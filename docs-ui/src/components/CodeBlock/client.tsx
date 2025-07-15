@@ -1,7 +1,7 @@
 'use client';
 
 import { CodeBlockProps } from '.';
-import { Text } from '@backstage/canon';
+import { Text } from '@backstage/ui';
 import styles from './styles.module.css';
 import parse from 'html-react-parser';
 

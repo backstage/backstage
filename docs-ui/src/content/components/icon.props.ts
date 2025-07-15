@@ -18,7 +18,7 @@ export const iconPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const iconUsageSnippet = `import { Icon } from '@backstage/canon';
+export const iconUsageSnippet = `import { Icon } from '@backstage/ui';
 
 <Icon />`;
 

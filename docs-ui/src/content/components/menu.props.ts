@@ -141,7 +141,7 @@ export const menuItemPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const menuUsageSnippet = `import { Menu } from '@backstage/canon';
+export const menuUsageSnippet = `import { Menu } from '@backstage/ui';
 
 <Menu.Root>
   <Menu.Trigger />

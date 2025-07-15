@@ -42,7 +42,7 @@ export const collapsiblePanelPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const collapsibleUsageSnippet = `import { Collapsible } from '@backstage/canon';
+export const collapsibleUsageSnippet = `import { Collapsible } from '@backstage/ui';
 
 <Collapsible.Root>
     <Collapsible.Trigger render={(props, state) => (

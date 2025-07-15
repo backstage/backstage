@@ -58,7 +58,7 @@ export const gridItemPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const gridUsageSnippet = `import { Grid } from '@backstage/canon';
+export const gridUsageSnippet = `import { Grid } from '@backstage/ui';
 
 <Grid />`;
 

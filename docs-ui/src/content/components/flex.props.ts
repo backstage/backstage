@@ -26,7 +26,7 @@ export const flexPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const flexUsageSnippet = `import { Flex } from '@backstage/canon';
+export const flexUsageSnippet = `import { Flex } from '@backstage/ui';
 
 <Flex />`;
 

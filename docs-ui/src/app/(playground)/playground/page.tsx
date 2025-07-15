@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Grid, Flex, Text } from '../../../../../packages/canon';
+import { Grid, Flex, Text } from '../../../../../packages/ui';
 import { screenSizes } from '@/utils/data';
 import { Frame } from '@/components/Frame';
 import { usePlayground } from '@/utils/playground-context';

@@ -1,6 +1,6 @@
 'use client';
 
-import { Icon, Text } from '../../../../packages/canon';
+import { Icon, Text } from '../../../../packages/ui';
 import styles from './styles.module.css';
 
 interface BaseUIProps {

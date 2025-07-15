@@ -94,7 +94,7 @@ export const selectPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const selectUsageSnippet = `import { Select } from '@backstage/canon';
+export const selectUsageSnippet = `import { Select } from '@backstage/ui';
 
 <Select
     name="font"

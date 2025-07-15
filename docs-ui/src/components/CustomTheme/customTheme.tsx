@@ -6,12 +6,12 @@ import { sass } from '@codemirror/lang-sass';
 import styles from './styles.module.css';
 import { usePlayground } from '@/utils/playground-context';
 import { AnimatePresence, motion } from 'motion/react';
-import { Icon } from '../../../../packages/canon';
+import { Icon } from '../../../../packages/ui';
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 
 const defaultTheme = `:root {
-  --canon-bg-solid: #000;
+  --bui-bg-solid: #000;
 }`;
 
 const myTheme = createTheme({

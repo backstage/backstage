@@ -24,7 +24,7 @@ export const skeletonPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const skeletonUsageSnippet = `import { Flex, Skeleton } from '@backstage/canon';
+export const skeletonUsageSnippet = `import { Flex, Skeleton } from '@backstage/ui';
 
 <Flex direction="column" gap="4">
   <Skeleton width={400} height={160} />

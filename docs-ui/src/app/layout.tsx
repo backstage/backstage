@@ -10,9 +10,9 @@ import '/public/theme-backstage.css';
 import '/public/theme-spotify.css';
 
 export const metadata: Metadata = {
-  title: 'Canon',
+  title: 'Backstage UI',
   description: 'UI library for Backstage',
-  metadataBase: new URL('https://canon.backstage.io'),
+  metadataBase: new URL('https://ui.backstage.io'),
 };
 
 export default function RootLayout({

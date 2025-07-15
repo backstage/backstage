@@ -46,7 +46,7 @@ export const checkboxPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const checkboxUsageSnippet = `import { Checkbox } from '@backstage/canon';
+export const checkboxUsageSnippet = `import { Checkbox } from '@backstage/ui';
 
 <Checkbox />`;
 

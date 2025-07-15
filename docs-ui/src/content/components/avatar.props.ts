@@ -18,7 +18,7 @@ export const avatarPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const snippetUsage = `import { Avatar } from '@backstage/canon';
+export const snippetUsage = `import { Avatar } from '@backstage/ui';
 
 <Avatar
   src="https://avatars.githubusercontent.com/u/1540635?v=4"

@@ -1948,42 +1948,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"canon-docs@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "canon-docs@workspace:."
-  dependencies:
-    "@codemirror/lang-sass": "npm:^6.0.2"
-    "@codemirror/view": "npm:^6.34.4"
-    "@lezer/highlight": "npm:^1.2.1"
-    "@mdx-js/loader": "npm:^3.1.0"
-    "@mdx-js/react": "npm:^3.1.0"
-    "@next/mdx": "npm:15.3.4"
-    "@storybook/react": "npm:^8.6.8"
-    "@types/mdx": "npm:^2.0.13"
-    "@types/node": "npm:^20"
-    "@types/react": "npm:19.1.8"
-    "@types/react-dom": "npm:19.1.6"
-    "@uiw/codemirror-themes": "npm:^4.23.7"
-    "@uiw/react-codemirror": "npm:^4.23.7"
-    chokidar: "npm:^3.6.0"
-    concurrently: "npm:^8.2.2"
-    eslint: "npm:^8"
-    eslint-config-next: "npm:15.3.4"
-    html-react-parser: "npm:^5.2.5"
-    lightningcss: "npm:^1.28.2"
-    motion: "npm:^12.4.1"
-    next: "npm:15.3.4"
-    next-mdx-remote-client: "npm:^2.1.2"
-    prop-types: "npm:^15.8.1"
-    react: "npm:19.1.0"
-    react-dom: "npm:19.1.0"
-    react-frame-component: "npm:^5.2.7"
-    shiki: "npm:^1.26.1"
-    storybook: "npm:^8.6.8"
-    typescript: "npm:^5"
-  languageName: unknown
-  linkType: soft
-
 "ccount@npm:^2.0.0":
   version: 2.0.1
   resolution: "ccount@npm:2.0.1"
@@ -2327,6 +2291,42 @@ __metadata:
   checksum: 10/3cc5f903d02d279d6dc4aa71ab6ed9898b9f4d1f861cc5421ce7357893c21b9520de78afb203c92bd650a6977ad0ca98195453a0707a39958cf5fea3b0a8ddd8
   languageName: node
   linkType: hard
+
+"docs-ui@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "docs-ui@workspace:."
+  dependencies:
+    "@codemirror/lang-sass": "npm:^6.0.2"
+    "@codemirror/view": "npm:^6.34.4"
+    "@lezer/highlight": "npm:^1.2.1"
+    "@mdx-js/loader": "npm:^3.1.0"
+    "@mdx-js/react": "npm:^3.1.0"
+    "@next/mdx": "npm:15.3.4"
+    "@storybook/react": "npm:^8.6.8"
+    "@types/mdx": "npm:^2.0.13"
+    "@types/node": "npm:^20"
+    "@types/react": "npm:19.1.8"
+    "@types/react-dom": "npm:19.1.6"
+    "@uiw/codemirror-themes": "npm:^4.23.7"
+    "@uiw/react-codemirror": "npm:^4.23.7"
+    chokidar: "npm:^3.6.0"
+    concurrently: "npm:^8.2.2"
+    eslint: "npm:^8"
+    eslint-config-next: "npm:15.3.4"
+    html-react-parser: "npm:^5.2.5"
+    lightningcss: "npm:^1.28.2"
+    motion: "npm:^12.4.1"
+    next: "npm:15.3.4"
+    next-mdx-remote-client: "npm:^2.1.2"
+    prop-types: "npm:^15.8.1"
+    react: "npm:19.1.0"
+    react-dom: "npm:19.1.0"
+    react-frame-component: "npm:^5.2.7"
+    shiki: "npm:^1.26.1"
+    storybook: "npm:^8.6.8"
+    typescript: "npm:^5"
+  languageName: unknown
+  linkType: soft
 
 "doctrine@npm:^2.1.0":
   version: 2.1.0

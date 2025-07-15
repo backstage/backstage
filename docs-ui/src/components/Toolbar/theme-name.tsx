@@ -2,7 +2,7 @@
 
 import { Select } from '@base-ui-components/react/select';
 import styles from './theme-name.module.css';
-import { Icon } from '@backstage/canon';
+import { Icon } from '@backstage/ui';
 import { usePlayground } from '@/utils/playground-context';
 
 const themes = [

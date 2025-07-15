@@ -29,7 +29,7 @@ export const radioGroupPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const radioGroupUsageSnippet = `import { RadioGroup } from '@backstage/canon';
+export const radioGroupUsageSnippet = `import { RadioGroup } from '@backstage/ui';
 
 <RadioGroup />`;
 

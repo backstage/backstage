@@ -1,7 +1,7 @@
 'use client';
 
 import { Tabs } from '@base-ui-components/react/tabs';
-import { Icon } from '@backstage/canon';
+import { Icon } from '@backstage/ui';
 import { usePlayground } from '@/utils/playground-context';
 import styles from './theme.module.css';
 

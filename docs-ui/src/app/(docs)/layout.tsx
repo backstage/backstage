@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import styles from './layout.module.css';
 
 export const metadata: Metadata = {
-  title: 'Canon',
+  title: 'Backstage UI',
   description: 'UI library for Backstage',
 };
 

@@ -29,7 +29,7 @@ export const buttonIconPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const buttonIconUsageSnippet = `import { ButtonIcon } from '@backstage/canon';
+export const buttonIconUsageSnippet = `import { ButtonIcon } from '@backstage/ui';
 
 <ButtonIcon />`;
 
@@ -52,8 +52,8 @@ export const buttonIconDisabledSnippet = `<ButtonIcon icon={<Icon name="cloud" /
 
 export const buttonIconResponsiveSnippet = `<ButtonIcon icon={<Icon name="cloud" />} variant={{ initial: 'primary', lg: 'secondary' }} />`;
 
-export const buttonIconAsLinkSnippet = `import { ButtonLink } from '@backstage/canon';
+export const buttonIconAsLinkSnippet = `import { ButtonLink } from '@backstage/ui';
 
-<ButtonLink href="https://canon.backstage.io" target="_blank">
+<ButtonLink href="https://ui.backstage.io" target="_blank">
   Button
 </ButtonLink>`;

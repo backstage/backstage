@@ -25,7 +25,7 @@ export const textPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const textUsageSnippet = `import { Text } from '@backstage/canon';
+export const textUsageSnippet = `import { Text } from '@backstage/ui';
 
 <Text />`;
 

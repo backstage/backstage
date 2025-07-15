@@ -31,7 +31,7 @@ export const buttonLinkPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const buttonLinkSnippetUsage = `import { ButtonLink } from '@backstage/canon';
+export const buttonLinkSnippetUsage = `import { ButtonLink } from '@backstage/ui';
 
 <ButtonLink />`;
 

@@ -11,7 +11,7 @@ export const containerPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const containerUsageSnippet = `import { Container } from "@backstage/canon";
+export const containerUsageSnippet = `import { Container } from "@backstage/ui";
 
 <Container>Hello World!</Container>`;
 

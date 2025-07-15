@@ -29,7 +29,7 @@ export const searchFieldPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const searchFieldUsageSnippet = `import { SearchField } from '@backstage/canon';
+export const searchFieldUsageSnippet = `import { SearchField } from '@backstage/ui';
 
 <SearchField />`;
 

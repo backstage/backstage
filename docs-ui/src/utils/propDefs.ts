@@ -1,4 +1,4 @@
-import type { Breakpoint } from '@backstage/canon/src/types';
+import type { Breakpoint } from '@backstage/ui/src/types';
 
 const breakpoints = ['initial', 'xs', 'sm', 'md', 'lg', 'xl'] as Breakpoint[];
 

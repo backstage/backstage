@@ -29,7 +29,7 @@ export const inputPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const textFieldUsageSnippet = `import { TextField } from '@backstage/canon';
+export const textFieldUsageSnippet = `import { TextField } from '@backstage/ui';
 
 <TextField />`;
 

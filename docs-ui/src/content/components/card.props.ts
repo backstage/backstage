@@ -24,7 +24,7 @@ export const cardFooterPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const cardUsageSnippet = `import { card } from '@backstage/canon';
+export const cardUsageSnippet = `import { card } from '@backstage/ui';
 
 <Card>
   <CardHeader>Header</CardHeader>

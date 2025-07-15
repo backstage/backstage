@@ -28,7 +28,7 @@ export const buttonPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const buttonSnippetUsage = `import { Button } from '@backstage/canon';
+export const buttonSnippetUsage = `import { Button } from '@backstage/ui';
 
 <Button />`;
 
@@ -65,8 +65,8 @@ export const buttonResponsiveSnippet = `<Button variant={{ initial: 'primary', l
   Responsive Button
 </Button>`;
 
-export const buttonAsLinkSnippet = `import { ButtonLink } from '@backstage/canon';
+export const buttonAsLinkSnippet = `import { ButtonLink } from '@backstage/ui';
 
-<ButtonLink href="https://canon.backstage.io" target="_blank">
+<ButtonLink href="https://ui.backstage.io" target="_blank">
   Button
 </ButtonLink>`;

@@ -1,7 +1,7 @@
 'use client';
 
-import { Text, Icon, icons } from '../../../../packages/canon';
-import type { IconNames } from '../../../../packages/canon';
+import { Text, Icon, icons } from '../../../../packages/ui';
+import type { IconNames } from '../../../../packages/ui';
 import styles from './styles.module.css';
 
 export const IconLibrary = () => {

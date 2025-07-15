@@ -1,6 +1,6 @@
-# Canon Docs
+# Backstage UI Docs
 
-Canon is our internal UI library built for Backstage. We built this website to document the library and its components. You can view this website [here](https://canon.backstage.io).
+Backstage UI is our internal UI library built for Backstage. We built this website to document the library and its components. You can view this website [here](https://ui.backstage.io).
 
 ## How to run locally
 

@@ -66,6 +66,6 @@ export const switchPropDefs: Record<string, PropDef> = {
   },
 };
 
-export const snippetUsage = `import { Switch } from '@backstage/canon';
+export const snippetUsage = `import { Switch } from '@backstage/ui';
 
 <Switch />`;

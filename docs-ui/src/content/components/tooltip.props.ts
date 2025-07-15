@@ -54,7 +54,7 @@ export const tooltipPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const tooltipUsageSnippet = `import { TooltipTrigger, Tooltip, Button } from '@backstage/canon';
+export const tooltipUsageSnippet = `import { TooltipTrigger, Tooltip, Button } from '@backstage/ui';
 
 <TooltipTrigger>
   <Button>Button</Button>

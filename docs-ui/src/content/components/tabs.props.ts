@@ -60,7 +60,7 @@ export const tabsPanelPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const tabsUsageSnippet = `import { Tabs } from '@backstage/canon';
+export const tabsUsageSnippet = `import { Tabs } from '@backstage/ui';
 
 <Tabs.Root>
     <Tabs.List>

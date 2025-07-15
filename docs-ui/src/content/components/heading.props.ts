@@ -23,7 +23,7 @@ export const headingPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const headingUsageSnippet = `import { Heading } from '@backstage/canon';
+export const headingUsageSnippet = `import { Heading } from '@backstage/ui';
 
 <Heading />`;
 

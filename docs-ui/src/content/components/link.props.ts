@@ -24,20 +24,20 @@ export const linkPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const linkUsageSnippet = `import { Link } from '@backstage/canon';
+export const linkUsageSnippet = `import { Link } from '@backstage/ui';
 
 <Link href="https://backstage.io">Sign up for Backstage</Link>`;
 
 export const linkDefaultSnippet = `<Link href="https://backstage.io">Sign up for Backstage</Link>`;
 
 export const linkVariantsSnippet = `<Flex gap="4" direction="column">
-  <Link href="https://canon.backstage.io" variant="subtitle" />
-  <Link href="https://canon.backstage.io" variant="body" />
-  <Link href="https://canon.backstage.io" variant="caption" />
-  <Link href="https://canon.backstage.io" variant="label" />
+  <Link href="https://ui.backstage.io" variant="subtitle" />
+  <Link href="https://ui.backstage.io" variant="body" />
+  <Link href="https://ui.backstage.io" variant="caption" />
+  <Link href="https://ui.backstage.io" variant="label" />
 </Flex>`;
 
 export const linkWeightsSnippet = `<Flex gap="4" direction="column">
-  <Link href="https://canon.backstage.io" weight="regular" />
-  <Link href="https://canon.backstage.io" weight="bold" />
+  <Link href="https://ui.backstage.io" weight="regular" />
+  <Link href="https://ui.backstage.io" weight="bold" />
 </Flex>`;

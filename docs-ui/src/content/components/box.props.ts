@@ -23,7 +23,7 @@ export const boxPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const snippetUsage = `import { Box } from '@backstage/canon';
+export const snippetUsage = `import { Box } from '@backstage/ui';
 
 <Box />`;
 
