@@ -463,8 +463,8 @@ export class CatalogBuilder {
       httpAuth,
     } = this.env;
 
-    const disableRelationsCompatibility = config.getOptionalBoolean(
-      'catalog.disableRelationsCompatibility',
+    const enableRelationsCompatibility = Boolean(
+      config.getOptionalBoolean('catalog.enableRelationsCompatibility'),
     );
 
     const policy = this.buildEntityPolicy();
@@ -503,7 +503,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       stitcher,
-      disableRelationsCompatibility,
+      enableRelationsCompatibility,
     });
 
     let permissionsService: PermissionsService;
@@ -619,7 +619,7 @@ export class CatalogBuilder {
       httpAuth,
       permissionsService,
       auditor,
-      disableRelationsCompatibility,
+      enableRelationsCompatibility,
     });
 
     if (
