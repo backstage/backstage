@@ -17,7 +17,7 @@
 import { JsonObject } from '@backstage/types';
 import {
   DatabaseService,
-  resolvePackageAssets,
+  resolvePackageDir,
 } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
@@ -58,7 +58,7 @@ import {
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { compact } from 'lodash';
 
-const migrationsDir = resolvePackageAssets('@backstage/plugin-scaffolder-backend', 'migrations');
+const migrationsDir = resolvePackageDir(__dirname, '..', '..', '..', 'migrations');
 
 export type RawDbTaskRow = {
   id: string;

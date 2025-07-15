@@ -15,14 +15,14 @@ This service is scoped per plugin too, so that table names do not conflict acros
 
 The following example shows how to get access to the database service in your `example` backend plugin and getting a client for interacting with the database. It also runs some migrations from a certain directory for your plugin.
 
-**Recommended approach for ES modules (using `resolveFromFile`):**
+The following example shows how to get access to the database service in your `example` backend plugin and getting a client for interacting with the database. It also runs some migrations from a certain directory for your plugin.
 
 ```ts
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { resolveFromFile } from '@backstage/backend-plugin-api';
+import { resolvePackageDir } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
   pluginId: 'example',
@@ -33,8 +33,8 @@ createBackendPlugin({
       },
       async init({ database }) {
         const client = await database.getClient();
-        // Use import.meta.url for stable resolution in all environments
-        const migrationsDir = resolveFromFile(import.meta.url, '../../migrations');
+        // Resolve migrations directory relative to this module
+        const migrationsDir = resolvePackageDir(__dirname, '..', '..', 'migrations');
         if (!database.migrations?.skip) {
           await client.migrate.latest({
             directory: migrationsDir,
@@ -46,71 +46,13 @@ createBackendPlugin({
 });
 ```
 
-**Recommended approach for CommonJS modules (using `resolvePackageAssets`):**
+The `resolvePackageDir` approach is preferred as it provides safer path resolution without requiring package names. While it still uses `__dirname`, it makes this usage explicit and centralizes it, reducing the chance of errors compared to manually writing `path.resolve(__dirname, '../../..')` which can be error-prone.
 
+**Migration from `resolvePackagePath`:**
 ```ts
-import {
-  coreServices,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
-import { resolvePackageAssets } from '@backstage/backend-plugin-api';
+// Old approach (requires package name)
+const migrationsDir = resolvePackagePath('@backstage/plugin-catalog-backend', 'migrations');
 
-createBackendPlugin({
-  pluginId: 'example',
-  register(env) {
-    env.registerInit({
-      deps: {
-        database: coreServices.database,
-      },
-      async init({ database }) {
-        const client = await database.getClient();
-        // Use package-based resolution for stability in bundled environments
-        const migrationsDir = resolvePackageAssets('@internal/my-plugin', 'migrations');
-        if (!database.migrations?.skip) {
-          await client.migrate.latest({
-            directory: migrationsDir,
-          });
-        }
-      },
-    });
-  },
-});
+// New approach (no package name needed, explicit __dirname)
+const migrationsDir = resolvePackageDir(__dirname, '..', '..', 'migrations');
 ```
-
-**Legacy approach (using `resolvePackagePath`):**
-
-```ts
-import {
-  coreServices,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
-
-createBackendPlugin({
-  pluginId: 'example',
-  register(env) {
-    env.registerInit({
-      deps: {
-        database: coreServices.database,
-      },
-      async init({ database }) {
-        const client = await database.getClient();
-        // Note: This approach may not work in bundled environments
-        const migrationsDir = resolvePackagePath(
-          '@internal/my-plugin',
-          'migrations',
-        );
-        if (!database.migrations?.skip) {
-          await client.migrate.latest({
-            directory: migrationsDir,
-          });
-        }
-      },
-    });
-  },
-});
-```
-
-The `resolveFromFile` approach with `import.meta.url` (ES modules) and `resolvePackageAssets` (CommonJS) are preferred as they provide stable path resolution in bundled environments. The legacy `resolvePackagePath` relies on being able to locate package.json files on the filesystem, which may not be available in all bundled environments.
-
-**Important:** Avoid using `__dirname` or `__filename` as they are not stable in production builds and bundled environments. Use `import.meta.url` for ES modules or `resolvePackageAssets` for CommonJS instead.

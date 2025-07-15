@@ -2,24 +2,18 @@
 '@backstage/backend-plugin-api': minor
 ---
 
-Add `resolvePackageAssets` function and update `resolveFromFile` for improved stability in production builds
+Add `resolvePackageDir` function to provide more portable path resolution without requiring package names
 
-**Breaking change in behavior**: `resolveFromFile` now only accepts `import.meta.url` (ES modules) and rejects `__dirname` because `__dirname` and `__filename` are not stable in production builds and bundled environments.
-
-**New `resolvePackageAssets` function**: Provides stable path resolution for CommonJS modules by using the module resolution system instead of relying on unstable file paths.
+**New `resolvePackageDir` function**: Provides safer path resolution by making `__dirname` usage explicit. Instead of developers writing error-prone `path.resolve(__dirname, '../../..')` patterns, they can use a more controlled helper function.
 
 **Migration guide:**
 
-ES modules (recommended):
 ```typescript
-// Use import.meta.url for stable resolution
-const migrationsDir = resolveFromFile(import.meta.url, '../migrations');
+// Old approach (requires package name)
+const migrationsDir = resolvePackagePath('@backstage/plugin-catalog-backend', 'migrations');
+
+// New approach (explicit __dirname, no package name needed)
+const migrationsDir = resolvePackageDir(__dirname, '..', '..', 'migrations');
 ```
 
-CommonJS modules:
-```typescript
-// Use resolvePackageAssets instead of __dirname-based approaches
-const migrationsDir = resolvePackageAssets('@backstage/plugin-auth-backend', 'migrations');
-```
-
-This ensures stable behavior across all deployment scenarios including bundled production environments.
+This approach eliminates the need to specify package names while providing a safer alternative to manual path construction. While it still uses `__dirname`, it centralizes this usage and makes it explicit, reducing errors compared to manual path resolution.

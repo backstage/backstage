@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { resolvePackageAssets } from '@backstage/backend-plugin-api';
+import { resolvePackageDir } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
 export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
-  const migrationsDir = resolvePackageAssets('@backstage/plugin-catalog-backend', 'migrations');
+  const migrationsDir = resolvePackageDir(__dirname, '..', '..', 'migrations');
 
   await knex.migrate.latest({
     directory: migrationsDir,

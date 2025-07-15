@@ -15,123 +15,39 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { resolveSafeChildPath, resolveFromFile, resolvePackageAssets } from './paths';
+import { resolveSafeChildPath, resolvePackageDir } from './paths';
 import { resolve as resolvePath } from 'path';
-import { pathToFileURL } from 'url';
 
 describe('paths', () => {
-  describe('resolveFromFile', () => {
-    it('should resolve paths from file URL (import.meta.url)', () => {
-      const testDir = '/some/module/path';
-      const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
-      
-      const result = resolveFromFile(fileUrl, '../assets', 'config.json');
-      expect(result).toBe(resolvePath(testDir, '../assets', 'config.json'));
+  describe('resolvePackageDir', () => {
+    it('should resolve paths relative to provided directory', () => {
+      const testDir = '/some/module/src/database';
+      const result = resolvePackageDir(testDir, '..', '..', 'migrations');
+      expect(result).toBe('/some/module/migrations');
     });
 
     it('should handle single path segment', () => {
-      const testDir = '/some/module/path';
-      const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
-      
-      const result = resolveFromFile(fileUrl, 'migrations');
-      expect(result).toBe(resolvePath(testDir, 'migrations'));
+      const testDir = '/some/module/src';
+      const result = resolvePackageDir(testDir, 'assets');
+      expect(result).toBe('/some/module/src/assets');
     });
 
     it('should handle no additional path segments', () => {
-      const testDir = '/some/module/path';
-      const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
-      
-      const result = resolveFromFile(fileUrl);
-      expect(result).toBe(testDir);
+      const testDir = '/some/module/src';
+      const result = resolvePackageDir(testDir);
+      expect(result).toBe('/some/module/src');
     });
 
-    it('should handle relative paths going up directories', () => {
-      const testDir = '/some/module/src/database';
-      const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
-      
-      const result = resolveFromFile(fileUrl, '../../assets');
-      expect(result).toBe(resolvePath(testDir, '../../assets'));
+    it('should handle multiple path segments', () => {
+      const testDir = '/some/module/src';
+      const result = resolvePackageDir(testDir, '..', 'assets', 'config.json');
+      expect(result).toBe('/some/module/assets/config.json');
     });
 
-    it('should throw error for non-file URLs (e.g., __dirname)', () => {
-      const testDir = '/some/module/path';
-      
-      expect(() => resolveFromFile(testDir, '../assets')).toThrow(
-        'resolveFromFile() expects import.meta.url as the first argument'
-      );
-    });
-  });
-
-  describe('resolvePackageAssets', () => {
-    it('should resolve package assets using require.resolve', () => {
-      // Mock require.resolve to simulate package resolution
-      const originalRequire = require;
-      const mockRequire = {
-        resolve: jest.fn((pkg: string) => {
-          if (pkg === 'test-package/package.json') {
-            return '/node_modules/test-package/package.json';
-          }
-          throw new Error('Cannot resolve module');
-        }),
-      };
-      
-      // @ts-ignore
-      global.require = mockRequire;
-      
-      try {
-        const result = resolvePackageAssets('test-package', 'migrations');
-        expect(result).toBe('/node_modules/test-package/migrations');
-        expect(mockRequire.resolve).toHaveBeenCalledWith('test-package/package.json');
-      } finally {
-        global.require = originalRequire;
-      }
-    });
-
-    it('should fallback to main entry resolution when package.json not found', () => {
-      const originalRequire = require;
-      const mockRequire = {
-        resolve: jest.fn((pkg: string) => {
-          if (pkg === 'test-package/package.json') {
-            throw new Error('Cannot find package.json');
-          }
-          if (pkg === 'test-package') {
-            return '/node_modules/test-package/dist/index.js';
-          }
-          throw new Error('Cannot resolve module');
-        }),
-      };
-      
-      // @ts-ignore
-      global.require = mockRequire;
-      
-      try {
-        const result = resolvePackageAssets('test-package', 'migrations');
-        expect(result).toBe('/node_modules/test-package/migrations');
-        expect(mockRequire.resolve).toHaveBeenCalledWith('test-package/package.json');
-        expect(mockRequire.resolve).toHaveBeenCalledWith('test-package');
-      } finally {
-        global.require = originalRequire;
-      }
-    });
-
-    it('should throw error when package cannot be resolved', () => {
-      const originalRequire = require;
-      const mockRequire = {
-        resolve: jest.fn(() => {
-          throw new Error('Cannot resolve module');
-        }),
-      };
-      
-      // @ts-ignore
-      global.require = mockRequire;
-      
-      try {
-        expect(() => resolvePackageAssets('non-existent-package', 'migrations')).toThrow(
-          'Cannot resolve package assets for \'non-existent-package\''
-        );
-      } finally {
-        global.require = originalRequire;
-      }
+    it('should handle absolute paths in segments', () => {
+      const testDir = '/some/module/src';
+      const result = resolvePackageDir(testDir, '..', 'assets');
+      expect(result).toBe('/some/module/assets');
     });
   });
 
