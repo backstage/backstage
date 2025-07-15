@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '@backstage/canon';
+import { Breakpoint } from '../../';
 import { ReactElement, ReactNode } from 'react';
 import { ButtonProps as RAButtonProps } from 'react-aria-components';
 

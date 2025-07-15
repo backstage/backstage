@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { MutableRefObject } from 'react';
-
 /**
  * Props for the main Header component.
  *
@@ -26,7 +24,7 @@ export interface HeaderProps {
   title?: string;
   breadcrumbs?: HeaderBreadcrumb[];
   customActions?: React.ReactNode;
-  menuItems?: HeaderOption[];
+  menuItems?: HeaderMenuItem[];
   tabs?: HeaderTab[];
 }
 
@@ -36,6 +34,7 @@ export interface HeaderProps {
  * @public
  */
 export interface HeaderTab {
+  id: string;
   label: string;
   href?: string;
 }
@@ -45,7 +44,7 @@ export interface HeaderTab {
  *
  * @public
  */
-export interface HeaderOption {
+export interface HeaderMenuItem {
   label: string;
   value: string;
   onClick?: () => void;
@@ -62,19 +61,15 @@ export interface HeaderBreadcrumb {
 }
 
 /**
- * Props for individual header tab components.
+ * Props for the HeaderToolbar component.
  *
- * @public
+ * @internal
  */
-export interface HeaderTabProps {
-  tab: HeaderTab;
-  setTabRef: (key: string, element: HTMLDivElement | null) => void;
-  setHoveredKey: (key: string | null) => void;
-}
-
-export interface HeaderIndicatorsProps {
-  tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
-  tabsRef: MutableRefObject<HTMLDivElement | null>;
-  hoveredKey: string | null;
-  prevHoveredKey: MutableRefObject<string | null>;
+export interface HeaderToolbarProps {
+  icon?: HeaderProps['icon'];
+  title?: HeaderProps['title'];
+  breadcrumbs?: HeaderProps['breadcrumbs'];
+  customActions?: HeaderProps['customActions'];
+  menuItems?: HeaderProps['menuItems'];
+  hasTabs?: boolean;
 }

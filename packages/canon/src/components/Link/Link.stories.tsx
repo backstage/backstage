@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { Link } from './Link';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
-import { Link as RouterLink, MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/Link',
@@ -26,6 +26,13 @@ const meta = {
   args: {
     children: 'Link',
   },
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta<typeof Link>;
 
 export default meta;
@@ -33,8 +40,16 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    to: 'https://canon.backstage.io',
+    href: '/home',
     children: 'Sign up for Backstage',
+  },
+};
+
+export const ExternalLink: Story = {
+  args: {
+    href: 'https://backstage.io',
+    children: 'Sign up for Backstage',
+    target: '_blank',
   },
 };
 
@@ -44,10 +59,36 @@ export const AllVariants: Story = {
   },
   render: args => (
     <Flex gap="4" direction="column">
-      <Link href="https://canon.backstage.io" variant="subtitle" {...args} />
-      <Link href="https://canon.backstage.io" variant="body" {...args} />
-      <Link href="https://canon.backstage.io" variant="caption" {...args} />
-      <Link href="https://canon.backstage.io" variant="label" {...args} />
+      <Link href="https://ui.backstage.io" variant="title-large" {...args} />
+      <Link href="https://ui.backstage.io" variant="title-medium" {...args} />
+      <Link href="https://ui.backstage.io" variant="title-small" {...args} />
+      <Link href="https://ui.backstage.io" variant="title-x-small" {...args} />
+      <Link href="https://ui.backstage.io" variant="body-large" {...args} />
+      <Link href="https://ui.backstage.io" variant="body-medium" {...args} />
+      <Link href="https://ui.backstage.io" variant="body-small" {...args} />
+      <Link href="https://ui.backstage.io" variant="body-x-small" {...args} />
+    </Flex>
+  ),
+};
+
+export const AllColors: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="primary"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="secondary"
+        {...args}
+      />
     </Flex>
   ),
 };
@@ -58,8 +99,102 @@ export const AllWeights: Story = {
   },
   render: args => (
     <Flex gap="4" direction="column">
-      <Link weight="regular" style={{ maxWidth: '600px' }} {...args} />
-      <Link weight="bold" style={{ maxWidth: '600px' }} {...args} />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-large"
+        weight="regular"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-large"
+        weight="bold"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-medium"
+        weight="regular"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-medium"
+        weight="bold"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        weight="regular"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        weight="bold"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-x-small"
+        weight="regular"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-x-small"
+        weight="bold"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="body-large"
+        weight="regular"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="body-large"
+        weight="bold"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="body-medium"
+        weight="regular"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="body-medium"
+        weight="bold"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="body-small"
+        weight="regular"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="body-small"
+        weight="bold"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="body-x-small"
+        weight="regular"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="body-x-small"
+        weight="bold"
+        {...args}
+      />
     </Flex>
   ),
 };
@@ -68,27 +203,10 @@ export const Responsive: Story = {
   args: {
     ...Default.args,
     variant: {
-      xs: 'label',
-      md: 'body',
+      xs: 'title-x-small',
+      md: 'body-x-small',
     },
   },
-};
-
-export const CustomRender: Story = {
-  render: () => {
-    return (
-      <Flex gap="4" direction="column" align="start">
-        <Link render={<RouterLink to="/catalog" />}>Go to Catalog</Link>
-      </Flex>
-    );
-  },
-  decorators: [
-    Story => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
 };
 
 export const Playground: Story = {
@@ -97,14 +215,20 @@ export const Playground: Story = {
   },
   render: args => (
     <Flex gap="4" direction="column">
-      <Text>Subtitle</Text>
-      <Link variant="subtitle" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body</Text>
-      <Link variant="body" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Caption</Text>
-      <Link variant="caption" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Label</Text>
-      <Link variant="label" style={{ maxWidth: '600px' }} {...args} />
+      <Text>Title X Small</Text>
+      <Link variant="title-x-small" style={{ maxWidth: '600px' }} {...args} />
+      <Text>Body X Small</Text>
+      <Link variant="body-x-small" style={{ maxWidth: '600px' }} {...args} />
+      <Text>Body Small</Text>
+      <Link variant="body-small" style={{ maxWidth: '600px' }} {...args} />
+      <Text>Body Medium</Text>
+      <Link variant="body-medium" style={{ maxWidth: '600px' }} {...args} />
+      <Text>Body Large</Text>
+      <Link variant="body-large" style={{ maxWidth: '600px' }} {...args} />
+      <Text>Title Small</Text>
+      <Link variant="title-small" style={{ maxWidth: '600px' }} {...args} />
+      <Text>Title Medium</Text>
+      <Link variant="title-medium" style={{ maxWidth: '600px' }} {...args} />
     </Flex>
   ),
 };

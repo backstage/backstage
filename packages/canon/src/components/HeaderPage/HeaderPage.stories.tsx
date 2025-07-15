@@ -16,35 +16,52 @@
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { HeaderPage } from './HeaderPage';
-import { HeaderPageOption, HeaderPageTab } from './types';
+import type { HeaderTab, HeaderMenuItem } from '../Header/types';
+import { MemoryRouter } from 'react-router-dom';
+import { Button } from '../Button';
 
 const meta = {
   title: 'Components/HeaderPage',
   component: HeaderPage,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta<typeof HeaderPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const tabs: HeaderPageTab[] = [
+const tabs: HeaderTab[] = [
   {
+    id: 'overview',
     label: 'Overview',
   },
   {
+    id: 'checks',
     label: 'Checks',
   },
   {
+    id: 'tracks',
     label: 'Tracks',
   },
   {
+    id: 'campaigns',
     label: 'Campaigns',
   },
   {
+    id: 'integrations',
     label: 'Integrations',
   },
 ];
 
-const options: HeaderPageOption[] = [
+const menuItems: HeaderMenuItem[] = [
   {
     label: 'Settings',
     value: 'settings',
@@ -66,16 +83,15 @@ const layoutDecorator = [
           left: 8,
           top: 8,
           bottom: 8,
-          backgroundColor: 'var(--canon-bg-surface-1',
-          borderRadius: 'var(--canon-radius-2)',
-          border: '1px solid var(--canon-border)',
+          backgroundColor: 'var(--bui-bg-surface-1',
+          borderRadius: 'var(--bui-radius-2)',
+          border: '1px solid var(--bui-border)',
           zIndex: 1,
         }}
       />
       <div
         style={{
           paddingInline: '266px',
-          minHeight: '200vh',
         }}
       >
         <Story />
@@ -87,9 +103,9 @@ const layoutDecorator = [
           right: 8,
           top: 8,
           bottom: 8,
-          backgroundColor: 'var(--canon-bg-surface-1',
-          borderRadius: 'var(--canon-radius-2)',
-          border: '1px solid var(--canon-border)',
+          backgroundColor: 'var(--bui-bg-surface-1',
+          borderRadius: 'var(--bui-radius-2)',
+          border: '1px solid var(--bui-border)',
           zIndex: 1,
         }}
       />
@@ -103,13 +119,6 @@ export const Default: Story = {
   },
 };
 
-export const WithDescription: Story = {
-  args: {
-    ...Default.args,
-    description: 'Header Page Description',
-  },
-};
-
 export const WithTabs: Story = {
   args: {
     ...Default.args,
@@ -117,20 +126,32 @@ export const WithTabs: Story = {
   },
 };
 
-export const WithOptions: Story = {
+export const WithMenuItems: Story = {
   args: {
     ...Default.args,
-    options,
+    menuItems,
   },
 };
 
+export const WithCustomActions: Story = {
+  render: () => (
+    <HeaderPage
+      {...Default.args}
+      menuItems={menuItems}
+      customActions={<Button>Custom action</Button>}
+    />
+  ),
+};
+
 export const WithEverything: Story = {
-  args: {
-    ...Default.args,
-    description: 'Header Page Description',
-    tabs,
-    options,
-  },
+  render: () => (
+    <HeaderPage
+      {...Default.args}
+      menuItems={menuItems}
+      tabs={tabs}
+      customActions={<Button>Custom action</Button>}
+    />
+  ),
 };
 
 export const WithLayout: Story = {
@@ -138,7 +159,4 @@ export const WithLayout: Story = {
     ...WithEverything.args,
   },
   decorators: layoutDecorator,
-  parameters: {
-    layout: 'fullscreen',
-  },
 };

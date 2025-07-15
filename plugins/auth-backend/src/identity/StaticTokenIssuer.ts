@@ -22,7 +22,6 @@ import {
   BackstageSignInResult,
   TokenParams,
 } from '@backstage/plugin-auth-node';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
 import { issueUserToken } from './issueUserToken';
 
 export type Config = {
@@ -42,7 +41,6 @@ export type Options = {
    * A list of claims to omit from issued tokens and only store in the user info database
    */
   omitClaimsFromToken?: string[];
-  userInfoDatabaseHandler: UserInfoDatabaseHandler;
 };
 
 /**
@@ -55,7 +53,6 @@ export class StaticTokenIssuer implements TokenIssuer {
   private readonly keyStore: StaticKeyStore;
   private readonly sessionExpirationSeconds: number;
   private readonly omitClaimsFromToken?: string[];
-  private readonly userInfoDatabaseHandler: UserInfoDatabaseHandler;
 
   public constructor(options: Options, keyStore: StaticKeyStore) {
     this.issuer = options.issuer;
@@ -63,10 +60,11 @@ export class StaticTokenIssuer implements TokenIssuer {
     this.sessionExpirationSeconds = options.sessionExpirationSeconds;
     this.keyStore = keyStore;
     this.omitClaimsFromToken = options.omitClaimsFromToken;
-    this.userInfoDatabaseHandler = options.userInfoDatabaseHandler;
   }
 
-  public async issueToken(params: TokenParams): Promise<BackstageSignInResult> {
+  public async issueToken(
+    params: TokenParams & { claims: { ent: string[] } },
+  ): Promise<BackstageSignInResult> {
     const key = await this.getSigningKey();
 
     return issueUserToken({
@@ -76,7 +74,6 @@ export class StaticTokenIssuer implements TokenIssuer {
       logger: this.logger,
       omitClaimsFromToken: this.omitClaimsFromToken,
       params,
-      userInfoDatabaseHandler: this.userInfoDatabaseHandler,
     });
   }
 

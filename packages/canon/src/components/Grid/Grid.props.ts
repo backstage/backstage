@@ -36,7 +36,7 @@ const columnsValues = [
 const gridPropDefs = {
   columns: {
     type: 'enum | string',
-    className: 'cu-columns',
+    className: 'bui-columns',
     customProperties: ['--columns'],
     values: columnsValues,
     responsive: true,
@@ -50,28 +50,28 @@ const gridPropDefs = {
 const gridItemPropDefs = {
   colSpan: {
     type: 'enum | string',
-    className: 'cu-col-span',
+    className: 'bui-col-span',
     customProperties: ['--col-span'],
     values: columnsValues,
     responsive: true,
   },
   colEnd: {
     type: 'enum | string',
-    className: 'cu-col-end',
+    className: 'bui-col-end',
     customProperties: ['--col-end'],
     values: columnsValues,
     responsive: true,
   },
   colStart: {
     type: 'enum | string',
-    className: 'cu-col-start',
+    className: 'bui-col-start',
     customProperties: ['--col-start'],
     values: columnsValues,
     responsive: true,
   },
   rowSpan: {
     type: 'enum | string',
-    className: 'cu-row-span',
+    className: 'bui-row-span',
     customProperties: ['--row-span'],
     values: columnsValues,
     responsive: true,

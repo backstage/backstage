@@ -17,31 +17,30 @@
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 
-import { BackstageTokenPayload } from './TokenFactory';
+import { AuthDatabase } from './AuthDatabase';
+import { JsonObject } from '@backstage/types';
 
 const TABLE = 'user_info';
 
 type Row = {
   user_entity_ref: string;
   user_info: string;
-  exp: string;
+  updated_at: string;
 };
 
 type UserInfo = {
-  claims: Omit<BackstageTokenPayload, 'aud' | 'iat' | 'iss' | 'uip'>;
+  claims: JsonObject;
 };
 
-export class UserInfoDatabaseHandler {
-  constructor(private readonly client: Knex) {}
+export class UserInfoDatabase {
+  private constructor(private readonly client: Knex) {}
 
   async addUserInfo(userInfo: UserInfo): Promise<void> {
     await this.client<Row>(TABLE)
       .insert({
         user_entity_ref: userInfo.claims.sub as string,
         user_info: JSON.stringify(userInfo),
-        exp: DateTime.fromSeconds(userInfo.claims.exp as number, {
-          zone: 'utc',
-        }).toSQL({ includeOffset: false }),
+        updated_at: DateTime.utc().toSQL({ includeOffset: false }),
       })
       .onConflict('user_entity_ref')
       .merge();
@@ -58,5 +57,10 @@ export class UserInfoDatabaseHandler {
 
     const userInfo = JSON.parse(info.user_info);
     return userInfo;
+  }
+
+  static async create(options: { database: AuthDatabase }) {
+    const client = await options.database.get();
+    return new UserInfoDatabase(client);
   }
 }

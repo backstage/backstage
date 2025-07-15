@@ -18,6 +18,7 @@
 @import '../components/Box/styles.css';
 @import '../components/Button/styles.css';
 @import '../components/ButtonIcon/styles.css';
+@import '../components/Card/Card.styles.css';
 @import '../components/Checkbox/styles.css';
 @import '../components/Collapsible/Collapsible.styles.css';
 @import '../components/Container/styles.css';
@@ -33,6 +34,7 @@
 @import '../components/Icon/styles.css';
 @import '../components/Link/styles.css';
 @import '../components/Menu/Menu.styles.css';
+@import '../components/Popover/Popover.styles.css';
 @import '../components/RadioGroup/RadioGroup.styles.css';
 @import '../components/Table/styles.css';
 @import '../components/Table/TableCell/TableCell.styles.css';
@@ -43,6 +45,7 @@
 @import '../components/Text/styles.css';
 @import '../components/TextField/TextField.styles.css';
 @import '../components/SearchField/SearchField.styles.css';
+@import '../components/Skeleton/Skeleton.styles.css';
 @import '../components/Tooltip/Tooltip.styles.css';
 @import '../components/ScrollArea/ScrollArea.styles.css';
 @import '../components/Select/Select.styles.css';

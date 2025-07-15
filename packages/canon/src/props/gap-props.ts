@@ -21,7 +21,7 @@ import { spacingValues } from './spacing.props';
 const gapPropDefs = {
   gap: {
     type: 'enum | string',
-    className: 'cu-gap',
+    className: 'bui-gap',
     customProperties: ['--gap'],
     values: spacingValues,
     responsive: true,

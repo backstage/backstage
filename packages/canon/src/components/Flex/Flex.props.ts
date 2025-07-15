@@ -29,19 +29,19 @@ const justifyValues = ['start', 'center', 'end', 'between'] as const;
 const flexPropDefs = {
   align: {
     type: 'enum',
-    className: 'cu-align',
+    className: 'bui-align',
     values: alignValues,
     responsive: true,
   },
   direction: {
     type: 'enum',
-    className: 'cu-fd',
+    className: 'bui-fd',
     values: directionValues,
     responsive: true,
   },
   justify: {
     type: 'enum',
-    className: 'cu-jc',
+    className: 'bui-jc',
     values: justifyValues,
     responsive: true,
   },

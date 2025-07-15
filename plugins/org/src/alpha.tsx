@@ -26,7 +26,8 @@ import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 const EntityGroupProfileCard = EntityCardBlueprint.make({
   name: 'group-profile',
   params: {
-    filter: 'kind:group',
+    type: 'info',
+    filter: { kind: 'group' },
     loader: async () =>
       import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(m =>
         compatWrapper(<m.GroupProfileCard />),
@@ -38,7 +39,7 @@ const EntityGroupProfileCard = EntityCardBlueprint.make({
 const EntityMembersListCard = EntityCardBlueprint.make({
   name: 'members-list',
   params: {
-    filter: 'kind:group',
+    filter: { kind: 'group' },
     loader: async () =>
       import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
         compatWrapper(<m.MembersListCard />),
@@ -50,7 +51,7 @@ const EntityMembersListCard = EntityCardBlueprint.make({
 const EntityOwnershipCard = EntityCardBlueprint.make({
   name: 'ownership',
   params: {
-    filter: 'kind:group,user',
+    filter: { kind: { $in: ['group', 'user'] } },
     loader: async () =>
       import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
         compatWrapper(<m.OwnershipCard />),
@@ -69,7 +70,8 @@ const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config }) {
     return originalFactory({
-      filter: 'kind:user',
+      type: 'info',
+      filter: { kind: 'user' },
       loader: async () =>
         import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
           m =>

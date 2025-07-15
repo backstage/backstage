@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export * from './Tooltip';
+export { TooltipTrigger, Tooltip } from './Tooltip';
+export type { TooltipProps } from './types';

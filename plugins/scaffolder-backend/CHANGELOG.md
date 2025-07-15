@@ -1,5 +1,30 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.1.0-next.2
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.6.0-next.1
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.12-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.3-next.2
+
 ## 2.0.1-next.1
 
 ### Patch Changes

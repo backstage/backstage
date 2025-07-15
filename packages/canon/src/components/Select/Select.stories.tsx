@@ -16,9 +16,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Select } from './Select';
 import { Flex } from '../Flex';
+import { Form } from 'react-aria-components';
+import { RiCloudLine } from '@remixicon/react';
 
 const meta = {
-  title: 'Components/Select',
+  title: 'Forms/Select',
   component: Select,
 } satisfies Meta<typeof Select>;
 
@@ -49,11 +51,25 @@ export const Preview: Story = {
   },
 };
 
-export const WithDescription: Story = {
+export const WithLabel: Story = {
   args: {
-    ...Preview.args,
+    ...Default.args,
+    label: 'Font Family',
+  },
+};
+
+export const WithLabelAndDescription: Story = {
+  args: {
+    ...WithLabel.args,
     description: 'Choose a font family for your document',
   },
+};
+
+export const WithIcon: Story = {
+  args: {
+    ...WithLabel.args,
+  },
+  render: args => <Select {...args} icon={<RiCloudLine />} />,
 };
 
 export const Sizes: Story = {
@@ -61,9 +77,9 @@ export const Sizes: Story = {
     ...Preview.args,
   },
   render: args => (
-    <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: 540 }}>
-      <Select {...args} size="small" />
-      <Select {...args} size="medium" />
+    <Flex direction="row" gap="2">
+      <Select {...args} size="small" icon={<RiCloudLine />} />
+      <Select {...args} size="medium" icon={<RiCloudLine />} />
     </Flex>
   ),
 };
@@ -71,24 +87,21 @@ export const Sizes: Story = {
 export const Required: Story = {
   args: {
     ...Preview.args,
-    required: true,
+    isRequired: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
     ...Preview.args,
-    disabled: true,
+    isDisabled: true,
   },
 };
 
 export const DisabledOption: Story = {
   args: {
     ...Preview.args,
-    options: [
-      ...fontOptions,
-      { value: 'comic-sans', label: 'Comic sans', disabled: true },
-    ],
+    disabledKeys: ['cursive', 'serif'],
   },
 };
 
@@ -102,15 +115,15 @@ export const NoOptions: Story = {
 export const WithValue: Story = {
   args: {
     ...Preview.args,
-    value: 'mono',
-    defaultValue: 'serif',
+    selectedKey: 'mono',
+    defaultSelectedKey: 'serif',
   },
 };
 
 export const WithDefaultValue: Story = {
   args: {
     ...Preview.args,
-    defaultValue: 'serif',
+    defaultSelectedKey: 'serif',
     options: fontOptions,
     name: 'font',
   },
@@ -246,14 +259,19 @@ export const WithManyOptions: Story = {
   },
 };
 
-export const WithErrorAndDescription: Story = {
+export const WithError: Story = {
   args: {
-    ...Preview.args,
-    error: 'Invalid font family',
+    ...WithLabel.args,
+    name: 'font',
   },
+  render: args => (
+    <Form validationErrors={{ font: 'Invalid font family' }}>
+      <Select {...args} />
+    </Form>
+  ),
 };
 
-export const WithLongOptionNames: Story = {
+export const WithLongNames: Story = {
   args: {
     label: 'Document Template',
     options: [
@@ -286,6 +304,19 @@ export const WithLongOptionNames: Story = {
     placeholder: 'Select a document template',
     name: 'template',
     style: { maxWidth: 400 },
-    value: 'annual-report-2024',
+    defaultSelectedKey: 'annual-report-2024',
   },
+};
+
+export const WithLongNamesAndPadding: Story = {
+  args: {
+    ...WithLongNames.args,
+  },
+  decorators: [
+    (Story, { args }) => (
+      <div style={{ padding: 128 }}>
+        <Story {...args} />
+      </div>
+    ),
+  ],
 };

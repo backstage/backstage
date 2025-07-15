@@ -18,9 +18,10 @@ import { Link } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useRef, useState, useEffect } from 'react';
 import { RiArrowRightSLine, RiMore2Line, RiShapesLine } from '@remixicon/react';
-import type { HeaderProps } from './types';
+import type { HeaderToolbarProps } from './types';
 import { ButtonIcon } from '../ButtonIcon';
 import { Menu } from '../Menu';
+import { Text } from '../Text';
 import { motion, useScroll, useTransform } from 'motion/react';
 
 /**
@@ -28,8 +29,8 @@ import { motion, useScroll, useTransform } from 'motion/react';
  *
  * @internal
  */
-export const HeaderToolbar = (props: HeaderProps) => {
-  const { icon, title, menuItems, breadcrumbs, customActions } = props;
+export const HeaderToolbar = (props: HeaderToolbarProps) => {
+  const { icon, title, menuItems, breadcrumbs, customActions, hasTabs } = props;
   const { classNames } = useStyles('Header');
 
   const { scrollY } = useScroll();
@@ -58,7 +59,7 @@ export const HeaderToolbar = (props: HeaderProps) => {
       // Get dimensions
       const wrapperRect = wrapper.getBoundingClientRect();
       const wrapperWidth = wrapperRect.width;
-      const wrapperPadding = 24; // 12px on each side (var(--canon-space-3))
+      const wrapperPadding = 24; // 12px on each side (var(--bui-space-3))
       const availableWidth = wrapperWidth - wrapperPadding;
 
       // Calculate required width for content
@@ -87,14 +88,14 @@ export const HeaderToolbar = (props: HeaderProps) => {
   }, []);
 
   return (
-    <div className={classNames.toolbar}>
+    <div className={classNames.toolbar} data-has-tabs={hasTabs}>
       <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
         <div className={classNames.toolbarContent} ref={toolbarContentRef}>
           <div className={classNames.toolbarName}>
             <div className={classNames.toolbarIcon}>
               {icon || <RiShapesLine />}
             </div>
-            {title || 'Your plugin'}
+            <Text variant="body">{title || 'Your plugin'}</Text>
           </div>
           {breadcrumbs && (
             <motion.div

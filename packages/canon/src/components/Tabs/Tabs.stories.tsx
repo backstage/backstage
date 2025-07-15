@@ -14,35 +14,163 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
-import { Tabs } from './Tabs';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import { Tabs, TabList, Tab, TabPanel } from './Tabs';
+import { MemoryRouter } from 'react-router-dom';
+import { Box } from '../Box';
+import { Text } from '../Text';
 
 const meta = {
   title: 'Components/Tabs',
-  component: Tabs.Root,
-} satisfies Meta<typeof Tabs.Root>;
+  component: Tabs,
+} satisfies Meta<typeof Tabs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const panelStyles = {
-  padding: 'var(--canon-space-3)',
-  fontSize: 'var(--canon-font-size-2)',
-};
+const withRouter = (Story: StoryFn) => (
+  <MemoryRouter>
+    <Story />
+  </MemoryRouter>
+);
 
 export const Default: Story = {
   args: {
-    children: (
-      <Tabs.Root>
-        <Tabs.List>
-          <Tabs.Tab>Tab 1</Tabs.Tab>
-          <Tabs.Tab>Tab 2</Tabs.Tab>
-          <Tabs.Tab>Tab 3 With long title</Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel style={panelStyles}>Content for Tab 1</Tabs.Panel>
-        <Tabs.Panel style={panelStyles}>Content for Tab 2</Tabs.Panel>
-        <Tabs.Panel style={panelStyles}>Content for Tab 3</Tabs.Panel>
-      </Tabs.Root>
-    ),
+    children: '',
   },
+  decorators: [withRouter],
+  render: () => (
+    <Tabs>
+      <TabList>
+        <Tab id="tab1">Tab 1</Tab>
+        <Tab id="tab2">Tab 2</Tab>
+        <Tab id="tab3">Tab 3 With long title</Tab>
+      </TabList>
+    </Tabs>
+  ),
+};
+
+export const WithTabPanels: Story = {
+  args: {
+    children: '',
+  },
+  decorators: [withRouter],
+  render: () => (
+    <Tabs>
+      <TabList>
+        <Tab id="tab1">Settings</Tab>
+        <Tab id="tab2">Profile</Tab>
+        <Tab id="tab3">Preferences</Tab>
+      </TabList>
+      <TabPanel id="tab1">
+        <Text>Settings panel content goes here</Text>
+      </TabPanel>
+      <TabPanel id="tab2">
+        <Text>Profile panel content goes here</Text>
+      </TabPanel>
+      <TabPanel id="tab3">
+        <Text>Preferences panel content goes here</Text>
+      </TabPanel>
+    </Tabs>
+  ),
+};
+
+export const WithMockedURLTab2: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/tab2']}>
+      <Tabs>
+        <TabList>
+          <Tab id="tab1" href="/tab1">
+            Tab 1
+          </Tab>
+          <Tab id="tab2" href="/tab2">
+            Tab 2
+          </Tab>
+          <Tab id="tab3" href="/tab3">
+            Tab 3 With long title
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL is mocked to be: <strong>/tab2</strong>
+        </Text>
+        <Text>
+          Notice how the "Tab 2" tab is selected (highlighted) because it
+          matches the current path.
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const WithMockedURLTab3: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/tab3']}>
+      <Tabs>
+        <TabList>
+          <Tab id="tab1" href="/tab1">
+            Tab 1
+          </Tab>
+          <Tab id="tab2" href="/tab2">
+            Tab 2
+          </Tab>
+          <Tab id="tab3" href="/tab3">
+            Tab 3 With long title
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL is mocked to be: <strong>/tab3</strong>
+        </Text>
+        <Text>
+          Notice how the "Tab 3 With long title" tab is selected (highlighted)
+          because it matches the current path.
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const WithMockedURLNoMatch: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/some-other-page']}>
+      <Tabs>
+        <TabList>
+          <Tab id="tab1" href="/tab1">
+            Tab 1
+          </Tab>
+          <Tab id="tab2" href="/tab2">
+            Tab 2
+          </Tab>
+          <Tab id="tab3" href="/tab3">
+            Tab 3 With long title
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL is mocked to be: <strong>/some-other-page</strong>
+        </Text>
+        <Text>
+          No tab is selected because the current path doesn't match any tab's
+          href.
+        </Text>
+        <Text>
+          Tabs without href (like "Tab 1", "Tab 2", "Tab 3 With long title")
+          fall back to React Aria's internal state.
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
 };

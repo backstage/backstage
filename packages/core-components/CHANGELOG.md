@@ -1,5 +1,14 @@
 # @backstage/core-components
 
+## 0.17.4-next.2
+
+### Patch Changes
+
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
 ## 0.17.4-next.1
 
 ### Patch Changes

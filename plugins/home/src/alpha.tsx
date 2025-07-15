@@ -21,8 +21,10 @@ import {
   PageBlueprint,
   createFrontendPlugin,
   createRouteRef,
+  AppRootElementBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { compatWrapper } from '@backstage/core-compat-api';
+import { VisitListener } from './components/';
 
 const rootRouteRef = createRouteRef();
 
@@ -63,13 +65,20 @@ const homePage = PageBlueprint.makeWithOverrides({
   },
 });
 
+const visitListenerAppRootElement = AppRootElementBlueprint.make({
+  name: 'visit-listener',
+  params: {
+    element: <VisitListener />,
+  },
+});
+
 /**
  * @alpha
  */
 export default createFrontendPlugin({
   pluginId: 'home',
   info: { packageJson: () => import('../package.json') },
-  extensions: [homePage],
+  extensions: [homePage, visitListenerAppRootElement],
   routes: {
     root: rootRouteRef,
   },

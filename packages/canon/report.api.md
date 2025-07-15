@@ -4,17 +4,12 @@
 
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
-import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
-import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
-import type { CSSProperties } from 'react';
 import type { ElementType } from 'react';
-import { FC } from 'react';
-import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
@@ -28,13 +23,18 @@ import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
+import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
-import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
+import type { TabListProps as TabListProps_2 } from 'react-aria-components';
+import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
+import { TabProps } from 'react-aria-components';
+import type { TabsProps as TabsProps_2 } from 'react-aria-components';
 import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
-import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
+import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
+import { TooltipTriggerComponentProps } from 'react-aria-components';
 import type { useRender } from '@base-ui-components/react/use-render';
 
 // @public (undocumented)
@@ -170,13 +170,13 @@ export interface ButtonIconProps extends ButtonProps_2 {
   // (undocumented)
   icon?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public (undocumented)
@@ -193,13 +193,13 @@ export interface ButtonLinkProps extends LinkProps_2 {
   // (undocumented)
   iconStart?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public
@@ -211,13 +211,42 @@ export interface ButtonProps extends ButtonProps_2 {
   // (undocumented)
   iconStart?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+}
+
+// @public
+export const Card: ForwardRefExoticComponent<
+  CardProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
 }
 
 // @public (undocumented)
@@ -293,9 +322,9 @@ export type ComponentDefinitionName = keyof typeof componentDefinitions;
 export const componentDefinitions: {
   readonly Avatar: {
     readonly classNames: {
-      readonly root: 'canon-AvatarRoot';
-      readonly image: 'canon-AvatarImage';
-      readonly fallback: 'canon-AvatarFallback';
+      readonly root: 'bui-AvatarRoot';
+      readonly image: 'bui-AvatarImage';
+      readonly fallback: 'bui-AvatarFallback';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium', 'large'];
@@ -303,12 +332,12 @@ export const componentDefinitions: {
   };
   readonly Box: {
     readonly classNames: {
-      readonly root: 'canon-Box';
+      readonly root: 'bui-Box';
     };
   };
   readonly Button: {
     readonly classNames: {
-      readonly root: 'canon-Button';
+      readonly root: 'bui-Button';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium', 'large'];
@@ -317,19 +346,27 @@ export const componentDefinitions: {
   };
   readonly ButtonIcon: {
     readonly classNames: {
-      readonly root: 'canon-ButtonIcon';
+      readonly root: 'bui-ButtonIcon';
     };
   };
   readonly ButtonLink: {
     readonly classNames: {
-      readonly root: 'canon-ButtonLink';
+      readonly root: 'bui-ButtonLink';
+    };
+  };
+  readonly Card: {
+    readonly classNames: {
+      readonly root: 'bui-Card';
+      readonly header: 'bui-CardHeader';
+      readonly body: 'bui-CardBody';
+      readonly footer: 'bui-CardFooter';
     };
   };
   readonly Checkbox: {
     readonly classNames: {
-      readonly root: 'canon-CheckboxRoot';
-      readonly label: 'canon-CheckboxLabel';
-      readonly indicator: 'canon-CheckboxIndicator';
+      readonly root: 'bui-CheckboxRoot';
+      readonly label: 'bui-CheckboxLabel';
+      readonly indicator: 'bui-CheckboxIndicator';
     };
     readonly dataAttributes: {
       readonly checked: readonly [true, false];
@@ -337,38 +374,61 @@ export const componentDefinitions: {
   };
   readonly Collapsible: {
     readonly classNames: {
-      readonly root: 'canon-CollapsibleRoot';
-      readonly trigger: 'canon-CollapsibleTrigger';
-      readonly panel: 'canon-CollapsiblePanel';
+      readonly root: 'bui-CollapsibleRoot';
+      readonly trigger: 'bui-CollapsibleTrigger';
+      readonly panel: 'bui-CollapsiblePanel';
     };
   };
   readonly Container: {
     readonly classNames: {
-      readonly root: 'canon-Container';
+      readonly root: 'bui-Container';
     };
   };
   readonly FieldLabel: {
     readonly classNames: {
-      readonly root: 'canon-FieldLabelWrapper';
-      readonly label: 'canon-FieldLabel';
-      readonly secondaryLabel: 'canon-FieldSecondaryLabel';
-      readonly description: 'canon-FieldDescription';
+      readonly root: 'bui-FieldLabelWrapper';
+      readonly label: 'bui-FieldLabel';
+      readonly secondaryLabel: 'bui-FieldSecondaryLabel';
+      readonly description: 'bui-FieldDescription';
     };
   };
   readonly Flex: {
     readonly classNames: {
-      readonly root: 'canon-Flex';
+      readonly root: 'bui-Flex';
     };
   };
   readonly Grid: {
     readonly classNames: {
-      readonly root: 'canon-Grid';
-      readonly item: 'canon-GridItem';
+      readonly root: 'bui-Grid';
+      readonly item: 'bui-GridItem';
+    };
+  };
+  readonly Header: {
+    readonly classNames: {
+      readonly toolbar: 'bui-HeaderToolbar';
+      readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
+      readonly toolbarContent: 'bui-HeaderToolbarContent';
+      readonly toolbarControls: 'bui-HeaderToolbarControls';
+      readonly toolbarIcon: 'bui-HeaderToolbarIcon';
+      readonly toolbarName: 'bui-HeaderToolbarName';
+      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+      readonly breadcrumb: 'bui-HeaderBreadcrumb';
+      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
+      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
+      readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    };
+  };
+  readonly HeaderPage: {
+    readonly classNames: {
+      readonly root: 'bui-HeaderPage';
+      readonly content: 'bui-HeaderPageContent';
+      readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
+      readonly controls: 'bui-HeaderPageControls';
     };
   };
   readonly Heading: {
     readonly classNames: {
-      readonly root: 'canon-Heading';
+      readonly root: 'bui-Heading';
     };
     readonly dataAttributes: {
       readonly variant: readonly ['title1', 'title2', 'title3', 'subtitle'];
@@ -378,113 +438,129 @@ export const componentDefinitions: {
   };
   readonly Icon: {
     readonly classNames: {
-      readonly root: 'canon-Icon';
+      readonly root: 'bui-Icon';
     };
   };
   readonly Link: {
     readonly classNames: {
-      readonly root: 'canon-Link';
+      readonly root: 'bui-Link';
     };
     readonly dataAttributes: {
       readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
       readonly weight: readonly ['regular', 'bold'];
     };
   };
+  readonly List: {
+    readonly classNames: {
+      readonly root: 'bui-List';
+      readonly row: 'bui-ListRow';
+      readonly label: 'bui-ListLabel';
+    };
+  };
   readonly Menu: {
     readonly classNames: {
-      readonly trigger: 'canon-MenuTrigger';
-      readonly backdrop: 'canon-MenuBackdrop';
-      readonly positioner: 'canon-MenuPositioner';
-      readonly popup: 'canon-MenuPopup';
-      readonly arrow: 'canon-MenuArrow';
-      readonly item: 'canon-MenuItem';
-      readonly group: 'canon-MenuGroup';
-      readonly groupLabel: 'canon-MenuGroupLabel';
-      readonly radioGroup: 'canon-MenuRadioGroup';
-      readonly radioItem: 'canon-MenuRadioItem';
-      readonly radioItemIndicator: 'canon-MenuRadioItemIndicator';
-      readonly checkboxItem: 'canon-MenuCheckboxItem';
-      readonly checkboxItemIndicator: 'canon-MenuCheckboxItemIndicator';
-      readonly submenuTrigger: 'canon-MenuSubmenuTrigger';
-      readonly separator: 'canon-MenuSeparator';
+      readonly trigger: 'bui-MenuTrigger';
+      readonly backdrop: 'bui-MenuBackdrop';
+      readonly positioner: 'bui-MenuPositioner';
+      readonly popup: 'bui-MenuPopup';
+      readonly arrow: 'bui-MenuArrow';
+      readonly item: 'bui-MenuItem';
+      readonly group: 'bui-MenuGroup';
+      readonly groupLabel: 'bui-MenuGroupLabel';
+      readonly radioGroup: 'bui-MenuRadioGroup';
+      readonly radioItem: 'bui-MenuRadioItem';
+      readonly radioItemIndicator: 'bui-MenuRadioItemIndicator';
+      readonly checkboxItem: 'bui-MenuCheckboxItem';
+      readonly checkboxItemIndicator: 'bui-MenuCheckboxItemIndicator';
+      readonly submenuTrigger: 'bui-MenuSubmenuTrigger';
+      readonly separator: 'bui-MenuSeparator';
+    };
+  };
+  readonly Popover: {
+    readonly classNames: {
+      readonly root: 'bui-Popover';
     };
   };
   readonly RadioGroup: {
     readonly classNames: {
-      readonly root: 'canon-RadioGroup';
-      readonly content: 'canon-RadioGroupContent';
-      readonly radio: 'canon-Radio';
+      readonly root: 'bui-RadioGroup';
+      readonly content: 'bui-RadioGroupContent';
+      readonly radio: 'bui-Radio';
     };
   };
   readonly ScrollArea: {
     readonly classNames: {
-      readonly root: 'canon-ScrollAreaRoot';
-      readonly viewport: 'canon-ScrollAreaViewport';
-      readonly scrollbar: 'canon-ScrollAreaScrollbar';
-      readonly thumb: 'canon-ScrollAreaThumb';
+      readonly root: 'bui-ScrollAreaRoot';
+      readonly viewport: 'bui-ScrollAreaViewport';
+      readonly scrollbar: 'bui-ScrollAreaScrollbar';
+      readonly thumb: 'bui-ScrollAreaThumb';
     };
   };
   readonly SearchField: {
     readonly classNames: {
-      readonly root: 'canon-SearchField';
-      readonly clear: 'canon-InputClear';
+      readonly root: 'bui-SearchField';
+      readonly clear: 'bui-InputClear';
     };
   };
   readonly Select: {
     readonly classNames: {
-      readonly root: 'canon-Select';
-      readonly required: 'canon-SelectRequired';
-      readonly trigger: 'canon-SelectTrigger';
-      readonly value: 'canon-SelectValue';
-      readonly icon: 'canon-SelectIcon';
-      readonly popup: 'canon-SelectPopup';
-      readonly item: 'canon-SelectItem';
-      readonly itemIndicator: 'canon-SelectItemIndicator';
-      readonly itemText: 'canon-SelectItemText';
-      readonly description: 'canon-SelectDescription';
-      readonly error: 'canon-SelectError';
+      readonly root: 'bui-Select';
+      readonly trigger: 'bui-SelectTrigger';
+      readonly value: 'bui-SelectValue';
+      readonly icon: 'bui-SelectIcon';
+      readonly list: 'bui-SelectList';
+      readonly item: 'bui-SelectItem';
+      readonly itemIndicator: 'bui-SelectItemIndicator';
+      readonly itemLabel: 'bui-SelectItemLabel';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium'];
     };
   };
+  readonly Skeleton: {
+    readonly classNames: {
+      readonly root: 'bui-Skeleton';
+    };
+  };
   readonly Switch: {
     readonly classNames: {
-      readonly root: 'canon-Switch';
-      readonly indicator: 'canon-SwitchIndicator';
+      readonly root: 'bui-Switch';
+      readonly indicator: 'bui-SwitchIndicator';
     };
   };
   readonly Table: {
     readonly classNames: {
-      readonly root: 'canon-TableRoot';
-      readonly header: 'canon-TableHeader';
-      readonly body: 'canon-TableBody';
-      readonly row: 'canon-TableRow';
-      readonly head: 'canon-TableHead';
-      readonly caption: 'canon-TableCaption';
-      readonly cell: 'canon-TableCell';
-      readonly cellText: 'canon-TableCellText';
-      readonly cellLink: 'canon-TableCellLink';
-      readonly cellProfile: 'canon-TableCellProfile';
-      readonly cellProfileAvatar: 'canon-TableCellProfileAvatar';
-      readonly cellProfileAvatarImage: 'canon-TableCellProfileAvatarImage';
-      readonly cellProfileAvatarFallback: 'canon-TableCellProfileAvatarFallback';
-      readonly cellProfileName: 'canon-TableCellProfileName';
-      readonly cellProfileLink: 'canon-TableCellProfileLink';
+      readonly root: 'bui-TableRoot';
+      readonly header: 'bui-TableHeader';
+      readonly body: 'bui-TableBody';
+      readonly row: 'bui-TableRow';
+      readonly head: 'bui-TableHead';
+      readonly caption: 'bui-TableCaption';
+      readonly cell: 'bui-TableCell';
+      readonly cellText: 'bui-TableCellText';
+      readonly cellLink: 'bui-TableCellLink';
+      readonly cellProfile: 'bui-TableCellProfile';
+      readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
+      readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
+      readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
+      readonly cellProfileName: 'bui-TableCellProfileName';
+      readonly cellProfileLink: 'bui-TableCellProfileLink';
     };
   };
   readonly Tabs: {
     readonly classNames: {
-      readonly root: 'canon-TabsRoot';
-      readonly list: 'canon-TabsList';
-      readonly indicator: 'canon-TabsIndicator';
-      readonly tab: 'canon-TabsTab';
-      readonly panel: 'canon-TabsPanel';
+      readonly tabs: 'bui-Tabs';
+      readonly tabList: 'bui-TabList';
+      readonly tabListWrapper: 'bui-TabListWrapper';
+      readonly tab: 'bui-Tab';
+      readonly tabActive: 'bui-TabActive';
+      readonly tabHovered: 'bui-TabHovered';
+      readonly panel: 'bui-TabPanel';
     };
   };
   readonly Text: {
     readonly classNames: {
-      readonly root: 'canon-Text';
+      readonly root: 'bui-Text';
     };
     readonly dataAttributes: {
       readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
@@ -501,42 +577,20 @@ export const componentDefinitions: {
   };
   readonly TextField: {
     readonly classNames: {
-      readonly root: 'canon-TextField';
-      readonly inputWrapper: 'canon-InputWrapper';
-      readonly input: 'canon-Input';
-      readonly inputIcon: 'canon-InputIcon';
+      readonly root: 'bui-TextField';
+      readonly inputWrapper: 'bui-InputWrapper';
+      readonly input: 'bui-Input';
+      readonly inputIcon: 'bui-InputIcon';
     };
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
       readonly disabled: readonly [true, false];
     };
   };
-  readonly Header: {
-    readonly classNames: {
-      readonly toolbar: 'canon-HeaderToolbar';
-      readonly toolbarWrapper: 'canon-HeaderToolbarWrapper';
-      readonly toolbarContent: 'canon-HeaderToolbarContent';
-      readonly toolbarControls: 'canon-HeaderToolbarControls';
-      readonly toolbarIcon: 'canon-HeaderToolbarIcon';
-      readonly toolbarName: 'canon-HeaderToolbarName';
-      readonly breadcrumbs: 'canon-HeaderBreadcrumbs';
-      readonly breadcrumb: 'canon-HeaderBreadcrumb';
-      readonly breadcrumbLink: 'canon-HeaderBreadcrumbLink';
-      readonly breadcrumbSeparator: 'canon-HeaderBreadcrumbSeparator';
-      readonly tabs: 'canon-HeaderTabs';
-      readonly tabList: 'canon-HeaderTabList';
-      readonly tab: 'canon-HeaderTab';
-      readonly tabActive: 'canon-HeaderTabActive';
-      readonly tabHovered: 'canon-HeaderTabHovered';
-      readonly subNav: 'canon-HeaderSubNav';
-    };
-  };
   readonly Tooltip: {
     readonly classNames: {
-      readonly trigger: 'canon-TooltipTrigger';
-      readonly positioner: 'canon-TooltipPositioner';
-      readonly popup: 'canon-TooltipPopup';
-      readonly arrow: 'canon-TooltipArrow';
+      readonly tooltip: 'bui-Tooltip';
+      readonly arrow: 'bui-TooltipArrow';
     };
   };
 };
@@ -951,7 +1005,7 @@ export interface HeaderBreadcrumb {
 }
 
 // @public
-export interface HeaderOption {
+export interface HeaderMenuItem {
   // (undocumented)
   label: string;
   // (undocumented)
@@ -964,33 +1018,15 @@ export interface HeaderOption {
 export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
 
 // @public
-export interface HeaderPageOption {
-  // (undocumented)
-  label: string;
-  // (undocumented)
-  onClick?: () => void;
-  // (undocumented)
-  value: string;
-}
-
-// @public
 export interface HeaderPageProps {
   // (undocumented)
-  description?: string;
+  customActions?: React.ReactNode;
   // (undocumented)
-  options?: HeaderPageOption[];
+  menuItems?: HeaderMenuItem[];
   // (undocumented)
-  tabs?: HeaderPageTab[];
+  tabs?: HeaderTab[];
   // (undocumented)
   title?: string;
-}
-
-// @public
-export interface HeaderPageTab {
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  label: string;
 }
 
 // @public
@@ -1002,7 +1038,7 @@ export interface HeaderProps {
   // (undocumented)
   icon?: React.ReactNode;
   // (undocumented)
-  menuItems?: HeaderOption[];
+  menuItems?: HeaderMenuItem[];
   // (undocumented)
   tabs?: HeaderTab[];
   // (undocumented)
@@ -1013,6 +1049,8 @@ export interface HeaderProps {
 export interface HeaderTab {
   // (undocumented)
   href?: string;
+  // (undocumented)
+  id: string;
   // (undocumented)
   label: string;
 }
@@ -1188,26 +1226,39 @@ export type JustifyContent =
 
 // @public (undocumented)
 export const Link: ForwardRefExoticComponent<
-  Omit<LinkProps, 'ref'> & RefAttributes<HTMLElement>
+  LinkProps & RefAttributes<HTMLAnchorElement>
 >;
 
 // @public (undocumented)
-export interface LinkProps extends useRender.ComponentProps<'a'> {
+export interface LinkProps extends LinkProps_2 {
   // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  style?: CSSProperties;
-  // (undocumented)
-  to?: string;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   // (undocumented)
   variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+    | 'title-large'
+    | 'title-medium'
+    | 'title-small'
+    | 'title-x-small'
+    | 'body-large'
+    | 'body-medium'
+    | 'body-small'
+    | 'body-x-small'
+    | Partial<
+        Record<
+          Breakpoint,
+          | 'title-large'
+          | 'title-medium'
+          | 'title-small'
+          | 'title-x-small'
+          | 'body-large'
+          | 'body-medium'
+          | 'body-small'
+          | 'body-x-small'
+        >
+      >;
   // (undocumented)
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
 }
@@ -1482,28 +1533,32 @@ export const Select: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export interface SelectProps {
-  className?: string;
-  defaultValue?: string;
-  description?: string;
-  disabled?: boolean;
-  error?: string;
-  label?: string;
-  name: string;
-  onBlur?: (event: FocusEvent_2<HTMLSelectElement>) => void;
-  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
-  onOpenChange?: (open: boolean) => void;
-  onValueChange?: (value: string) => void;
+export interface SelectProps
+  extends SelectProps_2<{
+      name: string;
+      value: string;
+    }>,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  icon?: ReactNode;
   options?: Array<{
     value: string;
     label: string;
     disabled?: boolean;
   }>;
-  placeholder?: string;
-  required?: boolean;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
-  style?: React.CSSProperties;
-  value?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
+
+// @public (undocumented)
+export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface SkeletonProps extends ComponentProps<'div'> {
+  // (undocumented)
+  height?: number | string;
+  // (undocumented)
+  rounded?: boolean;
+  // (undocumented)
+  width?: number | string;
 }
 
 // @public (undocumented)
@@ -1582,6 +1637,9 @@ export interface SwitchProps extends SwitchProps_2 {
 }
 
 // @public
+export const Tab: (props: TabProps) => JSX_2.Element;
+
+// @public
 export const Table: {
   Root: ForwardRefExoticComponent<
     HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
@@ -1653,31 +1711,23 @@ export interface TableCellTextProps
   title: string;
 }
 
-// @public (undocumented)
-export const Tabs: {
-  Root: ForwardRefExoticComponent<
-    TabsRootWithoutOrientation & RefAttributes<HTMLDivElement>
-  >;
-  List: ForwardRefExoticComponent<
-    Omit<Tabs_2.List.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Tab: ForwardRefExoticComponent<
-    Omit<Tabs_2.Tab.Props & RefAttributes<Element>, 'ref'> &
-      RefAttributes<Element>
-  >;
-  Panel: ForwardRefExoticComponent<
-    Omit<Tabs_2.Panel.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-};
+// @public
+export const TabList: (props: TabListProps) => JSX_2.Element;
 
-// @public (undocumented)
-export interface TabsRootWithoutOrientation
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof Tabs_2.Root>,
-    'orientation'
-  > {}
+// @public
+export interface TabListProps extends Omit<TabListProps_2<object>, 'items'> {}
+
+// @public
+export const TabPanel: (props: TabPanelProps) => JSX_2.Element;
+
+// @public
+export interface TabPanelProps extends TabPanelProps_2 {}
+
+// @public
+export const Tabs: (props: TabsProps) => JSX_2.Element | null;
+
+// @public
+export interface TabsProps extends TabsProps_2 {}
 
 // @public (undocumented)
 const Text_2: {
@@ -1736,27 +1786,20 @@ export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
   Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;
 
 // @public (undocumented)
-export const Tooltip: {
-  Provider: FC<Tooltip_2.Provider.Props>;
-  Root: FC<Tooltip_2.Root.Props>;
-  Trigger: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Trigger.Props & RefAttributes<any>, 'ref'> &
-      RefAttributes<any>
-  >;
-  Portal: typeof Tooltip_2.Portal;
-  Positioner: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Positioner.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Popup: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Popup.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Arrow: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Arrow.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-};
+export const Tooltip: ForwardRefExoticComponent<
+  TooltipProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface TooltipProps extends Omit<TooltipProps_2, 'children'> {
+  // (undocumented)
+  children: React.ReactNode;
+}
+
+// @public (undocumented)
+export const TooltipTrigger: (
+  props: TooltipTriggerComponentProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const useBreakpoint: () => {

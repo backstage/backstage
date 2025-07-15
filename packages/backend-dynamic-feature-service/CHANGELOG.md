@@ -1,5 +1,12 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
 ## 0.7.2-next.1
 
 ### Patch Changes

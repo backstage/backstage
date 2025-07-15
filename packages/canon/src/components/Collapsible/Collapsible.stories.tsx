@@ -34,7 +34,7 @@ export const Default: Story = {
     style: {
       display: 'flex',
       flexDirection: 'column',
-      gap: 'var(--canon-space-2)',
+      gap: 'var(--bui-space-2)',
       alignItems: 'center',
     },
     children: (
@@ -60,10 +60,10 @@ export const Default: Story = {
           <Box
             p="4"
             style={{
-              border: '1px solid var(--canon-border)',
-              backgroundColor: 'var(--canon-bg-surface-1)',
-              color: 'var(--canon-fg-primary)',
-              borderRadius: 'var(--canon-radius-2)',
+              border: '1px solid var(--bui-border)',
+              backgroundColor: 'var(--bui-bg-surface-1)',
+              color: 'var(--bui-fg-primary)',
+              borderRadius: 'var(--bui-radius-2)',
               width: '460px',
             }}
           >

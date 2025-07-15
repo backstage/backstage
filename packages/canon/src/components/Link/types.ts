@@ -14,21 +14,36 @@
  * limitations under the License.
  */
 
-import type { CSSProperties, ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
-import type { useRender } from '@base-ui-components/react/use-render';
+import type { LinkProps as AriaLinkProps } from 'react-aria-components';
 
 /** @public */
-export interface LinkProps extends useRender.ComponentProps<'a'> {
-  children: ReactNode;
-  to?: string;
+export interface LinkProps extends AriaLinkProps {
   variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+    | 'title-large'
+    | 'title-medium'
+    | 'title-small'
+    | 'title-x-small'
+    | 'body-large'
+    | 'body-medium'
+    | 'body-small'
+    | 'body-x-small'
+    | Partial<
+        Record<
+          Breakpoint,
+          | 'title-large'
+          | 'title-medium'
+          | 'title-small'
+          | 'title-x-small'
+          | 'body-large'
+          | 'body-medium'
+          | 'body-small'
+          | 'body-x-small'
+        >
+      >;
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
-  className?: string;
-  style?: CSSProperties;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
 }

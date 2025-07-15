@@ -5,14 +5,14 @@
   --sb-panel-left: 0;
   --sb-panel-right: 0;
   --sb-sidebar-border: none;
-  --sb-sidebar-border-right: 1px solid var(--canon-border);
+  --sb-sidebar-border-right: 1px solid var(--bui-border);
   --sb-options-border: none;
-  --sb-options-border-left: 1px solid var(--canon-border);
+  --sb-options-border-left: 1px solid var(--bui-border);
   --sb-content-padding-inline: 250px;
 }
 
 [data-theme-name='spotify'] {
-  --sb-panel-radius: var(--canon-radius-3);
+  --sb-panel-radius: var(--bui-radius-3);
   --sb-panel-top: 8px;
   --sb-panel-bottom: 8px;
   --sb-panel-left: 8px;
@@ -21,12 +21,12 @@
   --sb-sidebar-border-right: none;
   --sb-options-border: none;
   --sb-options-border-left: none;
-  --sb-content-padding-inline: 266px;
+  --sb-content-padding-inline: 258px;
 }
 
 [data-theme-name='spotify'][data-theme='light'] {
-  --sb-sidebar-border: 1px solid var(--canon-border);
-  --sb-sidebar-border-right: 1px solid var(--canon-border);
-  --sb-options-border: 1px solid var(--canon-border);
-  --sb-options-border-left: 1px solid var(--canon-border);
+  --sb-sidebar-border: 1px solid var(--bui-border);
+  --sb-sidebar-border-right: 1px solid var(--bui-border);
+  --sb-options-border: 1px solid var(--bui-border);
+  --sb-options-border-left: 1px solid var(--bui-border);
 }

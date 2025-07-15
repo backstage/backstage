@@ -948,6 +948,36 @@ describe('scaffolder router', () => {
         order: [{ order: 'desc', field: 'created_at' }],
       });
     });
+
+    it('disallows users from seeing tasks they do not own', async () => {
+      const { router, taskBroker, permissions } = await createTestRouter();
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            conditions: {
+              resourceType: 'scaffolder-task',
+              rule: 'IS_TASK_OWNER',
+              params: { createdBy: ['user'] },
+            },
+            pluginId: 'scaffolder',
+            resourceType: 'scaffolder-task',
+            result: AuthorizeResult.CONDITIONAL,
+          },
+        ]);
+      const response = await request(router).get(
+        `/v2/tasks?createdBy=not-user`,
+      );
+      expect(taskBroker.list).toHaveBeenCalledWith({
+        filters: { createdBy: ['not-user'], status: undefined },
+        order: undefined,
+        pagination: { limit: undefined, offset: undefined },
+        permissionFilters: { key: 'created_by', values: ['user'] },
+      });
+      expect(response.status).toBe(200);
+      expect(response.body.totalTasks).toBe(0);
+      expect(response.body.tasks).toEqual([]);
+    });
   });
 
   describe('GET /v2/tasks/:taskId', () => {
@@ -969,11 +999,52 @@ describe('scaffolder router', () => {
       expect(response.body.status).toBe('completed');
       expect(response.body.secrets).toBeUndefined();
     });
+    it('disallows users from seeing tasks they do not own', async () => {
+      const { router, permissions, taskBroker } = await createTestRouter();
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            conditions: {
+              resourceType: 'scaffolder-task',
+              rule: 'IS_TASK_OWNER',
+              params: { createdBy: ['user'] },
+            },
+            pluginId: 'scaffolder',
+            resourceType: 'scaffolder-task',
+            result: AuthorizeResult.CONDITIONAL,
+          },
+        ]);
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: 'not-user',
+      });
+
+      const response = await request(router).get(`/v2/tasks/a-random-id`);
+      expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+      expect(response.error).not.toBeFalsy();
+    });
   });
 
   describe('GET /v2/tasks/:taskId/eventstream', () => {
     it('should return log messages', async () => {
       const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1059,6 +1130,16 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should return log messages with after query', async () => {
       const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1123,6 +1204,16 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
   describe('GET /v2/tasks/:taskId/events', () => {
     it('should return log messages', async () => {
       const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1183,6 +1274,16 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should return log messages with after query', async () => {
       const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1208,6 +1309,40 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         after: 10,
       });
       expect(subscriber!.closed).toBe(true);
+    });
+    it('disallows users from seeing events for tasks they do not own', async () => {
+      const { permissions, router, taskBroker } = await createTestRouter();
+
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            conditions: {
+              resourceType: 'scaffolder-task',
+              rule: 'IS_TASK_OWNER',
+              params: { createdBy: ['user'] },
+            },
+            pluginId: 'scaffolder',
+            resourceType: 'scaffolder-task',
+            result: AuthorizeResult.CONDITIONAL,
+          },
+        ]);
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: 'not-user',
+      });
+
+      const response = await request(router).get(
+        `/v2/tasks/a-random-id/events`,
+      );
+      expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+      expect(response.error).not.toBeFalsy();
     });
   });
 
@@ -1235,6 +1370,35 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         'user:default/mock',
         expect.anything(),
       );
+    });
+    it('disallows users from seeing tasks they do not own', async () => {
+      const { permissions, router, taskBroker } = await createTestRouter();
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            conditions: {
+              resourceType: 'scaffolder-task',
+              rule: 'IS_TASK_OWNER',
+              params: { createdBy: ['user'] },
+            },
+            pluginId: 'scaffolder',
+            resourceType: 'scaffolder-task',
+            result: AuthorizeResult.CONDITIONAL,
+          },
+        ]);
+      const response = await request(router).get(
+        `/v2/tasks?createdBy=not-user`,
+      );
+      expect(taskBroker.list).toHaveBeenCalledWith({
+        filters: { createdBy: ['not-user'], status: undefined },
+        order: undefined,
+        pagination: { limit: undefined, offset: undefined },
+        permissionFilters: { key: 'created_by', values: ['user'] },
+      });
+      expect(response.status).toBe(200);
+      expect(response.body.totalTasks).toBe(0);
+      expect(response.body.tasks).toEqual([]);
     });
   });
 

@@ -87,6 +87,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'Card',
+    slug: 'card',
+    status: 'alpha',
+  },
+  {
     title: 'Checkbox',
     slug: 'checkbox',
     status: 'alpha',
@@ -132,6 +137,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'Skeleton',
+    slug: 'skeleton',
+    status: 'alpha',
+  },
+  {
     title: 'Switch',
     slug: 'switch',
     status: 'alpha',
@@ -154,6 +164,11 @@ export const components: Page[] = [
   {
     title: 'TextField',
     slug: 'text-field',
+    status: 'alpha',
+  },
+  {
+    title: 'Tooltip',
+    slug: 'tooltip',
     status: 'alpha',
   },
 ];
