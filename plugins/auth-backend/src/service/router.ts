@@ -23,6 +23,7 @@ import {
   DiscoveryService,
   LoggerService,
   RootConfigService,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -51,6 +52,7 @@ interface RouterOptions {
   config: RootConfigService;
   discovery: DiscoveryService;
   auth: AuthService;
+  scheduler: SchedulerService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
   catalog: CatalogService;
@@ -65,6 +67,7 @@ export async function createRouter(
     config,
     discovery,
     database: db,
+    scheduler,
     tokenFactoryAlgorithm,
     providerFactories = {},
   } = options;
@@ -87,33 +90,6 @@ export async function createRouter(
 
   // Read refresh token configuration
   const refreshTokenConfig = readRefreshTokenConfig(config);
-
-  // Initialize refresh token service if enabled
-  let refreshTokenService: RefreshTokenService | undefined;
-  if (refreshTokenConfig.enabled) {
-    const refreshSessionDatabase = await RefreshSessionDatabase.create({
-      database,
-    });
-
-    refreshTokenService = new RefreshTokenService({
-      logger: logger.child({ component: 'refresh-token-service' }),
-      refreshSessionDatabase,
-      userInfoDatabase: userInfo,
-      tokenIssuer,
-      defaultRefreshTokenExpirationSeconds: refreshTokenConfig.defaultExpirationSeconds,
-      maxRefreshTokenExpirationSeconds: refreshTokenConfig.maxExpirationSeconds,
-    });
-
-    // Set up periodic cleanup of expired sessions
-    setInterval(
-      () => {
-        refreshTokenService!.cleanupExpiredSessions().catch(error => {
-          logger.error(`Failed to cleanup expired refresh sessions: ${error}`);
-        });
-      },
-      refreshTokenConfig.cleanupIntervalSeconds * 1000,
-    );
-  }
 
   const omitClaimsFromToken = config.getOptionalBoolean(
     'auth.omitIdentityTokenOwnershipClaim',
@@ -143,6 +119,43 @@ export async function createRouter(
         config.getOptionalString('auth.identityTokenAlgorithm'),
       omitClaimsFromToken,
     });
+  }
+
+  // Initialize refresh token service if enabled
+  let refreshTokenService: RefreshTokenService | undefined;
+  if (refreshTokenConfig.enabled) {
+    const refreshSessionDatabase = await RefreshSessionDatabase.create({
+      database,
+    });
+
+    refreshTokenService = new RefreshTokenService({
+      logger: logger.child({ component: 'refresh-token-service' }),
+      refreshSessionDatabase,
+      userInfoDatabase: userInfo,
+      tokenIssuer,
+      defaultRefreshTokenExpirationSeconds:
+        refreshTokenConfig.defaultExpirationSeconds,
+      maxRefreshTokenExpirationSeconds: refreshTokenConfig.maxExpirationSeconds,
+    });
+
+    // Set up periodic cleanup of expired sessions
+    scheduler
+      .scheduleTask({
+        id: 'refresh-token-cleanup',
+        frequency: { seconds: refreshTokenConfig.cleanupIntervalSeconds },
+        timeout: { minutes: 5 },
+        scope: 'global',
+        fn: async () => {
+          await refreshTokenService!.cleanupExpiredSessions().catch(error => {
+            logger.error(
+              `Failed to cleanup expired refresh sessions: ${error}`,
+            );
+          });
+        },
+      })
+      .catch(error => {
+        logger.error(`Failed to schedule refresh token cleanup task: ${error}`);
+      });
   }
 
   const secret = config.getOptionalString('auth.session.secret');

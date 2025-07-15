@@ -66,6 +66,7 @@ export const authPlugin = createBackendPlugin({
         database: coreServices.database,
         discovery: coreServices.discovery,
         auth: coreServices.auth,
+        scheduler: coreServices.scheduler,
         catalog: catalogServiceRef,
       },
       async init({
@@ -75,6 +76,7 @@ export const authPlugin = createBackendPlugin({
         database,
         discovery,
         auth,
+        scheduler,
         catalog,
       }) {
         const router = await createRouter({
@@ -83,6 +85,7 @@ export const authPlugin = createBackendPlugin({
           database,
           discovery,
           auth,
+          scheduler,
           catalog,
           providerFactories: Object.fromEntries(providers),
           ownershipResolver,
