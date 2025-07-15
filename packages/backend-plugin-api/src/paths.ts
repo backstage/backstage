@@ -28,36 +28,96 @@ export const packagePathMocks = new Map<
 
 /**
  * Resolve a path relative to the calling module's location.
- * This is a more portable alternative to resolvePackagePath that works
- * in bundled environments and doesn't rely on package.json files.
+ * 
+ * **For ES modules (recommended):**
+ * Use with `import.meta.url` which provides stable file URL resolution
+ * even in bundled production environments.
  *
- * @param fileUrl - The import.meta.url (ES modules) or __dirname (CommonJS) of the calling module
+ * **For CommonJS modules:**
+ * Use `resolvePackageAssets` instead, which provides more stable resolution
+ * in bundled environments by using the module resolution system.
+ *
+ * @param fileUrl - The import.meta.url from an ES module
  * @param paths - Additional path segments to resolve relative to the calling module
  * @returns The resolved absolute path
  *
  * @example
  * ```ts
- * // ES modules
+ * // ES modules (recommended)
  * const assetsDir = resolveFromFile(import.meta.url, '../assets');
- * 
- * // CommonJS
- * const assetsDir = resolveFromFile(__dirname, '../assets');
  * ```
  *
  * @public
  */
 export function resolveFromFile(fileUrl: string, ...paths: string[]): string {
-  let basePath: string;
-  
-  if (fileUrl.startsWith('file://')) {
-    // Handle import.meta.url (ES modules)
-    basePath = dirname(fileURLToPath(fileUrl));
-  } else {
-    // Handle __dirname (CommonJS) or already resolved paths
-    basePath = fileUrl;
+  if (!fileUrl.startsWith('file://')) {
+    throw new Error(
+      'resolveFromFile() expects import.meta.url as the first argument. ' +
+      'For CommonJS modules, use resolvePackageAssets() instead, which provides ' +
+      'more stable resolution in bundled environments.'
+    );
   }
   
+  const basePath = dirname(fileURLToPath(fileUrl));
   return resolvePath(basePath, ...paths);
+}
+
+/**
+ * Resolve a path relative to a package directory using the module resolution system.
+ * This is a more bundling-friendly alternative for CommonJS modules.
+ * 
+ * This works by using require.resolve() to locate the package, then resolving
+ * paths relative to the package root. This is more stable in bundled environments
+ * than relying on __dirname or __filename.
+ *
+ * @param packageName - The name of the package to resolve from
+ * @param paths - Additional path segments to resolve relative to the package root
+ * @returns The resolved absolute path
+ *
+ * @example
+ * ```ts
+ * // Resolve migrations directory for current package
+ * const migrationsDir = resolvePackageAssets('@backstage/plugin-auth-backend', 'migrations');
+ * 
+ * // Resolve assets from current package
+ * const configFile = resolvePackageAssets('@backstage/plugin-auth-backend', 'assets', 'config.json');
+ * ```
+ *
+ * @public
+ */
+export function resolvePackageAssets(packageName: string, ...paths: string[]): string {
+  const mockedResolve = packagePathMocks.get(packageName);
+  if (mockedResolve) {
+    const resolved = mockedResolve(paths);
+    if (resolved) {
+      return resolved;
+    }
+  }
+
+  const req =
+    typeof __non_webpack_require__ === 'undefined'
+      ? require
+      : __non_webpack_require__;
+
+  try {
+    // Try to resolve the package.json to find the package root
+    const packageJsonPath = req.resolve(`${packageName}/package.json`);
+    return resolvePath(dirname(packageJsonPath), ...paths);
+  } catch (error) {
+    // If package.json is not available (bundled environment), try to resolve the main entry
+    try {
+      const mainPath = req.resolve(packageName);
+      // Assume the package root is one level up from the main entry
+      // This is a fallback that may not work in all cases
+      return resolvePath(dirname(mainPath), '..', ...paths);
+    } catch (fallbackError) {
+      throw new Error(
+        `Cannot resolve package assets for '${packageName}'. ` +
+        `This may indicate the package is not installed or not accessible in this environment. ` +
+        `Original error: ${error.message}`
+      );
+    }
+  }
 }
 
 /**
@@ -68,7 +128,7 @@ export function resolveFromFile(fileUrl: string, ...paths: string[]): string {
  * your backend plugin package. When doing so, do not forget to include the assets
  * in your published package by adding them to `files` in your `package.json`.
  *
- * @deprecated Use resolveFromFile with import.meta.url or __dirname instead.
+ * @deprecated Use resolveFromFile with import.meta.url (ES modules) or resolvePackageAssets (CommonJS) instead.
  * This function relies on package.json files being present which may not work
  * in bundled environments.
  *

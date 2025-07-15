@@ -16,12 +16,11 @@
 
 import {
   DatabaseService,
-  resolveFromFile,
+  resolvePackageAssets,
 } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
-// eslint-disable-next-line no-restricted-syntax -- Using resolveFromFile with __dirname is the new recommended approach
-const migrationsDir = resolveFromFile(__dirname, '../../migrations');
+const migrationsDir = resolvePackageAssets('@backstage/plugin-auth-backend', 'migrations');
 
 /**
  * Ensures that a database connection is established exactly once and only when

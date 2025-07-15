@@ -15,7 +15,7 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { resolveSafeChildPath, resolveFromFile } from './paths';
+import { resolveSafeChildPath, resolveFromFile, resolvePackageAssets } from './paths';
 import { resolve as resolvePath } from 'path';
 import { pathToFileURL } from 'url';
 
@@ -26,13 +26,6 @@ describe('paths', () => {
       const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
       
       const result = resolveFromFile(fileUrl, '../assets', 'config.json');
-      expect(result).toBe(resolvePath(testDir, '../assets', 'config.json'));
-    });
-
-    it('should resolve paths from directory path (__dirname)', () => {
-      const testDir = '/some/module/path';
-      
-      const result = resolveFromFile(testDir, '../assets', 'config.json');
       expect(result).toBe(resolvePath(testDir, '../assets', 'config.json'));
     });
 
@@ -54,9 +47,91 @@ describe('paths', () => {
 
     it('should handle relative paths going up directories', () => {
       const testDir = '/some/module/src/database';
+      const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
       
-      const result = resolveFromFile(testDir, '../../assets');
+      const result = resolveFromFile(fileUrl, '../../assets');
       expect(result).toBe(resolvePath(testDir, '../../assets'));
+    });
+
+    it('should throw error for non-file URLs (e.g., __dirname)', () => {
+      const testDir = '/some/module/path';
+      
+      expect(() => resolveFromFile(testDir, '../assets')).toThrow(
+        'resolveFromFile() expects import.meta.url as the first argument'
+      );
+    });
+  });
+
+  describe('resolvePackageAssets', () => {
+    it('should resolve package assets using require.resolve', () => {
+      // Mock require.resolve to simulate package resolution
+      const originalRequire = require;
+      const mockRequire = {
+        resolve: jest.fn((pkg: string) => {
+          if (pkg === 'test-package/package.json') {
+            return '/node_modules/test-package/package.json';
+          }
+          throw new Error('Cannot resolve module');
+        }),
+      };
+      
+      // @ts-ignore
+      global.require = mockRequire;
+      
+      try {
+        const result = resolvePackageAssets('test-package', 'migrations');
+        expect(result).toBe('/node_modules/test-package/migrations');
+        expect(mockRequire.resolve).toHaveBeenCalledWith('test-package/package.json');
+      } finally {
+        global.require = originalRequire;
+      }
+    });
+
+    it('should fallback to main entry resolution when package.json not found', () => {
+      const originalRequire = require;
+      const mockRequire = {
+        resolve: jest.fn((pkg: string) => {
+          if (pkg === 'test-package/package.json') {
+            throw new Error('Cannot find package.json');
+          }
+          if (pkg === 'test-package') {
+            return '/node_modules/test-package/dist/index.js';
+          }
+          throw new Error('Cannot resolve module');
+        }),
+      };
+      
+      // @ts-ignore
+      global.require = mockRequire;
+      
+      try {
+        const result = resolvePackageAssets('test-package', 'migrations');
+        expect(result).toBe('/node_modules/test-package/migrations');
+        expect(mockRequire.resolve).toHaveBeenCalledWith('test-package/package.json');
+        expect(mockRequire.resolve).toHaveBeenCalledWith('test-package');
+      } finally {
+        global.require = originalRequire;
+      }
+    });
+
+    it('should throw error when package cannot be resolved', () => {
+      const originalRequire = require;
+      const mockRequire = {
+        resolve: jest.fn(() => {
+          throw new Error('Cannot resolve module');
+        }),
+      };
+      
+      // @ts-ignore
+      global.require = mockRequire;
+      
+      try {
+        expect(() => resolvePackageAssets('non-existent-package', 'migrations')).toThrow(
+          'Cannot resolve package assets for \'non-existent-package\''
+        );
+      } finally {
+        global.require = originalRequire;
+      }
     });
   });
 

@@ -2,17 +2,24 @@
 '@backstage/backend-plugin-api': minor
 ---
 
-Add `resolveFromFile` as a portable alternative to `resolvePackagePath`
+Add `resolvePackageAssets` function and update `resolveFromFile` for improved stability in production builds
 
-`resolveFromFile` is a new utility that provides a more portable way to resolve paths relative to the calling module. Unlike `resolvePackagePath`, which relies on package.json files being present, `resolveFromFile` works with both CommonJS (`__dirname`) and ES modules (`import.meta.url`) and doesn't break in bundled environments.
+**Breaking change in behavior**: `resolveFromFile` now only accepts `import.meta.url` (ES modules) and rejects `__dirname` because `__dirname` and `__filename` are not stable in production builds and bundled environments.
 
-Example usage:
-```ts
-// ES modules
-const assetsDir = resolveFromFile(import.meta.url, '../assets');
+**New `resolvePackageAssets` function**: Provides stable path resolution for CommonJS modules by using the module resolution system instead of relying on unstable file paths.
 
-// CommonJS  
-const assetsDir = resolveFromFile(__dirname, '../assets');
+**Migration guide:**
+
+ES modules (recommended):
+```typescript
+// Use import.meta.url for stable resolution
+const migrationsDir = resolveFromFile(import.meta.url, '../migrations');
 ```
 
-The existing `resolvePackagePath` function is now deprecated and should be migrated to use `resolveFromFile` where possible.
+CommonJS modules:
+```typescript
+// Use resolvePackageAssets instead of __dirname-based approaches
+const migrationsDir = resolvePackageAssets('@backstage/plugin-auth-backend', 'migrations');
+```
+
+This ensures stable behavior across all deployment scenarios including bundled production environments.

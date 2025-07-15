@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { resolveFromFile } from '@backstage/backend-plugin-api';
+import { resolvePackageAssets } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
 export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
-  // eslint-disable-next-line no-restricted-syntax -- Using resolveFromFile with __dirname is the new recommended approach
-  const migrationsDir = resolveFromFile(__dirname, '../../migrations');
+  const migrationsDir = resolvePackageAssets('@backstage/plugin-catalog-backend', 'migrations');
 
   await knex.migrate.latest({
     directory: migrationsDir,
