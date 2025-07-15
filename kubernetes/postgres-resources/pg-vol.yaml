@@ -1,0 +1,30 @@
+# kubernetes/postgres-storage.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-storage
+  namespace: backstage
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2G
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: '/mnt/data'
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-storage-claim
+  namespace: backstage
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G

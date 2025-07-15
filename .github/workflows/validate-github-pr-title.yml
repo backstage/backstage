@@ -1,0 +1,28 @@
+name: Validate PR title #and branch once we uncomment 2nd step
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: [ nano-runner ]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          repository: Cye-Security/pr_title_restriction
+          ref: main
+          token: ${{ secrets.gh_actions_secret }}
+          path: ./.github/actions/pr_title_restriction
+      - name: Check PR title
+        uses: ./.github/actions/pr_title_restriction
+        with:
+          regex: '^(HYVD2D|HVRDOPS|hyvd2d|hvrdops)-[0-9]{2,6} [\s\S]*[\w\W]*[\d\D]*' # Regex the title should match.
+          github_token: ${{ secrets.gh_actions_secret }}
+#      - name: Check Branch name #todo: uncomment next 5 lines when/if needed
+#        uses: ./.github/actions/pr_title_restriction
+#        with:
+#          branch_regex: '^((feature)|(feat)|(tests)|(bugfix)|(fix)|(hotfix)|(infra))\/(\w+)\/(HYVD2D|HVRDOPS)-[\d]{2,6}_?[a-zA-Z_\-0-9]{0,}' # Regex the title should match.
+#          github_token: ${{ secrets.pr_title_token }}

@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-api-nginx
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: nginx
+    app.kubernetes.io/instance: users-api
+    backstage.io/kubernetes-id: users-api
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx
+      app.kubernetes.io/instance: users-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nginx
+        app.kubernetes.io/instance: users-api
+        backstage.io/kubernetes-id: users-api
+    spec:
+      automountServiceAccountToken: false
+      shareProcessNamespace: false
+      serviceAccountName: default
+      affinity:
+        podAffinity: 
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: nginx
+                    app.kubernetes.io/instance: users-api
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+      hostNetwork: false
+      hostIPC: false
+      initContainers:
+      containers:
+        - name: nginx
+          image: docker.io/bitnami/nginx:1.25.0-debian-11-r1
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: NGINX_HTTP_PORT_NUMBER
+              value: "8080"
+          envFrom:
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+            tcpSocket:
+              port: http
+          resources:
+            limits: {}
+            requests: {}
+          volumeMounts:
+      volumes:

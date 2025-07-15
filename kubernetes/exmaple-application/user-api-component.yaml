@@ -1,0 +1,29 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: users-api
+  description: Users api
+  annotations:
+    backstage.io/kubernetes-id: users-api
+  tags:
+    - nginx
+    - python
+    - flask
+  links:
+    - url: https://admin.example-org.com
+      title: Admin Dashboard
+      icon: dashboard
+      type: admin-dashboard
+    - url: https://metrics.example-org.com
+      title: metrics
+      icon: analytics
+      type: metrics-dashboard
+    - url: https://logs.example-org.com
+      title: logs
+      icon: assignment
+      type: logs-dashboard  
+spec:
+  type: service
+  lifecycle: production
+  owner: users-team
+  system: public-websites

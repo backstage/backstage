@@ -1,9 +1,0 @@
----
-blank_issues_enabled: false
-contact_links:
-  - about: 'Use the Backstage Community Discord for questions & discussions'
-    name: Questions
-    url: 'https://discord.gg/backstage-687207715902193673'
-  - about: 'Please check the FAQ before filing new issues'
-    name: 'Backstage FAQ'
-    url: 'https://backstage.io/docs/FAQ'

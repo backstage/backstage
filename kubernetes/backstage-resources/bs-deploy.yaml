@@ -1,0 +1,44 @@
+# kubernetes/backstage.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage
+  namespace: backstage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backstage
+  template:
+    metadata:
+      labels:
+        app: backstage
+    spec:
+      serviceAccountName: backstage-service-account
+      containers:
+        - name: backstage
+          image: backstage:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 7007
+          envFrom:
+            - secretRef:
+                name: postgres-secrets
+            - secretRef:
+                name: backstage-secrets
+          env:
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_HOST
+            value: "postgres.backstage.svc.cluster.local"
+# Uncomment if health checks are enabled in your app:
+# https://backstage.io/docs/plugins/observability#health-checks
+#          readinessProbe:
+#            httpGet:
+#              port: 7007
+#              path: /healthcheck
+#          livenessProbe:
+#            httpGet:
+#              port: 7007
+#              path: /healthcheck
