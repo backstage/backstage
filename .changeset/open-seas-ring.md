@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-react': patch
 ---
 
-fix: hide pagination query params if pagination mode is set to none
+hide pagination `queryparams` if pagination mode is set to none
