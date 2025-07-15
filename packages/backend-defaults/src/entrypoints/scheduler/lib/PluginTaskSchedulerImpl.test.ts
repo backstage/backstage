@@ -61,6 +61,8 @@ describe('PluginTaskManagerImpl', () => {
         addBeforeShutdownHook: jest.fn(),
         addStartupHook: jest.fn(),
       },
+      mockServices.auth.mock(),
+      mockServices.httpAuth.mock(),
     );
     return { knex, manager };
   }
