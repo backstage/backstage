@@ -1,0 +1,276 @@
+# Warning: OpenAPI 3.1.0 is not yet properly supported by the OpenAPI generator.
+openapi: '3.0.0'
+info:
+  # Must match the plugin name for proper discovery
+  title: tasks
+  description: API for managing tasks in Backstage
+  version: '0.1.0'
+  contact: {}
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: /
+paths:
+  /tasks:
+    get:
+      operationId: getTasks
+      security:
+        - JWT: []
+      summary: List tasks
+      description: Returns a list of available tasks
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /tasks/{id}:
+    get:
+      operationId: getTask
+      security:
+        - JWT: []
+      summary: Get task details
+      description: Returns details for a specific task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          allowReserved: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      operationId: triggerTask
+      summary: Trigger task
+      description: Triggers a specific task
+      security:
+        - JWT: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          allowReserved: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task triggered successfully
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - request
+        - response
+    TaskSettings:
+      type: object
+      description: Task settings
+      additionalProperties: {}
+      properties:
+        version:
+          type: number
+          format: int32
+          description: Internal identifier of the format of the settings object
+        cadence:
+          type: string
+          description: How often the task runs (manual, ISO duration, or cron format)
+        timeoutAfterDuration:
+          type: string
+          format: duration
+          pattern: ^P[0-9]+[YMDHMS]$
+          description: How long after a task starts that it's considered timed out
+        initialDelayDuration:
+          type: string
+          format: duration
+          pattern: ^P[0-9]+[YMDHMS]$
+          description: How long workers wait at service startup before starting to look for work
+      required:
+        - version
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Internal identifier for the task (pluginId:taskId format)
+        pluginId:
+          type: string
+          description: ID of the plugin that owns this task
+        taskId:
+          type: string
+          description: Original task ID from the scheduler
+        meta:
+          type: object
+          description: Enhanced metadata (custom/added properties)
+          properties:
+            title:
+              type: string
+              description: Display name of the task (if not provided, clients should fallback to using the taskId)
+            description:
+              type: string
+              description: Detailed description of the task (if not provided, clients should fallback to using the taskId or a generic description)
+            pluginTitle:
+              type: string
+              description: Display title of the plugin (if configured)
+            pluginDescription:
+              type: string
+              description: Description of the plugin (if configured)
+        task:
+          type: object
+          description: Original task data from scheduler (lossless)
+          properties:
+            taskId:
+              type: string
+              description: A unique (per plugin) ID for the task
+            pluginId:
+              type: string
+              description: The plugin where the task is scheduled
+            settings:
+              $ref: '#/components/schemas/TaskSettings'
+            scope:
+              type: string
+              enum: [global, local]
+              description: Either local (runs on each worker node with potential overlaps) or global (runs on one worker node at a time, without overlaps)
+            taskState:
+              type: object
+              nullable: true
+              description: Current state of the task execution
+              properties:
+                status:
+                  type: string
+                  enum: [running, idle]
+                  description: Current task status
+                startedAt:
+                  type: string
+                  format: date-time
+                  description: When the task started (for running tasks)
+                timesOutAt:
+                  type: string
+                  format: date-time
+                  description: When the task will timeout (for running tasks)
+                startsAt:
+                  type: string
+                  format: date-time
+                  description: When the task will start (for idle tasks)
+                lastRunError:
+                  type: string
+                  description: Error message from the last failed execution
+                lastRunEndedAt:
+                  type: string
+                  format: date-time
+                  description: When the last execution ended
+            workerState:
+              type: object
+              nullable: true
+              description: Current state of the worker
+              properties:
+                status:
+                  type: string
+                  enum: [initial-wait, idle, running]
+                  description: Current worker status
+          required:
+            - taskId
+            - pluginId
+            - scope
+            - settings
+            - taskState
+            - workerState
+        computed:
+          type: object
+          description: Computed/derived properties for convenience
+          properties:
+            status:
+              type: string
+              description: Current status of the task (derived from taskState)
+            cadence:
+              type: string
+              description: Task execution cadence (derived from settings)
+            lastRunEndedAt:
+              type: string
+              format: date-time
+              description: Timestamp of the last task execution
+            nextRunAt:
+              type: string
+              format: date-time
+              description: Timestamp of the next scheduled execution
+            lastRunError:
+              type: string
+              description: Error message from the last failed execution
+            workerStatus:
+              type: string
+              enum: [initial-wait, idle, running]
+              description: Current worker status (derived from workerState)
+            timesOutAt:
+              type: string
+              format: date-time
+              description: When the currently running task will timeout
+            startedAt:
+              type: string
+              format: date-time
+              description: When the currently running task started
+          required:
+            - status
+            - cadence
+      required:
+        - id
+        - pluginId
+        - taskId
+        - meta
+        - task
+        - computed

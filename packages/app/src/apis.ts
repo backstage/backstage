@@ -32,6 +32,10 @@ import { DefaultScaffolderFormDecoratorsApi } from '@backstage/plugin-scaffolder
 import { mockDecorator } from './components/scaffolder/decorators';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '@backstage/plugin-scaffolder';
+import {
+  DefaultTasksApiClient,
+  tasksApiRef,
+} from '@backstage/plugin-tasks-react';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -71,4 +75,16 @@ export const apis: AnyApiFactory[] = [
   }),
 
   ScmAuth.createDefaultApiFactory(),
+  createApiFactory({
+    api: tasksApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ discoveryApi, fetchApi }) =>
+      new DefaultTasksApiClient({
+        discoveryApi,
+        fetchApi,
+      }),
+  }),
 ];

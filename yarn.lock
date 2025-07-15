@@ -7970,6 +7970,112 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-tasks-backend@workspace:^, @backstage/plugin-tasks-backend@workspace:plugins/tasks-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-tasks-backend@workspace:plugins/tasks-backend"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-tasks-common": "workspace:^"
+    "@backstage/repo-tools": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": "npm:^4.17.21"
+    "@types/express-serve-static-core": "npm:^4.17.5"
+    "@types/node": "npm:^20.16.0"
+    "@types/supertest": "npm:^2.0.8"
+    express: "npm:^4.18.2"
+    minimatch: "npm:^10.0.3"
+    supertest: "npm:^7.0.0"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-tasks-common@workspace:^, @backstage/plugin-tasks-common@workspace:plugins/tasks-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-tasks-common@workspace:plugins/tasks-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-tasks-react@workspace:^, @backstage/plugin-tasks-react@workspace:plugins/tasks-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-tasks-react@workspace:plugins/tasks-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-tasks-common": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@material-ui/core": "npm:^4.12.4"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@types/luxon": "npm:~3.4.0"
+    "@types/react": "npm:^18.0.0"
+    cross-fetch: "npm:^4.0.0"
+    luxon: "npm:^3.4.3"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router-dom: "npm:^6.3.0"
+    react-use: "npm:^17.4.0"
+    uri-template: "npm:^2.0.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-tasks@workspace:^, @backstage/plugin-tasks@workspace:plugins/tasks":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-tasks@workspace:plugins/tasks"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/plugin-permission-react": "workspace:^"
+    "@backstage/plugin-tasks-common": "workspace:^"
+    "@backstage/plugin-tasks-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@material-ui/core": "npm:^4.12.4"
+    "@material-ui/icons": "npm:^4.11.3"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@testing-library/user-event": "npm:^14.0.0"
+    "@types/luxon": "npm:~3.4.0"
+    "@types/react": "npm:^18.0.0"
+    cronstrue: "npm:^3.0.0"
+    luxon: "npm:^3.4.3"
+    msw: "npm:^1.3.1"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router-dom: "npm:^6.3.0"
+    react-use: "npm:^17.4.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-techdocs-addons-test-utils@workspace:^, @backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-addons-test-utils@workspace:plugins/techdocs-addons-test-utils"
@@ -28119,6 +28225,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cronstrue@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "cronstrue@npm:3.0.0"
+  bin:
+    cronstrue: bin/cli.js
+  checksum: 10/263178951c47ec8a9c9ed7ab5d0d034d5d0ce976874eb936db331cabd21a5b1b83c0744ec85cc2d2bd784372671161f3223c156b88a8c5a48ac5afde5d88ee0a
+  languageName: node
+  linkType: hard
+
 "cross-env@npm:^7.0.0":
   version: 7.0.3
   resolution: "cross-env@npm:7.0.3"
@@ -31119,6 +31234,8 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-signals": "workspace:^"
+    "@backstage/plugin-tasks": "workspace:^"
+    "@backstage/plugin-tasks-react": "workspace:^"
     "@backstage/plugin-techdocs": "workspace:^"
     "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
@@ -31190,6 +31307,7 @@ __metadata:
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
+    "@backstage/plugin-tasks-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@opentelemetry/auto-instrumentations-node": "npm:^0.61.0"
     "@opentelemetry/exporter-prometheus": "npm:^0.54.0"

@@ -21,6 +21,7 @@ import {
 } from '@backstage/plugin-devtools';
 import { DevToolsLayout } from '@backstage/plugin-devtools';
 import { UnprocessedEntitiesContent } from '@backstage/plugin-catalog-unprocessed-entities';
+import { TasksContent } from '@backstage/plugin-tasks';
 
 const DevToolsPage = () => {
   return (
@@ -42,6 +43,9 @@ const DevToolsPage = () => {
         title="Unprocessed Entities"
       >
         <UnprocessedEntitiesContent />
+      </DevToolsLayout.Route>
+      <DevToolsLayout.Route path="tasks" title="Tasks">
+        <TasksContent />
       </DevToolsLayout.Route>
     </DevToolsLayout>
   );
