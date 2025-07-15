@@ -2,6 +2,7 @@
 '@backstage/frontend-plugin-api': minor
 '@backstage/core-plugin-api': minor
 '@backstage/plugin-permission-react': minor
+'@backstage/plugin-app': minor
 '@backstage/app-defaults': minor
 '@backstage/core-app-api': minor
 '@backstage/plugin-scaffolder': minor
