@@ -24,6 +24,7 @@ import { widthPropDefs } from '../../props/width.props';
 import { heightPropDefs } from '../../props/height.props';
 import { positionPropDefs } from '../../props/position.props';
 import { displayPropDefs } from '../../props/display.props';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
@@ -38,11 +39,12 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     ...boxPropDefs,
   };
 
+  const { classNames } = useStyles('Box');
   const { className, style } = extractProps(props, propDefs);
 
   return createElement(props.as || 'div', {
     ref,
-    className: clsx('canon-Box', className),
+    className: clsx(classNames.root, className),
     style,
     children,
   });

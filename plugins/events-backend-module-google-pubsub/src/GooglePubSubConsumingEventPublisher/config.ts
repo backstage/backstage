@@ -34,7 +34,7 @@ export function readSubscriptionTasksFromConfig(
   return subscriptionsConfig.keys().map(subscriptionId => {
     if (!subscriptionId.match(/^[-_\w]+$/)) {
       throw new InputError(
-        `Expected Googoe Pub/Sub subscription ID to consist of letters, numbers, dashes and underscores, but got '${subscriptionId}'`,
+        `Expected Google Pub/Sub subscription ID to consist of letters, numbers, dashes and underscores, but got '${subscriptionId}'`,
       );
     }
 
@@ -63,7 +63,7 @@ function readSubscriptionName(config: Config): {
   );
   if (!parts) {
     throw new InputError(
-      `Expected Googoe Pub/Sub 'subscriptionName' to be on the form 'projects/PROJECT_ID/subscriptions/SUBSCRIPTION_ID' but got '${subscriptionName}'`,
+      `Expected Google Pub/Sub 'subscriptionName' to be on the form 'projects/PROJECT_ID/subscriptions/SUBSCRIPTION_ID' but got '${subscriptionName}'`,
     );
   }
   return {

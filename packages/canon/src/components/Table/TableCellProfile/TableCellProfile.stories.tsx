@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { TableCellProfile } from './TableCellProfile';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/Table/TableCellProfile',
   component: TableCellProfile,
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta<typeof TableCellProfile>;
 
 export default meta;

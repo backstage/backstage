@@ -19,6 +19,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { TokenIssuer } from '../../identity/types';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { NotFoundError } from '@backstage/errors';
+import { UserInfoDatabase } from '../../database/UserInfoDatabase';
 
 describe('CatalogAuthResolverContext', () => {
   beforeEach(() => {
@@ -28,6 +29,16 @@ describe('CatalogAuthResolverContext', () => {
   const catalog = catalogServiceMock();
   jest.spyOn(catalog, 'getEntities');
 
+  const mockUserInfo = {
+    addUserInfo: jest.fn().mockResolvedValue(undefined),
+    getUserInfo: jest.fn().mockResolvedValue({
+      claims: {
+        sub: 'user:default/user',
+        ent: ['user:default/user'],
+      },
+    }),
+  } as unknown as jest.Mocked<UserInfoDatabase>;
+
   it('adds kind to filter when missing', async () => {
     const auth = mockServices.auth();
     const context = CatalogAuthResolverContext.create({
@@ -35,6 +46,7 @@ describe('CatalogAuthResolverContext', () => {
       catalog,
       tokenIssuer: {} as TokenIssuer,
       auth,
+      userInfo: mockUserInfo,
     });
 
     await expect(

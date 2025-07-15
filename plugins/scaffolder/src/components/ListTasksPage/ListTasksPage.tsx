@@ -91,14 +91,22 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
 
   if (error) {
     return (
-      <>
-        <ErrorPanel error={error} />
-        <EmptyState
-          missing="info"
-          title={t('listTaskPage.content.emptyState.title')}
-          description={t('listTaskPage.content.emptyState.description')}
-        />
-      </>
+      <CatalogFilterLayout>
+        <CatalogFilterLayout.Filters>
+          <OwnerListPicker
+            filter={ownerFilter}
+            onSelectOwner={id => setOwnerFilter(id)}
+          />
+        </CatalogFilterLayout.Filters>
+        <CatalogFilterLayout.Content>
+          <ErrorPanel error={error} />
+          <EmptyState
+            missing="info"
+            title={t('listTaskPage.content.emptyState.title')}
+            description={t('listTaskPage.content.emptyState.description')}
+          />
+        </CatalogFilterLayout.Content>
+      </CatalogFilterLayout>
     );
   }
 

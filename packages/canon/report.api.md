@@ -4,29 +4,37 @@
 
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
-import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
-import { ChangeEvent } from 'react';
+import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ComponentProps } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
-import type { CSSProperties } from 'react';
-import { FC } from 'react';
-import { FocusEvent as FocusEvent_2 } from 'react';
+import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
-import type { MouseEventHandler } from 'react';
+import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
+import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
+import type { SelectProps as SelectProps_2 } from 'react-aria-components';
+import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
-import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
+import type { TabListProps as TabListProps_2 } from 'react-aria-components';
+import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
+import { TabProps } from 'react-aria-components';
+import type { TabsProps as TabsProps_2 } from 'react-aria-components';
 import { TdHTMLAttributes } from 'react';
+import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
-import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
+import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
+import { TooltipTriggerComponentProps } from 'react-aria-components';
 import type { useRender } from '@base-ui-components/react/use-render';
 
 // @public (undocumented)
@@ -149,36 +157,96 @@ export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
 export const Button: ForwardRefExoticComponent<
-  Omit<ButtonProps, 'ref'> & RefAttributes<HTMLButtonElement>
+  ButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public (undocumented)
-export type ButtonOwnProps = GetPropDefTypes<typeof buttonPropDefs>;
-
-// @public (undocumented)
-export const buttonPropDefs: {
-  variant: {
-    type: 'enum';
-    values: ('primary' | 'secondary')[];
-    className: string;
-    default: 'primary';
-    responsive: true;
-  };
-  size: {
-    type: 'enum';
-    values: ('small' | 'medium')[];
-    className: string;
-    default: 'medium';
-    responsive: true;
-  };
-};
+export const ButtonIcon: ForwardRefExoticComponent<
+  ButtonIconProps & RefAttributes<HTMLButtonElement>
+>;
 
 // @public
-export interface ButtonProps extends useRender.ComponentProps<'button'> {
+export interface ButtonIconProps extends ButtonProps_2 {
+  // (undocumented)
+  icon?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+}
+
+// @public (undocumented)
+export const ButtonLink: ForwardRefExoticComponent<
+  ButtonLinkProps & RefAttributes<HTMLAnchorElement>
+>;
+
+// @public
+export interface ButtonLinkProps extends LinkProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
   iconEnd?: ReactElement;
+  // (undocumented)
   iconStart?: ReactElement;
-  size?: ButtonOwnProps['size'];
-  variant?: ButtonOwnProps['variant'];
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+}
+
+// @public
+export interface ButtonProps extends ButtonProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  iconEnd?: ReactElement;
+  // (undocumented)
+  iconStart?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+}
+
+// @public
+export const Card: ForwardRefExoticComponent<
+  CardProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
 }
 
 // @public (undocumented)
@@ -211,6 +279,9 @@ export interface CheckboxProps {
 }
 
 // @public
+export type ClassNamesMap = Record<string, string>;
+
+// @public
 export const Collapsible: {
   Root: ForwardRefExoticComponent<
     Omit<Collapsible_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
@@ -231,6 +302,298 @@ export const Collapsible: {
 
 // @public (undocumented)
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
+
+// @public
+export type ComponentClassNames<T extends ComponentDefinitionName> =
+  (typeof componentDefinitions)[T]['classNames'];
+
+// @public
+export interface ComponentDefinition {
+  // (undocumented)
+  classNames: ClassNamesMap;
+  // (undocumented)
+  dataAttributes?: DataAttributesMap;
+}
+
+// @public
+export type ComponentDefinitionName = keyof typeof componentDefinitions;
+
+// @public
+export const componentDefinitions: {
+  readonly Avatar: {
+    readonly classNames: {
+      readonly root: 'bui-AvatarRoot';
+      readonly image: 'bui-AvatarImage';
+      readonly fallback: 'bui-AvatarFallback';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium', 'large'];
+    };
+  };
+  readonly Box: {
+    readonly classNames: {
+      readonly root: 'bui-Box';
+    };
+  };
+  readonly Button: {
+    readonly classNames: {
+      readonly root: 'bui-Button';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium', 'large'];
+      readonly variant: readonly ['primary', 'secondary', 'ghost'];
+    };
+  };
+  readonly ButtonIcon: {
+    readonly classNames: {
+      readonly root: 'bui-ButtonIcon';
+    };
+  };
+  readonly ButtonLink: {
+    readonly classNames: {
+      readonly root: 'bui-ButtonLink';
+    };
+  };
+  readonly Card: {
+    readonly classNames: {
+      readonly root: 'bui-Card';
+      readonly header: 'bui-CardHeader';
+      readonly body: 'bui-CardBody';
+      readonly footer: 'bui-CardFooter';
+    };
+  };
+  readonly Checkbox: {
+    readonly classNames: {
+      readonly root: 'bui-CheckboxRoot';
+      readonly label: 'bui-CheckboxLabel';
+      readonly indicator: 'bui-CheckboxIndicator';
+    };
+    readonly dataAttributes: {
+      readonly checked: readonly [true, false];
+    };
+  };
+  readonly Collapsible: {
+    readonly classNames: {
+      readonly root: 'bui-CollapsibleRoot';
+      readonly trigger: 'bui-CollapsibleTrigger';
+      readonly panel: 'bui-CollapsiblePanel';
+    };
+  };
+  readonly Container: {
+    readonly classNames: {
+      readonly root: 'bui-Container';
+    };
+  };
+  readonly FieldLabel: {
+    readonly classNames: {
+      readonly root: 'bui-FieldLabelWrapper';
+      readonly label: 'bui-FieldLabel';
+      readonly secondaryLabel: 'bui-FieldSecondaryLabel';
+      readonly description: 'bui-FieldDescription';
+    };
+  };
+  readonly Flex: {
+    readonly classNames: {
+      readonly root: 'bui-Flex';
+    };
+  };
+  readonly Grid: {
+    readonly classNames: {
+      readonly root: 'bui-Grid';
+      readonly item: 'bui-GridItem';
+    };
+  };
+  readonly Header: {
+    readonly classNames: {
+      readonly toolbar: 'bui-HeaderToolbar';
+      readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
+      readonly toolbarContent: 'bui-HeaderToolbarContent';
+      readonly toolbarControls: 'bui-HeaderToolbarControls';
+      readonly toolbarIcon: 'bui-HeaderToolbarIcon';
+      readonly toolbarName: 'bui-HeaderToolbarName';
+      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+      readonly breadcrumb: 'bui-HeaderBreadcrumb';
+      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
+      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
+      readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    };
+  };
+  readonly HeaderPage: {
+    readonly classNames: {
+      readonly root: 'bui-HeaderPage';
+      readonly content: 'bui-HeaderPageContent';
+      readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
+      readonly controls: 'bui-HeaderPageControls';
+    };
+  };
+  readonly Heading: {
+    readonly classNames: {
+      readonly root: 'bui-Heading';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['title1', 'title2', 'title3', 'subtitle'];
+      readonly color: readonly ['primary', 'secondary', 'muted'];
+      readonly truncate: readonly [true, false];
+    };
+  };
+  readonly Icon: {
+    readonly classNames: {
+      readonly root: 'bui-Icon';
+    };
+  };
+  readonly Link: {
+    readonly classNames: {
+      readonly root: 'bui-Link';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
+      readonly weight: readonly ['regular', 'bold'];
+    };
+  };
+  readonly List: {
+    readonly classNames: {
+      readonly root: 'bui-List';
+      readonly row: 'bui-ListRow';
+      readonly label: 'bui-ListLabel';
+    };
+  };
+  readonly Menu: {
+    readonly classNames: {
+      readonly trigger: 'bui-MenuTrigger';
+      readonly backdrop: 'bui-MenuBackdrop';
+      readonly positioner: 'bui-MenuPositioner';
+      readonly popup: 'bui-MenuPopup';
+      readonly arrow: 'bui-MenuArrow';
+      readonly item: 'bui-MenuItem';
+      readonly group: 'bui-MenuGroup';
+      readonly groupLabel: 'bui-MenuGroupLabel';
+      readonly radioGroup: 'bui-MenuRadioGroup';
+      readonly radioItem: 'bui-MenuRadioItem';
+      readonly radioItemIndicator: 'bui-MenuRadioItemIndicator';
+      readonly checkboxItem: 'bui-MenuCheckboxItem';
+      readonly checkboxItemIndicator: 'bui-MenuCheckboxItemIndicator';
+      readonly submenuTrigger: 'bui-MenuSubmenuTrigger';
+      readonly separator: 'bui-MenuSeparator';
+    };
+  };
+  readonly Popover: {
+    readonly classNames: {
+      readonly root: 'bui-Popover';
+    };
+  };
+  readonly RadioGroup: {
+    readonly classNames: {
+      readonly root: 'bui-RadioGroup';
+      readonly content: 'bui-RadioGroupContent';
+      readonly radio: 'bui-Radio';
+    };
+  };
+  readonly ScrollArea: {
+    readonly classNames: {
+      readonly root: 'bui-ScrollAreaRoot';
+      readonly viewport: 'bui-ScrollAreaViewport';
+      readonly scrollbar: 'bui-ScrollAreaScrollbar';
+      readonly thumb: 'bui-ScrollAreaThumb';
+    };
+  };
+  readonly SearchField: {
+    readonly classNames: {
+      readonly root: 'bui-SearchField';
+      readonly clear: 'bui-InputClear';
+    };
+  };
+  readonly Select: {
+    readonly classNames: {
+      readonly root: 'bui-Select';
+      readonly trigger: 'bui-SelectTrigger';
+      readonly value: 'bui-SelectValue';
+      readonly icon: 'bui-SelectIcon';
+      readonly list: 'bui-SelectList';
+      readonly item: 'bui-SelectItem';
+      readonly itemIndicator: 'bui-SelectItemIndicator';
+      readonly itemLabel: 'bui-SelectItemLabel';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium'];
+    };
+  };
+  readonly Skeleton: {
+    readonly classNames: {
+      readonly root: 'bui-Skeleton';
+    };
+  };
+  readonly Switch: {
+    readonly classNames: {
+      readonly root: 'bui-Switch';
+      readonly indicator: 'bui-SwitchIndicator';
+    };
+  };
+  readonly Table: {
+    readonly classNames: {
+      readonly root: 'bui-TableRoot';
+      readonly header: 'bui-TableHeader';
+      readonly body: 'bui-TableBody';
+      readonly row: 'bui-TableRow';
+      readonly head: 'bui-TableHead';
+      readonly caption: 'bui-TableCaption';
+      readonly cell: 'bui-TableCell';
+      readonly cellText: 'bui-TableCellText';
+      readonly cellLink: 'bui-TableCellLink';
+      readonly cellProfile: 'bui-TableCellProfile';
+      readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
+      readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
+      readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
+      readonly cellProfileName: 'bui-TableCellProfileName';
+      readonly cellProfileLink: 'bui-TableCellProfileLink';
+    };
+  };
+  readonly Tabs: {
+    readonly classNames: {
+      readonly tabs: 'bui-Tabs';
+      readonly tabList: 'bui-TabList';
+      readonly tabListWrapper: 'bui-TabListWrapper';
+      readonly tab: 'bui-Tab';
+      readonly tabActive: 'bui-TabActive';
+      readonly tabHovered: 'bui-TabHovered';
+      readonly panel: 'bui-TabPanel';
+    };
+  };
+  readonly Text: {
+    readonly classNames: {
+      readonly root: 'bui-Text';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
+      readonly weight: readonly ['regular', 'bold'];
+      readonly color: readonly [
+        'primary',
+        'secondary',
+        'danger',
+        'warning',
+        'success',
+      ];
+      readonly truncate: readonly [true, false];
+    };
+  };
+  readonly TextField: {
+    readonly classNames: {
+      readonly root: 'bui-TextField';
+      readonly inputWrapper: 'bui-InputWrapper';
+      readonly input: 'bui-Input';
+      readonly inputIcon: 'bui-InputIcon';
+    };
+    readonly dataAttributes: {
+      readonly invalid: readonly [true, false];
+      readonly disabled: readonly [true, false];
+    };
+  };
+  readonly Tooltip: {
+    readonly classNames: {
+      readonly tooltip: 'bui-Tooltip';
+      readonly arrow: 'bui-TooltipArrow';
+    };
+  };
+};
 
 // @public (undocumented)
 export const Container: ForwardRefExoticComponent<
@@ -258,6 +621,12 @@ export interface ContainerProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public
+export type DataAttributesMap = Record<string, DataAttributeValues>;
+
+// @public
+export type DataAttributeValues = readonly (string | number | boolean)[];
 
 // @public
 export const DataTable: {
@@ -352,6 +721,20 @@ export type EnumPropDef<T> = {
   default?: T;
   required?: boolean;
 };
+
+// @public (undocumented)
+export const FieldLabel: ForwardRefExoticComponent<
+  FieldLabelProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface FieldLabelProps {
+  description?: string | null;
+  htmlFor?: string;
+  id?: string;
+  label?: string | null;
+  secondaryLabel?: string | null;
+}
 
 // @public (undocumented)
 export const Flex: ForwardRefExoticComponent<
@@ -610,26 +993,81 @@ export interface GridProps extends SpaceProps {
   style?: React.CSSProperties;
 }
 
-// @public (undocumented)
-export const Heading: ForwardRefExoticComponent<
-  Omit<HeadingProps, 'ref'> & RefAttributes<HTMLHeadingElement>
->;
+// @public
+export const Header: (props: HeaderProps) => JSX_2.Element;
+
+// @public
+export interface HeaderBreadcrumb {
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export interface HeaderMenuItem {
+  // (undocumented)
+  label: string;
+  // (undocumented)
+  onClick?: () => void;
+  // (undocumented)
+  value: string;
+}
+
+// @public
+export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
+
+// @public
+export interface HeaderPageProps {
+  // (undocumented)
+  customActions?: React.ReactNode;
+  // (undocumented)
+  menuItems?: HeaderMenuItem[];
+  // (undocumented)
+  tabs?: HeaderTab[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public
+export interface HeaderProps {
+  // (undocumented)
+  breadcrumbs?: HeaderBreadcrumb[];
+  // (undocumented)
+  customActions?: React.ReactNode;
+  // (undocumented)
+  icon?: React.ReactNode;
+  // (undocumented)
+  menuItems?: HeaderMenuItem[];
+  // (undocumented)
+  tabs?: HeaderTab[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public
+export interface HeaderTab {
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  label: string;
+}
 
 // @public (undocumented)
-export interface HeadingProps
-  extends Omit<useRender.ComponentProps<'h1'>, 'color'> {
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  color?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-  // (undocumented)
-  style?: React.CSSProperties;
-  // (undocumented)
-  truncate?: boolean;
-  // (undocumented)
+export const Heading: {
+  <T extends ElementType = 'h1'>(
+    props: HeadingProps<T> & {
+      ref?: React.ComponentPropsWithRef<T>['ref'];
+    },
+  ): React.ReactElement<HeadingProps<T>, T>;
+  displayName: string;
+};
+
+// @public (undocumented)
+export type HeadingOwnProps = {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   variant?:
     | 'display'
     | 'title1'
@@ -643,7 +1081,18 @@ export interface HeadingProps
           'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
         >
       >;
-}
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  truncate?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export type HeadingProps<T extends ElementType = 'h1'> = HeadingOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof HeadingOwnProps>;
 
 // @public (undocumented)
 export const heightPropDefs: {
@@ -672,40 +1121,6 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
 export const Icon: (props: IconProps) => JSX_2.Element | null;
-
-// @public (undocumented)
-export const IconButton: ForwardRefExoticComponent<
-  IconButtonProps & RefAttributes<HTMLButtonElement>
->;
-
-// @public (undocumented)
-export type IconButtonOwnProps = GetPropDefTypes<typeof iconButtonPropDefs>;
-
-// @public (undocumented)
-export const iconButtonPropDefs: {
-  variant: {
-    type: 'enum';
-    values: ('primary' | 'secondary')[];
-    className: string;
-    default: 'primary';
-    responsive: true;
-  };
-  size: {
-    type: 'enum';
-    values: ('small' | 'medium')[];
-    className: string;
-    default: 'medium';
-    responsive: true;
-  };
-};
-
-// @public
-export interface IconButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  icon: ReactElement;
-  size?: IconButtonOwnProps['size'];
-  variant?: IconButtonOwnProps['variant'];
-}
 
 // @public (undocumented)
 export const IconContext: Context<IconContextProps>;
@@ -811,26 +1226,39 @@ export type JustifyContent =
 
 // @public (undocumented)
 export const Link: ForwardRefExoticComponent<
-  Omit<LinkProps, 'ref'> & RefAttributes<HTMLElement>
+  LinkProps & RefAttributes<HTMLAnchorElement>
 >;
 
 // @public (undocumented)
-export interface LinkProps extends useRender.ComponentProps<'a'> {
+export interface LinkProps extends LinkProps_2 {
   // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  style?: CSSProperties;
-  // (undocumented)
-  to?: string;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   // (undocumented)
   variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+    | 'title-large'
+    | 'title-medium'
+    | 'title-small'
+    | 'title-x-small'
+    | 'body-large'
+    | 'body-medium'
+    | 'body-small'
+    | 'body-x-small'
+    | Partial<
+        Record<
+          Breakpoint,
+          | 'title-large'
+          | 'title-medium'
+          | 'title-small'
+          | 'title-x-small'
+          | 'body-large'
+          | 'body-medium'
+          | 'body-small'
+          | 'body-x-small'
+        >
+      >;
   // (undocumented)
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
 }
@@ -1019,6 +1447,27 @@ export type PositionProps = GetPropDefTypes<typeof positionPropDefs>;
 export type PropDef<T = any> = RegularPropDef<T> | ResponsivePropDef<T>;
 
 // @public (undocumented)
+export const Radio: ForwardRefExoticComponent<
+  RadioProps & RefAttributes<HTMLLabelElement>
+>;
+
+// @public (undocumented)
+export const RadioGroup: ForwardRefExoticComponent<
+  RadioGroupProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface RadioGroupProps
+  extends Omit<RadioGroupProps_2, 'children'>,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  // (undocumented)
+  children?: ReactNode;
+}
+
+// @public (undocumented)
+export interface RadioProps extends RadioProps_2 {}
+
+// @public (undocumented)
 export type ReactNodePropDef = {
   type: 'ReactNode';
   default?: ReactNode;
@@ -1065,33 +1514,51 @@ export const ScrollArea: {
 };
 
 // @public (undocumented)
+export const SearchField: ForwardRefExoticComponent<
+  SearchFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface SearchFieldProps
+  extends SearchFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  icon?: ReactNode | false;
+  placeholder?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
+
+// @public (undocumented)
 export const Select: ForwardRefExoticComponent<
   SelectProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
-export interface SelectProps {
-  className?: string;
-  defaultValue?: string;
-  description?: string;
-  disabled?: boolean;
-  error?: string;
-  label?: string;
-  name: string;
-  onBlur?: (event: FocusEvent_2<HTMLSelectElement>) => void;
-  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
-  onOpenChange?: (open: boolean) => void;
-  onValueChange?: (value: string) => void;
+export interface SelectProps
+  extends SelectProps_2<{
+      name: string;
+      value: string;
+    }>,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  icon?: ReactNode;
   options?: Array<{
     value: string;
     label: string;
     disabled?: boolean;
   }>;
-  placeholder?: string;
-  required?: boolean;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
-  style?: React.CSSProperties;
-  value?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
+
+// @public (undocumented)
+export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface SkeletonProps extends ComponentProps<'div'> {
+  // (undocumented)
+  height?: number | string;
+  // (undocumented)
+  rounded?: boolean;
+  // (undocumented)
+  width?: number | string;
 }
 
 // @public (undocumented)
@@ -1158,6 +1625,19 @@ export type StylingPropDef = {
   className: string;
   parseValue?: (value: string) => string | undefined;
 };
+
+// @public (undocumented)
+export const Switch: ForwardRefExoticComponent<
+  SwitchProps & RefAttributes<HTMLLabelElement>
+>;
+
+// @public (undocumented)
+export interface SwitchProps extends SwitchProps_2 {
+  label?: string;
+}
+
+// @public
+export const Tab: (props: TabProps) => JSX_2.Element;
 
 // @public
 export const Table: {
@@ -1231,36 +1711,33 @@ export interface TableCellTextProps
   title: string;
 }
 
+// @public
+export const TabList: (props: TabListProps) => JSX_2.Element;
+
+// @public
+export interface TabListProps extends Omit<TabListProps_2<object>, 'items'> {}
+
+// @public
+export const TabPanel: (props: TabPanelProps) => JSX_2.Element;
+
+// @public
+export interface TabPanelProps extends TabPanelProps_2 {}
+
+// @public
+export const Tabs: (props: TabsProps) => JSX_2.Element | null;
+
+// @public
+export interface TabsProps extends TabsProps_2 {}
+
 // @public (undocumented)
-export const Tabs: {
-  Root: ForwardRefExoticComponent<
-    TabsRootWithoutOrientation & RefAttributes<HTMLDivElement>
-  >;
-  List: ForwardRefExoticComponent<
-    Omit<Tabs_2.List.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Tab: ForwardRefExoticComponent<
-    Omit<Tabs_2.Tab.Props & RefAttributes<Element>, 'ref'> &
-      RefAttributes<Element>
-  >;
-  Panel: ForwardRefExoticComponent<
-    Omit<Tabs_2.Panel.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
+const Text_2: {
+  <T extends ElementType = 'p'>(
+    props: TextProps<T> & {
+      ref?: React.ComponentPropsWithRef<T>['ref'];
+    },
+  ): React.ReactElement<TextProps<T>, T>;
+  displayName: string;
 };
-
-// @public (undocumented)
-export interface TabsRootWithoutOrientation
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof Tabs_2.Root>,
-    'orientation'
-  > {}
-
-// @public (undocumented)
-const Text_2: ForwardRefExoticComponent<
-  Omit<TextProps, 'ref'> & RefAttributes<HTMLParagraphElement>
->;
 export { Text_2 as Text };
 
 // @public (undocumented)
@@ -1270,23 +1747,23 @@ export const TextField: ForwardRefExoticComponent<
 
 // @public (undocumented)
 export interface TextFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
-  className?: string;
-  description?: string;
-  error?: string | null;
+  extends TextFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   icon?: ReactNode;
-  label?: string;
-  name: string;
-  onClear?: MouseEventHandler<HTMLButtonElement>;
+  placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
 // @public (undocumented)
-export interface TextProps
-  extends Omit<useRender.ComponentProps<'p'>, 'color'> {
-  // (undocumented)
-  className?: string;
-  // (undocumented)
+export type TextOwnProps = {
+  as?: 'p' | 'span' | 'label';
+  variant?:
+    | 'subtitle'
+    | 'body'
+    | 'caption'
+    | 'label'
+    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
   color?:
     | 'primary'
     | 'secondary'
@@ -1299,43 +1776,30 @@ export interface TextProps
           'primary' | 'secondary' | 'danger' | 'warning' | 'success'
         >
       >;
-  // (undocumented)
-  style?: CSSProperties;
-  // (undocumented)
   truncate?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;
+
+// @public (undocumented)
+export const Tooltip: ForwardRefExoticComponent<
+  TooltipProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface TooltipProps extends Omit<TooltipProps_2, 'children'> {
   // (undocumented)
-  variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
-  // (undocumented)
-  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+  children: React.ReactNode;
 }
 
 // @public (undocumented)
-export const Tooltip: {
-  Provider: FC<Tooltip_2.Provider.Props>;
-  Root: FC<Tooltip_2.Root.Props>;
-  Trigger: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Trigger.Props & RefAttributes<any>, 'ref'> &
-      RefAttributes<any>
-  >;
-  Portal: typeof Tooltip_2.Portal;
-  Positioner: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Positioner.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Popup: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Popup.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Arrow: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Arrow.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-};
+export const TooltipTrigger: (
+  props: TooltipTriggerComponentProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const useBreakpoint: () => {

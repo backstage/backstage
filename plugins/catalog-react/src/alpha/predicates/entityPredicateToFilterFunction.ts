@@ -15,11 +15,7 @@
  */
 
 import { JsonValue } from '@backstage/types';
-import {
-  EntityPredicate,
-  EntityPredicatePrimitive,
-  EntityPredicateValue,
-} from './types';
+import { EntityPredicate, EntityPredicateValue } from './types';
 import { valueAtPath } from './valueAtPath';
 
 /**
@@ -92,7 +88,7 @@ function evaluatePredicateValue(
     return value.some(v => evaluateEntityPredicate(filter.$contains, v));
   }
   if ('$in' in filter) {
-    return filter.$in.includes(value as EntityPredicatePrimitive);
+    return filter.$in.some(search => valuesAreEqual(value, search));
   }
   if ('$exists' in filter) {
     if (filter.$exists === true) {

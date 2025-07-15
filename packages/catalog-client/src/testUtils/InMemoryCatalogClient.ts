@@ -106,6 +106,11 @@ function createFilter(
         if (expectedValue === CATALOG_FILTER_EXISTS) {
           continue;
         }
+        if (Array.isArray(expectedValue)) {
+          return expectedValue.some(value =>
+            searchValues?.includes(String(value).toLocaleLowerCase('en-US')),
+          );
+        }
         if (
           !searchValues?.includes(
             String(expectedValue).toLocaleLowerCase('en-US'),

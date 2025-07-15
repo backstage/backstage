@@ -1,7 +1,6 @@
 'use client';
 
 import { Tabs as TabsPrimitive } from '@base-ui-components/react/tabs';
-import { Text } from '../../../../packages/canon';
 import styles from './styles.module.css';
 
 export const Root = ({
@@ -27,14 +26,8 @@ export const Tab = (props: React.ComponentProps<typeof TabsPrimitive.Tab>) => (
     {...props}
     render={({ children, ...rest }, state) => {
       return (
-        <button className={styles.tab} {...rest}>
-          <Text
-            variant="subtitle"
-            weight="bold"
-            color={state.selected ? 'primary' : 'secondary'}
-          >
-            {children}
-          </Text>
+        <button className={styles.tab} data-selected={state.selected} {...rest}>
+          {children}
         </button>
       );
     }}

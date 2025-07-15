@@ -188,6 +188,7 @@ export interface IterationEngineOptions {
   manager: IncrementalIngestionDatabaseManager;
   provider: IncrementalEntityProvider<unknown, unknown>;
   restLength: HumanDuration;
+  burstLength: HumanDuration;
   ready: Promise<void>;
   backoff?: IncrementalEntityProviderOptions['backoff'];
   rejectRemovalsAbovePercentage?: number;

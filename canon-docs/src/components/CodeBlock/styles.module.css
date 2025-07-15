@@ -4,9 +4,8 @@
   position: relative;
   background: transparent;
   overflow-x: auto;
-  font-family: var(--canon-font-monospace);
+  font-family: var(--font-mono);
   background-color: #fff;
-  transition: background-color 0.2s ease-in-out;
   margin-bottom: 1rem;
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-CollapsiblePanel {
+.bui-CollapsiblePanel {
   display: flex;
   height: var(--collapsible-panel-height);
   overflow: hidden;

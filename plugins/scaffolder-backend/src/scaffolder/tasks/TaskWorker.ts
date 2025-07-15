@@ -189,6 +189,7 @@ export class TaskWorker {
       meta: {
         actionType: 'execution',
         taskId: task.taskId,
+        createdBy: task.createdBy,
         taskParameters: task.spec.parameters,
         templateRef: task.spec.templateInfo?.entityRef,
       },

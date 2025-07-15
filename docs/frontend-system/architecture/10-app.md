@@ -2,7 +2,6 @@
 id: app
 title: App Instances
 sidebar_label: App
-# prettier-ignore
 description: App instances
 ---
 

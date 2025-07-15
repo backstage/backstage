@@ -1,7 +1,6 @@
 ---
 id: migrating-from-v1beta2-to-v1beta3
 title: Migrating to v1beta3 templates
-# prettier-ignore
 description: How to migrate your existing templates to beta3 syntax
 ---
 
@@ -80,7 +79,6 @@ writing nice `yaml` files that just work.
 spec:
   steps:
       input:
-        allowedHosts: ['github.com']
         # highlight-remove-next-line
         description: 'This is {{ parameters.name }}'
         # highlight-add-next-line

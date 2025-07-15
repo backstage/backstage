@@ -14,8 +14,8 @@ export const overview: Page[] = [
     slug: 'about',
   },
   {
-    title: 'Releases',
-    slug: 'releases',
+    title: 'Changelog',
+    slug: 'changelog',
   },
 ];
 
@@ -77,6 +77,21 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'ButtonIcon',
+    slug: 'button-icon',
+    status: 'alpha',
+  },
+  {
+    title: 'ButtonLink',
+    slug: 'button-link',
+    status: 'alpha',
+  },
+  {
+    title: 'Card',
+    slug: 'card',
+    status: 'alpha',
+  },
+  {
     title: 'Checkbox',
     slug: 'checkbox',
     status: 'alpha',
@@ -97,11 +112,6 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
-    title: 'IconButton',
-    slug: 'icon-button',
-    status: 'alpha',
-  },
-  {
     title: 'Link',
     slug: 'link',
     status: 'alpha',
@@ -112,8 +122,28 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'RadioGroup',
+    slug: 'radio-group',
+    status: 'alpha',
+  },
+  {
+    title: 'SearchField',
+    slug: 'search-field',
+    status: 'alpha',
+  },
+  {
     title: 'Select',
     slug: 'select',
+    status: 'alpha',
+  },
+  {
+    title: 'Skeleton',
+    slug: 'skeleton',
+    status: 'alpha',
+  },
+  {
+    title: 'Switch',
+    slug: 'switch',
     status: 'alpha',
   },
   {
@@ -134,6 +164,11 @@ export const components: Page[] = [
   {
     title: 'TextField',
     slug: 'text-field',
+    status: 'alpha',
+  },
+  {
+    title: 'Tooltip',
+    slug: 'tooltip',
     status: 'alpha',
   },
 ];

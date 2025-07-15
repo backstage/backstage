@@ -18,22 +18,25 @@ import { ComponentType } from 'react';
 import { useIcons } from './context';
 import type { IconProps } from './types';
 import clsx from 'clsx';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Icon = (props: IconProps) => {
   const { name, size, className, style, ...restProps } = props;
   const { icons } = useIcons();
 
-  const CanonIcon = icons[name] as ComponentType<Omit<IconProps, 'name'>>;
+  const BckstageIcon = icons[name] as ComponentType<Omit<IconProps, 'name'>>;
 
-  if (!CanonIcon) {
+  if (!BckstageIcon) {
     console.error(`Icon "${name}" not found or is not a valid component.`);
     return null;
   }
 
+  const { classNames } = useStyles('Icon');
+
   return (
-    <CanonIcon
-      className={clsx('canon-Icon', className)}
+    <BckstageIcon
+      className={clsx(classNames.root, className)}
       style={{
         ...(size ? { width: size, height: size } : {}),
         ...style,

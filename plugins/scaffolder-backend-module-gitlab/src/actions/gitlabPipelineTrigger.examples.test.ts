@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createTriggerGitlabPipelineAction } from './gitlabPipelineTrigger';
 import { examples } from './gitlabPipelineTrigger.examples';
 import yaml from 'yaml';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   PipelineTriggerTokens: {
@@ -49,15 +49,17 @@ describe('gitlab:pipeline:trigger', () => {
     jest.useRealTimers();
   });
 
-  const config = new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'gitlab.com',
-          token: 'glpat-abcdef',
-          apiBaseUrl: 'https://gitlab.com/api/v4',
-        },
-      ],
+  const config = mockServices.rootConfig({
+    data: {
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'glpat-abcdef',
+            apiBaseUrl: 'https://gitlab.com/api/v4',
+          },
+        ],
+      },
     },
   });
   const integrations = ScmIntegrations.fromConfig(config);

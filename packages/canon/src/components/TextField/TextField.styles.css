@@ -14,152 +14,101 @@
  * limitations under the License.
  */
 
-.canon-TextField {
+.bui-TextField {
   display: flex;
   flex-direction: column;
-  font-family: var(--canon-font-regular);
+  font-family: var(--bui-font-regular);
   width: 100%;
 }
 
-.canon-TextFieldLabel {
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-primary);
-  margin-bottom: var(--canon-space-1_5);
-  margin-right: auto;
-  cursor: pointer;
+.bui-InputWrapper {
+  position: relative;
+
+  &[data-size='small'] .bui-Input {
+    height: 2rem;
+  }
+
+  &[data-size='medium'] .bui-Input {
+    height: 2.5rem;
+  }
+
+  &[data-size='small'] .bui-Input[data-icon] {
+    padding-left: var(--bui-space-8);
+  }
+
+  &[data-size='medium'] .bui-Input[data-icon] {
+    padding-left: var(--bui-space-9);
+  }
 }
 
-.canon-TextFieldLabel[data-disabled] {
-  cursor: default;
+.bui-InputIcon {
+  position: absolute;
+  left: var(--bui-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: var(--bui-space-1);
+  color: var(--bui-fg-primary);
+  flex-shrink: 0;
+
+  &[data-size='small'],
+  &[data-size='small'] svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &[data-size='medium'],
+  &[data-size='medium'] svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
 
-.canon-TextFieldDescription {
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-secondary);
-  margin: 0;
-  padding-top: var(--canon-space-1_5);
-}
-
-.canon-TextFieldError {
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-danger);
-  margin: 0;
-  padding-top: var(--canon-space-1_5);
-}
-
-.canon-TextFieldInputWrapper {
+.bui-Input {
   display: flex;
   align-items: center;
-  padding: 0 var(--canon-space-3);
-  border-radius: var(--canon-radius-3);
-  border: 1px solid var(--canon-border);
-  background-color: var(--canon-bg-surface-1);
-}
-
-.canon-TextFieldIcon {
-  margin-right: var(--canon-space-1);
-  color: var(--canon-fg-primary);
-  flex-shrink: 0;
-}
-
-.canon-TextFieldIcon[data-size='small'],
-.canon-TextFieldIcon[data-size='small'] svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.canon-TextFieldIcon[data-size='medium'],
-.canon-TextFieldIcon[data-size='medium'] svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.canon-TextFieldInput {
-  border: none;
-  background: none;
-  font-size: var(--canon-font-size-3);
-  font-family: var(--canon-font-regular);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-primary);
+  padding: 0 var(--bui-space-3);
+  border-radius: var(--bui-radius-3);
+  border: 1px solid var(--bui-border);
+  background-color: var(--bui-bg-surface-1);
+  font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  font-weight: var(--bui-font-weight-regular);
+  color: var(--bui-fg-primary);
   transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
   width: 100%;
   height: 100%;
   cursor: inherit;
-  padding: 0;
-}
 
-.canon-TextFieldInput:not([data-filled]):has(+ .canon-TextFieldClearButton) {
-  padding-right: 1.25rem;
-}
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
 
-.canon-TextFieldInput[type='search']::-webkit-search-cancel-button,
-.canon-TextFieldInput[type='search']::-webkit-search-decoration {
-  appearance: none;
-}
+  &::placeholder {
+    color: var(--bui-fg-secondary);
+  }
 
-.canon-TextFieldClearButton {
-  display: none;
-  padding: 0;
-  margin-left: var(--canon-space-1);
-  background: none;
-  border: none;
-  vertical-align: middle;
-  color: var(--canon-fg-primary);
-}
+  &[data-focused] {
+    outline-color: var(--bui-border-pressed);
+    outline-width: 0px;
+  }
 
-.canon-TextFieldInput[data-filled] + .canon-TextFieldClearButton {
-  display: inline-block;
-}
+  &[data-hovered] {
+    border-color: var(--bui-border-hover);
+  }
 
-.canon-TextFieldClearButtonIcon {
-  display: block;
-}
+  &[data-focused] {
+    border-color: var(--bui-border-pressed);
+    outline-width: 0px;
+  }
 
-.canon-TextFieldInput::placeholder {
-  color: var(--canon-fg-secondary);
-}
+  &[data-invalid] {
+    border-color: var(--bui-fg-danger);
+  }
 
-.canon-TextFieldInput[data-focused] {
-  outline-color: var(--canon-border-pressed);
-  outline-width: 0px;
-}
-
-.canon-TextFieldInputWrapper:has(> .canon-TextFieldInput:hover) {
-  border-color: var(--canon-border-hover);
-}
-
-.canon-TextField[data-focused] .canon-TextFieldInputWrapper {
-  border-color: var(--canon-border-pressed);
-}
-
-.canon-TextField[data-invalid] .canon-TextFieldInputWrapper {
-  border-color: var(--canon-fg-danger);
-}
-
-.canon-TextField[data-disabled] .canon-TextFieldInputWrapper {
-  opacity: 0.5;
-  cursor: not-allowed;
-  border: 1px solid var(--canon-border-disabled);
-}
-
-.canon-TextField[data-disabled] .canon-TextFieldClearButton {
-  cursor: inherit;
-}
-
-.canon-TextFieldInputWrapper[data-size='small'] {
-  height: 2rem;
-}
-
-.canon-TextFieldInputWrapper[data-size='medium'] {
-  height: 2.5rem;
-}
-
-.canon-TextFieldRequired {
-  color: var(--canon-fg-secondary);
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  margin-left: var(--canon-space-1);
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border: 1px solid var(--bui-border-disabled);
+  }
 }

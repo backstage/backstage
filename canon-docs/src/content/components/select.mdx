@@ -1,0 +1,102 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { SelectSnippet } from '@/snippets/stories-snippets';
+import {
+  selectPropDefs,
+  selectUsageSnippet,
+  selectDefaultSnippet,
+  selectDescriptionSnippet,
+  selectSizesSnippet,
+  selectDisabledSnippet,
+  selectResponsiveSnippet,
+  selectIconSnippet,
+} from './select.props';
+import { ComponentInfos } from '@/components/ComponentInfos';
+
+# Select
+
+A common form component for choosing a predefined value in a dropdown menu.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SelectSnippet story="Preview" />}
+  code={selectDefaultSnippet}
+/>
+
+<ComponentInfos
+  component="select"
+  classNames={[
+    'bui-Select',
+    'bui-SelectTrigger',
+    'bui-SelectValue',
+    'bui-SelectIcon',
+    'bui-SelectList',
+    'bui-SelectItem',
+    'bui-SelectItemIndicator',
+    'bui-SelectItemLabel',
+  ]}
+  usageCode={selectUsageSnippet}
+/>
+
+## API reference
+
+<PropsTable data={selectPropDefs} />
+
+## Examples
+
+### With Label and description
+
+Select component with label and description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectSnippet story="WithLabelAndDescription" />}
+  code={selectDescriptionSnippet}
+/>
+
+### Sizes
+
+Here's a view when the selects have different sizes.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectSnippet story="Sizes" />}
+  code={selectSizesSnippet}
+/>
+
+### With Icon
+
+Here's a view when the select has an icon.
+
+<Snippet
+
+align="center"
+py={4}
+open
+preview={<SelectSnippet story="WithIcon" />}
+code={selectIconSnippet}
+/>
+
+### Disabled
+
+Here's a view when the select is disabled.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectSnippet story="Disabled" />}
+  code={selectDisabledSnippet}
+/>
+
+### Responsive
+
+Here's a view when the select is responsive.
+
+<CodeBlock code={selectResponsiveSnippet} />

@@ -1,5 +1,17 @@
 # @backstage/theme
 
+## 0.6.7-next.1
+
+### Patch Changes
+
+- 373486e: Add a different background colour to focused `MenuItem`s to fix a bug in MUI 4 (which is fixed in MUI 5)
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- b68d269: Update uncomfortably bright color in recently visited and top visited home page cards
+
 ## 0.6.6
 
 ### Patch Changes

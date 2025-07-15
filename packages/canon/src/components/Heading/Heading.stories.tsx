@@ -96,7 +96,7 @@ export const WrappedInLink: Story = {
 export const CustomRender: Story = {
   args: {
     ...Default.args,
-    render: <h4 />,
+    as: 'h4',
   },
 };
 

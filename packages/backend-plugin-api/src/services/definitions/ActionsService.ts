@@ -29,6 +29,11 @@ export type ActionsServiceAction = {
     input: JSONSchema7;
     output: JSONSchema7;
   };
+  attributes: {
+    readOnly: boolean;
+    destructive: boolean;
+    idempotent: boolean;
+  };
 };
 
 /**

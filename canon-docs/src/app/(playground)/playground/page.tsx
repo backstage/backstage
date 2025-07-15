@@ -71,9 +71,6 @@ const Content = () => {
       {selectedComponents.find(c => c === 'text') && (
         <Line content={<TextSnippet story="Playground" />} title="Text" />
       )}
-      {/* {selectedComponents.find(c => c === 'input') && (
-        <Line content={<InputPlayground />} title="Input" />
-      )} */}
     </Flex>
   );
 };

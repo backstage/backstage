@@ -19,8 +19,8 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import express from 'express';
-import { createOpenApiRouter, spec } from '../schema/openapi';
-import { DynamicPluginProvider } from '@backstage/backend-dynamic-feature-service';
+import { createOpenApiRouter, spec } from '../schema/openapi/generated';
+import { DynamicPluginProvider } from '../manager/types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';

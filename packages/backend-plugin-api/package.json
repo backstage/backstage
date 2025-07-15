@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-plugin-api",
-  "version": "1.4.0-next.1",
+  "version": "1.4.1-next.0",
   "description": "Core API used by Backstage backend plugins",
   "backstage": {
     "role": "node-library"
@@ -20,7 +20,7 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
+    "./alpha": "./src/alpha/index.ts",
     "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
@@ -29,7 +29,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.ts"
+        "src/alpha/index.ts"
       ],
       "testUtils": [
         "src/testUtils.ts"

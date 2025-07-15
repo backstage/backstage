@@ -1,5 +1,58 @@
 # @backstage/backend-plugin-api
 
+## 1.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- 664c07a: Added `actionsRegistry` and `actions` experimental services to `/alpha` to allow registration of distributed actions from plugins, and the ability to invoke these actions. You can use these services by including them like the following:
+
+  ```ts
+  import {
+    actionsRegistryServiceRef,
+    actionsServiceRef,
+  } from '@backstage/backend-plugin-api/alpha';
+
+  createBackendPlugin({
+    pluginId: 'test-plugin',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          actions: actionsServiceRef,
+          actionsRegistry: actionsRegistryServiceRef,
+        },
+        async init({ actions, actionsRegistry }) {
+          actionsRegistry.register({
+            ...,
+          });
+
+          await actions.invoke(...);
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1
+
 ## 1.4.0-next.1
 
 ### Patch Changes

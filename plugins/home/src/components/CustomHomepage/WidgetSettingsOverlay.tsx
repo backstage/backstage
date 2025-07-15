@@ -29,6 +29,8 @@ import { Widget } from './types';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 const Form = withTheme(MuiTheme);
 
@@ -68,6 +70,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
   const styles = useStyles();
 
   const onClose = () => setSettingsDialogOpen(false);
+  const { t } = useTranslationRef(homeTranslationRef);
 
   return (
     <div className={styles.settingsOverlay}>
@@ -98,10 +101,10 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
             >
               <DialogActions>
                 <Button color="primary" variant="contained" type="submit">
-                  Submit
+                  {t('widgetSettingsOverlay.submitButtonTitle')}
                 </Button>
                 <Button color="secondary" onClick={onClose}>
-                  Cancel
+                  {t('widgetSettingsOverlay.cancelButtonTitle')}
                 </Button>
               </DialogActions>
             </Form>
@@ -116,7 +119,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
       >
         {widget.settingsSchema && (
           <Grid item className="overlayGridItem">
-            <Tooltip title="Edit settings">
+            <Tooltip title={t('widgetSettingsOverlay.editSettingsTooptip')}>
               <IconButton
                 color="primary"
                 onClick={() => setSettingsDialogOpen(true)}
@@ -128,7 +131,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
         )}
         {deletable !== false && (
           <Grid item className="overlayGridItem">
-            <Tooltip title="Delete widget">
+            <Tooltip title={t('widgetSettingsOverlay.deleteWidgetTooltip')}>
               <IconButton color="secondary" onClick={() => handleRemove(id)}>
                 <DeleteIcon fontSize="large" />
               </IconButton>

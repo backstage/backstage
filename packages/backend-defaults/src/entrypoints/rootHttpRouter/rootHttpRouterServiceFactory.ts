@@ -15,13 +15,13 @@
  */
 
 import {
-  RootConfigService,
   coreServices,
   createServiceFactory,
   LifecycleService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
-import express, { RequestHandler, Express } from 'express';
+import express, { Express, RequestHandler } from 'express';
 import type { Server } from 'node:http';
 import {
   createHttpServer,
@@ -121,6 +121,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
           app.use(middleware.cors());
           app.use(middleware.compression());
           app.use(middleware.logging());
+          app.use(middleware.rateLimit());
           app.use(healthRouter);
           app.use(routes);
           app.use(middleware.notFound());

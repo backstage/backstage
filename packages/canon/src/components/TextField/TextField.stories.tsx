@@ -16,12 +16,22 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { TextField } from './TextField';
-import { Flex } from '../Flex';
+import { Form } from 'react-aria-components';
 import { Icon } from '../Icon';
+import { Flex } from '../Flex';
+import { FieldLabel } from '../FieldLabel';
 
 const meta = {
-  title: 'Components/TextField',
+  title: 'Forms/TextField',
   component: TextField,
+  argTypes: {
+    isRequired: {
+      control: 'boolean',
+    },
+    icon: {
+      control: 'object',
+    },
+  },
 } satisfies Meta<typeof TextField>;
 
 export default meta;
@@ -37,7 +47,19 @@ export const Default: Story = {
   },
 };
 
-export const Filled: Story = {
+export const Sizes: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
+      <TextField {...args} size="small" icon={<Icon name="sparkling" />} />
+      <TextField {...args} size="medium" icon={<Icon name="sparkling" />} />
+    </Flex>
+  ),
+};
+
+export const DefaultValue: Story = {
   args: {
     ...Default.args,
     defaultValue: 'https://example.com',
@@ -61,84 +83,70 @@ export const WithDescription: Story = {
 export const Required: Story = {
   args: {
     ...WithLabel.args,
-    required: true,
+    isRequired: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
-    ...WithLabel.args,
-    disabled: true,
-  },
-};
-
-export const Sizes: Story = {
-  args: {
     ...Default.args,
-    label: 'Label',
-    description: 'Description',
-  },
-  render: args => (
-    <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
-      <TextField {...args} size="small" icon={<Icon name="sparkling" />} />
-      <TextField {...args} size="medium" icon={<Icon name="sparkling" />} />
-    </Flex>
-  ),
-};
-
-export const Responsive: Story = {
-  args: {
-    ...WithLabel.args,
-    size: {
-      initial: 'small',
-      sm: 'medium',
-    },
-  },
-};
-
-export const WithError: Story = {
-  args: {
-    ...WithLabel.args,
-    error: 'Invalid URL',
-  },
-};
-
-export const WithErrorAndDescription: Story = {
-  args: {
-    ...WithLabel.args,
-    error: 'Invalid URL',
-    description: 'Description',
+    isDisabled: true,
   },
 };
 
 export const WithIcon: Story = {
   args: {
-    ...WithLabel.args,
-    placeholder: 'Search...',
-    icon: <Icon name="search" />,
+    ...Default.args,
   },
+  render: args => (
+    <TextField
+      {...args}
+      placeholder="Enter a URL"
+      size="small"
+      icon={<Icon name="eye" />}
+    />
+  ),
 };
 
 export const DisabledWithIcon: Story = {
   args: {
     ...WithIcon.args,
-    disabled: true,
+    isDisabled: true,
   },
 };
 
-export const WithOnClear: Story = {
+export const ShowError: Story = {
   args: {
     ...WithLabel.args,
-    placeholder: 'Search...',
-    type: 'search',
-    onClear: () => console.log('Cleared!'),
+  },
+  render: args => (
+    <Form validationErrors={{ url: 'Invalid URL' }}>
+      <TextField {...args} />
+    </Form>
+  ),
+};
+
+export const Validation: Story = {
+  args: {
+    ...WithLabel.args,
+    validate: value => (value === 'admin' ? 'Nice try!' : null),
   },
 };
 
-export const DisabledWithOnClear: Story = {
-  args: {
-    ...WithOnClear.args,
-    defaultValue: 'Testing',
-    disabled: true,
-  },
+export const CustomField: Story = {
+  render: () => (
+    <>
+      <FieldLabel
+        htmlFor="custom-field"
+        id="custom-field-label"
+        label="Custom Field"
+      />
+      <TextField
+        id="custom-field"
+        aria-labelledby="custom-field-label"
+        name="custom-field"
+        defaultValue="Custom Field"
+      />
+    </>
+  ),
 };

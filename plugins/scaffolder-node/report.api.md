@@ -4,17 +4,20 @@
 
 ```ts
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 import { Expand } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
@@ -30,10 +33,9 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  checkpoint<T extends JsonValue | void>(opts: {
-    key: string;
-    fn: () => Promise<T> | T;
-  }): Promise<T>;
+  checkpoint<T extends JsonValue | void>(
+    opts: CheckpointContext<T>,
+  ): Promise<T>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
@@ -373,6 +375,7 @@ export interface TaskBroker {
       order: 'asc' | 'desc';
       field: string;
     }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{
     tasks: SerializedTask[];
     totalTasks?: number;
@@ -446,23 +449,30 @@ export interface TaskContext {
   // (undocumented)
   taskId?: string;
   // (undocumented)
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
 // @public
 export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
+
+// @public
+export type TaskFilter = {
+  key: string;
+  values?: string[];
+};
+
+// @public
+export type TaskFilters =
+  | {
+      anyOf: TaskFilter[];
+    }
+  | {
+      allOf: TaskFilter[];
+    }
+  | {
+      not: TaskFilter;
+    }
+  | TaskFilter;
 
 // @public
 export type TaskSecrets = Record<string, string> & {

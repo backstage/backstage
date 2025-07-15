@@ -23,7 +23,13 @@
 
 import { Plugin, Hooks, semverUtils, YarnVersion } from '@yarnpkg/core';
 import { Hooks as PackHooks } from '@yarnpkg/plugin-pack';
-import { beforeWorkspacePacking, reduceDependency } from './handlers';
+import { Hooks as EssentialHooks } from '@yarnpkg/plugin-essentials';
+import {
+  afterWorkspaceDependencyAddition,
+  afterWorkspaceDependencyReplacement,
+  beforeWorkspacePacking,
+  reduceDependency,
+} from './handlers';
 import { BackstageNpmResolver } from './resolvers';
 
 // All dependencies of the yarn plugin are bundled during the build. Chalk
@@ -44,8 +50,10 @@ if (!semverUtils.satisfiesWithPrereleases(YarnVersion, '^4.1.1')) {
 /**
  * @public
  */
-const plugin: Plugin<Hooks & PackHooks> = {
+const plugin: Plugin<Hooks & EssentialHooks & PackHooks> = {
   hooks: {
+    afterWorkspaceDependencyAddition,
+    afterWorkspaceDependencyReplacement,
     reduceDependency,
     beforeWorkspacePacking,
   },

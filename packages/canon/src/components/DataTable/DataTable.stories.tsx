@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { DataTable } from '.';
 import { data, DataProps } from './mocked-components';
 import { columns } from './mocked-columns';
@@ -26,9 +26,17 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { useState } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/DataTable',
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta;
 
 export default meta;

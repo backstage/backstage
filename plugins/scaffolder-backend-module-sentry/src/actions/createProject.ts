@@ -54,6 +54,12 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
                 'Optional slug for the new project. If not provided a slug is generated from the name',
             })
             .optional(),
+        platform: z =>
+          z
+            .string({
+              description: 'Optional sentry platform for the new project. ',
+            })
+            .optional(),
         authToken: z =>
           z
             .string({
@@ -64,7 +70,8 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
       },
     },
     async handler(ctx) {
-      const { organizationSlug, teamSlug, name, slug, authToken } = ctx.input;
+      const { organizationSlug, teamSlug, name, slug, platform, authToken } =
+        ctx.input;
 
       const body: any = {
         name: name,
@@ -72,6 +79,10 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
 
       if (slug) {
         body.slug = slug;
+      }
+
+      if (platform) {
+        body.platform = platform;
       }
 
       const token = authToken

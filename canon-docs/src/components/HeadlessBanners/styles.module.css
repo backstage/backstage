@@ -1,16 +1,16 @@
 .container {
   display: flex;
   background-color: var(--panel);
-  padding: var(--canon-space-6);
-  border-radius: var(--canon-radius-2);
+  padding: 1.5rem;
+  border-radius: 0.25rem;
   border: 1px solid var(--border);
-  margin-bottom: var(--canon-space-6);
-  gap: var(--canon-space-6);
+  margin-bottom: 1.5rem;
+  gap: 1.5rem;
   transition: background-color 0.2s ease-in-out;
 }
 
 .icon path {
-  fill: var(--canon-fg-primary);
+  fill: var(--primary);
 }
 
 .content {
@@ -31,12 +31,12 @@
   cursor: pointer;
   background-color: var(--bg);
   border: 1px solid var(--border);
-  border-radius: var(--canon-radius-2);
-  padding: 0 var(--canon-space-3);
+  border-radius: 0.25rem;
+  padding: 0 0.75rem;
   height: 28px;
   border-radius: 100px;
-  margin-top: var(--canon-space-3);
-  font-size: var(--canon-font-size-3);
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
   color: var(--primary);
-  gap: var(--canon-space-2);
+  gap: 0.5rem;
 }

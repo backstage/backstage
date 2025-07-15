@@ -1,5 +1,71 @@
 # @backstage/frontend-plugin-api
 
+## 0.10.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.10.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.3
+
+### Patch Changes
+
+- 0169b23: Internal tweak to avoid circular dependencies
+- 9e3868f: Added a new optional `info` option to `createFrontendPlugin` that lets you provide a loaders for different sources of metadata information about the plugin.
+
+  There are two available loaders. The first one is `info.packageJson`, which can be used to point to a `package.json` file for the plugin. This is recommended for any plugin that is defined within its own package, especially all plugins that are published to a package registry. Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      packageJson: () => import('../package.json'),
+    },
+  });
+  ```
+
+  The second loader is `info.manifest`, which can be used to point to an opaque plugin manifest. This **MUST ONLY** be used by plugins that are intended for use within a single organization. Plugins that are published to an open package registry should **NOT** use this loader. The loader is useful for adding additional internal metadata associated with the plugin, and it is up to the Backstage app to decide how these manifests are parsed and used. The default manifest parser in an app created with `createApp` from `@backstage/frontend-defaults` is able to parse the default `catalog-info.yaml` format and built-in fields such as `spec.owner`.
+
+  Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      manifest: () => import('../catalog-info.yaml'),
+    },
+  });
+  ```
+
+- 6f48f71: Added a new `useAppNode` hook, which can be used to get a reference to the `AppNode` from by the closest `ExtensionBoundary`.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.10.3-next.0
 
 ### Patch Changes

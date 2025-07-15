@@ -17,8 +17,7 @@
   color: var(--color-gray-900);
   cursor: pointer;
   user-select: none;
-  background-color: var(--bg);
-  transition: background-color 0.2s ease-in-out;
+  background-color: var(--surface-1);
 
   &:focus-visible {
     outline: 2px solid var(--color-blue);
@@ -31,8 +30,8 @@
 }
 
 .SelectValue {
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-regular);
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
 .Positioner {
@@ -82,8 +81,8 @@
   padding-block: 0.5rem;
   padding-left: 0.625rem;
   padding-right: 1rem;
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-bold);
+  font-size: 0.875rem;
+  font-weight: 600;
   display: grid;
   gap: 0.5rem;
   align-items: center;
@@ -134,4 +133,5 @@
 
 .ItemText {
   grid-column-start: 2;
+  font-size: 14px;
 }

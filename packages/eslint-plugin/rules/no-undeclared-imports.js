@@ -319,6 +319,7 @@ module.exports = {
         if (importsToAdd.length > 0) {
           addMissingImports(importsToAdd, packages, localPkg);
 
+          packages.clearCache();
           // This switches all import directives back to the original import.
           for (const added of importsToAdd) {
             context.report({
@@ -336,6 +337,7 @@ module.exports = {
           removeInlineImports(importsToInline, localPkg);
           addForwardedInlineImports(importsToInline, localPkg);
 
+          packages.clearCache();
           for (const inlined of importsToInline) {
             context.report({
               node: inlined.node,
@@ -350,8 +352,6 @@ module.exports = {
           }
           importsToInline.length = 0;
         }
-
-        packages.clearCache();
       },
       ...visitImports(context, (node, imp) => {
         // We leave checking of type imports to the repo-tools check,

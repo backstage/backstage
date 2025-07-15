@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-import { forwardRef, useCallback, useId, useRef, MouseEvent } from 'react';
-import { Select as SelectPrimitive } from '@base-ui-components/react/select';
-import { Icon } from '../Icon';
+import { forwardRef, useEffect } from 'react';
+import {
+  Select as AriaSelect,
+  SelectValue,
+  Button,
+  Popover,
+  ListBox,
+  ListBoxItem,
+  Text,
+} from 'react-aria-components';
 import clsx from 'clsx';
 import './Select.styles.css';
 import { SelectProps } from './types';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import { useStyles } from '../../hooks/useStyles';
+import { FieldLabel } from '../FieldLabel';
+import { Icon } from '../Icon';
+import { FieldError } from '../FieldError';
 
 /** @public */
 export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
@@ -30,100 +40,72 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     description,
     options,
     placeholder = 'Select an option',
-    size = 'medium',
-    required,
-    error,
+    size = 'small',
+    icon,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    isRequired,
+    secondaryLabel,
     style,
     ...rest
   } = props;
 
-  // Get the responsive value for the variant
-  const responsiveSize = useResponsiveValue(size);
+  const { classNames: popoverClassNames } = useStyles('Popover');
+  const { classNames, dataAttributes } = useStyles('Select', {
+    size,
+  });
 
-  // Generate unique IDs for accessibility
-  const selectId = useId();
-  const descriptionId = useId();
-  const errorId = useId();
+  useEffect(() => {
+    if (!label && !ariaLabel && !ariaLabelledBy) {
+      console.warn(
+        'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+      );
+    }
+  }, [label, ariaLabel, ariaLabelledBy]);
 
-  const triggerRef = useRef<HTMLButtonElement>(null);
-
-  const handleLabelClick = useCallback(
-    (e: MouseEvent<HTMLLabelElement>) => {
-      if (!props.disabled && triggerRef.current) {
-        e.preventDefault();
-        triggerRef.current.focus();
-      }
-    },
-    [props.disabled],
-  );
+  // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
+  const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
 
   return (
-    <div className={clsx('canon-Select', className)} style={style} ref={ref}>
-      {label && (
-        <label
-          className="canon-SelectLabel"
-          htmlFor={selectId}
-          onClick={handleLabelClick}
-          data-disabled={props.disabled ? true : undefined}
-        >
-          {label}
-          {required && (
-            <span aria-hidden="true" className="canon-SelectRequired">
-              (Required)
-            </span>
-          )}
-        </label>
-      )}
-      <SelectPrimitive.Root {...rest}>
-        <SelectPrimitive.Trigger
-          ref={triggerRef}
-          id={selectId}
-          className="canon-SelectTrigger"
-          data-size={responsiveSize}
-          data-invalid={error}
-        >
-          <SelectPrimitive.Value
-            className="canon-SelectValue"
-            placeholder={placeholder}
-          />
-          <SelectPrimitive.Icon className="canon-SelectIcon">
-            <Icon name="chevron-down" />
-          </SelectPrimitive.Icon>
-        </SelectPrimitive.Trigger>
-        <SelectPrimitive.Portal>
-          <SelectPrimitive.Backdrop />
-          <SelectPrimitive.Positioner>
-            <SelectPrimitive.Popup className="canon-SelectPopup">
-              {options?.map(option => (
-                <SelectPrimitive.Item
-                  key={option.value}
-                  value={option.value}
-                  disabled={option.disabled}
-                  className="canon-SelectItem"
-                >
-                  <SelectPrimitive.ItemIndicator className="canon-SelectItemIndicator">
-                    <Icon name="check" />
-                  </SelectPrimitive.ItemIndicator>
-                  <SelectPrimitive.ItemText className="canon-SelectItemText">
-                    {option.label}
-                  </SelectPrimitive.ItemText>
-                </SelectPrimitive.Item>
-              ))}
-            </SelectPrimitive.Popup>
-          </SelectPrimitive.Positioner>
-        </SelectPrimitive.Portal>
-      </SelectPrimitive.Root>
-      {description && (
-        <p className="canon-SelectDescription" id={descriptionId}>
-          {description}
-        </p>
-      )}
-      {error && (
-        <p className="canon-SelectError" id={errorId} role="alert">
-          {error}
-        </p>
-      )}
-    </div>
+    <AriaSelect
+      className={clsx(classNames.root, className)}
+      {...dataAttributes}
+      ref={ref}
+      {...rest}
+    >
+      <FieldLabel
+        label={label}
+        secondaryLabel={secondaryLabelText}
+        description={description}
+      />
+      <Button
+        className={classNames.trigger}
+        data-size={dataAttributes['data-size']}
+      >
+        {icon}
+        <SelectValue className={classNames.value} />
+        <Icon aria-hidden="true" name="chevron-down" />
+      </Button>
+      <FieldError />
+      <Popover className={popoverClassNames.root}>
+        <ListBox className={classNames.list}>
+          {options?.map(option => (
+            <ListBoxItem
+              key={option.value}
+              id={option.value}
+              className={classNames.item}
+            >
+              <div className={classNames.itemIndicator}>
+                <Icon name="check" />
+              </div>
+              <Text slot="label" className={classNames.itemLabel}>
+                {option.label}
+              </Text>
+            </ListBoxItem>
+          ))}
+        </ListBox>
+      </Popover>
+    </AriaSelect>
   );
 });
 
