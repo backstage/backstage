@@ -1035,6 +1035,19 @@ const _default: FrontendPlugin<
             optional: false;
           }
         >;
+        contentHeader: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            JSX_2.Element,
+            'core.reactElement',
+            {
+              optional: true;
+            }
+          >,
+          {
+            singleton: true;
+            optional: true;
+          }
+        >;
       };
       kind: 'page';
       name: undefined;
