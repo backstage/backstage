@@ -1012,9 +1012,26 @@ const _default: FrontendPlugin<
     }>;
     'page:catalog': ExtensionDefinition<{
       config: {
+        pagination:
+          | boolean
+          | {
+              mode: 'offset' | 'cursor';
+              offset?: number | undefined;
+              limit?: number | undefined;
+            };
+      } & {
         path: string | undefined;
       };
       configInput: {
+        pagination?:
+          | boolean
+          | {
+              mode: 'offset' | 'cursor';
+              offset?: number | undefined;
+              limit?: number | undefined;
+            }
+          | undefined;
+      } & {
         path?: string | undefined;
       };
       output:
