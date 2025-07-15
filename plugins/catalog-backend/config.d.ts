@@ -160,7 +160,7 @@ export interface Config {
     /**
      * The strategy to use for entities that are orphaned, i.e. no longer have
      * any other entities or providers referencing them. The default value is
-     * "keep".
+     * "delete".
      */
     orphanStrategy?: 'keep' | 'delete';
 
