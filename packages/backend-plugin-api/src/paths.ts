@@ -16,8 +16,9 @@
 
 import { isChildPath } from '@backstage/cli-common';
 import { NotAllowedError } from '@backstage/errors';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, dirname } from 'path';
 import { realpathSync as realPath } from 'fs';
+import { fileURLToPath } from 'url';
 
 /** @internal */
 export const packagePathMocks = new Map<
@@ -26,12 +27,50 @@ export const packagePathMocks = new Map<
 >();
 
 /**
+ * Resolve a path relative to the calling module's location.
+ * This is a more portable alternative to resolvePackagePath that works
+ * in bundled environments and doesn't rely on package.json files.
+ *
+ * @param fileUrl - The import.meta.url (ES modules) or __dirname (CommonJS) of the calling module
+ * @param paths - Additional path segments to resolve relative to the calling module
+ * @returns The resolved absolute path
+ *
+ * @example
+ * ```ts
+ * // ES modules
+ * const assetsDir = resolveFromFile(import.meta.url, '../assets');
+ * 
+ * // CommonJS
+ * const assetsDir = resolveFromFile(__dirname, '../assets');
+ * ```
+ *
+ * @public
+ */
+export function resolveFromFile(fileUrl: string, ...paths: string[]): string {
+  let basePath: string;
+  
+  if (fileUrl.startsWith('file://')) {
+    // Handle import.meta.url (ES modules)
+    basePath = dirname(fileURLToPath(fileUrl));
+  } else {
+    // Handle __dirname (CommonJS) or already resolved paths
+    basePath = fileUrl;
+  }
+  
+  return resolvePath(basePath, ...paths);
+}
+
+/**
  * Resolve a path relative to the root of a package directory.
  * Additional path arguments are resolved relative to the package dir.
  *
  * This is particularly useful when you want to access assets shipped with
  * your backend plugin package. When doing so, do not forget to include the assets
  * in your published package by adding them to `files` in your `package.json`.
+ *
+ * @deprecated Use resolveFromFile with import.meta.url or __dirname instead.
+ * This function relies on package.json files being present which may not work
+ * in bundled environments.
  *
  * @public
  */

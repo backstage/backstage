@@ -17,7 +17,7 @@
 import { JsonObject } from '@backstage/types';
 import {
   DatabaseService,
-  resolvePackagePath,
+  resolveFromFile,
 } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
@@ -58,10 +58,8 @@ import {
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { compact } from 'lodash';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-scaffolder-backend',
-  'migrations',
-);
+// eslint-disable-next-line no-restricted-syntax -- Using resolveFromFile with __dirname is the new recommended approach
+const migrationsDir = resolveFromFile(__dirname, '../../../migrations');
 
 export type RawDbTaskRow = {
   id: string;

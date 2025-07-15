@@ -116,6 +116,9 @@ export async function createRouter(
     'app.disableStaticFallbackCache',
   );
 
+  // Note: This is looking up an external package by name, so we can't use the new
+  // resolveFromFile approach here. This is one of the remaining legitimate use cases
+  // for resolvePackagePath when you need to resolve paths in other packages.
   const appDistDir = resolvePackagePath(appPackageName, 'dist');
   const staticDir = resolvePath(appDistDir, 'static');
 

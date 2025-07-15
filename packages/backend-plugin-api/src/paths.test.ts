@@ -15,9 +15,51 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { resolveSafeChildPath } from './paths';
+import { resolveSafeChildPath, resolveFromFile } from './paths';
+import { resolve as resolvePath } from 'path';
+import { pathToFileURL } from 'url';
 
 describe('paths', () => {
+  describe('resolveFromFile', () => {
+    it('should resolve paths from file URL (import.meta.url)', () => {
+      const testDir = '/some/module/path';
+      const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
+      
+      const result = resolveFromFile(fileUrl, '../assets', 'config.json');
+      expect(result).toBe(resolvePath(testDir, '../assets', 'config.json'));
+    });
+
+    it('should resolve paths from directory path (__dirname)', () => {
+      const testDir = '/some/module/path';
+      
+      const result = resolveFromFile(testDir, '../assets', 'config.json');
+      expect(result).toBe(resolvePath(testDir, '../assets', 'config.json'));
+    });
+
+    it('should handle single path segment', () => {
+      const testDir = '/some/module/path';
+      const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
+      
+      const result = resolveFromFile(fileUrl, 'migrations');
+      expect(result).toBe(resolvePath(testDir, 'migrations'));
+    });
+
+    it('should handle no additional path segments', () => {
+      const testDir = '/some/module/path';
+      const fileUrl = pathToFileURL(resolvePath(testDir, 'index.js')).href;
+      
+      const result = resolveFromFile(fileUrl);
+      expect(result).toBe(testDir);
+    });
+
+    it('should handle relative paths going up directories', () => {
+      const testDir = '/some/module/src/database';
+      
+      const result = resolveFromFile(testDir, '../../assets');
+      expect(result).toBe(resolvePath(testDir, '../../assets'));
+    });
+  });
+
   describe('resolveSafeChildPath', () => {
     const mockDir = createMockDirectory();
     const secondDirectory = createMockDirectory();
