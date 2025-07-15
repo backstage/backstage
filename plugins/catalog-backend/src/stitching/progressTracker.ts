@@ -13,52 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { stringifyError } from '@backstage/errors';
-import { metrics } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import { DbRefreshStateRow } from '../database/tables';
 import { createCounterMetric } from '../util/metrics';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 // Helps wrap the timing and logging behaviors
-export function progressTracker(knex: Knex, logger: LoggerService) {
+export function progressTracker(
+  knex: Knex,
+  logger: LoggerService,
+  metrics: MetricsService,
+) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promStitchedEntities = createCounterMetric({
     name: 'catalog_stitched_entities_count',
     help: 'Amount of entities stitched. DEPRECATED, use OpenTelemetry metrics instead',
   });
 
-  const meter = metrics.getMeter('default');
-
-  const stitchedEntities = meter.createCounter(
-    'catalog.stitched.entities.count',
-    {
-      description: 'Amount of entities stitched',
-    },
-  );
-
-  const stitchingDuration = meter.createHistogram(
-    'catalog.stitching.duration',
-    {
-      description: 'Time spent executing the full stitching flow',
-      unit: 'seconds',
-    },
-  );
-
-  const stitchingQueueCount = meter.createObservableGauge(
-    'catalog.stitching.queue.length',
-    { description: 'Number of entities currently in the stitching queue' },
-  );
-  stitchingQueueCount.addCallback(async result => {
-    const total = await knex<DbRefreshStateRow>('refresh_state')
-      .count({ count: '*' })
-      .whereNotNull('next_stitch_at');
-    result.observe(Number(total[0].count));
+  const stitchedEntities = metrics.createCounter('stitched.entities.count', {
+    description: 'Amount of entities stitched',
   });
 
-  const stitchingQueueDelay = meter.createHistogram(
+  const stitchingDuration = metrics.createHistogram('stitching.duration', {
+    description: 'Time spent executing the full stitching flow',
+    unit: 'seconds',
+  });
+
+  metrics.createObservableGauge({
+    name: 'stitching.queue.length',
+    opts: {
+      description: 'Number of entities currently in the stitching queue',
+    },
+    meter: metrics.getMeter(),
+    observer: async gauge => {
+      const total = await knex<DbRefreshStateRow>('refresh_state')
+        .count({ count: '*' })
+        .whereNotNull('next_stitch_at');
+      gauge.observe(Number(total[0].count));
+    },
+  });
+
+  const stitchingQueueDelay = metrics.createHistogram(
     'catalog.stitching.queue.delay',
     {
       description:

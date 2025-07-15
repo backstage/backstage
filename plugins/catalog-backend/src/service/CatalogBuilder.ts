@@ -111,6 +111,7 @@ import {
   catalogEntityPermissionResourceRef,
   CatalogPermissionRuleInput,
 } from '@backstage/plugin-catalog-node/alpha';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -123,6 +124,7 @@ export type CatalogEnvironment = {
   auth: AuthService;
   httpAuth: HttpAuthService;
   auditor?: AuditorService;
+  metrics: MetricsService;
 };
 
 /**
@@ -461,7 +463,11 @@ export class CatalogBuilder {
       auditor,
       auth,
       httpAuth,
+      metrics,
     } = this.env;
+
+    // This is a test metric to check if the metrics are working
+    metrics.createCounter('kurt.test.total').add(1);
 
     const disableRelationsCompatibility = config.getOptionalBoolean(
       'catalog.disableRelationsCompatibility',
@@ -480,6 +486,7 @@ export class CatalogBuilder {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
       logger,
+      metrics,
     });
 
     const processingDatabase = new DefaultProcessingDatabase({
@@ -487,6 +494,7 @@ export class CatalogBuilder {
       logger,
       refreshInterval: this.processingInterval,
       eventBroker: this.eventBroker,
+      metrics,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
@@ -587,6 +595,7 @@ export class CatalogBuilder {
         this.onProcessingError?.(event);
       },
       eventBroker: this.eventBroker,
+      metrics,
     });
 
     const locationAnalyzer =

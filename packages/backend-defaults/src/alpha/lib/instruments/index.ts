@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
-export { actionsServiceFactory } from './entrypoints/actions';
-export { metricsServiceFactory } from './entrypoints/metrics';
-export { rootMetricsServiceFactory } from './entrypoints/rootMetrics';
-
-export * from './lib';
+export { createCounterMetric } from './createCounterMetric';
+export { createUpDownCounterMetric } from './createUpDownCounterMetric';
+export { createHistogramMetric } from './createHistogramMetric';
+export { createGaugeMetric } from './createGaugeMetric';
+export { createObservableCounterMetric } from './createObservableCounterMetric';
+export { createObservableUpDownCounterMetric } from './createObservableUpDownCounterMetric';
+export { createObservableGaugeMetric } from './createObservableGaugeMetric';

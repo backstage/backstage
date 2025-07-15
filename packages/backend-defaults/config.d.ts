@@ -15,6 +15,9 @@
  */
 
 import { HumanDuration } from '@backstage/types';
+import * as OtelApi from '@opentelemetry/api';
+import { InstrumentationConfigMap } from '@opentelemetry/auto-instrumentations-node';
+import { MetricCollectOptions, ViewOptions } from '@opentelemetry/sdk-metrics';
 
 export interface Config {
   app: {
@@ -969,5 +972,44 @@ export interface Config {
        */
       plugins: string[];
     }>;
+  };
+
+  /**
+   * Configuration for metrics collection.
+   *
+   * @example
+   * ```yaml
+   * instrumentation:
+   *   enabled: true
+   *   resource:
+   *     serviceName: backstage
+   *     serviceVersion: 1.40.2
+   *   metrics:
+   *     enabled: true
+   *     collection:
+   *       timeoutMillis: 1000
+   *     exporters:
+   *       - type: console
+   *       - type: prometheus
+   * ```
+   *
+   * @alpha
+   */
+  instrumentation?: {
+    enabled?: boolean;
+
+    resource?: {
+      serviceName?: string;
+      serviceVersion?: string;
+      attributes?: OtelApi.Attributes;
+    };
+
+    metrics?: {
+      enabled?: boolean;
+      autoInstrumentations?: InstrumentationConfigMap;
+      collection?: MetricCollectOptions;
+      exporters?: Array<MetricsExporterConfig>;
+      views?: Array<ViewOptions>;
+    };
   };
 }

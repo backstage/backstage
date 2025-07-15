@@ -38,6 +38,7 @@ import { DefaultRefreshService } from './DefaultRefreshService';
 import { ConfigReader } from '@backstage/config';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 jest.setTimeout(60_000);
 
@@ -57,6 +58,7 @@ describe('DefaultRefreshService', () => {
         database: knex,
         logger,
         refreshInterval: () => 100,
+        metrics: {} as MetricsService,
       }),
       catalogDb: new DefaultCatalogDatabase({
         database: knex,
@@ -114,10 +116,12 @@ describe('DefaultRefreshService', () => {
     const stitcher = DefaultStitcher.fromConfig(new ConfigReader({}), {
       knex,
       logger: defaultLogger,
+      metrics: {} as MetricsService,
     });
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
       logger: defaultLogger,
+      metrics: {} as MetricsService,
       processingDatabase: db,
       knex: knex,
       stitcher: stitcher,

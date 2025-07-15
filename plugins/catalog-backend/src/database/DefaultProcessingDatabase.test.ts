@@ -36,6 +36,7 @@ import { createRandomProcessingInterval } from '../processing/refresh';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 jest.setTimeout(60_000);
 
@@ -58,6 +59,7 @@ describe('DefaultProcessingDatabase', () => {
           minSeconds: 100,
           maxSeconds: 150,
         }),
+        metrics: {} as MetricsService,
       }),
     };
   }

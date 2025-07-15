@@ -39,6 +39,7 @@ import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
 import {
   instanceMetadataServiceRef,
   BackendFeatureMeta,
+  rootMetricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
@@ -258,7 +259,15 @@ export class BackendInitializer {
       createInstanceMetadataServiceFactory(this.#registrations),
     );
 
-    // Initialize all root scoped services
+    const rootConfig = await this.#serviceRegistry.get(
+      coreServices.rootConfig,
+      'root',
+    );
+
+    // Initialize root metrics to start the SDK before any other services are initialized
+    await this.#serviceRegistry.get(rootMetricsServiceRef, 'root');
+
+    // Initialize all remaining root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
 
     const pluginInits = new Map<string, BackendRegisterInit>();
@@ -317,15 +326,12 @@ export class BackendInitializer {
 
     const allPluginIds = [...pluginInits.keys()];
 
-    const initLogger = createInitializationLogger(
-      allPluginIds,
-      await this.#serviceRegistry.get(coreServices.rootLogger, 'root'),
-    );
-
-    const rootConfig = await this.#serviceRegistry.get(
-      coreServices.rootConfig,
+    const rootLogger = await this.#serviceRegistry.get(
+      coreServices.rootLogger,
       'root',
     );
+
+    const initLogger = createInitializationLogger(allPluginIds, rootLogger);
 
     // All plugins are initialized in parallel
     const results = await Promise.allSettled(
@@ -453,10 +459,6 @@ export class BackendInitializer {
     // Once the backend is started, any uncaught errors or unhandled rejections are caught
     // and logged, in order to avoid crashing the entire backend on local failures.
     if (process.env.NODE_ENV !== 'test') {
-      const rootLogger = await this.#serviceRegistry.get(
-        coreServices.rootLogger,
-        'root',
-      );
       process.on('unhandledRejection', (reason: Error) => {
         rootLogger
           ?.child({ type: 'unhandledRejection' })
