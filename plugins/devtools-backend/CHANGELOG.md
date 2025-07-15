@@ -1,5 +1,18 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-node@0.10.2
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-devtools-common@0.1.17
+
 ## 0.5.7-next.1
 
 ### Patch Changes

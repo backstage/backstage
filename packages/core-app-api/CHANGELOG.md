@@ -1,5 +1,17 @@
 # @backstage/core-app-api
 
+## 1.18.0
+
+### Minor Changes
+
+- 5ddc0fe: if session exists and refresh fails, then create a new session if not instant popup
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+
 ## 1.18.0-next.1
 
 ### Minor Changes

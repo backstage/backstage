@@ -1,5 +1,18 @@
 # @backstage/plugin-signals
 
+## 0.0.21
+
+### Patch Changes
+
+- d52d67f: Added a New Frontend System App Root Element for the `<SignalsDisplay />` component
+- Updated dependencies
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-signals-react@0.0.15
+
 ## 0.0.21-next.2
 
 ### Patch Changes
