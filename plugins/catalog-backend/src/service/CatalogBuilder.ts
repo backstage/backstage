@@ -622,9 +622,7 @@ export class CatalogBuilder {
       enableRelationsCompatibility,
     });
 
-    if (
-      config.getOptionalString('catalog.orphanProviderStrategy') === 'delete'
-    ) {
+    if (config.getOptionalString('catalog.orphanProviderStrategy') !== 'keep') {
       await evictEntitiesFromOrphanedProviders({
         db: providerDatabase,
         providers: entityProviders,
