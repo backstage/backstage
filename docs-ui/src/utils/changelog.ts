@@ -5,7 +5,7 @@ export type Component =
   | 'button-link'
   | 'heading'
   | 'text'
-  | 'icon-button'
+  | 'button-icon'
   | 'icon'
   | 'tabs'
   | 'menu'
@@ -22,7 +22,7 @@ export type Component =
   | 'switch'
   | 'grid'
   | 'searchfield'
-  | 'radio'
+  | 'radio-group'
   | 'card'
   | 'skeleton'
   | 'header';
@@ -60,7 +60,7 @@ export const changelog: ChangelogProps[] = [
     type: 'new',
   },
   {
-    components: ['button', 'button-link', 'icon-button'],
+    components: ['button', 'button-link', 'button-icon'],
     version: '0.6.0',
     description: 'Improve `Button`, `ButtonIcon` and `ButtonLink` styling.',
     prs: ['30448'],
@@ -75,7 +75,7 @@ export const changelog: ChangelogProps[] = [
     type: 'fix',
   },
   {
-    components: ['button', 'button-link', 'icon-button'],
+    components: ['button', 'button-link', 'button-icon'],
     version: '0.6.0',
     description:
       'New `tertiary` variant to `Button`, `ButtonIcon` and `ButtonLink`.',
@@ -90,7 +90,7 @@ export const changelog: ChangelogProps[] = [
     type: 'new',
   },
   {
-    components: ['icon-button'],
+    components: ['button-icon'],
     version: '0.6.0',
     description: 'Rename `IconButton` to `ButtonIcon`.',
     prs: ['30297'],
@@ -105,7 +105,7 @@ export const changelog: ChangelogProps[] = [
     type: 'new',
   },
   {
-    components: ['button', 'button-link', 'icon-button'],
+    components: ['button', 'button-link', 'button-icon'],
     version: '0.6.0',
     description: 'Remove the `render` prop from all button-related components.',
     prs: ['30297'],
@@ -127,7 +127,7 @@ export const changelog: ChangelogProps[] = [
     type: 'new',
   },
   {
-    components: ['radio'],
+    components: ['radio-group'],
     version: '0.6.0',
     description: 'New `RadioGroup` + `Radio` component.',
     prs: ['30327'],
@@ -194,7 +194,7 @@ export const changelog: ChangelogProps[] = [
     type: 'fix',
   },
   {
-    components: ['button', 'button-link', 'icon-button'],
+    components: ['button', 'button-link', 'button-icon'],
     version: '0.5.0',
     description:
       '`Button`, `ButtonLink`, `ButtonIcon` now default to size `small` instead of `medium`',
@@ -251,7 +251,7 @@ export const changelog: ChangelogProps[] = [
     type: 'new',
   },
   {
-    components: ['button', 'icon-button'],
+    components: ['button', 'button-icon'],
     version: '0.4.0',
     description: 'Improve icon props on `Button` and `IconButton`',
     prs: ['29667'],
@@ -448,7 +448,7 @@ export const changelog: ChangelogProps[] = [
     type: 'new',
   },
   {
-    components: ['icon-button'],
+    components: ['button-icon'],
     version: '0.2.0',
     description: 'New `IconButton` component',
     prs: ['29239'],
