@@ -400,9 +400,11 @@ export const coreExtensionData: {
 };
 
 // @public (undocumented)
-export type CoreNotFoundErrorPageProps = {
-  children?: ReactNode;
-};
+export type CoreNotFoundErrorPageProps = PropsWithChildren<{
+  status?: string;
+  statusMessage?: string;
+  additionalInfo?: string;
+}>;
 
 // @public (undocumented)
 export type CoreProgressProps = {};

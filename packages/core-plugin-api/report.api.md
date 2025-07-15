@@ -139,7 +139,7 @@ export type ApiRefConfig = {
 
 // @public
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
+  NotFoundErrorPage: ComponentType<ErrorPageProps>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<PropsWithChildren<{}>>;
   Router: ComponentType<
@@ -413,6 +413,13 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
   plugin?: BackstagePlugin_2;
   error: Error;
   resetError: () => void;
+}>;
+
+// @public
+export type ErrorPageProps = PropsWithChildren<{
+  status?: string;
+  statusMessage?: string;
+  additionalInfo?: string;
 }>;
 
 // @public
