@@ -5,7 +5,7 @@ const chokidar = require('chokidar');
 
 // Configuration
 const config = {
-  canonPath: '../../packages/canon',
+  UIPath: '../../packages/ui',
   publicPath: '../public',
   files: [
     {
@@ -23,13 +23,13 @@ const config = {
 
 class CSSSync {
   constructor() {
-    this.canonPath = path.resolve(__dirname, config.canonPath);
+    this.UIPath = path.resolve(__dirname, config.UIPath);
     this.publicPath = path.resolve(__dirname, config.publicPath);
     this.isWatching = process.argv.includes('--watch');
   }
 
   async syncFile(fileConfig) {
-    const sourcePath = path.join(this.canonPath, fileConfig.source);
+    const sourcePath = path.join(this.UIPath, fileConfig.source);
     const destPath = path.join(this.publicPath, fileConfig.destination);
 
     try {
@@ -93,7 +93,7 @@ class CSSSync {
 
     // Watch all source files
     const watchPaths = config.files.map(file =>
-      path.join(this.canonPath, file.source),
+      path.join(this.UIPath, file.source),
     );
 
     const watcher = chokidar.watch(watchPaths, {
@@ -103,7 +103,7 @@ class CSSSync {
 
     watcher.on('change', async filePath => {
       console.log(
-        `\n🔄 Change detected: ${path.relative(this.canonPath, filePath)}`,
+        `\n🔄 Change detected: ${path.relative(this.UIPath, filePath)}`,
       );
 
       // Find which file changed and sync it
@@ -127,8 +127,8 @@ class CSSSync {
   }
 
   async run() {
-    console.log('🎨 Canon CSS Sync Tool\n');
-    console.log(`📂 Canon path: ${this.canonPath}`);
+    console.log('🎨 BUI CSS Sync Tool\n');
+    console.log(`📂 BUI path: ${this.UIPath}`);
     console.log(`📂 Public path: ${this.publicPath}\n`);
 
     // Initial sync
