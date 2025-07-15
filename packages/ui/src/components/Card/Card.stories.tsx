@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { Card, CardHeader, CardBody, CardFooter } from './Card';
-import { IconNames, Text } from '../../';
+import { IconNames, Text } from '../..';
 
 export interface ListItem {
   id: string;

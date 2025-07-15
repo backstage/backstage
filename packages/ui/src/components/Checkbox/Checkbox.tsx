@@ -16,7 +16,7 @@
 
 import { forwardRef } from 'react';
 import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
-import { Icon } from '../../';
+import { Icon } from '../..';
 import type { CheckboxProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import clsx from 'clsx';

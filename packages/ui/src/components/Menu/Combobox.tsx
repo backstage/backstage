@@ -27,7 +27,7 @@ import {
 } from 'react';
 import clsx from 'clsx';
 import { MenuComboboxOption, MenuComboboxProps } from './types';
-import { Icon } from '../../';
+import { Icon } from '../..';
 
 const getListboxItemId = (listboxId: string, optionValue: string): string =>
   `${listboxId}-option-${optionValue}`;
