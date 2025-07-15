@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,39 +15,45 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { resolveSafeChildPath, resolvePackageDir } from './paths';
+import { resolveSafeChildPath, resolvePackageAssets } from './paths';
 import { resolve as resolvePath } from 'path';
 
 describe('paths', () => {
-  describe('resolvePackageDir', () => {
-    it('should resolve paths relative to provided directory', () => {
-      const testDir = '/some/module/src/database';
-      const result = resolvePackageDir(testDir, '..', '..', 'migrations');
-      expect(result).toBe('/some/module/migrations');
+  describe('resolvePackageAssets', () => {
+    const mockDir = createMockDirectory();
+
+    beforeEach(() => {
+      mockDir.setContent({
+        'package.json': JSON.stringify({ name: 'test-package' }),
+        'migrations/001_initial.sql': 'CREATE TABLE test;',
+        'dist/database/migrations.js': 'module.exports = {}',
+        'dist/migrations/001_initial.sql': 'CREATE TABLE test;',
+        'src/database/migrations.ts': 'export function migrate() {}',
+      });
     });
 
-    it('should handle single path segment', () => {
-      const testDir = '/some/module/src';
-      const result = resolvePackageDir(testDir, 'assets');
-      expect(result).toBe('/some/module/src/assets');
+    it('should resolve assets from dist directory when called from built module', () => {
+      const moduleDir = mockDir.resolve('dist/database');
+      const result = resolvePackageAssets(moduleDir, 'migrations');
+      
+      // Should find the assets copied to dist/migrations
+      expect(result).toBe(mockDir.resolve('dist/migrations'));
     });
 
-    it('should handle no additional path segments', () => {
-      const testDir = '/some/module/src';
-      const result = resolvePackageDir(testDir);
-      expect(result).toBe('/some/module/src');
+    it('should fallback to package root when called from src during development', () => {
+      const moduleDir = mockDir.resolve('src/database');
+      const result = resolvePackageAssets(moduleDir, 'migrations');
+      
+      // Should find the assets in the package root
+      expect(result).toBe(mockDir.resolve('migrations'));
     });
 
-    it('should handle multiple path segments', () => {
-      const testDir = '/some/module/src';
-      const result = resolvePackageDir(testDir, '..', 'assets', 'config.json');
-      expect(result).toBe('/some/module/assets/config.json');
-    });
-
-    it('should handle absolute paths in segments', () => {
-      const testDir = '/some/module/src';
-      const result = resolvePackageDir(testDir, '..', 'assets');
-      expect(result).toBe('/some/module/assets');
+    it('should handle non-existent assets gracefully', () => {
+      const moduleDir = mockDir.resolve('src/database');
+      const result = resolvePackageAssets(moduleDir, 'nonexistent');
+      
+      // Should return a path even if it doesn't exist (for better error messages)
+      expect(result).toBe(mockDir.resolve('src/nonexistent'));
     });
   });
 

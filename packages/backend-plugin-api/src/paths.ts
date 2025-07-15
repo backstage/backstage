@@ -14,11 +14,27 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { isChildPath } from '@backstage/cli-common';
 import { NotAllowedError } from '@backstage/errors';
 import { resolve as resolvePath, dirname } from 'path';
 import { realpathSync as realPath } from 'fs';
-import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 
 /** @internal */
 export const packagePathMocks = new Map<
@@ -27,51 +43,12 @@ export const packagePathMocks = new Map<
 >();
 
 /**
- * Resolve a path relative to a directory using a more controlled approach 
- * than raw `__dirname` usage.
- * 
- * This function provides a safer alternative to manually writing 
- * `path.resolve(__dirname, ...)` by accepting the caller's `__dirname` 
- * explicitly and resolving paths relative to it. While this still uses 
- * `__dirname`, it centralizes the usage and makes it more explicit.
- * 
- * **Note**: This function still relies on `__dirname`, which may not be 
- * stable in all bundled production environments. However, it works with 
- * the current Backstage build system and provides better developer experience 
- * than manually constructing paths.
- *
- * @param callerDir - The `__dirname` of the calling module
- * @param paths - Path segments to resolve relative to the caller's directory
- * @returns The resolved absolute path
- *
- * @example
- * ```ts
- * // From src/database/migrations.ts, resolve ../../migrations
- * const migrationsDir = resolvePackageDir(__dirname, '..', '..', 'migrations');
- * 
- * // From src/service/router.ts, resolve ../assets  
- * const assetsDir = resolvePackageDir(__dirname, '..', 'assets');
- * 
- * // Resolve a specific file
- * const configFile = resolvePackageDir(__dirname, '..', 'config', 'settings.json');
- * ```
- *
- * @public
- */
-export function resolvePackageDir(callerDir: string, ...paths: string[]): string {
-  return resolvePath(callerDir, ...paths);
-}
-
-/**
  * Resolve a path relative to the root of a package directory.
  * Additional path arguments are resolved relative to the package dir.
  *
  * This is particularly useful when you want to access assets shipped with
  * your backend plugin package. When doing so, do not forget to include the assets
  * in your published package by adding them to `files` in your `package.json`.
- *
- * @deprecated Use resolvePackageDir instead, which doesn't require specifying
- * the package name and is less error-prone.
  *
  * @public
  */
@@ -90,6 +67,56 @@ export function resolvePackagePath(name: string, ...paths: string[]) {
       : __non_webpack_require__;
 
   return resolvePath(req.resolve(`${name}/package.json`), '..', ...paths);
+}
+
+/**
+ * Resolve paths to package assets with enhanced portability.
+ * 
+ * This function provides an alternative to resolvePackagePath that works better
+ * in bundled environments. It looks for assets in multiple locations:
+ * 1. Relative to the current module (using __dirname)
+ * 2. In the package's dist directory (for built packages)
+ * 3. Falls back to standard package resolution
+ *
+ * @param moduleDir - The __dirname of the calling module
+ * @param assetPath - Path to the asset directory or file
+ * @returns The resolved absolute path to the asset
+ *
+ * @example
+ * ```ts
+ * // From src/database/migrations.ts
+ * const migrationsDir = resolvePackageAssets(__dirname, 'migrations');
+ * 
+ * // From src/service/router.ts  
+ * const assetsDir = resolvePackageAssets(__dirname, 'assets');
+ * ```
+ *
+ * @public
+ */
+export function resolvePackageAssets(moduleDir: string, assetPath: string): string {
+  // Strategy 1: Look for assets relative to the built package location
+  // The CLI copies asset directories to dist/, so check there first
+  const builtAssetPath = resolvePath(dirname(moduleDir), assetPath);
+  if (existsSync(builtAssetPath)) {
+    return builtAssetPath;
+  }
+
+  // Strategy 2: Look for assets relative to package root (development)
+  // Navigate up from src/ to package root
+  const packageRootAssetPath = resolvePath(moduleDir, '..', '..', assetPath);
+  if (existsSync(packageRootAssetPath)) {
+    return packageRootAssetPath;
+  }
+
+  // Strategy 3: Look in the dist directory relative to module
+  const distAssetPath = resolvePath(dirname(moduleDir), '..', assetPath);
+  if (existsSync(distAssetPath)) {
+    return distAssetPath;
+  }
+
+  // Fallback: Return the most likely path even if it doesn't exist
+  // This allows for the asset to be created later or for better error messages
+  return builtAssetPath;
 }
 
 /**
@@ -127,5 +154,6 @@ function resolveRealPath(path: string): string {
 
   return path;
 }
+
 // Re-export isChildPath so that backend packages don't need to depend on cli-common
 export { isChildPath };

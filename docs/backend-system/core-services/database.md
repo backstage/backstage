@@ -15,14 +15,12 @@ This service is scoped per plugin too, so that table names do not conflict acros
 
 The following example shows how to get access to the database service in your `example` backend plugin and getting a client for interacting with the database. It also runs some migrations from a certain directory for your plugin.
 
-The following example shows how to get access to the database service in your `example` backend plugin and getting a client for interacting with the database. It also runs some migrations from a certain directory for your plugin.
-
 ```ts
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { resolvePackageDir } from '@backstage/backend-plugin-api';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
   pluginId: 'example',
@@ -33,8 +31,10 @@ createBackendPlugin({
       },
       async init({ database }) {
         const client = await database.getClient();
-        // Resolve migrations directory relative to this module
-        const migrationsDir = resolvePackageDir(__dirname, '..', '..', 'migrations');
+        const migrationsDir = resolvePackagePath(
+          '@internal/my-plugin',
+          'migrations',
+        );
         if (!database.migrations?.skip) {
           await client.migrate.latest({
             directory: migrationsDir,
@@ -46,13 +46,8 @@ createBackendPlugin({
 });
 ```
 
-The `resolvePackageDir` approach is preferred as it provides safer path resolution without requiring package names. While it still uses `__dirname`, it makes this usage explicit and centralizes it, reducing the chance of errors compared to manually writing `path.resolve(__dirname, '../../..')` which can be error-prone.
+Here, `@internal/my-plugin` should be the name of your package as indicated in the `name` field of your `package.json`.
 
-**Migration from `resolvePackagePath`:**
-```ts
-// Old approach (requires package name)
-const migrationsDir = resolvePackagePath('@backstage/plugin-catalog-backend', 'migrations');
+## Advanced Configuration
 
-// New approach (no package name needed, explicit __dirname)
-const migrationsDir = resolvePackageDir(__dirname, '..', '..', 'migrations');
-```
+See [our documentation on database configuration](../../features/database.md) for information about the configuration options that are available.
