@@ -172,7 +172,7 @@ export interface Config {
     orphanProviderStrategy?: 'keep' | 'delete';
 
     /**
-     * The strategy to use when stitching together the final entities.
+     * The strategy to use when stitching together the final entities. The default mode is "deferred".
      */
     stitchingStrategy?:
       | {
