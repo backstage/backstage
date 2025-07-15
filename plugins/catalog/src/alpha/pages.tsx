@@ -41,7 +41,22 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
   },
-  factory(originalFactory, { inputs }) {
+  config: {
+    schema: {
+      pagination: z =>
+        z
+          .union([
+            z.boolean(),
+            z.object({
+              mode: z.enum(['cursor', 'offset']),
+              limit: z.number().optional(),
+              offset: z.number().optional(),
+            }),
+          ])
+          .default(true),
+    },
+  },
+  factory(originalFactory, { inputs, config }) {
     return originalFactory({
       defaultPath: '/catalog',
       routeRef: convertLegacyRouteRef(rootRouteRef),
@@ -50,7 +65,12 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
-        return compatWrapper(<BaseCatalogPage filters={<>{filters}</>} />);
+        return compatWrapper(
+          <BaseCatalogPage
+            filters={<>{filters}</>}
+            pagination={config.pagination}
+          />,
+        );
       },
     });
   },
