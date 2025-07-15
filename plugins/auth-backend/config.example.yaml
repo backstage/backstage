@@ -1,0 +1,35 @@
+# Example configuration for long-lasting refresh tokens
+
+# Add this to your app-config.yaml to enable refresh tokens
+# Restart your auth-backend service after making changes
+
+auth:
+  # Required: Enable the refresh token feature
+  refreshTokens:
+    enabled: true
+    
+    # Optional: Configure token lifetimes
+    # Default is 30 days, maximum is 90 days
+    defaultExpiration: "30 days"
+    maxExpiration: "90 days"
+    
+    # Optional: Configure cleanup frequency
+    # How often to remove expired sessions from database
+    cleanupInterval: "1 hour"
+
+# Alternative duration formats:
+# 
+# String format:
+#   defaultExpiration: "7 days"
+#   defaultExpiration: "2 weeks" 
+#   defaultExpiration: "720 hours"
+#
+# Object format:
+#   defaultExpiration: { days: 7 }
+#   defaultExpiration: { weeks: 2 }
+#   defaultExpiration: { hours: 720 }
+#
+# ISO 8601 format:
+#   defaultExpiration: "P7D"    # 7 days
+#   defaultExpiration: "P2W"    # 2 weeks  
+#   defaultExpiration: "PT720H" # 720 hours
