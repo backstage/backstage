@@ -40,6 +40,10 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
+import { RefreshTokenRouter } from './RefreshTokenRouter';
+import { RefreshTokenService } from '../identity/RefreshTokenService';
+import { RefreshSessionDatabase } from '../database/RefreshSessionDatabase';
+import { readRefreshTokenConfig } from './readRefreshTokenConfig';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -80,6 +84,36 @@ export async function createRouter(
   const userInfo = await UserInfoDatabase.create({
     database,
   });
+
+  // Read refresh token configuration
+  const refreshTokenConfig = readRefreshTokenConfig(config);
+
+  // Initialize refresh token service if enabled
+  let refreshTokenService: RefreshTokenService | undefined;
+  if (refreshTokenConfig.enabled) {
+    const refreshSessionDatabase = await RefreshSessionDatabase.create({
+      database,
+    });
+
+    refreshTokenService = new RefreshTokenService({
+      logger: logger.child({ component: 'refresh-token-service' }),
+      refreshSessionDatabase,
+      userInfoDatabase: userInfo,
+      tokenIssuer,
+      defaultRefreshTokenExpirationSeconds: refreshTokenConfig.defaultExpirationSeconds,
+      maxRefreshTokenExpirationSeconds: refreshTokenConfig.maxExpirationSeconds,
+    });
+
+    // Set up periodic cleanup of expired sessions
+    setInterval(
+      () => {
+        refreshTokenService!.cleanupExpiredSessions().catch(error => {
+          logger.error(`Failed to cleanup expired refresh sessions: ${error}`);
+        });
+      },
+      refreshTokenConfig.cleanupIntervalSeconds * 1000,
+    );
+  }
 
   const omitClaimsFromToken = config.getOptionalBoolean(
     'auth.omitIdentityTokenOwnershipClaim',
@@ -155,6 +189,17 @@ export async function createRouter(
   });
 
   router.use(oidcRouter.getRouter());
+
+  // Add refresh token endpoints if enabled
+  if (refreshTokenService) {
+    const refreshTokenRouter = RefreshTokenRouter.create({
+      logger: logger.child({ component: 'refresh-token-router' }),
+      auth: options.auth,
+      refreshTokenService,
+    });
+
+    router.use(refreshTokenRouter.getRouter());
+  }
 
   // Gives a more helpful error message than a plain 404
   router.use('/:provider/', req => {
