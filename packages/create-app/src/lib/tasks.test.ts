@@ -52,7 +52,6 @@ jest.mock('./versions', () => ({
     '@backstage/cli': '1.0.0',
     '@backstage/backend-defaults': '1.0.0',
     '@backstage/backend-tasks': '1.0.0',
-    '@backstage/canon': '1.0.0',
     '@backstage/catalog-model': '1.0.0',
     '@backstage/catalog-client': '1.0.0',
     '@backstage/config': '1.0.0',
@@ -102,6 +101,7 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-user-settings': '1.0.0',
     '@backstage/theme': '1.0.0',
     '@backstage/test-utils': '1.0.0',
+    '@backstage/ui': '1.0.0',
   },
 }));
 

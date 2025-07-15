@@ -16,7 +16,7 @@
 
 import { ComponentType } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Table } from '../Table';
+import { Table } from '.';
 
 const invoices = [
   {

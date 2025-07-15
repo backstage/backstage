@@ -4,7 +4,7 @@ microsite
 canon-docs/.next
 canon-docs/public
 canon-docs/out
-packages/canon/css
+packages/ui/css
 coverage
 *.hbs
 templates
