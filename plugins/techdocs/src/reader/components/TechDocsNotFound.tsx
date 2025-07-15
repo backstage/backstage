@@ -15,8 +15,12 @@
  */
 
 import { useEffect } from 'react';
-import { useApi, configApiRef, useAnalytics } from '@backstage/core-plugin-api';
-import { ErrorPage } from '@backstage/core-components';
+import {
+  useApi,
+  configApiRef,
+  useAnalytics,
+  useApp,
+} from '@backstage/core-plugin-api';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 import { useLocation } from 'react-router-dom';
 
@@ -30,6 +34,8 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
   const analyticsApi = useAnalytics();
   const { entityRef } = useTechDocsReaderPage();
   const location = useLocation();
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
 
   useEffect(() => {
     const { pathname, search, hash } = location;
@@ -48,7 +54,7 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
   }
 
   return (
-    <ErrorPage
+    <NotFoundErrorPage
       status="404"
       statusMessage={errorMessage || 'Documentation not found'}
       additionalInfo={additionalInfo}

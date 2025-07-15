@@ -254,7 +254,12 @@ export const InternalRouter = (
         path={templatingExtensionsRouteRef.path}
         element={<TemplatingExtensionsPage />}
       />
-      <Route path="*" element={<NotFoundErrorPage />} />
+      <Route
+        path="*"
+        element={
+          <NotFoundErrorPage status="404" statusMessage="Page not found" />
+        }
+      />
     </Routes>
   );
 };

@@ -113,7 +113,9 @@ export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
     ...routes,
     {
       path: '*',
-      element: <NotFoundErrorPage />,
+      element: (
+        <NotFoundErrorPage status="404" statusMessage="Page not found" />
+      ),
     },
   ];
 

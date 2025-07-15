@@ -177,20 +177,13 @@ describe('<TechDocsReaderPageContent />', () => {
     useTechDocsReaderDom.mockReturnValue(undefined);
     useReaderState.mockReturnValue({ state: 'CONTENT_NOT_FOUND' });
 
-    const rendered = await renderInTestApp(
-      <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
-      </Wrapper>,
-    );
-
-    await waitFor(() => {
-      expect(
-        rendered.queryByTestId('techdocs-native-shadowroot'),
-      ).not.toBeInTheDocument();
-      expect(
-        rendered.getByText('ERROR 404: Documentation not found'),
-      ).toBeInTheDocument();
-    });
+    await expect(
+      renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      ),
+    ).rejects.toThrow('Reached NotFound Page');
   });
 
   it('should scroll to header if hash is not present in url', async () => {
