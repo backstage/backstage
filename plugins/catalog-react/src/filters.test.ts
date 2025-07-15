@@ -149,6 +149,13 @@ describe('EntityOrphanFilter', () => {
     expect(filter.filterEntity(orphan)).toBeTruthy();
     expect(filter.filterEntity(entities[1])).toBeFalsy();
   });
+
+  it('should return query value as string', () => {
+    const trueFilter = new EntityOrphanFilter(true);
+    const falseFilter = new EntityOrphanFilter(false);
+    expect(trueFilter.toQueryValue()).toBe('true');
+    expect(falseFilter.toQueryValue()).toBe('false');
+  });
 });
 
 describe('EntityErrorFilter', () => {
@@ -175,6 +182,13 @@ describe('EntityErrorFilter', () => {
     const filter = new EntityErrorFilter(true);
     expect(filter.filterEntity(error)).toBeTruthy();
     expect(filter.filterEntity(entities[1])).toBeFalsy();
+  });
+
+  it('should return query value as string', () => {
+    const trueFilter = new EntityErrorFilter(true);
+    const falseFilter = new EntityErrorFilter(false);
+    expect(trueFilter.toQueryValue()).toBe('true');
+    expect(falseFilter.toQueryValue()).toBe('false');
   });
 });
 
