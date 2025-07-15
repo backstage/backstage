@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import type { GetEntitiesResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   alertApiRef,
@@ -23,7 +23,10 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import { PropsWithChildren } from 'react';
@@ -37,10 +40,9 @@ import {
   EntityTypeFilter,
   EntityUserFilter,
 } from '../filters';
-import { EntityListProvider, useEntityList } from './useEntityListProvider';
-import { useMountEffect } from '@react-hookz/web';
-import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { MockPromise } from '../testUtils/MockPromise';
 import { EntityListPagination } from '../types';
+import { EntityListProvider, useEntityList } from './useEntityListProvider';
 
 const entities: Entity[] = [
   {
@@ -340,6 +342,62 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'group' },
     });
+  });
+
+  it('uses the last applied filter even if an earlier request finishes later', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    const firstResult = new MockPromise<GetEntitiesResponse>();
+    const secondResult = new MockPromise<GetEntitiesResponse>();
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBeGreaterThan(0);
+    });
+    expect(result.current.totalItems).toBe(2);
+    expect(result.current.backendEntities.length).toBe(2);
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+
+    mockCatalogApi.getEntities!.mockReturnValueOnce(firstResult);
+
+    await act(async () => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
+        filter: { kind: 'api' },
+      });
+    });
+
+    mockCatalogApi.getEntities!.mockReturnValueOnce(secondResult);
+
+    await act(async () => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('system', 'System'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(3, {
+        filter: { kind: 'system' },
+      });
+    });
+
+    await act(async () => {
+      secondResult.resolve({
+        items: [],
+      });
+      firstResult.resolve({
+        items: entities,
+      });
+    });
+
+    expect(result.current.filters.kind!.value).toBe('system');
+    expect(result.current.backendEntities.length).toBe(0);
   });
 });
 
