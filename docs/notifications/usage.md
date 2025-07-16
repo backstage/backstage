@@ -210,3 +210,39 @@ notificationsApi.getNotification(yourId);
 // or with connection to signals:
 notificationsApi.getNotification(lastSignal.notification_id);
 ```
+
+## Metadata Field
+
+The metadata field is a freeform object that is designed to be used by processors.
+
+For example, for a custom processor that supports markdown format the metadata field can be used to pass an optional `markdown` field.
+
+When sending a notification:
+
+```ts
+notificationService.send({
+  recipients: { type: 'entity', entityRef: 'group/default:team-a' },
+  payload: {
+    title: 'Notification',
+    description: 'Description'
+    metadata: {
+      markdown: `
+        ### Notification
+        Description
+      `,
+    },
+  },
+});
+```
+
+In your processor, you can then use the metadata field accordingly:
+
+```ts
+async postProcess(notification: Notification): Promise<void> {
+  customNotificationSender.send({
+    to: getUsers(notification.recipients),
+    subject: notification.payload.title,
+    markdownText: notification.payload.metadata?.markdown ?? notification.payload.description,
+  });
+}
+```
