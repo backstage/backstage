@@ -366,7 +366,7 @@ For deployment on Kubernetes, you can use
 [Azure Workload Identity Federation](https://learn.microsoft.com/en-us/azure/active-directory/workload-identities/workload-identity-federation-overview)
 to grant your Backstage workload access to the storage account without
 managing secrets.
-If running in Azure VMs or Azure Kubernetes Service (AKS) with managed
+If running in Azure Virtual Machines or Azure Kubernetes Service (AKS) with managed
 identity, no additional configuration apart from the `accountName` and
 `containerName` may be needed.
 For other scenarios, you can use a
