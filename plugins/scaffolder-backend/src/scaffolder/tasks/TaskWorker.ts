@@ -190,34 +190,44 @@ export class TaskWorker {
     });
   }
 
-  protected truncateParameters(parameters: JsonObject) {
-    const auditMaxLength =
-      this.config?.getOptionalNumber('scaffolder.auditor.maxLength') ?? 256;
+  private truncateParameters(parameters: JsonObject) {
+    const taskParameterMaxLength =
+      this.config?.getOptionalNumber(
+        'scaffolder.auditor.taskParameterMaxLength',
+      ) ?? 256;
 
-    if (auditMaxLength === -1) {
+    if (taskParameterMaxLength === -1) {
       this.logger?.debug(
-        `scaffolder.auditor.maxLength manually disabled via configuration, no task parameter length limit set.`,
+        `scaffolder.auditor.taskParameterMaxLength manually disabled via configuration, no task parameter length limit set.`,
       );
       return parameters;
     }
 
-    const truncatedParameters: JsonObject = {};
-
-    for (const key in parameters) {
-      if (Object.prototype.hasOwnProperty.call(parameters, key)) {
-        const rawValue = parameters[key];
-        const value = rawValue?.toString();
-        if (value && value.length > auditMaxLength) {
-          truncatedParameters[key] = value
-            .slice(0, auditMaxLength)
+    function truncate(value: unknown): unknown {
+      if (typeof value === 'string') {
+        if (value.length > taskParameterMaxLength) {
+          return value
+            .slice(0, taskParameterMaxLength)
             .concat('...<truncated>');
-        } else {
-          truncatedParameters[key] = rawValue;
         }
+        return value;
       }
+      if (Array.isArray(value)) {
+        return value.map(truncate);
+      }
+      if (value && typeof value === 'object') {
+        const result: Record<string, unknown> = {};
+        for (const k in value as object) {
+          if (Object.hasOwn(value, k)) {
+            result[k] = truncate((value as any)[k]);
+          }
+        }
+        return result;
+      }
+      return value;
     }
 
-    return truncatedParameters;
+    return truncate(parameters) as JsonObject;
   }
 
   async runOneTask(task: TaskContext) {

@@ -16,7 +16,7 @@
 
 import os from 'os';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
-import { ConfigReader } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { TaskWorker, TaskWorkerOptions } from './TaskWorker';
@@ -341,5 +341,60 @@ describe('TaskWorker internals', () => {
     // We now expect one more task to have been claimed, and two tasks in the queue again
     expect(claimedTaskCount).toBe(3);
     expect(inflightTasks.length).toBe(2);
+  });
+});
+
+describe('TaskWorker.truncateParameters', () => {
+  let worker: TaskWorker;
+
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    const logger = { debug: jest.fn() } as any;
+
+    const config = {
+      getOptionalNumber: jest.fn().mockReturnValue(5),
+    } as unknown as Config;
+
+    worker = await TaskWorker.create({
+      logger,
+      workingDirectory: '/tmp',
+      integrations: {} as ScmIntegrations,
+      taskBroker: {} as TaskBroker,
+      actionRegistry: {} as TemplateActionRegistry,
+      config,
+    });
+  });
+
+  it('successfully does nothing', async () => {
+    const testParams = {};
+
+    // @ts-expect-error (truncateParameters is private, but for test we can access)
+    const result = worker.truncateParameters(testParams);
+
+    expect(result).toEqual({});
+  });
+
+  it('truncates long strings in nested objects and arrays', async () => {
+    const params = {
+      test: 'short',
+      test2: 'thisisaverylongstring',
+      nested: {
+        test3: 'anotherlongstringhere',
+        test4: ['ok', 'toolongstring'],
+      },
+    };
+
+    // @ts-expect-error (truncateParameters is private, but for test we can access)
+    const result = worker.truncateParameters(params);
+
+    expect(result).toEqual({
+      test: 'short',
+      test2: 'thisi...<truncated>',
+      nested: {
+        test3: 'anoth...<truncated>',
+        test4: ['ok', 'toolo...<truncated>'],
+      },
+    });
   });
 });
