@@ -105,6 +105,16 @@ We follow `provider:entity:verb` or as close to this as possible for our built-i
 
 Also feel free to use your company name to namespace them if you prefer too, for example `acme:file:create` like above.
 
+:::warning Critical: Use camelCase for Action IDs
+
+**Always use `camelCase` for action IDs** instead of `kebab-case` or `snake_case`. Action IDs with dashes (like `fetch:component-id`) will cause your template expressions to return `NaN` instead of expected values.
+
+**Problem:** If you use kebab-case like `fetch:component-id`, expressions like `${{ steps.fetch-component-id.output.componentId }}` will be evaluated as `steps.fetch - component - id.output.componentId` (subtraction operations), resulting in `NaN`.
+
+**Solution:** Use `fetchComponentId` instead of `fetch:component-id`, or access outputs with bracket notation: `${{ steps['fetch:component-id'].output.componentId }}`.
+
+:::
+
 Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if possible, which leads to better reading
 and writing of template entity definitions.
 

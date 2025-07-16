@@ -633,6 +633,14 @@ template. These follow the same standard format:
       name: ${{ parameters.name }}
 ```
 
+:::warning Action ID Naming
+
+When using custom actions, **use camelCase for action IDs** to avoid issues with template expressions. Action IDs with dashes will cause expressions like `${{ steps.my-action.output.value }}` to return `NaN` instead of the expected value.
+
+Use `myAction` instead of `my-action`, or access outputs with bracket notation: `${{ steps['my-action'].output.value }}`.
+
+:::
+
 By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
 [create your own custom actions](./writing-custom-actions.md).

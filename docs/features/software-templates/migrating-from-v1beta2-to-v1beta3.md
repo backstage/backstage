@@ -202,6 +202,45 @@ output:
 
 ## Watch out for `dash-case`
 
+:::warning Critical Issue: kebab-case Action IDs Cause NaN
+
+The nunjucks compiler can run into issues if the `id` fields in your template steps use dash characters, since these IDs translate directly to JavaScript object properties when accessed as output. **This is a common source of bugs where template expressions return `NaN` instead of expected values.**
+
+**The Problem:**
+When you use kebab-case action IDs like `fetch:component-id`, template expressions like:
+```yaml
+${{ steps.fetch-component-id.output.componentId }}
+```
+Are evaluated as JavaScript: `steps.fetch - component - id.output.componentId`, which performs subtraction operations and results in `NaN`.
+
+**Solutions:**
+
+1. **Recommended:** Use `camelCase` for your action IDs:
+
+```yaml
+steps:
+  - id: fetchComponentId    # ✅ Use camelCase
+    ...
+
+  - id: publishPullRequest  # ✅ Use camelCase
+    input:
+      repoUrl: ${{ steps.fetchComponentId.output.repoUrl }}  # ✅ Works correctly
+```
+
+2. **Alternative:** Keep dash-case and use bracket notation for property access:
+
+```yaml
+steps:
+  - id: fetch-component-id   # ⚠️  Dash-case requires bracket notation
+    ...
+
+  - id: publish-pull-request
+    input:
+      repoUrl: ${{ steps['fetch-component-id'].output.repoUrl }}  # ✅ Works with brackets
+```
+
+:::
+
 The nunjucks compiler can run into issues if the `id` fields in your template steps use dash characters, since these IDs translate directly to JavaScript object properties when accessed as output. One possible migration path is to use `camelCase` for your action IDs.
 
 ```yaml
