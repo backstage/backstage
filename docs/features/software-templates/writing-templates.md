@@ -59,7 +59,7 @@ spec:
 
   # here's the steps that are executed in series in the scaffolder backend
   steps:
-    - id: fetch-base
+    - id: fetchBase
       name: Fetch Base
       action: fetch:template
       input:
@@ -68,7 +68,7 @@ spec:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
 
-    - id: fetch-docs
+    - id: fetchDocs
       name: Fetch Docs
       action: fetch:plain
       input:
@@ -87,7 +87,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   # some outputs which are saved along with the job for use in the frontend
@@ -622,7 +622,7 @@ The `steps` is an array of the things that you want to happen part of this
 template. These follow the same standard format:
 
 ```yaml
-- id: fetch-base # A unique id for the step
+- id: fetchBase # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
   if: ${{ parameters.name }} # Optional condition, skip the step if not truthy
   each: ${{ parameters.iterable }} # Optional iterable, run the same step multiple times
@@ -732,7 +732,7 @@ spec:
           default: false
   ...
   steps:
-    - id: fetch-base
+    - id: fetchBase
       name: Fetch Base
       action: fetch:template
       input:
