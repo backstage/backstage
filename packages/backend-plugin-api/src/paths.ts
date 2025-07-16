@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2020 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { isChildPath } from '@backstage/cli-common';
 import { NotAllowedError } from '@backstage/errors';
 import { resolve as resolvePath, dirname } from 'path';
-import { realpathSync as realPath } from 'fs';
-import { existsSync } from 'fs';
+import { realpathSync as realPath, existsSync } from 'fs';
 
 /** @internal */
 export const packagePathMocks = new Map<
@@ -70,85 +53,82 @@ export function resolvePackagePath(name: string, ...paths: string[]) {
 }
 
 /**
- * Resolve paths to package assets with enhanced portability.
+ * Resolve paths to package assets automatically from the calling location.
  * 
- * This function provides a reliable alternative to resolvePackagePath that works
- * across all deployment scenarios by using module resolution instead of file system
- * path assumptions. It looks for assets using these strategies:
- * 
- * 1. Auto-generated asset resolver modules (in production builds)
- * 2. Development-time asset locations (relative to package root)
- * 3. Fallback to common asset locations
+ * This function provides a portable alternative to resolvePackagePath that doesn't
+ * require package names or __dirname. It uses stack trace analysis to detect the
+ * calling file and automatically resolves assets relative to the package root.
  *
- * @param packageName - The name of the package containing the assets
- * @param assetPath - Path to the asset directory or file
+ * @param assetPath - Path to the asset directory or file relative to package root
  * @returns The resolved absolute path to the asset
  *
  * @example
  * ```ts
- * // From catalog-backend migrations
- * const migrationsDir = resolvePackageAssets('@backstage/plugin-catalog-backend', 'migrations');
+ * // From catalog-backend/src/database/migrations.ts
+ * const migrationsDir = resolvePackageAssets('migrations');
  * 
- * // From auth-backend assets
- * const assetsDir = resolvePackageAssets('@backstage/plugin-auth-backend', 'assets');
+ * // From auth-backend/src/providers/oauth2/provider.ts  
+ * const templatesDir = resolvePackageAssets('templates');
  * ```
  *
  * @public
  */
-export function resolvePackageAssets(packageName: string, assetPath: string): string {
-  const req =
-    typeof __non_webpack_require__ === 'undefined'
-      ? require
-      : __non_webpack_require__;
+export function resolvePackageAssets(assetPath: string): string {
+  // Use stack trace to find the calling file
+  const originalPrepareStackTrace = Error.prepareStackTrace;
+  Error.prepareStackTrace = (_, stack) => stack;
+  const stack = (new Error().stack as any) as NodeJS.CallSite[];
+  Error.prepareStackTrace = originalPrepareStackTrace;
 
-  try {
-    // Strategy 1: Try to find auto-generated asset resolver modules
-    // These are created by the CLI build process and provide reliable asset paths
-    const packageDistPath = resolvePath(req.resolve(`${packageName}/package.json`), '..');
-    
-    try {
-      const assetResolverPath = resolvePath(packageDistPath, '__asset_resolvers__.js');
-      if (existsSync(assetResolverPath)) {
-        // eslint-disable-next-line import/no-dynamic-require
-        const assetResolvers = req(assetResolverPath);
-        const resolvedAsset = assetResolvers.resolveAsset(assetPath);
-        if (resolvedAsset && existsSync(resolvedAsset)) {
-          return resolvedAsset;
-        }
-      }
-    } catch {
-      // Asset resolver not available, continue to next strategy
+  // Find the first external caller (skip this function)
+  let callerFile: string | undefined;
+  for (let i = 1; i < stack.length; i++) {
+    const fileName = stack[i].getFileName();
+    if (fileName && !fileName.includes('paths.ts') && !fileName.includes('paths.js')) {
+      callerFile = fileName;
+      break;
     }
-
-    // Strategy 2: Look for assets in the built package dist directory
-    const builtAssetPath = resolvePath(packageDistPath, assetPath);
-    if (existsSync(builtAssetPath)) {
-      return builtAssetPath;
-    }
-
-    // Strategy 3: Development-time fallback - look in package source
-    // This handles cases where we're running in development mode
-    const sourceAssetPath = resolvePath(packageDistPath, '..', assetPath);
-    if (existsSync(sourceAssetPath)) {
-      return sourceAssetPath;
-    }
-
-    // Strategy 4: Try looking in common development locations
-    const devAssetPath = resolvePath(packageDistPath, '..', 'src', '..', assetPath);
-    if (existsSync(devAssetPath)) {
-      return devAssetPath;
-    }
-
-    // Fallback: Return the most likely path for better error messages
-    return builtAssetPath;
-  } catch (error) {
-    // If package resolution fails completely, fall back to the old behavior
-    // but this should be rare in normal usage
-    throw new Error(
-      `Unable to resolve package assets for ${packageName}: ${error.message}. ` +
-      `Make sure the package is properly installed and built.`
-    );
   }
+
+  if (!callerFile) {
+    throw new Error('Unable to determine calling file for asset resolution');
+  }
+
+  // Find the package root by walking up from the caller
+  let currentDir = dirname(callerFile);
+  let packageRoot: string | undefined;
+  
+  while (currentDir !== dirname(currentDir)) {
+    if (existsSync(resolvePath(currentDir, 'package.json'))) {
+      packageRoot = currentDir;
+      break;
+    }
+    currentDir = dirname(currentDir);
+  }
+
+  if (!packageRoot) {
+    // Fallback: resolve relative to caller file
+    return resolvePath(dirname(callerFile), assetPath);
+  }
+
+  // Try multiple locations for the asset
+  const candidatePaths = [
+    // Built assets in dist folder
+    resolvePath(packageRoot, 'dist', assetPath),
+    // Source assets in package root
+    resolvePath(packageRoot, assetPath),
+    // Development-time source location
+    resolvePath(packageRoot, 'src', '..', assetPath),
+  ];
+
+  for (const candidatePath of candidatePaths) {
+    if (existsSync(candidatePath)) {
+      return candidatePath;
+    }
+  }
+
+  // Return the most likely path (package root + asset path) for better error messages
+  return resolvePath(packageRoot, assetPath);
 }
 
 /**

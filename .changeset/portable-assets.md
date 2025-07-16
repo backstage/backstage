@@ -1,25 +1,25 @@
 ---
 '@backstage/backend-plugin-api': minor
-'@backstage/cli': patch
 ---
 
-Add `resolvePackageAssets` function as a more reliable alternative to `resolvePackagePath`.
+Add `resolvePackageAssets` function as a portable alternative to `resolvePackagePath`.
 
-This new function provides reliable asset resolution across all deployment scenarios by using module resolution instead of file system assumptions. The CLI now generates asset resolver modules during the build process that enable reliable runtime asset discovery.
+This new function provides automatic asset resolution without requiring package names or relying on unstable `__dirname` paths. It uses stack trace analysis to detect the calling file and automatically resolves assets relative to the package root.
 
 Key improvements:
-1. **No dependency on `__dirname`**: Uses package name and module resolution instead of unstable file paths
-2. **Auto-generated resolver modules**: The CLI creates resolver modules that provide reliable asset paths
-3. **Multi-strategy fallback**: Falls back gracefully from resolver modules to built assets to development locations
-4. **Works in bundled environments**: Doesn't rely on package.json files being available at runtime
+1. **No package names required**: Automatically detects the calling package
+2. **No dependency on `__dirname`**: Uses stack traces for reliable caller detection
+3. **Works in bundled environments**: Stack traces remain stable across deployment scenarios  
+4. **Multi-location fallback**: Checks dist folder, package root, and development locations
+5. **Better error messages**: Returns meaningful paths even for missing assets
 
-The CLI enhancement generates small resolver modules alongside copied assets, enabling runtime code to reliably find assets without making assumptions about directory structure.
+The function eliminates the need to know or pass package names while providing more reliable asset resolution than manual path construction.
 
 Migration example:
 ```ts
 // Before
 const migrationsDir = resolvePackagePath('@backstage/plugin-catalog-backend', 'migrations');
 
-// After  
-const migrationsDir = resolvePackageAssets('@backstage/plugin-catalog-backend', 'migrations');
+// After (from within catalog-backend package)
+const migrationsDir = resolvePackageAssets('migrations');
 ```

@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
-const migrationsDir = resolvePackageAssets('@backstage/plugin-auth-backend', 'migrations');
+const migrationsDir = resolvePackageAssets('migrations');
 
 /**
  * Ensures that a database connection is established exactly once and only when
