@@ -59,7 +59,7 @@ spec:
 
   # here's the steps that are executed in series in the scaffolder backend
   steps:
-    - id: fetch-base
+    - id: fetch_base
       name: Fetch Base
       action: fetch:template
       input:
@@ -68,7 +68,7 @@ spec:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
 
-    - id: fetch-docs
+    - id: fetch_docs
       name: Fetch Docs
       action: fetch:plain
       input:
@@ -622,7 +622,7 @@ The `steps` is an array of the things that you want to happen part of this
 template. These follow the same standard format:
 
 ```yaml
-- id: fetch-base # A unique id for the step
+- id: fetch_base # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
   if: ${{ parameters.name }} # Optional condition, skip the step if not truthy
   each: ${{ parameters.iterable }} # Optional iterable, run the same step multiple times
@@ -632,6 +632,10 @@ template. These follow the same standard format:
     values:
       name: ${{ parameters.name }}
 ```
+
+:::note Step ID Naming Convention
+When naming step IDs, prefer `snake_case` (like `fetch_base`) over `kebab-case` (like `fetch-base`). This is because step outputs are accessed in templates using dot notation like `${{ steps.fetch_base.output.someValue }}`, and kebab-case IDs would be interpreted as mathematical expressions (e.g., `fetch - base`), causing template evaluation errors. If you must use kebab-case IDs, access outputs using bracket notation: `${{ steps['fetch-base'].output.someValue }}`.
+:::
 
 By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
@@ -724,7 +728,7 @@ spec:
           default: false
   ...
   steps:
-    - id: fetch-base
+    - id: fetch_base
       name: Fetch Base
       action: fetch:template
       input:

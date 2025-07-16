@@ -49,7 +49,7 @@ spec:
 
   # here's the steps that are executed in series in the scaffolder backend
   steps:
-    - id: fetch-base
+    - id: fetch_base
       name: Fetch Base
       action: fetch:template
       input:
@@ -57,7 +57,7 @@ spec:
         values:
           name: ${{ parameters.name }}
 
-    - id: fetch-docs
+    - id: fetch_docs
       name: Fetch Docs
       action: fetch:plain
       input:

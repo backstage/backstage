@@ -108,6 +108,10 @@ Also feel free to use your company name to namespace them if you prefer too, for
 Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if possible, which leads to better reading
 and writing of template entity definitions.
 
+:::note Action IDs vs Step IDs
+This guidance is for **action IDs** (like `github:repo:create`), which identify the action implementation. For **step IDs** in templates (the `id` field in template steps), prefer `snake_case` over `kebab-case` to avoid template evaluation issues when accessing step outputs.
+:::
+
 ### Adding a TemplateExample
 
 A TemplateExample is a way to document different ways that your custom action can be used. Once added, it will be visible

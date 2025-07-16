@@ -176,13 +176,13 @@ describe('scaffolderPlugin', () => {
         {
           description: 'Downloads content and places it in the workspace.',
           example:
-            'steps:\n  - action: fetch:plain\n    id: fetch-plain\n    name: Fetch plain\n    input:\n      url: https://github.com/backstage/community/tree/main/backstage-community-sessions/assets\n',
+            'steps:\n  - action: fetch:plain\n    id: fetch_plain\n    name: Fetch plain\n    input:\n      url: https://github.com/backstage/community/tree/main/backstage-community-sessions/assets\n',
         },
         {
           description:
             'Optionally, if you would prefer the data to be downloaded to a subdirectory in the workspace you may specify the ‘targetPath’ input option.',
           example:
-            'steps:\n  - action: fetch:plain\n    id: fetch-plain\n    name: Fetch plain\n    input:\n      url: https://github.com/backstage/community/tree/main/backstage-community-sessions/assets\n      targetPath: fetched-data\n',
+            'steps:\n  - action: fetch:plain\n    id: fetch_plain\n    name: Fetch plain\n    input:\n      url: https://github.com/backstage/community/tree/main/backstage-community-sessions/assets\n      targetPath: fetched-data\n',
         },
       ],
       schema: {

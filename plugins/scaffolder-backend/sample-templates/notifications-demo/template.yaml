@@ -60,7 +60,7 @@ spec:
           description: Notification scope
 
   steps:
-    - id: send-notification
+    - id: send_notification
       name: Send notification
       action: notification:send
       input:

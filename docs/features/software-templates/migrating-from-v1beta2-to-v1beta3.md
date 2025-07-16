@@ -200,9 +200,9 @@ output:
       # highlight-add-end
 ```
 
-## Watch out for `dash-case`
+## Watch out for `kebab-case` step IDs
 
-The nunjucks compiler can run into issues if the `id` fields in your template steps use dash characters, since these IDs translate directly to JavaScript object properties when accessed as output. One possible migration path is to use `camelCase` for your action IDs.
+The nunjucks compiler can run into issues if the `id` fields in your template steps use dash characters, since these IDs translate directly to JavaScript object properties when accessed as output. The recommended migration path is to use `snake_case` for your step IDs.
 
 ```yaml
   steps:
@@ -217,21 +217,23 @@ The nunjucks compiler can run into issues if the `id` fields in your template st
 
   steps:
     # highlight-add-start
-    id: myCustomAction
+    id: my_custom_action
     ...
 
-    id: publishPullRequest
+    id: publish_pull_request
     input:
-      repoUrl: ${{ steps.myCustomAction.output.repoUrl }}
+      repoUrl: ${{ steps.my_custom_action.output.repoUrl }}
       # highlight-add-end
 ```
 
-Alternatively, it's possible to keep the `dash-case` syntax and use brackets for property access as you would in JavaScript:
+Alternatively, it's possible to keep the `kebab-case` syntax and use brackets for property access as you would in JavaScript:
 
 ```yaml
 input:
   repoUrl: ${{ steps['my-custom-action'].output.repoUrl }}
 ```
+
+However, we recommend using `snake_case` for better readability and consistency.
 
 ### Summary
 
