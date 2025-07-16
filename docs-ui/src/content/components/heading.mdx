@@ -1,0 +1,66 @@
+import { PropsTable } from '@/components/PropsTable';
+import { HeadingSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  headingPropDefs,
+  headingUsageSnippet,
+  headingDefaultSnippet,
+  headingVariantsSnippet,
+  headingTruncateSnippet,
+  headingResponsiveSnippet,
+} from './heading.props';
+import { ComponentInfos } from '@/components/ComponentInfos';
+
+# Heading
+
+Headings are used to structure the content of your page.
+
+<Snippet
+  py={4}
+  preview={<HeadingSnippet story="Title1" />}
+  code={headingDefaultSnippet}
+/>
+
+<ComponentInfos
+  component="heading"
+  classNames={['bui-Heading']}
+  usageCode={headingUsageSnippet}
+/>
+
+## API reference
+
+<PropsTable data={headingPropDefs} />
+
+## Examples
+
+### All variants
+
+The `Heading` component has a `variant` prop that can be used to change the
+appearance of the heading.
+
+<Snippet
+  py={2}
+  open
+  preview={<HeadingSnippet story="AllVariants" />}
+  code={headingVariantsSnippet}
+/>
+
+### Truncate
+
+The `Heading` component has a `truncate` prop that can be used to truncate the
+heading.
+
+<Snippet
+  py={2}
+  open
+  preview={<HeadingSnippet story="Truncate" />}
+  code={headingTruncateSnippet}
+/>
+
+### Responsive
+
+You can also use the `variant` prop to change the appearance of the text based
+on the screen size.
+
+<CodeBlock code={headingResponsiveSnippet} />

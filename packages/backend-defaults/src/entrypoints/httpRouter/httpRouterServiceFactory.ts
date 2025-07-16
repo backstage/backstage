@@ -22,12 +22,13 @@ import {
   HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
 import {
-  createLifecycleMiddleware,
+  createAuthIntegrationRouter,
   createCookieAuthRefreshMiddleware,
   createCredentialsBarrier,
-  createAuthIntegrationRouter,
+  createLifecycleMiddleware,
 } from './http';
 import { MiddlewareFactory } from '../rootHttpRouter';
+import { createRateLimitMiddleware } from './http/createRateLimitMiddleware.ts';
 
 /**
  * HTTP route registration for plugins.
@@ -60,6 +61,8 @@ export const httpRouterServiceFactory = createServiceFactory({
     logger,
   }) {
     const router = PromiseRouter();
+
+    router.use(createRateLimitMiddleware({ pluginId: plugin.getId(), config }));
 
     rootHttpRouter.use(`/api/${plugin.getId()}`, router);
 

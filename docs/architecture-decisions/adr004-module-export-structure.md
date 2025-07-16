@@ -1,7 +1,6 @@
 ---
 id: adrs-adr004
 title: 'ADR004: Module Export Structure'
-# prettier-ignore
 description: Architecture Decision Record (ADR) log on Module Export Structure
 ---
 

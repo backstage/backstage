@@ -108,9 +108,6 @@ describe('GitlabUrlReader', () => {
         config: createConfig(),
         response: expect.objectContaining({
           url: 'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
-          headers: expect.objectContaining({
-            'private-token': '',
-          }),
         }),
       },
       {
@@ -119,7 +116,7 @@ describe('GitlabUrlReader', () => {
         response: expect.objectContaining({
           url: 'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
           headers: expect.objectContaining({
-            'private-token': '0123456789',
+            authorization: 'Bearer 0123456789',
           }),
         }),
       },
@@ -252,10 +249,10 @@ describe('GitlabUrlReader', () => {
     it('should return the file when using a user token', async () => {
       worker.use(
         rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('private-token') !== 'gl-user-token') {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
             return res(
-              ctx.status(403),
-              ctx.json({ message: 'Not Authorized' }),
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
             );
           }
           return res(ctx.status(200), ctx.json({ id: 12345 }));
@@ -571,10 +568,10 @@ describe('GitlabUrlReader', () => {
     it('should return the file when using a user token', async () => {
       worker.use(
         rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('private-token') !== 'gl-user-token') {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
             return res(
-              ctx.status(403),
-              ctx.json({ message: 'Not Authorized' }),
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
             );
           }
           return res(ctx.status(200), ctx.json({ id: 12345 }));
@@ -737,10 +734,10 @@ describe('GitlabUrlReader', () => {
           (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
         rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('private-token') !== 'gl-user-token') {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
             return res(
-              ctx.status(403),
-              ctx.json({ message: 'Not Authorized' }),
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
             );
           }
           return res(ctx.status(200), ctx.json({ id: 12345 }));
@@ -798,10 +795,10 @@ describe('GitlabUrlReader', () => {
           (_, res, ctx) => res(ctx.status(404)),
         ),
         rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('private-token') !== 'gl-user-token') {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
             return res(
-              ctx.status(403),
-              ctx.json({ message: 'Not Authorized' }),
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
             );
           }
           return res(ctx.status(200), ctx.json({ id: 12345 }));
@@ -857,21 +854,19 @@ describe('GitlabUrlReader', () => {
     beforeEach(() => {
       worker.use(
         rest.get('*/api/v4/projects/group%2Fproject', (req, res, ctx) => {
-          // the private-token header must be included on API calls
-          if (req.headers.get('private-token') !== 'gl-dummy-token') {
+          if (req.headers.get('authorization') !== 'Bearer gl-dummy-token') {
             return res(
-              ctx.status(403),
-              ctx.json({ message: 'Not Authorized' }),
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
             );
           }
           return res(ctx.status(200), ctx.json({ id: 12345 }));
         }),
         rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          // the private-token header must be included on API calls
-          if (req.headers.get('private-token') !== 'gl-user-token') {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
             return res(
-              ctx.status(403),
-              ctx.json({ message: 'Not Authorized' }),
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
             );
           }
           return res(ctx.status(200), ctx.json({ id: 12345 }));

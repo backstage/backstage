@@ -32,6 +32,7 @@ describe('WinstonRootAuditorService', () => {
       plugin: {
         getId: () => 'test-plugin',
       },
+      config: mockServices.rootConfig.mock(),
     });
     expect(childLogger).toBeInstanceOf(DefaultAuditorService);
   });
@@ -45,6 +46,7 @@ describe('WinstonRootAuditorService', () => {
       plugin: {
         getId: () => pluginId,
       },
+      config: mockServices.rootConfig.mock(),
     });
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
@@ -68,6 +70,7 @@ describe('WinstonRootAuditorService', () => {
       plugin: {
         getId: () => pluginId,
       },
+      config: mockServices.rootConfig.mock(),
     });
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
@@ -95,6 +98,7 @@ describe('WinstonRootAuditorService', () => {
       plugin: {
         getId: () => pluginId,
       },
+      config: mockServices.rootConfig.mock(),
     });
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
@@ -111,7 +115,7 @@ describe('WinstonRootAuditorService', () => {
       eventId: 'test-event',
       meta: {},
       status: 'failed',
-      error: error.toString(),
+      error,
     });
   });
 
@@ -124,6 +128,7 @@ describe('WinstonRootAuditorService', () => {
       plugin: {
         getId: () => pluginId,
       },
+      config: mockServices.rootConfig.mock(),
     });
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
@@ -163,7 +168,7 @@ describe('WinstonRootAuditorService', () => {
         initiated: 'test',
         failed: 'test',
       },
-      error: error.toString(),
+      error,
     });
   });
 });

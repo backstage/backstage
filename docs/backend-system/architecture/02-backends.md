@@ -2,7 +2,6 @@
 id: backends
 title: Backend Instances
 sidebar_label: Backend
-# prettier-ignore
 description: Backend instances
 ---
 

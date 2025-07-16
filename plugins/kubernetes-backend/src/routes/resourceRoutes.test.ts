@@ -18,30 +18,18 @@ import request from 'supertest';
 import {
   mockCredentials,
   mockServices,
-  type ServiceMock,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { kubernetesObjectsProviderExtensionPoint } from '@backstage/plugin-kubernetes-node';
-import {
-  createBackendModule,
-  type PermissionsService,
-} from '@backstage/backend-plugin-api';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('resourcesRoutes', () => {
   let app: ExtendedHttpServer;
-  const permissionsMock: ServiceMock<PermissionsService> =
-    mockServices.permissions.mock({
-      authorize: jest.fn(),
-      authorizeConditional: jest.fn(),
-    });
 
   const startPermissionDeniedTestServer = async () => {
-    permissionsMock.authorize.mockResolvedValue([
-      { result: AuthorizeResult.DENY },
-    ]);
     const { server } = await startTestBackend({
       features: [
         mockServices.rootConfig.factory({
@@ -52,7 +40,7 @@ describe('resourcesRoutes', () => {
             },
           },
         }),
-        permissionsMock.factory,
+        mockServices.permissions.factory({ result: AuthorizeResult.DENY }),
         import('@backstage/plugin-kubernetes-backend'),
       ],
     });

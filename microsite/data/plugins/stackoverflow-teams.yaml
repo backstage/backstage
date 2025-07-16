@@ -1,0 +1,10 @@
+---
+title: Stack Overflow for Teams
+author: Stack Overflow
+authorUrl: https://github.com/StackExchange/
+category: Discovery
+description: Provide seamless access to Stack Overflow Teams most relevant data, allowing you to display the top users, top tags, and top questions directly within Backstage. It also allows to securely create SO Teams questions from Backstage.
+documentation: https://stackoverflowteams.help/en/articles/9692515-backstage-io-integration
+iconUrl: /img/stack-overflow-logo.svg
+npmPackageName: 'backstage-plugin-stack-overflow-teams'
+addedDate: '2025-06-10'

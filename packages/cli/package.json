@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli",
-  "version": "0.32.2-next.0",
+  "version": "0.33.1",
   "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
@@ -20,8 +20,7 @@
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "bin": {
-    "backstage-cli": "bin/backstage-cli",
-    "backstage-cli-alpha": "bin/backstage-cli-alpha"
+    "backstage-cli": "bin/backstage-cli"
   },
   "files": [
     "asset-types",

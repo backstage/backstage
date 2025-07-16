@@ -1,0 +1,74 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.bui-Switch {
+  display: flex;
+  /* This is needed so the HiddenInput is positioned correctly */
+  position: relative;
+  align-items: center;
+  gap: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
+  color: var(--bui-fg-primary);
+  cursor: pointer;
+
+  &[data-pressed] .bui-SwitchIndicator {
+    &:before {
+      background: var(--bui-fg-solid);
+    }
+  }
+
+  &[data-selected] {
+    .bui-SwitchIndicator {
+      background: var(--bui-bg-solid);
+
+      &:before {
+        background: var(--bui-fg-solid);
+        transform: translateX(100%);
+      }
+    }
+
+    &[data-pressed] {
+      .indicator {
+        background: var(--bui-gray-3);
+      }
+    }
+  }
+
+  &[data-focus-visible] .bui-SwitchIndicator {
+    outline: 2px solid;
+    outline-offset: 2px;
+  }
+}
+
+.bui-SwitchIndicator {
+  width: 2rem;
+  height: 1.143rem;
+  border: 2px;
+  background: var(--bui-gray-3);
+  border-radius: 1.143rem;
+  transition: all 200ms;
+
+  &:before {
+    content: '';
+    display: block;
+    margin: 0.143rem;
+    width: 0.857rem;
+    height: 0.857rem;
+    background: var(--bui-fg-solid);
+    border-radius: 16px;
+    transition: all 200ms;
+  }
+}

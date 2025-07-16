@@ -33,11 +33,12 @@
 
 ## Table `user_info`
 
-| Column            | Type                       | Nullable | Max Length | Default |
-| ----------------- | -------------------------- | -------- | ---------- | ------- |
-| `exp`             | `timestamp with time zone` | false    | -          | -       |
-| `user_entity_ref` | `character varying`        | false    | 255        | -       |
-| `user_info`       | `text`                     | false    | -          | -       |
+| Column            | Type                       | Nullable | Max Length | Default             |
+| ----------------- | -------------------------- | -------- | ---------- | ------------------- |
+| `created_at`      | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `updated_at`      | `timestamp with time zone` | false    | -          | -                   |
+| `user_entity_ref` | `character varying`        | false    | 255        | -                   |
+| `user_info`       | `text`                     | false    | -          | -                   |
 
 ### Indices
 

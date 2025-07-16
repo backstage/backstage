@@ -2,7 +2,6 @@
 id: migrations
 title: Frontend System Changelog
 sidebar_label: Changelog
-# prettier-ignore
 description: Changelog documentation for different versions of the frontend system core APIs.
 ---
 

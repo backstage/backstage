@@ -1,5 +1,153 @@
 # @backstage/plugin-scaffolder
 
+## 1.33.0
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- 289e4a1: Filter MultiEntityPicker options based on rendered option value
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/plugin-scaffolder-react@1.18.0
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/plugin-scaffolder-common@1.6.0
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.33.0-next.2
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.18.0-next.2
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/plugin-scaffolder-common@1.6.0-next.1
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+
+## 1.32.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/integration-react@1.2.9-next.1
+  - @backstage/plugin-permission-react@0.4.36-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+  - @backstage/plugin-scaffolder-react@1.17.1-next.1
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 1.32.1-next.0
+
+### Patch Changes
+
+- 289e4a1: Filter MultiEntityPicker options based on rendered option value
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/integration-react@1.2.9-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/plugin-scaffolder-react@1.17.1-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.35
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.32.0
+
+### Minor Changes
+
+- 6c972fe: Added information about the `entityRef` and `taskId` to the analytics events whenever is possible.
+- 3c59ece: **New Frontend System Only:**
+  The `Scaffolder` plugin is now responsible for providing an entity icon link extension to launch templates from the catalog entity page.
+
+### Patch Changes
+
+- d781b33: render details for composite property schemas
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- b00c160: Remove React import form notification and scaffolder plugin
+- 95a1d72: Added appropriate message when global templating function metadata is absent.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-scaffolder-react@1.17.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/integration-react@1.2.8
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.35
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.32.0-next.2
+
+### Minor Changes
+
+- 3c59ece: **New Frontend System Only:**
+  The `Scaffolder` plugin is now responsible for providing an entity icon link extension to launch templates from the catalog entity page.
+
+### Patch Changes
+
+- b00c160: Remove React import form notification and scaffolder plugin
+- 95a1d72: Added appropriate message when global templating function metadata is absent.
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-scaffolder-react@1.16.1-next.2
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/plugin-scaffolder-common@1.5.11
+
 ## 1.31.1-next.1
 
 ### Patch Changes

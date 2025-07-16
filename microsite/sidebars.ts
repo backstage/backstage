@@ -330,7 +330,7 @@ export default {
       {
         type: 'category',
         label: 'Gitea',
-        items: ['integrations/gitea/locations'],
+        items: ['integrations/gitea/locations', 'integrations/gitea/discovery'],
       },
       {
         type: 'category',
@@ -462,6 +462,8 @@ export default {
               'backend-system/core-services/token-manager',
               'backend-system/core-services/url-reader',
               'backend-system/core-services/user-info',
+              'backend-system/core-services/actions-registry',
+              'backend-system/core-services/actions',
             ],
           },
         ],

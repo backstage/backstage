@@ -8,8 +8,6 @@ import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
-import { IncrementalEntityProvider as IncrementalEntityProvider_2 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
-import { IncrementalEntityProviderOptions as IncrementalEntityProviderOptions_2 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 
 // @public
 const catalogModuleIncrementalIngestionEntityProvider: BackendFeature;
@@ -68,8 +66,8 @@ export interface IncrementalEntityProviderOptions {
 // @public
 export interface IncrementalIngestionProviderExtensionPoint {
   addProvider<TCursor, TContext>(config: {
-    options: IncrementalEntityProviderOptions_2;
-    provider: IncrementalEntityProvider_2<TCursor, TContext>;
+    options: IncrementalEntityProviderOptions;
+    provider: IncrementalEntityProvider<TCursor, TContext>;
   }): void;
 }
 

@@ -2,7 +2,6 @@
 id: descriptor-format
 title: Descriptor Format of Catalog Entities
 sidebar_label: YAML File Format
-# prettier-ignore
 description: Documentation on Descriptor Format of Catalog Entities which describes the default data shape and semantics of catalog entities
 ---
 
@@ -728,7 +727,6 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: 'This is {{ parameters.name }}'
         repoUrl: '{{ parameters.repoUrl }}'
 

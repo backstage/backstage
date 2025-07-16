@@ -435,7 +435,7 @@ Supply your custom icon in `packages/app/src/App.tsx`
 
 ```tsx title="packages/app/src/App.tsx"
 /* highlight-add-next-line */
-import { ExampleIcon } from './assets/customIcons'
+import { ExampleIcon } from './assets/icons/CustomIcons'
 
 
 const app = createApp({

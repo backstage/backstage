@@ -1,5 +1,38 @@
 # @backstage/plugin-auth-node
 
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
+## 0.6.4
+
+### Patch Changes
+
+- 0169b23: Internal tweak to avoid circular dependencies
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.6.4-next.1
 
 ### Patch Changes

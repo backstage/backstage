@@ -1,5 +1,32 @@
 # @backstage/core-plugin-api
 
+## 1.10.9
+
+### Patch Changes
+
+- f6ffea6: Add optional message field for auth providers. This is intended to be a user friendly message that displays in the OAuth request dialog. A default message will be displayed if one is not provided.
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 1.10.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
+## 1.10.8
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- 0169b23: Internal tweak to avoid circular dependencies
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 1.10.7
 
 ### Patch Changes
