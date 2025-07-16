@@ -43,7 +43,7 @@ If the scaffolder doesn't find a local Cookiecutter, it pulls down the `spotify/
 
 ```yaml
 steps:
-  - id: fetch-base
+  - id: fetch_base
     name: Fetch Base
     action: fetch:cookiecutter
     input:
@@ -59,7 +59,7 @@ Cookiecutter enables extensions mentioned in `cookiecutter.json`. `fetch:cookiec
 
 ```yaml
 steps:
-  - id: fetch-base
+  - id: fetch_base
     name: Fetch Base
     action: fetch:cookiecutter
     input:
