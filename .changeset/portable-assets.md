@@ -3,16 +3,17 @@
 '@backstage/cli': patch
 ---
 
-Add `resolvePackageAssets` function as a more portable alternative to `resolvePackagePath`.
+Add `resolvePackageAssets` function as a more reliable alternative to `resolvePackagePath`.
 
-This new function works by leveraging the CLI build system to copy asset directories (like `migrations`, `assets`, `templates`) to predictable locations in the built package. The CLI now includes a rollup plugin that automatically copies these directories during the build process.
+This new function provides reliable asset resolution across all deployment scenarios by using module resolution instead of file system assumptions. The CLI now generates asset resolver modules during the build process that enable reliable runtime asset discovery.
 
-The `resolvePackageAssets` function then looks for assets in multiple locations:
-1. Relative to the built module (for production)
-2. In the package root (for development)
-3. In the dist directory (fallback)
+Key improvements:
+1. **No dependency on `__dirname`**: Uses package name and module resolution instead of unstable file paths
+2. **Auto-generated resolver modules**: The CLI creates resolver modules that provide reliable asset paths
+3. **Multi-strategy fallback**: Falls back gracefully from resolver modules to built assets to development locations
+4. **Works in bundled environments**: Doesn't rely on package.json files being available at runtime
 
-This approach is more portable than `resolvePackagePath` because it doesn't rely on package.json files being available, making it work better in bundled environments.
+The CLI enhancement generates small resolver modules alongside copied assets, enabling runtime code to reliably find assets without making assumptions about directory structure.
 
 Migration example:
 ```ts
@@ -20,5 +21,5 @@ Migration example:
 const migrationsDir = resolvePackagePath('@backstage/plugin-catalog-backend', 'migrations');
 
 // After  
-const migrationsDir = resolvePackageAssets(__dirname, 'migrations');
+const migrationsDir = resolvePackageAssets('@backstage/plugin-catalog-backend', 'migrations');
 ```

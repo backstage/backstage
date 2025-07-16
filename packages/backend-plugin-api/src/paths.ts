@@ -72,51 +72,83 @@ export function resolvePackagePath(name: string, ...paths: string[]) {
 /**
  * Resolve paths to package assets with enhanced portability.
  * 
- * This function provides an alternative to resolvePackagePath that works better
- * in bundled environments. It looks for assets in multiple locations:
- * 1. Relative to the current module (using __dirname)
- * 2. In the package's dist directory (for built packages)
- * 3. Falls back to standard package resolution
+ * This function provides a reliable alternative to resolvePackagePath that works
+ * across all deployment scenarios by using module resolution instead of file system
+ * path assumptions. It looks for assets using these strategies:
+ * 
+ * 1. Auto-generated asset resolver modules (in production builds)
+ * 2. Development-time asset locations (relative to package root)
+ * 3. Fallback to common asset locations
  *
- * @param moduleDir - The __dirname of the calling module
+ * @param packageName - The name of the package containing the assets
  * @param assetPath - Path to the asset directory or file
  * @returns The resolved absolute path to the asset
  *
  * @example
  * ```ts
- * // From src/database/migrations.ts
- * const migrationsDir = resolvePackageAssets(__dirname, 'migrations');
+ * // From catalog-backend migrations
+ * const migrationsDir = resolvePackageAssets('@backstage/plugin-catalog-backend', 'migrations');
  * 
- * // From src/service/router.ts  
- * const assetsDir = resolvePackageAssets(__dirname, 'assets');
+ * // From auth-backend assets
+ * const assetsDir = resolvePackageAssets('@backstage/plugin-auth-backend', 'assets');
  * ```
  *
  * @public
  */
-export function resolvePackageAssets(moduleDir: string, assetPath: string): string {
-  // Strategy 1: Look for assets relative to the built package location
-  // The CLI copies asset directories to dist/, so check there first
-  const builtAssetPath = resolvePath(dirname(moduleDir), assetPath);
-  if (existsSync(builtAssetPath)) {
+export function resolvePackageAssets(packageName: string, assetPath: string): string {
+  const req =
+    typeof __non_webpack_require__ === 'undefined'
+      ? require
+      : __non_webpack_require__;
+
+  try {
+    // Strategy 1: Try to find auto-generated asset resolver modules
+    // These are created by the CLI build process and provide reliable asset paths
+    const packageDistPath = resolvePath(req.resolve(`${packageName}/package.json`), '..');
+    
+    try {
+      const assetResolverPath = resolvePath(packageDistPath, '__asset_resolvers__.js');
+      if (existsSync(assetResolverPath)) {
+        // eslint-disable-next-line import/no-dynamic-require
+        const assetResolvers = req(assetResolverPath);
+        const resolvedAsset = assetResolvers.resolveAsset(assetPath);
+        if (resolvedAsset && existsSync(resolvedAsset)) {
+          return resolvedAsset;
+        }
+      }
+    } catch {
+      // Asset resolver not available, continue to next strategy
+    }
+
+    // Strategy 2: Look for assets in the built package dist directory
+    const builtAssetPath = resolvePath(packageDistPath, assetPath);
+    if (existsSync(builtAssetPath)) {
+      return builtAssetPath;
+    }
+
+    // Strategy 3: Development-time fallback - look in package source
+    // This handles cases where we're running in development mode
+    const sourceAssetPath = resolvePath(packageDistPath, '..', assetPath);
+    if (existsSync(sourceAssetPath)) {
+      return sourceAssetPath;
+    }
+
+    // Strategy 4: Try looking in common development locations
+    const devAssetPath = resolvePath(packageDistPath, '..', 'src', '..', assetPath);
+    if (existsSync(devAssetPath)) {
+      return devAssetPath;
+    }
+
+    // Fallback: Return the most likely path for better error messages
     return builtAssetPath;
+  } catch (error) {
+    // If package resolution fails completely, fall back to the old behavior
+    // but this should be rare in normal usage
+    throw new Error(
+      `Unable to resolve package assets for ${packageName}: ${error.message}. ` +
+      `Make sure the package is properly installed and built.`
+    );
   }
-
-  // Strategy 2: Look for assets relative to package root (development)
-  // Navigate up from src/ to package root
-  const packageRootAssetPath = resolvePath(moduleDir, '..', '..', assetPath);
-  if (existsSync(packageRootAssetPath)) {
-    return packageRootAssetPath;
-  }
-
-  // Strategy 3: Look in the dist directory relative to module
-  const distAssetPath = resolvePath(dirname(moduleDir), '..', assetPath);
-  if (existsSync(distAssetPath)) {
-    return distAssetPath;
-  }
-
-  // Fallback: Return the most likely path even if it doesn't exist
-  // This allows for the asset to be created later or for better error messages
-  return builtAssetPath;
 }
 
 /**

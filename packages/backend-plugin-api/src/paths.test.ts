@@ -15,7 +15,7 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { resolveSafeChildPath, resolvePackageAssets } from './paths';
+import { resolveSafeChildPath, resolvePackageAssets, packagePathMocks } from './paths';
 import { resolve as resolvePath } from 'path';
 
 describe('paths', () => {
@@ -26,34 +26,67 @@ describe('paths', () => {
       mockDir.setContent({
         'package.json': JSON.stringify({ name: 'test-package' }),
         'migrations/001_initial.sql': 'CREATE TABLE test;',
-        'dist/database/migrations.js': 'module.exports = {}',
+        'dist/__asset_resolvers__.js': `
+          module.exports = {
+            resolveAsset: (assetName) => {
+              if (assetName === 'migrations') {
+                return require('path').resolve(__dirname, 'migrations');
+              }
+              return null;
+            },
+            getAvailableAssets: () => ['migrations'],
+          };
+        `,
         'dist/migrations/001_initial.sql': 'CREATE TABLE test;',
-        'src/database/migrations.ts': 'export function migrate() {}',
+        'assets/static.txt': 'static content',
       });
+
+      // Mock require.resolve to return our mock package location
+      packagePathMocks.set('test-package', () => mockDir.resolve('package.json'));
     });
 
-    it('should resolve assets from dist directory when called from built module', () => {
-      const moduleDir = mockDir.resolve('dist/database');
-      const result = resolvePackageAssets(moduleDir, 'migrations');
+    afterEach(() => {
+      packagePathMocks.clear();
+    });
+
+    it('should resolve assets using auto-generated resolver modules', () => {
+      const result = resolvePackageAssets('test-package', 'migrations');
       
-      // Should find the assets copied to dist/migrations
+      // Should find the assets using the resolver module
       expect(result).toBe(mockDir.resolve('dist/migrations'));
     });
 
-    it('should fallback to package root when called from src during development', () => {
-      const moduleDir = mockDir.resolve('src/database');
-      const result = resolvePackageAssets(moduleDir, 'migrations');
+    it('should fallback to built package location when resolver not available', () => {
+      // Remove the resolver module
+      mockDir.removeContent(['dist/__asset_resolvers__.js']);
+      
+      const result = resolvePackageAssets('test-package', 'migrations');
+      
+      // Should find the assets in the dist directory
+      expect(result).toBe(mockDir.resolve('dist/migrations'));
+    });
+
+    it('should fallback to package source in development', () => {
+      // Remove both resolver and dist assets
+      mockDir.removeContent(['dist/__asset_resolvers__.js', 'dist/migrations']);
+      
+      const result = resolvePackageAssets('test-package', 'migrations');
       
       // Should find the assets in the package root
       expect(result).toBe(mockDir.resolve('migrations'));
     });
 
-    it('should handle non-existent assets gracefully', () => {
-      const moduleDir = mockDir.resolve('src/database');
-      const result = resolvePackageAssets(moduleDir, 'nonexistent');
+    it('should handle non-existent packages gracefully', () => {
+      expect(() => {
+        resolvePackageAssets('non-existent-package', 'migrations');
+      }).toThrow(/Unable to resolve package assets for non-existent-package/);
+    });
+
+    it('should return path even for non-existent assets', () => {
+      const result = resolvePackageAssets('test-package', 'nonexistent');
       
-      // Should return a path even if it doesn't exist (for better error messages)
-      expect(result).toBe(mockDir.resolve('src/nonexistent'));
+      // Should return a valid path for better error messages
+      expect(result).toBe(mockDir.resolve('dist/nonexistent'));
     });
   });
 

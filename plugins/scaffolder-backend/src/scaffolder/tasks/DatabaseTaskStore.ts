@@ -58,7 +58,7 @@ import {
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { compact } from 'lodash';
 
-const migrationsDir = resolvePackageAssets(__dirname, 'migrations');
+const migrationsDir = resolvePackageAssets('@backstage/plugin-scaffolder-backend', 'migrations');
 
 export type RawDbTaskRow = {
   id: string;

@@ -18,7 +18,7 @@ import { resolvePackageAssets } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
 export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
-  const migrationsDir = resolvePackageAssets(__dirname, 'migrations');
+  const migrationsDir = resolvePackageAssets('@backstage/plugin-catalog-backend', 'migrations');
 
   await knex.migrate.latest({
     directory: migrationsDir,
