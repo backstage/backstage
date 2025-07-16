@@ -602,8 +602,6 @@ export class TaskWorker {
   start(): void;
   // (undocumented)
   stop(): Promise<void>;
-  // (undocumented)
-  protected truncateParameters(parameters: JsonObject): JsonObject;
 }
 
 // @public @deprecated
