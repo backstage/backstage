@@ -18,7 +18,8 @@ import { renderHook, act } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { scaffolderApiRef } from '../api';
 import { useTaskEventStream } from './useEventStream';
-import { ScaffolderTask, ScaffolderTaskStatus } from '../api';
+import { ScaffolderTask, ScaffolderTaskStatus, LogEvent } from '../api';
+import { Observer, Subscription } from '@backstage/types';
 
 describe('useTaskEventStream with duplicate step IDs', () => {
   const mockScaffolderApi = {
@@ -65,21 +66,22 @@ describe('useTaskEventStream with duplicate step IDs', () => {
   });
 
   it('should handle duplicate step IDs correctly', async () => {
-    // Create a simple subject-like implementation using zen-observable
-    const observers: any[] = [];
+    // Create a simple subject-like implementation using zen-observable types
+    const observers: Observer<LogEvent>[] = [];
     const logStream = {
-      next: (value: any) => {
+      next: (value: LogEvent) => {
         observers.forEach(observer => {
           if (observer.next) observer.next(value);
         });
       },
-      subscribe: (observer: any) => {
+      subscribe: (observer: Observer<LogEvent>): Subscription => {
         observers.push(observer);
         return {
           unsubscribe: () => {
             const index = observers.indexOf(observer);
             if (index > -1) observers.splice(index, 1);
           },
+          closed: false,
         };
       },
     };
@@ -100,6 +102,8 @@ describe('useTaskEventStream with duplicate step IDs', () => {
     act(() => {
       logStream.next({
         type: 'log',
+        id: 'log1',
+        taskId: 'test-task',
         createdAt: '2024-01-01T00:00:01Z',
         body: {
           stepId: 'debug-repro',
@@ -112,6 +116,8 @@ describe('useTaskEventStream with duplicate step IDs', () => {
     act(() => {
       logStream.next({
         type: 'log',
+        id: 'log2',
+        taskId: 'test-task',
         createdAt: '2024-01-01T00:00:02Z',
         body: {
           stepId: 'debug-repro',
@@ -124,6 +130,8 @@ describe('useTaskEventStream with duplicate step IDs', () => {
     act(() => {
       logStream.next({
         type: 'log',
+        id: 'log3',
+        taskId: 'test-task',
         createdAt: '2024-01-01T00:00:03Z',
         body: {
           stepId: 'debug-repro',
