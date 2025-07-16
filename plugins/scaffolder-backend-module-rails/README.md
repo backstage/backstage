@@ -151,7 +151,7 @@ spec:
                 - master
 
   steps:
-    - id: fetch-base
+    - id: fetch_base
       name: Fetch Base
       action: fetch:rails
       input:
@@ -220,7 +220,7 @@ If you choose to provide a docker image, you need to update your template with `
 
 ```yaml
 steps:
-  - id: fetch-base
+  - id: fetch_base
     name: Fetch Base
     action: fetch:rails
     input:

@@ -85,7 +85,7 @@ spec:
           default: false
 
   steps:
-    - id: fetch-base
+    - id: fetch_base
       name: Fetch Base
       action: fetch:cookiecutter
       input:
