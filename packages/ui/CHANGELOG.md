@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.6.1
+
+### Patch Changes
+
+- b9288aa: Fix missing `dist` folder.
+
 ## 0.6.0
 
 ### Minor Changes
