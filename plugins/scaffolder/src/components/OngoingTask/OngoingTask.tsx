@@ -128,10 +128,13 @@ function OngoingTaskContent(props: {
   const classes = useStyles();
   const steps = useMemo(
     () =>
-      taskStream.task?.spec.steps.map(step => ({
-        ...step,
-        ...taskStream?.steps?.[step.id],
-      })) ?? [],
+      taskStream.task?.spec.steps.map((step, index) => {
+        const uniqueKey = `${index}-${step.id}`;
+        return {
+          ...step,
+          ...taskStream?.steps?.[uniqueKey],
+        };
+      }) ?? [],
     [taskStream],
   );
   const { t } = useTranslationRef(scaffolderTranslationRef);

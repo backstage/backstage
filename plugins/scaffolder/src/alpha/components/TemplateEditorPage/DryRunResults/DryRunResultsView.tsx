@@ -111,12 +111,16 @@ function LogContent() {
       return [];
     }
     return (
-      selectedResult.steps.map(step => {
+      selectedResult.steps.map((step, index) => {
+        // Filter logs that belong to this specific step instance
+        // Since we can't distinguish between logs for steps with same ID in dry run,
+        // we'll create a separate entry for each step and show all logs for that step.id
         const stepLog = selectedResult.log.filter(
           l => l.body.stepId === step.id,
         );
         return {
-          id: step.id,
+          id: `${index}-${step.id}`, // Use unique ID for each step
+          originalId: step.id, // Keep track of original ID for display
           name: step.name,
           logString: stepLog.map(l => l.body.message).join('\n'),
           status: stepLog[stepLog.length - 1]?.body.status ?? 'completed',

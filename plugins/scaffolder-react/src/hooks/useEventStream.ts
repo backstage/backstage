@@ -47,10 +47,10 @@ export type TaskStream = {
   cancelled: boolean;
   loading: boolean;
   error?: Error;
-  stepLogs: { [stepId in string]: string[] };
+  stepLogs: { [stepKey in string]: string[] };
   completed: boolean;
   task?: ScaffolderTask;
-  steps: { [stepId in string]: ScaffolderStep };
+  steps: { [stepKey in string]: ScaffolderStep };
   output?: ScaffolderTaskOutput;
 };
 
@@ -77,14 +77,19 @@ type ReducerAction =
 function reducer(draft: TaskStream, action: ReducerAction) {
   switch (action.type) {
     case 'INIT': {
-      draft.steps = action.data.spec.steps.reduce((current, next) => {
-        current[next.id] = { status: 'open', id: next.id };
+      // Create unique keys for each step using index-stepId format
+      draft.steps = action.data.spec.steps.reduce((current, next, index) => {
+        const uniqueKey = `${index}-${next.id}`;
+        current[uniqueKey] = { status: 'open', id: next.id };
         return current;
-      }, {} as { [stepId in string]: ScaffolderStep });
-      draft.stepLogs = action.data.spec.steps.reduce((current, next) => {
-        current[next.id] = [];
+      }, {} as { [stepKey in string]: ScaffolderStep });
+
+      draft.stepLogs = action.data.spec.steps.reduce((current, next, index) => {
+        const uniqueKey = `${index}-${next.id}`;
+        current[uniqueKey] = [];
         return current;
-      }, {} as { [stepId in string]: string[] });
+      }, {} as { [stepKey in string]: string[] });
+
       draft.loading = false;
       draft.error = undefined;
       draft.completed = false;
@@ -100,12 +105,57 @@ function reducer(draft: TaskStream, action: ReducerAction) {
         const logLine = `${entry.createdAt} ${entry.body.message}`;
         logLines.push(logLine);
 
-        if (!entry.body.stepId || !draft.steps?.[entry.body.stepId]) {
+        if (!entry.body.stepId) {
           continue;
         }
 
-        const currentStepLog = draft.stepLogs?.[entry.body.stepId];
-        const currentStep = draft.steps?.[entry.body.stepId];
+        // Find all step keys that match this stepId
+        const matchingStepKeys = Object.keys(draft.steps || {}).filter(
+          key => draft.steps?.[key]?.id === entry.body.stepId,
+        );
+
+        if (matchingStepKeys.length === 0) {
+          continue;
+        }
+
+        // For steps with the same ID, determine which one this event belongs to
+        // by finding the first step that isn't completed/failed/cancelled or the last one
+        let targetStepKey: string;
+
+        if (matchingStepKeys.length === 1) {
+          // Simple case: only one step with this ID
+          targetStepKey = matchingStepKeys[0];
+        } else {
+          // Multiple steps with same ID: find the appropriate one
+          // If this is a "beginning" or "processing" status, use the first open step
+          // If this is a completion status, use the step that's currently processing
+          // If this is a skipped status, use the first open step
+          const processingStep = matchingStepKeys.find(
+            key => draft.steps?.[key]?.status === 'processing',
+          );
+          const openStep = matchingStepKeys.find(
+            key => draft.steps?.[key]?.status === 'open',
+          );
+
+          if (entry.body.status === 'processing' && openStep) {
+            targetStepKey = openStep;
+          } else if (
+            processingStep &&
+            ['completed', 'failed', 'cancelled'].includes(
+              entry.body.status || '',
+            )
+          ) {
+            targetStepKey = processingStep;
+          } else if (entry.body.status === 'skipped' && openStep) {
+            targetStepKey = openStep;
+          } else {
+            // Fallback: use the first available step or the first one
+            targetStepKey = openStep || matchingStepKeys[0];
+          }
+        }
+
+        const currentStepLog = draft.stepLogs?.[targetStepKey];
+        const currentStep = draft.steps?.[targetStepKey];
 
         if (currentStep) {
           if (entry.body.status && entry.body.status !== currentStep.status) {
@@ -116,7 +166,9 @@ function reducer(draft: TaskStream, action: ReducerAction) {
             }
 
             if (
-              ['cancelled', 'completed', 'failed'].includes(currentStep.status)
+              ['cancelled', 'completed', 'failed', 'skipped'].includes(
+                currentStep.status,
+              )
             ) {
               currentStep.endedAt = entry.createdAt;
             }
@@ -148,11 +200,11 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       draft.output = undefined;
       draft.error = undefined;
 
-      for (const stepId in draft.steps) {
-        if (draft.steps.hasOwnProperty(stepId)) {
-          draft.steps[stepId].startedAt = undefined;
-          draft.steps[stepId].endedAt = undefined;
-          draft.steps[stepId].status = 'open';
+      for (const stepKey in draft.steps) {
+        if (draft.steps.hasOwnProperty(stepKey)) {
+          draft.steps[stepKey].startedAt = undefined;
+          draft.steps[stepKey].endedAt = undefined;
+          draft.steps[stepKey].status = 'open';
         }
       }
       return;
@@ -181,8 +233,8 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     cancelled: false,
     loading: true,
     completed: false,
-    stepLogs: {} as { [stepId in string]: string[] },
-    steps: {} as { [stepId in string]: ScaffolderStep },
+    stepLogs: {} as { [stepKey in string]: string[] },
+    steps: {} as { [stepKey in string]: ScaffolderStep },
   });
 
   useEffect(() => {
