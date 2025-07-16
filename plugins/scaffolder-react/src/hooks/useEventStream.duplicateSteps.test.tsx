@@ -28,7 +28,10 @@ describe('useTaskEventStream with duplicate step IDs', () => {
   };
 
   const mockTask: ScaffolderTask = {
-    taskId: 'test-task',
+    id: 'test-task',
+    status: 'processing',
+    lastHeartbeatAt: '2024-01-01T00:00:00Z',
+    createdAt: '2024-01-01T00:00:00Z',
     spec: {
       apiVersion: 'scaffolder.backstage.io/v1beta3',
       parameters: { option: true },

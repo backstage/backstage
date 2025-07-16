@@ -7507,6 +7507,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
     react-use: "npm:^17.2.4"
+    rxjs: "npm:^7.8.2"
     swr: "npm:^2.0.0"
     use-immer: "npm:^0.10.0"
     zen-observable: "npm:^0.10.0"
@@ -45697,7 +45698,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:7.8.2, rxjs@npm:^7.2.0, rxjs@npm:^7.5.5":
+"rxjs@npm:7.8.2, rxjs@npm:^7.2.0, rxjs@npm:^7.5.5, rxjs@npm:^7.8.2":
   version: 7.8.2
   resolution: "rxjs@npm:7.8.2"
   dependencies:

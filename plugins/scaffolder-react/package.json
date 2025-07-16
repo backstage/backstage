@@ -112,6 +112,7 @@
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
+    "rxjs": "^7.8.2",
     "swr": "^2.0.0"
   },
   "peerDependencies": {
