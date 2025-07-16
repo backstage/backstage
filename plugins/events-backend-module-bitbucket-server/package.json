@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-bitbucket-server",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "events",

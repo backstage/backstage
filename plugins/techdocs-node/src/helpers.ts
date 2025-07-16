@@ -52,7 +52,7 @@ export const parseReferenceAnnotation = (
   const annotation = entity.metadata.annotations?.[annotationName];
   if (!annotation) {
     throw new InputError(
-      `No location annotation provided in entity: ${entity.metadata.name}`,
+      `No ${annotationName} annotation provided in entity: ${entity.metadata.name}`,
     );
   }
 

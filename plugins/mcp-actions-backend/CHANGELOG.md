@@ -1,5 +1,26 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.1
+
+### Patch Changes
+
+- 6bc0799: Fixed the example in the README for generating a static token by adding a subject field
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/catalog-client@1.10.2
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-node@1.17.2
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+
 ## 0.1.1-next.0
 
 ### Patch Changes

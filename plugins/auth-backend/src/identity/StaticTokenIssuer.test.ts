@@ -18,8 +18,6 @@ import { createLocalJWKSet, jwtVerify } from 'jose';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { StaticKeyStore } from './StaticKeyStore';
 import { mockServices } from '@backstage/backend-test-utils';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
-import { omit } from 'lodash';
 
 const logger = mockServices.logger.mock();
 const entityRef = stringifyEntityRef({
@@ -29,10 +27,6 @@ const entityRef = stringifyEntityRef({
 });
 
 describe('StaticTokenIssuer', () => {
-  const mockUserInfoDatabaseHandler = {
-    addUserInfo: jest.fn().mockResolvedValue(undefined),
-  } as unknown as UserInfoDatabaseHandler;
-
   const staticKeyStore = {
     listKeys: () => {
       return Promise.resolve({
@@ -85,7 +79,6 @@ describe('StaticTokenIssuer', () => {
         logger,
         issuer: 'my-issuer',
         sessionExpirationSeconds: keyDurationSeconds,
-        userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
       },
       staticKeyStore as unknown as StaticKeyStore,
     );
@@ -119,9 +112,6 @@ describe('StaticTokenIssuer', () => {
     expect(verifyResult.payload.exp).toBe(
       verifyResult.payload.iat! + keyDurationSeconds,
     );
-    expect(mockUserInfoDatabaseHandler.addUserInfo).toHaveBeenCalledWith({
-      claims: omit(verifyResult.payload, ['aud', 'iat', 'iss', 'uip']),
-    });
   });
 
   it('should issue valid tokens with omitted claims', async () => {
@@ -131,7 +121,6 @@ describe('StaticTokenIssuer', () => {
         logger,
         issuer: 'my-issuer',
         sessionExpirationSeconds: keyDurationSeconds,
-        userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
         omitClaimsFromToken: ['ent'],
       },
       staticKeyStore as unknown as StaticKeyStore,
@@ -165,11 +154,5 @@ describe('StaticTokenIssuer', () => {
     expect(verifyResult.payload.exp).toBe(
       verifyResult.payload.iat! + keyDurationSeconds,
     );
-    expect(mockUserInfoDatabaseHandler.addUserInfo).toHaveBeenCalledWith({
-      claims: {
-        ...omit(verifyResult.payload, ['aud', 'iat', 'iss', 'uip']),
-        ent: [entityRef],
-      },
-    });
   });
 });

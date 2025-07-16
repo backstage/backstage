@@ -25,7 +25,7 @@ import {
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
-import { FrontendFeature } from '../wiring';
+import { FrontendFeature } from '../wiring/types';
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {

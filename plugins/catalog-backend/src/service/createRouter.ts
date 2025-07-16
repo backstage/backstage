@@ -81,7 +81,7 @@ export interface RouterOptions {
   permissionsService: PermissionsService;
   // TODO: Require AuditorService once `backend-legacy` is removed
   auditor?: AuditorService;
-  disableRelationsCompatibility?: boolean;
+  enableRelationsCompatibility?: boolean;
 }
 
 /**
@@ -110,7 +110,7 @@ export async function createRouter(
     auth,
     httpAuth,
     auditor,
-    disableRelationsCompatibility = false,
+    enableRelationsCompatibility = false,
   } = options;
 
   const readonlyEnabled =
@@ -179,7 +179,7 @@ export async function createRouter(
           // When pagination parameters are passed in, use the legacy slow path
           // that loads all entities into memory
 
-          if (pagination || disableRelationsCompatibility !== true) {
+          if (pagination || enableRelationsCompatibility === true) {
             const { entities, pageInfo } = await entitiesCatalog.entities({
               filter,
               fields,
@@ -204,7 +204,7 @@ export async function createRouter(
             await writeEntitiesResponse({
               res,
               items: entities,
-              alwaysUseObjectMode: !disableRelationsCompatibility,
+              alwaysUseObjectMode: enableRelationsCompatibility,
             });
             return;
           }
@@ -295,7 +295,7 @@ export async function createRouter(
           await writeEntitiesResponse({
             res,
             items,
-            alwaysUseObjectMode: !disableRelationsCompatibility,
+            alwaysUseObjectMode: enableRelationsCompatibility,
             responseWrapper: entities => ({
               items: entities,
               ...meta,
@@ -482,7 +482,7 @@ export async function createRouter(
           await writeEntitiesResponse({
             res,
             items,
-            alwaysUseObjectMode: !disableRelationsCompatibility,
+            alwaysUseObjectMode: enableRelationsCompatibility,
             responseWrapper: entities => ({
               items: entities,
             }),

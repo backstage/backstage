@@ -238,6 +238,8 @@ export class TaskWorker {
         actionType: 'execution',
         taskId: task.taskId,
         taskParameters: this.truncateParameters(task.spec.parameters),
+        createdBy: task.createdBy,
+        taskParameters: task.spec.parameters,
         templateRef: task.spec.templateInfo?.entityRef,
       },
     });

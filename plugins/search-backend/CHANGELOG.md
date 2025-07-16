@@ -1,5 +1,34 @@
 # @backstage/plugin-search-backend
 
+## 2.0.4
+
+### Patch Changes
+
+- 69fb975: Error messages should not contain backend SQL query strings in the API response, this change will ensure that messages are logged and empty response is returned to the user
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-node@0.10.2
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/backend-openapi-utils@0.5.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-search-backend-node@1.3.13
+  - @backstage/plugin-search-common@1.2.19
+
+## 2.0.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.13-next.0
+  - @backstage/plugin-search-common@1.2.19-next.0
+  - @backstage/backend-openapi-utils@0.5.5-next.0
+
 ## 2.0.4-next.0
 
 ### Patch Changes

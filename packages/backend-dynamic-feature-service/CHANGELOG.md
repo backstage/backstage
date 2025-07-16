@@ -1,5 +1,58 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.2
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- 3d61c36: Fix wrong imports which lead to module initialization failures when enabling dynamic plugins.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.0
+  - @backstage/config-loader@1.10.2
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-node@0.10.2
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/backend-openapi-utils@0.5.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-app-node@0.1.35
+  - @backstage/plugin-auth-node@0.6.5
+  - @backstage/plugin-events-backend@0.5.4
+  - @backstage/plugin-events-node@0.4.13
+  - @backstage/plugin-search-backend-node@1.3.13
+  - @backstage/plugin-search-common@1.2.19
+
+## 0.7.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
+## 0.7.2-next.1
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- 3d61c36: Fix wrong imports which lead to module initialization failures when enabling dynamic plugins.
+- Updated dependencies
+  - @backstage/config-loader@1.10.2-next.0
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/plugin-app-node@0.1.35-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+  - @backstage/plugin-catalog-backend@3.0.0-next.1
+  - @backstage/plugin-events-backend@0.5.4-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+  - @backstage/plugin-search-backend-node@1.3.13-next.0
+  - @backstage/plugin-search-common@1.2.19-next.0
+  - @backstage/backend-openapi-utils@0.5.5-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
 ## 0.7.2-next.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-node",
-  "version": "0.9.1-next.0",
+  "version": "0.10.0",
   "description": "The plugin-scaffolder-node module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "node-library",
@@ -58,6 +58,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@isomorphic-git/pgp-plugin": "^0.0.7",

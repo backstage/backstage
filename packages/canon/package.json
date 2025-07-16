@@ -1,8 +1,9 @@
 {
   "name": "@backstage/canon",
-  "version": "0.6.0-next.0",
+  "version": "0.6.0",
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "moved": "@backstage/ui"
   },
   "publishConfig": {
     "access": "public",
@@ -27,59 +28,16 @@
     "css"
   ],
   "scripts": {
-    "build": "yarn build:app && yarn build:css",
-    "build-storybook": "storybook build",
-    "build:app": "backstage-cli package build",
-    "build:css": "node scripts/build-css.mjs",
-    "build:css:watch": "node scripts/build-css.mjs --watch",
+    "build": "backstage-cli package build && mkdir -p css && cp -r ../ui/css/styles.css css/styles.css",
     "clean": "backstage-cli package clean",
-    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack",
-    "start": "concurrently \"yarn build:css:watch\" \"yarn storybook\"",
-    "storybook": "storybook dev -p 6006",
-    "test": "backstage-cli package test"
+    "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@base-ui-components/react": "1.0.0-alpha.7",
-    "@remixicon/react": "^4.6.0",
-    "@tanstack/react-table": "^8.21.3",
-    "clsx": "^2.1.1",
-    "react-aria-components": "^1.10.1"
+    "@backstage/ui": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@storybook/addon-essentials": "^8.6.12",
-    "@storybook/addon-interactions": "^8.6.12",
-    "@storybook/addon-styling-webpack": "^1.0.1",
-    "@storybook/addon-themes": "^8.6.12",
-    "@storybook/addon-webpack5-compiler-swc": "^3.0.0",
-    "@storybook/blocks": "^8.6.12",
-    "@storybook/react": "^8.6.12",
-    "@storybook/react-webpack5": "^8.6.12",
-    "@storybook/test": "^8.6.12",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "chalk": "^5.4.1",
-    "eslint-plugin-storybook": "^0.12.0",
-    "glob": "^11.0.1",
-    "globals": "^15.11.0",
-    "lightningcss": "^1.29.1",
-    "mini-css-extract-plugin": "^2.9.2",
-    "react": "^18.0.2",
-    "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0",
-    "storybook": "^8.6.12"
+    "@backstage/cli": "workspace:^"
   },
-  "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
-  },
-  "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    }
-  }
+  "deprecated": "This package has been deprecated. Please use @backstage/ui instead."
 }

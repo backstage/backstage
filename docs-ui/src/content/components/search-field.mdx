@@ -1,0 +1,69 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { SearchFieldSnippet } from '@/snippets/stories-snippets';
+import {
+  searchFieldPropDefs,
+  searchFieldUsageSnippet,
+  searchFieldDefaultSnippet,
+  searchFieldSizesSnippet,
+  searchFieldDescriptionSnippet,
+} from './search-field.props';
+import { ComponentInfos } from '@/components/ComponentInfos';
+
+# SearchField
+
+A SearchField is a text field designed for searches.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SearchFieldSnippet story="WithLabel" />}
+  code={searchFieldDefaultSnippet}
+/>
+
+<ComponentInfos
+  component="searchfield"
+  classNames={[
+    'bui-SearchField',
+    'bui-TextField',
+    'bui-InputWrapper',
+    'bui-Input',
+    'bui-InputIcon',
+    'bui-FieldLabelWrapper',
+    'bui-FieldLabel',
+    'bui-FieldDescription',
+    'bui-FieldSecondaryLabel',
+    'bui-FieldError',
+  ]}
+  usageCode={searchFieldUsageSnippet}
+/>
+
+## API reference
+
+<PropsTable data={searchFieldPropDefs} />
+
+## Examples
+
+### Sizes
+
+We support two different sizes: `small`, `medium`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SearchFieldSnippet story="Sizes" />}
+  code={searchFieldSizesSnippet}
+/>
+
+### With description
+
+Here's a simple SearchField with a description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SearchFieldSnippet story="WithDescription" />}
+  code={searchFieldDescriptionSnippet}
+/>

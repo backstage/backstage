@@ -1,0 +1,31 @@
+import { PropsTable } from '@/components/PropsTable';
+import { IconSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  iconPropDefs,
+  iconUsageSnippet,
+  iconDefaultSnippet,
+} from './icon.props';
+import { ComponentInfos } from '@/components/ComponentInfos';
+
+# Icon
+
+Icons are used to represent an action or a state.
+
+<Snippet
+  py={4}
+  align="center"
+  preview={<IconSnippet story="Default" />}
+  code={iconDefaultSnippet}
+/>
+
+<ComponentInfos
+  component="icon"
+  classNames={['bui-Icon']}
+  usageCode={iconUsageSnippet}
+/>
+
+## API reference
+
+<PropsTable data={iconPropDefs} />

@@ -11,7 +11,6 @@ import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
 import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
-import { ElasticSearchQueryTranslator as ElasticSearchQueryTranslator_2 } from '@backstage/plugin-search-backend-module-elasticsearch';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
@@ -332,7 +331,7 @@ export type ElasticSearchQueryTranslator = (
 // @public (undocumented)
 export interface ElasticSearchQueryTranslatorExtensionPoint {
   // (undocumented)
-  setTranslator(translator: ElasticSearchQueryTranslator_2): void;
+  setTranslator(translator: ElasticSearchQueryTranslator): void;
 }
 
 // @public

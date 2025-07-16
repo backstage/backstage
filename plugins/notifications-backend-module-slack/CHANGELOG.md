@@ -1,5 +1,29 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-notifications-node@0.2.17
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-notifications-common@0.0.10-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-notifications-node@0.2.17-next.0
+
 ## 0.1.2
 
 ### Patch Changes

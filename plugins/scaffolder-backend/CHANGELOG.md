@@ -1,5 +1,96 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.1.0
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- 424610a: Scaffolder audit Log now includes taskId and createdBy
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- fc70b43: Replaced deprecated uses of `@backstage/backend-common` with the equivalents in `@backstage/backend-defaults` and `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-node@0.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/integration@1.17.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1
+  - @backstage/plugin-scaffolder-common@1.6.0
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.5
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.3
+
+## 2.1.0-next.2
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.6.0-next.1
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.12-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.3-next.2
+
+## 2.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.12-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.3-next.1
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
 ## 2.0.1-next.0
 
 ### Patch Changes

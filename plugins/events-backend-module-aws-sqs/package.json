@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-aws-sqs",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "events",

@@ -1,5 +1,26 @@
 # @backstage/plugin-search-react
 
+## 1.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-search-common@1.2.19
+
+## 1.9.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-search-common@1.2.19-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
 ## 1.9.2-next.0
 
 ### Patch Changes

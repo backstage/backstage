@@ -1,0 +1,12 @@
+.bui-Container {
+  max-width: 120rem;
+  padding-inline: var(--bui-space-4);
+  margin-inline: auto;
+  transition: padding 0.2s ease-in-out;
+}
+
+@media (min-width: 640px) {
+  .bui-Container {
+    padding-inline: var(--bui-space-5);
+  }
+}

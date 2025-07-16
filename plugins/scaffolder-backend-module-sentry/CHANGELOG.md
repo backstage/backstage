@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.2.11
+
+### Patch Changes
+
+- 648b3d7: Add optional input to sentry:project:create to set the new Sentry project's platform
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.2.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+
 ## 0.2.11-next.0
 
 ### Patch Changes

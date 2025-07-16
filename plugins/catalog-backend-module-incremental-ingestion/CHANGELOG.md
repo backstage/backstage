@@ -1,5 +1,37 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.7.2
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- e2dd095: Fixed bug in `IncrementalIngestionEngine` by adding `burstLength` check when a burst completes
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.0
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+
+## 0.7.2-next.1
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- e2dd095: Fixed bug in `IncrementalIngestionEngine` by adding `burstLength` check when a burst completes
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-backend@3.0.0-next.1
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
 ## 0.7.2-next.0
 
 ### Patch Changes

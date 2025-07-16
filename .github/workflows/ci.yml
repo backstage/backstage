@@ -28,7 +28,7 @@ jobs:
     name: Install ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
         with:
           egress-policy: audit
 
@@ -64,7 +64,7 @@ jobs:
     name: Verify ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
         with:
           egress-policy: audit
 
@@ -130,6 +130,10 @@ jobs:
         # For now canon has a custom build script and needs to be built separately
       - name: build canon
         run: yarn --cwd packages/canon build
+
+        # For now BUI has a custom build script and needs to be built separately
+      - name: build BUI
+        run: yarn --cwd packages/ui build
 
       - name: verify type dependencies
         run: yarn lint:type-deps

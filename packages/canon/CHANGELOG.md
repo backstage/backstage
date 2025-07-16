@@ -1,5 +1,59 @@
 # @backstage/canon
 
+## 0.6.0
+
+### Minor Changes
+
+- 1d64db6: **Breaking changes** We are updating our Link component to use React Aria under the hood. To match their API we are updating the `to` prop to `href` to match both internal and external routing. We are also updating our variant naming to include all our new font sizes.
+- 83fd7f4: **Breaking change** We are moving the Select component to use React Aria under the hood. We updated most props and events according to their underlying API.
+- cae63df: **Breaking changes** The Tabs components has been updates to use React Aria under the hood and to work with react-router-dom directly.
+- 4c6d891: **BREAKING CHANGES**
+
+  We’re updating our Button component to provide better support for button links.
+
+  - We’re introducing a new `ButtonLink` component, which replaces the previous render prop pattern.
+  - To maintain naming consistency across components, `IconButton` is being renamed to `ButtonIcon`.
+  - Additionally, the render prop will be removed from all button-related components.
+
+  These changes aim to simplify usage and improve clarity in our component API.
+
+- 2e30459: We are moving our Tooltip component to use React Aria under the hood. In doing so, the structure of the component and its prop are changing to follow the new underlying structure.
+- 8fd6fcb: We are renaming @backstage/canon into @backstage/ui. As part of this move we are renaming all class names and CSS variables to follow the new name. "--canon" prefix is becoming "--bui" and all component class names starting with ".canon" will now start with ".bui"
+
+### Patch Changes
+
+- 140f652: We are consolidating all css files into a single styles.css in Canon.
+- 76255b8: Add new Card component to Canon.
+- 8154fb9: Add new SearchField component in Canon
+- b0a6c8e: Add new Header component to Canon.
+- 6910892: Add new `RadioGroup` + `Radio` component to Canon
+- 9c17305: Fix scrolling width and height on ScrollArea component in Canon.
+- 390ea20: Export Card and Skeleton components.
+- be76576: Improve Button, ButtonIcon and ButtonLink styling in Canon.
+- 17beb9b: Update return types for Heading & Text components for React 19.
+- a8a8514: We are transforming how we structure our class names and data attributes definitions for all components. They are now all set in the same place.
+- 667b951: Added placeholder prop to TextField component.
+- eac4a4c: Add new tertiary variant to Button, ButtonIcon and ButtonLink in Canon.
+- e71333a: adding export for ButtonLink so it's importable
+- 8f2e82d: Add new Skeleton component in Canon
+- Updated dependencies
+  - @backstage/ui@0.6.0
+
+## 0.6.0-next.1
+
+### Minor Changes
+
+- 2e30459: We are moving our Tooltip component to use React Aria under the hood. In doing so, the structure of the component and its prop are changing to follow the new underlying structure.
+
+### Patch Changes
+
+- 76255b8: Add new Card component to Canon.
+- b0a6c8e: Add new Header component to Canon.
+- be76576: Improve Button, ButtonIcon and ButtonLink styling in Canon.
+- 17beb9b: Update return types for Heading & Text components for React 19.
+- eac4a4c: Add new tertiary variant to Button, ButtonIcon and ButtonLink in Canon.
+- 8f2e82d: Add new Skeleton component in Canon
+
 ## 0.6.0-next.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.111-next.0",
+  "version": "0.2.111",
   "backstage": {
     "role": "frontend"
   },
@@ -36,7 +36,6 @@
   },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
-    "@backstage/canon": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -71,6 +70,7 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",

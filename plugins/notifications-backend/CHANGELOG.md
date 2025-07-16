@@ -1,5 +1,37 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.8
+
+### Patch Changes
+
+- 4401dfb: Allow defining default notification settings via configuration
+- 9a5a73f: Fix `addTopic` migration when `user_settings` present
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.5
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-notifications-node@0.2.17
+  - @backstage/plugin-signals-node@0.1.22
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+  - @backstage/plugin-notifications-common@0.0.10-next.0
+  - @backstage/plugin-signals-node@0.1.22-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-notifications-node@0.2.17-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
 ## 0.5.8-next.0
 
 ### Patch Changes

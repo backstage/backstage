@@ -1,0 +1,302 @@
+.bui-align-start {
+  align-items: start;
+}
+
+.bui-align-center {
+  align-items: center;
+}
+
+.bui-align-end {
+  align-items: end;
+}
+
+.bui-align-stretch {
+  align-items: stretch;
+}
+
+.bui-jc-start {
+  justify-content: start;
+}
+
+.bui-jc-center {
+  justify-content: center;
+}
+
+.bui-jc-end {
+  justify-content: end;
+}
+
+.bui-jc-between {
+  justify-content: space-between;
+}
+
+.bui-fd-row {
+  flex-direction: row;
+}
+
+.bui-fd-column {
+  flex-direction: column;
+}
+
+.bui-fd-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.bui-fd-column-reverse {
+  flex-direction: column-reverse;
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:bui-align-start {
+    align-items: start;
+  }
+
+  .xs\:bui-align-center {
+    align-items: center;
+  }
+
+  .xs\:bui-align-end {
+    align-items: end;
+  }
+
+  .xs\:bui-align-stretch {
+    align-items: stretch;
+  }
+
+  .xs\:bui-jc-start {
+    justify-content: start;
+  }
+
+  .xs\:bui-jc-center {
+    justify-content: center;
+  }
+
+  .xs\:bui-jc-end {
+    justify-content: end;
+  }
+
+  .xs\:bui-jc-between {
+    justify-content: space-between;
+  }
+
+  .xs\:bui-fd-row {
+    flex-direction: row;
+  }
+
+  .xs\:bui-fd-column {
+    flex-direction: column;
+  }
+
+  .xs\:bui-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .xs\:bui-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:bui-align-start {
+    align-items: start;
+  }
+
+  .sm\:bui-align-center {
+    align-items: center;
+  }
+
+  .sm\:bui-align-end {
+    align-items: end;
+  }
+
+  .sm\:bui-align-stretch {
+    align-items: stretch;
+  }
+
+  .sm\:bui-jc-start {
+    justify-content: start;
+  }
+
+  .sm\:bui-jc-center {
+    justify-content: center;
+  }
+
+  .sm\:bui-jc-end {
+    justify-content: end;
+  }
+
+  .sm\:bui-jc-between {
+    justify-content: space-between;
+  }
+
+  .sm\:bui-fd-row {
+    flex-direction: row;
+  }
+
+  .sm\:bui-fd-column {
+    flex-direction: column;
+  }
+
+  .sm\:bui-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .sm\:bui-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:bui-align-start {
+    align-items: start;
+  }
+
+  .md\:bui-align-center {
+    align-items: center;
+  }
+
+  .md\:bui-align-end {
+    align-items: end;
+  }
+
+  .md\:bui-align-stretch {
+    align-items: stretch;
+  }
+
+  .md\:bui-jc-start {
+    justify-content: start;
+  }
+
+  .md\:bui-jc-center {
+    justify-content: center;
+  }
+
+  .md\:bui-jc-end {
+    justify-content: end;
+  }
+
+  .md\:bui-jc-between {
+    justify-content: space-between;
+  }
+
+  .md\:bui-fd-row {
+    flex-direction: row;
+  }
+
+  .md\:bui-fd-column {
+    flex-direction: column;
+  }
+
+  .md\:bui-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .md\:bui-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:bui-align-start {
+    align-items: start;
+  }
+
+  .lg\:bui-align-center {
+    align-items: center;
+  }
+
+  .lg\:bui-align-end {
+    align-items: end;
+  }
+
+  .lg\:bui-align-stretch {
+    align-items: stretch;
+  }
+
+  .lg\:bui-jc-start {
+    justify-content: start;
+  }
+
+  .lg\:bui-jc-center {
+    justify-content: center;
+  }
+
+  .lg\:bui-jc-end {
+    justify-content: end;
+  }
+
+  .lg\:bui-jc-between {
+    justify-content: space-between;
+  }
+
+  .lg\:bui-fd-row {
+    flex-direction: row;
+  }
+
+  .lg\:bui-fd-column {
+    flex-direction: column;
+  }
+
+  .lg\:bui-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .lg\:bui-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:bui-align-start {
+    align-items: start;
+  }
+
+  .xl\:bui-align-center {
+    align-items: center;
+  }
+
+  .xl\:bui-align-end {
+    align-items: end;
+  }
+
+  .xl\:bui-align-stretch {
+    align-items: stretch;
+  }
+
+  .xl\:bui-jc-start {
+    justify-content: start;
+  }
+
+  .xl\:bui-jc-center {
+    justify-content: center;
+  }
+
+  .xl\:bui-jc-end {
+    justify-content: end;
+  }
+
+  .xl\:bui-jc-between {
+    justify-content: space-between;
+  }
+
+  .xl\:bui-fd-row {
+    flex-direction: row;
+  }
+
+  .xl\:bui-fd-column {
+    flex-direction: column;
+  }
+
+  .xl\:bui-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .xl\:bui-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}

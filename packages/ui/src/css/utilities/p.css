@@ -1,0 +1,422 @@
+.bui-p {
+  padding: var(--p);
+}
+
+.bui-p-0\.5 {
+  padding: var(--bui-space-0_5);
+}
+
+.bui-p-1 {
+  padding: var(--bui-space-1);
+}
+
+.bui-p-1\.5 {
+  padding: var(--bui-space-1_5);
+}
+
+.bui-p-2 {
+  padding: var(--bui-space-2);
+}
+
+.bui-p-3 {
+  padding: var(--bui-space-3);
+}
+
+.bui-p-4 {
+  padding: var(--bui-space-4);
+}
+
+.bui-p-5 {
+  padding: var(--bui-space-5);
+}
+
+.bui-p-6 {
+  padding: var(--bui-space-6);
+}
+
+.bui-p-7 {
+  padding: var(--bui-space-7);
+}
+
+.bui-p-8 {
+  padding: var(--bui-space-8);
+}
+
+.bui-p-9 {
+  padding: var(--bui-space-9);
+}
+
+.bui-p-10 {
+  padding: var(--bui-space-10);
+}
+
+.bui-p-11 {
+  padding: var(--bui-space-11);
+}
+
+.bui-p-12 {
+  padding: var(--bui-space-12);
+}
+
+.bui-p-13 {
+  padding: var(--bui-space-13);
+}
+
+.bui-p-14 {
+  padding: var(--bui-space-14);
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:bui-p {
+    padding: var(--p-xs);
+  }
+
+  .xs\:bui-p-0\.5 {
+    padding: var(--bui-space-0_5);
+  }
+
+  .xs\:bui-p-1 {
+    padding: var(--bui-space-1);
+  }
+
+  .xs\:bui-p-1\.5 {
+    padding: var(--bui-space-1_5);
+  }
+
+  .xs\:bui-p-2 {
+    padding: var(--bui-space-2);
+  }
+
+  .xs\:bui-p-3 {
+    padding: var(--bui-space-3);
+  }
+
+  .xs\:bui-p-4 {
+    padding: var(--bui-space-4);
+  }
+
+  .xs\:bui-p-5 {
+    padding: var(--bui-space-5);
+  }
+
+  .xs\:bui-p-6 {
+    padding: var(--bui-space-6);
+  }
+
+  .xs\:bui-p-7 {
+    padding: var(--bui-space-7);
+  }
+
+  .xs\:bui-p-8 {
+    padding: var(--bui-space-8);
+  }
+
+  .xs\:bui-p-9 {
+    padding: var(--bui-space-9);
+  }
+
+  .xs\:bui-p-10 {
+    padding: var(--bui-space-10);
+  }
+
+  .xs\:bui-p-11 {
+    padding: var(--bui-space-11);
+  }
+
+  .xs\:bui-p-12 {
+    padding: var(--bui-space-12);
+  }
+
+  .xs\:bui-p-13 {
+    padding: var(--bui-space-13);
+  }
+
+  .xs\:bui-p-14 {
+    padding: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:bui-p {
+    padding: var(--p-sm);
+  }
+
+  .sm\:bui-p-0\.5 {
+    padding: var(--bui-space-0_5);
+  }
+
+  .sm\:bui-p-1 {
+    padding: var(--bui-space-1);
+  }
+
+  .sm\:bui-p-1\.5 {
+    padding: var(--bui-space-1_5);
+  }
+
+  .sm\:bui-p-2 {
+    padding: var(--bui-space-2);
+  }
+
+  .sm\:bui-p-3 {
+    padding: var(--bui-space-3);
+  }
+
+  .sm\:bui-p-4 {
+    padding: var(--bui-space-4);
+  }
+
+  .sm\:bui-p-5 {
+    padding: var(--bui-space-5);
+  }
+
+  .sm\:bui-p-6 {
+    padding: var(--bui-space-6);
+  }
+
+  .sm\:bui-p-7 {
+    padding: var(--bui-space-7);
+  }
+
+  .sm\:bui-p-8 {
+    padding: var(--bui-space-8);
+  }
+
+  .sm\:bui-p-9 {
+    padding: var(--bui-space-9);
+  }
+
+  .sm\:bui-p-10 {
+    padding: var(--bui-space-10);
+  }
+
+  .sm\:bui-p-11 {
+    padding: var(--bui-space-11);
+  }
+
+  .sm\:bui-p-12 {
+    padding: var(--bui-space-12);
+  }
+
+  .sm\:bui-p-13 {
+    padding: var(--bui-space-13);
+  }
+
+  .sm\:bui-p-14 {
+    padding: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:bui-p {
+    padding: var(--p-md);
+  }
+
+  .md\:bui-p-0\.5 {
+    padding: var(--bui-space-0_5);
+  }
+
+  .md\:bui-p-1 {
+    padding: var(--bui-space-1);
+  }
+
+  .md\:bui-p-1\.5 {
+    padding: var(--bui-space-1_5);
+  }
+
+  .md\:bui-p-2 {
+    padding: var(--bui-space-2);
+  }
+
+  .md\:bui-p-3 {
+    padding: var(--bui-space-3);
+  }
+
+  .md\:bui-p-4 {
+    padding: var(--bui-space-4);
+  }
+
+  .md\:bui-p-5 {
+    padding: var(--bui-space-5);
+  }
+
+  .md\:bui-p-6 {
+    padding: var(--bui-space-6);
+  }
+
+  .md\:bui-p-7 {
+    padding: var(--bui-space-7);
+  }
+
+  .md\:bui-p-8 {
+    padding: var(--bui-space-8);
+  }
+
+  .md\:bui-p-9 {
+    padding: var(--bui-space-9);
+  }
+
+  .md\:bui-p-10 {
+    padding: var(--bui-space-10);
+  }
+
+  .md\:bui-p-11 {
+    padding: var(--bui-space-11);
+  }
+
+  .md\:bui-p-12 {
+    padding: var(--bui-space-12);
+  }
+
+  .md\:bui-p-13 {
+    padding: var(--bui-space-13);
+  }
+
+  .md\:bui-p-14 {
+    padding: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:bui-p {
+    padding: var(--p-lg);
+  }
+
+  .lg\:bui-p-0\.5 {
+    padding: var(--bui-space-0_5);
+  }
+
+  .lg\:bui-p-1 {
+    padding: var(--bui-space-1);
+  }
+
+  .lg\:bui-p-1\.5 {
+    padding: var(--bui-space-1_5);
+  }
+
+  .lg\:bui-p-2 {
+    padding: var(--bui-space-2);
+  }
+
+  .lg\:bui-p-3 {
+    padding: var(--bui-space-3);
+  }
+
+  .lg\:bui-p-4 {
+    padding: var(--bui-space-4);
+  }
+
+  .lg\:bui-p-5 {
+    padding: var(--bui-space-5);
+  }
+
+  .lg\:bui-p-6 {
+    padding: var(--bui-space-6);
+  }
+
+  .lg\:bui-p-7 {
+    padding: var(--bui-space-7);
+  }
+
+  .lg\:bui-p-8 {
+    padding: var(--bui-space-8);
+  }
+
+  .lg\:bui-p-9 {
+    padding: var(--bui-space-9);
+  }
+
+  .lg\:bui-p-10 {
+    padding: var(--bui-space-10);
+  }
+
+  .lg\:bui-p-11 {
+    padding: var(--bui-space-11);
+  }
+
+  .lg\:bui-p-12 {
+    padding: var(--bui-space-12);
+  }
+
+  .lg\:bui-p-13 {
+    padding: var(--bui-space-13);
+  }
+
+  .lg\:bui-p-14 {
+    padding: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:bui-p {
+    padding: var(--p-xl);
+  }
+
+  .xl\:bui-p-0\.5 {
+    padding: var(--bui-space-0_5);
+  }
+
+  .xl\:bui-p-1 {
+    padding: var(--bui-space-1);
+  }
+
+  .xl\:bui-p-1\.5 {
+    padding: var(--bui-space-1_5);
+  }
+
+  .xl\:bui-p-2 {
+    padding: var(--bui-space-2);
+  }
+
+  .xl\:bui-p-3 {
+    padding: var(--bui-space-3);
+  }
+
+  .xl\:bui-p-4 {
+    padding: var(--bui-space-4);
+  }
+
+  .xl\:bui-p-5 {
+    padding: var(--bui-space-5);
+  }
+
+  .xl\:bui-p-6 {
+    padding: var(--bui-space-6);
+  }
+
+  .xl\:bui-p-7 {
+    padding: var(--bui-space-7);
+  }
+
+  .xl\:bui-p-8 {
+    padding: var(--bui-space-8);
+  }
+
+  .xl\:bui-p-9 {
+    padding: var(--bui-space-9);
+  }
+
+  .xl\:bui-p-10 {
+    padding: var(--bui-space-10);
+  }
+
+  .xl\:bui-p-11 {
+    padding: var(--bui-space-11);
+  }
+
+  .xl\:bui-p-12 {
+    padding: var(--bui-space-12);
+  }
+
+  .xl\:bui-p-13 {
+    padding: var(--bui-space-13);
+  }
+
+  .xl\:bui-p-14 {
+    padding: var(--bui-space-14);
+  }
+}

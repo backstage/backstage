@@ -86,6 +86,7 @@ describe('authPlugin', () => {
       });
 
       const refreshRes = await request(server).post('/api/auth/guest/refresh');
+
       expect(refreshRes.status).toBe(200);
       expect(refreshRes.body).toMatchObject({
         backstageIdentity: {
@@ -110,7 +111,6 @@ describe('authPlugin', () => {
         claims: {
           sub: expectedIdentity.userEntityRef,
           ent: expectedIdentity.ownershipEntityRefs,
-          exp: expect.any(Number),
         },
       });
     });
@@ -160,7 +160,6 @@ describe('authPlugin', () => {
         claims: {
           sub: expectedIdentity.userEntityRef,
           ent: expectedIdentity.ownershipEntityRefs,
-          exp: expect.any(Number),
         },
       });
     });

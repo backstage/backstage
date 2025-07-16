@@ -16,30 +16,59 @@
 import {
   Descriptor,
   DescriptorHash,
+  httpUtils,
   IdentHash,
   Workspace,
 } from '@yarnpkg/core';
+import { npath, ppath } from '@yarnpkg/fslib';
 import { suggestUtils } from '@yarnpkg/plugin-essentials';
-import { getPackageVersion } from '../util';
 import { afterWorkspaceDependencyReplacement } from './afterWorkspaceDependencyReplacement';
-
-jest.mock('../util', () => ({
-  getPackageVersion: jest.fn(),
-}));
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('afterWorkspaceDependencyReplacement.test', () => {
+  const mockDir = createMockDirectory();
   const workspace = {
     project: {
       configuration: {},
     },
   } as Workspace;
   const target = {} as suggestUtils.Target;
-  const mockGetPackageVersion = getPackageVersion as jest.MockedFunction<
-    typeof getPackageVersion
-  >;
+
+  const consoleWarnSpy = jest
+    .spyOn(console, 'warn')
+    .mockImplementation(() => {});
 
   beforeEach(() => {
-    mockGetPackageVersion.mockReset();
+    jest.resetAllMocks();
+
+    jest.spyOn(httpUtils, 'get').mockResolvedValue({
+      releaseVersion: '1.23.45',
+      packages: [
+        {
+          name: '@backstage/test-package',
+          version: '6.7.8',
+        },
+      ],
+    });
+
+    jest
+      .spyOn(ppath, 'cwd')
+      .mockReturnValue(npath.toPortablePath(mockDir.path));
+
+    jest
+      .spyOn(process, 'cwd')
+      .mockReturnValue(npath.toPortablePath(mockDir.path));
+
+    mockDir.setContent({
+      'backstage.json': JSON.stringify({
+        version: '1.23.45',
+      }),
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+    });
   });
 
   it('should warn that the range is being changed for a backstage scoped dependency', async () => {
@@ -58,8 +87,6 @@ describe('afterWorkspaceDependencyReplacement.test', () => {
       identHash: {} as IdentHash,
     };
 
-    mockGetPackageVersion.mockImplementation(() => Promise.resolve('success'));
-
     await afterWorkspaceDependencyReplacement(
       workspace,
       target,
@@ -67,46 +94,8 @@ describe('afterWorkspaceDependencyReplacement.test', () => {
       toDescriptor,
     );
 
-    expect(toDescriptor.range).toBe('^1.0.0');
-    expect(mockGetPackageVersion).toHaveBeenCalledTimes(1);
-    expect(mockGetPackageVersion).toHaveBeenCalledWith(
-      toDescriptor,
-      workspace.project.configuration,
-    );
-  });
-
-  it('should not warn that the range is being changed for a backstage scoped dependency where it cant find a version from remote', async () => {
-    const fromDescriptor: Descriptor = {
-      scope: 'backstage',
-      name: 'test-package',
-      range: 'backstage:^',
-      descriptorHash: {} as DescriptorHash,
-      identHash: {} as IdentHash,
-    };
-    const toDescriptor: Descriptor = {
-      scope: 'backstage',
-      name: 'test-package',
-      range: '^1.0.0',
-      descriptorHash: {} as DescriptorHash,
-      identHash: {} as IdentHash,
-    };
-
-    mockGetPackageVersion.mockImplementation(() =>
-      Promise.reject(new Error('test error')),
-    );
-
-    await afterWorkspaceDependencyReplacement(
-      workspace,
-      target,
-      fromDescriptor,
-      toDescriptor,
-    );
-
-    expect(toDescriptor.range).toBe('^1.0.0');
-    expect(mockGetPackageVersion).toHaveBeenCalledTimes(1);
-    expect(mockGetPackageVersion).toHaveBeenCalledWith(
-      toDescriptor,
-      workspace.project.configuration,
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'test-package should be set to "backstage:^" instead of "^1.0.0". Make sure this change is intentional and not a mistake.',
     );
   });
 
@@ -132,7 +121,7 @@ describe('afterWorkspaceDependencyReplacement.test', () => {
       toDescriptor,
     );
 
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
     expect(toDescriptor.range).toBe('^1.0.0');
-    expect(mockGetPackageVersion).not.toHaveBeenCalled();
   });
 });

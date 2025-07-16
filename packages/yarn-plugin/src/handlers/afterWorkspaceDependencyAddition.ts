@@ -31,16 +31,18 @@ export const afterWorkspaceDependencyAddition = async (
     descriptor.scope === 'backstage' &&
     descriptorRange.protocol !== PROTOCOL
   ) {
+    const originalRange = descriptor.range;
     try {
-      await getPackageVersion(descriptor, workspace.project.configuration);
+      descriptor.range = `${PROTOCOL}^`;
+      await getPackageVersion(descriptor, workspace.project.configuration); // Verify that the actual version can be resolved
       console.info(
         `Setting ${descriptor.scope}/${descriptor.name} to ${PROTOCOL}^`,
       );
-      descriptor.range = `${PROTOCOL}^`;
     } catch (_error: any) {
       // if there's no found version then this is likely a deprecated package
       // or otherwise the plugin won't be able to resolve the real version
       // and we should leave the desired range as is
+      descriptor.range = originalRange;
     }
   }
 };

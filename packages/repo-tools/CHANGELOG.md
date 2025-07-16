@@ -1,5 +1,27 @@
 # @backstage/repo-tools
 
+## 0.15.0
+
+### Minor Changes
+
+- 1e7082e: Clear output directory before running `package-docs` and skip all internal packages.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.15.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
 ## 0.15.0-next.0
 
 ### Minor Changes
