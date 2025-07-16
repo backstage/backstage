@@ -15,8 +15,11 @@
  */
 
 import {
+  ServiceMock,
   TestDatabaseId,
   TestDatabases,
+  mockCredentials,
+  mockErrorHandler,
   mockServices,
 } from '@backstage/backend-test-utils';
 import { ConflictError, NotFoundError } from '@backstage/errors';
@@ -27,6 +30,9 @@ import {
   parseDuration,
 } from './PluginTaskSchedulerImpl';
 import { createDeferred } from '@backstage/types';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import request from 'supertest';
+import express from 'express';
 
 jest.setTimeout(60_000);
 
@@ -49,7 +55,11 @@ describe('PluginTaskManagerImpl', () => {
     jest.clearAllMocks();
   });
 
-  async function init(databaseId: TestDatabaseId) {
+  async function init(
+    databaseId: TestDatabaseId,
+    mockAuthService?: ServiceMock<AuthService> | AuthService,
+    mockHttpAuthService?: ServiceMock<HttpAuthService> | HttpAuthService,
+  ) {
     const knex = await databases.init(databaseId);
     await migrateBackendTasks(knex);
     const manager = new PluginTaskSchedulerImpl(
@@ -61,8 +71,8 @@ describe('PluginTaskManagerImpl', () => {
         addBeforeShutdownHook: jest.fn(),
         addStartupHook: jest.fn(),
       },
-      mockServices.auth.mock(),
-      mockServices.httpAuth.mock(),
+      mockAuthService ?? mockServices.auth(),
+      mockHttpAuthService ?? mockServices.httpAuth.mock(),
     );
     return { knex, manager };
   }
@@ -406,5 +416,59 @@ describe('PluginTaskManagerImpl', () => {
       expect(parseDuration({ cron: '1 * * * *' })).toEqual('1 * * * *');
       expect(parseDuration({ trigger: 'manual' })).toEqual('manual');
     });
+  });
+
+  describe('router', () => {
+    beforeAll(() => {
+      jest.useRealTimers();
+    });
+
+    it.each(databases.eachSupportedId())(
+      'GET /.backstage/scheduler/v1/tasks is protected, %p',
+      async databaseId => {
+        console.log('database id', databaseId);
+        const { manager } = await init(
+          databaseId,
+          mockServices.auth(),
+          mockServices.httpAuth({
+            defaultCredentials: mockCredentials.user(),
+          }),
+        );
+        const app = express();
+        app.use(manager.getRouter());
+        app.use(mockErrorHandler());
+        const res = await request(app).get('/.backstage/scheduler/v1/tasks');
+        expect(res.status).toBe(403);
+        expect(res.body.error?.name).toBe('NotAllowedError');
+        expect(res.body.error?.message).toMatch(
+          /must be invoked by a service/i,
+        );
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'POST /.backstage/scheduler/v1/tasks/:id/trigger is protected, %p',
+      async databaseId => {
+        console.log('database id', databaseId);
+        const { manager } = await init(
+          databaseId,
+          mockServices.auth(),
+          mockServices.httpAuth({
+            defaultCredentials: mockCredentials.user(),
+          }),
+        );
+        const app = express();
+        app.use(manager.getRouter());
+        app.use(mockErrorHandler());
+        const res = await request(app).post(
+          '/.backstage/scheduler/v1/tasks/foo/trigger',
+        );
+        expect(res.status).toBe(403);
+        expect(res.body.error?.name).toBe('NotAllowedError');
+        expect(res.body.error?.message).toMatch(
+          /must be invoked by a service/i,
+        );
+      },
+    );
   });
 });
