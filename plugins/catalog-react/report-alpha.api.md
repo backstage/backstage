@@ -95,6 +95,7 @@ export function convertLegacyEntityCardExtension(
   overrides?: {
     name?: string;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+    type?: EntityCardType;
   },
 ): ExtensionDefinition;
 
