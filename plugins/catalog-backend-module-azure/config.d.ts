@@ -28,9 +28,9 @@ export interface Config {
       azureDevOps?: {
         [name: string]: {
           /**
-           * (Optional) The DevOps host; leave empty for `dev.azure.com`, otherwise set to your self-hosted instance host.
+           * (Optional) The DevOps host; defaults to `dev.azure.com` if left empty, otherwise set to your self-hosted instance host.
            */
-          host: string;
+          host?: string;
           /**
            * (Required) Your organization slug.
            */
