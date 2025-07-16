@@ -19,7 +19,6 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { scaffolderApiRef } from '../api';
 import { useTaskEventStream } from './useEventStream';
 import { ScaffolderTask, ScaffolderTaskStatus } from '../api';
-import { Subject } from 'rxjs';
 
 describe('useTaskEventStream with duplicate step IDs', () => {
   const mockScaffolderApi = {
@@ -66,7 +65,25 @@ describe('useTaskEventStream with duplicate step IDs', () => {
   });
 
   it('should handle duplicate step IDs correctly', async () => {
-    const logStream = new Subject();
+    // Create a simple subject-like implementation using zen-observable
+    const observers: any[] = [];
+    const logStream = {
+      next: (value: any) => {
+        observers.forEach(observer => {
+          if (observer.next) observer.next(value);
+        });
+      },
+      subscribe: (observer: any) => {
+        observers.push(observer);
+        return {
+          unsubscribe: () => {
+            const index = observers.indexOf(observer);
+            if (index > -1) observers.splice(index, 1);
+          },
+        };
+      },
+    };
+
     mockScaffolderApi.getTask.mockResolvedValue(mockTask);
     mockScaffolderApi.streamLogs.mockReturnValue(logStream);
 
