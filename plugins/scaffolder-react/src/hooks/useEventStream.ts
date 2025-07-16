@@ -118,41 +118,13 @@ function reducer(draft: TaskStream, action: ReducerAction) {
           continue;
         }
 
-        // For steps with the same ID, determine which one this event belongs to
-        // by finding the first step that isn't completed/failed/cancelled or the last one
-        let targetStepKey: string;
-
-        if (matchingStepKeys.length === 1) {
-          // Simple case: only one step with this ID
-          targetStepKey = matchingStepKeys[0];
-        } else {
-          // Multiple steps with same ID: find the appropriate one
-          // If this is a "beginning" or "processing" status, use the first open step
-          // If this is a completion status, use the step that's currently processing
-          // If this is a skipped status, use the first open step
-          const processingStep = matchingStepKeys.find(
-            key => draft.steps?.[key]?.status === 'processing',
-          );
-          const openStep = matchingStepKeys.find(
-            key => draft.steps?.[key]?.status === 'open',
-          );
-
-          if (entry.body.status === 'processing' && openStep) {
-            targetStepKey = openStep;
-          } else if (
-            processingStep &&
-            ['completed', 'failed', 'cancelled'].includes(
-              entry.body.status || '',
-            )
-          ) {
-            targetStepKey = processingStep;
-          } else if (entry.body.status === 'skipped' && openStep) {
-            targetStepKey = openStep;
-          } else {
-            // Fallback: use the first available step or the first one
-            targetStepKey = openStep || matchingStepKeys[0];
-          }
-        }
+        // For steps with the same ID, apply the event to the first unfinished step
+        // or the last one if all are finished
+        const targetStepKey = 
+          matchingStepKeys.find(key => {
+            const step = draft.steps?.[key];
+            return step && !['completed', 'failed', 'cancelled', 'skipped'].includes(step.status);
+          }) || matchingStepKeys[matchingStepKeys.length - 1];
 
         const currentStepLog = draft.stepLogs?.[targetStepKey];
         const currentStep = draft.steps?.[targetStepKey];

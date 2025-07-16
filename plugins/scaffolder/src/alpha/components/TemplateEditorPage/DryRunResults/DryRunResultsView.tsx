@@ -120,7 +120,6 @@ function LogContent() {
         );
         return {
           id: `${index}-${step.id}`, // Use unique ID for each step
-          originalId: step.id, // Keep track of original ID for display
           name: step.name,
           logString: stepLog.map(l => l.body.message).join('\n'),
           status: stepLog[stepLog.length - 1]?.body.status ?? 'completed',
