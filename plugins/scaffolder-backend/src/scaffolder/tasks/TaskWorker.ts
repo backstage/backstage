@@ -236,10 +236,9 @@ export class TaskWorker {
       severityLevel: 'medium',
       meta: {
         actionType: 'execution',
+        createdBy: task.createdBy,
         taskId: task.taskId,
         taskParameters: this.truncateParameters(task.spec.parameters),
-        createdBy: task.createdBy,
-        taskParameters: task.spec.parameters,
         templateRef: task.spec.templateInfo?.entityRef,
       },
     });
