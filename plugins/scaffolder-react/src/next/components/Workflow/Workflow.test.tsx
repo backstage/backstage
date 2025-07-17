@@ -146,4 +146,84 @@ describe('<Workflow />', () => {
       age: '53',
     });
   });
+
+  it('should display template description from manifest when no description prop is provided', async () => {
+    const onCreate = jest.fn();
+    const onError = jest.fn();
+
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      steps: [],
+      title: 'Test Template',
+      description: 'Template description from manifest',
+    });
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Workflow
+          onCreate={onCreate}
+          onError={onError}
+          namespace="default"
+          templateName="test-template"
+          extensions={[]}
+        />
+      </ApiProvider>,
+    );
+
+    // Should display the template description from manifest
+    expect(getByText('Template description from manifest')).toBeInTheDocument();
+  });
+
+  it('should display template description from manifest when empty description prop is provided', async () => {
+    const onCreate = jest.fn();
+    const onError = jest.fn();
+
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      steps: [],
+      title: 'Test Template',
+      description: 'Template description from manifest',
+    });
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Workflow
+          description=""
+          onCreate={onCreate}
+          onError={onError}
+          namespace="default"
+          templateName="test-template"
+          extensions={[]}
+        />
+      </ApiProvider>,
+    );
+
+    // Should display the template description from manifest, not the empty string
+    expect(getByText('Template description from manifest')).toBeInTheDocument();
+  });
+
+  it('should display template description from manifest when whitespace-only description prop is provided', async () => {
+    const onCreate = jest.fn();
+    const onError = jest.fn();
+
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      steps: [],
+      title: 'Test Template',
+      description: 'Template description from manifest',
+    });
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Workflow
+          description="   "
+          onCreate={onCreate}
+          onError={onError}
+          namespace="default"
+          templateName="test-template"
+          extensions={[]}
+        />
+      </ApiProvider>,
+    );
+
+    // Should display the template description from manifest, not the whitespace
+    expect(getByText('Template description from manifest')).toBeInTheDocument();
+  });
 });

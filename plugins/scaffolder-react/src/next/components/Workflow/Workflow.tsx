@@ -128,8 +128,8 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
               className={styles.markdown}
               linkTarget="_blank"
               content={
-                description ??
-                sortedManifest.description ??
+                (description && description.trim()) ||
+                sortedManifest.description ||
                 t('workflow.noDescription')
               }
             />
