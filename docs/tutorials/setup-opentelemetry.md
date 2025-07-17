@@ -45,7 +45,8 @@ if (isMainThread) {
   const prometheusExporter = new PrometheusExporter();
   // We post the traces to localhost:4318/v1/traces
   const otlpTraceExporter = new OTLPTraceExporter({
-    url: 'http://localhost:4318/v1/traces', // This is the most common URL to work with Jaeger but you may need to adjust this for your needs
+    // Default Jaeger URL trace endpoint.
+    url: 'http://localhost:4318/v1/traces',
   });
   const sdk = new NodeSDK({
     metricReader: prometheusExporter,
@@ -131,7 +132,9 @@ const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 ```
 
-This will then output a very large volume of details to the logs, we don't recommend shipping this in production, which you can then look at to help get a better idea of why something may not be working as expected.
+This will then add OpenTelemetry debug logs that you can then look at to help get a better idea of why something may not be working as expected.
+
+We don't recommend shipping this in production because of the log density.
 
 ## Production Setup
 
