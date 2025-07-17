@@ -23,14 +23,14 @@ import {
 import { VerifyFunction } from 'passport-oauth2';
 
 export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
-  private _apiEntryPoint: string;
-  private _graphApiVersion: string;
+  private apiEntryPoint: string;
+  private graphApiVersion: string;
   private shouldSkipUserProfile = false;
 
   constructor(config: MicrosoftStrategyOptions, verify: VerifyFunction) {
     super(config, verify);
-    this._apiEntryPoint = config.apiEntryPoint || 'https://graph.microsoft.com';
-    this._graphApiVersion = config.graphApiVersion || 'v1.0';
+    this.apiEntryPoint = config.apiEntryPoint || 'https://graph.microsoft.com';
+    this.graphApiVersion = config.graphApiVersion || 'v1.0';
   }
 
   public setSkipUserProfile(shouldSkipUserProfile: boolean): void {
@@ -72,8 +72,8 @@ export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
         .map(s => s.toLocaleLowerCase('en-US'))
         .some(s =>
           [
-            `${this._apiEntryPoint}/user.read`,
-            `${this._apiEntryPoint}/user.read.all`,
+            `${this.apiEntryPoint}/user.read`,
+            `${this.apiEntryPoint}/user.read.all`,
             'user.read',
             'user.read.all',
           ].includes(s),
@@ -107,7 +107,7 @@ export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
   ): Promise<string | undefined> {
     try {
       const res = await fetch(
-        `${this._apiEntryPoint}/${this._graphApiVersion}/me/photos/${size}/$value`,
+        `${this.apiEntryPoint}/${this.graphApiVersion}/me/photos/${size}/$value`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
