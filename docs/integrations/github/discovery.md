@@ -52,7 +52,11 @@ You can check the official docs to [configure your webhook](https://docs.github.
 
 The webhook(s) will need to be configured to react to `push` and `repository` events.
 
-Certain actions like `transferred` by the `repository` event type will not be supported when you use repository webhooks. Please check the GitHub documentation for these event types and their actions.
+:::note
+
+To receive the `repository.transferred` event, the new owner account must have the GitHub App installed, and the App must be subscribed to `repository` events. This event is only sent to the account where the ownership is transferred.
+
+:::
 
 When creating the webhook in GitHub the "Payload URL" will looks something along these lines: `https://<your-intance-name>/api/events/http/github` and the "Content Type" should be `application/json`.
 
@@ -172,11 +176,7 @@ events:
             # The fully qualified name of the subscription
             subscriptionName: 'projects/my-google-project/subscriptions/github-enterprise-events'
             # The event system topic to transfer to. This can also be just a plain string
-            targetTopic:
-              # This example picks the topic name from a message attribute + a prefix
-              fromMessageAttribute:
-                attributeName: 'x-github-event'
-                withPrefix: 'github.'
+            targetTopic: 'github.{{ event.attributes.x-github-event }}'
 ```
 
 The [Google Pub/Sub module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-google-pubsub/README.md#configuration) has more details on the configuration options, the example above includes on the required options.
