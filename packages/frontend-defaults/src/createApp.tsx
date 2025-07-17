@@ -80,6 +80,7 @@ export interface CreateAppOptions {
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
   pluginInfoResolver?: FrontendPluginInfoResolver;
+  flags?: { allowUnknownExtensionConfig?: boolean };
 }
 
 /**
@@ -115,6 +116,7 @@ export function createApp(options?: CreateAppOptions): {
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
       pluginInfoResolver: options?.pluginInfoResolver,
+      flags: options?.flags,
     });
 
     const rootEl = app.tree.root.instance!.getData(
