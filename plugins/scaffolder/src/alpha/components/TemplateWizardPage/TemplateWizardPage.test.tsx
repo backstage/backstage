@@ -222,4 +222,53 @@ describe('TemplateWizardPage', () => {
       expect(queryByTestId('menu-button')).not.toBeInTheDocument();
     });
   });
+
+  describe('template description passing', () => {
+    it('should pass template description to Workflow component', async () => {
+      const templateDescription = 'This is a test template description';
+      
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+        title: 'Test Template',
+        description: templateDescription,
+      });
+      
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service', 
+        metadata: {
+          name: 'test',
+        },
+        spec: {},
+      });
+
+      // Mock the Workflow component to verify it receives the description prop
+      const MockWorkflow = jest.fn(() => null);
+      jest.doMock('@backstage/plugin-scaffolder-react/alpha', () => ({
+        ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+        Workflow: MockWorkflow,
+      }));
+
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // Verify the Workflow component was called with the description prop
+      expect(MockWorkflow).toHaveBeenCalledWith(
+        expect.objectContaining({
+          description: templateDescription,
+        }),
+        expect.anything(),
+      );
+    });
+  });
 });

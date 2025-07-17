@@ -149,6 +149,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
         <Workflow
           namespace={namespace}
           templateName={templateName}
+          description={manifest?.description}
           onCreate={onCreate}
           components={props.components}
           onError={onError}
