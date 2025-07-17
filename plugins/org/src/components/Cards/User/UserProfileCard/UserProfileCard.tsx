@@ -25,7 +25,7 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import BaseButton from '@material-ui/core/ButtonBase';
@@ -58,21 +58,31 @@ import { useCallback, useState } from 'react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
 
-const useStyles = makeStyles((theme: any) => ({
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-  moreButton: {
-    display: 'contents',
-    color: theme.palette.primary.main,
-  },
-  dialogPaper: {
-    minHeight: 400,
-  },
-}));
+/** @public */
+export type UserProfileCardClassKey =
+  | 'closeButton'
+  | 'moreButton'
+  | 'dialogPaper';
+
+const useStyles = makeStyles(
+  theme =>
+    createStyles({
+      closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+      },
+      moreButton: {
+        display: 'contents',
+        color: theme.palette.primary.main,
+      },
+      dialogPaper: {
+        minHeight: 400,
+      },
+    }),
+  { name: 'PluginOrgUserProfileCard' },
+);
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
