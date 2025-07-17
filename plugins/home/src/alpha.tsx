@@ -22,9 +22,14 @@ import {
   createFrontendPlugin,
   createRouteRef,
   AppRootElementBlueprint,
+  identityApiRef,
+  storageApiRef,
+  createApiFactory,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { compatWrapper } from '@backstage/core-compat-api';
 import { VisitListener } from './components/';
+import { visitsApiRef, VisitsStorageApi } from './api';
 
 const rootRouteRef = createRouteRef();
 
@@ -72,13 +77,28 @@ const visitListenerAppRootElement = AppRootElementBlueprint.make({
   },
 });
 
+const visitsApi = ApiBlueprint.make({
+  name: 'visits',
+  params: {
+    factory: createApiFactory({
+      api: visitsApiRef,
+      deps: {
+        storageApi: storageApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ storageApi, identityApi }) =>
+        VisitsStorageApi.create({ storageApi, identityApi }),
+    }),
+  },
+});
+
 /**
  * @alpha
  */
 export default createFrontendPlugin({
   pluginId: 'home',
   info: { packageJson: () => import('../package.json') },
-  extensions: [homePage, visitListenerAppRootElement],
+  extensions: [homePage, visitsApi, visitListenerAppRootElement],
   routes: {
     root: rootRouteRef,
   },
