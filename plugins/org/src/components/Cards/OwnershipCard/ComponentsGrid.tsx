@@ -31,32 +31,41 @@ import { catalogIndexRouteRef } from '../../../routes';
 import { useGetEntities } from './useGetEntities';
 import { EntityRelationAggregation } from '../types';
 
-const useStyles = makeStyles(theme =>
-  createStyles({
-    card: {
-      border: `1px solid ${theme.palette.divider}`,
-      boxShadow: theme.shadows[2],
-      borderRadius: '4px',
-      padding: theme.spacing(2),
-      transition: `${theme.transitions.duration.standard}ms`,
-      '&:hover': {
-        boxShadow: theme.shadows[4],
+/** @public */
+export type ComponentsGridClassKey =
+  | 'card'
+  | 'bold'
+  | 'smallFont'
+  | 'entityTypeBox';
+
+const useStyles = makeStyles(
+  theme =>
+    createStyles({
+      card: {
+        border: `1px solid ${theme.palette.divider}`,
+        boxShadow: theme.shadows[2],
+        borderRadius: '4px',
+        padding: theme.spacing(2),
+        transition: `${theme.transitions.duration.standard}ms`,
+        '&:hover': {
+          boxShadow: theme.shadows[4],
+        },
+        height: '100%',
       },
-      height: '100%',
-    },
-    bold: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    smallFont: {
-      fontSize: theme.typography.body2.fontSize,
-    },
-    entityTypeBox: {
-      background: (props: { type: string }) =>
-        theme.getPageTheme({ themeId: props.type }).backgroundImage,
-      color: (props: { type: string }) =>
-        theme.getPageTheme({ themeId: props.type }).fontColor,
-    },
-  }),
+      bold: {
+        fontWeight: theme.typography.fontWeightBold,
+      },
+      smallFont: {
+        fontSize: theme.typography.body2.fontSize,
+      },
+      entityTypeBox: {
+        background: (props: { type: string }) =>
+          theme.getPageTheme({ themeId: props.type }).backgroundImage,
+        color: (props: { type: string }) =>
+          theme.getPageTheme({ themeId: props.type }).fontColor,
+      },
+    }),
+  { name: 'PluginOrgComponentsGrid' },
 );
 
 const EntityCountTile = ({
