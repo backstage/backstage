@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog
 
+## 1.31.2-next.0
+
+### Patch Changes
+
+- 08e094c: Adjusted the sticky scrolling of the new entity layout so that the info columns scrolls to the bottom more eagerly.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-search-react@1.9.2
+
 ## 1.31.1
 
 ### Patch Changes

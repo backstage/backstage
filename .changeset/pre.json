@@ -204,5 +204,11 @@
     "@backstage/plugin-user-settings-backend": "0.3.4",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "blue-apples-pump",
+    "hot-clowns-behave",
+    "huge-heads-occur",
+    "orange-poems-report",
+    "spotty-icons-shake"
+  ]
 }
