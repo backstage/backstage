@@ -53,6 +53,10 @@ export type ActionContext<
   };
   signal?: AbortSignal;
   each?: JsonObject;
+  step?: {
+    id?: string;
+    name?: string;
+  };
 };
 
 // @public (undocumented)
