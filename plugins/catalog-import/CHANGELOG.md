@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.3
+
+### Patch Changes
+
+- 406b8b8: Fixed bug with error message since ResponseError is now thrown from CatalogClient
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-catalog-common@1.1.5
+
 ## 0.13.3-next.1
 
 ### Patch Changes

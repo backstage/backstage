@@ -1,0 +1,68 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { TextFieldSnippet } from '@/snippets/stories-snippets';
+import {
+  inputPropDefs,
+  textFieldUsageSnippet,
+  textFieldDefaultSnippet,
+  textFieldSizesSnippet,
+  textFieldDescriptionSnippet,
+} from './text-field.props';
+import { ComponentInfos } from '@/components/ComponentInfos';
+
+# TextField
+
+A text field component for your forms.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<TextFieldSnippet story="WithLabel" />}
+  code={textFieldDefaultSnippet}
+/>
+
+<ComponentInfos
+  component="textfield"
+  classNames={[
+    'bui-TextField',
+    'bui-InputWrapper',
+    'bui-Input',
+    'bui-InputIcon',
+    'bui-FieldLabelWrapper',
+    'bui-FieldLabel',
+    'bui-FieldDescription',
+    'bui-FieldSecondaryLabel',
+    'bui-FieldError',
+  ]}
+  usageCode={textFieldUsageSnippet}
+/>
+
+## API reference
+
+<PropsTable data={inputPropDefs} />
+
+## Examples
+
+### Sizes
+
+We support two different sizes: `small`, `medium`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<TextFieldSnippet story="Sizes" />}
+  code={textFieldSizesSnippet}
+/>
+
+### With description
+
+Here's a simple TextField with a description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<TextFieldSnippet story="WithDescription" />}
+  code={textFieldDescriptionSnippet}
+/>

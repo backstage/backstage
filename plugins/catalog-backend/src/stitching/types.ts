@@ -61,11 +61,11 @@ export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
     'catalog.stitchingStrategy.mode',
   );
 
-  if (strategyMode === undefined || strategyMode === 'immediate') {
+  if (strategyMode === 'immediate') {
     return {
       mode: 'immediate',
     };
-  } else if (strategyMode === 'deferred') {
+  } else if (strategyMode === undefined || strategyMode === 'deferred') {
     const pollingIntervalKey = 'catalog.stitchingStrategy.pollingInterval';
     const stitchTimeoutKey = 'catalog.stitchingStrategy.stitchTimeout';
 

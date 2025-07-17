@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-openapi-utils@0.5.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-node@1.17.2
+
 ## 0.5.4-next.0
 
 ### Patch Changes

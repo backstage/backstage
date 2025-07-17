@@ -1,5 +1,23 @@
 # @backstage/plugin-home
 
+## 0.8.10
+
+### Patch Changes
+
+- d52d67f: Added a New Frontend System App Root Element for the `<VisitListener />` component
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-home-react@0.1.28
+
 ## 0.8.10-next.2
 
 ### Patch Changes

@@ -1,5 +1,45 @@
 # example-backend
 
+## 0.0.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.0
+  - @backstage/plugin-scaffolder-backend@2.1.0
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-node@0.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/plugin-notifications-backend@0.5.8
+  - @backstage/plugin-mcp-actions-backend@0.1.1
+  - @backstage/plugin-auth-backend@0.25.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1
+  - @backstage/plugin-search-backend@2.0.4
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-app-backend@0.5.4
+  - @backstage/plugin-auth-backend-module-github-provider@0.3.5
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.10
+  - @backstage/plugin-auth-node@0.6.5
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.4
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.12
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.2
+  - @backstage/plugin-devtools-backend@0.5.7
+  - @backstage/plugin-events-backend@0.5.4
+  - @backstage/plugin-events-backend-module-google-pubsub@0.1.2
+  - @backstage/plugin-kubernetes-backend@0.19.8
+  - @backstage/plugin-permission-backend@0.7.2
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.10
+  - @backstage/plugin-proxy-backend@0.6.4
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.12
+  - @backstage/plugin-search-backend-module-catalog@0.3.6
+  - @backstage/plugin-search-backend-module-explore@0.3.4
+  - @backstage/plugin-search-backend-module-techdocs@0.4.4
+  - @backstage/plugin-search-backend-node@1.3.13
+  - @backstage/plugin-signals-backend@0.3.6
+  - @backstage/plugin-techdocs-backend@2.0.4
+
 ## 0.0.40-next.2
 
 ### Patch Changes

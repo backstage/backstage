@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.21
+
+### Patch Changes
+
+- fe1a2f4: Catalog graph plugin support i18n
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+
 ## 0.4.21-next.1
 
 ### Patch Changes
