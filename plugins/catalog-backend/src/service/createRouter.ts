@@ -35,6 +35,7 @@ import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
+import { createHash } from 'crypto';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
@@ -62,6 +63,12 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+
+// Helper function to generate ETag based on query parameters
+function generateQueryETag(query: Record<string, any>): string {
+  const queryString = JSON.stringify(query, Object.keys(query).sort());
+  return createHash('md5').update(queryString).digest('hex');
+}
 
 /**
  * Options used by {@link createRouter}.
@@ -206,6 +213,16 @@ export async function createRouter(
               items: entities,
               alwaysUseObjectMode: enableRelationsCompatibility,
             });
+            return;
+          }
+
+          // Generate ETag for the streaming response based on query parameters
+          const etag = `"${generateQueryETag(req.query)}"`;
+          res.setHeader('ETag', etag);
+
+          // Handle conditional requests
+          if (req.headers['if-none-match'] === etag) {
+            res.status(304).end();
             return;
           }
 

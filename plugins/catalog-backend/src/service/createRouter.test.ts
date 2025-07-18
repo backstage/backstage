@@ -180,6 +180,48 @@ describe('createRouter readonly disabled', () => {
       expect(response.body).toEqual(entities);
     });
 
+    it('sets ETag header for streaming responses', async () => {
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [entities[0]] },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
+      const response = await request(app).get('/entities?kind=Component');
+
+      expect(response.status).toEqual(200);
+      expect(response.headers['etag']).toBeDefined();
+      expect(response.headers['etag']).toMatch(/^"[a-f0-9]+"/);
+    });
+
+    it('handles If-None-Match header for streaming responses', async () => {
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [entities[0]] },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
+      // First request to get ETag
+      const response1 = await request(app).get('/entities?kind=Component');
+      expect(response1.status).toEqual(200);
+      const etag = response1.headers['etag'];
+
+      // Second request with If-None-Match header
+      const response2 = await request(app)
+        .get('/entities?kind=Component')
+        .set('If-None-Match', etag);
+
+      expect(response2.status).toEqual(304);
+    });
+
     it('parses single and multiple request parameters and passes them down', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items: { type: 'object', entities: [] },
