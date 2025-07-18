@@ -100,7 +100,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     // inefficient, we usually only do this once per entire refresh loop and
     // don't have to worry about timeouts and reconnects etc.
     const client = await LdapClient.create(
-      // this.logger,
+      this.logger,
       provider.target,
       provider.bind,
       provider.tls,

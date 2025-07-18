@@ -15,7 +15,7 @@
  */
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { SearchEntry } from 'ldapjs';
+import { Entry } from 'ldapts';
 import merge from 'lodash/merge';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig, VendorConfig } from './config';
@@ -32,11 +32,7 @@ import {
   resolveRelations,
 } from './read';
 import { RecursivePartial } from './util';
-import {
-  ActiveDirectoryVendor,
-  DefaultLdapVendor,
-  FreeIpaVendor,
-} from './vendors';
+import { ActiveDirectoryVendor, DefaultLdapVendor } from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -64,40 +60,32 @@ function group(data: RecursivePartial<GroupEntity>): GroupEntity {
   );
 }
 
-function searchEntry(
-  attributes: Record<string, string[] | Buffer[]>,
-): SearchEntry {
-  return {
-    raw: Object.entries(attributes).reduce((obj, [key, values]) => {
-      obj[key] = values;
-      return obj;
-    }, {} as any),
-  } as any;
-}
-
 describe('readLdapUsers', () => {
   const client: jest.Mocked<LdapClient> = {
-    searchStreaming: jest.fn(),
+    search: jest.fn(),
     getVendor: jest.fn(),
   } as any;
 
   afterEach(() => jest.resetAllMocks());
 
   it('transfers all attributes from a default ldap vendor', async () => {
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        uid: 'uid-value',
+        description: 'description-value',
+        cn: 'cn-value',
+        mail: 'mail-value',
+        avatarUrl: 'avatarUrl-value',
+        memberOf: ['x', 'y', 'z'],
+        entryDN: 'dn-value',
+        entryUUID: 'uuid-value',
+      },
+    ];
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          uid: ['uid-value'],
-          description: ['description-value'],
-          cn: ['cn-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          entryDN: ['dn-value'],
-          entryUUID: ['uuid-value'],
-        }),
-      );
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: UserConfig[] = [
       {
@@ -142,20 +130,23 @@ describe('readLdapUsers', () => {
   });
 
   it('override default vendor configs', async () => {
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-vaule',
+        uid: 'uid-value',
+        description: 'description-value',
+        cn: 'cn-value',
+        mail: 'mail-value',
+        avatarUrl: 'avatarUrl-value',
+        memberOf: ['x', 'y', 'z'],
+        customDN: 'dn-value',
+        customUUID: 'uuid-value',
+      },
+    ];
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          uid: ['uid-value'],
-          description: ['description-value'],
-          cn: ['cn-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          customDN: ['dn-value'],
-          customUUID: ['uuid-value'],
-        }),
-      );
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: UserConfig[] = [
       {
@@ -211,25 +202,23 @@ describe('readLdapUsers', () => {
   });
 
   it('should allow skipping memberOf', async () => {
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        uid: ['uid-value'],
+        description: ['description-value'],
+        cn: ['cn-value'],
+        mail: ['mail-value'],
+        avatarUrl: ['avatarUrl-value'],
+        memberOf: ['x', 'y', 'z'],
+        customDN: ['dn-value'],
+        customUUID: ['uuid-value'],
+      },
+    ];
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(searchEntry({ memberOf: ['x', 'y', 'z'] }));
-    });
-
-    client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          uid: ['uid-value'],
-          description: ['description-value'],
-          cn: ['cn-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          customDN: ['dn-value'],
-          customUUID: ['uuid-value'],
-        }),
-      );
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: UserConfig[] = [
       {
@@ -258,25 +247,28 @@ describe('readLdapUsers', () => {
   });
 
   it('transfers all attributes from Microsoft Active Directory', async () => {
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        uid: 'uid-value',
+        description: ['description-value'],
+        cn: ['cn-value'],
+        mail: ['mail-value'],
+        avatarUrl: ['avatarUrl-value'],
+        memberOf: ['x', 'y', 'z'],
+        distinguishedName: ['dn-value'],
+        objectGUID: [
+          Buffer.from([
+            68, 2, 125, 190, 209, 0, 94, 73, 133, 33, 230, 174, 234, 195, 160,
+            152,
+          ]),
+        ],
+      },
+    ];
     client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          uid: ['uid-value'],
-          description: ['description-value'],
-          cn: ['cn-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          distinguishedName: ['dn-value'],
-          objectGUID: [
-            Buffer.from([
-              68, 2, 125, 190, 209, 0, 94, 73, 133, 33, 230, 174, 234, 195, 160,
-              152,
-            ]),
-          ],
-        }),
-      );
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: UserConfig[] = [
       {
@@ -321,20 +313,22 @@ describe('readLdapUsers', () => {
   });
 
   it('transfers all attributes from FreeIPA', async () => {
-    client.getVendor.mockResolvedValue(FreeIpaVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          uid: ['uid-value'],
-          description: ['description-value'],
-          cn: ['cn-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          dn: ['dn-value'],
-          ipaUniqueID: ['uuid-value'],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        uid: 'uid-value',
+        description: ['description-value'],
+        cn: ['cn-value'],
+        mail: ['mail-value'],
+        avatarUrl: ['avatarUrl-value'],
+        memberOf: ['x', 'y', 'z'],
+        dn: 'dn-value',
+        ipaUniqueID: ['uuid-value'],
+      },
+    ];
+    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: UserConfig[] = [
       {
@@ -380,21 +374,25 @@ describe('readLdapUsers', () => {
 
   it('transfers all attributes from for vendorDN case sensitivity', async () => {
     const vendor = DefaultLdapVendor;
-    client.getVendor.mockResolvedValue(vendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          uid: ['uid-value'],
-          description: ['description-value'],
-          cn: ['cn-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'Y', 'z'],
-          entryDN: ['dn-VALUE'],
-          entryUUID: ['uuid-value'],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-VALUE',
+        uid: ['uid-value'],
+        description: ['description-value'],
+        cn: ['cn-value'],
+        mail: ['mail-value'],
+        avatarUrl: ['avatarUrl-value'],
+        memberOf: ['x', 'Y', 'z'],
+        entryDN: ['dn-VALUE'],
+        entryUUID: ['uuid-value'],
+      },
+    ];
+    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
+
     const config: UserConfig[] = [
       {
         dn: 'ddd',
@@ -438,21 +436,25 @@ describe('readLdapUsers', () => {
   });
   it('fails to transfer all attributes from for due case sensitivity', async () => {
     const vendor = DefaultLdapVendor;
-    client.getVendor.mockResolvedValue(vendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          uid: ['uid-value'],
-          description: ['description-value'],
-          cn: ['cn-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'Y', 'z'],
-          entryDN: ['dn-VALUE'],
-          entryUUID: ['uuid-value'],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-VALUE',
+        uid: ['uid-value'],
+        description: ['description-value'],
+        cn: ['cn-value'],
+        mail: ['mail-value'],
+        avatarUrl: ['avatarUrl-value'],
+        memberOf: ['x', 'Y', 'z'],
+        entryDN: ['dn-VALUE'],
+        entryUUID: ['uuid-value'],
+      },
+    ];
+    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
+
     const config: UserConfig[] = [
       {
         dn: 'ddd',
@@ -498,19 +500,22 @@ describe('readLdapUsers', () => {
 
   it('can process a list of UserConfigs', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          uid: ['uid-value'],
-          description: ['description-value'],
-          cn: ['cn-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          entryDN: ['dn-value'],
-          entryUUID: ['uuid-value'],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        uid: 'uid-value',
+        description: 'description-value',
+        cn: 'cn-value',
+        mail: 'mail-value',
+        avatarUrl: 'avatarUrl-value',
+        memberOf: ['x', 'y', 'z'],
+        entryDN: 'dn-value',
+        entryUUID: 'uuid-value',
+      },
+    ];
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: UserConfig[] = [
       {
@@ -552,7 +557,7 @@ describe('readLdapUsers', () => {
 
 describe('readLdapGroups', () => {
   const client: jest.Mocked<LdapClient> = {
-    searchStreaming: jest.fn(),
+    search: jest.fn(),
     getVendor: jest.fn(),
   } as any;
 
@@ -560,20 +565,23 @@ describe('readLdapGroups', () => {
 
   it('transfers all attributes from a default ldap vendor', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          cn: ['cn-value'],
-          description: ['description-value'],
-          tt: ['type-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          member: ['e', 'f', 'g'],
-          entryDN: ['dn-value'],
-          entryUUID: ['uuid-value'],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        cn: 'cn-value',
+        description: 'description-value',
+        tt: 'type-value',
+        mail: 'mail-value',
+        avatarUrl: 'avatarUrl-value',
+        memberOf: ['x', 'y', 'z'],
+        member: ['e', 'f', 'g'],
+        entryDN: 'dn-value',
+        entryUUID: 'uuid-value',
+      },
+    ];
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: GroupConfig[] = [
       {
@@ -629,25 +637,26 @@ describe('readLdapGroups', () => {
 
   it('transfers all attributes from Microsoft Active Directory', async () => {
     client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          cn: ['cn-value'],
-          description: ['description-value'],
-          tt: ['type-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          member: ['e', 'f', 'g'],
-          distinguishedName: ['dn-value'],
-          objectGUID: [
-            Buffer.from([
-              68, 2, 125, 190, 209, 0, 94, 73, 133, 33, 230, 174, 234, 195, 160,
-              152,
-            ]),
-          ],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        cn: 'cn-value',
+        description: 'description-value',
+        tt: 'type-value',
+        mail: 'mail-value',
+        avatarUrl: 'avatarUrl-value',
+        memberOf: ['x', 'y', 'z'],
+        member: ['e', 'f', 'g'],
+        distinguishedName: 'dn-value',
+        objectGUID: Buffer.from([
+          68, 2, 125, 190, 209, 0, 94, 73, 133, 33, 230, 174, 234, 195, 160,
+          152,
+        ]),
+      },
+    ];
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: GroupConfig[] = [
       {
@@ -703,20 +712,23 @@ describe('readLdapGroups', () => {
 
   it('override default vendor configs', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          cn: ['cn-value'],
-          description: ['description-value'],
-          tt: ['type-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          member: ['e', 'f', 'g'],
-          customDN: ['dn-value'],
-          customUUID: ['uuid-value'],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        cn: 'cn-value',
+        description: 'description-value',
+        tt: 'type-value',
+        mail: 'mail-value',
+        avatarUrl: 'avatarUrl-value',
+        memberOf: ['x', 'y', 'z'],
+        member: ['e', 'f', 'g'],
+        customDN: 'dn-value',
+        customUUID: 'uuid-value',
+      },
+    ];
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: GroupConfig[] = [
       {
@@ -778,20 +790,23 @@ describe('readLdapGroups', () => {
 
   it('should allow skipping members', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          cn: ['cn-value'],
-          description: ['description-value'],
-          tt: ['type-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          member: ['e', 'f', 'g'],
-          customDN: ['dn-value'],
-          customUUID: ['uuid-value'],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        cn: 'cn-value',
+        description: 'description-value',
+        tt: 'type-value',
+        mail: 'mail-value',
+        avatarUrl: 'avatarUrl-value',
+        memberOf: ['x', 'y', 'z'],
+        member: ['e', 'f', 'g'],
+        customDN: 'dn-value',
+        customUUID: 'uuid-value',
+      },
+    ];
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: GroupConfig[] = [
       {
@@ -823,20 +838,23 @@ describe('readLdapGroups', () => {
 
   it('can process a list of GroupConfigs', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
-    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
-      await fn(
-        searchEntry({
-          cn: ['cn-value'],
-          description: ['description-value'],
-          tt: ['type-value'],
-          mail: ['mail-value'],
-          avatarUrl: ['avatarUrl-value'],
-          memberOf: ['x', 'y', 'z'],
-          member: ['e', 'f', 'g'],
-          entryDN: ['dn-value'],
-          entryUUID: ['uuid-value'],
-        }),
-      );
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        cn: 'cn-value',
+        description: 'description-value',
+        tt: 'type-value',
+        mail: 'mail-value',
+        avatarUrl: 'avatarUrl-value',
+        memberOf: ['x', 'y', 'z'],
+        member: ['e', 'f', 'g'],
+        entryDN: 'dn-value',
+        entryUUID: 'uuid-value',
+      },
+    ];
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
     });
     const config: GroupConfig[] = [
       {
@@ -1026,7 +1044,8 @@ describe('defaultUserTransformer', () => {
       },
     };
 
-    const entry = searchEntry({
+    const entry: Entry = {
+      dn: 'dn-value',
       uid: ['uid-value'],
       description: ['description-value'],
       cn: ['cn-value'],
@@ -1035,7 +1054,7 @@ describe('defaultUserTransformer', () => {
       memberOf: ['x', 'y', 'z'],
       entryDN: ['dn-value'],
       entryUUID: ['uuid-value'],
-    });
+    };
 
     let output = await defaultUserTransformer(DefaultLdapVendor, config, entry);
     expect(output).toEqual({
@@ -1095,12 +1114,13 @@ describe('defaultUserTransformer', () => {
       set: {},
     };
 
-    const entry = searchEntry({
+    const entry: Entry = {
+      dn: 'ddd',
       description: ['description-value'],
       cn: ['cn-value'],
       mail: ['mail-value'],
       memberOf: ['x', 'y', 'z'],
-    });
+    };
 
     await expect(
       defaultUserTransformer(DefaultLdapVendor, config, entry),
@@ -1131,7 +1151,8 @@ describe('defaultGroupTransformer', () => {
       },
     };
 
-    const entry = searchEntry({
+    const entry: Entry = {
+      dn: 'dn-value',
       uid: ['uid-value'],
       description: ['description-value'],
       cn: ['cn-value'],
@@ -1140,7 +1161,7 @@ describe('defaultGroupTransformer', () => {
       memberOf: ['x', 'y', 'z'],
       entryDN: ['dn-value'],
       entryUUID: ['uuid-value'],
-    });
+    };
 
     let output = await defaultGroupTransformer(
       DefaultLdapVendor,
@@ -1210,14 +1231,15 @@ describe('defaultGroupTransformer', () => {
       },
     };
 
-    const entry = searchEntry({
+    const entry: Entry = {
+      dn: 'dn-value',
       description: ['description-value'],
       mail: ['mail-value'],
       avatarUrl: ['avatarUrl-value'],
       memberOf: ['x', 'y', 'z'],
       entryDN: ['dn-value'],
       entryUUID: ['uuid-value'],
-    });
+    };
 
     await expect(
       defaultGroupTransformer(DefaultLdapVendor, config, entry),
@@ -1248,7 +1270,8 @@ describe('defaultUserTransformerWithCaseSensitiveDNs', () => {
       },
     };
 
-    const entry = searchEntry({
+    const entry: Entry = {
+      dn: 'dn-VALUE',
       uid: ['uid-value'],
       description: ['description-value'],
       cn: ['cn-value'],
@@ -1257,7 +1280,7 @@ describe('defaultUserTransformerWithCaseSensitiveDNs', () => {
       memberOf: ['x', 'y', 'z'],
       entryDN: ['dn-VALUE'],
       entryUUID: ['uuid-value'],
-    });
+    };
 
     const vendor = DefaultLdapVendor;
     let output = await defaultUserTransformer(vendor, config, entry);
@@ -1326,7 +1349,8 @@ describe('defaultGroupTransformerWithCaseSensitiveDNs', () => {
       },
     };
 
-    const entry = searchEntry({
+    const entry: Entry = {
+      dn: 'dn-VALUE',
       uid: ['uid-value'],
       description: ['description-value'],
       cn: ['cn-value'],
@@ -1335,7 +1359,7 @@ describe('defaultGroupTransformerWithCaseSensitiveDNs', () => {
       memberOf: ['x', 'y', 'z'],
       entryDN: ['dn-VALUE'],
       entryUUID: ['uuid-value'],
-    });
+    };
 
     const vendor = DefaultLdapVendor;
 
