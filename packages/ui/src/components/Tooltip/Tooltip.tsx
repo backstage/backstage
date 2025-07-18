@@ -25,9 +25,6 @@ import clsx from 'clsx';
 import { TooltipProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 
-const tooltipArrowPathDefinition =
-  'M30 0h-1a6.314 6.314 0 0 0-4.895 2.326l-7.555 9.271a2 2 0 0 1-3.1 0L5.895 2.326A6.314 6.314 0 0 0 1 0H0';
-
 /** @public */
 export const TooltipTrigger = (props: TooltipTriggerComponentProps) => {
   const { delay = 600 } = props;
@@ -48,14 +45,15 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
         ref={ref}
       >
         <OverlayArrow className={classNames.arrow}>
-          <svg width={30} height={30} viewBox="0 0 30 30">
+          <svg width={28} height={28} viewBox="0 0 28 28">
+            {/* Identical to the path below, but closed instead of open to fill the background. */}
             <path
               className={classNames.arrowFill}
-              d={tooltipArrowPathDefinition}
+              d="M28 .5c-2 0-3.696.854-4.895 2.326l-7.555 9.271a2 2 0 0 1-3.1 0L4.895 2.826C3.695 1.354 2 .5 0 .5H0h28Z"
             />
             <path
               className={classNames.arrowStroke}
-              d={tooltipArrowPathDefinition}
+              d="M28 .5c-2 0-3.696.854-4.895 2.326l-7.555 9.271a2 2 0 0 1-3.1 0L4.895 2.826C3.695 1.354 2 .5 0 .5"
             />
           </svg>
         </OverlayArrow>
