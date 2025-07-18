@@ -32,7 +32,11 @@ import {
   resolveRelations,
 } from './read';
 import { RecursivePartial } from './util';
-import { ActiveDirectoryVendor, DefaultLdapVendor } from './vendors';
+import {
+  ActiveDirectoryVendor,
+  DefaultLdapVendor,
+  FreeIpaVendor,
+} from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -325,7 +329,7 @@ describe('readLdapUsers', () => {
         ipaUniqueID: ['uuid-value'],
       },
     ];
-    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    client.getVendor.mockResolvedValue(FreeIpaVendor);
     client.search.mockResolvedValue({
       searchEntries,
       searchReferences: [],
@@ -387,7 +391,7 @@ describe('readLdapUsers', () => {
         entryUUID: ['uuid-value'],
       },
     ];
-    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    client.getVendor.mockResolvedValue(vendor);
     client.search.mockResolvedValue({
       searchEntries,
       searchReferences: [],

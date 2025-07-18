@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-import { Entry, SearchOptions } from 'ldapts';
-import { cloneDeep } from 'lodash';
+import { Entry } from 'ldapts';
 import { LdapVendor } from './vendors';
-
-/**
- * Builds a string form of an error.
- *
- * @param error - The error
- */
-export function errorString(error: any): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
 
 /**
  * Maps a single-valued attribute to a consumer.
@@ -56,29 +43,6 @@ export function mapStringAttr(
       setter(values[0]);
     }
   }
-}
-
-export function createOptions(inputOptions: SearchOptions): SearchOptions {
-  const result = cloneDeep(inputOptions);
-
-  // ldapts handles paging differently than ldapjs
-  // In ldapts, paged is a boolean or a paging options object
-  if (result.paged === true) {
-    // Use default page size
-    result.paged = true;
-  } else if (typeof result.paged === 'object' && result.paged !== null) {
-    // If it's an object, we need to map it to ldapts format
-    const pagedOptions: any = result.paged;
-    if (pagedOptions.pageSize) {
-      result.paged = {
-        pageSize: pagedOptions.pageSize,
-      };
-    } else {
-      result.paged = true;
-    }
-  }
-
-  return result;
 }
 
 export type RecursivePartial<T> = {

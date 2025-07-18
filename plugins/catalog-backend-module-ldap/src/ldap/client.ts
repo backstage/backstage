@@ -19,7 +19,6 @@ import { readFile } from 'fs/promises';
 import { Client, Entry, SearchOptions, SearchResult } from 'ldapts';
 import tlsLib from 'tls';
 import { BindConfig, TLSConfig } from './config';
-import { errorString } from './util';
 import {
   AEDirVendor,
   ActiveDirectoryVendor,
@@ -73,7 +72,7 @@ export class LdapClient {
         await client.bind(bind.dn, bind.secret);
       } catch (error) {
         await client.unbind();
-        throw error(`LDAP bind failed for ${bind.dn}, ${errorString(error)}`);
+        throw error(`LDAP bind failed for ${bind.dn}, ${error}`);
       }
     }
     return ldapClient;
