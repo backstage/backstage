@@ -274,8 +274,10 @@ function readOptionsConfig(c: Config | undefined): SearchOptions {
     attributes: c.getOptionalStringArray('attributes'),
     sizeLimit: c.getOptionalNumber('sizeLimit'),
     timeLimit: c.getOptionalNumber('timeLimit'),
-    derefAliases: c.getOptionalNumber('derefAliases'),
-    typesOnly: c.getOptionalBoolean('typesOnly'),
+    derefAliases: c.getOptionalNumber(
+      'derefAliases',
+    ) as SearchOptions['derefAliases'],
+    returnAttributeValues: c.getOptionalBoolean('attributeValues'),
     ...(paged !== undefined ? { paged } : undefined),
   };
 }
