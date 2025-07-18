@@ -95,7 +95,7 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
             <div className={classNames.toolbarIcon}>
               {icon || <RiShapesLine />}
             </div>
-            <Text variant="body">{title || 'Your plugin'}</Text>
+            <Text variant="body-medium">{title || 'Your plugin'}</Text>
           </div>
           {breadcrumbs && (
             <motion.div

@@ -12,12 +12,15 @@ import {
   linkDefaultSnippet,
   linkVariantsSnippet,
   linkWeightsSnippet,
+  linkColorsSnippet,
+  linkRouterSnippet,
+  linkTruncateSnippet,
 } from './link.props';
 import { ComponentInfos } from '@/components/ComponentInfos';
 
 # Link
 
-A link component that renders a `<a>` element.
+A link component that supports both internal routing and external navigation.
 
 <Snippet
   align="center"
@@ -30,12 +33,22 @@ A link component that renders a `<a>` element.
   component="link"
   classNames={[
     'bui-Link',
-    "bui-Link[data-variant='body']",
-    "bui-Link[data-variant='subtitle']",
-    "bui-Link[data-variant='caption']",
-    "bui-Link[data-variant='label']",
-    "bui-Link[data-weight='regular']",
-    "bui-Link[data-weight='bold']",
+    'bui-Text',
+    "bui-Text[data-variant='title-large']",
+    "bui-Text[data-variant='title-medium']",
+    "bui-Text[data-variant='title-small']",
+    "bui-Text[data-variant='title-x-small']",
+    "bui-Text[data-variant='body-large']",
+    "bui-Text[data-variant='body-medium']",
+    "bui-Text[data-variant='body-small']",
+    "bui-Text[data-variant='body-x-small']",
+    "bui-Text[data-weight='regular']",
+    "bui-Text[data-weight='bold']",
+    "bui-Text[data-color='primary']",
+    "bui-Text[data-color='secondary']",
+    "bui-Text[data-color='danger']",
+    "bui-Text[data-color='warning']",
+    "bui-Text[data-color='success']",
   ]}
   usageCode={linkUsageSnippet}
 />
@@ -43,6 +56,15 @@ A link component that renders a `<a>` element.
 ## API reference
 
 <PropsTable data={linkPropDefs} />
+
+## Router Integration
+
+The `Link` component handles both internal and external navigation. It automatically detects whether the provided URL is internal (relative path) or external (absolute URL with protocol) and renders the appropriate element:
+
+- **Internal routes**: Uses `react-router-dom`'s `Link` component for client-side navigation
+- **External URLs**: Renders a standard `<a>` element for traditional navigation
+
+<CodeBlock language="tsx" code={linkRouterSnippet} />
 
 ## Examples
 
@@ -68,4 +90,26 @@ Here's a view when links have different weights.
   open
   preview={<LinkSnippet story="AllWeights" />}
   code={linkWeightsSnippet}
+/>
+
+### Colors
+
+Here's a view when links have different colors.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<LinkSnippet story="AllColors" />}
+  code={linkColorsSnippet}
+/>
+
+### Truncate
+
+The `Link` component has a `truncate` prop that can be used to truncate the text.
+
+<Snippet
+  open
+  preview={<LinkSnippet story="Truncate" />}
+  code={linkTruncateSnippet}
 />

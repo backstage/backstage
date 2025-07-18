@@ -34,7 +34,7 @@ const TableCellLink = forwardRef<HTMLDivElement, TableCellLinkProps>(
       >
         {title && <Link href={href}>{title}</Link>}
         {description && (
-          <Text variant="body" color="secondary">
+          <Text variant="body-medium" color="secondary">
             {description}
           </Text>
         )}

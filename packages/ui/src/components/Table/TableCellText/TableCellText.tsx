@@ -31,9 +31,9 @@ const TableCellText = forwardRef<HTMLDivElement, TableCellTextProps>(
         className={clsx(classNames.cellText, className)}
         {...props}
       >
-        {title && <Text variant="body">{title}</Text>}
+        {title && <Text variant="body-medium">{title}</Text>}
         {description && (
-          <Text variant="body" color="secondary">
+          <Text variant="body-medium" color="secondary">
             {description}
           </Text>
         )}

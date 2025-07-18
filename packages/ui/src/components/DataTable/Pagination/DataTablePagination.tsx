@@ -70,7 +70,7 @@ const DataTablePagination = forwardRef(
           )}
         </div>
         <div className="bui-DataTablePagination--right">
-          <Text variant="body">{`${fromCount} - ${toCount} of ${rowCount}`}</Text>
+          <Text variant="body-medium">{`${fromCount} - ${toCount} of ${rowCount}`}</Text>
           <ButtonIcon
             variant="secondary"
             size="small"
