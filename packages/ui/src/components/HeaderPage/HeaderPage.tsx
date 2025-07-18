@@ -34,7 +34,9 @@ export const HeaderPage = (props: HeaderPageProps) => {
   return (
     <div className={classNames.root}>
       <div className={classNames.content}>
-        <Text variant="title-small">{title}</Text>
+        <Text variant="title-small" weight="bold">
+          {title}
+        </Text>
         <div className={classNames.controls}>
           {customActions}
           {menuItems && (
