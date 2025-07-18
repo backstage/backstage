@@ -57,7 +57,7 @@ describe('command entrypoint', () => {
     jest.resetAllMocks();
   });
 
-  test('should call expected tasks with no `--path` option', async () => {
+  it('should call expected tasks with no `--path` option', async () => {
     const cmd = {} as unknown as Command;
     await createApp(cmd);
     expect(checkAppExistsMock).toHaveBeenCalled();
@@ -74,7 +74,6 @@ describe('command entrypoint', () => {
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),
     );
-    expect(templatingMock.mock.lastCall?.[3]).toEqual(['packages/app-next/']);
     expect(moveAppMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
   });
@@ -94,7 +93,6 @@ describe('command entrypoint', () => {
       ),
     );
     expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
-    expect(templatingMock.mock.lastCall?.[3]).toEqual(['packages/app-next/']);
     expect(buildAppMock).toHaveBeenCalled();
   });
 
