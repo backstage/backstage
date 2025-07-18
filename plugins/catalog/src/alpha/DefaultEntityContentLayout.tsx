@@ -79,8 +79,7 @@ const useStyles = makeStyles<
     infoArea: {
       gridArea: 'info',
       position: 'sticky',
-      bottom: theme.spacing(3),
-      alignSelf: 'end',
+      top: theme.spacing(3),
       marginLeft: theme.spacing(3),
     },
     contentArea: {
