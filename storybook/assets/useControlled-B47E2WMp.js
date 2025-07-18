@@ -1,1 +1,0 @@
-import{r as t}from"./index-CTjT7uj6.js";function i(e){var a=e.controlled,r=e.default;e.name,e.state;var u=t.useRef(a!==void 0),l=u.current,o=t.useState(r),n=o[0],s=o[1],c=l?a:n,d=t.useCallback(function(v){l||s(v)},[]);return[c,d]}export{i as u};
