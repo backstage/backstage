@@ -36,7 +36,6 @@ import {
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
-import { Progress } from '@backstage/core-components';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
