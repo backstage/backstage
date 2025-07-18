@@ -591,6 +591,8 @@ export const componentDefinitions: {
     readonly classNames: {
       readonly tooltip: 'bui-Tooltip';
       readonly arrow: 'bui-TooltipArrow';
+      readonly arrowFill: 'bui-TooltipArrowFill';
+      readonly arrowStroke: 'bui-TooltipArrowStroke';
     };
   };
 };

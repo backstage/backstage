@@ -18,9 +18,10 @@
   box-shadow: 0 8px 20px rgba(0 0 0 / 0.1);
   border-radius: 4px;
   background: var(--bui-bg-surface-2);
+  border: var(--bui-border) solid 1px;
   forced-color-adjust: none;
   outline: none;
-  padding: var(--bui-space-2) var(--bui-space-3);
+  padding: var(--bui-space-3) var(--bui-space-4);
   max-width: 240px;
   /* fixes FF gap */
   transform: translate3d(0, 0, 0);
@@ -33,6 +34,27 @@
   &[data-exiting] {
     transform: var(--origin);
     opacity: 0;
+  }
+
+  & .bui-TooltipArrow {
+    svg {
+      /* The tooltip is rendered overlaying the main
+         tooltip element by 1px. This causes the borders
+         to overlap, which causes minor visual artifacts
+         with transparent border colors. To mitigate this,
+         we split the stroke and fill across separate
+         elements in order to guarantee that the stroke is
+         always overlaying a consistent color. */
+      path.bui-TooltipArrowFill {
+        stroke: var(--bui-bg-surface-2);
+        fill: var(--bui-bg-surface-2);
+      }
+
+      path.bui-TooltipArrowStroke {
+        stroke: var(--bui-border);
+        fill: transparent;
+      }
+    }
   }
 
   &[data-placement='top'] {

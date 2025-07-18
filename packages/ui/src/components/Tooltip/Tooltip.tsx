@@ -25,6 +25,9 @@ import clsx from 'clsx';
 import { TooltipProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 
+const tooltipArrowPathDefinition =
+  'M28-1 15.509 14.281a1.943 1.943 0 0 1-3.018 0L0-1';
+
 /** @public */
 export const TooltipTrigger = (props: TooltipTriggerComponentProps) => {
   const { delay = 600 } = props;
@@ -40,12 +43,20 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
     return (
       <AriaTooltip
         className={clsx(classNames.tooltip, className)}
+        offset={16}
         {...rest}
         ref={ref}
       >
         <OverlayArrow className={classNames.arrow}>
-          <svg width={8} height={8} viewBox="0 0 8 8">
-            <path d="M0 0 L4 4 L8 0" />
+          <svg width={28} height={28} viewBox="0 0 28 28">
+            <path
+              className={classNames.arrowFill}
+              d={tooltipArrowPathDefinition}
+            />
+            <path
+              className={classNames.arrowStroke}
+              d={tooltipArrowPathDefinition}
+            />
           </svg>
         </OverlayArrow>
         {children}
