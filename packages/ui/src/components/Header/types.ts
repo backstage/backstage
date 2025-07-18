@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TabsProps } from 'react-aria-components';
+
 /**
  * Props for the main Header component.
  *
@@ -26,6 +28,7 @@ export interface HeaderProps {
   customActions?: React.ReactNode;
   menuItems?: HeaderMenuItem[];
   tabs?: HeaderTab[];
+  onTabSelectionChange?: TabsProps['onSelectionChange'];
 }
 
 /**
