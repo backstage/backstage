@@ -10505,8 +10505,9 @@
 
 .bui-Tooltip {
   background: var(--bui-bg-surface-2);
+  border: var(--bui-border) solid 1px;
   forced-color-adjust: none;
-  padding: var(--bui-space-2) var(--bui-space-3);
+  padding: var(--bui-space-3) var(--bui-space-4);
   max-width: 240px;
   font-size: var(--bui-font-size-3);
   font-family: var(--bui-font-regular);
@@ -10520,6 +10521,20 @@
   &[data-entering], &[data-exiting] {
     transform: var(--origin);
     opacity: 0;
+  }
+
+  & .bui-TooltipArrow {
+    & svg {
+      & path.bui-TooltipArrowFill {
+        stroke: var(--bui-bg-surface-2);
+        fill: var(--bui-bg-surface-2);
+      }
+
+      & path.bui-TooltipArrowStroke {
+        stroke: var(--bui-border);
+        fill: #0000;
+      }
+    }
   }
 
   &[data-placement="top"] {
