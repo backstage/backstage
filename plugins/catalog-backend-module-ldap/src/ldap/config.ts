@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
-import { SearchOptions } from 'ldapjs';
+import { SearchOptions } from 'ldapts';
 import mergeWith from 'lodash/mergeWith';
 import { trimEnd } from 'lodash';
 import { RecursivePartial } from './util';

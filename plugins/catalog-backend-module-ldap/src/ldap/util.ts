@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import { Error as LDAPError, SearchEntry, SearchOptions } from 'ldapjs';
+import { Entry, SearchOptions } from 'ldapts';
 import { cloneDeep } from 'lodash';
 import { LdapVendor } from './vendors';
 
 /**
- * Builds a string form of an LDAP Error structure.
+ * Builds a string form of an error.
  *
  * @param error - The error
  */
-export function errorString(error: LDAPError) {
-  return `${error.code} ${error.name}: ${error.message}`;
+export function errorString(error: any): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
 }
 
 /**
@@ -42,7 +45,7 @@ export function errorString(error: LDAPError) {
  * @public
  */
 export function mapStringAttr(
-  entry: SearchEntry,
+  entry: Entry,
   vendor: LdapVendor,
   attributeName: string | undefined,
   setter: (value: string) => void,
@@ -58,10 +61,21 @@ export function mapStringAttr(
 export function createOptions(inputOptions: SearchOptions): SearchOptions {
   const result = cloneDeep(inputOptions);
 
+  // ldapts handles paging differently than ldapjs
+  // In ldapts, paged is a boolean or a paging options object
   if (result.paged === true) {
-    result.paged = { pagePause: true };
-  } else if (typeof result.paged === 'object') {
-    result.paged.pagePause = true;
+    // Use default page size
+    result.paged = true;
+  } else if (typeof result.paged === 'object' && result.paged !== null) {
+    // If it's an object, we need to map it to ldapts format
+    const pagedOptions: any = result.paged;
+    if (pagedOptions.pageSize) {
+      result.paged = {
+        pageSize: pagedOptions.pageSize,
+      };
+    } else {
+      result.paged = true;
+    }
   }
 
   return result;

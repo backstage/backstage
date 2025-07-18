@@ -47,6 +47,7 @@
     "@backstage/types": "workspace:^",
     "@types/ldapjs": "^2.2.5",
     "ldapjs": "^2.3.3",
+    "ldapts": "^8.0.6",
     "lodash": "^4.17.21",
     "uuid": "^11.0.0"
   },
