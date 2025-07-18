@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ForwardedError } from '@backstage/errors';
+// import { ForwardedError } from '@backstage/errors';
 import { readFile } from 'fs/promises';
-import { Client, Entry, SearchOptions, SearchResult } from 'ldapts';
+import { Client, Entry, SearchOptions } from 'ldapts';
 import tlsLib from 'tls';
 import { BindConfig, TLSConfig } from './config';
 import { errorString } from './util';
@@ -29,7 +29,7 @@ import {
   FreeIpaVendor,
   LdapVendor,
 } from './vendors';
-import { LoggerService } from '@backstage/backend-plugin-api';
+// import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Basic wrapper for the `ldapjs` library.
@@ -43,7 +43,7 @@ export class LdapClient {
   private vendor: Promise<LdapVendor> | undefined;
 
   static async create(
-    logger: LoggerService,
+    // logger: LoggerService,
     target: string,
     bind?: BindConfig,
     tls?: TLSConfig,
@@ -66,7 +66,7 @@ export class LdapClient {
       },
     });
 
-    const ldapClient = new LdapClient(client, logger);
+    const ldapClient = new LdapClient(client);
 
     if (bind) {
       try {
@@ -80,8 +80,8 @@ export class LdapClient {
   }
   constructor(
     private readonly client: Client,
-    private readonly logger: LoggerService,
-  ) {}
+  ) // private readonly logger: LoggerService,
+  {}
 
   /**
    * Performs an LDAP search operation.
@@ -89,26 +89,26 @@ export class LdapClient {
    * @param dn - The fully qualified base DN to search within
    * @param options - The search options
    */
-  async search(dn: string, options: SearchOptions): Promise<SearchResult> {
-    this.logger.debug(`Reading LDAP entries so far`);
-    try {
-      const ldaptsOptions: SearchOptions = {
-        scope: options.scope,
-        filter: options.filter,
-        attributes: options.attributes,
-        sizeLimit: options.sizeLimit,
-        timeLimit: options.timeLimit,
-        derefAliases: options.derefAliases,
-        paged: options.paged,
-      };
+  // async search(dn: string, options: SearchOptions): Promise<SearchResult> {
+  //   this.logger.debug(`Reading LDAP entries so far`);
+  //   try {
+  //     const ldaptsOptions: SearchOptions = {
+  //       scope: options.scope,
+  //       filter: options.filter,
+  //       attributes: options.attributes,
+  //       sizeLimit: options.sizeLimit,
+  //       timeLimit: options.timeLimit,
+  //       derefAliases: options.derefAliases,
+  //       paged: options.paged,
+  //     };
 
-      const result = await this.client.search(dn, ldaptsOptions);
+  //     const result = await this.client.search(dn, ldaptsOptions);
 
-      return result;
-    } catch (e) {
-      throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
-    }
-  }
+  //     return result;
+  //   } catch (e) {
+  //     throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
+  //   }
+  // }
 
   /**
    * Performs an LDAP search operation, calls a function on each entry to limit memory usage
@@ -222,7 +222,7 @@ export class LdapClient {
    * @see https://ldapwiki.com/wiki/RootDSE
    */
   async getRootDSE(): Promise<Entry | undefined> {
-    const result = await this.search('', {
+    const result = await this.client.search('', {
       scope: 'base',
       filter: '(objectclass=*)',
     } as SearchOptions);

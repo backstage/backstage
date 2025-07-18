@@ -284,7 +284,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
     // inefficient, we usually only do this once per entire refresh loop and
     // don't have to worry about timeouts and reconnects etc.
     const client = await LdapClient.create(
-      this.options.logger,
+      // this.options.logger,
       this.options.provider.target,
       this.options.provider.bind,
       this.options.provider.tls,
