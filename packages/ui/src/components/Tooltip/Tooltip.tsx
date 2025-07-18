@@ -40,20 +40,20 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
     return (
       <AriaTooltip
         className={clsx(classNames.tooltip, className)}
-        offset={14}
+        offset={16}
         {...rest}
         ref={ref}
       >
         <OverlayArrow className={classNames.arrow}>
-          <svg width={28} height={28} viewBox="0 0 28 28">
+          <svg width={32} height={32} viewBox="0 0 32 32">
             {/* Identical to the path below, but closed instead of open to fill the background. */}
             <path
               className={classNames.arrowFill}
-              d="M28 .5c-2 0-3.696.854-4.895 2.326l-7.555 9.271a2 2 0 0 1-3.1 0L4.895 2.826C3.695 1.354 2 .5 0 .5H0h28Z"
+              d="M32 .5c-2.6 0-3.6.5-4.6 1.7l-9.9 12a2 2 0 0 1-3 0l-9.9-12C3.6 1 2.6.5 0 .5H0h32Z"
             />
             <path
               className={classNames.arrowStroke}
-              d="M28 .5c-2 0-3.696.854-4.895 2.326l-7.555 9.271a2 2 0 0 1-3.1 0L4.895 2.826C3.695 1.354 2 .5 0 .5"
+              d="M32 .5c-2.6 0-3.6.5-4.6 1.7l-9.9 12a2 2 0 0 1-3 0l-9.9-12C3.6 1 2.6.5 0 .5"
             />
           </svg>
         </OverlayArrow>
