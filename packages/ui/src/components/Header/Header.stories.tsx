@@ -40,7 +40,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const withRouter = (Story: StoryFn) => (
+export const withRouter = (Story: StoryFn) => (
   <MemoryRouter>
     <Story />
   </MemoryRouter>
@@ -113,7 +113,7 @@ const menuItems: HeaderMenuItem[] = [
 ];
 
 // Extract layout decorator as a reusable constant
-const layoutDecorator = [
+export const layoutDecorator = [
   (Story: StoryFn) => (
     <>
       <div
@@ -281,10 +281,10 @@ export const WithMockedURLCampaigns: Story = {
     <MemoryRouter initialEntries={['/campaigns']}>
       <Header {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           Current URL is mocked to be: <strong>/campaigns</strong>
         </Text>
-        <Text>
+        <Text as="p">
           Notice how the "Campaigns" tab is selected (highlighted) because it
           matches the current path.
         </Text>
@@ -301,10 +301,10 @@ export const WithMockedURLIntegrations: Story = {
     <MemoryRouter initialEntries={['/integrations']}>
       <Header {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           Current URL is mocked to be: <strong>/integrations</strong>
         </Text>
-        <Text>
+        <Text as="p">
           Notice how the "Integrations" tab is selected (highlighted) because it
           matches the current path.
         </Text>
@@ -321,14 +321,14 @@ export const WithMockedURLNoMatch: Story = {
     <MemoryRouter initialEntries={['/some-other-page']}>
       <Header {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           Current URL is mocked to be: <strong>/some-other-page</strong>
         </Text>
-        <Text>
+        <Text as="p">
           No tab is selected because the current path doesn't match any tab's
           href.
         </Text>
-        <Text>
+        <Text as="p">
           Tabs without href (like "Overview", "Checks", "Tracks") fall back to
           React Aria's internal state.
         </Text>

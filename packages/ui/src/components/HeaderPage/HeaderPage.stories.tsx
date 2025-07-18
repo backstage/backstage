@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { HeaderPage } from './HeaderPage';
 import type { HeaderTab, HeaderMenuItem } from '../Header/types';
-import { MemoryRouter } from 'react-router-dom';
 import { Button } from '../Button';
+import { layoutDecorator, withRouter } from '../Header/Header.stories';
 
 const meta = {
   title: 'Components/HeaderPage',
@@ -26,13 +26,6 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
-  decorators: [
-    (Story: StoryFn) => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
 } satisfies Meta<typeof HeaderPage>;
 
 export default meta;
@@ -72,47 +65,6 @@ const menuItems: HeaderMenuItem[] = [
   },
 ];
 
-// Extract layout decorator as a reusable constant
-const layoutDecorator = [
-  (Story: StoryFn) => (
-    <>
-      <div
-        style={{
-          width: '250px',
-          position: 'fixed',
-          left: 8,
-          top: 8,
-          bottom: 8,
-          backgroundColor: 'var(--bui-bg-surface-1',
-          borderRadius: 'var(--bui-radius-2)',
-          border: '1px solid var(--bui-border)',
-          zIndex: 1,
-        }}
-      />
-      <div
-        style={{
-          paddingInline: '266px',
-        }}
-      >
-        <Story />
-      </div>
-      <div
-        style={{
-          width: '250px',
-          position: 'fixed',
-          right: 8,
-          top: 8,
-          bottom: 8,
-          backgroundColor: 'var(--bui-bg-surface-1',
-          borderRadius: 'var(--bui-radius-2)',
-          border: '1px solid var(--bui-border)',
-          zIndex: 1,
-        }}
-      />
-    </>
-  ),
-];
-
 export const Default: Story = {
   args: {
     title: 'Header Page',
@@ -124,6 +76,7 @@ export const WithTabs: Story = {
     ...Default.args,
     tabs,
   },
+  decorators: [withRouter],
 };
 
 export const WithMenuItems: Story = {
@@ -144,6 +97,7 @@ export const WithCustomActions: Story = {
 };
 
 export const WithEverything: Story = {
+  decorators: [withRouter],
   render: () => (
     <HeaderPage
       {...Default.args}
@@ -159,4 +113,12 @@ export const WithLayout: Story = {
     ...WithEverything.args,
   },
   decorators: layoutDecorator,
+  render: () => (
+    <HeaderPage
+      {...Default.args}
+      menuItems={menuItems}
+      tabs={tabs}
+      customActions={<Button>Custom action</Button>}
+    />
+  ),
 };
