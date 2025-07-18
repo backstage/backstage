@@ -634,6 +634,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SerializedTask'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -706,6 +708,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SerializedTaskEvent'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
       parameters:
         - $ref: '#/components/parameters/eventsAfter'
         - $ref: '#/components/parameters/taskId'

@@ -22,13 +22,3 @@
  * @public
  */
 export type TaskEventType = 'cancelled' | 'completion' | 'log' | 'recovered';
-
-/**
- * @public
- */
-export const TaskEventType = {
-  Cancelled: 'cancelled' as TaskEventType,
-  Completion: 'completion' as TaskEventType,
-  Log: 'log' as TaskEventType,
-  Recovered: 'recovered' as TaskEventType,
-};

@@ -70,7 +70,7 @@ export type GetTask = {
   path: {
     taskId: string;
   };
-  response: SerializedTask;
+  response: SerializedTask | Error;
 };
 /**
  * @public
@@ -135,7 +135,7 @@ export type StreamLogsPolling = {
   query: {
     after?: number;
   };
-  response: Array<SerializedTaskEvent>;
+  response: Array<SerializedTaskEvent> | Error;
 };
 
 export type EndpointMap = {

@@ -28,15 +28,3 @@ export type TaskStatus =
   | 'open'
   | 'processing'
   | 'skipped';
-
-/**
- * @public
- */
-export const TaskStatus = {
-  Cancelled: 'cancelled' as TaskStatus,
-  Completed: 'completed' as TaskStatus,
-  Failed: 'failed' as TaskStatus,
-  Open: 'open' as TaskStatus,
-  Processing: 'processing' as TaskStatus,
-  Skipped: 'skipped' as TaskStatus,
-};

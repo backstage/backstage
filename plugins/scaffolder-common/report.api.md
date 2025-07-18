@@ -356,16 +356,6 @@ export type ScaffolderTaskStatus =
   | 'processing'
   | 'skipped';
 
-// @public (undocumented)
-export const ScaffolderTaskStatus: {
-  Cancelled: ScaffolderTaskStatus;
-  Completed: ScaffolderTaskStatus;
-  Failed: ScaffolderTaskStatus;
-  Open: ScaffolderTaskStatus;
-  Processing: ScaffolderTaskStatus;
-  Skipped: ScaffolderTaskStatus;
-};
-
 // @public
 export type ScaffolderUsageExample = {
   description?: string;
@@ -375,14 +365,6 @@ export type ScaffolderUsageExample = {
 
 // @public (undocumented)
 export type TaskEventType = 'cancelled' | 'completion' | 'log' | 'recovered';
-
-// @public (undocumented)
-export const TaskEventType: {
-  Cancelled: TaskEventType;
-  Completion: TaskEventType;
-  Log: TaskEventType;
-  Recovered: TaskEventType;
-};
 
 // @public
 export type TaskRecoverStrategy = 'none' | 'startOver';
