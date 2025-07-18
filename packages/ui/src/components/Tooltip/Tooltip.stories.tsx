@@ -15,110 +15,111 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
+import { Placement } from '@react-types/overlays';
 import { TooltipTrigger, Tooltip } from './Tooltip';
 import { Button } from '../Button/Button';
 
 const meta = {
   title: 'Components/Tooltip',
   component: TooltipTrigger,
-} satisfies Meta<typeof TooltipTrigger>;
+  parameters: { layout: 'centered' },
+  argTypes: {
+    isOpen: {
+      control: { type: 'boolean' },
+    },
+    isDisabled: {
+      control: { type: 'boolean' },
+    },
+    placement: {
+      options: ['top', 'right', 'bottom', 'left'],
+      control: { type: 'inline-radio' },
+    },
+    delay: {
+      control: { type: 'number' },
+    },
+    closeDelay: {
+      control: { type: 'number' },
+    },
+  },
+  render: ({ tooltip, isOpen, isDisabled, placement, delay, closeDelay }) => (
+    <TooltipTrigger
+      isOpen={isOpen}
+      isDisabled={isDisabled}
+      delay={delay}
+      closeDelay={closeDelay}
+    >
+      <Button>Button</Button>
+      <Tooltip placement={placement}>{tooltip ?? 'I am a tooltip'}</Tooltip>
+    </TooltipTrigger>
+  ),
+} as Meta<{
+  tooltip?: string;
+  isOpen?: boolean;
+  isDisabled?: boolean;
+  placement?: Placement;
+  delay?: number;
+  closeDelay?: number;
+}>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { children: '' },
-  render: () => (
-    <TooltipTrigger>
-      <Button>Button</Button>
-      <Tooltip>I am a tooltip</Tooltip>
-    </TooltipTrigger>
-  ),
+  args: {
+    tooltip: 'I am a tooltip',
+  },
 };
 
 export const IsOpen: Story = {
   args: {
     ...Default.args,
+    isOpen: true,
   },
-  render: () => (
-    <TooltipTrigger isOpen>
-      <Button>Button</Button>
-      <Tooltip>I am a tooltip</Tooltip>
-    </TooltipTrigger>
-  ),
 };
 
 export const IsDisabled: Story = {
   args: {
     ...Default.args,
+    isDisabled: true,
   },
-  render: () => (
-    <TooltipTrigger isDisabled>
-      <Button>Button</Button>
-      <Tooltip>I am a tooltip</Tooltip>
-    </TooltipTrigger>
-  ),
 };
 
-export const PlacementTop: Story = {
+export const NoDelays: Story = {
   args: {
     ...Default.args,
+    delay: 0,
+    closeDelay: 0,
   },
-  render: () => (
-    <TooltipTrigger>
-      <Button>Button</Button>
-      <Tooltip placement="top">I am a tooltip</Tooltip>
-    </TooltipTrigger>
-  ),
 };
 
-export const PlacementRight: Story = {
+export const OrthogonalPlacements: Story = {
+  parameters: {
+    controls: {
+      exclude: ['placement'],
+    },
+  },
   args: {
     ...Default.args,
+    isOpen: true,
   },
-  render: () => (
-    <TooltipTrigger>
-      <Button>Button</Button>
-      <Tooltip placement="right">I am a tooltip</Tooltip>
-    </TooltipTrigger>
-  ),
-};
-
-export const PlacementLeft: Story = {
-  args: {
-    ...Default.args,
+  render: ({ isOpen, tooltip }) => {
+    return (
+      <TooltipTrigger isOpen={isOpen}>
+        <Button>Button</Button>
+        <Tooltip placement="top">{tooltip}</Tooltip>
+        <Tooltip placement="right">{tooltip}</Tooltip>
+        <Tooltip placement="bottom">{tooltip}</Tooltip>
+        <Tooltip placement="left">{tooltip}</Tooltip>
+      </TooltipTrigger>
+    );
   },
-  render: () => (
-    <TooltipTrigger>
-      <Button>Button</Button>
-      <Tooltip placement="left">I am a tooltip</Tooltip>
-    </TooltipTrigger>
-  ),
-};
-
-export const PlacementBottom: Story = {
-  args: {
-    ...Default.args,
-  },
-  render: () => (
-    <TooltipTrigger>
-      <Button>Button</Button>
-      <Tooltip placement="bottom">I am a tooltip</Tooltip>
-    </TooltipTrigger>
-  ),
 };
 
 export const WithLongText: Story = {
   args: {
     ...Default.args,
+    isOpen: true,
+    tooltip:
+      'I am a tooltip with a very long text. orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
   },
-  render: () => (
-    <TooltipTrigger isOpen>
-      <Button>Button</Button>
-      <Tooltip placement="bottom">
-        I am a tooltip with a very long text. I am a tooltip with a very long
-        text.
-      </Tooltip>
-    </TooltipTrigger>
-  ),
 };
