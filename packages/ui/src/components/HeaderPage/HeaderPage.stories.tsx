@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { HeaderPage } from './HeaderPage';
 import type { HeaderTab, HeaderMenuItem } from '../Header/types';
 import { Button } from '../Button';
-import { layoutDecorator, withRouter } from '../Header/Header.stories';
+import { MemoryRouter } from 'react-router-dom';
+import { Container } from '../Container';
+import { Text } from '../Text';
 
 const meta = {
   title: 'Components/HeaderPage',
@@ -30,6 +32,12 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+const withRouter = (Story: StoryFn) => (
+  <MemoryRouter>
+    <Story />
+  </MemoryRouter>
+);
 
 const tabs: HeaderTab[] = [
   {
@@ -63,6 +71,57 @@ const menuItems: HeaderMenuItem[] = [
     label: 'Invite new members',
     value: 'invite-new-members',
   },
+];
+
+// Extract layout decorator as a reusable constant
+export const layoutDecorator = [
+  (Story: StoryFn) => (
+    <>
+      <div
+        style={{
+          width: '250px',
+          position: 'fixed',
+          left: 'var(--sb-panel-left)',
+          top: 'var(--sb-panel-top)',
+          bottom: 'var(--sb-panel-bottom)',
+          backgroundColor: 'var(--bui-bg-surface-1)',
+          borderRadius: 'var(--sb-panel-radius)',
+          border: 'var(--sb-sidebar-border)',
+          borderRight: 'var(--sb-sidebar-border-right)',
+          zIndex: 1,
+        }}
+      />
+      <div
+        style={{
+          paddingInline: 'var(--sb-content-padding-inline)',
+          minHeight: '200vh',
+        }}
+      >
+        <Story />
+        <Container>
+          <Text>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+        </Container>
+      </div>
+      <div
+        style={{
+          width: '250px',
+          position: 'fixed',
+          right: 'var(--sb-panel-right)',
+          top: 'var(--sb-panel-top)',
+          bottom: 'var(--sb-panel-bottom)',
+          backgroundColor: 'var(--bui-bg-surface-1)',
+          borderRadius: 'var(--sb-panel-radius)',
+          border: 'var(--sb-options-border)',
+          borderLeft: 'var(--sb-options-border-left)',
+          zIndex: 1,
+        }}
+      />
+    </>
+  ),
+  withRouter,
 ];
 
 export const Default: Story = {

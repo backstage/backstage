@@ -40,7 +40,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const withRouter = (Story: StoryFn) => (
+const withRouter = (Story: StoryFn) => (
   <MemoryRouter>
     <Story />
   </MemoryRouter>
@@ -113,7 +113,7 @@ const menuItems: HeaderMenuItem[] = [
 ];
 
 // Extract layout decorator as a reusable constant
-export const layoutDecorator = [
+const layoutDecorator = [
   (Story: StoryFn) => (
     <>
       <div
