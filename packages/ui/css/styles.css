@@ -10504,10 +10504,10 @@
 }
 
 .bui-Tooltip {
-  background: var(--bui-bg-surface-2);
-  border: var(--bui-border) solid 1px;
+  background: var(--bui-bg-surface-1);
+  border: 1px solid var(--bui-gray-3);
   forced-color-adjust: none;
-  padding: var(--bui-space-3) var(--bui-space-4);
+  padding: var(--bui-space-2) var(--bui-space-3);
   max-width: 240px;
   font-size: var(--bui-font-size-3);
   font-family: var(--bui-font-regular);
@@ -10516,63 +10516,70 @@
   outline: none;
   transition: transform .2s, opacity .2s;
   transform: translate3d(0, 0, 0);
-  box-shadow: 0 8px 20px #0000001a;
+  box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
 
   &[data-entering], &[data-exiting] {
     transform: var(--origin);
     opacity: 0;
   }
+}
 
-  & .bui-TooltipArrow {
-    & svg {
-      & path.bui-TooltipArrowFill {
-        stroke: var(--bui-bg-surface-2);
-        fill: var(--bui-bg-surface-2);
-      }
-
-      & path.bui-TooltipArrowStroke {
-        stroke: var(--bui-border);
-        fill: #0000;
-      }
-    }
+.bui-TooltipArrow {
+  & svg {
+    display: block;
   }
 
   &[data-placement="top"] {
-    margin-bottom: var(--bui-space-2);
-    --origin: translateY(4px);
+    transform: translateY(4px);
+
+    & svg {
+      transform: translateY(-2px);
+    }
   }
 
   &[data-placement="bottom"] {
-    margin-top: var(--bui-space-2);
-    --origin: translateY(-4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(180deg);
+    & svg {
+      transform: rotate(180deg)translateY(-2px);
     }
   }
 
   &[data-placement="right"] {
-    margin-left: var(--bui-space-2);
-    --origin: translateX(-4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(90deg);
+    & svg {
+      transform: rotate(90deg)translateY(-7px);
     }
   }
 
   &[data-placement="left"] {
-    margin-right: var(--bui-space-2);
-    --origin: translateX(4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(-90deg);
+    & svg {
+      transform: rotate(-90deg)translateY(-7px);
     }
   }
 }
 
-.bui-TooltipArrow svg {
-  fill: var(--bui-bg-surface-1);
-  display: block;
+.bui-TooltipArrowFill {
+  fill: canvas;
+}
+
+.bui-TooltipArrowStroke {
+  fill: var(--bui-gray-3);
+}
+
+[data-theme="dark"] {
+  & .bui-Tooltip {
+    background: var(--bui-bg-surface-2);
+    box-shadow: none;
+    border: 1px solid var(--bui-gray-4);
+  }
+
+  & .bui-TooltipArrow {
+    & .bui-TooltipArrowFill {
+      fill: var(--bui-bg-surface-2);
+    }
+
+    & .bui-TooltipArrowStroke {
+      fill: var(--bui-gray-4);
+    }
+  }
 }
 
 .bui-ScrollAreaRoot {

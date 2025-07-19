@@ -34,26 +34,25 @@ export const TooltipTrigger = (props: TooltipTriggerComponentProps) => {
 
 /** @public */
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
-  ({ className, children, ...rest }, ref) => {
+  ({ className, children, offset = 12, ...rest }, ref) => {
     const { classNames } = useStyles('Tooltip');
 
     return (
       <AriaTooltip
         className={clsx(classNames.tooltip, className)}
-        offset={16}
+        offset={offset}
         {...rest}
         ref={ref}
       >
         <OverlayArrow className={classNames.arrow}>
-          <svg width={32} height={32} viewBox="0 0 32 32">
-            {/* Identical to the path below, but closed instead of open to fill the background. */}
+          <svg width="20" height="10" viewBox="0 0 20 10" fill="none">
             <path
               className={classNames.arrowFill}
-              d="M32 .5c-2.6 0-3.6.5-4.6 1.7l-9.9 12a2 2 0 0 1-3 0l-9.9-12C3.6 1 2.6.5 0 .5H0h32Z"
+              d="M10.3356 7.39793L15.1924 3.02682C15.9269 2.36577 16.8801 2 17.8683 2H20V7.94781e-07L1.74846e-07 -9.53674e-07L0 2L1.4651 2C2.4532 2 3.4064 2.36577 4.1409 3.02682L8.9977 7.39793C9.378 7.7402 9.9553 7.74021 10.3356 7.39793Z"
             />
             <path
               className={classNames.arrowStroke}
-              d="M32 .5c-2.6 0-3.6.5-4.6 1.7l-9.9 12a2 2 0 0 1-3 0l-9.9-12C3.6 1 2.6.5 0 .5"
+              d="M11.0046 8.14124C10.2439 8.82575 9.08939 8.82578 8.32869 8.14122L3.47189 3.77011C2.92109 3.27432 2.20619 2.99999 1.46509 2.99999L4.10999 3L8.99769 7.39793C9.37799 7.7402 9.95529 7.7402 10.3356 7.39793L15.2226 3L17.8683 2.99999C17.1271 2.99999 16.4122 3.27432 15.8614 3.77011L11.0046 8.14124Z"
             />
           </svg>
         </OverlayArrow>
