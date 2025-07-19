@@ -286,8 +286,6 @@ export const componentDefinitions = {
     classNames: {
       tooltip: 'bui-Tooltip',
       arrow: 'bui-TooltipArrow',
-      arrowFill: 'bui-TooltipArrowFill',
-      arrowStroke: 'bui-TooltipArrowStroke',
     },
   },
 } as const satisfies Record<string, ComponentDefinition>;

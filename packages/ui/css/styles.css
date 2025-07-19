@@ -10554,14 +10554,14 @@
       transform: rotate(-90deg)translateY(-7px);
     }
   }
-}
 
-.bui-TooltipArrowFill {
-  fill: canvas;
-}
+  & svg path:first-child {
+    fill: canvas;
+  }
 
-.bui-TooltipArrowStroke {
-  fill: var(--bui-gray-3);
+  & svg path:nth-child(2) {
+    fill: var(--bui-gray-3);
+  }
 }
 
 [data-theme="dark"] {
@@ -10572,11 +10572,11 @@
   }
 
   & .bui-TooltipArrow {
-    & .bui-TooltipArrowFill {
+    & svg path:first-child {
       fill: var(--bui-bg-surface-2);
     }
 
-    & .bui-TooltipArrowStroke {
+    & svg path:nth-child(2) {
       fill: var(--bui-gray-4);
     }
   }
