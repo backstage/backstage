@@ -64,10 +64,19 @@ import {
   validateRequestBody,
 } from './util';
 
-// Helper function to generate ETag based on query parameters
-function generateQueryETag(query: Record<string, any>): string {
-  const queryString = JSON.stringify(query, Object.keys(query).sort());
-  return createHash('md5').update(queryString).digest('hex');
+// Helper function to generate ETag based on query parameters and total count
+function generateQueryETag(query: Record<string, any>, totalItems?: number): string {
+  const etagData = {
+    query: Object.keys(query)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = query[key];
+        return acc;
+      }, {} as Record<string, any>),
+    totalItems,
+  };
+  const dataString = JSON.stringify(etagData);
+  return createHash('md5').update(dataString).digest('hex');
 }
 
 /**
@@ -216,19 +225,10 @@ export async function createRouter(
             return;
           }
 
-          // Generate ETag for the streaming response based on query parameters
-          const etag = `"${generateQueryETag(req.query)}"`;
-          res.setHeader('ETag', etag);
-
-          // Handle conditional requests
-          if (req.headers['if-none-match'] === etag) {
-            res.status(304).end();
-            return;
-          }
-
           const responseStream = createEntityArrayJsonStream(res);
           const limit = 10000;
           let cursor: Cursor | undefined;
+          let totalItems: number | undefined;
 
           try {
             let currentWrite: Promise<boolean> | undefined = undefined;
@@ -241,10 +241,23 @@ export async function createRouter(
                       limit,
                       filter,
                       orderFields: order,
-                      skipTotalItems: true,
+                      skipTotalItems: false, // Include totalItems for ETag generation
                     }
                   : { credentials, fields, limit, cursor },
               );
+
+              // Generate ETag using query parameters and total count from first request
+              if (!cursor && totalItems === undefined) {
+                totalItems = result.totalItems;
+                const etag = `"${generateQueryETag(req.query, totalItems)}"`;
+                res.setHeader('ETag', etag);
+
+                // Handle conditional requests
+                if (req.headers['if-none-match'] === etag) {
+                  res.status(304).end();
+                  return;
+                }
+              }
 
               // Wait for previous write to complete
               if (await currentWrite) {

@@ -214,12 +214,48 @@ describe('createRouter readonly disabled', () => {
       expect(response1.status).toEqual(200);
       const etag = response1.headers['etag'];
 
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [entities[0]] },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
       // Second request with If-None-Match header
       const response2 = await request(app)
         .get('/entities?kind=Component')
         .set('If-None-Match', etag);
 
       expect(response2.status).toEqual(304);
+    });
+
+    it('generates different ETags when totalItems changes', async () => {
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      // First request with totalItems: 1
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [entities[0]] },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
+      const response1 = await request(app).get('/entities?kind=Component');
+      expect(response1.status).toEqual(200);
+      const etag1 = response1.headers['etag'];
+
+      // Second request with totalItems: 2
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [entities[0]] },
+        pageInfo: {},
+        totalItems: 2,
+      });
+
+      const response2 = await request(app).get('/entities?kind=Component');
+      expect(response2.status).toEqual(200);
+      const etag2 = response2.headers['etag'];
+
+      expect(etag1).not.toEqual(etag2);
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
