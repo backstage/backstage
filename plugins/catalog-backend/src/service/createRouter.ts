@@ -64,8 +64,8 @@ import {
   validateRequestBody,
 } from './util';
 
-// Helper function to generate ETag based on query parameters and total count
-function generateQueryETag(query: Record<string, any>, totalItems?: number): string {
+// Helper function to generate ETag based on query parameters and entity data
+function generateQueryETag(query: Record<string, any>, entityETags: string[]): string {
   const etagData = {
     query: Object.keys(query)
       .sort()
@@ -73,7 +73,7 @@ function generateQueryETag(query: Record<string, any>, totalItems?: number): str
         acc[key] = query[key];
         return acc;
       }, {} as Record<string, any>),
-    totalItems,
+    entityETags: entityETags.sort(), // Sort to ensure consistent order
   };
   const dataString = JSON.stringify(etagData);
   return createHash('md5').update(dataString).digest('hex');
@@ -225,10 +225,55 @@ export async function createRouter(
             return;
           }
 
+          // First, get all entity ETags for proper ETag generation
+          const etagFields = (entity: Entity) => ({
+            metadata: {
+              uid: entity.metadata.uid,
+              etag: entity.metadata.etag,
+            },
+          } as Entity);
+
+          let allEntityETags: string[] = [];
+          let etagCursor: Cursor | undefined;
+          const etagLimit = 10000;
+
+          // Collect all entity ETags that match the query
+          do {
+            const etagResult = await entitiesCatalog.queryEntities(
+              !etagCursor
+                ? {
+                    credentials,
+                    fields: etagFields,
+                    limit: etagLimit,
+                    filter,
+                    orderFields: order,
+                    skipTotalItems: false,
+                  }
+                : { credentials, fields: etagFields, limit: etagLimit, cursor: etagCursor },
+            );
+
+            // Collect ETags from this batch
+            const batchETags = etagResult.items.entities
+              .map(entity => entity?.metadata?.etag)
+              .filter((etag): etag is string => !!etag);
+            allEntityETags.push(...batchETags);
+
+            etagCursor = etagResult.pageInfo?.nextCursor;
+          } while (etagCursor);
+
+          // Generate ETag based on query parameters and entity ETags
+          const etag = `"${generateQueryETag(req.query, allEntityETags)}"`;
+          res.setHeader('ETag', etag);
+
+          // Handle conditional requests
+          if (req.headers['if-none-match'] === etag) {
+            res.status(304).end();
+            return;
+          }
+
           const responseStream = createEntityArrayJsonStream(res);
           const limit = 10000;
           let cursor: Cursor | undefined;
-          let totalItems: number | undefined;
 
           try {
             let currentWrite: Promise<boolean> | undefined = undefined;
@@ -241,23 +286,10 @@ export async function createRouter(
                       limit,
                       filter,
                       orderFields: order,
-                      skipTotalItems: false, // Include totalItems for ETag generation
+                      skipTotalItems: true, // Skip totalItems since we don't need it for streaming
                     }
                   : { credentials, fields, limit, cursor },
               );
-
-              // Generate ETag using query parameters and total count from first request
-              if (!cursor && totalItems === undefined) {
-                totalItems = result.totalItems;
-                const etag = `"${generateQueryETag(req.query, totalItems)}"`;
-                res.setHeader('ETag', etag);
-
-                // Handle conditional requests
-                if (req.headers['if-none-match'] === etag) {
-                  res.status(304).end();
-                  return;
-                }
-              }
 
               // Wait for previous write to complete
               if (await currentWrite) {

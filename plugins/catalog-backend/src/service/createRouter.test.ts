@@ -182,9 +182,35 @@ describe('createRouter readonly disabled', () => {
 
     it('sets ETag header for streaming responses', async () => {
       const entities: Entity[] = [
-        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+        { 
+          apiVersion: 'a', 
+          kind: 'b', 
+          metadata: { 
+            name: 'n', 
+            uid: 'test-uid-1',
+            etag: 'entity-etag-1'
+          } 
+        },
       ];
 
+      // First call to get ETags only
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { 
+          type: 'object', 
+          entities: [
+            {
+              metadata: { 
+                uid: 'test-uid-1', 
+                etag: 'entity-etag-1' 
+              }
+            } as Entity
+          ]
+        },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
+      // Second call for actual data streaming
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items: { type: 'object', entities: [entities[0]] },
         pageInfo: {},
@@ -200,9 +226,35 @@ describe('createRouter readonly disabled', () => {
 
     it('handles If-None-Match header for streaming responses', async () => {
       const entities: Entity[] = [
-        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+        { 
+          apiVersion: 'a', 
+          kind: 'b', 
+          metadata: { 
+            name: 'n', 
+            uid: 'test-uid-1',
+            etag: 'entity-etag-1'
+          } 
+        },
       ];
 
+      // First call to get ETags only
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { 
+          type: 'object', 
+          entities: [
+            {
+              metadata: { 
+                uid: 'test-uid-1', 
+                etag: 'entity-etag-1' 
+              }
+            } as Entity
+          ]
+        },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
+      // Second call for actual data streaming
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items: { type: 'object', entities: [entities[0]] },
         pageInfo: {},
@@ -214,8 +266,19 @@ describe('createRouter readonly disabled', () => {
       expect(response1.status).toEqual(200);
       const etag = response1.headers['etag'];
 
+      // Mock the same ETag query for the second request
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: { type: 'object', entities: [entities[0]] },
+        items: { 
+          type: 'object', 
+          entities: [
+            {
+              metadata: { 
+                uid: 'test-uid-1', 
+                etag: 'entity-etag-1' 
+              }
+            } as Entity
+          ]
+        },
         pageInfo: {},
         totalItems: 1,
       });
@@ -228,28 +291,72 @@ describe('createRouter readonly disabled', () => {
       expect(response2.status).toEqual(304);
     });
 
-    it('generates different ETags when totalItems changes', async () => {
+    it('generates different ETags when entity data changes', async () => {
       const entities: Entity[] = [
-        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+        { 
+          apiVersion: 'a', 
+          kind: 'b', 
+          metadata: { 
+            name: 'n',
+            uid: 'test-uid-1',
+            etag: 'entity-etag-1'
+          } 
+        },
       ];
 
-      // First request with totalItems: 1
-      entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: { type: 'object', entities: [entities[0]] },
-        pageInfo: {},
-        totalItems: 1,
-      });
+      // First request with entity-etag-1
+      entitiesCatalog.queryEntities
+        // ETag query
+        .mockResolvedValueOnce({
+          items: { 
+            type: 'object', 
+            entities: [
+              {
+                metadata: { 
+                  uid: 'test-uid-1', 
+                  etag: 'entity-etag-1' 
+                }
+              } as Entity
+            ]
+          },
+          pageInfo: {},
+          totalItems: 1,
+        })
+        // Data query
+        .mockResolvedValueOnce({
+          items: { type: 'object', entities: [entities[0]] },
+          pageInfo: {},
+          totalItems: 1,
+        });
 
       const response1 = await request(app).get('/entities?kind=Component');
       expect(response1.status).toEqual(200);
       const etag1 = response1.headers['etag'];
 
-      // Second request with totalItems: 2
-      entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: { type: 'object', entities: [entities[0]] },
-        pageInfo: {},
-        totalItems: 2,
-      });
+      // Second request with entity-etag-2 (simulating entity update)
+      entitiesCatalog.queryEntities
+        // ETag query with different entity ETag
+        .mockResolvedValueOnce({
+          items: { 
+            type: 'object', 
+            entities: [
+              {
+                metadata: { 
+                  uid: 'test-uid-1', 
+                  etag: 'entity-etag-2' 
+                }
+              } as Entity
+            ]
+          },
+          pageInfo: {},
+          totalItems: 1,
+        })
+        // Data query
+        .mockResolvedValueOnce({
+          items: { type: 'object', entities: [entities[0]] },
+          pageInfo: {},
+          totalItems: 1,
+        });
 
       const response2 = await request(app).get('/entities?kind=Component');
       expect(response2.status).toEqual(200);
@@ -259,18 +366,48 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
+      // Mock ETag query
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items: { type: 'object', entities: [] },
         pageInfo: {},
         totalItems: 0,
       });
+      // Mock data query
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [] },
+        pageInfo: {},
+        totalItems: 0,
+      });
+      
       const response = await request(app).get(
         '/entities?filter=a=1,a=2,b=3&filter=c=4',
       );
 
       expect(response.status).toEqual(200);
-      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(2);
+      
+      // First call should be for ETags
+      expect(entitiesCatalog.queryEntities).toHaveBeenNthCalledWith(1, {
+        filter: {
+          anyOf: [
+            {
+              allOf: [
+                { key: 'a', values: ['1', '2'] },
+                { key: 'b', values: ['3'] },
+              ],
+            },
+            { key: 'c', values: ['4'] },
+          ],
+        },
+        limit: 10000,
+        credentials: mockCredentials.user(),
+        skipTotalItems: false,
+        fields: expect.any(Function),
+        orderFields: [],
+      });
+      
+      // Second call should be for actual data
+      expect(entitiesCatalog.queryEntities).toHaveBeenNthCalledWith(2, {
         filter: {
           anyOf: [
             {
@@ -285,6 +422,7 @@ describe('createRouter readonly disabled', () => {
         limit: 10000,
         credentials: mockCredentials.user(),
         skipTotalItems: true,
+        orderFields: [],
       });
     });
 
