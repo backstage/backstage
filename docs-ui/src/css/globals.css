@@ -26,8 +26,6 @@
 }
 
 body {
-  display: flex;
-  flex-direction: row;
   background-color: var(--bg);
   color: var(--primary);
   font-family: var(--font-regular);

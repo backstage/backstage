@@ -1,0 +1,31 @@
+.toolbar {
+  position: fixed;
+  display: flex;
+  top: 0;
+  left: 332px;
+  right: 40px;
+  height: 112px;
+  z-index: 10;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 0.25rem;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.name {
+  margin-top: 3px;
+  font-size: 28px;
+  color: #26c9ad;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

@@ -3,7 +3,7 @@ import { Sidebar } from '../components/Sidebar';
 import { Toolbar } from '@/components/Toolbar';
 import { Providers } from './providers';
 import { CustomTheme } from '@/components/CustomTheme';
-import styles from '../css/page.module.css';
+import styles from './layout.module.css';
 
 import '../css/globals.css';
 import '/public/theme-backstage.css';
@@ -29,14 +29,10 @@ export default function RootLayout({
     >
       <body>
         <Providers>
-          <div className={styles.global}>
-            <Sidebar />
-            <div className={styles.container}>
-              <Toolbar />
-              {children}
-            </div>
-            <CustomTheme />
-          </div>
+          <Sidebar />
+          <Toolbar />
+          <div className={styles.container}>{children}</div>
+          <CustomTheme />
         </Providers>
       </body>
     </html>

@@ -6,15 +6,11 @@
   .sidebar {
     display: block;
     position: fixed;
-    top: 16px;
-    left: 16px;
-    border-radius: 8px;
-    width: 300px;
-    height: calc(100vh - 32px);
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.025);
+    top: 112px;
+    left: 0;
+    width: 332px;
+    height: calc(100vh - 112px);
     color: var(--primary);
-    background-color: var(--panel);
-    border: 1px solid var(--border);
     overflow: hidden;
   }
 }
@@ -23,22 +19,44 @@
   height: 100%;
 }
 
+.scrollbar {
+  display: flex;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.1);
+  width: 0.25rem;
+  border-radius: 0.375rem;
+  margin: 0.5rem;
+  opacity: 0;
+  transition: opacity 150ms 300ms;
+  right: -20px;
+
+  &[data-scrolling] {
+    opacity: 1;
+    transition-duration: 75ms;
+    transition-delay: 0ms;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 1.25rem;
+    height: 100%;
+  }
+}
+
+.thumb {
+  width: 100%;
+  border-radius: inherit;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
 .viewport {
   overflow: scroll;
   height: 100%;
 }
 
 .content {
-  padding: 0 20px 20px;
-}
-
-.logoContainer {
-  padding-left: 6px;
-  padding-top: 20px;
-}
-
-.logo path {
-  fill: var(--primary);
+  padding: 0 20px 48px;
 }
 
 .menu {
@@ -97,36 +115,4 @@
 .lineStatus {
   font-size: 14px;
   color: var(--secondary);
-}
-
-.scrollbar {
-  display: flex;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.1);
-  width: 0.25rem;
-  border-radius: 0.375rem;
-  margin: 0.5rem;
-  opacity: 0;
-  transition: opacity 150ms 300ms;
-  right: -20px;
-
-  &[data-hovering],
-  &[data-scrolling] {
-    opacity: 1;
-    transition-duration: 75ms;
-    transition-delay: 0ms;
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    width: 1.25rem;
-    height: 100%;
-  }
-}
-
-.thumb {
-  width: 100%;
-  border-radius: inherit;
-  background-color: rgba(0, 0, 0, 0.2);
 }
