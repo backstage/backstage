@@ -126,6 +126,12 @@ export class GithubCreateAppServer {
           checks: 'read',
           actions: 'write',
         }),
+        ...(this.permissions.includes('administration') && {
+          administration: 'write',
+        }),
+        ...(this.permissions.includes('workflows') && {
+          workflows: 'write',
+        }),
       },
       name: 'Backstage-<changeme>',
       url: 'https://backstage.io',
