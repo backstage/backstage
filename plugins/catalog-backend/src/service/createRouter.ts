@@ -65,7 +65,10 @@ import {
 } from './util';
 
 // Helper function to generate ETag based on query parameters and entity data
-function generateQueryETag(query: Record<string, any>, entityETags: string[]): string {
+function generateQueryETag(
+  query: Record<string, any>,
+  entityETags: string[],
+): string {
   const etagData = {
     query: Object.keys(query)
       .sort()
@@ -194,7 +197,6 @@ export async function createRouter(
 
           // When pagination parameters are passed in, use the legacy slow path
           // that loads all entities into memory
-
           if (pagination || enableRelationsCompatibility === true) {
             const { entities, pageInfo } = await entitiesCatalog.entities({
               filter,
@@ -225,15 +227,17 @@ export async function createRouter(
             return;
           }
 
+          // Use streaming path with ETag support
           // First, get all entity ETags for proper ETag generation
-          const etagFields = (entity: Entity) => ({
-            metadata: {
-              uid: entity.metadata.uid,
-              etag: entity.metadata.etag,
-            },
-          } as Entity);
+          const etagFields = (entity: Entity) =>
+            ({
+              metadata: {
+                uid: entity.metadata.uid,
+                etag: entity.metadata.etag,
+              },
+            } as Entity);
 
-          let allEntityETags: string[] = [];
+          const allEntityETags: string[] = [];
           let etagCursor: Cursor | undefined;
           const etagLimit = 10000;
 
@@ -249,7 +253,12 @@ export async function createRouter(
                     orderFields: order,
                     skipTotalItems: false,
                   }
-                : { credentials, fields: etagFields, limit: etagLimit, cursor: etagCursor },
+                : {
+                    credentials,
+                    fields: etagFields,
+                    limit: etagLimit,
+                    cursor: etagCursor,
+                  },
             );
 
             // Collect ETags from this batch

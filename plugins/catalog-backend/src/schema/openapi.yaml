@@ -869,6 +869,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Entity'
+        '304':
+          description: 'Not Modified - resource not modified based on conditional request'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         default:
