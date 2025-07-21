@@ -38,7 +38,8 @@ export type TextOwnProps = {
     | 'div'
     | 'strong'
     | 'em'
-    | 'small';
+    | 'small'
+    | 'legend';
   variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
   weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
