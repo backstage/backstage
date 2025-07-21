@@ -1,0 +1,14 @@
+title: Netorca Plugin
+author: Netautomate
+authorUrl: https://netorca.io
+category: Discovery
+description: |
+  The Netorca Backstage Plugin seamlessly integrates Netorca services into Backstage.
+  Enables quick scaffolding, exporting existing services as reusable templates and provides custom dashboard.
+documentation: https://github.com/netautomate/netorca-backstage/README.md
+iconUrl: https://netautomate.gitlab.io/netorca_docs/img/netorca.png
+npmPackageName: '@netautomate/plugin-catalog-backend-module-netorca-provider'
+addedDate: '2025-07-22'
+tags:
+  - Netorca
+  - Netautomate
