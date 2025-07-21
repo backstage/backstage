@@ -19,6 +19,8 @@ import { HeaderPage } from './HeaderPage';
 import type { HeaderTab, HeaderMenuItem } from '../Header/types';
 import { MemoryRouter } from 'react-router-dom';
 import { Button } from '../Button';
+import { Container } from '../Container';
+import { Text } from '../Text';
 
 const meta = {
   title: 'Components/HeaderPage',
@@ -80,35 +82,30 @@ const layoutDecorator = [
         style={{
           width: '250px',
           position: 'fixed',
-          left: 8,
-          top: 8,
-          bottom: 8,
-          backgroundColor: 'var(--bui-bg-surface-1',
-          borderRadius: 'var(--bui-radius-2)',
-          border: '1px solid var(--bui-border)',
+          left: 'var(--sb-panel-left)',
+          top: 'var(--sb-panel-top)',
+          bottom: 'var(--sb-panel-bottom)',
+          backgroundColor: 'var(--sb-sidebar-bg)',
+          borderRadius: 'var(--sb-panel-radius)',
+          border: 'var(--sb-sidebar-border)',
+          borderRight: 'var(--sb-sidebar-border-right)',
           zIndex: 1,
         }}
       />
       <div
         style={{
-          paddingInline: '266px',
+          paddingLeft: 'var(--sb-content-padding-inline)',
+          minHeight: '200vh',
         }}
       >
         <Story />
+        <Container>
+          <Text>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+        </Container>
       </div>
-      <div
-        style={{
-          width: '250px',
-          position: 'fixed',
-          right: 8,
-          top: 8,
-          bottom: 8,
-          backgroundColor: 'var(--bui-bg-surface-1',
-          borderRadius: 'var(--bui-radius-2)',
-          border: '1px solid var(--bui-border)',
-          zIndex: 1,
-        }}
-      />
     </>
   ),
 ];
@@ -159,4 +156,5 @@ export const WithLayout: Story = {
     ...WithEverything.args,
   },
   decorators: layoutDecorator,
+  render: WithEverything.render,
 };

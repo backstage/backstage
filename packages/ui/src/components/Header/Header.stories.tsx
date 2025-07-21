@@ -123,7 +123,7 @@ const layoutDecorator = [
           left: 'var(--sb-panel-left)',
           top: 'var(--sb-panel-top)',
           bottom: 'var(--sb-panel-bottom)',
-          backgroundColor: 'var(--bui-bg-surface-1)',
+          backgroundColor: 'var(--sb-sidebar-bg)',
           borderRadius: 'var(--sb-panel-radius)',
           border: 'var(--sb-sidebar-border)',
           borderRight: 'var(--sb-sidebar-border-right)',
@@ -132,7 +132,7 @@ const layoutDecorator = [
       />
       <div
         style={{
-          paddingInline: 'var(--sb-content-padding-inline)',
+          paddingLeft: 'var(--sb-content-padding-inline)',
           minHeight: '200vh',
         }}
       >
@@ -144,20 +144,6 @@ const layoutDecorator = [
           </Text>
         </Container>
       </div>
-      <div
-        style={{
-          width: '250px',
-          position: 'fixed',
-          right: 'var(--sb-panel-right)',
-          top: 'var(--sb-panel-top)',
-          bottom: 'var(--sb-panel-bottom)',
-          backgroundColor: 'var(--bui-bg-surface-1)',
-          borderRadius: 'var(--sb-panel-radius)',
-          border: 'var(--sb-options-border)',
-          borderLeft: 'var(--sb-options-border-left)',
-          zIndex: 1,
-        }}
-      />
     </>
   ),
   withRouter,
