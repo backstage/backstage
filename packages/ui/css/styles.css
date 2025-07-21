@@ -10512,6 +10512,7 @@
   font-size: var(--bui-font-size-3);
   font-family: var(--bui-font-regular);
   color: var(--bui-fg-primary);
+  --tooltip-offset: var(--bui-space-3);
   border-radius: 4px;
   outline: none;
   transition: transform .2s, opacity .2s;
@@ -10522,45 +10523,59 @@
     transform: var(--origin);
     opacity: 0;
   }
+
+  &[data-placement="top"] {
+    margin-bottom: var(--tooltip-offset);
+    --origin: translateY(4px);
+  }
+
+  &[data-placement="right"] {
+    margin-left: var(--tooltip-offset);
+    --origin: translateX(-4px);
+  }
+
+  &[data-placement="bottom"] {
+    margin-top: var(--tooltip-offset);
+    --origin: translateY(-4px);
+  }
+
+  &[data-placement="left"] {
+    margin-right: var(--tooltip-offset);
+    --origin: translateX(4px);
+  }
 }
 
 .bui-TooltipArrow {
   & svg {
+    --tooltip-arrow-overlap: -2px;
     display: block;
-  }
 
-  &[data-placement="top"] {
-    transform: translateY(4px);
+    & path:first-child {
+      fill: var(--bui-bg-surface-1);
+    }
 
-    & svg {
-      transform: translateY(-2px);
+    & path:nth-child(2) {
+      fill: var(--bui-gray-3);
     }
   }
 
-  &[data-placement="bottom"] {
-    & svg {
-      transform: rotate(180deg)translateY(-2px);
-    }
+  &[data-placement="top"] svg {
+    margin-top: var(--tooltip-arrow-overlap);
   }
 
-  &[data-placement="right"] {
-    & svg {
-      transform: rotate(90deg)translateY(-7px);
-    }
+  &[data-placement="bottom"] svg {
+    margin-bottom: var(--tooltip-arrow-overlap);
+    transform: rotate(180deg);
   }
 
-  &[data-placement="left"] {
-    & svg {
-      transform: rotate(-90deg)translateY(-7px);
-    }
+  &[data-placement="right"] svg {
+    margin-right: var(--tooltip-arrow-overlap);
+    transform: rotate(90deg);
   }
 
-  & svg path:first-child {
-    fill: canvas;
-  }
-
-  & svg path:nth-child(2) {
-    fill: var(--bui-gray-3);
+  &[data-placement="left"] svg {
+    margin-left: var(--tooltip-arrow-overlap);
+    transform: rotate(-90deg);
   }
 }
 
