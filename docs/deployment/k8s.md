@@ -112,7 +112,7 @@ YmFja3N0YWdl
 Secrets are base64-encoded, but not encrypted. Be sure to enable
 [Encryption at Rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)
 for the cluster. For storing secrets in Git, consider
-[SealedSecrets or other solutions](https://learnk8s.io/kubernetes-secrets-in-git).
+[SealedSecrets or other solutions](https://learnkube.com/kubernetes-secrets-in-git)
 
 :::
 
