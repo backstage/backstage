@@ -73,11 +73,12 @@
 }
 
 .sectionTitle {
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 12px 0;
-  color: var(--primary);
-  margin-top: 24px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 0 12px 4px;
+  color: var(--secondary);
+  margin-top: 40px;
+  text-transform: uppercase;
 }
 
 .line {
@@ -93,13 +94,12 @@
   border-radius: 4px;
 
   &:hover {
-    background-color: var(--surface-1);
-    transition: background-color 0.2s ease-in-out;
+    background-color: white;
   }
 }
 
 .line.active {
-  background-color: var(--surface-1);
+  background-color: white;
 }
 
 .line.active .lineTitle {
@@ -109,7 +109,7 @@
 .lineTitle {
   font-size: 14px;
   font-weight: 400;
-  color: var(--secondary);
+  color: var(--primary);
 }
 
 .lineStatus {

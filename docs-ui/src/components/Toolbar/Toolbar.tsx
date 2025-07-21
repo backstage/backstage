@@ -1,9 +1,22 @@
+'use client';
+
 import { ThemeSelector } from './theme';
 import { ThemeNameSelector } from './theme-name';
 import styles from './Toolbar.module.css';
-import { Nav } from './nav';
+import { usePathname } from 'next/navigation';
+import { components, layoutComponents } from '@/utils/data';
+import { AnimatedName } from './AnimatedName';
 
 export const Toolbar = () => {
+  const pathname = usePathname();
+  const allComponents = [...layoutComponents, ...components];
+  const isComponent = pathname.startsWith('/components');
+  const componentSlug = pathname.replace('/components/', '');
+  const findComponent = allComponents.find(c => c.slug === componentSlug);
+
+  let name = 'UI';
+  if (isComponent && findComponent) name = findComponent.title;
+
   return (
     <div className={styles.toolbar}>
       <div className={styles.left}>
@@ -19,7 +32,7 @@ export const Toolbar = () => {
             fill="#121212"
           />
         </svg>
-        <div className={styles.name}>Button</div>
+        <div className={styles.name}>UI</div>
       </div>
       <div className={styles.actions}>
         <ThemeNameSelector />
