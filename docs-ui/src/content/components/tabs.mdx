@@ -10,8 +10,9 @@ import {
   tabsUsageSnippet,
   tabsDefaultSnippet,
 } from './tabs.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Tabs"
@@ -24,17 +25,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={tabsDefaultSnippet}
 />
 
-<ComponentInfos
-  component="tabs"
-  classNames={[
-    'bui-TabsRoot',
-    'bui-TabsList',
-    'bui-TabsTab',
-    'bui-TabsPanel',
-    'bui-TabsIndicator',
-  ]}
-  usageCode={tabsUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={tabsUsageSnippet} />
 
 ## API reference
 
@@ -61,3 +54,7 @@ An individual interactive tab button that toggles the corresponding panel. Rende
 A panel displayed when the corresponding tab is active. Renders a `<div>` element.
 
 <PropsTable data={tabsPanelPropDefs} />
+
+<Theming component="Tabs" />
+
+<ChangelogComponent component="tabs" />

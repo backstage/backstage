@@ -13,8 +13,9 @@ import {
   menuHoverSnippet,
   menuSubmenuSnippet,
 } from './menu.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Menu"
@@ -28,27 +29,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={menuDefaultSnippet}
 />
 
-<ComponentInfos
-  component="menu"
-  classNames={[
-    'bui-MenuTrigger',
-    'bui-MenuBackdrop',
-    'bui-MenuPositioner',
-    'bui-MenuPopup',
-    'bui-MenuArrow',
-    'bui-MenuItem',
-    'bui-MenuGroup',
-    'bui-MenuGroupLabel',
-    'bui-MenuRadioGroup',
-    'bui-MenuRadioItem',
-    'bui-MenuRadioItemIndicator',
-    'bui-MenuCheckboxItem',
-    'bui-MenuCheckboxItemIndicator',
-    'bui-MenuSubmenuTrigger',
-    'bui-MenuSeparator',
-  ]}
-  usageCode={menuUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={menuUsageSnippet} />
 
 ## API reference
 
@@ -105,3 +88,7 @@ You can nest menus to create a more complex navigation structure.
   preview={<MenuSnippet story="Submenu" />}
   code={menuSubmenuSnippet}
 />
+
+<Theming component="Menu" />
+
+<ChangelogComponent component="menu" />

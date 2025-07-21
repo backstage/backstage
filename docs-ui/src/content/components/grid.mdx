@@ -14,8 +14,9 @@ import {
   gridResponsiveSnippet,
   gridStartEndSnippet,
 } from './grid.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   type="Layout"
@@ -29,11 +30,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={gridDefaultSnippet}
 />
 
-<ComponentInfos
-  component="grid"
-  classNames={['bui-Grid', 'bui-GridItem']}
-  usageCode={gridUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={gridUsageSnippet} />
 
 ## API reference
 
@@ -93,3 +92,7 @@ responsive designs.
 The start and end props can be used to position the item in the grid.
 
 <CodeBlock code={gridStartEndSnippet} />
+
+<Theming component="Grid" />
+
+<ChangelogComponent component="grid" />

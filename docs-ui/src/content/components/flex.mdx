@@ -12,8 +12,9 @@ import {
   flexAlignSnippet,
 } from './flex.props';
 import { spacingPropDefs } from '@/utils/propDefs';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   type="Layout"
@@ -28,11 +29,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={flexDefaultSnippet}
 />
 
-<ComponentInfos
-  component="flex"
-  classNames={['bui-Flex']}
-  usageCode={flexUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={flexUsageSnippet} />
 
 ## API reference
 
@@ -63,3 +62,7 @@ The Flex component also supports responsive alignment, making it easy to
 create responsive designs.
 
 <CodeBlock code={flexAlignSnippet} />
+
+<Theming component="Flex" />
+
+<ChangelogComponent component="flex" />

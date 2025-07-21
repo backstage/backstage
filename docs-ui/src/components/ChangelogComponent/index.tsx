@@ -11,19 +11,22 @@ export const ChangelogComponent = ({ component }: { component: Component }) => {
   return (
     <MDXRemote
       components={formattedMDXComponents}
-      source={`${componentChangelog
-        ?.map(change => {
-          const prs =
-            change.prs.length > 0 &&
-            change.prs
-              .map(
-                pr =>
-                  `[#${pr}](https://github.com/backstage/backstage/pull/${pr})`,
-              )
-              .join(', ');
-          return `- \`${change.version}\` - ${change.description} ${prs}`;
-        })
-        .join('\n')}`}
+      source={`
+        ## Changelog
+
+        ${componentChangelog
+          ?.map(change => {
+            const prs =
+              change.prs.length > 0 &&
+              change.prs
+                .map(
+                  pr =>
+                    `[#${pr}](https://github.com/backstage/backstage/pull/${pr})`,
+                )
+                .join(', ');
+            return `- \`${change.version}\` - ${change.description} ${prs}`;
+          })
+          .join('\n')}`}
     />
   );
 };

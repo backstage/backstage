@@ -94,12 +94,12 @@
   border-radius: 4px;
 
   &:hover {
-    background-color: white;
+    background-color: var(--action);
   }
 }
 
 .line.active {
-  background-color: white;
+  background-color: var(--action);
 }
 
 .line.active .lineTitle {

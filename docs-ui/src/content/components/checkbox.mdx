@@ -8,8 +8,9 @@ import {
   checkboxDefaultSnippet,
   checkboxVariantsSnippet,
 } from './checkbox.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Checkbox"
@@ -23,11 +24,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={checkboxDefaultSnippet}
 />
 
-<ComponentInfos
-  component="checkbox"
-  classNames={['bui-Checkbox']}
-  usageCode={checkboxUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={checkboxUsageSnippet} />
 
 ## API reference
 
@@ -46,3 +45,7 @@ Here's a view when checkboxes have different variants.
   preview={<CheckboxSnippet story="AllVariants" />}
   code={checkboxVariantsSnippet}
 />
+
+<Theming component="Checkbox" />
+
+<ChangelogComponent component="checkbox" />

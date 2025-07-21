@@ -10,8 +10,9 @@ import {
   headingTruncateSnippet,
   headingResponsiveSnippet,
 } from './heading.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Heading"
@@ -24,11 +25,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={headingDefaultSnippet}
 />
 
-<ComponentInfos
-  component="heading"
-  classNames={['bui-Heading']}
-  usageCode={headingUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={headingUsageSnippet} />
 
 ## API reference
 
@@ -66,3 +65,7 @@ You can also use the `variant` prop to change the appearance of the text based
 on the screen size.
 
 <CodeBlock code={headingResponsiveSnippet} />
+
+<Theming component="Heading" />
+
+<ChangelogComponent component="heading" />

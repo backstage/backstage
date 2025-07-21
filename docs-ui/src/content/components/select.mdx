@@ -12,8 +12,9 @@ import {
   selectResponsiveSnippet,
   selectIconSnippet,
 } from './select.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Select"
@@ -27,20 +28,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={selectDefaultSnippet}
 />
 
-<ComponentInfos
-  component="select"
-  classNames={[
-    'bui-Select',
-    'bui-SelectTrigger',
-    'bui-SelectValue',
-    'bui-SelectIcon',
-    'bui-SelectList',
-    'bui-SelectItem',
-    'bui-SelectItemIndicator',
-    'bui-SelectItemLabel',
-  ]}
-  usageCode={selectUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={selectUsageSnippet} />
 
 ## API reference
 
@@ -102,3 +92,7 @@ Here's a view when the select is disabled.
 Here's a view when the select is responsive.
 
 <CodeBlock code={selectResponsiveSnippet} />
+
+<Theming component="Select" />
+
+<ChangelogComponent component="select" />

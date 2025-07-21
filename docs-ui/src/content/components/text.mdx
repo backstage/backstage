@@ -11,8 +11,9 @@ import {
   textTruncateSnippet,
   textResponsiveSnippet,
 } from './text.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Text"
@@ -25,11 +26,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={textDefaultSnippet}
 />
 
-<ComponentInfos
-  component="text"
-  classNames={['bui-Text']}
-  usageCode={textUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={textUsageSnippet} />
 
 ## API reference
 
@@ -76,3 +75,7 @@ You can also use the `variant` prop to change the appearance of the text based
 on the screen size.
 
 <CodeBlock code={textResponsiveSnippet} />
+
+<Theming component="Text" />
+
+<ChangelogComponent component="text" />

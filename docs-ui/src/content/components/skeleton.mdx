@@ -9,8 +9,9 @@ import {
   skeletonDemo1Snippet,
   skeletonDemo2Snippet,
 } from './skeleton.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Skeleton"
@@ -24,11 +25,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={skeletonDefaultSnippet}
 />
 
-<ComponentInfos
-  component="skeleton"
-  classNames={['bui-Skeleton']}
-  usageCode={skeletonUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={skeletonUsageSnippet} />
 
 ## API reference
 
@@ -59,3 +58,7 @@ You can use a mix of different sizes to create a more complex skeleton.
   code={skeletonDemo2Snippet}
   open
 />
+
+<Theming component="Skeleton" />
+
+<ChangelogComponent component="skeleton" />

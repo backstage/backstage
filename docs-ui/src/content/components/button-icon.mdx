@@ -12,8 +12,9 @@ import {
   buttonIconResponsiveSnippet,
   buttonIconAsLinkSnippet,
 } from './button-icon.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="ButtonIcon"
@@ -27,11 +28,9 @@ import { PageTitle } from '@/components/PageTitle';
   code={buttonIconDefaultSnippet}
 />
 
-<ComponentInfos
-  component="button-icon"
-  classNames={['bui-Button', 'bui-ButtonIcon']}
-  usageCode={buttonIconUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={buttonIconUsageSnippet} />
 
 ## API reference
 
@@ -80,3 +79,7 @@ Here's a view when buttons are disabled.
 Here's a view when buttons are responsive.
 
 <CodeBlock code={buttonIconResponsiveSnippet} />
+
+<Theming component="ButtonIcon" />
+
+<ChangelogComponent component="button-icon" />

@@ -1,14 +1,15 @@
 .container {
   position: relative;
   z-index: 20;
-  width: 100%;
+  width: calc(100% - 64px);
   margin-inline: 0 16px;
+  margin-left: 32px;
+  margin-right: 32px;
   margin-top: 112px;
   margin-bottom: 48px;
   padding-inline: 40px;
   padding-block: 48px;
-  background-color: white;
-  width: calc(100% - 32px);
+  background-color: var(--panel);
   border-radius: 0.5rem;
 }
 

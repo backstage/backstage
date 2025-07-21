@@ -8,8 +8,9 @@ import {
   tooltipTriggerPropDefs,
   tooltipPropDefs,
 } from './tooltip.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Tooltip"
@@ -23,11 +24,9 @@ import { PageTitle } from '@/components/PageTitle';
   align="center"
 />
 
-<ComponentInfos
-  component="tooltip"
-  classNames={['bui-Tooltip', 'bui-ToltipArrow']}
-  usageCode={tooltipUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={tooltipUsageSnippet} />
 
 ## API reference
 
@@ -42,3 +41,7 @@ The trigger will wrap both the trigger and the tooltip.
 The tooltip will wrap the content of the tooltip.
 
 <PropsTable data={tooltipPropDefs} />
+
+<Theming component="Tooltip" />
+
+<ChangelogComponent component="tooltip" />

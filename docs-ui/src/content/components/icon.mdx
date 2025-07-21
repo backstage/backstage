@@ -7,8 +7,9 @@ import {
   iconUsageSnippet,
   iconDefaultSnippet,
 } from './icon.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Icon"
@@ -22,12 +23,14 @@ import { PageTitle } from '@/components/PageTitle';
   code={iconDefaultSnippet}
 />
 
-<ComponentInfos
-  component="icon"
-  classNames={['bui-Icon']}
-  usageCode={iconUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={iconUsageSnippet} />
 
 ## API reference
 
 <PropsTable data={iconPropDefs} />
+
+<Theming component="Icon" />
+
+<ChangelogComponent component="icon" />

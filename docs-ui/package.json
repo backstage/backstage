@@ -32,7 +32,6 @@
     "prop-types": "^15.8.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-frame-component": "^5.2.7",
     "shiki": "^1.26.1",
     "storybook": "^8.6.8"
   },
