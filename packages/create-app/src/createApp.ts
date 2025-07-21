@@ -70,7 +70,7 @@ export default async (opts: OptionValues): Promise<void> => {
     ? paths.resolveTarget(opts.templatePath)
     : paths.resolveOwn('templates/default-app');
 
-  // If using the default template, filter out `packages/app` when the `--next` flag
+  // If using the default template, filter out `packages/app` when the `--` flag
   // is used or `packages/app-next` when its not used.
   const excludedDirs = !opts.templatePath
     ? [opts.experimentalFrontend ? 'packages/app/' : 'packages/app-next/']
@@ -126,6 +126,14 @@ export default async (opts: OptionValues): Promise<void> => {
 
       Task.section('Moving to final location');
       await moveAppTask(tempDir, appDir, answers.name);
+    }
+
+    if (opts.next) {
+      // we need to rename the app-next directory back to the app directory which got excluded
+      await fs.rename(
+        resolvePath(appDir, 'app-next'),
+        resolvePath(appDir, 'app'),
+      );
     }
 
     const fetchedYarnLockSeed = await fetchYarnLockSeedTask(appDir);
