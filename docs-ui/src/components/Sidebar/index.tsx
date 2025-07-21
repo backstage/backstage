@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Fragment } from 'react';
+import { RiGithubLine, RiNpmjsLine } from '@remixicon/react';
 
 const data = [
   {
@@ -31,12 +32,30 @@ const data = [
   },
 ];
 
-export const Sidebar = () => {
+interface SidebarProps {
+  version: string;
+}
+
+export const Sidebar = ({ version }: SidebarProps) => {
   const pathname = usePathname();
   const isPlayground = pathname.includes('/playground');
 
   return (
     <div className={styles.sidebar}>
+      <div className={styles.version}>
+        Version {version}
+        <div className={styles.versionLinks}>
+          <a
+            href="https://github.com/backstage/backstage/tree/master/packages/ui"
+            target="_blank"
+          >
+            <RiGithubLine size={16} />
+          </a>
+          <a href="https://www.npmjs.com/package/@backstage/ui" target="_blank">
+            <RiNpmjsLine size={16} />
+          </a>
+        </div>
+      </div>
       <ScrollArea.Root className={styles.root}>
         <ScrollArea.Viewport className={styles.viewport}>
           <div className={styles.content}>
