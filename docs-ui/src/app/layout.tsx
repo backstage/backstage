@@ -51,7 +51,9 @@ export default async function RootLayout({
         <Providers>
           <Sidebar version={packageVersion} />
           <Toolbar />
-          <div className={styles.container}>{children}</div>
+          <div className={styles.container}>
+            <div className={styles.content}>{children}</div>
+          </div>
           <CustomTheme />
         </Providers>
       </body>

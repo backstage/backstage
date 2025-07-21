@@ -13,6 +13,12 @@
   border-radius: 0.5rem;
 }
 
+.content {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
 @media (min-width: 768px) {
   .container {
     width: calc(100% - 332px - 40px);

@@ -40,34 +40,33 @@ const options = [
 ];
 
 export const Default: Story = {
-  args: {
-    children: (
-      <>
-        <Menu.Trigger
-          render={props => (
-            <Button
-              {...props}
-              size="small"
-              variant="secondary"
-              iconEnd={<Icon name="chevron-down" />}
-            >
-              Menu
-            </Button>
-          )}
-        />
-        <Menu.Portal>
-          <Menu.Positioner sideOffset={8} align="start">
-            <Menu.Popup>
-              <Menu.Item>Settings</Menu.Item>
-              <Menu.Item>Invite new members</Menu.Item>
-              <Menu.Item>Download app</Menu.Item>
-              <Menu.Item>Log out</Menu.Item>
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </>
-    ),
-  },
+  args: { children: undefined },
+  render: args => (
+    <Menu.Root {...args}>
+      <Menu.Trigger
+        render={props => (
+          <Button
+            {...props}
+            size="small"
+            variant="secondary"
+            iconEnd={<Icon name="chevron-down" />}
+          >
+            Menu
+          </Button>
+        )}
+      />
+      <Menu.Portal>
+        <Menu.Positioner sideOffset={8} align="start">
+          <Menu.Popup>
+            <Menu.Item>Settings</Menu.Item>
+            <Menu.Item>Invite new members</Menu.Item>
+            <Menu.Item>Download app</Menu.Item>
+            <Menu.Item>Log out</Menu.Item>
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
+  ),
 };
 
 export const Open: Story = {
@@ -75,6 +74,7 @@ export const Open: Story = {
     ...Default.args,
     open: true,
   },
+  render: Default.render,
 };
 
 export const OpenOnHover: Story = {
@@ -82,49 +82,49 @@ export const OpenOnHover: Story = {
     ...Default.args,
     openOnHover: true,
   },
+  render: Default.render,
 };
 
 export const Submenu: Story = {
-  args: {
-    children: (
-      <>
-        <Menu.Trigger
-          render={props => (
-            <Button
-              {...props}
-              size="small"
-              variant="secondary"
-              iconEnd={<Icon name="chevron-down" />}
-            >
-              Menu
-            </Button>
-          )}
-        />
-        <Menu.Portal>
-          <Menu.Positioner sideOffset={8} align="start">
-            <Menu.Popup>
-              <Menu.Item>Settings</Menu.Item>
-              <Menu.Item>Invite new members</Menu.Item>
-              <Menu.Item>Download app</Menu.Item>
-              <Menu.Item>Log out</Menu.Item>
-              <Menu.Root>
-                <Menu.SubmenuTrigger>Submenu</Menu.SubmenuTrigger>
-                <Menu.Portal>
-                  <Menu.Positioner>
-                    <Menu.Popup>
-                      <Menu.Item>Submenu Item 1</Menu.Item>
-                      <Menu.Item>Submenu Item 2</Menu.Item>
-                      <Menu.Item>Submenu Item 3</Menu.Item>
-                    </Menu.Popup>
-                  </Menu.Positioner>
-                </Menu.Portal>
-              </Menu.Root>
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </>
-    ),
-  },
+  args: { children: undefined },
+  render: args => (
+    <Menu.Root {...args}>
+      <Menu.Trigger
+        render={props => (
+          <Button
+            {...props}
+            size="small"
+            variant="secondary"
+            iconEnd={<Icon name="chevron-down" />}
+          >
+            Menu
+          </Button>
+        )}
+      />
+      <Menu.Portal>
+        <Menu.Positioner sideOffset={8} align="start">
+          <Menu.Popup>
+            <Menu.Item>Settings</Menu.Item>
+            <Menu.Item>Invite new members</Menu.Item>
+            <Menu.Item>Download app</Menu.Item>
+            <Menu.Item>Log out</Menu.Item>
+            <Menu.Root>
+              <Menu.SubmenuTrigger>Submenu</Menu.SubmenuTrigger>
+              <Menu.Portal>
+                <Menu.Positioner>
+                  <Menu.Popup>
+                    <Menu.Item>Submenu Item 1</Menu.Item>
+                    <Menu.Item>Submenu Item 2</Menu.Item>
+                    <Menu.Item>Submenu Item 3</Menu.Item>
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
+  ),
 };
 
 export const SubmenuCombobox = () => {
