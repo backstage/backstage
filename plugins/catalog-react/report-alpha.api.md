@@ -372,7 +372,7 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
   name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
-    filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
   };
   output:
     | ConfigurableExtensionDataRef<
@@ -407,11 +407,6 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     filterFunction: ConfigurableExtensionDataRef<
       (entity: Entity) => boolean,
       'catalog.entity-filter-function',
-      {}
-    >;
-    filterExpression: ConfigurableExtensionDataRef<
-      string,
-      'catalog.entity-filter-expression',
       {}
     >;
     element: ConfigurableExtensionDataRef<

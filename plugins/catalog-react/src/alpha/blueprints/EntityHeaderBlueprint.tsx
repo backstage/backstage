@@ -34,13 +34,11 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
   attachTo: { id: 'page:catalog/entity', input: 'headers' },
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
-    filterExpression: entityFilterExpressionDataRef,
     element: coreExtensionData.reactElement,
   },
   config: {
     schema: {
-      filter: z =>
-        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
+      filter: z => createEntityPredicateSchema(z).optional(),
     },
   },
   output: [
@@ -51,7 +49,7 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
   *factory(
     params: {
       loader: () => Promise<JSX.Element>;
-      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      filter?: EntityPredicate | ((entity: Entity) => boolean);
     },
     { node, config },
   ) {
