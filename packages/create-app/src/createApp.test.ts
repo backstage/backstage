@@ -96,8 +96,8 @@ describe('command entrypoint', () => {
     expect(buildAppMock).toHaveBeenCalled();
   });
 
-  it('should call expected tasks when `--experimental-frontend` is supplied', async () => {
-    const cmd = { experimentalFrontend: true } as unknown as Command;
+  it('should call expected tasks when `--next` is supplied', async () => {
+    const cmd = { next: true } as unknown as Command;
     await createApp(cmd);
     expect(checkAppExistsMock).toHaveBeenCalled();
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();

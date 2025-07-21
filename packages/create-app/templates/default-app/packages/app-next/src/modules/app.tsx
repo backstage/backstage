@@ -1,5 +1,5 @@
-import { coreExtensionData, createFrontendModule } from "@backstage/frontend-plugin-api";
-import appPlugin from "@backstage/plugin-app";
+import { coreExtensionData, createFrontendModule } from '@backstage/frontend-plugin-api';
+import appPlugin from '@backstage/plugin-app';
 
 export const appModule = createFrontendModule({
   pluginId: 'app',

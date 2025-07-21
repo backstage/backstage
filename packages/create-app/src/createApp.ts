@@ -70,7 +70,7 @@ export default async (opts: OptionValues): Promise<void> => {
     ? paths.resolveTarget(opts.templatePath)
     : paths.resolveOwn('templates/default-app');
 
-  // If using the default template, filter out `packages/app` when the `--experimental-frontend` flag
+  // If using the default template, filter out `packages/app` when the `--next` flag
   // is used or `packages/app-next` when its not used.
   const excludedDirs = !opts.templatePath
     ? [opts.experimentalFrontend ? 'packages/app/' : 'packages/app-next/']
