@@ -1,0 +1,10 @@
+---
+title: Signadot
+author: Signadot
+authorUrl: https://www.signadot.com/
+category: Kubernetes
+description: View and manage lightweight ephemeral Kubernetes environments (Sandboxes) for testing microservices in pull requests and local development.
+documentation: https://github.com/signadot/backstage-plugin
+iconUrl: https://avatars.githubusercontent.com/u/57196635
+npmPackageName: '@signadot-lib/backstage-plugin'
+addedDate: '2025-07-09'
