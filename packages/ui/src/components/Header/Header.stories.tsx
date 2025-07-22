@@ -170,10 +170,12 @@ export const WithOptions: Story = {
 
 export const WithCustomActions: Story = {
   args: {
-    customActions: <Button>Custom action</Button>,
     menuItems,
   },
   decorators: [withRouter],
+  render: args => (
+    <Header {...args} customActions={<Button>Custom action</Button>} />
+  ),
 };
 
 export const WithBreadcrumbs: Story = {
@@ -185,11 +187,25 @@ export const WithBreadcrumbs: Story = {
 
 export const WithAllComponents: Story = {
   args: {
+    title: 'My plugin',
+    titleLink: '/',
     menuItems,
     tabs,
     breadcrumbs,
   },
   decorators: [withRouter],
+  render: args => (
+    <Header
+      {...args}
+      customActions={
+        <>
+          <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+          <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+          <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+        </>
+      }
+    />
+  ),
 };
 
 export const WithLayout: Story = {
