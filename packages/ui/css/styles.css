@@ -10504,18 +10504,20 @@
 }
 
 .bui-Tooltip {
-  background: var(--bui-bg-surface-2);
+  background: var(--bui-bg-surface-1);
+  border: 1px solid var(--bui-gray-3);
   forced-color-adjust: none;
   padding: var(--bui-space-2) var(--bui-space-3);
   max-width: 240px;
   font-size: var(--bui-font-size-3);
   font-family: var(--bui-font-regular);
   color: var(--bui-fg-primary);
+  --tooltip-offset: var(--bui-space-3);
   border-radius: 4px;
   outline: none;
   transition: transform .2s, opacity .2s;
   transform: translate3d(0, 0, 0);
-  box-shadow: 0 8px 20px #0000001a;
+  box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
 
   &[data-entering], &[data-exiting] {
     transform: var(--origin);
@@ -10523,41 +10525,76 @@
   }
 
   &[data-placement="top"] {
-    margin-bottom: var(--bui-space-2);
+    margin-bottom: var(--tooltip-offset);
     --origin: translateY(4px);
   }
 
-  &[data-placement="bottom"] {
-    margin-top: var(--bui-space-2);
-    --origin: translateY(-4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(180deg);
-    }
+  &[data-placement="right"] {
+    margin-left: var(--tooltip-offset);
+    --origin: translateX(-4px);
   }
 
-  &[data-placement="right"] {
-    margin-left: var(--bui-space-2);
-    --origin: translateX(-4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(90deg);
-    }
+  &[data-placement="bottom"] {
+    margin-top: var(--tooltip-offset);
+    --origin: translateY(-4px);
   }
 
   &[data-placement="left"] {
-    margin-right: var(--bui-space-2);
+    margin-right: var(--tooltip-offset);
     --origin: translateX(4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(-90deg);
-    }
   }
 }
 
-.bui-TooltipArrow svg {
-  fill: var(--bui-bg-surface-1);
-  display: block;
+.bui-TooltipArrow {
+  & svg {
+    --tooltip-arrow-overlap: -2px;
+    display: block;
+
+    & path:first-child {
+      fill: var(--bui-bg-surface-1);
+    }
+
+    & path:nth-child(2) {
+      fill: var(--bui-gray-3);
+    }
+  }
+
+  &[data-placement="top"] svg {
+    margin-top: var(--tooltip-arrow-overlap);
+  }
+
+  &[data-placement="bottom"] svg {
+    margin-bottom: var(--tooltip-arrow-overlap);
+    transform: rotate(180deg);
+  }
+
+  &[data-placement="right"] svg {
+    margin-right: var(--tooltip-arrow-overlap);
+    transform: rotate(90deg);
+  }
+
+  &[data-placement="left"] svg {
+    margin-left: var(--tooltip-arrow-overlap);
+    transform: rotate(-90deg);
+  }
+}
+
+[data-theme="dark"] {
+  & .bui-Tooltip {
+    background: var(--bui-bg-surface-2);
+    box-shadow: none;
+    border: 1px solid var(--bui-gray-4);
+  }
+
+  & .bui-TooltipArrow {
+    & svg path:first-child {
+      fill: var(--bui-bg-surface-2);
+    }
+
+    & svg path:nth-child(2) {
+      fill: var(--bui-gray-4);
+    }
+  }
 }
 
 .bui-ScrollAreaRoot {

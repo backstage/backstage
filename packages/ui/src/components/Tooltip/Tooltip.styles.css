@@ -15,9 +15,11 @@
  */
 
 .bui-Tooltip {
-  box-shadow: 0 8px 20px rgba(0 0 0 / 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0 0 0 / 0.1),
+    0 4px 6px -4px rgba(0 0 0 / 0.1);
   border-radius: 4px;
-  background: var(--bui-bg-surface-2);
+  background: var(--bui-bg-surface-1);
+  border: 1px solid var(--bui-gray-3);
   forced-color-adjust: none;
   outline: none;
   padding: var(--bui-space-2) var(--bui-space-3);
@@ -35,40 +37,87 @@
     opacity: 0;
   }
 
+  --tooltip-offset: var(--bui-space-3);
+
   &[data-placement='top'] {
-    margin-bottom: var(--bui-space-2);
+    margin-bottom: var(--tooltip-offset);
     --origin: translateY(4px);
   }
 
-  &[data-placement='bottom'] {
-    margin-top: var(--bui-space-2);
-    --origin: translateY(-4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(180deg);
-    }
+  &[data-placement='right'] {
+    margin-left: var(--tooltip-offset);
+    --origin: translateX(-4px);
   }
 
-  &[data-placement='right'] {
-    margin-left: var(--bui-space-2);
-    --origin: translateX(-4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(90deg);
-    }
+  &[data-placement='bottom'] {
+    margin-top: var(--tooltip-offset);
+    --origin: translateY(-4px);
   }
 
   &[data-placement='left'] {
-    margin-right: var(--bui-space-2);
+    margin-right: var(--tooltip-offset);
     --origin: translateX(4px);
-
-    & .bui-TooltipArrow svg {
-      transform: rotate(-90deg);
-    }
   }
 }
 
-.bui-TooltipArrow svg {
-  display: block;
-  fill: var(--bui-bg-surface-1);
+.bui-TooltipArrow {
+  & svg {
+    display: block;
+
+    /* The tooltip is rendered overlaying the main
+      tooltip element by 1px. This causes the borders
+      to overlap, which causes minor visual artifacts
+      with transparent border colors. To mitigate this,
+      we split the stroke and fill across separate
+      elements in order to guarantee that the stroke is
+      always overlaying a consistent color. */
+    path:nth-child(1) {
+      fill: var(--bui-bg-surface-1);
+    }
+
+    path:nth-child(2) {
+      fill: var(--bui-gray-3);
+    }
+
+    /* The arrow svg overlaps the tooltip by 2px, so we
+      need to adjust the margins accordingly. */
+    --tooltip-arrow-overlap: -2px;
+  }
+
+  &[data-placement='top'] svg {
+    margin-top: var(--tooltip-arrow-overlap);
+  }
+
+  &[data-placement='bottom'] svg {
+    margin-bottom: var(--tooltip-arrow-overlap);
+    transform: rotate(180deg);
+  }
+
+  &[data-placement='right'] svg {
+    margin-right: var(--tooltip-arrow-overlap);
+    transform: rotate(90deg);
+  }
+
+  &[data-placement='left'] svg {
+    margin-left: var(--tooltip-arrow-overlap);
+    transform: rotate(-90deg);
+  }
+}
+
+[data-theme='dark'] {
+  .bui-Tooltip {
+    background: var(--bui-bg-surface-2);
+    box-shadow: none;
+    border: 1px solid var(--bui-gray-4);
+  }
+
+  .bui-TooltipArrow {
+    svg path:nth-child(1) {
+      fill: var(--bui-bg-surface-2);
+    }
+
+    svg path:nth-child(2) {
+      fill: var(--bui-gray-4);
+    }
+  }
 }
