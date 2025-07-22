@@ -1,1 +1,0 @@
-import{r}from"./index-CTjT7uj6.js";var t=typeof window<"u"?r.useLayoutEffect:r.useEffect;function a(e){var n=r.useRef(e);return t(function(){n.current=e}),r.useCallback(function(){return n.current.apply(void 0,arguments)},[])}function u(e){return e&&e.ownerDocument||document}function c(e){var n=u(e);return n.defaultView||window}export{c as a,u as o,a as u};
