@@ -1097,17 +1097,24 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {
-        header: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            JSX_2.Element,
-            'core.reactElement',
-            {
-              optional: true;
-            }
-          >,
+        headers: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              JSX_2.Element,
+              'core.reactElement',
+              {
+                optional: true;
+              }
+            >,
           {
-            singleton: true;
-            optional: true;
+            singleton: false;
+            optional: false;
           }
         >;
         contents: ExtensionInput<

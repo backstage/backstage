@@ -19,22 +19,44 @@ import {
   coreExtensionData,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
+import { EntityPredicate } from '../predicates/types';
+import { Entity } from '@backstage/catalog-model';
+import { resolveEntityFilterData } from './resolveEntityFilterData';
+import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import {
+  entityFilterExpressionDataRef,
+  entityFilterFunctionDataRef,
+} from './extensionData';
 
 /** @alpha */
 export const EntityHeaderBlueprint = createExtensionBlueprint({
   kind: 'entity-header',
-  attachTo: { id: 'page:catalog/entity', input: 'header' },
+  attachTo: { id: 'page:catalog/entity', input: 'headers' },
   dataRefs: {
+    filterFunction: entityFilterFunctionDataRef,
     element: coreExtensionData.reactElement,
   },
-  output: [coreExtensionData.reactElement.optional()],
+  config: {
+    schema: {
+      filter: z => createEntityPredicateSchema(z).optional(),
+    },
+  },
+  output: [
+    entityFilterFunctionDataRef.optional(),
+    entityFilterExpressionDataRef.optional(),
+    coreExtensionData.reactElement.optional(),
+  ],
   *factory(
     params: {
       loader: () => Promise<JSX.Element>;
+      filter?: EntityPredicate | ((entity: Entity) => boolean);
     },
-    { node },
+    { node, config },
   ) {
-    const { loader } = params;
+    const { loader, filter } = params;
+
+    yield* resolveEntityFilterData(filter, config, node);
+
     if (loader) {
       yield coreExtensionData.reactElement(
         ExtensionBoundary.lazy(node, loader),
