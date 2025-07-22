@@ -106,7 +106,7 @@ In 1.25, Backstage started moving to a secure by default model for plugins. This
 The actual endpoint that is being called is defined in
 
 ```ts title="plugins/carmen-backend/src/service/router.ts"
-export async function createRouter(
+export async function createRouter( 
   options: RouterOptions,
 ): Promise<express.Router> {
   // ...
