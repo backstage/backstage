@@ -71,14 +71,17 @@ export function UnifiedThemeProvider(
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
   const themeMode = v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode;
+  const themeName = 'backstage';
 
   useEffect(() => {
     document.body.setAttribute('data-theme-mode', themeMode);
+    document.body.setAttribute('data-theme-name', themeName);
 
     return () => {
       document.body.removeAttribute('data-theme-mode');
+      document.body.removeAttribute('data-theme-name');
     };
-  }, [themeMode]);
+  }, [themeMode, themeName]);
 
   let cssBaseline: JSX.Element | undefined = undefined;
   if (!noCssBaseline) {
