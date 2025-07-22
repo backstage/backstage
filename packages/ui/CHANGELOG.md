@@ -1,5 +1,16 @@
 # @backstage/ui
 
+## 0.7.0-next.0
+
+### Minor Changes
+
+- b0e47f3: **Breaking** We are upgrading our `Text` component to support all font sizes making the `Heading` component redundant. The new `Text` component introduces 4 sizes for title and 4 sizes for body text. All of these work in multiple colors and font weights. We improved the `as` prop to include all possible values. The `Link` component has also been updated to match the new `Text` component.
+
+### Patch Changes
+
+- e7ff178: Update styling of Tooltip element
+- e0e886f: Adds onTabSelectionChange to ui header component.
+
 ## 0.6.0
 
 ### Minor Changes

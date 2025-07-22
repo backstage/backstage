@@ -1,5 +1,15 @@
 # @backstage/plugin-org
 
+## 0.6.42-next.0
+
+### Patch Changes
+
+- 43cbb10: Added OwnershipCard, ComponentsGrid and UserProfileCard components to the `overridableComponents`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
 ## 0.6.41
 
 ### Patch Changes

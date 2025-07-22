@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 1.31.2-next.0
+
+### Patch Changes
+
+- f4622e8: Adding a more sensible default order to the default filters
+- 77eebdc: Support multiple headers in new frontend system, and don't render a header until the entity has finished loading
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-search-react@1.9.2
+
 ## 1.31.1
 
 ### Patch Changes
