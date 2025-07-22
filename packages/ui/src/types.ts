@@ -17,25 +17,6 @@
 import { componentDefinitions } from './utils/componentDefinitions';
 
 /** @public */
-export type AsProps =
-  | 'div'
-  | 'span'
-  | 'p'
-  | 'article'
-  | 'section'
-  | 'main'
-  | 'nav'
-  | 'aside'
-  | 'ul'
-  | 'ol'
-  | 'li'
-  | 'details'
-  | 'summary'
-  | 'dd'
-  | 'dl'
-  | 'dt';
-
-/** @public */
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 /** @public */
@@ -116,6 +97,26 @@ export interface SpaceProps {
   px?: Responsive<Space>;
   py?: Responsive<Space>;
 }
+
+/** @public */
+export type TextVariants =
+  | 'title-large'
+  | 'title-medium'
+  | 'title-small'
+  | 'title-x-small'
+  | 'body-large'
+  | 'body-medium'
+  | 'body-small'
+  | 'body-x-small';
+
+/** @public */
+export type TextColors = 'primary' | 'secondary';
+
+/** @public */
+export type TextColorStatus = 'danger' | 'warning' | 'success';
+
+/** @public */
+export type TextWeights = 'regular' | 'bold';
 
 /** @public */
 export interface UtilityProps extends SpaceProps {

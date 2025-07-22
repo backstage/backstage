@@ -8,7 +8,6 @@ import * as ButtonLinkStories from '../../../packages/ui/src/components/ButtonLi
 import * as CheckboxStories from '../../../packages/ui/src/components/Checkbox/Checkbox.stories';
 import * as ContainerStories from '../../../packages/ui/src/components/Container/Container.stories';
 import * as GridStories from '../../../packages/ui/src/components/Grid/Grid.stories';
-import * as HeadingStories from '../../../packages/ui/src/components/Heading/Heading.stories';
 import * as IconStories from '../../../packages/ui/src/components/Icon/Icon.stories';
 import * as TextFieldStories from '../../../packages/ui/src/components/TextField/TextField.stories';
 import * as TextStories from '../../../packages/ui/src/components/Text/Text.stories';
@@ -108,17 +107,6 @@ export const TextFieldSnippet = ({
 
 export const GridSnippet = ({ story }: { story: keyof typeof GridStories }) => {
   const stories = composeStories(GridStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const HeadingSnippet = ({
-  story,
-}: {
-  story: keyof typeof HeadingStories;
-}) => {
-  const stories = composeStories(HeadingStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;

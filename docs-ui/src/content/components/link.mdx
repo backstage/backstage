@@ -12,6 +12,9 @@ import {
   linkDefaultSnippet,
   linkVariantsSnippet,
   linkWeightsSnippet,
+  linkColorsSnippet,
+  linkRouterSnippet,
+  linkTruncateSnippet,
 } from './link.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -37,6 +40,15 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PropsTable data={linkPropDefs} />
 
+## Router Integration
+
+The `Link` component handles both internal and external navigation. It automatically detects whether the provided URL is internal (relative path) or external (absolute URL with protocol) and renders the appropriate element:
+
+- **Internal routes**: Uses `react-router-dom`'s `Link` component for client-side navigation
+- **External URLs**: Renders a standard `<a>` element for traditional navigation
+
+<CodeBlock language="tsx" code={linkRouterSnippet} />
+
 ## Examples
 
 ### Variants
@@ -61,6 +73,28 @@ Here's a view when links have different weights.
   open
   preview={<LinkSnippet story="AllWeights" />}
   code={linkWeightsSnippet}
+/>
+
+### Colors
+
+Here's a view when links have different colors.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<LinkSnippet story="AllColors" />}
+  code={linkColorsSnippet}
+/>
+
+### Truncate
+
+The `Link` component has a `truncate` prop that can be used to truncate the text.
+
+<Snippet
+  open
+  preview={<LinkSnippet story="Truncate" />}
+  code={linkTruncateSnippet}
 />
 
 <Theming component="Link" />
