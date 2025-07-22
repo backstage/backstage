@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-react': minor
 ---
 
-Added the analyzeLocation method to catalogApiMock
+Added the `analyzeLocation` method to `catalogApiMock`
