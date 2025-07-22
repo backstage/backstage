@@ -155,8 +155,8 @@
   --bui-gray-8: #b4b4b4;
 
   /* Background Colors */
-  --bui-bg: var(--bui-black);
-  --bui-bg-surface-1: var(--bui-gray-1);
+  --bui-bg: #333333;
+  --bui-bg-surface-1: #424242;
   --bui-bg-surface-2: var(--bui-gray-2);
   --bui-bg-solid: #9cc9ff;
   --bui-bg-solid-hover: #83b9fd;
@@ -185,7 +185,7 @@
   --bui-fg-success: #1db954;
 
   /* Border Colors */
-  --bui-border: rgba(255, 255, 255, 0.2);
+  --bui-border: rgba(255, 255, 255, 0.12);
   --bui-border-hover: rgba(255, 255, 255, 0.4);
   --bui-border-pressed: rgba(255, 255, 255, 0.5);
   --bui-border-disabled: rgba(255, 255, 255, 0.2);

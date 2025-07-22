@@ -174,3 +174,282 @@ export const WithMockedURLNoMatch: Story = {
     </MemoryRouter>
   ),
 };
+
+// New stories for testing match strategies
+
+export const ExactMatchingDefault: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/mentorship/events']}>
+      <Tabs>
+        <TabList>
+          <Tab id="mentorship" href="/mentorship">
+            Mentorship
+          </Tab>
+          <Tab id="events" href="/mentorship/events">
+            Events
+          </Tab>
+          <Tab id="catalog" href="/catalog">
+            Catalog
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL: <strong>/mentorship/events</strong>
+        </Text>
+        <Text>
+          Using default exact matching, only the "Events" tab is active because
+          it exactly matches the URL.
+        </Text>
+        <Text>
+          The "Mentorship" tab is NOT active even though the URL contains
+          "/mentorship".
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const PrefixMatchingForNestedRoutes: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/mentorship/events']}>
+      <Tabs>
+        <TabList>
+          <Tab id="mentorship" href="/mentorship" matchStrategy="prefix">
+            Mentorship
+          </Tab>
+          <Tab id="events" href="/mentorship/events">
+            Events
+          </Tab>
+          <Tab id="catalog" href="/catalog" matchStrategy="prefix">
+            Catalog
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL: <strong>/mentorship/events</strong>
+        </Text>
+        <Text>
+          The "Mentorship" tab uses prefix matching and IS active because
+          "/mentorship/events" starts with "/mentorship".
+        </Text>
+        <Text>
+          The "Events" tab uses exact matching and is also active because it
+          exactly matches.
+        </Text>
+        <Text>
+          The "Catalog" tab uses prefix matching but is NOT active because the
+          URL doesn't start with "/catalog".
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const PrefixMatchingDeepNesting: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+      <Tabs>
+        <TabList>
+          <Tab id="home" href="/home">
+            Home
+          </Tab>
+          <Tab id="catalog" href="/catalog" matchStrategy="prefix">
+            Catalog
+          </Tab>
+          <Tab id="mentorship" href="/mentorship" matchStrategy="prefix">
+            Mentorship
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL: <strong>/catalog/users/john/details</strong>
+        </Text>
+        <Text>
+          The "Catalog" tab is active because it uses prefix matching and the
+          URL starts with "/catalog".
+        </Text>
+        <Text>This works for any level of nesting under "/catalog".</Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const MixedMatchingStrategies: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/dashboard/analytics/reports']}>
+      <Tabs>
+        <TabList>
+          <Tab id="overview" href="/dashboard">
+            Overview
+          </Tab>
+          <Tab
+            id="analytics"
+            href="/dashboard/analytics"
+            matchStrategy="prefix"
+          >
+            Analytics
+          </Tab>
+          <Tab id="settings" href="/dashboard/settings" matchStrategy="prefix">
+            Settings
+          </Tab>
+          <Tab id="help" href="/help">
+            Help
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL: <strong>/dashboard/analytics/reports</strong>
+        </Text>
+        <Text>
+          • "Overview" tab: exact matching, NOT active (doesn't exactly match
+          "/dashboard")
+        </Text>
+        <Text>
+          • "Analytics" tab: prefix matching, IS active (URL starts with
+          "/dashboard/analytics")
+        </Text>
+        <Text>
+          • "Settings" tab: prefix matching, NOT active (URL doesn't start with
+          "/dashboard/settings")
+        </Text>
+        <Text>
+          • "Help" tab: exact matching, NOT active (doesn't exactly match
+          "/help")
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const PrefixMatchingEdgeCases: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/foobar']}>
+      <Tabs>
+        <TabList>
+          <Tab id="foo" href="/foo" matchStrategy="prefix">
+            Foo
+          </Tab>
+          <Tab id="foobar" href="/foobar">
+            Foobar
+          </Tab>
+          <Tab id="foo-exact" href="/foo">
+            Foo (exact)
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL: <strong>/foobar</strong>
+        </Text>
+        <Text>
+          • "Foo" tab (prefix): NOT active - prevents "/foo" from matching
+          "/foobar"
+        </Text>
+        <Text>
+          • "Foobar" tab (exact): IS active - exactly matches "/foobar"
+        </Text>
+        <Text>
+          • "Foo (exact)" tab: NOT active - doesn't exactly match "/foobar"
+        </Text>
+        <Text>
+          This shows that prefix matching properly requires a "/" separator to
+          prevent false matches.
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const PrefixMatchingWithSlash: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/foo/bar']}>
+      <Tabs>
+        <TabList>
+          <Tab id="foo" href="/foo" matchStrategy="prefix">
+            Foo
+          </Tab>
+          <Tab id="foobar" href="/foobar">
+            Foobar
+          </Tab>
+          <Tab id="bar" href="/bar" matchStrategy="prefix">
+            Bar
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL: <strong>/foo/bar</strong>
+        </Text>
+        <Text>
+          • "Foo" tab (prefix): IS active - "/foo/bar" starts with "/foo/"
+        </Text>
+        <Text>
+          • "Foobar" tab (exact): NOT active - doesn't exactly match "/foobar"
+        </Text>
+        <Text>
+          • "Bar" tab (prefix): NOT active - "/foo/bar" doesn't start with
+          "/bar"
+        </Text>
+        <Text>
+          This demonstrates proper prefix matching with the "/" separator.
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const RootPathMatching: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/']}>
+      <Tabs>
+        <TabList>
+          <Tab id="home" href="/">
+            Home
+          </Tab>
+          <Tab id="home-prefix" href="/" matchStrategy="prefix">
+            Home (prefix)
+          </Tab>
+          <Tab id="catalog" href="/catalog" matchStrategy="prefix">
+            Catalog
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text>
+          Current URL: <strong>/</strong>
+        </Text>
+        <Text>• "Home" tab (exact): IS active - exactly matches "/"</Text>
+        <Text>• "Home (prefix)" tab: IS active - "/" matches "/"</Text>
+        <Text>
+          • "Catalog" tab (prefix): NOT active - "/" doesn't start with
+          "/catalog"
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+};

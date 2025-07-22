@@ -28,7 +28,7 @@ import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
-import { TabProps } from 'react-aria-components';
+import type { TabProps as TabProps_2 } from 'react-aria-components';
 import { TabsProps as TabsProps_2 } from 'react-aria-components';
 import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
@@ -1026,6 +1026,8 @@ export interface HeaderProps {
   tabs?: HeaderTab[];
   // (undocumented)
   title?: string;
+  // (undocumented)
+  titleLink?: string;
 }
 
 // @public
@@ -1036,6 +1038,7 @@ export interface HeaderTab {
   id: string;
   // (undocumented)
   label: string;
+  matchStrategy?: TabMatchStrategy;
 }
 
 // @public (undocumented)
@@ -1643,10 +1646,18 @@ export const TabList: (props: TabListProps) => JSX_2.Element;
 export interface TabListProps extends Omit<TabListProps_2<object>, 'items'> {}
 
 // @public
+export type TabMatchStrategy = 'exact' | 'prefix';
+
+// @public
 export const TabPanel: (props: TabPanelProps) => JSX_2.Element;
 
 // @public
 export interface TabPanelProps extends TabPanelProps_2 {}
+
+// @public
+export interface TabProps extends TabProps_2 {
+  matchStrategy?: 'exact' | 'prefix';
+}
 
 // @public
 export const Tabs: (props: TabsProps) => JSX_2.Element | null;
