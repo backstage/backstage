@@ -72,7 +72,12 @@ export const HeaderPage = (props: HeaderPageProps) => {
           <Tabs>
             <TabList>
               {tabs.map(tab => (
-                <Tab key={tab.id} id={tab.id} href={tab.href}>
+                <Tab
+                  key={tab.id}
+                  id={tab.id}
+                  href={tab.href}
+                  matchStrategy={tab.matchStrategy}
+                >
                   {tab.label}
                 </Tab>
               ))}

@@ -15,4 +15,10 @@
  */
 
 export { Tabs, TabList, Tab, TabPanel } from './Tabs';
-export type { TabsProps, TabListProps, TabPanelProps } from './types';
+export type {
+  TabsProps,
+  TabListProps,
+  TabPanelProps,
+  TabProps,
+  TabMatchStrategy,
+} from './types';

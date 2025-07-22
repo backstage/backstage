@@ -29,6 +29,7 @@ import type {
   TabListProps,
   TabPanelProps,
   TabsContextValue,
+  TabProps,
 } from './types';
 import { useLocation, useNavigate, useHref } from 'react-router-dom';
 import { TabsIndicators } from './TabsIndicators';
@@ -51,6 +52,29 @@ const useTabsContext = () => {
     throw new Error('Tab components must be used within a Tabs component');
   }
   return context;
+};
+
+/**
+ * Utility function to determine if a tab should be active based on the matching strategy.
+ * This follows the pattern used in WorkaroundNavLink from the sidebar.
+ */
+const isTabActive = (
+  tabHref: string,
+  currentPathname: string,
+  matchStrategy: 'exact' | 'prefix',
+): boolean => {
+  if (matchStrategy === 'exact') {
+    return tabHref === currentPathname;
+  }
+
+  // Prefix matching - similar to WorkaroundNavLink behavior
+  if (tabHref === currentPathname) {
+    return true;
+  }
+
+  // Check if current path starts with tab href followed by a slash
+  // This prevents /foo matching /foobar
+  return currentPathname.startsWith(`${tabHref}/`);
 };
 
 /**
@@ -83,11 +107,12 @@ export const Tabs = (props: TabsProps) => {
       if (isValidElement(child) && child.type === TabList) {
         const tabListChildren = Children.toArray(child.props.children);
         for (const tabChild of tabListChildren) {
-          if (
-            isValidElement(tabChild) &&
-            tabChild.props.href === location.pathname
-          ) {
-            return tabChild.props.id;
+          if (isValidElement(tabChild) && tabChild.props.href) {
+            // Use tab-specific strategy, defaulting to 'exact'
+            const strategy = tabChild.props.matchStrategy || 'exact';
+            if (isTabActive(tabChild.props.href, location.pathname, strategy)) {
+              return tabChild.props.id;
+            }
           }
         }
       }
@@ -173,8 +198,8 @@ export const TabList = (props: TabListProps) => {
  *
  * @public
  */
-export const Tab = (props: AriaTabProps) => {
-  const { href, children, id, ...rest } = props;
+export const Tab = (props: TabProps) => {
+  const { href, children, id, matchStrategy: _matchStrategy, ...rest } = props;
   const { classNames } = useStyles('Tabs');
   const { setTabRef } = useTabsContext();
 
