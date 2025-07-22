@@ -1,5 +1,13 @@
 # @backstage/plugin-signals
 
+## 0.0.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
 ## 0.0.21
 
 ### Patch Changes

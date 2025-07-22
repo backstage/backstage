@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-react
 
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 77eebdc: Support `filter` parameter on the `EntityHeaderBlueprint`
+- a3a878d: Adding `type` as an override to the `convertLegacyEntityCardExtension`
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/frontend-test-utils@0.3.5-next.0
+
 ## 1.19.1
 
 ### Patch Changes
