@@ -16,11 +16,14 @@ import {
   linkRouterSnippet,
   linkTruncateSnippet,
 } from './link.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Link
-
-A link component that supports both internal routing and external navigation.
+<PageTitle
+  title="Link"
+  description="A link component that renders a `<a>` element."
+/>
 
 <Snippet
   align="center"
@@ -29,29 +32,9 @@ A link component that supports both internal routing and external navigation.
   code={linkDefaultSnippet}
 />
 
-<ComponentInfos
-  component="link"
-  classNames={[
-    'bui-Link',
-    'bui-Text',
-    "bui-Text[data-variant='title-large']",
-    "bui-Text[data-variant='title-medium']",
-    "bui-Text[data-variant='title-small']",
-    "bui-Text[data-variant='title-x-small']",
-    "bui-Text[data-variant='body-large']",
-    "bui-Text[data-variant='body-medium']",
-    "bui-Text[data-variant='body-small']",
-    "bui-Text[data-variant='body-x-small']",
-    "bui-Text[data-weight='regular']",
-    "bui-Text[data-weight='bold']",
-    "bui-Text[data-color='primary']",
-    "bui-Text[data-color='secondary']",
-    "bui-Text[data-color='danger']",
-    "bui-Text[data-color='warning']",
-    "bui-Text[data-color='success']",
-  ]}
-  usageCode={linkUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={linkUsageSnippet} />
 
 ## API reference
 
@@ -113,3 +96,7 @@ The `Link` component has a `truncate` prop that can be used to truncate the text
   preview={<LinkSnippet story="Truncate" />}
   code={linkTruncateSnippet}
 />
+
+<Theming component="Link" />
+
+<ChangelogComponent component="link" />

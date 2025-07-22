@@ -907,6 +907,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@remixicon/react@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "@remixicon/react@npm:4.6.0"
+  peerDependencies:
+    react: ">=18.2.0"
+  checksum: 10/d92c8131734062fca8d82d55dd8f3f4e28cb72c5eefda528c8aba5f3298f0c847342eecdbd7787d6da5af21b699d735f6cf27f151f0c982c1c9f06a78b235c94
+  languageName: node
+  linkType: hard
+
 "@rtsao/scc@npm:^1.1.0":
   version: 1.1.0
   resolution: "@rtsao/scc@npm:1.1.0"
@@ -2302,6 +2311,7 @@ __metadata:
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"
     "@next/mdx": "npm:15.3.4"
+    "@remixicon/react": "npm:^4.6.0"
     "@storybook/react": "npm:^8.6.8"
     "@types/mdx": "npm:^2.0.13"
     "@types/node": "npm:^20"
@@ -2321,7 +2331,6 @@ __metadata:
     prop-types: "npm:^15.8.1"
     react: "npm:19.1.0"
     react-dom: "npm:19.1.0"
-    react-frame-component: "npm:^5.2.7"
     shiki: "npm:^1.26.1"
     storybook: "npm:^8.6.8"
     typescript: "npm:^5"
@@ -5584,17 +5593,6 @@ __metadata:
   peerDependencies:
     react: ^19.1.0
   checksum: 10/c5b58605862c7b0bb044416b01c73647bb8e89717fb5d7a2c279b11815fb7b49b619fe685c404e59f55eb52c66831236cc565c25ee1c2d042739f4a2cc538aa2
-  languageName: node
-  linkType: hard
-
-"react-frame-component@npm:^5.2.7":
-  version: 5.2.7
-  resolution: "react-frame-component@npm:5.2.7"
-  peerDependencies:
-    prop-types: ^15.5.9
-    react: ">= 16.3"
-    react-dom: ">= 16.3"
-  checksum: 10/bedee0c25075cbfb6d592991937640a9c8680f9017284e73ced338cc07348b3efc99121052b60ba0923d3d4ec1ed050348ddec452f059e0b947f6bff1d5bfe24
   languageName: node
   linkType: hard
 

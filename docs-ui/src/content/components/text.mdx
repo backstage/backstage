@@ -12,11 +12,14 @@ import {
   textResponsiveSnippet,
   textColorsSnippet,
 } from './text.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Text
-
-The `Text` component is used to display content on your page.
+<PageTitle
+  title="Text"
+  description="The `Text` component is used to display content on your page."
+/>
 
 <Snippet
   py={4}
@@ -24,29 +27,9 @@ The `Text` component is used to display content on your page.
   code={textDefaultSnippet}
 />
 
-<ComponentInfos
-  component="text"
-  classNames={[
-    'bui-Text',
-    "bui-Text[data-variant='title-large']",
-    "bui-Text[data-variant='title-medium']",
-    "bui-Text[data-variant='title-small']",
-    "bui-Text[data-variant='title-x-small']",
-    "bui-Text[data-variant='body-large']",
-    "bui-Text[data-variant='body-medium']",
-    "bui-Text[data-variant='body-small']",
-    "bui-Text[data-variant='body-x-small']",
-    "bui-Text[data-weight='regular']",
-    "bui-Text[data-weight='bold']",
-    "bui-Text[data-color='primary']",
-    "bui-Text[data-color='secondary']",
-    "bui-Text[data-color='danger']",
-    "bui-Text[data-color='warning']",
-    "bui-Text[data-color='success']",
-    'bui-Text[data-truncate]',
-  ]}
-  usageCode={textUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={textUsageSnippet} />
 
 ## API reference
 
@@ -103,3 +86,7 @@ You can also use the `variant` prop to change the appearance of the text based
 on the screen size.
 
 <CodeBlock code={textResponsiveSnippet} />
+
+<Theming component="Text" />
+
+<ChangelogComponent component="text" />

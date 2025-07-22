@@ -29,7 +29,7 @@ import { Table as Table_2 } from '@tanstack/react-table';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
 import { TabProps } from 'react-aria-components';
-import type { TabsProps as TabsProps_2 } from 'react-aria-components';
+import { TabsProps as TabsProps_2 } from 'react-aria-components';
 import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
@@ -1020,6 +1020,8 @@ export interface HeaderProps {
   icon?: React.ReactNode;
   // (undocumented)
   menuItems?: HeaderMenuItem[];
+  // (undocumented)
+  onTabSelectionChange?: TabsProps_2['onSelectionChange'];
   // (undocumented)
   tabs?: HeaderTab[];
   // (undocumented)

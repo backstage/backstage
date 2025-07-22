@@ -50,7 +50,7 @@ export const Header = (props: HeaderProps) => {
       />
       {tabs && (
         <div className={classNames.tabsWrapper}>
-          <Tabs>
+          <Tabs onSelectionChange={props.onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (
                 <Tab key={tab.id} id={tab.id} href={tab.href}>

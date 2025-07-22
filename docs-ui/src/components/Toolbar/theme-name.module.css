@@ -4,20 +4,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  height: 2rem;
-  padding-left: 0.875rem;
-  padding-right: 0.75rem;
+  height: 3rem;
+  padding-left: 1.25rem;
+  padding-right: 1rem;
   margin: 0;
   outline: 0;
   border: 1px solid var(--color-gray-200);
-  border-radius: 0.375rem;
+  border-radius: 3rem;
   font-family: inherit;
   font-size: 1rem;
   line-height: 1.5rem;
   color: var(--color-gray-900);
   cursor: pointer;
   user-select: none;
-  background-color: var(--surface-1);
+  background-color: var(--action);
 
   &:focus-visible {
     outline: 2px solid var(--color-blue);
