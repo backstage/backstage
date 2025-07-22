@@ -187,6 +187,40 @@ describe('gitlab core', () => {
     });
   });
 
+  describe('error handling', () => {
+    it('should throw specific error for 429 Too Many Requests response', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/group%2Fproject', (_, res, ctx) =>
+          res(ctx.status(429), ctx.json({ error: 'rate_limit_exceeded' })),
+        ),
+      );
+
+      const target =
+        'https://gitlab.com/group/project/-/blob/branch/folder/file.yaml';
+
+      await expect(
+        getGitLabFileFetchUrl(target, configWithNoToken),
+      ).rejects.toThrow('GitLab Error: 429 - Too Many Requests.');
+    });
+
+    it('should throw specific error for 401 Unauthorized response', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/group%2Fproject', (_, res, ctx) =>
+          res(ctx.status(401), ctx.json({ error: 'unauthorized' })),
+        ),
+      );
+
+      const target =
+        'https://gitlab.com/group/project/-/blob/branch/folder/file.yaml';
+
+      await expect(
+        getGitLabFileFetchUrl(target, configWithNoToken),
+      ).rejects.toThrow(
+        'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
+      );
+    });
+  });
+
   describe('getGitLabRequestOptions', () => {
     it('should return Authorization bearer header when a token is provided', () => {
       const token = '1234567890';

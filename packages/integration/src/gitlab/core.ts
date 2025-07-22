@@ -154,6 +154,10 @@ export async function getProjectId(
         );
       }
 
+      if (response.status === 429) {
+        throw new Error('GitLab Error: 429 - Too Many Requests.');
+      }
+
       throw new Error(
         `GitLab Error '${data.error}', ${data.error_description}`,
       );
