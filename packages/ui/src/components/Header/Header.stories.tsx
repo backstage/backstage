@@ -230,6 +230,7 @@ export const WithEverything: Story = {
     menuItems,
     breadcrumbs,
     tabs,
+    titleLink: '/',
   },
   decorators: layoutDecorator,
   render: args => (

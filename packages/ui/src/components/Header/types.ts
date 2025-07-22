@@ -24,6 +24,7 @@ import { TabsProps } from 'react-aria-components';
 export interface HeaderProps {
   icon?: React.ReactNode;
   title?: string;
+  titleLink?: string;
   breadcrumbs?: HeaderBreadcrumb[];
   customActions?: React.ReactNode;
   menuItems?: HeaderMenuItem[];
@@ -71,6 +72,7 @@ export interface HeaderBreadcrumb {
 export interface HeaderToolbarProps {
   icon?: HeaderProps['icon'];
   title?: HeaderProps['title'];
+  titleLink?: HeaderProps['titleLink'];
   breadcrumbs?: HeaderProps['breadcrumbs'];
   customActions?: HeaderProps['customActions'];
   menuItems?: HeaderProps['menuItems'];

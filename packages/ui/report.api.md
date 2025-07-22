@@ -1045,6 +1045,8 @@ export interface HeaderProps {
   tabs?: HeaderTab[];
   // (undocumented)
   title?: string;
+  // (undocumented)
+  titleLink?: string;
 }
 
 // @public
