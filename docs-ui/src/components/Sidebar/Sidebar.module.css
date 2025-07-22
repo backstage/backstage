@@ -6,97 +6,44 @@
   .sidebar {
     display: block;
     position: fixed;
-    top: 16px;
-    left: 16px;
-    border-radius: 8px;
-    width: 300px;
-    height: calc(100vh - 32px);
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.025);
+    top: 112px;
+    left: 0;
+    width: 332px;
+    height: calc(100vh - 112px);
     color: var(--primary);
-    background-color: var(--panel);
-    border: 1px solid var(--border);
     overflow: hidden;
+  }
+}
+
+.version {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--secondary);
+  margin-inline: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.versionLinks {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  a {
+    color: var(--secondary);
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: var(--primary);
+    }
   }
 }
 
 .root {
   height: 100%;
-}
-
-.viewport {
-  overflow: scroll;
-  height: 100%;
-}
-
-.content {
-  padding: 0 20px 20px;
-}
-
-.logoContainer {
-  padding-left: 6px;
-  padding-top: 20px;
-}
-
-.logo path {
-  fill: var(--primary);
-}
-
-.menu {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-}
-
-.section {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.sectionTitle {
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 12px 0;
-  color: var(--primary);
-  margin-top: 24px;
-}
-
-.line {
-  text-decoration: none;
-  align-items: center;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 26px;
-  padding: 0 12px;
-  border-radius: 4px;
-
-  &:hover {
-    background-color: var(--surface-1);
-    transition: background-color 0.2s ease-in-out;
-  }
-}
-
-.line.active {
-  background-color: var(--surface-1);
-}
-
-.line.active .lineTitle {
-  color: var(--primary);
-}
-
-.lineTitle {
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--secondary);
-}
-
-.lineStatus {
-  font-size: 14px;
-  color: var(--secondary);
 }
 
 .scrollbar {
@@ -110,7 +57,6 @@
   transition: opacity 150ms 300ms;
   right: -20px;
 
-  &[data-hovering],
   &[data-scrolling] {
     opacity: 1;
     transition-duration: 75ms;
@@ -129,4 +75,71 @@
   width: 100%;
   border-radius: inherit;
   background-color: rgba(0, 0, 0, 0.2);
+}
+
+.viewport {
+  overflow: scroll;
+  height: 100%;
+}
+
+.content {
+  padding: 0 20px 64px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sectionTitle {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 0 12px 4px;
+  color: var(--secondary);
+  margin-top: 40px;
+  text-transform: uppercase;
+}
+
+.line {
+  text-decoration: none;
+  align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: var(--action);
+  }
+}
+
+.line.active {
+  background-color: var(--action);
+}
+
+.line.active .lineTitle {
+  color: var(--primary);
+}
+
+.lineTitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--primary);
+}
+
+.lineStatus {
+  font-size: 14px;
+  color: var(--secondary);
 }

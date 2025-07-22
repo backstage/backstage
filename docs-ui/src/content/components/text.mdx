@@ -11,11 +11,14 @@ import {
   textTruncateSnippet,
   textResponsiveSnippet,
 } from './text.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Text
-
-The `Text` component is used to display content on your page.
+<PageTitle
+  title="Text"
+  description="The `Text` component is used to display content on your page."
+/>
 
 <Snippet
   py={4}
@@ -23,11 +26,9 @@ The `Text` component is used to display content on your page.
   code={textDefaultSnippet}
 />
 
-<ComponentInfos
-  component="text"
-  classNames={['bui-Text']}
-  usageCode={textUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={textUsageSnippet} />
 
 ## API reference
 
@@ -74,3 +75,7 @@ You can also use the `variant` prop to change the appearance of the text based
 on the screen size.
 
 <CodeBlock code={textResponsiveSnippet} />
+
+<Theming component="Text" />
+
+<ChangelogComponent component="text" />

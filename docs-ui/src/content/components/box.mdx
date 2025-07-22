@@ -10,11 +10,15 @@ import {
   boxResponsiveSnippet,
 } from './box.props';
 import { spacingPropDefs } from '@/utils/propDefs';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Box
-
-Box is the lowest-level component in Backstage UI. It provides a consistent API for styling and layout.
+<PageTitle
+  type="Layout"
+  title="Box"
+  description="Box is the lowest-level component in Backstage UI. It provides a consistent API for styling and layout."
+/>
 
 <Snippet
   py={4}
@@ -23,7 +27,9 @@ Box is the lowest-level component in Backstage UI. It provides a consistent API 
   align="center"
 />
 
-<ComponentInfos component="box" usageCode={snippetUsage} />
+## Usage
+
+<CodeBlock code={snippetUsage} />
 
 ## API reference
 
@@ -53,3 +59,7 @@ A simple example of how to use the Box component.
 Here's a view when buttons are responsive.
 
 <CodeBlock code={boxResponsiveSnippet} />
+
+<Theming component="Box" />
+
+<ChangelogComponent component="box" />
