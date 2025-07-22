@@ -28,13 +28,6 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
-  decorators: [
-    (Story: StoryFn) => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
 } satisfies Meta<typeof HeaderPage>;
 
 export default meta;
@@ -73,6 +66,12 @@ const menuItems: HeaderMenuItem[] = [
     value: 'invite-new-members',
   },
 ];
+
+const withRouter = (Story: StoryFn) => (
+  <MemoryRouter>
+    <Story />
+  </MemoryRouter>
+);
 
 // Extract layout decorator as a reusable constant
 const layoutDecorator = [
@@ -121,6 +120,7 @@ export const WithTabs: Story = {
     ...Default.args,
     tabs,
   },
+  decorators: [withRouter],
 };
 
 export const WithMenuItems: Story = {
@@ -141,6 +141,7 @@ export const WithCustomActions: Story = {
 };
 
 export const WithEverything: Story = {
+  decorators: [withRouter],
   render: () => (
     <HeaderPage
       {...Default.args}
@@ -155,6 +156,157 @@ export const WithLayout: Story = {
   args: {
     ...WithEverything.args,
   },
-  decorators: layoutDecorator,
+  decorators: [withRouter, ...layoutDecorator],
   render: WithEverything.render,
+};
+
+export const WithTabsMatchingStrategies: Story = {
+  args: {
+    title: 'Route Matching Demo',
+    tabs: [
+      {
+        id: 'home',
+        label: 'Home',
+        href: '/home',
+      },
+      {
+        id: 'mentorship',
+        label: 'Mentorship',
+        href: '/mentorship',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'catalog',
+        label: 'Catalog',
+        href: '/catalog',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'settings',
+        label: 'Settings',
+        href: '/settings',
+      },
+    ],
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/mentorship/events']}>
+      <HeaderPage {...args} />
+      <Container>
+        <Text>
+          <strong>Current URL:</strong> /mentorship/events
+        </Text>
+        <br />
+        <Text>
+          Notice how the "Mentorship" tab is active even though we're on a
+          nested route. This is because it uses{' '}
+          <code>matchStrategy="prefix"</code>.
+        </Text>
+        <br />
+        <Text>
+          • <strong>Home</strong>: exact matching (default) - not active
+        </Text>
+        <Text>
+          • <strong>Mentorship</strong>: prefix matching - IS active (URL starts
+          with /mentorship)
+        </Text>
+        <Text>
+          • <strong>Catalog</strong>: prefix matching - not active
+        </Text>
+        <Text>
+          • <strong>Settings</strong>: exact matching (default) - not active
+        </Text>
+      </Container>
+    </MemoryRouter>
+  ),
+};
+
+export const WithTabsExactMatching: Story = {
+  args: {
+    title: 'Exact Matching Demo',
+    tabs: [
+      {
+        id: 'mentorship',
+        label: 'Mentorship',
+        href: '/mentorship',
+      },
+      {
+        id: 'events',
+        label: 'Events',
+        href: '/mentorship/events',
+      },
+      {
+        id: 'mentors',
+        label: 'Mentors',
+        href: '/mentorship/mentors',
+      },
+    ],
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/mentorship/events']}>
+      <HeaderPage {...args} />
+      <Container>
+        <Text>
+          <strong>Current URL:</strong> /mentorship/events
+        </Text>
+        <br />
+        <Text>
+          With default exact matching, only the "Events" tab is active because
+          it exactly matches the current URL. The "Mentorship" tab is not active
+          even though the URL is under /mentorship.
+        </Text>
+      </Container>
+    </MemoryRouter>
+  ),
+};
+
+export const WithTabsPrefixMatchingDeep: Story = {
+  args: {
+    title: 'Deep Nesting Demo',
+    tabs: [
+      {
+        id: 'catalog',
+        label: 'Catalog',
+        href: '/catalog',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'users',
+        label: 'Users',
+        href: '/catalog/users',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'components',
+        label: 'Components',
+        href: '/catalog/components',
+        matchStrategy: 'prefix',
+      },
+    ],
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+      <HeaderPage {...args} />
+      <Container>
+        <Text>
+          <strong>Current URL:</strong> /catalog/users/john/details
+        </Text>
+        <br />
+        <Text>Both "Catalog" and "Users" tabs are active because:</Text>
+        <Text>
+          • <strong>Catalog</strong>: URL starts with /catalog
+        </Text>
+        <Text>
+          • <strong>Users</strong>: URL starts with /catalog/users
+        </Text>
+        <Text>
+          • <strong>Components</strong>: not active (URL doesn't start with
+          /catalog/components)
+        </Text>
+        <br />
+        <Text>
+          This demonstrates how prefix matching works with deeply nested routes.
+        </Text>
+      </Container>
+    </MemoryRouter>
+  ),
 };

@@ -105,7 +105,6 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
 
   return (
     <RouterProvider navigate={navigate} useHref={useHref}>
-      {' '}
       <div className={classNames.toolbar} data-has-tabs={hasTabs}>
         <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
           <div className={classNames.toolbarContent} ref={toolbarContentRef}>
