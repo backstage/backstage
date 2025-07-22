@@ -48,7 +48,11 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/errors": "workspace:^"
+    "@backstage/errors": "workspace:^",
+    "@opentelemetry/auto-instrumentations-node": "^0.62.0",
+    "@opentelemetry/exporter-prometheus": "^0.203.0",
+    "@opentelemetry/sdk-metrics": "^2.0.1",
+    "@opentelemetry/sdk-node": "^0.203.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

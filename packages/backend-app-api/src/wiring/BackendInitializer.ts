@@ -44,6 +44,7 @@ import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
 import { unwrapFeature } from './helpers';
+import { initializeTelemetry } from './initializeTelemetry';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -153,7 +154,6 @@ function createInstanceMetadataServiceFactory(
     factory: async () => ({ getInstalledFeatures: () => installedFeatures }),
   });
 }
-
 export class BackendInitializer {
   #startPromise?: Promise<void>;
   #stopPromise?: Promise<void>;
@@ -254,11 +254,31 @@ export class BackendInitializer {
 
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
 
+    const rootConfig = await this.#serviceRegistry.get(
+      coreServices.rootConfig,
+      'root',
+    );
+
+    const rootLogger = await this.#serviceRegistry.get(
+      coreServices.rootLogger,
+      'root',
+    );
+
+    await initializeTelemetry({
+      rootConfig,
+      rootLogger,
+    });
+
+    /*
+      New services (metrics, tracing, etc) can be added to `defaultServiceFactories` and rely on the existing DependencyGraph to be initialized
+    */
+
+    // Creates a metadata service that can be used to get information about the installed features prior to startup
     this.#serviceRegistry.add(
       createInstanceMetadataServiceFactory(this.#registrations),
     );
 
-    // Initialize all root scoped services
+    // Initialize all remaining root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
 
     const pluginInits = new Map<string, BackendRegisterInit>();
@@ -317,15 +337,7 @@ export class BackendInitializer {
 
     const allPluginIds = [...pluginInits.keys()];
 
-    const initLogger = createInitializationLogger(
-      allPluginIds,
-      await this.#serviceRegistry.get(coreServices.rootLogger, 'root'),
-    );
-
-    const rootConfig = await this.#serviceRegistry.get(
-      coreServices.rootConfig,
-      'root',
-    );
+    const initLogger = createInitializationLogger(allPluginIds, rootLogger);
 
     // All plugins are initialized in parallel
     const results = await Promise.allSettled(
@@ -453,10 +465,6 @@ export class BackendInitializer {
     // Once the backend is started, any uncaught errors or unhandled rejections are caught
     // and logged, in order to avoid crashing the entire backend on local failures.
     if (process.env.NODE_ENV !== 'test') {
-      const rootLogger = await this.#serviceRegistry.get(
-        coreServices.rootLogger,
-        'root',
-      );
       process.on('unhandledRejection', (reason: Error) => {
         rootLogger
           ?.child({ type: 'unhandledRejection' })
