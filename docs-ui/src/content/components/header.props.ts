@@ -91,6 +91,10 @@ export const propDefs: Record<string, PropDef> = {
       },
     },
   },
+  onTabSelectionChange: {
+    type: 'enum',
+    values: ['(key: string) => void'],
+  },
   ...childrenPropDefs,
   ...classNamePropDefs,
   ...stylePropDefs,
@@ -128,20 +132,87 @@ export const defaultSnippet = `<Header
   }
 />`;
 
-export const flexSimpleSnippet = `<Flex gap="md">
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-</Flex>`;
+export const simple = `<Header
+  title="My plugin"
+  titleLink="/"
+  tabs={[
+    { id: 'overview', label: 'Overview' },
+    { id: 'checks', label: 'Checks' },
+    { id: 'tracks', label: 'Tracks' },
+    { id: 'campaigns', label: 'Campaigns' },
+    { id: 'integrations', label: 'Integrations' },
+  ]}
+  menuItems={[
+    { label: 'Settings', value: 'settings' },
+    { label: 'Invite new members', value: 'invite-new-members' },
+  ]}
+  customActions={
+    <>
+      <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+      <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+      <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+    </>
+  }
+/>`;
 
-export const flexResponsiveSnippet = `<Flex gap={{ xs: 'xs', md: 'md' }}>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-</Flex>`;
+export const withTabs = `
+<Header
+  title="My plugin"
+  titleLink="/"
+  tabs={[
+    { id: 'overview', label: 'Overview' },
+    { id: 'checks', label: 'Checks' },
+    { id: 'tracks', label: 'Tracks' },
+    { id: 'campaigns', label: 'Campaigns' },
+    { id: 'integrations', label: 'Integrations' },
+  ]}
+  menuItems={[
+    { label: 'Settings', value: 'settings' },
+    { label: 'Invite new members', value: 'invite-new-members' },
+  ]}
+  customActions={
+    <>
+      <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+      <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+      <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+    </>
+  }
+  tabs={[
+    { id: 'overview', label: 'Overview' },
+    { id: 'checks', label: 'Checks' },
+    { id: 'tracks', label: 'Tracks' },
+    { id: 'campaigns', label: 'Campaigns' },
+    { id: 'integrations', label: 'Integrations' },
+  ]}
+/>
+`;
 
-export const flexAlignSnippet = `<Flex align={{ xs: 'start', md: 'center' }}>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-</Flex>`;
+export const withBreadcrumbs = `<Header
+  title="My plugin"
+  titleLink="/"
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Settings', href: '/settings' },
+  ]}
+  tabs={[
+    { id: 'overview', label: 'Overview' },
+    { id: 'checks', label: 'Checks' },
+    { id: 'tracks', label: 'Tracks' },
+    { id: 'campaigns', label: 'Campaigns' },
+    { id: 'integrations', label: 'Integrations' },
+  ]}
+/>`;
+
+export const withHeaderPage = `<Header
+  title="My plugin"
+  titleLink="/"
+  breadcrumbs={...}
+  tabs={...}
+/>
+<HeaderPage
+  title="Page title"
+  menuItems={...}
+  tabs={...}
+  customActions={<Button>Custom action</Button>}
+/>`;

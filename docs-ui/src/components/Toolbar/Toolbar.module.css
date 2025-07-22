@@ -78,7 +78,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--action);
+    /* background-color: var(--action); */
+    border: 1px solid var(--border2);
     border-radius: 48px;
     padding-inline: 20px;
     color: var(--primary);

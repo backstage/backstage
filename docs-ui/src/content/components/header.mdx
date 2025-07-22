@@ -4,16 +4,13 @@ import { Snippet } from '@/components/Snippet';
 import { HeaderSnippet } from '@/snippets/stories-snippets';
 import {
   propDefs,
-  flexUsageSnippet,
-  flexDefaultSnippet,
-  flexFAQ1Snippet,
-  flexSimpleSnippet,
-  flexResponsiveSnippet,
-  flexAlignSnippet,
   usage,
+  simple,
   defaultSnippet,
+  withTabs,
+  withBreadcrumbs,
+  withHeaderPage,
 } from './header.props';
-import { spacingPropDefs } from '@/utils/propDefs';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -26,7 +23,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <Snippet
   py={4}
-  preview={<HeaderSnippet story="WithAllComponents" />}
+  preview={<HeaderSnippet story="WithAllOptionsAndTabs" />}
   code={defaultSnippet}
 />
 
@@ -38,31 +35,50 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PropsTable data={propDefs} />
 
-The grid component also accepts all the spacing props from the Box component.
-
-<PropsTable data={spacingPropDefs} />
-
 ## Examples
 
-### Simple
+### Simple header
 
-A simple example of how to use the Flex component.
+A simple example of how to use the Header component.
 
-<CodeBlock code={flexSimpleSnippet} />
+<Snippet
+  py={4}
+  preview={<HeaderSnippet story="WithAllOptions" />}
+  code={simple}
+  open
+/>
 
-### Responsive
+### Header with tabs
 
-The Flex component also supports responsive values, making it easy to create
-responsive designs.
+A simple example of how to use the Header component with tabs. All links are using React Router
+under the hood and will be active when you are on the corresponding page.
 
-<CodeBlock code={flexResponsiveSnippet} />
+<Snippet
 
-### Align
+preview={<HeaderSnippet story="WithAllOptionsAndTabs" />}
+code={withTabs}
+open
+/>
 
-The Flex component also supports responsive alignment, making it easy to
-create responsive designs.
+### Header with breadcrumbs
 
-<CodeBlock code={flexAlignSnippet} />
+Breacrumbs should appear when you scroll down (and not directly visible as it is in the demo below).
+
+<Snippet
+  preview={<HeaderSnippet story="WithBreadcrumbs" />}
+  code={withBreadcrumbs}
+  open
+/>
+
+### Header with HeaderPage
+
+You can use the `Header` component inside the [HeaderPage](/components/header-page) component to compose your multi-level navigation.
+
+<Snippet
+  preview={<HeaderSnippet story="WithHeaderPage" />}
+  code={withHeaderPage}
+  open
+/>
 
 <Theming component="Header" />
 
