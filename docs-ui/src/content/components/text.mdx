@@ -10,6 +10,7 @@ import {
   textWeightsSnippet,
   textTruncateSnippet,
   textResponsiveSnippet,
+  textColorsSnippet,
 } from './text.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -58,10 +59,20 @@ appearance of the text.
   code={textWeightsSnippet}
 />
 
+### All colors
+
+The `Text` component has a `color` prop that can be used to change the
+appearance of the text.
+
+<Snippet
+  open
+  preview={<TextSnippet story="AllColors" />}
+  code={textColorsSnippet}
+/>
+
 ### Truncate
 
-The `Text` component has a `truncate` prop that can be used to truncate the
-text.
+The `Text` component has a `truncate` prop that can be used to truncate the text.
 
 <Snippet
   open

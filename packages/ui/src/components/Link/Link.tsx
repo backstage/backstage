@@ -51,15 +51,18 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     variant = 'body',
     weight = 'regular',
     color = 'primary',
+    truncate,
     href,
     ...restProps
   } = props;
 
-  const { classNames, dataAttributes } = useStyles('Link', {
-    variant,
-    weight,
-    color,
-  });
+  const { classNames: linkClassNames } = useStyles('Link');
+  const { classNames: textClassNames, dataAttributes: textDataAttributes } =
+    useStyles('Text', {
+      variant,
+      weight,
+      color,
+    });
 
   const isExternal = isExternalLink(href);
 
@@ -68,9 +71,10 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     return (
       <AriaLink
         ref={ref}
-        className={clsx(classNames.root, className)}
+        className={clsx(textClassNames.root, linkClassNames.root, className)}
+        data-truncate={truncate}
         href={href}
-        {...dataAttributes}
+        {...textDataAttributes}
         {...restProps}
       />
     );
@@ -81,9 +85,10 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     <RouterProvider navigate={navigate} useHref={useHref}>
       <AriaLink
         ref={ref}
-        className={clsx(classNames.root, className)}
+        className={clsx(textClassNames.root, linkClassNames.root, className)}
+        data-truncate={truncate}
+        {...textDataAttributes}
         href={href}
-        {...dataAttributes}
         {...restProps}
       />
     </RouterProvider>

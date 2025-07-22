@@ -15,8 +15,8 @@
  */
 
 import type { HeaderPageProps } from './types';
-import { Heading } from '../Heading';
 import { Menu } from '../Menu';
+import { Text } from '../Text';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiMore2Line } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
@@ -34,7 +34,9 @@ export const HeaderPage = (props: HeaderPageProps) => {
   return (
     <div className={classNames.root}>
       <div className={classNames.content}>
-        <Heading variant="title4">{title}</Heading>
+        <Text variant="title-small" weight="bold">
+          {title}
+        </Text>
         <div className={classNames.controls}>
           {customActions}
           {menuItems && (
