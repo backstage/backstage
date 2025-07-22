@@ -150,9 +150,17 @@ export function createTemplateAction<
     TOutputSchema
   >,
 ): TemplateAction<TActionInput, TActionOutput, 'v2'> {
-  const { inputSchema, outputSchema } = parseSchemas(
-    action as TemplateActionOptions<any, any, any>,
-  );
+  const { inputSchema, outputSchema, inputZodSchema, outputZodSchema } =
+    parseSchemas(action as TemplateActionOptions<any, any, any>);
+
+  const wrapperHandler = (ctx: ActionContext<TActionInput, TActionOutput>) => {
+    return action.handler({
+      ...ctx,
+      input: (inputZodSchema?.parse(ctx.input) as TActionInput) ?? ctx.input,
+      output:
+        (outputZodSchema?.parse(ctx.output) as TActionOutput) ?? ctx.output,
+    });
+  };
 
   return {
     ...action,
@@ -161,5 +169,6 @@ export function createTemplateAction<
       input: inputSchema,
       output: outputSchema,
     },
-  };
+    handler: wrapperHandler,
+  } as TemplateAction<TActionInput, TActionOutput, 'v2'>;
 }

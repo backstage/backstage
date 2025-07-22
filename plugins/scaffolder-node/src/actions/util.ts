@@ -148,29 +148,36 @@ const isZodFunctionDefinition = (
 
 export const parseSchemas = (
   action: TemplateActionOptions<any, any, any>,
-): { inputSchema?: Schema; outputSchema?: Schema } => {
+): {
+  inputSchema?: Schema;
+  outputSchema?: Schema;
+  inputZodSchema?: z.ZodObject<any>;
+  outputZodSchema?: z.ZodObject<any>;
+} => {
   if (!action.schema) {
     return { inputSchema: undefined, outputSchema: undefined };
   }
 
   if (isKeyValueZodCallback(action.schema.input)) {
-    const input = z.object(
-      Object.fromEntries(
-        Object.entries(action.schema.input).map(([k, v]) => [k, v(z)]),
-      ),
-    );
+    const createZodObject = (
+      schema: Record<string, (z: typeof z) => z.ZodType>,
+    ) =>
+      z.object(
+        Object.fromEntries(
+          Object.entries(schema).map(([key, fn]) => [key, fn(z)]),
+        ),
+      );
+    const input = createZodObject(action.schema.input);
+    let output;
+    if (isKeyValueZodCallback(action.schema.output)) {
+      output = createZodObject(action.schema.output);
+    }
 
     return {
-      inputSchema: zodToJsonSchema(input) as Schema,
-      outputSchema: isKeyValueZodCallback(action.schema.output)
-        ? (zodToJsonSchema(
-            z.object(
-              Object.fromEntries(
-                Object.entries(action.schema.output).map(([k, v]) => [k, v(z)]),
-              ),
-            ),
-          ) as Schema)
-        : undefined,
+      inputSchema: zodToJsonSchema<Schema>(input),
+      outputSchema: output && zodToJsonSchema<Schema>(output),
+      inputZodSchema: input,
+      outputZodSchema: output,
     };
   }
 

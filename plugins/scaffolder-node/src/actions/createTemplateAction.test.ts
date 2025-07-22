@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { createTemplateAction } from './createTemplateAction';
+import { createMockActionContext } from "@backstage/plugin-scaffolder-node-test-utils";
+import { mockServices } from '@backstage/backend-test-utils'
 
 describe('createTemplateAction', () => {
   it('should allow creating with new first class zod support', () => {
@@ -99,4 +101,35 @@ describe('createTemplateAction', () => {
 
     expect(action).toBeDefined();
   });
+
+  it('should allow creating with a function for input and output schema for empty objects of schemes with default fields', async () => {
+    const mockContext = createMockActionContext({
+      logger: mockServices.logger.mock(),
+    });
+    const action = createTemplateAction({
+      id: 'something:random',
+      description: 'Just for demo',
+      schema: {
+        input: {
+          x: z => z.number().default(0),
+          y: z => z.string().default('Hello'),
+          t: z => z.string().transform(val => val.length)
+        },
+      },
+      async handler(ctx) {
+        ctx.logger.info(`The value of x is ${ctx.input?.x}`);
+        ctx.logger.info(`The value of y is ${ctx.input?.y}`);
+        ctx.logger.info(`The value of t is ${ctx.input?.t}`);
+      },
+    });
+    await action.handler({
+      ...mockContext,
+      input: {
+        t: 'Backstage'
+      },
+    });
+    expect(mockContext.logger.info).toHaveBeenCalledWith('The value of x is 0');
+    expect(mockContext.logger.info).toHaveBeenCalledWith('The value of y is Hello');
+    expect(mockContext.logger.info).toHaveBeenCalledWith('The value of t is 9');
+  })
 });
