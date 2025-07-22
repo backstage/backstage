@@ -11,11 +11,14 @@ import {
   collapsibleTriggerSnippet,
   collapsibleOpenSnippet,
 } from './collapsible.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Collapsible
-
-An avatar component with a fallback for initials.
+<PageTitle
+  title="Collapsible"
+  description="A collapsible component that can be used to display content in a box."
+/>
 
 <Snippet
   align="center"
@@ -25,15 +28,9 @@ An avatar component with a fallback for initials.
   code={collapsibleDefaultSnippet}
 />
 
-<ComponentInfos
-  component="collapsible"
-  classNames={[
-    'bui-CollapsibleRoot',
-    'bui-CollapsibleTrigger',
-    'bui-CollapsiblePanel',
-  ]}
-  usageCode={collapsibleUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={collapsibleUsageSnippet} />
 
 ## API reference
 
@@ -69,3 +66,7 @@ Open the panel by default by setting the `defaultOpen` prop to `true`.
   preview={<CollapsibleSnippet story="Open" />}
   code={collapsibleOpenSnippet}
 />
+
+<Theming component="Collapsible" />
+
+<ChangelogComponent component="collapsible" />

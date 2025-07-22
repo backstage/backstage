@@ -10,11 +10,14 @@ import {
   tabsUsageSnippet,
   tabsDefaultSnippet,
 } from './tabs.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Tabs
-
-A component for toggling between related panels on the same page.
+<PageTitle
+  title="Tabs"
+  description="A component for toggling between related panels on the same page."
+/>
 
 <Snippet
   py={4}
@@ -22,17 +25,9 @@ A component for toggling between related panels on the same page.
   code={tabsDefaultSnippet}
 />
 
-<ComponentInfos
-  component="tabs"
-  classNames={[
-    'bui-TabsRoot',
-    'bui-TabsList',
-    'bui-TabsTab',
-    'bui-TabsPanel',
-    'bui-TabsIndicator',
-  ]}
-  usageCode={tabsUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={tabsUsageSnippet} />
 
 ## API reference
 
@@ -59,3 +54,7 @@ An individual interactive tab button that toggles the corresponding panel. Rende
 A panel displayed when the corresponding tab is active. Renders a `<div>` element.
 
 <PropsTable data={tabsPanelPropDefs} />
+
+<Theming component="Tabs" />
+
+<ChangelogComponent component="tabs" />

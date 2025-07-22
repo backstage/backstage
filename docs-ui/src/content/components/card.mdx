@@ -12,11 +12,14 @@ import {
   cardLongBodySnippet,
   cardListRowSnippet,
 } from './card.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Card
-
-A card component that can be used to display content in a box.
+<PageTitle
+  title="Card"
+  description="A card component that can be used to display content in a box."
+/>
 
 <Snippet
   align="center"
@@ -25,11 +28,9 @@ A card component that can be used to display content in a box.
   code={cardDefaultSnippet}
 />
 
-<ComponentInfos
-  component="card"
-  classNames={['bui-Card', 'bui-CardHeader', 'bui-CardBody', 'bui-CardFooter']}
-  usageCode={cardUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={cardUsageSnippet} />
 
 ## API reference
 
@@ -82,3 +83,7 @@ Here's a view when card has a list.
   code={cardListRowSnippet}
   open
 />
+
+<Theming component="Card" />
+
+<ChangelogComponent component="card" />

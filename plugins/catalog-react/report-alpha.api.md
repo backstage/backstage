@@ -372,18 +372,43 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
   name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
   };
-  output: ConfigurableExtensionDataRef<
-    JSX_2.Element,
-    'core.reactElement',
-    {
-      optional: true;
-    }
-  >;
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {
+          optional: true;
+        }
+      >;
   inputs: {};
-  config: {};
-  configInput: {};
+  config: {
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+  };
   dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',

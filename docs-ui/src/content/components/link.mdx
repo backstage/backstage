@@ -13,11 +13,14 @@ import {
   linkVariantsSnippet,
   linkWeightsSnippet,
 } from './link.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Link
-
-A link component that renders a `<a>` element.
+<PageTitle
+  title="Link"
+  description="A link component that renders a `<a>` element."
+/>
 
 <Snippet
   align="center"
@@ -26,19 +29,9 @@ A link component that renders a `<a>` element.
   code={linkDefaultSnippet}
 />
 
-<ComponentInfos
-  component="link"
-  classNames={[
-    'bui-Link',
-    "bui-Link[data-variant='body']",
-    "bui-Link[data-variant='subtitle']",
-    "bui-Link[data-variant='caption']",
-    "bui-Link[data-variant='label']",
-    "bui-Link[data-weight='regular']",
-    "bui-Link[data-weight='bold']",
-  ]}
-  usageCode={linkUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={linkUsageSnippet} />
 
 ## API reference
 
@@ -69,3 +62,7 @@ Here's a view when links have different weights.
   preview={<LinkSnippet story="AllWeights" />}
   code={linkWeightsSnippet}
 />
+
+<Theming component="Link" />
+
+<ChangelogComponent component="link" />

@@ -12,11 +12,15 @@ import {
   flexAlignSnippet,
 } from './flex.props';
 import { spacingPropDefs } from '@/utils/propDefs';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Flex
-
-A responsive flex container component for vertical stacking with customizable gaps.
+<PageTitle
+  type="Layout"
+  title="Flex"
+  description="A responsive flex container component for vertical stacking with customizable gaps."
+/>
 
 <Snippet
   py={4}
@@ -25,11 +29,9 @@ A responsive flex container component for vertical stacking with customizable ga
   code={flexDefaultSnippet}
 />
 
-<ComponentInfos
-  component="flex"
-  classNames={['bui-Flex']}
-  usageCode={flexUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={flexUsageSnippet} />
 
 ## API reference
 
@@ -60,3 +62,7 @@ The Flex component also supports responsive alignment, making it easy to
 create responsive designs.
 
 <CodeBlock code={flexAlignSnippet} />
+
+<Theming component="Flex" />
+
+<ChangelogComponent component="flex" />
