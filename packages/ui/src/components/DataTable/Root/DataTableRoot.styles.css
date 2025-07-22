@@ -1,0 +1,5 @@
+.bui-DataTableRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bui-space-3);
+}

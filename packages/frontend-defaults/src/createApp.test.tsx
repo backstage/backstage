@@ -282,6 +282,38 @@ describe('createApp', () => {
     ).resolves.toBeInTheDocument();
   });
 
+  it('should allow unknown extension config if the flag is set', async () => {
+    const app = createApp({
+      configLoader: async () => ({
+        config: mockApis.config({
+          data: {
+            app: {
+              extensions: [{ 'unknown:lols/wut': false }],
+            },
+          },
+        }),
+      }),
+      features: [
+        appPlugin,
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => <div>Derp</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+      flags: { allowUnknownExtensionConfig: true },
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
+  });
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 

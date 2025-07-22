@@ -1,5 +1,55 @@
 # @backstage/plugin-org
 
+## 0.6.42-next.0
+
+### Patch Changes
+
+- 43cbb10: Added OwnershipCard, ComponentsGrid and UserProfileCard components to the `overridableComponents`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.6.41
+
+### Patch Changes
+
+- 3ab9b96: Updated card extensions for the new frontend system to use the new entity predicates, and switch the card type to `info` for the user and group profile cards.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-catalog-common@1.1.5
+
+## 0.6.41-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 0.6.41-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/plugin-catalog-common@1.1.4
+
 ## 0.6.40
 
 ### Patch Changes

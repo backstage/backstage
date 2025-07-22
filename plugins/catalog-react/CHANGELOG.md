@@ -1,5 +1,74 @@
 # @backstage/plugin-catalog-react
 
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 77eebdc: Support `filter` parameter on the `EntityHeaderBlueprint`
+- a3a878d: Adding `type` as an override to the `convertLegacyEntityCardExtension`
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/frontend-test-utils@0.3.5-next.0
+
+## 1.19.1
+
+### Patch Changes
+
+- a07feb7: Fixed a but in the new alpha entity predicates where the `$in` operator mistakenly case sensitive.
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration-react@1.2.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/frontend-test-utils@0.3.4
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.19.1-next.1
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-test-utils@0.3.4-next.1
+  - @backstage/integration-react@1.2.9-next.1
+  - @backstage/plugin-permission-react@0.4.36-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 1.19.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.9-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/frontend-test-utils@0.3.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.35
+
 ## 1.19.0
 
 ### Minor Changes

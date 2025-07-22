@@ -1,0 +1,94 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { MenuSnippet } from '@/snippets/stories-snippets';
+import {
+  menuRootPropDefs,
+  menuTriggerPropDefs,
+  menuPositionerPropDefs,
+  menuItemPropDefs,
+  menuUsageSnippet,
+  menuDefaultSnippet,
+  menuTriggerSnippet,
+  menuHoverSnippet,
+  menuSubmenuSnippet,
+} from './menu.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Menu"
+  description="A list of actions in a dropdown, enhanced with keyboard navigation."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<MenuSnippet story="Default" />}
+  code={menuDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={menuUsageSnippet} />
+
+## API reference
+
+### Menu.Root
+
+Groups all parts of the menu. Doesn't render its own HTML element.
+
+<PropsTable data={menuRootPropDefs} />
+
+### Menu.Trigger
+
+The trigger by default render a simple unstyled button. Because menus can be rendered in different ways, we recommend
+using the `render` prop to render a custom trigger.
+
+<CodeBlock code={menuTriggerSnippet} />
+
+<PropsTable data={menuTriggerPropDefs} />
+
+### Menu.Positioner
+
+Positions the menu popup against the trigger. Renders a `<div>` element.
+
+<PropsTable data={menuPositionerPropDefs} />
+
+### Menu.Item
+
+An individual interactive item in the menu. Renders a `<div>` element.
+
+<PropsTable data={menuItemPropDefs} />
+
+## Examples
+
+### Open on hover
+
+To create a menu that opens on hover, add the `openOnHover` prop to the Root part.
+You can additionally configure how quickly the menu opens on hover using the `delay` prop.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<MenuSnippet story="OpenOnHover" />}
+  code={menuHoverSnippet}
+/>
+
+### Nested navigation
+
+You can nest menus to create a more complex navigation structure.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<MenuSnippet story="Submenu" />}
+  code={menuSubmenuSnippet}
+/>
+
+<Theming component="Menu" />
+
+<ChangelogComponent component="menu" />

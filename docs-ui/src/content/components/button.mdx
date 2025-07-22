@@ -1,0 +1,109 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ButtonSnippet, ButtonLinkSnippet } from '@/snippets/stories-snippets';
+import {
+  buttonPropDefs,
+  buttonSnippetUsage,
+  buttonVariantsSnippet,
+  buttonSizesSnippet,
+  buttonIconsSnippet,
+  buttonDisabledSnippet,
+  buttonResponsiveSnippet,
+  buttonAsLinkSnippet,
+} from './button.props';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+
+<PageTitle
+  title="Button"
+  description="A button component that can be used to trigger actions."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<ButtonSnippet story="Variants" />}
+  code={buttonVariantsSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={buttonSnippetUsage} />
+
+## API reference
+
+<PropsTable data={buttonPropDefs} />
+
+## Examples
+
+### Variants
+
+Here's a view when buttons have different variants.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonSnippet story="Variants" />}
+  code={buttonVariantsSnippet}
+/>
+
+### Sizes
+
+Here's a view when buttons have different sizes.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonSnippet story="Sizes" />}
+  code={buttonSizesSnippet}
+/>
+
+### With Icons
+
+Here's a view when buttons have icons.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonSnippet story="WithIcons" />}
+  code={buttonIconsSnippet}
+/>
+
+### Disabled
+
+Here's a view when buttons are disabled.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonSnippet story="Disabled" />}
+  code={buttonDisabledSnippet}
+/>
+
+### Responsive
+
+Here's a view when buttons are responsive.
+
+<CodeBlock code={buttonResponsiveSnippet} />
+
+### As Link
+
+If you want to use a button as a link, please use the `ButtonLink` component.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonLinkSnippet story="Variants" />}
+  code={buttonAsLinkSnippet}
+/>
+
+<Theming component="Button" />
+
+<ChangelogComponent component="button" />

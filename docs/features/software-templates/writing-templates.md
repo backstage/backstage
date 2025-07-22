@@ -59,7 +59,7 @@ spec:
 
   # here's the steps that are executed in series in the scaffolder backend
   steps:
-    - id: fetch-base
+    - id: fetchBase
       name: Fetch Base
       action: fetch:template
       input:
@@ -68,7 +68,7 @@ spec:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
 
-    - id: fetch-docs
+    - id: fetchDocs
       name: Fetch Docs
       action: fetch:plain
       input:
@@ -79,7 +79,6 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: 'main'
@@ -88,7 +87,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   # some outputs which are saved along with the job for use in the frontend
@@ -505,7 +504,6 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
         # here's where the secret can be used
@@ -624,7 +622,7 @@ The `steps` is an array of the things that you want to happen part of this
 template. These follow the same standard format:
 
 ```yaml
-- id: fetch-base # A unique id for the step
+- id: fetchBase # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
   if: ${{ parameters.name }} # Optional condition, skip the step if not truthy
   each: ${{ parameters.iterable }} # Optional iterable, run the same step multiple times
@@ -634,6 +632,14 @@ template. These follow the same standard format:
     values:
       name: ${{ parameters.name }}
 ```
+
+:::warning Action ID Naming
+
+When using custom actions, **use camelCase for action IDs** to avoid issues with template expressions. Action IDs with dashes will cause expressions like `${{ steps.my-action.output.value }}` to return `NaN` instead of the expected value.
+
+Use `myAction` instead of `my-action`, or access outputs with bracket notation: `${{ steps['my-action'].output.value }}`.
+
+:::
 
 By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
@@ -726,7 +732,7 @@ spec:
           default: false
   ...
   steps:
-    - id: fetch-base
+    - id: fetchBase
       name: Fetch Base
       action: fetch:template
       input:

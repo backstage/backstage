@@ -1,5 +1,27 @@
 # @backstage/plugin-permission-node
 
+## 0.10.2
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.5
+
+## 0.10.2-next.0
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+
 ## 0.10.1
 
 ### Patch Changes

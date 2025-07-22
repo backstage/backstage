@@ -16,6 +16,7 @@ import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
@@ -27,6 +28,7 @@ import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
 import { TaskCompletionState } from '@backstage/plugin-scaffolder-node';
 import { TaskContext } from '@backstage/plugin-scaffolder-node';
+import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -351,6 +353,7 @@ export class DatabaseTaskStore implements TaskStore {
       order: 'asc' | 'desc';
       field: string;
     }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{
     tasks: SerializedTask[];
     totalTasks?: number;
@@ -442,6 +445,8 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   get spec(): TaskSpecV1beta3;
   // (undocumented)
+  get taskId(): string;
+  // (undocumented)
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
@@ -486,6 +491,7 @@ export interface TaskStore {
       limit?: number;
       offset?: number;
     };
+    permissionFilters?: PermissionCriteria<TaskFilters>;
     order?: {
       order: 'asc' | 'desc';
       field: string;

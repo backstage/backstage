@@ -1,0 +1,44 @@
+.toolbar {
+  position: fixed;
+  display: flex;
+  top: 0;
+  left: 32px;
+  right: 32px;
+  height: 112px;
+  z-index: 10;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 0.25rem;
+}
+
+@media (min-width: 960px) {
+  .toolbar {
+    left: 332px;
+    right: 40px;
+  }
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.name {
+  margin-top: 3px;
+  font-size: 28px;
+  color: #26c9ad;
+  font-weight: 500;
+}
+
+.actions {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}

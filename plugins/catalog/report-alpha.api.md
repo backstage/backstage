@@ -1012,9 +1012,26 @@ const _default: FrontendPlugin<
     }>;
     'page:catalog': ExtensionDefinition<{
       config: {
+        pagination:
+          | boolean
+          | {
+              mode: 'offset' | 'cursor';
+              offset?: number | undefined;
+              limit?: number | undefined;
+            };
+      } & {
         path: string | undefined;
       };
       configInput: {
+        pagination?:
+          | boolean
+          | {
+              mode: 'offset' | 'cursor';
+              offset?: number | undefined;
+              limit?: number | undefined;
+            }
+          | undefined;
+      } & {
         path?: string | undefined;
       };
       output:
@@ -1080,17 +1097,24 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {
-        header: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            JSX_2.Element,
-            'core.reactElement',
-            {
-              optional: true;
-            }
-          >,
+        headers: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              JSX_2.Element,
+              'core.reactElement',
+              {
+                optional: true;
+              }
+            >,
           {
-            singleton: true;
-            optional: true;
+            singleton: false;
+            optional: false;
           }
         >;
         contents: ExtensionInput<

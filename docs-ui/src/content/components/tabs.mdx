@@ -1,0 +1,60 @@
+import { PropsTable } from '@/components/PropsTable';
+import { TabsSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  tabsRootPropDefs,
+  tabsListPropDefs,
+  tabsTabPropDefs,
+  tabsPanelPropDefs,
+  tabsUsageSnippet,
+  tabsDefaultSnippet,
+} from './tabs.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Tabs"
+  description="A component for toggling between related panels on the same page."
+/>
+
+<Snippet
+  py={4}
+  preview={<TabsSnippet story="Default" />}
+  code={tabsDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={tabsUsageSnippet} />
+
+## API reference
+
+### Tabs.Root
+
+Groups the tabs and the corresponding panels. Renders a `<div>` element.
+
+<PropsTable data={tabsRootPropDefs} />
+
+### Tabs.List
+
+Groups the individual tab buttons. Renders a `<div>` element.
+
+<PropsTable data={tabsListPropDefs} />
+
+### Tabs.Tab
+
+An individual interactive tab button that toggles the corresponding panel. Renders a `<button>` element.
+
+<PropsTable data={tabsTabPropDefs} />
+
+### Tabs.Panel
+
+A panel displayed when the corresponding tab is active. Renders a `<div>` element.
+
+<PropsTable data={tabsPanelPropDefs} />
+
+<Theming component="Tabs" />
+
+<ChangelogComponent component="tabs" />

@@ -727,7 +727,6 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: 'This is {{ parameters.name }}'
         repoUrl: '{{ parameters.repoUrl }}'
 

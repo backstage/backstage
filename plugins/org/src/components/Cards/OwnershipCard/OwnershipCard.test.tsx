@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  GetEntitiesRequest,
-  GetEntitiesResponse,
-} from '@backstage/catalog-client';
 import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -104,18 +100,6 @@ const items = [
   },
 ] as Entity[];
 
-const getEntitiesMock = (
-  request?: GetEntitiesRequest,
-): Promise<GetEntitiesResponse> => {
-  const filterKinds =
-    Array.isArray(request?.filter) && Array.isArray(request?.filter[0].kind)
-      ? request?.filter[0].kind ?? []
-      : []; // we expect the request to be like { filter: [{ kind: ['API','System'], 'relations.ownedBy': [group:default/my-team], .... }]. If changed in OwnerShipCard, let's change in also here
-  return Promise.resolve({
-    items: items.filter(item => filterKinds.find(k => k === item.kind)),
-  } as GetEntitiesResponse);
-};
-
 describe('OwnershipCard', () => {
   const groupEntity: GroupEntity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -157,7 +141,8 @@ describe('OwnershipCard', () => {
   };
 
   it('displays entity counts', async () => {
-    const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+    const catalogApi = catalogApiMock({ entities: items });
+    const mockedGetEntities = jest.spyOn(catalogApi, 'getEntities');
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -172,7 +157,7 @@ describe('OwnershipCard', () => {
       },
     );
 
-    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+    expect(mockedGetEntities).toHaveBeenCalledWith({
       filter: [
         {
           kind: ['Component', 'API', 'System'],
@@ -207,7 +192,7 @@ describe('OwnershipCard', () => {
   });
 
   it('applies CustomFilterDefinition', async () => {
-    const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+    const catalogApi = catalogApiMock({ entities: items });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -240,7 +225,7 @@ describe('OwnershipCard', () => {
   });
 
   it('links to the catalog with the group filter', async () => {
-    const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+    const catalogApi = catalogApiMock({ entities: items });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -263,7 +248,7 @@ describe('OwnershipCard', () => {
   });
 
   it('links to the catalog with the user and groups filters from an user profile', async () => {
-    const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+    const catalogApi = catalogApiMock({ entities: items });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -288,7 +273,7 @@ describe('OwnershipCard', () => {
 
   describe('OwnershipCard relations', () => {
     it('shows relations toggle', async () => {
-      const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+      const catalogApi = catalogApiMock({ entities: items });
 
       const { getByTitle } = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -307,7 +292,7 @@ describe('OwnershipCard', () => {
     });
 
     it('hides relations toggle', async () => {
-      const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+      const catalogApi = catalogApiMock({ entities: items });
 
       const rendered = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -326,7 +311,7 @@ describe('OwnershipCard', () => {
     });
 
     it('overrides relation type', async () => {
-      const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+      const catalogApi = catalogApiMock({ entities: items });
 
       const { getByTitle } = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -345,7 +330,7 @@ describe('OwnershipCard', () => {
     });
 
     it('defaults to aggregated for User entity kind', async () => {
-      const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+      const catalogApi = catalogApiMock({ entities: items });
 
       const { getByLabelText } = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -364,7 +349,7 @@ describe('OwnershipCard', () => {
     });
 
     it('defaults to direct for all entity kinds except User', async () => {
-      const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+      const catalogApi = catalogApiMock({ entities: items });
 
       const { getByLabelText } = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -383,7 +368,7 @@ describe('OwnershipCard', () => {
     });
 
     it('defaults to provided relationsType', async () => {
-      const catalogApi = catalogApiMock.mock({ getEntities: getEntitiesMock });
+      const catalogApi = catalogApiMock({ entities: items });
 
       const { getByLabelText } = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
