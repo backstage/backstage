@@ -28,11 +28,13 @@ import * as HeaderStories from '../../../packages/ui/src/components/Header/Heade
 import * as HeaderPageStories from '../../../packages/ui/src/components/HeaderPage/HeaderPage.stories';
 
 // Helper function to create snippet components
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createSnippetComponent = (stories: any) => {
   return function SnippetComponent({ story }: { story: string }) {
     const composedStories = composeStories(stories);
     const StoryComponent = composedStories[
       story as keyof typeof composedStories
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ] as any;
 
     return StoryComponent ? <StoryComponent /> : null;

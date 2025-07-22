@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Fragment } from 'react';
-import { RiGithubLine, RiNpmjsLine } from '@remixicon/react';
 
 const data = [
   {
@@ -31,10 +30,6 @@ const data = [
     url: '/components',
   },
 ];
-
-interface SidebarProps {
-  version: string;
-}
 
 export const Sidebar = () => {
   const pathname = usePathname();
