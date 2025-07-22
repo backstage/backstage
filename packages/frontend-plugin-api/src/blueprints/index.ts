@@ -24,7 +24,6 @@ export {
   type NavContentComponentProps,
 } from './NavContentBlueprint';
 export { NavItemBlueprint } from './NavItemBlueprint';
-export { NavLogoBlueprint } from './NavLogoBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { RouterBlueprint } from './RouterBlueprint';
 export { SignInPageBlueprint } from './SignInPageBlueprint';
