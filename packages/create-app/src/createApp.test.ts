@@ -107,13 +107,12 @@ describe('command entrypoint', () => {
         'packages',
         'create-app',
         'templates',
-        'default-app',
+        'next-app',
       ),
     );
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),
     );
-    expect(templatingMock.mock.lastCall?.[3]).toEqual(['packages/app/']);
     expect(moveAppMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
   });
@@ -131,7 +130,6 @@ describe('command entrypoint', () => {
       findPaths(__dirname).resolveTarget('templateDirectory'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
-    expect(templatingMock.mock.lastCall?.[3]).toEqual([]);
     expect(buildAppMock).toHaveBeenCalled();
   });
 
@@ -148,7 +146,6 @@ describe('command entrypoint', () => {
       path.resolve('somewhere', 'templateDirectory'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
-    expect(templatingMock.mock.lastCall?.[3]).toEqual([]);
     expect(buildAppMock).toHaveBeenCalled();
   });
 
