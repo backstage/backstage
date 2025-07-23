@@ -1,0 +1,36 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-color: var(--panel);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  gap: 4px;
+  min-height: 120px;
+
+  &:hover {
+    background-color: var(--panel-hover);
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.description {
+  margin: 0;
+  font-size: 14px;
+  color: var(--secondary);
+}

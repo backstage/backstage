@@ -1,6 +1,7 @@
 :root {
   --bg: #f4f4f4;
   --panel: #fff;
+  --panel-hover: #fafafa;
   --primary: #000;
   --secondary: #929292;
   --action: #fff;
@@ -20,6 +21,7 @@
 [data-theme='dark'] {
   --bg: #000;
   --panel: #181818;
+  --panel-hover: #202020;
   --primary: #fff;
   --secondary: #818181;
   --action: #202020;

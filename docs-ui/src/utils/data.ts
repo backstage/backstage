@@ -10,6 +10,10 @@ export const overview: Page[] = [
     slug: '',
   },
   {
+    title: 'Installation',
+    slug: 'install',
+  },
+  {
     title: 'About',
     slug: 'about',
   },
