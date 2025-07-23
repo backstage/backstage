@@ -1,4 +1,4 @@
-import { overview, theme, components, layoutComponents } from './data';
+import { overview, coreConcepts, components, layoutComponents } from './data';
 
 export function getPageName(slug: string): string | null {
   // Search in overview pages
@@ -7,10 +7,10 @@ export function getPageName(slug: string): string | null {
     return overviewPage.title;
   }
 
-  // Search in theme pages
-  const themePage = theme.find(p => p.slug === slug);
-  if (themePage) {
-    return themePage.title;
+  // Search in core concepts array
+  const coreConcept = coreConcepts.find(c => c.slug === slug);
+  if (coreConcept) {
+    return coreConcept.title;
   }
 
   // Search in components array

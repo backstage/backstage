@@ -1,7 +1,12 @@
 'use client';
 
 import styles from './Sidebar.module.css';
-import { components, overview, layoutComponents, theme } from '@/utils/data';
+import {
+  components,
+  overview,
+  layoutComponents,
+  coreConcepts,
+} from '@/utils/data';
 import { ScrollArea } from '@base-ui-components/react/scroll-area';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -15,9 +20,9 @@ const data = [
     url: '',
   },
   {
-    title: 'Theme',
-    content: theme,
-    url: '/theme',
+    title: 'Core Concepts',
+    content: coreConcepts,
+    url: '',
   },
   {
     title: 'Layout Components',

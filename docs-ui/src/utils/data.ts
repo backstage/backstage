@@ -19,7 +19,7 @@ export const overview: Page[] = [
   },
 ];
 
-export const theme: Page[] = [
+export const coreConcepts: Page[] = [
   {
     title: 'Iconography',
     slug: 'iconography',
@@ -35,10 +35,6 @@ export const theme: Page[] = [
   {
     title: 'Theming',
     slug: 'theming',
-  },
-  {
-    title: 'Typography',
-    slug: 'typography',
   },
 ];
 
