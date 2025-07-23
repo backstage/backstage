@@ -91,7 +91,6 @@ export async function templatingTask(
   templateDir: string,
   destinationDir: string,
   context: any,
-  excludedDirs?: string[],
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
@@ -99,16 +98,6 @@ export async function templatingTask(
 
   for (const file of files) {
     const filePath = relativePath(templateDir, file);
-
-    if (
-      excludedDirs?.some(excludedDir => {
-        const normalizedFilePath = filePath.replace(/\\/g, '/');
-        const normalizedExcludedDir = excludedDir.replace(/\\/g, '/');
-        return normalizedFilePath.startsWith(normalizedExcludedDir);
-      })
-    ) {
-      continue;
-    }
 
     const destinationFile = resolvePath(destinationDir, filePath);
     await fs.ensureDir(dirname(destinationFile));

@@ -14,17 +14,22 @@
     "lint": "backstage-cli package lint"
   },
   "dependencies": {
-    "@backstage/frontend-defaults": "^{{version '@backstage/frontend-defaults'}}",
-    "@backstage/frontend-plugin-api": "^{{version '@backstage/frontend-plugin-api'}}",
-    "@backstage/plugin-catalog": "^{{version '@backstage/plugin-catalog'}}",
-    "@backstage/ui": "^{{version '@backstage/ui'}}",
+    "@backstage/core-compat-api": "^{{ version '@backstage/core-compat-api'}}",
+    "@backstage/frontend-defaults": "^{{ version '@backstage/frontend-defaults'}}",
+    "@backstage/frontend-plugin-api": "^{{ version '@backstage/frontend-plugin-api'}}",
+    "@backstage/plugin-catalog": "^{{ version '@backstage/plugin-catalog'}}",
+    "@backstage/plugin-org": "^{{ version '@backstage/plugin-org'}}",
+    "@backstage/plugin-scaffolder": "^{{ version '@backstage/plugin-scaffolder'}}",
+    "@backstage/plugin-search": "^{{ version '@backstage/plugin-search'}}",
+    "@backstage/plugin-user-settings": "^{{ version '@backstage/plugin-user-settings'}}",
+    "@backstage/ui": "^{{ version '@backstage/ui'}}",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
-    "@backstage/test-utils": "^{{version '@backstage/test-utils'}}",
+    "@backstage/frontend-test-utils": "^{{ version '@backstage/frontend-test-utils'}}",
     "@playwright/test": "^1.32.3",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",

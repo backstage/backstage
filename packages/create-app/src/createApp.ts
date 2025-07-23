@@ -65,16 +65,15 @@ export default async (opts: OptionValues): Promise<void> => {
     },
   ]);
 
+  // Pick the built-in template based on the --next flag
+  const builtInTemplate = opts.next
+    ? paths.resolveOwn('templates/next-app')
+    : paths.resolveOwn('templates/default-app');
+
   // Use `--template-path` argument as template when specified. Otherwise, use the default template.
   const templateDir = opts.templatePath
     ? paths.resolveTarget(opts.templatePath)
-    : paths.resolveOwn('templates/default-app');
-
-  // If using the default template, filter out `packages/app` when the `--` flag
-  // is used or `packages/app-next` when its not used.
-  const excludedDirs = !opts.templatePath
-    ? [opts.experimentalFrontend ? 'packages/app/' : 'packages/app-next/']
-    : [];
+    : builtInTemplate;
 
   // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`
@@ -95,15 +94,10 @@ export default async (opts: OptionValues): Promise<void> => {
       await checkPathExistsTask(appDir);
 
       Task.section('Preparing files');
-      await templatingTask(
-        templateDir,
-        opts.path,
-        {
-          ...answers,
-          defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
-        },
-        excludedDirs,
-      );
+      await templatingTask(templateDir, opts.path, {
+        ...answers,
+        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+      });
     } else {
       // Template to temporary location, and then move files
 
@@ -114,26 +108,13 @@ export default async (opts: OptionValues): Promise<void> => {
       const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), answers.name));
 
       Task.section('Preparing files');
-      await templatingTask(
-        templateDir,
-        tempDir,
-        {
-          ...answers,
-          defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
-        },
-        excludedDirs,
-      );
+      await templatingTask(templateDir, tempDir, {
+        ...answers,
+        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+      });
 
       Task.section('Moving to final location');
       await moveAppTask(tempDir, appDir, answers.name);
-    }
-
-    if (opts.next) {
-      // we need to rename the app-next directory back to the app directory which got excluded
-      await fs.rename(
-        resolvePath(appDir, 'app-next'),
-        resolvePath(appDir, 'app'),
-      );
     }
 
     const fetchedYarnLockSeed = await fetchYarnLockSeedTask(appDir);
