@@ -1,0 +1,38 @@
+:root {
+  --sb-panel-radius: 0;
+  --sb-panel-top: 0;
+  --sb-panel-bottom: 0;
+  --sb-panel-left: 0;
+  --sb-panel-right: 0;
+  --sb-sidebar-border: none;
+  --sb-sidebar-border-right: 1px solid var(--bui-border);
+  --sb-sidebar-bg: #000;
+  --sb-options-border: none;
+  --sb-options-border-left: 1px solid var(--bui-border);
+  --sb-content-padding-inline: 250px;
+}
+
+[data-theme='dark'] {
+  --sb-sidebar-bg: var(--bui-bg-surface-1);
+}
+
+[data-theme-name='spotify'] {
+  --sb-panel-radius: var(--bui-radius-3);
+  --sb-panel-top: 8px;
+  --sb-panel-bottom: 8px;
+  --sb-panel-left: 8px;
+  --sb-panel-right: 8px;
+  --sb-sidebar-border: none;
+  --sb-sidebar-border-right: none;
+  --sb-sidebar-bg: var(--bui-bg-surface-1);
+  --sb-options-border: none;
+  --sb-options-border-left: none;
+  --sb-content-padding-inline: 258px;
+}
+
+[data-theme-name='spotify'][data-theme='light'] {
+  --sb-sidebar-border: 1px solid var(--bui-border);
+  --sb-sidebar-border-right: 1px solid var(--bui-border);
+  --sb-options-border: 1px solid var(--bui-border);
+  --sb-options-border-left: 1px solid var(--bui-border);
+}

@@ -1,5 +1,15 @@
 # @backstage/integration-react
 
+## 1.2.9
+
+### Patch Changes
+
+- 998fd15: Separated gitlab `write_repository` and `api` scope to pass checks in `RefreshingAuthSessionManager`
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration@1.17.1
+
 ## 1.2.9-next.1
 
 ### Patch Changes

@@ -29,6 +29,22 @@ export interface Config {
      */
     throttleInterval?: HumanDuration | string;
     /**
+     * Default settings for user specific notification settings
+     */
+    defaultSettings?: {
+      channels?: {
+        id: string;
+        origins?: {
+          id: string;
+          enabled: boolean;
+          topics?: {
+            id: string;
+            enabled: boolean;
+          }[];
+        }[];
+      }[];
+    };
+    /*
      * Time to keep the notifications in the database, defaults to 365 days.
      * Can be disabled by setting to false.
      */

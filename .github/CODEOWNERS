@@ -40,6 +40,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /packages/repo-tools                              @backstage/tooling-maintainers
 /packages/techdocs-cli                            @backstage/techdocs-maintainers
 /packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
+/packages/ui                                      @backstage/design-system-maintainers
 /packages/yarn-plugin                             @backstage/tooling-maintainers
 /plugins/app                                      @backstage/framework-maintainers
 /plugins/app-*                                    @backstage/framework-maintainers

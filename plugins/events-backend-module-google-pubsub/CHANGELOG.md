@@ -1,5 +1,14 @@
 # @backstage/plugin-events-backend-module-google-pubsub
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-events-node@0.4.13
+
 ## 0.1.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @backstage/plugin-gateway-backend
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.1
+
 ## 1.0.3-next.0
 
 ### Patch Changes

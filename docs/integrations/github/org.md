@@ -168,6 +168,7 @@ const backend = createBackend();
 
 backend.add(import('@backstage/plugin-catalog-backend'));
 
+backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 backend.add(githubOrgModule);
 
 backend.start();

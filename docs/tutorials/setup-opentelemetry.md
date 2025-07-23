@@ -6,7 +6,7 @@ description: Tutorial to setup OpenTelemetry metrics and traces exporters in Bac
 
 Backstage uses [OpenTelemetry](https://opentelemetry.io/) to instrument its components by reporting traces and metrics.
 
-This tutorial shows how to setup exporters in your Backstage backend package. For demonstration purposes we will use a Prometheus exporter, but you can adjust your solution to use another one that suits your needs; see for example the article on [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/).
+This tutorial shows how to setup exporters in your Backstage backend package. For demonstration purposes we will use a Prometheus exporter, but you can adjust your solution to use another one that suits your needs; see for example the article on [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/). This tutorial also includes exporting traces using the JSON/HTTP exporter with Jaeger being the ideal target, but this too can be adjusted to fit your needs by seeing the supported tooling in the [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/) documentation.
 
 ## Install dependencies
 
@@ -19,7 +19,8 @@ The `auto-instrumentations-node` will automatically create spans for code called
 yarn --cwd packages/backend add \
     @opentelemetry/sdk-node \
     @opentelemetry/auto-instrumentations-node \
-    @opentelemetry/exporter-prometheus
+    @opentelemetry/exporter-prometheus \
+    @opentelemetry/exporter-trace-otlp-http
 ```
 
 ## Configure
@@ -36,12 +37,20 @@ if (isMainThread) {
     getNodeAutoInstrumentations,
   } = require('@opentelemetry/auto-instrumentations-node');
   const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
+  const {
+    OTLPTraceExporter,
+  } = require('@opentelemetry/exporter-trace-otlp-http');
 
   // By default exports the metrics on localhost:9464/metrics
-  const prometheus = new PrometheusExporter();
+  const prometheusExporter = new PrometheusExporter();
+  // We post the traces to localhost:4318/v1/traces
+  const otlpTraceExporter = new OTLPTraceExporter({
+    // Default Jaeger URL trace endpoint.
+    url: 'http://localhost:4318/v1/traces',
+  });
   const sdk = new NodeSDK({
-    // You can add a traceExporter field here too
-    metricReader: prometheus,
+    metricReader: prometheusExporter,
+    traceExporter: otlpTraceExporter,
     instrumentations: [getNodeAutoInstrumentations()],
   });
 
@@ -104,6 +113,28 @@ For local development, you can add the required flag in your `packages/backend/p
 ```
 
 You can now start your Backstage instance as usual, using `yarn start` and you'll be able to see your metrics at: <http://localhost:9464/metrics>
+
+### Troubleshooting
+
+If you are having issues getting metrics or traces working there are some helpful diagnostic tools from OpenTelemetry you can use that can help.
+
+First we need to the `@opentelemetry/api` package:
+
+```bash
+yarn --cwd packages/backend add @opentelemetry/api
+```
+
+Then we want to add the following snippet before the `sdk.start()` call:
+
+```js
+const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
+
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+```
+
+This will then add OpenTelemetry debug logs that you can then look at to help get a better idea of why something may not be working as expected.
+
+We don't recommend shipping this in production because of the log density.
 
 ## Production Setup
 

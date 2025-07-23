@@ -1,5 +1,25 @@
 # @backstage/frontend-defaults
 
+## 0.2.5-next.0
+
+### Patch Changes
+
+- 7adc846: Added support for passing through `allowUnknownExtensionConfig` as a flag
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.5-next.0
+  - @backstage/plugin-app@0.1.11
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/frontend-app-api@0.11.4
+  - @backstage/plugin-app@0.1.11
+  - @backstage/frontend-plugin-api@0.10.4
+
 ## 0.2.4-next.1
 
 ### Patch Changes

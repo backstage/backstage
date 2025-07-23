@@ -17,7 +17,7 @@ The initiatives listed below are planned for release within the next half-year, 
 
 ### New Frontend System - Ready for Adoption
 
-The [new fronted system](../frontend-system/index.md) still needs more work, and
+The [new frontend system](../frontend-system/index.md) still needs more work, and
 the next milestone is to improve it to the point where there is enough
 confidence in the design to start encouraging adoption in the community. You can
 follow along with this work in the [meta issue](https://github.com/backstage/backstage/issues/19545).
