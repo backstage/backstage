@@ -46,8 +46,6 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
   } = props;
   const { classNames } = useStyles('Header');
   let navigate = useNavigate();
-  // const { scrollY } = useScroll();
-  // const breadcrumbOpacity = useTransform(scrollY, [80, 120], [0, 1]);
 
   // Refs for collision detection
   const toolbarWrapperRef = useRef<HTMLDivElement>(null);
