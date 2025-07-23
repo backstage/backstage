@@ -22,8 +22,12 @@ import type { HeaderToolbarProps } from './types';
 import { ButtonIcon } from '../ButtonIcon';
 import { Menu } from '../Menu';
 import { Text } from '../Text';
-import { motion, useScroll, useTransform } from 'motion/react';
 import { useNavigate, useHref } from 'react-router-dom';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
  * A component that renders a toolbar.
@@ -42,13 +46,14 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
   } = props;
   const { classNames } = useStyles('Header');
   let navigate = useNavigate();
-  const { scrollY } = useScroll();
-  const breadcrumbOpacity = useTransform(scrollY, [80, 120], [0, 1]);
+  // const { scrollY } = useScroll();
+  // const breadcrumbOpacity = useTransform(scrollY, [80, 120], [0, 1]);
 
   // Refs for collision detection
   const toolbarWrapperRef = useRef<HTMLDivElement>(null);
   const toolbarContentRef = useRef<HTMLDivElement>(null);
   const toolbarControlsRef = useRef<HTMLDivElement>(null);
+  const breadcrumbsRef = useRef<HTMLDivElement>(null);
 
   // State for breadcrumb visibility
   const [showBreadcrumbs, setShowBreadcrumbs] = useState(true);
@@ -96,6 +101,19 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
     };
   }, []);
 
+  useGSAP(() => {
+    gsap.to(breadcrumbsRef.current, {
+      scrollTrigger: {
+        start: '10% 10%',
+        end: '20% 20%',
+        scrub: true,
+      },
+      opacity: 1,
+      duration: 1,
+      ease: 'power2.inOut',
+    });
+  });
+
   const titleContent = (
     <>
       <div className={classNames.toolbarIcon}>{icon || <RiShapesLine />}</div>
@@ -116,10 +134,11 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
               <div className={classNames.toolbarName}>{titleContent}</div>
             )}
             {breadcrumbs && (
-              <motion.div
+              <div
+                ref={breadcrumbsRef}
                 className={classNames.breadcrumbs}
                 style={{
-                  opacity: breadcrumbOpacity,
+                  opacity: 0,
                   visibility: showBreadcrumbs ? 'visible' : 'hidden',
                 }}
               >
@@ -144,7 +163,7 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
                     )}
                   </div>
                 ))}
-              </motion.div>
+              </div>
             )}
           </div>
           <div className={classNames.toolbarControls} ref={toolbarControlsRef}>
