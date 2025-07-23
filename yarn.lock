@@ -3555,7 +3555,7 @@ __metadata:
     archiver: "npm:^7.0.0"
     aws-sdk-client-mock: "npm:^4.0.0"
     base64-stream: "npm:^1.0.0"
-    better-sqlite3: "npm:^11.0.0"
+    better-sqlite3: "npm:^12.0.0"
     compression: "npm:^1.7.4"
     concat-stream: "npm:^2.0.0"
     cookie: "npm:^0.7.0"
@@ -3731,7 +3731,7 @@ __metadata:
     "@types/keyv": "npm:^4.2.0"
     "@types/qs": "npm:^6.9.6"
     "@types/supertest": "npm:^2.0.8"
-    better-sqlite3: "npm:^11.0.0"
+    better-sqlite3: "npm:^12.0.0"
     cookie: "npm:^0.7.0"
     express: "npm:^4.17.1"
     fs-extra: "npm:^11.0.0"
@@ -5695,7 +5695,7 @@ __metadata:
     "@types/glob": "npm:^8.0.0"
     "@types/lodash": "npm:^4.14.151"
     "@types/supertest": "npm:^2.0.8"
-    better-sqlite3: "npm:^11.0.0"
+    better-sqlite3: "npm:^12.0.0"
     codeowners-utils: "npm:^1.0.2"
     core-js: "npm:^3.6.5"
     express: "npm:^4.17.1"
@@ -25875,14 +25875,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^11.0.0":
-  version: 11.7.2
-  resolution: "better-sqlite3@npm:11.7.2"
+"better-sqlite3@npm:^12.0.0":
+  version: 12.2.0
+  resolution: "better-sqlite3@npm:12.2.0"
   dependencies:
     bindings: "npm:^1.5.0"
     node-gyp: "npm:latest"
     prebuild-install: "npm:^7.1.1"
-  checksum: 10/49e1d8847560058d00c87177dfa6ef6bf713cb0122795c8f43143ac3154608f2ff83d4180ab00c7c24f5c23f0bcfe96bb47ac08b3ef5081ed41f46869df594f6
+  checksum: 10/2662e321237624d5813a7b97528dfc11fc5110b068d57f4096de82d7136e7e4a4b722a2a4266ddfb5095070712fd3d2542f6212ccb68e2d3eb2042498269e1cf
   languageName: node
   linkType: hard
 
