@@ -1,6 +1,7 @@
 :root {
-  --bg: #f8f8f8;
+  --bg: #f4f4f4;
   --panel: #fff;
+  --panel-hover: #fafafa;
   --primary: #000;
   --secondary: #929292;
   --action: #fff;
@@ -13,17 +14,20 @@
   --font-weight-regular: 400;
   --font-weight-bold: 600;
   --border: #e5e5e5;
+  --border2: #cdcdcd;
   --surface-1: #f4f4f4;
 }
 
 [data-theme='dark'] {
   --bg: #000;
   --panel: #181818;
+  --panel-hover: #202020;
   --primary: #fff;
   --secondary: #818181;
   --action: #202020;
   --link: #4856e8;
   --border: #2a2a2a;
+  --border2: #2a2a2a;
   --surface-1: #282828;
 }
 

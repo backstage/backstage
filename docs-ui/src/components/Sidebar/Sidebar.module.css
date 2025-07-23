@@ -15,33 +15,6 @@
   }
 }
 
-.version {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--secondary);
-  margin-inline: 32px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.versionLinks {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  a {
-    color: var(--secondary);
-    transition: color 0.2s ease-in-out;
-
-    &:hover {
-      color: var(--primary);
-    }
-  }
-}
-
 .root {
   height: 100%;
 }
@@ -106,6 +79,10 @@
   color: var(--secondary);
   margin-top: 40px;
   text-transform: uppercase;
+
+  &:first-child {
+    margin-top: 12px;
+  }
 }
 
 .line {

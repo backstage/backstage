@@ -2,9 +2,29 @@ import type { Breakpoint } from '@backstage/ui/src/types';
 
 const breakpoints = ['initial', 'xs', 'sm', 'md', 'lg', 'xl'] as Breakpoint[];
 
+export type ComplexTypeDef = {
+  name: string;
+  properties: Record<
+    string,
+    {
+      type: string;
+      required?: boolean;
+      description?: string;
+    }
+  >;
+};
+
 export type PropDef = {
-  type: 'string' | 'enum' | 'enum | string' | 'number' | 'boolean';
+  type:
+    | 'string'
+    | 'enum'
+    | 'enum | string'
+    | 'number'
+    | 'boolean'
+    | 'spacing'
+    | 'complex';
   values?: string | string[];
+  complexType?: ComplexTypeDef;
   default?: string;
   required?: boolean;
   responsive?: boolean;

@@ -95,10 +95,10 @@ export const WithMockedURLTab2: Story = {
         </TabList>
       </Tabs>
       <Box mt="6" pl="2">
-        <Text>
+        <Text as="p">
           Current URL is mocked to be: <strong>/tab2</strong>
         </Text>
-        <Text>
+        <Text as="p">
           Notice how the "Tab 2" tab is selected (highlighted) because it
           matches the current path.
         </Text>
@@ -273,14 +273,16 @@ export const PrefixMatchingDeepNesting: Story = {
         </TabList>
       </Tabs>
       <Box mt="6" pl="2">
-        <Text>
+        <Text as="p">
           Current URL: <strong>/catalog/users/john/details</strong>
         </Text>
-        <Text>
+        <Text as="p">
           The "Catalog" tab is active because it uses prefix matching and the
           URL starts with "/catalog".
         </Text>
-        <Text>This works for any level of nesting under "/catalog".</Text>
+        <Text as="p">
+          This works for any level of nesting under "/catalog".
+        </Text>
       </Box>
     </MemoryRouter>
   ),

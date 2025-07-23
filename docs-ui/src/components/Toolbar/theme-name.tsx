@@ -1,6 +1,13 @@
 'use client';
 
-import { Select } from '@base-ui-components/react/select';
+import {
+  Button,
+  ListBox,
+  ListBoxItem,
+  Popover,
+  Select,
+  SelectValue,
+} from 'react-aria-components';
 import styles from './theme-name.module.css';
 import { Icon } from '@backstage/ui';
 import { usePlayground } from '@/utils/playground-context';
@@ -15,35 +22,23 @@ export const ThemeNameSelector = () => {
   const { selectedThemeName, setSelectedThemeName } = usePlayground();
 
   return (
-    <Select.Root
-      value={selectedThemeName || 'default'}
-      onValueChange={setSelectedThemeName}
+    <Select
+      selectedKey={selectedThemeName || 'default'}
+      onSelectionChange={setSelectedThemeName}
     >
-      <Select.Trigger className={styles.Select}>
-        <Select.Value
-          className={styles.SelectValue}
-          placeholder="Select a theme"
-        />
-        <Select.Icon className={styles.SelectIcon}>
-          <Icon name="chevron-down" />
-        </Select.Icon>
-      </Select.Trigger>
-      <Select.Portal>
-        <Select.Positioner className={styles.Positioner} sideOffset={8}>
-          <Select.Popup className={styles.Popup}>
-            {themes.map(({ name, value }) => (
-              <Select.Item className={styles.Item} value={value} key={value}>
-                <Select.ItemIndicator className={styles.ItemIndicator}>
-                  <Icon name="check" />
-                </Select.ItemIndicator>
-                <Select.ItemText className={styles.ItemText}>
-                  {name}
-                </Select.ItemText>
-              </Select.Item>
-            ))}
-          </Select.Popup>
-        </Select.Positioner>
-      </Select.Portal>
-    </Select.Root>
+      <Button className={styles.Select}>
+        <SelectValue />
+        <Icon name="chevron-down" />
+      </Button>
+      <Popover className={styles.Popup}>
+        <ListBox className={styles.ListBox}>
+          {themes.map(({ name, value }) => (
+            <ListBoxItem key={value} id={value} className={styles.Item}>
+              {name}
+            </ListBoxItem>
+          ))}
+        </ListBox>
+      </Popover>
+    </Select>
   );
 };
