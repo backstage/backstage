@@ -52,11 +52,13 @@ curl localhost:7007/api/carmen/todos
 ```
 
 You should see the following response:
-```sh
+
+```json
 {
-"items": []
-} 
+  "items": []
+}
 ```
+
 :::note Note: The route shown here matches the default in the current backend plugin template. If you want a `/health` endpoint for health checks, you can add it to your router yourself.
 
 :::
