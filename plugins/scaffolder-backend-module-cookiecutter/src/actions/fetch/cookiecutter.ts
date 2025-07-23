@@ -33,6 +33,52 @@ import {
 import { examples } from './cookiecutter.examples';
 import { ContainerRunner } from './ContainerRunner';
 
+/**
+ * Helper function to recursively parse JSON strings in an object back to their proper types.
+ * This handles the case where arrays and objects are passed as JSON strings instead of actual objects.
+ */
+function parseJsonStrings(obj: JsonObject): JsonObject {
+  const result: JsonObject = {};
+
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value === 'string') {
+      // Try to parse the string as JSON
+      try {
+        // Check if it looks like JSON (starts with [ or {)
+        if (
+          (value.startsWith('[') && value.endsWith(']')) ||
+          (value.startsWith('{') && value.endsWith('}'))
+        ) {
+          const parsed = JSON.parse(value);
+          // If parsing succeeded and resulted in an object or array, use the parsed value
+          if (typeof parsed === 'object' && parsed !== null) {
+            result[key] = parsed;
+          } else {
+            result[key] = value;
+          }
+        } else {
+          result[key] = value;
+        }
+      } catch {
+        // If parsing fails, keep the original string
+        result[key] = value;
+      }
+    } else if (
+      typeof value === 'object' &&
+      value !== null &&
+      !Array.isArray(value)
+    ) {
+      // Recursively process nested objects
+      result[key] = parseJsonStrings(value as JsonObject);
+    } else {
+      // Keep arrays, numbers, booleans, null as-is
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
 export class CookiecutterRunner {
   private readonly containerRunner?: ContainerRunner;
 
@@ -78,9 +124,12 @@ export class CookiecutterRunner {
       templateContentsDir,
     );
 
+    // Parse any JSON strings in the values back to proper objects/arrays
+    const parsedValues = parseJsonStrings(values);
+
     const cookieInfo = {
       ...cookieCutterJson,
-      ...values,
+      ...parsedValues,
     };
 
     await fs.writeJSON(path.join(templateDir, 'cookiecutter.json'), cookieInfo);

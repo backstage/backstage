@@ -18,11 +18,14 @@ import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { createFetchCookiecutterAction } from './cookiecutter';
+import {
+  createFetchCookiecutterAction,
+  CookiecutterRunner,
+} from './cookiecutter';
 import { join } from 'path';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { Writable } from 'stream';
+import { Writable, PassThrough } from 'stream';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ContainerRunner } from './ContainerRunner';
 
@@ -217,5 +220,272 @@ describe('fetch:cookiecutter', () => {
     await expect(ccAction.handler(mockContext)).rejects.toThrow(
       /Invalid state: containerRunner cannot be undefined when cookiecutter is not installed/,
     );
+  });
+
+  it('should handle array and object values correctly in cookiecutter.json', async () => {
+    // Mock that cookiecutter is installed
+    commandExists.mockResolvedValue(true);
+
+    const testValues = {
+      stringValue: 'test',
+      arrayValue: [
+        { name: 'item1', type: 'typeA' },
+        { name: 'item2', type: 'typeB' },
+      ],
+      objectValue: {
+        nested: {
+          property: 'value',
+        },
+      },
+    };
+
+    const workspacePath = mockTmpDir;
+    const templateDir = join(workspacePath, 'template');
+    const templateContentsDir = join(templateDir, 'contents');
+
+    // Set up a cookiecutter.json in the template contents directory
+    mockDir.setContent({
+      'template/contents/cookiecutter.json': JSON.stringify({
+        project_name: 'default',
+      }),
+    });
+
+    // Mock executeShellCommand to capture the cookiecutter.json and avoid running actual cookiecutter
+    let capturedCookiecutterJson: any = null;
+    executeShellCommand.mockImplementation(async () => {
+      // Capture the cookiecutter.json content before it's processed
+      const cookiecutterJsonContent = mockDir.content({ path: 'template' });
+      if (
+        cookiecutterJsonContent &&
+        typeof cookiecutterJsonContent === 'object' &&
+        'cookiecutter.json' in cookiecutterJsonContent
+      ) {
+        capturedCookiecutterJson = JSON.parse(
+          cookiecutterJsonContent['cookiecutter.json'] as string,
+        );
+      }
+
+      // Create output that cookiecutter would normally create
+      mockDir.setContent({
+        'intermediate/testproject': {},
+      });
+    });
+
+    const runner = new CookiecutterRunner({});
+    const logStream = new PassThrough();
+
+    await runner.run({
+      workspacePath,
+      values: testValues,
+      logStream,
+      templateDir,
+      templateContentsDir,
+    });
+
+    // Verify that the cookiecutter.json was written with correct structure
+    expect(capturedCookiecutterJson).toBeDefined();
+    expect(capturedCookiecutterJson.stringValue).toBe('test');
+    expect(Array.isArray(capturedCookiecutterJson.arrayValue)).toBe(true);
+    expect(capturedCookiecutterJson.arrayValue).toHaveLength(2);
+    expect(capturedCookiecutterJson.arrayValue[0]).toEqual({
+      name: 'item1',
+      type: 'typeA',
+    });
+    expect(capturedCookiecutterJson.arrayValue[1]).toEqual({
+      name: 'item2',
+      type: 'typeB',
+    });
+    expect(typeof capturedCookiecutterJson.objectValue).toBe('object');
+    expect(capturedCookiecutterJson.objectValue.nested.property).toBe('value');
+
+    // Verify these are not stringified versions
+    expect(typeof capturedCookiecutterJson.arrayValue).not.toBe('string');
+    expect(typeof capturedCookiecutterJson.objectValue).not.toBe('string');
+  });
+
+  it('should automatically parse JSON strings back to objects/arrays', async () => {
+    // Mock that cookiecutter is installed
+    commandExists.mockResolvedValue(true);
+
+    // Simulate the issue: arrays/objects passed as JSON strings instead of actual arrays/objects
+    const problematicValues = {
+      stringValue: 'test',
+      // This is what might be happening - arrays being passed as JSON strings
+      arrayValue:
+        '[{"name":"item1","type":"typeA"},{"name":"item2","type":"typeB"}]',
+      objectValue: '{"nested":{"property":"value"}}',
+    };
+
+    const workspacePath = mockTmpDir;
+    const templateDir = join(workspacePath, 'template');
+    const templateContentsDir = join(templateDir, 'contents');
+
+    // Set up a cookiecutter.json in the template contents directory
+    mockDir.setContent({
+      'template/contents/cookiecutter.json': JSON.stringify({
+        project_name: 'default',
+      }),
+    });
+
+    // Mock executeShellCommand to capture the cookiecutter.json and avoid running actual cookiecutter
+    let capturedCookiecutterJson: any = null;
+    executeShellCommand.mockImplementation(async () => {
+      // Capture the cookiecutter.json content before it's processed
+      const cookiecutterJsonContent = mockDir.content({ path: 'template' });
+      if (
+        cookiecutterJsonContent &&
+        typeof cookiecutterJsonContent === 'object' &&
+        'cookiecutter.json' in cookiecutterJsonContent
+      ) {
+        capturedCookiecutterJson = JSON.parse(
+          cookiecutterJsonContent['cookiecutter.json'] as string,
+        );
+      }
+
+      // Create output that cookiecutter would normally create
+      mockDir.setContent({
+        'intermediate/testproject': {},
+      });
+    });
+
+    const runner = new CookiecutterRunner({});
+    const logStream = new PassThrough();
+
+    await runner.run({
+      workspacePath,
+      values: problematicValues,
+      logStream,
+      templateDir,
+      templateContentsDir,
+    });
+
+    // With the fix, these should now be parsed back to proper objects/arrays
+    expect(capturedCookiecutterJson).toBeDefined();
+    expect(capturedCookiecutterJson.stringValue).toBe('test');
+
+    // The fix should convert JSON strings back to proper arrays/objects
+    expect(Array.isArray(capturedCookiecutterJson.arrayValue)).toBe(true);
+    expect(capturedCookiecutterJson.arrayValue).toHaveLength(2);
+    expect(capturedCookiecutterJson.arrayValue[0]).toEqual({
+      name: 'item1',
+      type: 'typeA',
+    });
+    expect(capturedCookiecutterJson.arrayValue[1]).toEqual({
+      name: 'item2',
+      type: 'typeB',
+    });
+    expect(typeof capturedCookiecutterJson.objectValue).toBe('object');
+    expect(capturedCookiecutterJson.objectValue.nested.property).toBe('value');
+  });
+
+  it('should handle edge cases when parsing JSON strings', async () => {
+    // Mock that cookiecutter is installed
+    commandExists.mockResolvedValue(true);
+
+    // Test various edge cases
+    const edgeCaseValues = {
+      normalString: 'just a regular string',
+      emptyArray: '[]',
+      emptyObject: '{}',
+      numberAsString: '42',
+      booleanAsString: 'true',
+      invalidJson: '[invalid json}',
+      stringThatLooksLikeJson: '[this looks like json but is not]',
+      nestedObject: '{"level1":{"level2":{"value":"deep"}}}',
+      arrayOfPrimitives: '[1, 2, "three", true, null]',
+      quotedStringValue: '"quoted string"',
+      nullValue: null,
+      undefinedValue: undefined,
+    };
+
+    const workspacePath = mockTmpDir;
+    const templateDir = join(workspacePath, 'template');
+    const templateContentsDir = join(templateDir, 'contents');
+
+    // Set up a cookiecutter.json in the template contents directory
+    mockDir.setContent({
+      'template/contents/cookiecutter.json': JSON.stringify({
+        project_name: 'default',
+      }),
+    });
+
+    // Mock executeShellCommand to capture the cookiecutter.json and avoid running actual cookiecutter
+    let capturedCookiecutterJson: any = null;
+    executeShellCommand.mockImplementation(async () => {
+      // Capture the cookiecutter.json content before it's processed
+      const cookiecutterJsonContent = mockDir.content({ path: 'template' });
+      if (
+        cookiecutterJsonContent &&
+        typeof cookiecutterJsonContent === 'object' &&
+        'cookiecutter.json' in cookiecutterJsonContent
+      ) {
+        capturedCookiecutterJson = JSON.parse(
+          cookiecutterJsonContent['cookiecutter.json'] as string,
+        );
+      }
+
+      // Create output that cookiecutter would normally create
+      mockDir.setContent({
+        'intermediate/testproject': {},
+      });
+    });
+
+    const runner = new CookiecutterRunner({});
+    const logStream = new PassThrough();
+
+    await runner.run({
+      workspacePath,
+      values: edgeCaseValues,
+      logStream,
+      templateDir,
+      templateContentsDir,
+    });
+
+    // Verify edge cases are handled correctly
+    expect(capturedCookiecutterJson).toBeDefined();
+
+    // Normal string should remain unchanged
+    expect(capturedCookiecutterJson.normalString).toBe('just a regular string');
+
+    // Empty array/object strings should be parsed
+    expect(Array.isArray(capturedCookiecutterJson.emptyArray)).toBe(true);
+    expect(capturedCookiecutterJson.emptyArray).toHaveLength(0);
+    expect(typeof capturedCookiecutterJson.emptyObject).toBe('object');
+    expect(Object.keys(capturedCookiecutterJson.emptyObject)).toHaveLength(0);
+
+    // Numbers and booleans as strings should remain as strings (not parsed)
+    expect(capturedCookiecutterJson.numberAsString).toBe('42');
+    expect(capturedCookiecutterJson.booleanAsString).toBe('true');
+
+    // Invalid JSON should remain as string
+    expect(capturedCookiecutterJson.invalidJson).toBe('[invalid json}');
+    expect(capturedCookiecutterJson.stringThatLooksLikeJson).toBe(
+      '[this looks like json but is not]',
+    );
+
+    // Nested object should be parsed
+    expect(typeof capturedCookiecutterJson.nestedObject).toBe('object');
+    expect(capturedCookiecutterJson.nestedObject.level1.level2.value).toBe(
+      'deep',
+    );
+
+    // Array of primitives should be parsed
+    expect(Array.isArray(capturedCookiecutterJson.arrayOfPrimitives)).toBe(
+      true,
+    );
+    expect(capturedCookiecutterJson.arrayOfPrimitives).toEqual([
+      1,
+      2,
+      'three',
+      true,
+      null,
+    ]);
+
+    // Quoted string should be parsed to just the string value
+    expect(capturedCookiecutterJson.quotedStringValue).toBe('"quoted string"');
+
+    // null and undefined should be preserved
+    expect(capturedCookiecutterJson.nullValue).toBe(null);
+    expect(capturedCookiecutterJson.undefinedValue).toBe(undefined);
   });
 });
