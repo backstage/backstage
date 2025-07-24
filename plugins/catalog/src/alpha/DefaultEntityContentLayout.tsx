@@ -57,7 +57,6 @@ const useStyles = makeStyles<
     '& > *': {
       flexShrink: 0,
       flexGrow: 0,
-      flexBasis: 'auto',
     },
   },
   summaryArea: {
