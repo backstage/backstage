@@ -40,6 +40,8 @@ import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as coreAppApi } from '../../../core-app-api/package.json';
+import { version as coreCompatApi } from '../../../core-compat-api/package.json';
+import { version as frontendTestUtils } from '../../../frontend-test-utils/package.json';
 import { version as coreComponents } from '../../../core-components/package.json';
 import { version as corePluginApi } from '../../../core-plugin-api/package.json';
 import { version as e2eTestUtils } from '../../../e2e-test-utils/package.json';
@@ -100,8 +102,10 @@ export const packageVersions = {
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
+  '@backstage/core-compat-api': coreCompatApi,
   '@backstage/core-components': coreComponents,
   '@backstage/core-plugin-api': corePluginApi,
+  '@backstage/frontend-test-utils': frontendTestUtils,
   '@backstage/e2e-test-utils': e2eTestUtils,
   '@backstage/errors': errors,
   '@backstage/integration-react': integrationReact,
