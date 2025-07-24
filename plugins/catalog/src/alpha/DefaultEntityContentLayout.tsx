@@ -79,23 +79,32 @@ const useStyles = makeStyles<
   },
   [theme.breakpoints.up('md')]: {
     root: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'flex-start',
+      display: 'grid',
       gap: theme.spacing(3),
+      gridTemplateAreas: ({ summaryCards }) => `
+        "${summaryCards ? 'summary' : 'content'} info"
+        "content info"
+      `,
+      gridTemplateColumns: ({ infoCards }) => (infoCards ? '2fr 1fr' : '1fr'),
+      alignItems: 'start',
     },
     mainContent: {
-      flex: '2 1 0',
-      minWidth: 0,
+      display: 'contents',
+    },
+    contentArea: {
+      gridArea: 'content',
+    },
+    summaryArea: {
+      gridArea: 'summary',
+      marginBottom: theme.spacing(3),
     },
     infoArea: {
-      flex: '0 0 auto',
-      width: '33.333%',
+      gridArea: 'info',
       position: 'sticky',
       top: theme.spacing(3),
       maxHeight: `calc(100vh - ${theme.spacing(6)}px)`,
       overflowY: 'auto',
-      alignSelf: 'flex-start',
+      alignSelf: 'start',
     },
   },
 }));
