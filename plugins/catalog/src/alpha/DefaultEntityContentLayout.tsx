@@ -175,8 +175,6 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
         {infoCards.length > 0 ? (
           <div className={classes.infoArea}>
             {infoCards.map(card => card.element)}
-            {infoCards.map(card => card.element)}
-            {infoCards.map(card => card.element)}
           </div>
         ) : null}
       </div>
