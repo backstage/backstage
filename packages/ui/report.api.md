@@ -322,7 +322,7 @@ export const componentDefinitions: {
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium', 'large'];
-      readonly variant: readonly ['primary', 'secondary', 'ghost'];
+      readonly variant: readonly ['primary', 'secondary', 'tertiary'];
     };
   };
   readonly ButtonIcon: {

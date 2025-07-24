@@ -124,13 +124,15 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
       <div className={classNames.toolbar} data-has-tabs={hasTabs}>
         <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
           <div className={classNames.toolbarContent} ref={toolbarContentRef}>
-            {titleLink ? (
-              <Link className={classNames.toolbarName} href={titleLink}>
-                {titleContent}
-              </Link>
-            ) : (
-              <div className={classNames.toolbarName}>{titleContent}</div>
-            )}
+            <Text as="h1" variant="body-medium">
+              {titleLink ? (
+                <Link className={classNames.toolbarName} href={titleLink}>
+                  {titleContent}
+                </Link>
+              ) : (
+                <div className={classNames.toolbarName}>{titleContent}</div>
+              )}
+            </Text>
             {breadcrumbs && (
               <div
                 ref={breadcrumbsRef}
