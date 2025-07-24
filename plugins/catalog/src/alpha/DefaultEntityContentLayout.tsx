@@ -41,7 +41,7 @@ const useStyles = makeStyles<
     flexFlow: 'column nowrap',
     gap: theme.spacing(3),
   },
-  contentArea: {
+  mainContent: {
     display: 'flex',
     flexFlow: 'column',
     gap: theme.spacing(3),
@@ -51,9 +51,14 @@ const useStyles = makeStyles<
   infoArea: {
     display: 'flex',
     flexFlow: 'column nowrap',
-    alignItems: 'stretch',
+    alignItems: 'flex-start',
     gap: theme.spacing(3),
     minWidth: 0,
+    '& > *': {
+      flexShrink: 0,
+      flexGrow: 0,
+      flexBasis: 'auto',
+    },
   },
   summaryArea: {
     minWidth: 0,
@@ -65,29 +70,32 @@ const useStyles = makeStyles<
       marginLeft: theme.spacing(3),
     },
   },
+  contentArea: {
+    display: 'flex',
+    flexFlow: 'column',
+    gap: theme.spacing(3),
+    alignItems: 'stretch',
+    minWidth: 0,
+  },
   [theme.breakpoints.up('md')]: {
     root: {
-      display: 'grid',
-      gap: 0,
-      gridTemplateAreas: ({ summaryCards }) => `
-        "${summaryCards ? 'summary' : 'content'} info"
-        "content info"
-      `,
-      gridTemplateColumns: ({ infoCards }) => (infoCards ? '2fr 1fr' : '1fr'),
-      alignItems: 'start',
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: theme.spacing(3),
+    },
+    mainContent: {
+      flex: '2 1 0',
+      minWidth: 0,
     },
     infoArea: {
-      gridArea: 'info',
+      flex: '0 0 auto',
+      width: '33.333%',
       position: 'sticky',
       top: theme.spacing(3),
-      marginLeft: theme.spacing(3),
-    },
-    contentArea: {
-      gridArea: 'content',
-    },
-    summaryArea: {
-      gridArea: 'summary',
-      marginBottom: theme.spacing(3),
+      maxHeight: `calc(100vh - ${theme.spacing(6)}px)`,
+      overflowY: 'auto',
+      alignSelf: 'flex-start',
     },
   },
 }));
@@ -139,23 +147,27 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
     <>
       {entityWarningContent}
       <div className={classes.root}>
+        <div className={classes.mainContent}>
+          {summaryCards.length > 0 ? (
+            <div className={classes.summaryArea}>
+              <HorizontalScrollGrid scrollStep={400} scrollSpeed={100}>
+                {summaryCards.map(card => (
+                  <div className={classes.summaryCard}>{card.element}</div>
+                ))}
+              </HorizontalScrollGrid>
+            </div>
+          ) : null}
+          {contentCards.length > 0 ? (
+            <div className={classes.contentArea}>
+              {contentCards.map(card => card.element)}
+            </div>
+          ) : null}
+        </div>
         {infoCards.length > 0 ? (
           <div className={classes.infoArea}>
             {infoCards.map(card => card.element)}
-          </div>
-        ) : null}
-        {summaryCards.length > 0 ? (
-          <div className={classes.summaryArea}>
-            <HorizontalScrollGrid scrollStep={400} scrollSpeed={100}>
-              {summaryCards.map(card => (
-                <div className={classes.summaryCard}>{card.element}</div>
-              ))}
-            </HorizontalScrollGrid>
-          </div>
-        ) : null}
-        {contentCards.length > 0 ? (
-          <div className={classes.contentArea}>
-            {contentCards.map(card => card.element)}
+            {infoCards.map(card => card.element)}
+            {infoCards.map(card => card.element)}
           </div>
         ) : null}
       </div>
