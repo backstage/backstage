@@ -548,7 +548,6 @@ export default {
       {
         Technical: [
           'tutorials/quickstart-app-plugin',
-          'tutorials/configuring-plugin-databases',
           'tutorials/manual-knex-rollback',
           'tutorials/using-backstage-proxy-within-plugin',
           'tutorials/enable-public-entry',
