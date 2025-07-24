@@ -102,6 +102,8 @@ const useStyles = makeStyles<
       gridArea: 'info',
       position: 'sticky',
       top: theme.spacing(3),
+      // this is a little unfortunate, it's basically vh - header, in order for the page to scroll
+      // naturally throught the main cards.
       maxHeight: `calc(100vh - ${theme.spacing(6)}px)`,
       overflowY: 'auto',
       alignSelf: 'start',
@@ -163,6 +165,11 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
     <>
       {entityWarningContent}
       <div className={classes.root}>
+        {infoCards.length > 0 ? (
+          <div className={classes.infoArea}>
+            {infoCards.map(card => card.element)}
+          </div>
+        ) : null}
         <div className={classes.mainContent}>
           {summaryCards.length > 0 ? (
             <div className={classes.summaryArea}>
@@ -179,11 +186,6 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
             </div>
           ) : null}
         </div>
-        {infoCards.length > 0 ? (
-          <div className={classes.infoArea}>
-            {infoCards.map(card => card.element)}
-          </div>
-        ) : null}
       </div>
     </>
   );
