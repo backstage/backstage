@@ -10578,11 +10578,11 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--bui-space-2);
-  max-width: 100%;
-  transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
+  width: 100%;
   display: flex;
 
   & svg {
+    color: var(--bui-fg-secondary);
     flex-shrink: 0;
   }
 
@@ -10612,6 +10612,7 @@
 
   &:hover {
     border-color: var(--bui-border-hover);
+    transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
   }
 
   &:focus-visible {
@@ -10650,6 +10651,7 @@
   font-family: var(--bui-font-regular);
   font-weight: var(--bui-font-weight-regular);
   color: var(--bui-fg-primary);
+  text-align: left;
   overflow: hidden;
 
   & .bui-SelectItemIndicator {
@@ -10664,14 +10666,15 @@
 .bui-SelectItem {
   width: var(--anchor-width);
   padding-block: var(--bui-space-2);
-  padding-inline: var(--bui-space-4);
+  padding-left: var(--bui-space-3);
+  padding-right: var(--bui-space-4);
   color: var(--bui-fg-primary);
   border-radius: var(--bui-radius-3);
   cursor: pointer;
   user-select: none;
   font-size: var(--bui-font-size-3);
   align-items: center;
-  gap: var(--bui-space-2);
+  gap: var(--bui-space-1);
   outline: none;
   grid-template-columns: 1rem 1fr;
   grid-template-areas: "icon text";
