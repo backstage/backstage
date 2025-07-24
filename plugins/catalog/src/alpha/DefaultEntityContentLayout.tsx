@@ -107,6 +107,7 @@ const useStyles = makeStyles<
       maxHeight: '100vh',
       overflowY: 'auto',
       alignSelf: 'start',
+      alignItems: 'stretch',
       // Hide the scrollbar for the inner info cards
       // kind of an accessibility nightmare, but we see.
       scrollbarWidth: 'none',
