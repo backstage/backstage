@@ -105,6 +105,13 @@ const useStyles = makeStyles<
       maxHeight: `calc(100vh - ${theme.spacing(6)}px)`,
       overflowY: 'auto',
       alignSelf: 'start',
+      // Hide the scrollbar for the inner info cards
+      // kind of an accessibility nightmare, but we see.
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
+      '&::-webkit-scrollbar': {
+        display: 'none',
+      },
     },
   },
 }));
