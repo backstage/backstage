@@ -272,4 +272,35 @@ describe('fetch:cookiecutter', () => {
     );
     expect(containerRunner.runContainer).toHaveBeenCalled();
   });
+
+  it(`should ${examples[5].description}`, async () => {
+    const input = yaml.parse(examples[5].example).steps[0].input;
+
+    commandExists.mockResolvedValue(false);
+
+    fetchContents.mockImplementation(() => Promise.resolve());
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(fetchContents).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reader: mockReader,
+        integrations,
+        baseUrl: mockContext.templateInfo?.baseUrl,
+        fetchUrl: mockContext.input.url,
+        outputPath: join(
+          mockTmpDir,
+          'template',
+          "{{cookiecutter and 'contents'}}",
+        ),
+      }),
+    );
+    expect(containerRunner.runContainer).toHaveBeenCalled();
+  });
 });

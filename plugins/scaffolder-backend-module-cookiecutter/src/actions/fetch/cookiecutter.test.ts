@@ -482,7 +482,7 @@ describe('fetch:cookiecutter', () => {
     ]);
 
     // Quoted string should be parsed to just the string value
-    expect(capturedCookiecutterJson.quotedStringValue).toBe('"quoted string"');
+    expect(capturedCookiecutterJson.quotedStringValue).toBe('quoted string');
 
     // null and undefined should be preserved
     expect(capturedCookiecutterJson.nullValue).toBe(null);

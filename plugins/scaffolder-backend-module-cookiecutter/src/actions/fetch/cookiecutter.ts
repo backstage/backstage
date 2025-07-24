@@ -44,7 +44,7 @@ function parseJsonStrings(obj: JsonObject): JsonObject {
     if (typeof value === 'string') {
       // Try to parse the string as JSON
       try {
-        // Check if it looks like JSON (starts with [ or {)
+        // Check if it looks like JSON (starts with [, {, or ")
         if (
           (value.startsWith('[') && value.endsWith(']')) ||
           (value.startsWith('{') && value.endsWith('}'))
@@ -52,6 +52,18 @@ function parseJsonStrings(obj: JsonObject): JsonObject {
           const parsed = JSON.parse(value);
           // If parsing succeeded and resulted in an object or array, use the parsed value
           if (typeof parsed === 'object' && parsed !== null) {
+            result[key] = parsed;
+          } else {
+            result[key] = value;
+          }
+        } else if (
+          value.startsWith('"') &&
+          value.endsWith('"') &&
+          value.length > 1
+        ) {
+          // Handle quoted strings - parse them to get the actual string value
+          const parsed = JSON.parse(value);
+          if (typeof parsed === 'string') {
             result[key] = parsed;
           } else {
             result[key] = value;

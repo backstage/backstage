@@ -116,4 +116,36 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Fetch and template using cookiecutter with array and object values.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'fetchTemplate',
+          action: 'fetch:cookiecutter',
+          name: 'Fetch and Template Using Cookiecutter',
+          input: {
+            url: 'https://google.com/cookie/cutter',
+            values: {
+              project_name: 'my-project',
+              features: [
+                { name: 'authentication', enabled: true },
+                { name: 'database', enabled: false },
+              ],
+              config: {
+                database: {
+                  type: 'postgresql',
+                  port: 5432,
+                },
+                cache: {
+                  type: 'redis',
+                },
+              },
+            },
+          },
+        },
+      ],
+    }),
+  },
 ];
