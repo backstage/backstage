@@ -1,43 +1,173 @@
-import { CodeBlock } from '@/components/CodeBlock';
+import { ComponentCards, ComponentCard } from '@/components/ComponentCards';
 
-# Backstage UI
+## Welcome to Backstage UI, the new design library for Backstage plugins.
 
-Welcome to the Backstage UI, the new design library for Backstage plugins. This
-project is still under active development but we will make sure to document
+This project is still under active development but we will make sure to document
 the API as we go. We are aiming to improve the general UI of Backstage and
 plugins across Backstage. This new library will take time to build but we are
 building it incrementally with not conflict with the existing theming system.
 
-## Installation
+### Actions
 
-### 1. Install Backstage UI
+<ComponentCards>
+  <ComponentCard
+    title="Button"
+    description="A button component to help you trigger actions."
+    href="/components/button"
+  />
+  <ComponentCard
+    title="ButtonLink"
+    description="A button component to help you trigger actions."
+    href="/components/button-link"
+  />
+  <ComponentCard
+    title="ButtonIcon"
+    description="A button for actions with an icon."
+    href="/components/button-icon"
+  />
+  <ComponentCard
+    title="Link"
+    description="A link component to help you navigate to other pages."
+    href="/components/link"
+  />
+</ComponentCards>
 
-Install Backstage UI using a package manager.
+### Layout
 
-<CodeBlock lang="shell" code={`yarn add @backstage/ui`} />
+<ComponentCards>
+  <ComponentCard
+    title="Box"
+    description="The simplest component to help you style your content."
+    href="/components/box"
+  />
+  <ComponentCard
+    title="Flex"
+    description="A flex container for your layout."
+    href="/components/flex"
+  />
+  <ComponentCard
+    title="Grid"
+    description="A grid container for your layout."
+    href="/components/grid"
+  />
+  <ComponentCard
+    title="Container"
+    description="Helps you center your content."
+    href="/components/container"
+  />
+  <ComponentCard
+    title="Card"
+    description="A component to separate your content on the page."
+    href="/components/card"
+  />
+  <ComponentCard
+    title="Collapsible"
+    description="A collapsible component for expandable content."
+    href="/components/collapsible"
+  />
+</ComponentCards>
 
-### 2. Import the css files
+### Selection and inputs
 
-Import the global CSS file at the root of your application.
+<ComponentCards>
+  <ComponentCard
+    title="Checkbox"
+    description="A checkbox component to help you select items."
+    href="/components/checkbox"
+  />
+  <ComponentCard
+    title="TextField"
+    description="A text field component to help you input text."
+    href="/components/text-field"
+  />
+  <ComponentCard
+    title="SearchField"
+    description="A search field component to help you search for items."
+    href="/components/search-field"
+  />
+  <ComponentCard
+    title="Select"
+    description="A select component to help you select items."
+    href="/components/select"
+  />
+  <ComponentCard
+    title="Switch"
+    description="A switch component to help you toggle items."
+    href="/components/switch"
+  />
+  <ComponentCard
+    title="RadioGroup"
+    description="A radio group component to help you select items."
+    href="/components/radio-group"
+  />
+</ComponentCards>
 
-```tsx
-import '@backstage/ui/css/styles.css';
-```
+### Navigation
 
-### 3. Start building ✨
+<ComponentCards>
+  <ComponentCard
+    title="Header"
+    description="A header component to help you display a header."
+    href="/components/header"
+  />
+  <ComponentCard
+    title="HeaderPage"
+    description="A header to complement the Header component."
+    href="/components/header-page"
+  />
+  <ComponentCard
+    title="Menu"
+    description="A menu component to help you display a menu."
+    href="/components/menu"
+  />
+  <ComponentCard
+    title="Tabs"
+    description="A tabs component to help you display a tabs."
+    href="/components/tabs"
+  />
+</ComponentCards>
 
-Now you can start building your plugin using the new design system.
+### Images and icons
 
-```tsx
-import { Flex, Button, Text } from '@backstage/ui';
+<ComponentCards>
+  <ComponentCard
+    title="Avatar"
+    description="A avatar component to help you display user avatars."
+    href="/components/avatar"
+  />
+  <ComponentCard
+    title="Icon"
+    description="A icon component to help you display icons."
+    href="/components/icon"
+  />
+</ComponentCards>
 
-<Flex>
-  <Text>Hello World</Text>
-  <Button>Click me</Button>
-</Flex>;
-```
+### Feedback indicators
 
-## Next steps
+<ComponentCards>
+  <ComponentCard
+    title="Skeleton"
+    description="A skeleton component to help you display loading states."
+    href="/components/skeleton"
+  />
+  <ComponentCard
+    title="Tooltip"
+    description="A tooltip component to help you display a tooltip."
+    href="/components/tooltip"
+  />
+</ComponentCards>
+
+### Typography
+
+<ComponentCards>
+  <ComponentCard
+    title="Text"
+    description="A text component to help you style your text."
+    href="/components/text"
+  />
+</ComponentCards>
+
+## Support
 
 Now that you have the basics down, you can start building your plugin using the new design system.
 Please familiarise yourself first with our theming principles. This will help you understand the core concepts of the design system.

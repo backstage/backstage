@@ -1,0 +1,40 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CodeBlock } from '@/components/CodeBlock';
+import { Snippet } from '@/components/Snippet';
+import { HeaderPageSnippet } from '@/snippets/stories-snippets';
+import {
+  propDefs,
+  usage,
+  simple,
+  defaultSnippet,
+  withTabs,
+  withBreadcrumbs,
+  withHeaderPage,
+} from './header-page.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Component"
+  title="HeaderPage"
+  description="A header page component for the plugin that should sit under the Header component."
+/>
+
+<Snippet
+  py={4}
+  preview={<HeaderPageSnippet story="WithEverything" />}
+  code={defaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={usage} />
+
+## API reference
+
+<PropsTable data={propDefs} />
+
+<Theming component="Header" />
+
+<ChangelogComponent component="Header" />

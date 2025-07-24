@@ -3555,7 +3555,7 @@ __metadata:
     archiver: "npm:^7.0.0"
     aws-sdk-client-mock: "npm:^4.0.0"
     base64-stream: "npm:^1.0.0"
-    better-sqlite3: "npm:^11.0.0"
+    better-sqlite3: "npm:^12.0.0"
     compression: "npm:^1.7.4"
     concat-stream: "npm:^2.0.0"
     cookie: "npm:^0.7.0"
@@ -3731,7 +3731,7 @@ __metadata:
     "@types/keyv": "npm:^4.2.0"
     "@types/qs": "npm:^6.9.6"
     "@types/supertest": "npm:^2.0.8"
-    better-sqlite3: "npm:^11.0.0"
+    better-sqlite3: "npm:^12.0.0"
     cookie: "npm:^0.7.0"
     express: "npm:^4.17.1"
     fs-extra: "npm:^11.0.0"
@@ -3766,6 +3766,7 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
     cross-fetch: "npm:^4.0.0"
     msw: "npm:^1.0.0"
     uri-template: "npm:^2.0.0"
@@ -5694,7 +5695,7 @@ __metadata:
     "@types/glob": "npm:^8.0.0"
     "@types/lodash": "npm:^4.14.151"
     "@types/supertest": "npm:^2.0.8"
-    better-sqlite3: "npm:^11.0.0"
+    better-sqlite3: "npm:^12.0.0"
     codeowners-utils: "npm:^1.0.2"
     core-js: "npm:^3.6.5"
     express: "npm:^4.17.1"
@@ -8457,6 +8458,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@base-ui-components/react": "npm:1.0.0-alpha.7"
+    "@gsap/react": "npm:^2.1.2"
     "@remixicon/react": "npm:^4.6.0"
     "@storybook/addon-essentials": "npm:^8.6.12"
     "@storybook/addon-interactions": "npm:^8.6.12"
@@ -8475,9 +8477,9 @@ __metadata:
     eslint-plugin-storybook: "npm:^0.12.0"
     glob: "npm:^11.0.1"
     globals: "npm:^15.11.0"
+    gsap: "npm:^3.13.0"
     lightningcss: "npm:^1.29.1"
     mini-css-extract-plugin: "npm:^2.9.2"
-    motion: "npm:^12.20.1"
     react: "npm:^18.0.2"
     react-aria-components: "npm:^1.10.1"
     react-dom: "npm:^18.0.2"
@@ -10312,6 +10314,16 @@ __metadata:
   bin:
     proto-loader-gen-types: build/bin/proto-loader-gen-types.js
   checksum: 10/7e2d842c2061cbaf6450c71da0077263be3bab165454d5c8a3e1ae4d3c6d2915f02fd27da63ff01f05e127b1221acd40705273f5d29303901e60514e852992f4
+  languageName: node
+  linkType: hard
+
+"@gsap/react@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@gsap/react@npm:2.1.2"
+  peerDependencies:
+    gsap: ^3.12.5
+    react: ">=17"
+  checksum: 10/48e78bbb31a4ec5a75aab6ea69ec3f4df0bb7cff0c8ebfcdc14553cb8e35f54b7fcf94f933e2aa65fd977135aaac87b855007d376504f1bb93a74328ba1dc0cb
   languageName: node
   linkType: hard
 
@@ -25874,14 +25886,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^11.0.0":
-  version: 11.7.2
-  resolution: "better-sqlite3@npm:11.7.2"
+"better-sqlite3@npm:^12.0.0":
+  version: 12.2.0
+  resolution: "better-sqlite3@npm:12.2.0"
   dependencies:
     bindings: "npm:^1.5.0"
     node-gyp: "npm:latest"
     prebuild-install: "npm:^7.1.1"
-  checksum: 10/49e1d8847560058d00c87177dfa6ef6bf713cb0122795c8f43143ac3154608f2ff83d4180ab00c7c24f5c23f0bcfe96bb47ac08b3ef5081ed41f46869df594f6
+  checksum: 10/2662e321237624d5813a7b97528dfc11fc5110b068d57f4096de82d7136e7e4a4b722a2a4266ddfb5095070712fd3d2542f6212ccb68e2d3eb2042498269e1cf
   languageName: node
   linkType: hard
 
@@ -32318,28 +32330,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.20.1":
-  version: 12.20.1
-  resolution: "framer-motion@npm:12.20.1"
-  dependencies:
-    motion-dom: "npm:^12.20.1"
-    motion-utils: "npm:^12.19.0"
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    "@emotion/is-prop-valid": "*"
-    react: ^18.0.0 || ^19.0.0
-    react-dom: ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@emotion/is-prop-valid":
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10/ba36e76dbf66c856f0c5d3cfb80973bb0ef95ca9169fc16b22560a7bc55fbedcf63205266dba7beecac5152c4cd140097ff504c5d529beffca86cd85f97bf5e3
-  languageName: node
-  linkType: hard
-
 "framer-motion@npm:^6.5.1":
   version: 6.5.1
   resolution: "framer-motion@npm:6.5.1"
@@ -33434,6 +33424,13 @@ __metadata:
   peerDependencies:
     react: ^16.0.0
   checksum: 10/ec022adc0c81ae17e2d59e8d36ec6e2306788d56c33296349ff252a627933491f8fab567cba90cfd5c998a13b36dfc321b3aa14c7a016d8e9c408853d23399de
+  languageName: node
+  linkType: hard
+
+"gsap@npm:^3.13.0":
+  version: 3.13.0
+  resolution: "gsap@npm:3.13.0"
+  checksum: 10/1908d51cbdf8f0bec8a69919af352d743a06529639a89f750f1c02e9a165d3ea816f867569df222ee7bfc14e23e268ebeb51dc5df0687fa7918ddd5d3b3efaec
   languageName: node
   linkType: hard
 
@@ -39805,43 +39802,6 @@ __metadata:
     on-finished: "npm:~2.3.0"
     on-headers: "npm:~1.0.2"
   checksum: 10/4497ace00dac65318658595528c1924942c900aae88b7adc5e69e18dd78fb5d1fcccdc2048404ce7d88b5344dc088c492e3aa7cf8023f1e601c6b0f4ff806b93
-  languageName: node
-  linkType: hard
-
-"motion-dom@npm:^12.20.1":
-  version: 12.20.1
-  resolution: "motion-dom@npm:12.20.1"
-  dependencies:
-    motion-utils: "npm:^12.19.0"
-  checksum: 10/b92d733fdfe3f66511f73c7f84f9483a0529eadf6ad2ab633cef584d161bcd1af786d257776e1fe7cd2b4e2c9c10912773f96ce9e2bd5b45c6c33ba6d9edfe86
-  languageName: node
-  linkType: hard
-
-"motion-utils@npm:^12.19.0":
-  version: 12.19.0
-  resolution: "motion-utils@npm:12.19.0"
-  checksum: 10/a6fe6b329bf4e2070bb95788218f36f0d7ea6cc3098e6ea2646ed68d5be88d25fa30e55284463ace78d19a5e19714875a7b70055bd86ae6e52a5fdee08438470
-  languageName: node
-  linkType: hard
-
-"motion@npm:^12.20.1":
-  version: 12.20.1
-  resolution: "motion@npm:12.20.1"
-  dependencies:
-    framer-motion: "npm:^12.20.1"
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    "@emotion/is-prop-valid": "*"
-    react: ^18.0.0 || ^19.0.0
-    react-dom: ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@emotion/is-prop-valid":
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10/49057c8d5812207209ca078a67ee7467d2dca7abacdcf2db486cd28c3ca105a7fe2504c34407df201c85035f6df1c806954af94914417ee89d721133fc4e92ce
   languageName: node
   linkType: hard
 

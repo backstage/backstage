@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Sidebar } from '../components/Sidebar';
 import { Toolbar } from '@/components/Toolbar';
+import { StickyHeader } from '../components/StickyHeader/StickyHeader';
 import { Providers } from './providers';
 import { CustomTheme } from '@/components/CustomTheme';
 import styles from './layout.module.css';
@@ -49,8 +50,9 @@ export default async function RootLayout({
     >
       <body>
         <Providers>
-          <Sidebar version={packageVersion} />
-          <Toolbar />
+          <Sidebar />
+          <Toolbar version={packageVersion} />
+          <StickyHeader />
           <div className={styles.container}>
             <div className={styles.content}>{children}</div>
           </div>

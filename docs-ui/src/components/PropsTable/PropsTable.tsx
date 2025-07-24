@@ -2,15 +2,13 @@
 
 import * as Table from '../Table';
 import { Chip } from '../Chip';
+import { TypePopup } from './TypePopup';
 import { icons } from '../../../../packages/ui';
 
-// Define a more specific type for the data object
-type PropData = {
-  values?: string | string[];
-  responsive?: boolean;
-  default?: string;
-  type?: string;
-};
+import { PropDef } from '@/utils/propDefs';
+
+// Use the proper PropDef type
+type PropData = PropDef;
 
 // Modify the PropsTable component to use the new type
 export const PropsTable = <T extends Record<string, PropData>>({
@@ -58,6 +56,12 @@ export const PropsTable = <T extends Record<string, PropData>>({
                       <Chip>0.5, 1, 1.5, 2, 3, ..., 14</Chip>
                       <Chip>string</Chip>
                     </>
+                  )}
+                  {data[n].type === 'complex' && data[n].complexType && (
+                    <TypePopup
+                      complexType={data[n].complexType}
+                      name={data[n].complexType.name}
+                    />
                   )}
                   {data[n].type === 'enum | string' && (
                     <>

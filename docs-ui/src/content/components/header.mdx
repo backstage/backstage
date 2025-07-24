@@ -1,0 +1,85 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CodeBlock } from '@/components/CodeBlock';
+import { Snippet } from '@/components/Snippet';
+import { HeaderSnippet } from '@/snippets/stories-snippets';
+import {
+  propDefs,
+  usage,
+  simple,
+  defaultSnippet,
+  withTabs,
+  withBreadcrumbs,
+  withHeaderPage,
+} from './header.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Component"
+  title="Header"
+  description="A header component for the plugin."
+/>
+
+<Snippet
+  py={4}
+  preview={<HeaderSnippet story="WithAllOptionsAndTabs" />}
+  code={defaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={usage} />
+
+## API reference
+
+<PropsTable data={propDefs} />
+
+## Examples
+
+### Simple header
+
+A simple example of how to use the Header component.
+
+<Snippet
+  py={4}
+  preview={<HeaderSnippet story="WithAllOptions" />}
+  code={simple}
+  open
+/>
+
+### Header with tabs
+
+A simple example of how to use the Header component with tabs. All links are using React Router
+under the hood and will be active when you are on the corresponding page.
+
+<Snippet
+
+preview={<HeaderSnippet story="WithAllOptionsAndTabs" />}
+code={withTabs}
+open
+/>
+
+### Header with breadcrumbs
+
+Breacrumbs should appear when you scroll down (and not directly visible as it is in the demo below).
+
+<Snippet
+  preview={<HeaderSnippet story="WithBreadcrumbs" />}
+  code={withBreadcrumbs}
+  open
+/>
+
+### Header with HeaderPage
+
+You can use the `Header` component inside the [HeaderPage](/components/header-page) component to compose your multi-level navigation.
+
+<Snippet
+  preview={<HeaderSnippet story="WithHeaderPage" />}
+  code={withHeaderPage}
+  open
+/>
+
+<Theming component="Header" />
+
+<ChangelogComponent component="Header" />

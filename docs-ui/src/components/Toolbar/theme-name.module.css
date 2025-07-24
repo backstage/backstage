@@ -25,19 +25,6 @@
   }
 }
 
-.SelectIcon {
-  display: flex;
-}
-
-.SelectValue {
-  font-size: 0.875rem;
-  font-weight: 400;
-}
-
-.Positioner {
-  z-index: 20;
-}
-
 .Popup {
   box-sizing: border-box;
   padding-block: 0.25rem;
@@ -73,65 +60,51 @@
   }
 }
 
-.Item {
-  box-sizing: border-box;
-  outline: 0;
-  font-size: 0.875rem;
-  line-height: 1rem;
-  padding-block: 0.5rem;
-  padding-left: 0.625rem;
-  padding-right: 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  display: grid;
-  gap: 0.5rem;
-  align-items: center;
-  grid-template-columns: 0.75rem 1fr;
-  cursor: default;
-  user-select: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+.Popup[data-trigger='Select'] {
+  min-width: var(--trigger-width);
 
-  [data-side='none'] & {
-    font-size: 1rem;
-    padding-right: 3rem;
-    min-width: calc(var(--anchor-width) + 1rem);
+  .ListBox {
+    display: block;
+    width: unset;
+    max-height: inherit;
+    min-height: unset;
+    border: none;
+
+    .react-aria-Header {
+      padding-left: 1.571rem;
+    }
   }
 
-  &[data-highlighted] {
-    z-index: 0;
+  .Item {
     position: relative;
-    color: var(--color-gray-50);
-    background-color: var(--bg);
+    padding: 0 0.571rem 0 1.571rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+
+    &[data-focus-visible] {
+      outline: none;
+    }
+
+    &[data-selected] {
+      font-weight: 600;
+      background: unset;
+      color: var(--text-color);
+
+      &::before {
+        content: '✓';
+        content: '✓' / '';
+        alt: ' ';
+        position: absolute;
+        left: 4px;
+      }
+    }
+
+    &[data-focused],
+    &[data-pressed] {
+      background: var(--bg);
+      color: var(--primary);
+      cursor: pointer;
+    }
   }
-
-  &[data-highlighted]::before {
-    content: '';
-    z-index: -1;
-    position: absolute;
-    inset-block: 0;
-    inset-inline: 0.25rem;
-    border-radius: 0.25rem;
-    background-color: var(--color-gray-900);
-  }
-}
-
-.ItemIndicator {
-  grid-column-start: 1;
-  width: 1rem;
-  height: 1rem;
-  display: flex;
-  align-items: center;
-}
-
-.ItemIndicatorIcon {
-  display: block;
-  width: 0.75rem;
-  height: 0.75rem;
-}
-
-.ItemText {
-  grid-column-start: 2;
-  font-size: 14px;
 }
