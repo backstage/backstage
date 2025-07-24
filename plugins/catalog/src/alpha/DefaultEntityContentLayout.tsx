@@ -101,9 +101,10 @@ const useStyles = makeStyles<
       gridArea: 'info',
       position: 'sticky',
       top: theme.spacing(3),
-      // this is a little unfortunate, it's basically vh - header, in order for the page to scroll
-      // naturally throught the main cards.
-      maxHeight: `calc(100vh - ${theme.spacing(6)}px)`,
+      // this is a little unfortunate, but it's required to make the info cards scrollable
+      // in a fixed container of the full height when it's stuck.
+      // 100% doesn't work as that's the height of the entire layout, which is what powers the card scrolling.
+      maxHeight: '100vh',
       overflowY: 'auto',
       alignSelf: 'start',
       // Hide the scrollbar for the inner info cards
