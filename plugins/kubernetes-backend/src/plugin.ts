@@ -176,7 +176,6 @@ export const kubernetesPlugin = createBackendPlugin({
         http: coreServices.httpRouter,
         logger: coreServices.logger,
         config: coreServices.rootConfig,
-        discovery: coreServices.discovery,
         catalogApi: catalogServiceRef,
         permissions: coreServices.permissions,
         auth: coreServices.auth,
@@ -186,7 +185,6 @@ export const kubernetesPlugin = createBackendPlugin({
         http,
         logger,
         config,
-        discovery,
         catalogApi,
         permissions,
         auth,
@@ -199,7 +197,6 @@ export const kubernetesPlugin = createBackendPlugin({
             config,
             catalogApi,
             permissions,
-            discovery,
             auth,
             httpAuth,
           })

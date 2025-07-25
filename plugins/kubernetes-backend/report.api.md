@@ -12,7 +12,6 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
 import { Config } from '@backstage/config';
 import { CustomResource as CustomResource_2 } from '@backstage/plugin-kubernetes-node';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
@@ -30,7 +29,7 @@ import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-n
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'http-proxy-middleware';
-import { RootConfigService } from '@backstage/backend-plugin-api';
+import type { RootConfigService } from '@backstage/backend-plugin-api';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
@@ -90,7 +89,15 @@ export class AzureIdentityStrategy implements AuthenticationStrategy_2 {
 export type ClusterDetails = k8sAuthTypes.ClusterDetails;
 
 // @public @deprecated
-export function createRouter(options: RouterOptions): Promise<express.Router>;
+export function createRouter(options: {
+  logger: Logger;
+  config: RootConfigService;
+  catalogApi: CatalogApi;
+  clusterSupplier?: KubernetesClustersSupplier;
+  permissions: PermissionEvaluator;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+}): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
 export type CustomResource = k8sAuthTypes.CustomResource;
@@ -190,12 +197,11 @@ export class KubernetesBuilder {
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider_2;
   // (undocumented)
-  protected buildProxy(
-    logger: LoggerService,
-    clusterSupplier: KubernetesClustersSupplier_2,
-    discovery: DiscoveryService,
-    httpAuth: HttpAuthService,
-  ): KubernetesProxy;
+  protected buildProxy(options: {
+    logger: LoggerService;
+    clusterSupplier: KubernetesClustersSupplier_2;
+    httpAuth: HttpAuthService;
+  }): KubernetesProxy;
   // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider_2,
@@ -241,12 +247,11 @@ export class KubernetesBuilder {
   // (undocumented)
   protected getObjectTypesToFetch(): ObjectToFetch_2[] | undefined;
   // (undocumented)
-  protected getProxy(
-    logger: LoggerService,
-    clusterSupplier: KubernetesClustersSupplier_2,
-    discovery: DiscoveryService,
-    httpAuth: HttpAuthService,
-  ): KubernetesProxy;
+  protected getProxy(options: {
+    logger: LoggerService;
+    clusterSupplier: KubernetesClustersSupplier_2;
+    httpAuth: HttpAuthService;
+  }): KubernetesProxy;
   // (undocumented)
   protected getServiceLocator(): KubernetesServiceLocator_2;
   // (undocumented)
@@ -293,15 +298,13 @@ export type KubernetesCredential = k8sAuthTypes.KubernetesCredential;
 // @public @deprecated (undocumented)
 export interface KubernetesEnvironment {
   // (undocumented)
-  auth?: AuthService;
+  auth: AuthService;
   // (undocumented)
   catalogApi: CatalogApi;
   // (undocumented)
   config: Config;
   // (undocumented)
-  discovery: DiscoveryService;
-  // (undocumented)
-  httpAuth?: HttpAuthService;
+  httpAuth: HttpAuthService;
   // (undocumented)
   logger: LoggerService;
   // (undocumented)
@@ -356,8 +359,7 @@ export type KubernetesProxyOptions = {
   logger: LoggerService;
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
-  discovery: DiscoveryService;
-  httpAuth?: HttpAuthService;
+  httpAuth: HttpAuthService;
 };
 
 // @public @deprecated (undocumented)
@@ -383,22 +385,6 @@ export class OidcStrategy implements AuthenticationStrategy_2 {
   presentAuthMetadata(_authMetadata: AuthMetadata_2): AuthMetadata_2;
   // (undocumented)
   validateCluster(authMetadata: AuthMetadata_2): Error[];
-}
-
-// @public @deprecated (undocumented)
-export interface RouterOptions {
-  // (undocumented)
-  catalogApi: CatalogApi;
-  // (undocumented)
-  clusterSupplier?: KubernetesClustersSupplier;
-  // (undocumented)
-  config: RootConfigService;
-  // (undocumented)
-  discovery: DiscoveryService;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  permissions: PermissionEvaluator;
 }
 
 // @public (undocumented)

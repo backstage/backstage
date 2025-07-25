@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ServiceLocatorRequestContext } from '../types/types';
 import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';

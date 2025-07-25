@@ -78,7 +78,6 @@ describe('KubernetesProxy', () => {
   };
 
   const permissionApi = mockServices.permissions();
-  const mockDisocveryApi = mockServices.discovery.mock();
 
   registerMswTestHooks(worker);
 
@@ -153,7 +152,7 @@ describe('KubernetesProxy', () => {
       logger,
       clusterSupplier,
       authStrategy,
-      discovery: mockDisocveryApi,
+      httpAuth: mockServices.httpAuth.mock(),
     });
   });
 
@@ -540,7 +539,7 @@ describe('KubernetesProxy', () => {
       logger: mockServices.logger.mock(),
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
-      discovery: mockDisocveryApi,
+      httpAuth: mockServices.httpAuth.mock(),
     });
 
     worker.use(
@@ -662,7 +661,7 @@ describe('KubernetesProxy', () => {
       logger: mockServices.logger.mock(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
-      discovery: mockDisocveryApi,
+      httpAuth: mockServices.httpAuth.mock(),
     });
 
     worker.use(
