@@ -14,46 +14,107 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import clsx from 'clsx';
+import { DataTableProps } from './types';
 import {
   Table,
+  TableRow,
+  TableHeader,
+  TableHead,
   TableBody,
   TableCell,
-  TableHead,
-  TableCellProfile,
-  TableCellText,
-  TableHeader,
-  TableRow,
 } from '../Table';
-import { DataTableRoot } from './Root/DataTableRoot';
-import { DataTablePagination } from './Pagination/DataTablePagination';
-import { Table as TanstackTable } from '@tanstack/react-table';
-import { DataTableTable } from './Table/DataTableTable';
+import { flexRender } from '@tanstack/react-table';
+import { DataTableHeadContent } from './DataTableHeadContent';
 
-const TableRoot = forwardRef<
-  React.ElementRef<typeof Table>,
-  React.ComponentPropsWithoutRef<typeof Table>
->(({ className, ...props }, ref) => <Table ref={ref} {...props} />);
-TableRoot.displayName = Table.displayName;
+function getAriaSort(sortDirection: string | false) {
+  if (sortDirection === 'asc') {
+    return 'ascending';
+  }
+  if (sortDirection === 'desc') {
+    return 'descending';
+  }
+  return 'none';
+}
 
-/**
- * DataTable component for displaying tabular data with pagination
- * @public
- */
-export const DataTable = {
-  Root: DataTableRoot as <TData>(
-    props: {
-      table: TanstackTable<TData>;
-    } & React.HTMLAttributes<HTMLDivElement>,
-  ) => JSX.Element,
-  Pagination: DataTablePagination,
-  Table: DataTableTable,
-  TableRoot: TableRoot,
-  TableHeader: TableHeader,
-  TableBody: TableBody,
-  TableRow: TableRow,
-  TableCell: TableCell,
-  TableCellText: TableCellText,
-  TableCellProfile: TableCellProfile,
-  TableHead: TableHead,
-};
+/** @public */
+function DataTable<TData>(
+  props: DataTableProps<TData> & { ref?: React.ForwardedRef<HTMLTableElement> },
+) {
+  const { className, table, ref, ...rest } = props;
+
+  return (
+    <Table
+      ref={ref}
+      style={{ minWidth: table.getTotalSize() }}
+      className={clsx(className)}
+      {...rest}
+    >
+      <TableHeader>
+        {table.getHeaderGroups().map(headerGroup => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map(header => {
+              return (
+                <TableHead
+                  key={header.id}
+                  style={{ width: header.getSize() }}
+                  aria-sort={getAriaSort(header.column.getIsSorted())}
+                >
+                  {header.isPlaceholder ? null : (
+                    <DataTableHeadContent header={header} />
+                  )}
+                </TableHead>
+              );
+            })}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody>
+        {table.getRowModel().rows?.length ? (
+          table.getRowModel().rows.map(row => {
+            const rowData = row.original as TData & { onClick?: () => void };
+            const handleRowClick = rowData.onClick
+              ? (e: React.MouseEvent<HTMLTableRowElement>) => {
+                  if (!e.isPropagationStopped()) {
+                    rowData.onClick!();
+                  }
+                }
+              : undefined;
+
+            return (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+                data-clickable={!!rowData.onClick}
+                onClick={handleRowClick}
+              >
+                {row.getVisibleCells().map(cell => (
+                  <TableCell
+                    key={cell.id}
+                    style={{ width: cell.column.getSize() }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            );
+          })
+        ) : (
+          <TableRow>
+            <TableCell
+              colSpan={table.getAllColumns().length}
+              className="h-24 text-center"
+              style={{ width: table.getTotalSize() }}
+            >
+              No results.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
+}
+
+DataTable.displayName = 'DataTable';
+
+export { DataTable };

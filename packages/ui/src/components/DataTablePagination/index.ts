@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-/** @public */
-export interface DataTableTableProps
-  extends React.HTMLAttributes<HTMLTableElement> {}
+export { DataTablePagination } from './DataTablePagination';
+export type { DataTablePaginationProps } from './types';

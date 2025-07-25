@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-export { DataTable } from './DataTable';
-export type { DataTableProps } from './types';
+import { Table } from '@tanstack/react-table';
+
+/** @public */
+export interface DataTableProps<TData>
+  extends React.HTMLAttributes<HTMLTableElement> {
+  table: Table<TData>;
+}

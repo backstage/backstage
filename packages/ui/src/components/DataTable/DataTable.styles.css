@@ -1,0 +1,37 @@
+.bui-DataTableRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bui-space-3);
+}
+
+.bui-DataTableRoot--sort {
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bui-space-1);
+}
+
+.bui-DataTableRoot--sort .bui-DataTableRoot--unsorted {
+  opacity: 0;
+  transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.bui-DataTableRoot--sort:hover .bui-DataTableRoot--unsorted,
+.bui-DataTableRoot--sort:focus .bui-DataTableRoot--unsorted {
+  opacity: 0.5;
+}
+
+.bui-DataTableRoot--sort .bui-DataTableRoot--sorted-asc,
+.bui-DataTableRoot--sort:hover .bui-DataTableRoot--sorted-asc,
+.bui-DataTableRoot--sort:focus .bui-DataTableRoot--sorted-asc {
+  opacity: 1;
+  transform: rotate(0);
+}
+
+.bui-DataTableRoot--sort .bui-DataTableRoot--sorted-desc,
+.bui-DataTableRoot--sort:hover .bui-DataTableRoot--sorted-desc,
+.bui-DataTableRoot--sort:focus .bui-DataTableRoot--sorted-desc {
+  opacity: 1;
+  transform: rotate(180deg);
+}

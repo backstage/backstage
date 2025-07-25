@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,15 @@
 @import '../components/Checkbox/styles.css';
 @import '../components/Collapsible/Collapsible.styles.css';
 @import '../components/Container/styles.css';
-@import '../components/DataTable/Root/DataTableRoot.styles.css';
-@import '../components/DataTable/Pagination/DataTablePagination.styles.css';
+@import '../components/DataTable/DataTable.styles.css';
+@import '../components/DataTablePagination/DataTablePagination.styles.css';
 @import '../components/FieldError/FieldError.styles.css';
 @import '../components/FieldLabel/FieldLabel.styles.css';
 @import '../components/Flex/styles.css';
 @import '../components/Grid/styles.css';
 @import '../components/Header/Header.styles.css';
 @import '../components/HeaderPage/HeaderPage.styles.css';
+@import '../components/Hidden/Hidden.styles.css';
 @import '../components/Icon/styles.css';
 @import '../components/Link/styles.css';
 @import '../components/Menu/Menu.styles.css';

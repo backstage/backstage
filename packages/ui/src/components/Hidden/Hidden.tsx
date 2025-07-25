@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-/** @public */
-export interface DataTablePaginationProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+import { Box, BoxProps } from '../Box';
+import clsx from 'clsx';
+
+export const Hidden = (props: BoxProps) => {
+  return <Box {...props} className={clsx('bui-Hidden', props.className)} />;
+};

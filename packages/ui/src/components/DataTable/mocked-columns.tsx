@@ -17,7 +17,8 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { DataProps } from './mocked-components';
 import { Checkbox } from '../Checkbox';
-import { DataTable } from './DataTable';
+import { TableCellText } from '../Table/TableCellText/TableCellText';
+import { TableCellProfile } from '../Table/TableCellProfile/TableCellProfile';
 
 export const columns: ColumnDef<DataProps>[] = [
   {
@@ -48,7 +49,7 @@ export const columns: ColumnDef<DataProps>[] = [
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => (
-      <DataTable.TableCellText
+      <TableCellText
         title={row.getValue('name')}
         description={row.original.description}
         href="/"
@@ -63,7 +64,7 @@ export const columns: ColumnDef<DataProps>[] = [
       const owner = row.getValue('owner') as DataProps['owner'];
 
       return (
-        <DataTable.TableCellProfile
+        <TableCellProfile
           name={owner.name}
           src={owner.profilePicture}
           href={owner.link}
@@ -74,13 +75,13 @@ export const columns: ColumnDef<DataProps>[] = [
   {
     accessorKey: 'type',
     header: 'Type',
-    cell: ({ row }) => <DataTable.TableCellText title={row.getValue('type')} />,
+    cell: ({ row }) => <TableCellText title={row.getValue('type')} />,
     size: 150,
   },
   {
     accessorKey: 'tags',
     header: 'Tags',
-    cell: ({ row }) => <DataTable.TableCellText title={row.getValue('tags')} />,
+    cell: ({ row }) => <TableCellText title={row.getValue('tags')} />,
     size: 150,
   },
 ];
@@ -90,16 +91,14 @@ export const columns2: ColumnDef<DataProps>[] = [
     accessorKey: 'type',
     header: 'Type',
     cell: ({ row }) => (
-      <DataTable.TableCellText title={row.getValue('type')} color="secondary" />
+      <TableCellText title={row.getValue('type')} color="secondary" />
     ),
     size: 100,
   },
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => (
-      <DataTable.TableCellText title={row.getValue('name')} href="/" />
-    ),
+    cell: ({ row }) => <TableCellText title={row.getValue('name')} href="/" />,
     size: 450,
   },
   {
@@ -109,7 +108,7 @@ export const columns2: ColumnDef<DataProps>[] = [
       const owner = row.getValue('owner') as DataProps['owner'];
 
       return (
-        <DataTable.TableCellProfile
+        <TableCellProfile
           name={owner.name}
           src={owner.profilePicture}
           href={owner.link}
@@ -122,10 +121,7 @@ export const columns2: ColumnDef<DataProps>[] = [
     accessorKey: 'lifecycle',
     header: 'Lifecycle',
     cell: ({ row }) => (
-      <DataTable.TableCellText
-        title={row.getValue('lifecycle')}
-        color="secondary"
-      />
+      <TableCellText title={row.getValue('lifecycle')} color="secondary" />
     ),
     size: 100,
   },
@@ -133,10 +129,7 @@ export const columns2: ColumnDef<DataProps>[] = [
     accessorKey: 'system',
     header: 'System',
     cell: ({ row }) => (
-      <DataTable.TableCellText
-        title={row.getValue('lifecycle')}
-        color="secondary"
-      />
+      <TableCellText title={row.getValue('lifecycle')} color="secondary" />
     ),
     size: 100,
   },

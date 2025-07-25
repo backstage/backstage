@@ -14,5 +14,21 @@
  * limitations under the License.
  */
 
-export { DataTable } from './DataTable';
-export type { DataTableProps } from './types';
+import { Table } from '@tanstack/react-table';
+
+/** @public */
+export interface DataTablePaginationProps<TData>
+  extends React.HTMLAttributes<HTMLDivElement> {
+  table?: Table<TData>;
+  onNextPage?: () => void;
+  onPreviousPage?: () => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  showPageSizeOptions?: boolean;
+}
+
+/** @public */
+export type DataTablePaginationComponent = <TData>(
+  props: DataTablePaginationProps<TData> & {
+    ref?: React.ForwardedRef<HTMLDivElement>;
+  },
+) => React.ReactElement;

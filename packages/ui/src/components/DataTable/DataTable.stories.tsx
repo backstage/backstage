@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,15 @@
 
 import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { DataTable } from '.';
+import { DataTablePagination } from '../DataTablePagination';
+import {
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHead,
+  Table,
+} from '../Table';
 import { data, DataProps } from './mocked-components';
 import { columns } from './mocked-columns';
 import {
@@ -52,10 +61,10 @@ export const Uncontrolled: Story = {
     });
 
     return (
-      <DataTable.Root table={table}>
-        <DataTable.Table />
-        <DataTable.Pagination />
-      </DataTable.Root>
+      <>
+        <DataTable table={table} />
+        <DataTablePagination table={table} />
+      </>
     );
   },
 };
@@ -79,10 +88,10 @@ export const Controlled: Story = {
     });
 
     return (
-      <DataTable.Root table={table}>
-        <DataTable.Table />
-        <DataTable.Pagination />
-      </DataTable.Root>
+      <>
+        <DataTable table={table} />
+        <DataTablePagination table={table} />
+      </>
     );
   },
 };
@@ -97,57 +106,57 @@ export const WithCustomTable: Story = {
     });
 
     return (
-      <DataTable.Root table={table}>
-        <DataTable.TableRoot>
-          <DataTable.TableHeader>
+      <>
+        <Table>
+          <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
-              <DataTable.TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
                   return (
-                    <DataTable.TableHead key={header.id}>
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
                           )}
-                    </DataTable.TableHead>
+                    </TableHead>
                   );
                 })}
-              </DataTable.TableRow>
+              </TableRow>
             ))}
-          </DataTable.TableHeader>
-          <DataTable.TableBody>
+          </TableHeader>
+          <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
-                <DataTable.TableRow
+                <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map(cell => (
-                    <DataTable.TableCell key={cell.id}>
+                    <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
                       )}
-                    </DataTable.TableCell>
+                    </TableCell>
                   ))}
-                </DataTable.TableRow>
+                </TableRow>
               ))
             ) : (
-              <DataTable.TableRow>
-                <DataTable.TableCell
+              <TableRow>
+                <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
                   No results.
-                </DataTable.TableCell>
-              </DataTable.TableRow>
+                </TableCell>
+              </TableRow>
             )}
-          </DataTable.TableBody>
-        </DataTable.TableRoot>
-        <DataTable.Pagination />
-      </DataTable.Root>
+          </TableBody>
+        </Table>
+        <DataTablePagination table={table} />
+      </>
     );
   },
 };

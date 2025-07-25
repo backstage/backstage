@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { Table } from '@tanstack/react-table';
+import type { Meta, StoryObj } from '@storybook/react';
+import { Hidden } from './Hidden';
 
-/** @public */
-export interface DataTableRootProps<TData>
-  extends React.HTMLAttributes<HTMLDivElement> {
-  /**
-   * The table instance.
-   */
-  table: Table<TData>;
-}
+const meta = {
+  title: 'Components/Hidden',
+  component: Hidden,
+} satisfies Meta<typeof Hidden>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    children: 'Visually hidden content',
+  },
+};
