@@ -27,6 +27,7 @@ import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { configApiRef } from '@backstage/core-plugin-api';
+import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { createApiFactory } from '@backstage/core-plugin-api';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
@@ -39,6 +40,7 @@ import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { Expand } from '@backstage/types';
+import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
@@ -49,7 +51,8 @@ import { fetchApiRef } from '@backstage/core-plugin-api';
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
-import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
+import { IconComponent as IconComponent_2 } from '@backstage/frontend-plugin-api';
+import { IconComponent as IconComponent_3 } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -70,6 +73,7 @@ import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SessionState } from '@backstage/core-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
@@ -1414,18 +1418,58 @@ export { identityApiRef };
 export { microsoftAuthApiRef };
 
 // @public
+export const NavContentBlueprint: ExtensionBlueprint_2<{
+  kind: 'nav-content';
+  name: undefined;
+  params: {
+    component: NavContentComponent;
+  };
+  output: ConfigurableExtensionDataRef_2<
+    NavContentComponent,
+    'core.nav-content.component',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef_2<
+      NavContentComponent,
+      'core.nav-content.component',
+      {}
+    >;
+  };
+}>;
+
+// @public
+export type NavContentComponent = (
+  props: NavContentComponentProps,
+) => JSX.Element | null;
+
+// @public
+export interface NavContentComponentProps {
+  items: Array<{
+    icon: IconComponent_2;
+    title: string;
+    routeRef: RouteRef_2<undefined>;
+    to: string;
+    text: string;
+  }>;
+}
+
+// @public
 export const NavItemBlueprint: ExtensionBlueprint<{
   kind: 'nav-item';
   name: undefined;
   params: {
     title: string;
-    icon: IconComponent_2;
+    icon: IconComponent_3;
     routeRef: RouteRef<undefined>;
   };
   output: ConfigurableExtensionDataRef<
     {
       title: string;
-      icon: IconComponent_2;
+      icon: IconComponent_3;
       routeRef: RouteRef<undefined>;
     },
     'core.nav-item.target',
@@ -1438,41 +1482,10 @@ export const NavItemBlueprint: ExtensionBlueprint<{
     target: ConfigurableExtensionDataRef<
       {
         title: string;
-        icon: IconComponent_2;
+        icon: IconComponent_3;
         routeRef: RouteRef<undefined>;
       },
       'core.nav-item.target',
-      {}
-    >;
-  };
-}>;
-
-// @public
-export const NavLogoBlueprint: ExtensionBlueprint<{
-  kind: 'nav-logo';
-  name: undefined;
-  params: {
-    logoIcon: JSX.Element;
-    logoFull: JSX.Element;
-  };
-  output: ConfigurableExtensionDataRef<
-    {
-      logoIcon?: JSX.Element;
-      logoFull?: JSX.Element;
-    },
-    'core.nav-logo.logo-elements',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    logoElements: ConfigurableExtensionDataRef<
-      {
-        logoIcon?: JSX.Element;
-        logoFull?: JSX.Element;
-      },
-      'core.nav-logo.logo-elements',
       {}
     >;
   };

@@ -16,6 +16,7 @@ import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconComponent as IconComponent_2 } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { NavContentComponent } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
@@ -100,13 +101,10 @@ const appPlugin: FrontendPlugin<
             optional: false;
           }
         >;
-        logos: ExtensionInput<
+        content: ExtensionInput<
           ConfigurableExtensionDataRef<
-            {
-              logoIcon?: JSX.Element;
-              logoFull?: JSX.Element;
-            },
-            'core.nav-logo.logo-elements',
+            NavContentComponent,
+            'core.nav-content.component',
             {}
           >,
           {
