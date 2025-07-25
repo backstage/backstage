@@ -48,7 +48,7 @@ export const columns: ColumnDef<DataProps>[] = [
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => (
-      <DataTable.TableCellLink
+      <DataTable.TableCellText
         title={row.getValue('name')}
         description={row.original.description}
         href="/"
@@ -98,7 +98,7 @@ export const columns2: ColumnDef<DataProps>[] = [
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => (
-      <DataTable.TableCellLink title={row.getValue('name')} href="/" />
+      <DataTable.TableCellText title={row.getValue('name')} href="/" />
     ),
     size: 450,
   },

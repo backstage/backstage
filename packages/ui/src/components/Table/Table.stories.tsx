@@ -16,7 +16,14 @@
 
 import { ComponentType } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Table } from '.';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '.';
 
 const invoices = [
   {
@@ -65,13 +72,13 @@ const invoices = [
 
 const meta = {
   title: 'Components/Table',
-  component: Table.Root,
+  component: Table,
   subcomponents: {
-    Body: Table.Body as ComponentType<unknown>,
-    Cell: Table.Cell as ComponentType<unknown>,
-    Head: Table.Head as ComponentType<unknown>,
-    Header: Table.Header as ComponentType<unknown>,
-    Row: Table.Row as ComponentType<unknown>,
+    Body: TableBody as ComponentType<unknown>,
+    Cell: TableCell as ComponentType<unknown>,
+    Head: TableHead as ComponentType<unknown>,
+    Header: TableHeader as ComponentType<unknown>,
+    Row: TableRow as ComponentType<unknown>,
   },
 } satisfies Meta<typeof Table>;
 
@@ -80,27 +87,25 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
-    <Table.Root>
-      <Table.Header>
-        <Table.Row>
-          <Table.Head className="w-[100px]">Invoice</Table.Head>
-          <Table.Head>Status</Table.Head>
-          <Table.Head>Method</Table.Head>
-          <Table.Head className="text-right">Amount</Table.Head>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Invoice</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Method</TableHead>
+          <TableHead className="text-right">Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {invoices.map(invoice => (
-          <Table.Row key={invoice.invoice}>
-            <Table.Cell className="font-medium">{invoice.invoice}</Table.Cell>
-            <Table.Cell>{invoice.paymentStatus}</Table.Cell>
-            <Table.Cell>{invoice.paymentMethod}</Table.Cell>
-            <Table.Cell className="text-right">
-              {invoice.totalAmount}
-            </Table.Cell>
-          </Table.Row>
+          <TableRow key={invoice.invoice}>
+            <TableCell className="font-medium">{invoice.invoice}</TableCell>
+            <TableCell>{invoice.paymentStatus}</TableCell>
+            <TableCell>{invoice.paymentMethod}</TableCell>
+            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+          </TableRow>
         ))}
-      </Table.Body>
-    </Table.Root>
+      </TableBody>
+    </Table>
   ),
 };

@@ -17,7 +17,14 @@
 import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { DataTableTableProps } from './types';
-import { Table } from '../../Table';
+import {
+  Table,
+  TableRow,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableCell,
+} from '../../Table';
 import { useDataTable } from '../Root/DataTableRoot';
 import { flexRender } from '@tanstack/react-table';
 
@@ -28,18 +35,18 @@ const DataTableTable = forwardRef(
     const { table } = useDataTable();
 
     return (
-      <Table.Root
+      <Table
         ref={ref}
         style={{ minWidth: table.getTotalSize() }}
         className={clsx(className)}
         {...rest}
       >
-        <Table.Header>
+        <TableHeader>
           {table.getHeaderGroups().map(headerGroup => (
-            <Table.Row key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map(header => {
                 return (
-                  <Table.Head
+                  <TableHead
                     key={header.id}
                     style={{ width: header.getSize() }}
                   >
@@ -49,42 +56,42 @@ const DataTableTable = forwardRef(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
-                  </Table.Head>
+                  </TableHead>
                 );
               })}
-            </Table.Row>
+            </TableRow>
           ))}
-        </Table.Header>
-        <Table.Body>
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map(row => (
-              <Table.Row
+              <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
               >
                 {row.getVisibleCells().map(cell => (
-                  <Table.Cell
+                  <TableCell
                     key={cell.id}
                     style={{ width: cell.column.getSize() }}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Table.Cell>
+                  </TableCell>
                 ))}
-              </Table.Row>
+              </TableRow>
             ))
           ) : (
-            <Table.Row>
-              <Table.Cell
+            <TableRow>
+              <TableCell
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
                 style={{ width: table.getTotalSize() }}
               >
                 No results.
-              </Table.Cell>
-            </Table.Row>
+              </TableCell>
+            </TableRow>
           )}
-        </Table.Body>
-      </Table.Root>
+        </TableBody>
+      </Table>
     );
   },
 );

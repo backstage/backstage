@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 import { forwardRef } from 'react';
 import clsx from 'clsx';
-import { TableCell } from './TableCell/TableCell';
-import { TableCellText } from './TableCellText/TableCellText';
-import { TableCellProfile } from './TableCellProfile/TableCellProfile';
 import { useStyles } from '../../hooks/useStyles';
 
-const TableRoot = forwardRef<
+/** @public */
+export const Table = forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => {
@@ -31,9 +29,10 @@ const TableRoot = forwardRef<
     <table ref={ref} className={clsx(classNames.root, className)} {...props} />
   );
 });
-TableRoot.displayName = 'TableRoot';
+Table.displayName = 'Table';
 
-const TableHeader = forwardRef<
+/** @public */
+export const TableHeader = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => {
@@ -49,7 +48,8 @@ const TableHeader = forwardRef<
 });
 TableHeader.displayName = 'TableHeader';
 
-const TableBody = forwardRef<
+/** @public */
+export const TableBody = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => {
@@ -61,7 +61,8 @@ const TableBody = forwardRef<
 });
 TableBody.displayName = 'TableBody';
 
-const TableRow = forwardRef<
+/** @public */
+export const TableRow = forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, ...props }, ref) => {
@@ -75,7 +76,8 @@ const TableRow = forwardRef<
 });
 TableRow.displayName = 'TableRow';
 
-const TableHead = forwardRef<
+/** @public */
+export const TableHead = forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => {
@@ -87,7 +89,8 @@ const TableHead = forwardRef<
 });
 TableHead.displayName = 'TableHead';
 
-const TableCaption = forwardRef<
+/** @public */
+export const TableCaption = forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => {
@@ -102,19 +105,3 @@ const TableCaption = forwardRef<
   );
 });
 TableCaption.displayName = 'TableCaption';
-
-/**
- * Table component for displaying tabular data
- * @public
- */
-export const Table = {
-  Root: TableRoot,
-  Header: TableHeader,
-  Body: TableBody,
-  Head: TableHead,
-  Row: TableRow,
-  Cell: TableCell,
-  CellText: TableCellText,
-  CellProfile: TableCellProfile,
-  Caption: TableCaption,
-};

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,26 @@
  */
 
 import { forwardRef } from 'react';
-import { Table } from '../Table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableCellProfile,
+  TableCellText,
+  TableHeader,
+  TableRow,
+} from '../Table';
 import { DataTableRoot } from './Root/DataTableRoot';
 import { DataTablePagination } from './Pagination/DataTablePagination';
 import { Table as TanstackTable } from '@tanstack/react-table';
 import { DataTableTable } from './Table/DataTableTable';
 
 const TableRoot = forwardRef<
-  React.ElementRef<typeof Table.Root>,
-  React.ComponentPropsWithoutRef<typeof Table.Root>
->(({ className, ...props }, ref) => <Table.Root ref={ref} {...props} />);
-TableRoot.displayName = Table.Root.displayName;
+  React.ElementRef<typeof Table>,
+  React.ComponentPropsWithoutRef<typeof Table>
+>(({ className, ...props }, ref) => <Table ref={ref} {...props} />);
+TableRoot.displayName = Table.displayName;
 
 /**
  * DataTable component for displaying tabular data with pagination
@@ -40,12 +49,11 @@ export const DataTable = {
   Pagination: DataTablePagination,
   Table: DataTableTable,
   TableRoot: TableRoot,
-  TableHeader: Table.Header,
-  TableBody: Table.Body,
-  TableRow: Table.Row,
-  TableCell: Table.Cell,
-  TableCellText: Table.CellText,
-  TableCellLink: Table.CellLink,
-  TableCellProfile: Table.CellProfile,
-  TableHead: Table.Head,
+  TableHeader: TableHeader,
+  TableBody: TableBody,
+  TableRow: TableRow,
+  TableCell: TableCell,
+  TableCellText: TableCellText,
+  TableCellProfile: TableCellProfile,
+  TableHead: TableHead,
 };
