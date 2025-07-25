@@ -126,4 +126,37 @@ describe('end-to-end', () => {
     expect(proc.stdout).toContain('Serving docs in Backstage at');
     expect(proc.exit).toEqual(0);
   });
+
+  it('can generate with custom mkdocs config file name', async () => {
+    // Create a custom mkdocs config file
+    const customConfigPath = path.join(cwd, 'custom-mkdocs.yml');
+    const originalConfigPath = path.join(cwd, 'mkdocs.yml');
+    
+    // Copy the existing mkdocs.yml to custom-mkdocs.yml
+    execSync(`cp "${originalConfigPath}" "${customConfigPath}"`);
+    
+    try {
+      const proc = await executeCommand(
+        entryPoint, 
+        ['generate', '--no-docker', '-c', 'custom-mkdocs.yml'], 
+        { cwd, timeout }
+      );
+      expect(proc.stdout).toContain('Successfully generated docs');
+      expect(proc.exit).toEqual(0);
+    } finally {
+      // Clean up
+      execSync(`rm -f "${customConfigPath}"`);
+    }
+  });
+
+  it('fails to generate with non-existent custom mkdocs config file', async () => {
+    const proc = await executeCommand(
+      entryPoint, 
+      ['generate', '--no-docker', '-c', 'non-existent-mkdocs.yml'], 
+      { cwd, timeout }
+    );
+    expect(proc.stderr).toContain('The specified file');
+    expect(proc.stderr).toContain('does not exist');
+    expect(proc.exit).not.toEqual(0);
+  });
 });

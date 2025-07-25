@@ -53,6 +53,9 @@ export default async function generate(opts: OptionValues) {
 
   const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
     sourceDir,
+    {
+      mkdocsConfigFileName: opts.mkdocsConfigFileName,
+    },
   );
 
   const config = new ConfigReader({
