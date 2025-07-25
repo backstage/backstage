@@ -22,4 +22,59 @@ describe('createComponentRef', () => {
     expect(ref.id).toBe('foo');
     expect(String(ref)).toBe('ComponentRef{id=foo}');
   });
+
+  it('should allow defining a default component implementation', () => {
+    const Test = () => <div>test</div>;
+
+    createComponentRef<{ foo: string }, { bar: string }>({
+      id: 'foo',
+      mode: 'sync',
+      defaultComponent: ({ bar }) => <Test key={bar} />,
+    });
+
+    createComponentRef<{ foo: string }, { bar: string }>({
+      id: 'foo',
+      mode: 'async',
+      defaultComponent: async () => <Test />,
+    });
+
+    // @ts-expect-error - this should be an error as mode is sync
+    createComponentRef<{ foo: string }, { bar: string }>({
+      id: 'foo',
+      mode: 'sync',
+      defaultComponent: async ({ bar }) => <Test key={bar} />,
+    });
+
+    // todo: why do we have two errors here?
+    // @ts-expect-error - this should be an error as mode is async
+    createComponentRef<{ foo: string }, { bar: string }>({
+      id: 'foo',
+      mode: 'async',
+      defaultComponent: ({ bar }) => <Test key={bar} />,
+    });
+
+    // todo: why does this not work?
+    createComponentRef<{ foo: string }, { bar: string }>({
+      id: 'foo',
+      // @ts-expect-error - this should be an error as default mode is async
+      defaultComponent: ({ bar }) => <Test key={bar} />,
+    });
+
+    expect(Test).toBeDefined();
+  });
+
+  it('should allow transformings props', () => {
+    createComponentRef<{ foo: string }, { bar: string }>({
+      id: 'foo',
+      transformProps: props => ({ foo: props.bar }),
+    });
+
+    createComponentRef<{ foo: string }, { bar: string }>({
+      id: 'foo',
+      // @ts-expect-error - this should be an error as foo is not a string
+      transformProps: props => ({ foo: 1 }),
+    });
+
+    expect(true).toBe(true);
+  });
 });
