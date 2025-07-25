@@ -18,11 +18,23 @@ import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { TableCellTextProps } from './types';
 import { Text } from '../../Text/Text';
+import { Link } from '../../Link/Link';
 import { useStyles } from '../../../hooks/useStyles';
 
 /** @public */
 const TableCellText = forwardRef<HTMLDivElement, TableCellTextProps>(
-  ({ className, title, description, ...props }, ref) => {
+  (
+    {
+      className,
+      title,
+      description,
+      color = 'primary',
+      leadingIcon,
+      href,
+      ...props
+    },
+    ref,
+  ) => {
     const { classNames } = useStyles('Table');
 
     return (
@@ -31,12 +43,25 @@ const TableCellText = forwardRef<HTMLDivElement, TableCellTextProps>(
         className={clsx(classNames.cellText, className)}
         {...props}
       >
-        {title && <Text variant="body-medium">{title}</Text>}
-        {description && (
-          <Text variant="body-medium" color="secondary">
-            {description}
-          </Text>
+        {leadingIcon && (
+          <div className={classNames.cellTextIcon}>{leadingIcon}</div>
         )}
+        <div className={classNames.cellTextContent}>
+          {href ? (
+            <Link href={href} variant="body-medium" color={color}>
+              {title}
+            </Link>
+          ) : (
+            <Text as="p" variant="body-medium" color={color}>
+              {title}
+            </Text>
+          )}
+          {description && (
+            <Text variant="body-medium" color="secondary">
+              {description}
+            </Text>
+          )}
+        </div>
       </div>
     );
   },

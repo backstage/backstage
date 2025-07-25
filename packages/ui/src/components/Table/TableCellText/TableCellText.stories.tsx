@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { TableCellText } from './TableCellText';
+import { Icon } from '../../Icon/Icon';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/Table/TableCellText',
@@ -36,4 +38,50 @@ export const WithDescription: Story = {
     ...Default.args,
     description: 'This is a description',
   },
+};
+
+export const WithIcon: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <TableCellText {...args} leadingIcon={<Icon name="arrow-right" />} />
+  ),
+};
+
+export const WithIconAndDescription: Story = {
+  args: {
+    ...WithDescription.args,
+  },
+  render: args => (
+    <TableCellText {...args} leadingIcon={<Icon name="arrow-right" />} />
+  ),
+};
+
+export const WithLink: Story = {
+  args: {
+    ...WithDescription.args,
+    href: '/home',
+  },
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+};
+
+export const WithExternalLink: Story = {
+  args: {
+    ...WithDescription.args,
+    href: 'https://www.google.com',
+  },
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 };

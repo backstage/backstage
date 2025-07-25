@@ -15,6 +15,20 @@
  */
 
 .bui-TableCellText {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--bui-space-2);
+}
+
+.bui-TableCellTextIcon,
+.bui-TableCellTextIcon svg {
+  display: inline-flex;
+  align-items: center;
+  color: var(--bui-fg-primary);
+}
+
+.bui-TableCellTextContent {
   display: flex;
   flex-direction: column;
   gap: var(--bui-space-0_5);

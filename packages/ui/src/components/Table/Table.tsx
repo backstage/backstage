@@ -18,7 +18,6 @@ import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { TableCell } from './TableCell/TableCell';
 import { TableCellText } from './TableCellText/TableCellText';
-import { TableCellLink } from './TableCellLink/TableCellLink';
 import { TableCellProfile } from './TableCellProfile/TableCellProfile';
 import { useStyles } from '../../hooks/useStyles';
 
@@ -116,7 +115,6 @@ export const Table = {
   Row: TableRow,
   Cell: TableCell,
   CellText: TableCellText,
-  CellLink: TableCellLink,
   CellProfile: TableCellProfile,
   Caption: TableCaption,
 };

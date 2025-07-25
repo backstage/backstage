@@ -19,6 +19,7 @@ export interface TableCellProfileProps
   extends React.HTMLAttributes<HTMLDivElement> {
   src?: string;
   name?: string;
-  to?: string;
-  withImage?: boolean;
+  href?: string;
+  description?: string;
+  color?: 'primary' | 'secondary';
 }

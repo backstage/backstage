@@ -24,7 +24,10 @@ import { useStyles } from '../../../hooks/useStyles';
 
 /** @public */
 const TableCellProfile = forwardRef<HTMLDivElement, TableCellProfileProps>(
-  ({ className, src, name, to, withImage = true, ...rest }, ref) => {
+  (
+    { className, src, name, href, description, color = 'primary', ...rest },
+    ref,
+  ) => {
     const { classNames } = useStyles('Table');
 
     return (
@@ -33,7 +36,7 @@ const TableCellProfile = forwardRef<HTMLDivElement, TableCellProfileProps>(
         className={clsx(classNames.cellProfile, className)}
         {...rest}
       >
-        {withImage && (
+        {src && (
           <Avatar.Root className={classNames.cellProfileAvatar}>
             <Avatar.Image
               src={src}
@@ -51,10 +54,12 @@ const TableCellProfile = forwardRef<HTMLDivElement, TableCellProfileProps>(
             </Avatar.Fallback>
           </Avatar.Root>
         )}
-        {name && to ? (
-          <Link href={to}>{name}</Link>
+        {name && href ? (
+          <Link href={href}>{name}</Link>
         ) : (
-          <Text variant="body-medium">{name}</Text>
+          <Text as="p" variant="body-medium" color={color}>
+            {name}
+          </Text>
         )}
       </div>
     );

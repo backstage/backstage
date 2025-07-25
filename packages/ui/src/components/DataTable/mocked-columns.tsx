@@ -66,7 +66,7 @@ export const columns: ColumnDef<DataProps>[] = [
         <DataTable.TableCellProfile
           name={owner.name}
           src={owner.profilePicture}
-          to={owner.link}
+          href={owner.link}
         />
       );
     },
@@ -82,5 +82,62 @@ export const columns: ColumnDef<DataProps>[] = [
     header: 'Tags',
     cell: ({ row }) => <DataTable.TableCellText title={row.getValue('tags')} />,
     size: 150,
+  },
+];
+
+export const columns2: ColumnDef<DataProps>[] = [
+  {
+    accessorKey: 'type',
+    header: 'Type',
+    cell: ({ row }) => (
+      <DataTable.TableCellText title={row.getValue('type')} color="secondary" />
+    ),
+    size: 100,
+  },
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => (
+      <DataTable.TableCellLink title={row.getValue('name')} href="/" />
+    ),
+    size: 450,
+  },
+  {
+    accessorKey: 'owner',
+    header: 'Owner',
+    cell: ({ row }) => {
+      const owner = row.getValue('owner') as DataProps['owner'];
+
+      return (
+        <DataTable.TableCellProfile
+          name={owner.name}
+          src={owner.profilePicture}
+          href={owner.link}
+          color="secondary"
+        />
+      );
+    },
+  },
+  {
+    accessorKey: 'lifecycle',
+    header: 'Lifecycle',
+    cell: ({ row }) => (
+      <DataTable.TableCellText
+        title={row.getValue('lifecycle')}
+        color="secondary"
+      />
+    ),
+    size: 100,
+  },
+  {
+    accessorKey: 'system',
+    header: 'System',
+    cell: ({ row }) => (
+      <DataTable.TableCellText
+        title={row.getValue('lifecycle')}
+        color="secondary"
+      />
+    ),
+    size: 100,
   },
 ];

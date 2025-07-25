@@ -16,5 +16,4 @@
 
 export * from './Table';
 export * from './TableCellText/types';
-export * from './TableCellLink/types';
 export * from './TableCellProfile/types';

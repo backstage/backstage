@@ -19,4 +19,7 @@ export interface TableCellTextProps
   extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   description?: string;
+  color?: 'primary' | 'secondary';
+  leadingIcon?: React.ReactNode;
+  href?: string;
 }

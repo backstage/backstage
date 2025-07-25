@@ -50,6 +50,6 @@ export const Fallback: Story = {
 export const WithLink: Story = {
   args: {
     ...Default.args,
-    to: 'https://www.google.com',
+    href: 'https://www.google.com',
   },
 };
