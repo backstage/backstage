@@ -18,6 +18,11 @@ This website was created with [Docusaurus](https://docusaurus.io/).
 
 Testing the web site locally is a great way to see what final website will look like after publishing, and is ideal for testing more complex changes, large updates to navigation, or complex page designs that may include special alignment, which may not otherwise be validated through continuous integration.
 
+
+## Prerequisites
+- Node.js 16 or higher
+- Yarn package manager
+  
 ## Installation
 
 ```bash
@@ -39,6 +44,15 @@ $ yarn build
 ```
 
 This command generates static content into the `build` directory, which is what will be deployed to GitHub pages from the master branch.
+
+## Deployment
+
+The microsite is deployed automatically using GitHub Actions when changes are pushed to the `master` branch. This process builds the static site and publishes it to GitHub Pages.
+Manual deployment can be performed by running:
+
+```bash
+$ yarn deploy
+```
 
 ## Directory Structure
 
