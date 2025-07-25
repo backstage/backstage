@@ -15,20 +15,82 @@
  */
 
 /** @public */
-export type ComponentRef<T extends {} = {}> = {
+export type ComponentRef<
+  TInnerComponentProps,
+  TExternalComponentProps,
+  TMode extends 'sync' | 'async' = 'async',
+> = {
   id: string;
-  T: T;
+  mode: TMode;
+  transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
+  defaultComponent?: TMode extends 'async'
+    ? (props: TExternalComponentProps) => Promise<JSX.Element>
+    : (props: TExternalComponentProps) => JSX.Element;
 };
 
-/** @public */
-export function createComponentRef<T extends {} = {}>(options: {
+export interface ComponentRefOptions<
+  TInnerComponentProps,
+  TExternalComponentProps,
+  TMode extends 'sync' | 'async' = 'async',
+> {
   id: string;
-}): ComponentRef<T> {
-  const { id } = options;
+  mode?: TMode;
+  defaultComponent?: TMode extends 'async'
+    ? (props: TExternalComponentProps) => Promise<JSX.Element>
+    : (props: TExternalComponentProps) => JSX.Element;
+  transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
+}
+
+/**
+ * Creates a new component ref that is synchronous.
+ * @public
+ */
+export function createComponentRef<
+  TInnerComponentProps,
+  TExternalComponentProps,
+>(
+  options: ComponentRefOptions<
+    TInnerComponentProps,
+    TExternalComponentProps,
+    'sync'
+  >,
+): ComponentRef<TInnerComponentProps, TExternalComponentProps, 'sync'>;
+
+/**
+ * Creates a new component ref that is asynchronous.
+ * @public
+ */
+export function createComponentRef<
+  TInnerComponentProps,
+  TExternalComponentProps,
+>(
+  options: ComponentRefOptions<
+    TInnerComponentProps,
+    TExternalComponentProps,
+    'async'
+  >,
+): ComponentRef<TInnerComponentProps, TExternalComponentProps, 'async'>;
+
+export function createComponentRef<
+  TInnerComponentProps,
+  TExternalComponentProps,
+  TMode extends 'sync' | 'async',
+>(
+  options: ComponentRefOptions<
+    TInnerComponentProps,
+    TExternalComponentProps,
+    TMode
+  >,
+): ComponentRef<TInnerComponentProps, TExternalComponentProps, TMode> {
+  const { id, mode = 'async', defaultComponent, transformProps } = options;
+
   return {
     id,
+    mode,
+    defaultComponent,
+    transformProps,
     toString() {
       return `ComponentRef{id=${id}}`;
     },
-  } as ComponentRef<T>;
+  } as ComponentRef<TInnerComponentProps, TExternalComponentProps, TMode>;
 }
