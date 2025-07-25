@@ -131,15 +131,15 @@ describe('end-to-end', () => {
     // Create a custom mkdocs config file
     const customConfigPath = path.join(cwd, 'custom-mkdocs.yml');
     const originalConfigPath = path.join(cwd, 'mkdocs.yml');
-    
+
     // Copy the existing mkdocs.yml to custom-mkdocs.yml
     execSync(`cp "${originalConfigPath}" "${customConfigPath}"`);
-    
+
     try {
       const proc = await executeCommand(
-        entryPoint, 
-        ['generate', '--no-docker', '-c', 'custom-mkdocs.yml'], 
-        { cwd, timeout }
+        entryPoint,
+        ['generate', '--no-docker', '-c', 'custom-mkdocs.yml'],
+        { cwd, timeout },
       );
       expect(proc.stdout).toContain('Successfully generated docs');
       expect(proc.exit).toEqual(0);
@@ -151,9 +151,9 @@ describe('end-to-end', () => {
 
   it('fails to generate with non-existent custom mkdocs config file', async () => {
     const proc = await executeCommand(
-      entryPoint, 
-      ['generate', '--no-docker', '-c', 'non-existent-mkdocs.yml'], 
-      { cwd, timeout }
+      entryPoint,
+      ['generate', '--no-docker', '-c', 'non-existent-mkdocs.yml'],
+      { cwd, timeout },
     );
     expect(proc.stderr).toContain('The specified file');
     expect(proc.stderr).toContain('does not exist');
