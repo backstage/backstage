@@ -37,8 +37,12 @@ function getAriaSort(sortDirection: string | false) {
   return 'none';
 }
 
-/** @public */
-function Table<TData>(
+/**
+ * A table component built on top of TanStack Table with built-in styling.
+ *
+ * @public
+ */
+export function Table<TData>(
   props: TableProps<TData> & { ref?: React.ForwardedRef<HTMLTableElement> },
 ) {
   const { className, table, ref, ...rest } = props;
@@ -114,7 +118,3 @@ function Table<TData>(
     </RawTable>
   );
 }
-
-Table.displayName = 'Table';
-
-export { Table };

@@ -21,8 +21,12 @@ import clsx from 'clsx';
 import { Select } from '../../Select';
 import { Icon } from '../../Icon';
 
-/** @public */
-function TablePagination<TData>(props: TablePaginationProps<TData>) {
+/**
+ * Pagination controls for Table components with page navigation and size selection.
+ *
+ * @public
+ */
+export function TablePagination<TData>(props: TablePaginationProps<TData>) {
   const {
     className,
     table,
@@ -102,7 +106,3 @@ function TablePagination<TData>(props: TablePaginationProps<TData>) {
     </div>
   );
 }
-
-TablePagination.displayName = 'TablePagination';
-
-export { TablePagination };

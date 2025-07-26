@@ -1505,20 +1505,12 @@ export interface SwitchProps extends SwitchProps_2 {
 // @public
 export const Tab: (props: TabProps) => JSX_2.Element;
 
-// Warning: (ae-missing-release-tag) "Table" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function Table<TData>(
   props: TableProps<TData> & {
     ref?: React.ForwardedRef<HTMLTableElement>;
   },
 ): JSX_2.Element;
-
-// @public (undocumented)
-export namespace Table {
-  var // (undocumented)
-    displayName: string;
-}
 
 // @public (undocumented)
 export const TableCellProfile: ForwardRefExoticComponent<
@@ -1560,18 +1552,10 @@ export interface TableCellTextProps
   title: string;
 }
 
-// Warning: (ae-missing-release-tag) "TablePagination" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function TablePagination<TData>(
   props: TablePaginationProps<TData>,
 ): JSX_2.Element;
-
-// @public (undocumented)
-export namespace TablePagination {
-  var // (undocumented)
-    displayName: string;
-}
 
 // @public (undocumented)
 export interface TablePaginationProps<TData>
