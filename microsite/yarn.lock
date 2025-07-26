@@ -4285,6 +4285,7 @@ __metadata:
     "@types/luxon": "npm:^3.0.0"
     "@types/webpack-env": "npm:^1.18.0"
     clsx: "npm:^2.0.0"
+    docusaurus-plugin-llms: "npm:^0.1.5"
     docusaurus-plugin-openapi-docs: "npm:^4.3.0"
     docusaurus-plugin-sass: "npm:^0.2.3"
     docusaurus-pushfeedback: "npm:^1.0.0"
@@ -5898,6 +5899,18 @@ __metadata:
   dependencies:
     "@leichtgewicht/ip-codec": "npm:^2.0.1"
   checksum: 10/6a3827d59a7c3b9a8f211d6ba1299bb19e8abed838690d88ed5b47d739c3ac8615a6aa2cbef3a3e87bf21f69a10e78e275bc63b9b411b4263afe4b1ada325574
+  languageName: node
+  linkType: hard
+
+"docusaurus-plugin-llms@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "docusaurus-plugin-llms@npm:0.1.5"
+  dependencies:
+    gray-matter: "npm:^4.0.3"
+    minimatch: "npm:^9.0.3"
+  peerDependencies:
+    "@docusaurus/core": ^3.0.0
+  checksum: 10/6d0c32efaa1acd12e4d320441d87bf26496f3e355b6419100a05d3098970eeabb1e45c1a22b06d8b14c65e8027dbd3b21bb2878bd4bf33f2766e477e6f856654
   languageName: node
   linkType: hard
 
@@ -10331,7 +10344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^9.0.4":
+"minimatch@npm:^9.0.3, minimatch@npm:^9.0.4":
   version: 9.0.5
   resolution: "minimatch@npm:9.0.5"
   dependencies:
