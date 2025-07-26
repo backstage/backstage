@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,98 +14,74 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import { Table, TablePagination } from '.';
+import { data, DataProps } from './mocked-components';
+import { columns } from './mocked-columns';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '.';
-
-const invoices = [
-  {
-    invoice: 'INV001',
-    paymentStatus: 'Paid',
-    totalAmount: '$250.00',
-    paymentMethod: 'Credit Card',
-  },
-  {
-    invoice: 'INV002',
-    paymentStatus: 'Pending',
-    totalAmount: '$150.00',
-    paymentMethod: 'PayPal',
-  },
-  {
-    invoice: 'INV003',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$350.00',
-    paymentMethod: 'Bank Transfer',
-  },
-  {
-    invoice: 'INV004',
-    paymentStatus: 'Paid',
-    totalAmount: '$450.00',
-    paymentMethod: 'Credit Card',
-  },
-  {
-    invoice: 'INV005',
-    paymentStatus: 'Paid',
-    totalAmount: '$550.00',
-    paymentMethod: 'PayPal',
-  },
-  {
-    invoice: 'INV006',
-    paymentStatus: 'Pending',
-    totalAmount: '$200.00',
-    paymentMethod: 'Bank Transfer',
-  },
-  {
-    invoice: 'INV007',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$300.00',
-    paymentMethod: 'Credit Card',
-  },
-];
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+  PaginationState,
+} from '@tanstack/react-table';
+import { useState } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/Table',
-  component: Table,
-  subcomponents: {
-    Body: TableBody as ComponentType<unknown>,
-    Cell: TableCell as ComponentType<unknown>,
-    Head: TableHead as ComponentType<unknown>,
-    Header: TableHeader as ComponentType<unknown>,
-    Row: TableRow as ComponentType<unknown>,
-  },
-} satisfies Meta<typeof Table>;
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+} satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {invoices.map(invoice => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  ),
+export const Uncontrolled: Story = {
+  render: () => {
+    const table = useReactTable<DataProps>({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+    });
+
+    return (
+      <>
+        <Table table={table} />
+        <TablePagination table={table} />
+      </>
+    );
+  },
+};
+
+export const Controlled: Story = {
+  render: () => {
+    const [pagination, setPagination] = useState<PaginationState>({
+      pageIndex: 4,
+      pageSize: 5,
+    });
+
+    const table = useReactTable<DataProps>({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      state: {
+        pagination,
+      },
+      onPaginationChange: setPagination,
+    });
+
+    return (
+      <>
+        <Table table={table} />
+        <TablePagination table={table} />
+      </>
+    );
+  },
 };

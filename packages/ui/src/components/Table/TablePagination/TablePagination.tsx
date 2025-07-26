@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Text } from '../Text';
-import { DataTablePaginationProps } from './types';
-import { ButtonIcon } from '../ButtonIcon';
+import { Text } from '../../Text';
+import { TablePaginationProps } from './types';
+import { ButtonIcon } from '../../ButtonIcon';
 import clsx from 'clsx';
-import { Select } from '../Select';
-import { Icon } from '../Icon';
+import { Select } from '../../Select';
+import { Icon } from '../../Icon';
 
 /** @public */
-function DataTablePagination<TData>(props: DataTablePaginationProps<TData>) {
+function TablePagination<TData>(props: TablePaginationProps<TData>) {
   const {
     className,
     table,
@@ -103,6 +103,6 @@ function DataTablePagination<TData>(props: DataTablePaginationProps<TData>) {
   );
 }
 
-DataTablePagination.displayName = 'DataTablePagination';
+TablePagination.displayName = 'TablePagination';
 
-export { DataTablePagination };
+export { TablePagination };

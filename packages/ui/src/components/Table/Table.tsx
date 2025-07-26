@@ -14,94 +14,107 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
 import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
+import { TableProps } from './types';
+import {
+  RawTable,
+  RawTableRow,
+  RawTableHeader,
+  RawTableHead,
+  RawTableBody,
+  RawTableCell,
+} from './RawTable';
+import { RawHeadContent } from './RawHeadContent';
+import { flexRender } from '@tanstack/react-table';
+
+function getAriaSort(sortDirection: string | false) {
+  if (sortDirection === 'asc') {
+    return 'ascending';
+  }
+  if (sortDirection === 'desc') {
+    return 'descending';
+  }
+  return 'none';
+}
 
 /** @public */
-export const Table = forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Table');
+function Table<TData>(
+  props: TableProps<TData> & { ref?: React.ForwardedRef<HTMLTableElement> },
+) {
+  const { className, table, ref, ...rest } = props;
 
   return (
-    <table ref={ref} className={clsx(classNames.root, className)} {...props} />
+    <RawTable
+      ref={ref}
+      style={{ minWidth: table.getTotalSize() }}
+      className={clsx(className)}
+      {...rest}
+    >
+      <RawTableHeader>
+        {table.getHeaderGroups().map(headerGroup => (
+          <RawTableRow key={headerGroup.id}>
+            {headerGroup.headers.map(header => {
+              return (
+                <RawTableHead
+                  key={header.id}
+                  style={{ width: header.getSize() }}
+                  aria-sort={getAriaSort(header.column.getIsSorted())}
+                >
+                  {header.isPlaceholder ? null : (
+                    <RawHeadContent header={header} />
+                  )}
+                </RawTableHead>
+              );
+            })}
+          </RawTableRow>
+        ))}
+      </RawTableHeader>
+      <RawTableBody>
+        {table.getRowModel().rows?.length ? (
+          table.getRowModel().rows.map(row => {
+            const rowData = row.original as TData & { onClick?: () => void };
+            const handleRowClick = rowData.onClick
+              ? (e: React.MouseEvent<HTMLTableRowElement>) => {
+                  if (!e.isPropagationStopped()) {
+                    rowData.onClick!();
+                  }
+                }
+              : undefined;
+
+            return (
+              <RawTableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+                data-clickable={!!rowData.onClick}
+                onClick={handleRowClick}
+              >
+                {row.getVisibleCells().map(cell => (
+                  <RawTableCell
+                    key={cell.id}
+                    style={{ width: cell.column.getSize() }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </RawTableCell>
+                ))}
+              </RawTableRow>
+            );
+          })
+        ) : (
+          <RawTableRow>
+            <RawTableCell
+              colSpan={table.getAllColumns().length}
+              className="h-24 text-center"
+              style={{ width: table.getTotalSize() }}
+            >
+              No results.
+            </RawTableCell>
+          </RawTableRow>
+        )}
+      </RawTableBody>
+    </RawTable>
   );
-});
+}
+
 Table.displayName = 'Table';
 
-/** @public */
-export const TableHeader = forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Table');
-
-  return (
-    <thead
-      ref={ref}
-      className={clsx(classNames.header, className)}
-      {...props}
-    />
-  );
-});
-TableHeader.displayName = 'TableHeader';
-
-/** @public */
-export const TableBody = forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Table');
-
-  return (
-    <tbody ref={ref} className={clsx(classNames.body, className)} {...props} />
-  );
-});
-TableBody.displayName = 'TableBody';
-
-/** @public */
-export const TableRow = forwardRef<
-  HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Table');
-
-  return (
-    <tr ref={ref} className={clsx(classNames.row, className)} {...props}>
-      {props.children}
-    </tr>
-  );
-});
-TableRow.displayName = 'TableRow';
-
-/** @public */
-export const TableHead = forwardRef<
-  HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Table');
-
-  return (
-    <th ref={ref} className={clsx(classNames.head, className)} {...props} />
-  );
-});
-TableHead.displayName = 'TableHead';
-
-/** @public */
-export const TableCaption = forwardRef<
-  HTMLTableCaptionElement,
-  React.HTMLAttributes<HTMLTableCaptionElement>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Table');
-
-  return (
-    <caption
-      ref={ref}
-      className={clsx(classNames.caption, className)}
-      {...props}
-    />
-  );
-});
-TableCaption.displayName = 'TableCaption';
+export { Table };

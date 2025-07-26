@@ -17,6 +17,7 @@
 import { Box, BoxProps } from '../Box';
 import clsx from 'clsx';
 
+/** @public */
 export const Hidden = (props: BoxProps) => {
   return <Box {...props} className={clsx('bui-Hidden', props.className)} />;
 };

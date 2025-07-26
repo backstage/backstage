@@ -14,21 +14,5 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import clsx from 'clsx';
-import { useStyles } from '../../../hooks/useStyles';
-
-/** @public */
-const TableCell = forwardRef<
-  HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Table');
-
-  return (
-    <td ref={ref} className={clsx(classNames.cell, className)} {...props} />
-  );
-});
-TableCell.displayName = 'TableCell';
-
-export { TableCell };
+export { RawHeadContent } from './RawHeadContent';
+export type { RawHeadContentProps } from './types';

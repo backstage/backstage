@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-export { DataTable } from './DataTable';
-export type { DataTableProps } from './types';
+export {
+  RawTable,
+  RawTableBody,
+  RawTableHead,
+  RawTableHeader,
+  RawTableRow,
+  RawTableCell,
+} from './RawTable';

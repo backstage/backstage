@@ -17,8 +17,8 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { DataProps } from './mocked-components';
 import { Checkbox } from '../Checkbox';
-import { TableCellText } from '../Table/TableCellText/TableCellText';
-import { TableCellProfile } from '../Table/TableCellProfile/TableCellProfile';
+import { TableCellText } from './TableCellText/TableCellText';
+import { TableCellProfile } from './TableCellProfile/TableCellProfile';
 
 export const columns: ColumnDef<DataProps>[] = [
   {

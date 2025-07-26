@@ -34,8 +34,6 @@ export * from './components/Avatar';
 export * from './components/Button';
 export * from './components/Card';
 export * from './components/Collapsible';
-export * from './components/DataTable';
-export * from './components/DataTablePagination';
 export * from './components/FieldLabel';
 export * from './components/Header';
 export * from './components/HeaderPage';

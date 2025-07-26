@@ -11,7 +11,6 @@ import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
-import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
@@ -30,12 +29,9 @@ import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
 import type { TabProps as TabProps_2 } from 'react-aria-components';
 import { TabsProps as TabsProps_2 } from 'react-aria-components';
-import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
-import { ThHTMLAttributes } from 'react';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
-import type { useRender } from '@base-ui-components/react/use-render';
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -519,7 +515,8 @@ export const componentDefinitions: {
       readonly caption: 'bui-TableCaption';
       readonly cell: 'bui-TableCell';
       readonly cellText: 'bui-TableCellText';
-      readonly cellLink: 'bui-TableCellLink';
+      readonly cellTextContent: 'bui-TableCellTextContent';
+      readonly cellTextIcon: 'bui-TableCellTextIcon';
       readonly cellProfile: 'bui-TableCellProfile';
       readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
       readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
@@ -608,68 +605,6 @@ export type DataAttributesMap = Record<string, DataAttributeValues>;
 
 // @public
 export type DataAttributeValues = readonly (string | number | boolean)[];
-
-// @public
-export const DataTable: {
-  Root: <TData>(
-    props: {
-      table: Table_2<TData>;
-    } & React.HTMLAttributes<HTMLDivElement>,
-  ) => JSX.Element;
-  Pagination: ForwardRefExoticComponent<
-    DataTablePaginationProps & RefAttributes<HTMLDivElement>
-  >;
-  Table: ForwardRefExoticComponent<
-    DataTableTableProps & RefAttributes<HTMLTableElement>
-  >;
-  TableRoot: ForwardRefExoticComponent<
-    Omit<
-      HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>,
-      'ref'
-    > &
-      RefAttributes<HTMLTableElement>
-  >;
-  TableHeader: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableSectionElement> &
-      RefAttributes<HTMLTableSectionElement>
-  >;
-  TableBody: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableSectionElement> &
-      RefAttributes<HTMLTableSectionElement>
-  >;
-  TableRow: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
-  >;
-  TableCell: ForwardRefExoticComponent<
-    TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
-  >;
-  TableCellText: ForwardRefExoticComponent<
-    TableCellTextProps & RefAttributes<HTMLDivElement>
-  >;
-  TableCellLink: ForwardRefExoticComponent<
-    TableCellLinkProps & RefAttributes<HTMLDivElement>
-  >;
-  TableCellProfile: ForwardRefExoticComponent<
-    TableCellProfileProps & RefAttributes<HTMLDivElement>
-  >;
-  TableHead: ForwardRefExoticComponent<
-    ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
-  >;
-};
-
-// @public (undocumented)
-export interface DataTablePaginationProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
-
-// @public (undocumented)
-export interface DataTableRootProps<TData>
-  extends React.HTMLAttributes<HTMLDivElement> {
-  table: Table_2<TData>;
-}
-
-// @public (undocumented)
-export interface DataTableTableProps
-  extends React.HTMLAttributes<HTMLTableElement> {}
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
@@ -1065,6 +1000,9 @@ export const heightPropDefs: {
 
 // @public (undocumented)
 export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
+
+// @public (undocumented)
+export const Hidden: (props: BoxProps) => JSX_2.Element;
 
 // @public (undocumented)
 export const Icon: (props: IconProps) => JSX_2.Element | null;
@@ -1567,76 +1505,94 @@ export interface SwitchProps extends SwitchProps_2 {
 // @public
 export const Tab: (props: TabProps) => JSX_2.Element;
 
-// @public
-export const Table: {
-  Root: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
-  >;
-  Header: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableSectionElement> &
-      RefAttributes<HTMLTableSectionElement>
-  >;
-  Body: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableSectionElement> &
-      RefAttributes<HTMLTableSectionElement>
-  >;
-  Head: ForwardRefExoticComponent<
-    ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
-  >;
-  Row: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
-  >;
-  Cell: ForwardRefExoticComponent<
-    TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
-  >;
-  CellText: ForwardRefExoticComponent<
-    TableCellTextProps & RefAttributes<HTMLDivElement>
-  >;
-  CellLink: ForwardRefExoticComponent<
-    TableCellLinkProps & RefAttributes<HTMLDivElement>
-  >;
-  CellProfile: ForwardRefExoticComponent<
-    TableCellProfileProps & RefAttributes<HTMLDivElement>
-  >;
-  Caption: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableCaptionElement> &
-      RefAttributes<HTMLTableCaptionElement>
-  >;
-};
+// Warning: (ae-missing-release-tag) "Table" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function Table<TData>(
+  props: TableProps<TData> & {
+    ref?: React.ForwardedRef<HTMLTableElement>;
+  },
+): JSX_2.Element;
 
 // @public (undocumented)
-export interface TableCellLinkProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  href: string;
-  // (undocumented)
-  render?: useRender.ComponentProps<'a'>['render'];
-  // (undocumented)
-  title: string;
+export namespace Table {
+  var // (undocumented)
+    displayName: string;
 }
+
+// @public (undocumented)
+export const TableCellProfile: ForwardRefExoticComponent<
+  TableCellProfileProps & RefAttributes<HTMLDivElement>
+>;
 
 // @public (undocumented)
 export interface TableCellProfileProps
   extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
+  color?: 'primary' | 'secondary';
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  href?: string;
+  // (undocumented)
   name?: string;
   // (undocumented)
   src?: string;
-  // (undocumented)
-  to?: string;
-  // (undocumented)
-  withImage?: boolean;
 }
+
+// @public (undocumented)
+export const TableCellText: ForwardRefExoticComponent<
+  TableCellTextProps & RefAttributes<HTMLDivElement>
+>;
 
 // @public (undocumented)
 export interface TableCellTextProps
   extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
+  color?: 'primary' | 'secondary';
+  // (undocumented)
   description?: string;
   // (undocumented)
+  href?: string;
+  // (undocumented)
+  leadingIcon?: React.ReactNode;
+  // (undocumented)
   title: string;
+}
+
+// Warning: (ae-missing-release-tag) "TablePagination" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function TablePagination<TData>(
+  props: TablePaginationProps<TData>,
+): JSX_2.Element;
+
+// @public (undocumented)
+export namespace TablePagination {
+  var // (undocumented)
+    displayName: string;
+}
+
+// @public (undocumented)
+export interface TablePaginationProps<TData>
+  extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  onNextPage?: () => void;
+  // (undocumented)
+  onPageSizeChange?: (pageSize: number) => void;
+  // (undocumented)
+  onPreviousPage?: () => void;
+  // (undocumented)
+  showPageSizeOptions?: boolean;
+  // (undocumented)
+  table?: Table_2<TData>;
+}
+
+// @public (undocumented)
+export interface TableProps<TData>
+  extends React.HTMLAttributes<HTMLTableElement> {
+  // (undocumented)
+  table: Table_2<TData>;
 }
 
 // @public

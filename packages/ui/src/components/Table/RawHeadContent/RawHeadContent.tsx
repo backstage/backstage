@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { flexRender } from '@tanstack/react-table';
-import { Icon } from '../Icon';
-import { Header } from '@tanstack/react-table';
-import { Hidden } from '../Hidden';
+import { Icon } from '../../Icon';
+import { Hidden } from '../../Hidden';
+import { RawHeadContentProps } from './types';
 
 function getSortTitle(nextOrder: string | false) {
   if (nextOrder === 'asc') {
@@ -30,13 +31,8 @@ function getSortTitle(nextOrder: string | false) {
   return 'Clear sort';
 }
 
-interface DataTableHeadContentProps<TData> {
-  header: Header<TData, unknown>;
-}
-
-export function DataTableHeadContent<TData>({
-  header,
-}: DataTableHeadContentProps<TData>) {
+/** @internal */
+export function RawHeadContent<TData>({ header }: RawHeadContentProps<TData>) {
   const headerContent = useMemo(
     () => flexRender(header.column.columnDef.header, header.getContext()),
     [header],

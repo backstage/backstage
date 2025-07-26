@@ -17,7 +17,11 @@
 import { Table } from '@tanstack/react-table';
 
 /** @public */
-export interface DataTableProps<TData>
-  extends React.HTMLAttributes<HTMLTableElement> {
-  table: Table<TData>;
+export interface TablePaginationProps<TData>
+  extends React.HTMLAttributes<HTMLDivElement> {
+  table?: Table<TData>;
+  onNextPage?: () => void;
+  onPreviousPage?: () => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  showPageSizeOptions?: boolean;
 }

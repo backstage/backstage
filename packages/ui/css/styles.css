@@ -9523,6 +9523,125 @@
   display: flex;
 }
 
+.bui-DataTableRoot--sort {
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+  gap: var(--bui-space-1);
+  display: inline-flex;
+}
+
+.bui-DataTableRoot--sort .bui-DataTableRoot--unsorted {
+  opacity: 0;
+  transition: opacity .1s ease-in-out, transform .1s ease-in-out;
+}
+
+.bui-DataTableRoot--sort:hover .bui-DataTableRoot--unsorted, .bui-DataTableRoot--sort:focus .bui-DataTableRoot--unsorted {
+  opacity: .5;
+}
+
+.bui-DataTableRoot--sort .bui-DataTableRoot--sorted-asc, .bui-DataTableRoot--sort:hover .bui-DataTableRoot--sorted-asc, .bui-DataTableRoot--sort:focus .bui-DataTableRoot--sorted-asc {
+  opacity: 1;
+  transform: rotate(0);
+}
+
+.bui-DataTableRoot--sort .bui-DataTableRoot--sorted-desc, .bui-DataTableRoot--sort:hover .bui-DataTableRoot--sorted-desc, .bui-DataTableRoot--sort:focus .bui-DataTableRoot--sorted-desc {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+
+.bui-TableRoot {
+  caption-side: bottom;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.bui-TableHead {
+  text-align: left;
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
+  color: var(--bui-fg-primary);
+}
+
+.bui-TableBody {
+  color: var(--bui-fg-primary);
+}
+
+.bui-TableRow {
+  border-bottom: 1px solid var(--bui-border);
+  transition: color .2s ease-in-out;
+}
+
+.bui-TableBody .bui-TableRow:hover {
+  background-color: var(--bui-gray-2);
+}
+
+.bui-TableCell {
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
+}
+
+.bui-TableCellText {
+  align-items: center;
+  gap: var(--bui-space-2);
+  flex-direction: row;
+  display: inline-flex;
+}
+
+.bui-TableCellTextIcon, .bui-TableCellTextIcon svg {
+  color: var(--bui-fg-primary);
+  align-items: center;
+  display: inline-flex;
+}
+
+.bui-TableCellTextContent {
+  gap: var(--bui-space-0_5);
+  flex-direction: column;
+  display: flex;
+}
+
+.bui-TableCellProfile {
+  gap: var(--bui-space-2);
+  flex-direction: row;
+  align-items: center;
+  display: flex;
+}
+
+.bui-TableCellProfileAvatar {
+  vertical-align: middle;
+  user-select: none;
+  color: var(--bui-fg-primary);
+  background-color: var(--bui-bg-surface-2);
+  border-radius: 100%;
+  justify-content: center;
+  align-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.bui-TableCellProfileAvatarImage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.bui-TableCellProfileAvatarFallback {
+  width: 100%;
+  height: 100%;
+  font-size: var(--bui-font-size-2);
+  font-weight: var(--bui-font-weight-regular);
+  box-shadow: inset 0 0 0 1px var(--bui-border);
+  border-radius: var(--bui-radius-full);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
 .bui-DataTablePagination {
   padding-top: var(--bui-space-5);
   justify-content: space-between;
@@ -9730,6 +9849,19 @@
   gap: var(--bui-space-2);
   flex-direction: row;
   display: flex;
+}
+
+.bui-Hidden {
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(100%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  position: absolute !important;
+  overflow: hidden !important;
 }
 
 .bui-Icon {
@@ -10032,85 +10164,6 @@
       border-color: var(--bui-border-disabled);
     }
   }
-}
-
-.bui-TableRoot {
-  caption-side: bottom;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.bui-TableHead {
-  text-align: left;
-  padding: var(--bui-space-3);
-  font-size: var(--bui-font-size-3);
-  color: var(--bui-fg-primary);
-}
-
-.bui-TableBody {
-  color: var(--bui-fg-primary);
-}
-
-.bui-TableRow {
-  border-bottom: 1px solid var(--bui-border);
-  transition: color .2s ease-in-out;
-}
-
-.bui-TableBody .bui-TableRow:hover {
-  background-color: var(--bui-gray-2);
-}
-
-.bui-TableCell {
-  padding: var(--bui-space-3);
-  font-size: var(--bui-font-size-3);
-}
-
-.bui-TableCellText, .bui-TableCellLink {
-  gap: var(--bui-space-0_5);
-  flex-direction: column;
-  display: flex;
-}
-
-.bui-TableCellProfile {
-  gap: var(--bui-space-2);
-  flex-direction: row;
-  align-items: center;
-  display: flex;
-}
-
-.bui-TableCellProfileAvatar {
-  vertical-align: middle;
-  user-select: none;
-  color: var(--bui-fg-primary);
-  background-color: var(--bui-bg-surface-2);
-  border-radius: 100%;
-  justify-content: center;
-  align-items: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1;
-  display: inline-flex;
-  overflow: hidden;
-}
-
-.bui-TableCellProfileAvatarImage {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-}
-
-.bui-TableCellProfileAvatarFallback {
-  width: 100%;
-  height: 100%;
-  font-size: var(--bui-font-size-2);
-  font-weight: var(--bui-font-weight-regular);
-  box-shadow: inset 0 0 0 1px var(--bui-border);
-  border-radius: var(--bui-radius-full);
-  justify-content: center;
-  align-items: center;
-  display: flex;
 }
 
 .bui-Tabs {

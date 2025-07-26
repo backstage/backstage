@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-.bui-TableCell {
-  padding: var(--bui-space-3);
-  font-size: var(--bui-font-size-3);
+import { Header } from '@tanstack/react-table';
+
+/** @internal */
+export interface RawHeadContentProps<TData> {
+  header: Header<TData, unknown>;
 }

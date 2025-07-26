@@ -14,12 +14,33 @@
  * limitations under the License.
  */
 
-export { Table } from './Table';
-export { TableCellText } from './TableCellText/TableCellText';
-export { TableCellProfile } from './TableCellProfile/TableCellProfile';
-export { TablePagination } from './TablePagination';
+.bui-TableRoot {
+  width: 100%;
+  caption-side: bottom;
+  border-collapse: collapse;
+}
 
-export type { TableProps } from './types';
-export type { TableCellTextProps } from './TableCellText/types';
-export type { TableCellProfileProps } from './TableCellProfile/types';
-export type { TablePaginationProps } from './TablePagination/types';
+.bui-TableHead {
+  text-align: left;
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
+  color: var(--bui-fg-primary);
+}
+
+.bui-TableBody {
+  color: var(--bui-fg-primary);
+}
+
+.bui-TableRow {
+  border-bottom: 1px solid var(--bui-border);
+  transition: color 0.2s ease-in-out;
+}
+
+.bui-TableBody .bui-TableRow:hover {
+  background-color: var(--bui-gray-2);
+}
+
+.bui-TableCell {
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
+}

@@ -15,18 +15,36 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { TableCell } from './TableCell';
+import { TablePagination } from './TablePagination';
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { data, DataProps } from '../mocked-components';
+import { columns } from '../mocked-columns';
 
 const meta = {
-  title: 'Components/Table/TableCell',
-  component: TableCell,
-} satisfies Meta<typeof TableCell>;
+  title: 'Components/Table/TablePagination',
+  component: TablePagination,
+} satisfies Meta<typeof TablePagination>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    children: 'Hello world',
+  render: () => {
+    const table = useReactTable<DataProps>({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+    });
+
+    return <TablePagination table={table} />;
   },
 };
