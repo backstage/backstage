@@ -32,20 +32,11 @@ import { TechDocsPicker } from './TechDocsPicker';
 import { EntityListDocsTable } from './Tables';
 import { TechDocsIndexPageProps } from './TechDocsIndexPage';
 
-/**
- * Props for {@link DefaultTechDocsHome}
- *
- * @public
- * @deprecated Please use `TechDocsIndexPageProps` instead.
- */
-export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
+export type DefaultTechDocsHomeProps = TechDocsIndexPageProps & {
+  customFilter?: ReactNode;
+};
 
-/**
- * Component which renders a default documentation landing page.
- *
- * @public
- */
-export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
+export const DefaultTechDocsHome = (props: DefaultTechDocsHomeProps) => {
   const {
     initialFilter = 'owned',
     columns,
@@ -55,6 +46,7 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
     options,
     PageWrapper,
     CustomHeader,
+    customFilter,
   } = props;
   const Wrapper: FC<{
     children: ReactNode;
@@ -73,6 +65,7 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
+              {customFilter}
               <TechDocsPicker />
               <UserListPicker initialFilter={initialFilter} />
               <EntityOwnerPicker mode={ownerPickerMode} />

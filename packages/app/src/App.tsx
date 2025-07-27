@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import React, { useState } from 'react';
 import {
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
@@ -85,11 +86,11 @@ import {
 } from '@backstage/plugin-notifications';
 import { CustomizableHomePage } from './components/home/CustomizableHomePage';
 import { HomePage } from './components/home/HomePage';
+import { DefaultTechDocsHome } from '@backstage/plugin-techdocs'; // Add explicit import if needed
 
 const app = createApp({
   apis,
   icons: {
-    // Custom icon example
     alert: AlarmIcon,
   },
   featureFlags: [
@@ -113,11 +114,38 @@ const app = createApp({
   },
 });
 
+const CustomFilter = () => {
+  const [filterValue, setFilterValue] = useState('');
+
+  return (
+    <div style={{ padding: '6px 10px' }}>
+      <label
+        htmlFor="custom-filter"
+        style={{ marginRight: 10, fontWeight: 600, fontSize: 14 }}
+      >
+        Custom Filter:
+      </label>
+      <input
+        id="custom-filter"
+        type="text"
+        value={filterValue}
+        onChange={e => setFilterValue(e.target.value)}
+        placeholder="Filter docs..."
+        style={{
+          padding: '6px 8px',
+          borderRadius: 5,
+          border: '1px solid #bbb',
+          fontSize: 14,
+          width: 140,
+        }}
+      />
+    </div>
+  );
+};
+
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
-
-    {/* TODO(rubenl): Move this to / once its more mature and components exist */}
 
     <FeatureFlagged with="customizable-home-page-preview">
       <Route path="/home" element={<HomepageCompositionRoot />}>
@@ -176,7 +204,11 @@ const routes = (
     />
     <Route
       path="/docs"
-      element={<TechDocsIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
+      element={
+        <TechDocsIndexPage pagination={{ mode: 'offset', limit: 20 }}>
+          <DefaultTechDocsHome customFilter={<CustomFilter />} />
+        </TechDocsIndexPage>
+      }
     />
     <Route
       path="/docs/:namespace/:kind/:name/*"
