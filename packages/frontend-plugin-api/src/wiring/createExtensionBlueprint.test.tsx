@@ -15,7 +15,10 @@
  */
 
 import { coreExtensionData } from './coreExtensionData';
-import { createExtensionBlueprint } from './createExtensionBlueprint';
+import {
+  createExtensionBlueprint,
+  createExtensionBlueprintParams,
+} from './createExtensionBlueprint';
 import {
   createExtensionTester,
   renderInTestApp,
@@ -876,6 +879,21 @@ describe('createExtensionBlueprint', () => {
       test2: 'orig-2',
     });
 
+    const extensionDef = blueprint.make({
+      // Using define is optional in this case
+      params: define =>
+        define({
+          test1: 'orig-1',
+          test2: 'orig-2',
+        }),
+    });
+
+    expect(getOutputs(extensionDef)).toEqual({
+      test1: 'orig-1',
+      test2: 'orig-2',
+    });
+
+    // Plain override
     expect(
       getOutputs(
         extension.override({
@@ -896,11 +914,65 @@ describe('createExtensionBlueprint', () => {
         extension.override({
           params: {
             test2: 'override-2',
+            // @ts-expect-error
+            test3: 'nonexistent',
           },
         }),
       ),
     ).toEqual({
       test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Partial override with original define
+    expect(
+      getOutputs(
+        extensionDef.override({
+          params: {
+            test2: 'override-2',
+            // @ts-expect-error
+            test3: 'nonexistent',
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Override with define
+    expect(
+      getOutputs(
+        extension.override({
+          params: define =>
+            define({
+              test1: 'override-1',
+              test2: 'override-2',
+              // @ts-expect-error
+              test3: 'nonexistent',
+            }),
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override with define with original define
+    expect(
+      getOutputs(
+        extensionDef.override({
+          params: define =>
+            define({
+              test1: 'override-1',
+              test2: 'override-2',
+              // @ts-expect-error
+              test3: 'nonexistent',
+            }),
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
       test2: 'override-2',
     });
 
@@ -930,6 +1002,8 @@ describe('createExtensionBlueprint', () => {
             return origFactory({
               params: {
                 test2: 'override-2',
+                // @ts-expect-error
+                test3: 'nonexistent',
               },
             });
           },
@@ -937,6 +1011,70 @@ describe('createExtensionBlueprint', () => {
       ),
     ).toEqual({
       test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Partial override via factory with original define
+    expect(
+      getOutputs(
+        extensionDef.override({
+          factory(origFactory) {
+            return origFactory({
+              params: {
+                test2: 'override-2',
+                // @ts-expect-error
+                test3: 'nonexistent',
+              },
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory with define
+    expect(
+      getOutputs(
+        extension.override({
+          factory(origFactory) {
+            return origFactory({
+              params: define =>
+                define({
+                  test1: 'override-1',
+                  test2: 'override-2',
+                  // @ts-expect-error
+                  test3: 'nonexistent',
+                }),
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory with define with original define
+    expect(
+      getOutputs(
+        extensionDef.override({
+          factory(origFactory) {
+            return origFactory({
+              params: define =>
+                define({
+                  test1: 'override-1',
+                  test2: 'override-2',
+                  // @ts-expect-error
+                  test3: 'nonexistent',
+                }),
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
       test2: 'override-2',
     });
 
@@ -991,6 +1129,21 @@ describe('createExtensionBlueprint', () => {
       test2: 'orig-2',
     });
 
+    const extensionDef = blueprint.make({
+      // Using define is optional in this case
+      params: define =>
+        define({
+          test1: 'orig-1',
+          test2: 'orig-2',
+        }),
+    });
+
+    expect(getOutputs(extensionDef)).toEqual({
+      test1: 'orig-1',
+      test2: 'orig-2',
+    });
+
+    // Plain override
     expect(
       getOutputs(
         extension.override({
@@ -1011,6 +1164,8 @@ describe('createExtensionBlueprint', () => {
         extension.override({
           params: {
             test2: 'override-2',
+            // @ts-expect-error
+            test3: 'nonexistent',
           },
         }),
       ),
@@ -1019,6 +1174,59 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
+    // Partial override with original define
+    expect(
+      getOutputs(
+        extensionDef.override({
+          params: {
+            test2: 'override-2',
+            // @ts-expect-error
+            test3: 'nonexistent',
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Override with define
+    expect(
+      getOutputs(
+        extension.override({
+          params: define =>
+            define({
+              test1: 'override-1',
+              test2: 'override-2',
+              // @ts-expect-error
+              test3: 'nonexistent',
+            }),
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override with define with original define
+    expect(
+      getOutputs(
+        extensionDef.override({
+          params: define =>
+            define({
+              test1: 'override-1',
+              test2: 'override-2',
+              // @ts-expect-error
+              test3: 'nonexistent',
+            }),
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory
     expect(
       getOutputs(
         extension.override({
@@ -1045,6 +1253,8 @@ describe('createExtensionBlueprint', () => {
             return origFactory({
               params: {
                 test2: 'override-2',
+                // @ts-expect-error
+                test3: 'nonexistent',
               },
             });
           },
@@ -1052,6 +1262,70 @@ describe('createExtensionBlueprint', () => {
       ),
     ).toEqual({
       test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Partial override via factory with original define
+    expect(
+      getOutputs(
+        extensionDef.override({
+          factory(origFactory) {
+            return origFactory({
+              params: {
+                test2: 'override-2',
+                // @ts-expect-error
+                test3: 'nonexistent',
+              },
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory with define
+    expect(
+      getOutputs(
+        extension.override({
+          factory(origFactory) {
+            return origFactory({
+              params: define =>
+                define({
+                  test1: 'override-1',
+                  test2: 'override-2',
+                  // @ts-expect-error
+                  test3: 'nonexistent',
+                }),
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory with define with original define
+    expect(
+      getOutputs(
+        extensionDef.override({
+          factory(origFactory) {
+            return origFactory({
+              params: define =>
+                define({
+                  test1: 'override-1',
+                  test2: 'override-2',
+                  // @ts-expect-error
+                  test3: 'nonexistent',
+                }),
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
       test2: 'override-2',
     });
 
@@ -1068,5 +1342,184 @@ describe('createExtensionBlueprint', () => {
         }),
       ),
     ).toThrow('Refused to override params and factory at the same time');
+  });
+
+  describe('with advanced parameter types', () => {
+    const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
+
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef],
+      defineParams<const A extends string, const B extends A>(params: {
+        a: A;
+        b: B;
+      }) {
+        return createExtensionBlueprintParams(params);
+      },
+      factory(params) {
+        return [testDataRef(`${params.a} ${params.b}`)];
+      },
+    });
+
+    it('should allow creation of extension blueprints', () => {
+      TestExtensionBlueprint.make({
+        // @ts-expect-error not using define func
+        params: {
+          a: 'x',
+          b: 'y',
+        },
+      });
+
+      TestExtensionBlueprint.make({
+        params: define =>
+          define({
+            a: 'x',
+            // @ts-expect-error b doesn't match a
+            b: 'y',
+          }),
+      });
+
+      const extension = TestExtensionBlueprint.make({
+        params: define =>
+          define({
+            a: 'x',
+            b: 'x',
+          }),
+      });
+
+      expect(extension).toEqual({
+        $$type: '@backstage/ExtensionDefinition',
+        T: undefined,
+        attachTo: {
+          id: 'test',
+          input: 'default',
+        },
+        configSchema: undefined,
+        disabled: false,
+        inputs: {},
+        kind: 'test-extension',
+        name: undefined,
+        namespace: undefined,
+        output: [testDataRef],
+        factory: expect.any(Function),
+        toString: expect.any(Function),
+        override: expect.any(Function),
+        version: 'v2',
+      });
+
+      expect(createExtensionTester(extension).get(testDataRef)).toBe('x x');
+
+      extension.override({
+        // @ts-expect-error not using define func
+        params: {
+          a: 'z',
+          b: 'w',
+        },
+      });
+
+      extension.override({
+        params: define =>
+          define({
+            a: 'z',
+            // @ts-expect-error b doesn't match a
+            b: 'w',
+          }),
+      });
+
+      const override = extension.override({
+        params: define =>
+          define({
+            a: 'z',
+            b: 'z',
+          }),
+      });
+
+      expect(createExtensionTester(override).get(testDataRef)).toBe('z z');
+    });
+
+    it('should allow overriding of the default factory', () => {
+      TestExtensionBlueprint.makeWithOverrides({
+        factory(originalFactory) {
+          // @ts-expect-error not using define func
+          return originalFactory({
+            a: 'x',
+            b: 'y',
+          });
+        },
+      });
+
+      TestExtensionBlueprint.makeWithOverrides({
+        factory(originalFactory) {
+          return originalFactory(define =>
+            define({
+              a: 'x',
+              // @ts-expect-error b doesn't match a
+              b: 'y',
+            }),
+          );
+        },
+      });
+
+      const extension = TestExtensionBlueprint.makeWithOverrides({
+        factory(originalFactory) {
+          return originalFactory(define =>
+            define({
+              a: 'x',
+              b: 'x',
+            }),
+          );
+        },
+      });
+
+      expect(extension).toEqual({
+        $$type: '@backstage/ExtensionDefinition',
+        T: undefined,
+        attachTo: {
+          id: 'test',
+          input: 'default',
+        },
+        configSchema: undefined,
+        disabled: false,
+        inputs: {},
+        kind: 'test-extension',
+        name: undefined,
+        namespace: undefined,
+        output: [testDataRef],
+        factory: expect.any(Function),
+        toString: expect.any(Function),
+        override: expect.any(Function),
+        version: 'v2',
+      });
+
+      expect(createExtensionTester(extension).get(testDataRef)).toBe('x x');
+
+      extension.override({
+        // @ts-expect-error not using define func
+        params: {
+          a: 'z',
+          b: 'w',
+        },
+      });
+
+      extension.override({
+        params: define =>
+          define({
+            a: 'z',
+            // @ts-expect-error b doesn't match a
+            b: 'w',
+          }),
+      });
+
+      const override = extension.override({
+        params: define =>
+          define({
+            a: 'z',
+            b: 'z',
+          }),
+      });
+
+      expect(createExtensionTester(override).get(testDataRef)).toBe('z z');
+    });
   });
 });
