@@ -18,7 +18,7 @@ import { createComponentRef } from './createComponentRef';
 
 describe('createComponentRef', () => {
   it('can be created and read', () => {
-    const ref = createComponentRef({ id: 'foo' });
+    const ref = createComponentRef({ id: 'foo', mode: 'sync' });
     expect(ref.id).toBe('foo');
     expect(String(ref)).toBe('ComponentRef{id=foo}');
   });
@@ -45,7 +45,6 @@ describe('createComponentRef', () => {
       defaultComponent: async ({ bar }) => <Test key={bar} />,
     });
 
-    // todo: why do we have two errors here?
     // @ts-expect-error - this should be an error as mode is async
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
@@ -53,11 +52,9 @@ describe('createComponentRef', () => {
       defaultComponent: ({ bar }) => <Test key={bar} />,
     });
 
-    // todo: why does this not work?
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
-      // @ts-expect-error - this should be an error as default mode is async
-      defaultComponent: ({ bar }) => <Test key={bar} />,
+      mode: 'sync',
     });
 
     expect(Test).toBeDefined();
@@ -66,11 +63,13 @@ describe('createComponentRef', () => {
   it('should allow transformings props', () => {
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
+      mode: 'sync',
       transformProps: props => ({ foo: props.bar }),
     });
 
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
+      mode: 'sync',
       // @ts-expect-error - this should be an error as foo is not a string
       transformProps: props => ({ foo: 1 }),
     });

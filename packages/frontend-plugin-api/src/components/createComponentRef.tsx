@@ -18,26 +18,30 @@
 export type ComponentRef<
   TInnerComponentProps,
   TExternalComponentProps,
-  TMode extends 'sync' | 'async' = 'async',
+  TMode extends 'sync' | 'async',
 > = {
   id: string;
   mode: TMode;
   transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
   defaultComponent?: TMode extends 'async'
     ? (props: TExternalComponentProps) => Promise<JSX.Element>
-    : (props: TExternalComponentProps) => JSX.Element;
+    : TMode extends 'sync'
+    ? (props: TExternalComponentProps) => JSX.Element
+    : never;
 };
 
 export interface ComponentRefOptions<
   TInnerComponentProps,
   TExternalComponentProps,
-  TMode extends 'sync' | 'async' = 'async',
+  TMode extends 'sync' | 'async',
 > {
   id: string;
-  mode?: TMode;
+  mode: TMode;
   defaultComponent?: TMode extends 'async'
     ? (props: TExternalComponentProps) => Promise<JSX.Element>
-    : (props: TExternalComponentProps) => JSX.Element;
+    : TMode extends 'sync'
+    ? (props: TExternalComponentProps) => JSX.Element
+    : never;
   transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
 }
 
@@ -82,7 +86,7 @@ export function createComponentRef<
     TMode
   >,
 ): ComponentRef<TInnerComponentProps, TExternalComponentProps, TMode> {
-  const { id, mode = 'async', defaultComponent, transformProps } = options;
+  const { id, mode, defaultComponent, transformProps } = options;
 
   return {
     id,
