@@ -1541,5 +1541,44 @@ describe('createExtensionBlueprint', () => {
 
       expect(createExtensionTester(override).get(testDataRef)).toBe('z z');
     });
+
+    it('should allow the params definer to transform the params', () => {
+      const TestTransformExtensionBlueprint = createExtensionBlueprint({
+        kind: 'test-extension',
+        attachTo: { id: 'test', input: 'default' },
+        output: [testDataRef],
+        defineParams(params: { a: number; b: number }) {
+          return createExtensionBlueprintParams({
+            x: params.a + 1,
+            y: params.b + 1,
+          });
+        },
+        factory(params) {
+          return [testDataRef(`${params.x} ${params.y}`)];
+        },
+      });
+
+      const extension = TestTransformExtensionBlueprint.make({
+        params: define =>
+          define({
+            a: 0,
+            b: 10,
+          }),
+      });
+
+      expect(createExtensionTester(extension).get(testDataRef)).toBe(`1 11`);
+
+      expect(
+        createExtensionTester(
+          extension.override({
+            params: define =>
+              define({
+                a: 20,
+                b: 30,
+              }),
+          }),
+        ).get(testDataRef),
+      ).toBe(`21 31`);
+    });
   });
 });
