@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export { RawTable } from './RawTable';
-export { RawTableBody } from './RawTableBody';
-export { RawTableCaption } from './RawTableCaption';
-export { RawTableCell } from './RawTableCell';
-export { RawTableHead } from './RawTableHead';
-export { RawTableHeader } from './RawTableHeader';
-export { RawTableRow } from './RawTableRow';
+import { Header } from '@tanstack/react-table';
+
+/** @internal */
+export interface RawTableHeadProps<TData>
+  extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  header: Header<TData, unknown>;
+}

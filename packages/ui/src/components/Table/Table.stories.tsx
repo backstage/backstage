@@ -21,6 +21,7 @@ import { columns } from './mocked-columns';
 import {
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
   PaginationState,
 } from '@tanstack/react-table';
@@ -48,7 +49,10 @@ export const Uncontrolled: Story = {
       columns,
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
     });
+
+    console.log(table.getState().sorting);
 
     return (
       <>

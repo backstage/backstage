@@ -33,13 +33,11 @@ export const columns: ColumnDef<DataProps>[] = [
       />
     ),
     cell: ({ row }) => (
-      <td>
-        <Checkbox
-          checked={row.getIsSelected()}
-          onChange={(checked: boolean) => row.toggleSelected(checked)}
-          aria-label="Select row"
-        />
-      </td>
+      <Checkbox
+        checked={row.getIsSelected()}
+        onChange={(checked: boolean) => row.toggleSelected(checked)}
+        aria-label="Select row"
+      />
     ),
     enableSorting: false,
     enableHiding: false,
@@ -56,6 +54,7 @@ export const columns: ColumnDef<DataProps>[] = [
       />
     ),
     size: 450,
+    enableSorting: false,
   },
   {
     accessorKey: 'owner',

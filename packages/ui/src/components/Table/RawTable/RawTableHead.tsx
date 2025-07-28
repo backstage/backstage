@@ -15,11 +15,11 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import clsx from 'clsx';
 import { flexRender } from '@tanstack/react-table';
 import { Icon } from '../../Icon';
 import { Hidden } from '../../Hidden';
-import { RawHeadContentProps } from './types';
+import { RawTableHeadProps } from './types';
+import { useStyles } from '../../../hooks/useStyles';
 
 function getSortTitle(nextOrder: string | false) {
   if (nextOrder === 'asc') {
@@ -32,7 +32,8 @@ function getSortTitle(nextOrder: string | false) {
 }
 
 /** @internal */
-export function RawHeadContent<TData>({ header }: RawHeadContentProps<TData>) {
+export function RawTableHead<TData>({ header }: RawTableHeadProps<TData>) {
+  const { classNames } = useStyles('Table');
   const headerContent = useMemo(
     () => flexRender(header.column.columnDef.header, header.getContext()),
     [header],
@@ -50,32 +51,25 @@ export function RawHeadContent<TData>({ header }: RawHeadContentProps<TData>) {
   );
 
   if (!header.column.getCanSort()) {
-    return headerContent;
+    return <th className={classNames.head}>{headerContent}</th>;
   }
 
   return (
-    <span
-      role="button"
-      tabIndex={0}
-      className="bui-DataTableRoot--sort"
-      onClick={handleSort}
-      onKeyDown={handleSort}
-    >
-      {headerContent}
-      <Hidden>, {getSortTitle(header.column.getNextSortingOrder())}</Hidden>
-      <Icon
-        aria-hidden
-        tab-index={-1}
-        name="arrow-down"
-        className={clsx(
-          'bui-DataTableRoot--unsorted',
-          {
-            asc: 'bui-DataTableRoot--sorted-asc',
-            desc: 'bui-DataTableRoot--sorted-desc',
-          }[header.column.getIsSorted() as string],
-        )}
-        data-testid="datatable--sort-icon"
-      />
-    </span>
+    <th className={classNames.head}>
+      <span
+        role="button"
+        tabIndex={0}
+        className={classNames.headSortButton}
+        onClick={handleSort}
+        onKeyDown={handleSort}
+        {...(header.column.getIsSorted() && {
+          'data-sort-order': header.column.getIsSorted(),
+        })}
+      >
+        {headerContent}
+        <Hidden>, {getSortTitle(header.column.getNextSortingOrder())}</Hidden>
+        <Icon aria-hidden tab-index={-1} name="arrow-down" />
+      </span>
+    </th>
   );
 }

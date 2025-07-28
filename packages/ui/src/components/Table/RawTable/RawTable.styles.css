@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.bui-TableRoot {
+.bui-Table {
   width: 100%;
   caption-side: bottom;
   border-collapse: collapse;
@@ -25,6 +25,33 @@
   padding: var(--bui-space-3);
   font-size: var(--bui-font-size-3);
   color: var(--bui-fg-primary);
+}
+
+.bui-TableHeadSortButton {
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bui-space-1);
+
+  &:hover svg {
+    opacity: 0.5;
+  }
+
+  & svg {
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+  }
+
+  &[data-sort-order='asc'] svg {
+    opacity: 1;
+    transform: rotate(0);
+  }
+
+  &[data-sort-order='desc'] svg {
+    opacity: 1;
+    transform: rotate(180deg);
+  }
 }
 
 .bui-TableBody {

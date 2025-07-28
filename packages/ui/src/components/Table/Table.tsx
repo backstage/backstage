@@ -24,7 +24,6 @@ import {
   RawTableBody,
   RawTableCell,
 } from './RawTable';
-import { RawHeadContent } from './RawHeadContent';
 import { flexRender } from '@tanstack/react-table';
 
 function getAriaSort(sortDirection: string | false) {
@@ -58,16 +57,17 @@ export function Table<TData>(
         {table.getHeaderGroups().map(headerGroup => (
           <RawTableRow key={headerGroup.id}>
             {headerGroup.headers.map(header => {
+              if (header.isPlaceholder) {
+                return null;
+              }
+
               return (
                 <RawTableHead
                   key={header.id}
                   style={{ width: header.getSize() }}
                   aria-sort={getAriaSort(header.column.getIsSorted())}
-                >
-                  {header.isPlaceholder ? null : (
-                    <RawHeadContent header={header} />
-                  )}
-                </RawTableHead>
+                  header={header}
+                />
               );
             })}
           </RawTableRow>

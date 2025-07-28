@@ -231,11 +231,12 @@ export const componentDefinitions = {
   },
   Table: {
     classNames: {
-      root: 'bui-TableRoot',
+      table: 'bui-Table',
       header: 'bui-TableHeader',
       body: 'bui-TableBody',
       row: 'bui-TableRow',
       head: 'bui-TableHead',
+      headSortButton: 'bui-TableHeadSortButton',
       caption: 'bui-TableCaption',
       cell: 'bui-TableCell',
       cellText: 'bui-TableCellText',

@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-export { RawTable } from './RawTable';
-export { RawTableBody } from './RawTableBody';
-export { RawTableCaption } from './RawTableCaption';
-export { RawTableCell } from './RawTableCell';
-export { RawTableHead } from './RawTableHead';
-export { RawTableHeader } from './RawTableHeader';
-export { RawTableRow } from './RawTableRow';
+import { forwardRef } from 'react';
+import clsx from 'clsx';
+import { useStyles } from '../../../hooks/useStyles';
+
+/** @internal */
+export const RawTableHeader = forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('Table');
+
+  return (
+    <thead
+      ref={ref}
+      className={clsx(classNames.header, className)}
+      {...props}
+    />
+  );
+});
+RawTableHeader.displayName = 'RawTableHeader';

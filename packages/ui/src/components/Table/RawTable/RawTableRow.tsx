@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-import { Header } from '@tanstack/react-table';
+import { forwardRef } from 'react';
+import clsx from 'clsx';
+import { useStyles } from '../../../hooks/useStyles';
 
 /** @internal */
-export interface RawHeadContentProps<TData> {
-  header: Header<TData, unknown>;
-}
+export const RawTableRow = forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('Table');
+
+  return (
+    <tr ref={ref} className={clsx(classNames.row, className)} {...props}>
+      {props.children}
+    </tr>
+  );
+});
+RawTableRow.displayName = 'RawTableRow';
