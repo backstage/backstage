@@ -24,7 +24,6 @@ import {
   AppRootElementBlueprint,
   identityApiRef,
   storageApiRef,
-  createApiFactory,
   ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { compatWrapper } from '@backstage/core-compat-api';
@@ -79,8 +78,8 @@ const visitListenerAppRootElement = AppRootElementBlueprint.make({
 
 const visitsApi = ApiBlueprint.make({
   name: 'visits',
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: visitsApiRef,
       deps: {
         storageApi: storageApiRef,
@@ -89,7 +88,6 @@ const visitsApi = ApiBlueprint.make({
       factory: ({ storageApi, identityApi }) =>
         VisitsStorageApi.create({ storageApi, identityApi }),
     }),
-  },
 });
 
 /**

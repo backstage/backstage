@@ -16,7 +16,6 @@
 import {
   ApiBlueprint,
   TranslationBlueprint,
-  createApiFactory,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -39,8 +38,8 @@ export const TranslationsApi = ApiBlueprint.makeWithOverrides({
     ),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory({
-      factory: createApiFactory({
+    return originalFactory(define =>
+      define({
         api: translationApiRef,
         deps: { languageApi: appLanguageApiRef },
         factory: ({ languageApi }) =>
@@ -51,6 +50,6 @@ export const TranslationsApi = ApiBlueprint.makeWithOverrides({
             ),
           }),
       }),
-    });
+    );
   },
 });

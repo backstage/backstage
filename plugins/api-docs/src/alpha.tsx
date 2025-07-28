@@ -20,7 +20,6 @@ import {
   ApiBlueprint,
   NavItemBlueprint,
   PageBlueprint,
-  createApiFactory,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 
@@ -55,8 +54,8 @@ const apiDocsNavItem = NavItemBlueprint.make({
 
 const apiDocsConfigApi = ApiBlueprint.make({
   name: 'config',
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: apiDocsConfigRef,
       deps: {},
       factory: () => {
@@ -68,7 +67,6 @@ const apiDocsConfigApi = ApiBlueprint.make({
         };
       },
     }),
-  },
 });
 
 const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({

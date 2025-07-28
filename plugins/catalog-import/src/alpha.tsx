@@ -16,7 +16,6 @@
 
 import {
   configApiRef,
-  createApiFactory,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
@@ -53,8 +52,8 @@ const catalogImportPage = PageBlueprint.make({
 });
 
 const catalogImportApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: catalogImportApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -81,7 +80,6 @@ const catalogImportApi = ApiBlueprint.make({
           configApi,
         }),
     }),
-  },
 });
 
 /** @alpha */

@@ -5,7 +5,9 @@
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
+import { BlueprintParams } from '@backstage/frontend-plugin-api/src/wiring/createExtensionBlueprint';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -66,9 +68,13 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => BlueprintParams<AnyApiFactory>;
     }>;
     'api:scaffolder/form-decorators': ExtensionDefinition<{
       config: {};
@@ -93,9 +99,13 @@ const _default: FrontendPlugin<
       };
       kind: 'api';
       name: 'form-decorators';
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => BlueprintParams<AnyApiFactory>;
     }>;
     'api:scaffolder/form-fields': ExtensionDefinition<{
       config: {};
@@ -120,9 +130,13 @@ const _default: FrontendPlugin<
       };
       kind: 'api';
       name: 'form-fields';
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => BlueprintParams<AnyApiFactory>;
     }>;
     'entity-icon-link:scaffolder/launch-template': ExtensionDefinition<{
       kind: 'entity-icon-link';
@@ -273,9 +287,13 @@ export const formDecoratorsApi: ExtensionDefinition<{
   };
   kind: 'api';
   name: 'form-decorators';
-  params: {
-    factory: AnyApiFactory;
-  };
+  params: <
+    TApi,
+    TImpl extends TApi,
+    TDeps extends { [name in string]: unknown },
+  >(
+    params: ApiFactory<TApi, TImpl, TDeps>,
+  ) => BlueprintParams<AnyApiFactory>;
 }>;
 
 // @alpha (undocumented)
