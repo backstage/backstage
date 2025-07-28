@@ -99,7 +99,7 @@ export class McpService {
               type: 'text',
               text: [
                 '```json',
-                JSON.stringify(e?.body?.error ?? e, null, 2),
+                JSON.stringify(e?.body?.error?.cause ?? e, null, 2),
                 '```',
               ].join('\n'),
             },

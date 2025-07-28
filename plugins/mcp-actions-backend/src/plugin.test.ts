@@ -205,12 +205,7 @@ describe('Mcp Backend', () => {
             JSON.stringify(
               {
                 name: 'InputError',
-                message:
-                  'Failed execution of action "local:throw-error"; caused by InputError: Something went wrong with the input?',
-                cause: {
-                  name: 'InputError',
-                  message: 'Something went wrong with the input?',
-                },
+                message: 'Something went wrong with the input?',
               },
               null,
               2,
