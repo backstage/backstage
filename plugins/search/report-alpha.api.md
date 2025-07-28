@@ -6,8 +6,8 @@
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
-import { BlueprintParams } from '@backstage/frontend-plugin-api/src/wiring/createExtensionBlueprint';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -43,7 +43,7 @@ const _default: FrontendPlugin<
         TDeps extends { [name in string]: unknown },
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => BlueprintParams<AnyApiFactory>;
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'nav-item:search': ExtensionDefinition<{
       kind: 'nav-item';
@@ -157,7 +157,7 @@ export const searchApi: ExtensionDefinition<{
     TDeps extends { [name in string]: unknown },
   >(
     params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => BlueprintParams<AnyApiFactory>;
+  ) => ExtensionBlueprintParams<AnyApiFactory>;
 }>;
 
 // @alpha (undocumented)

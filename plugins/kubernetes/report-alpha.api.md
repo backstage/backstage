@@ -6,11 +6,11 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { BlueprintParams } from '@backstage/frontend-plugin-api/src/wiring/createExtensionBlueprint';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -41,7 +41,7 @@ const _default: FrontendPlugin<
         TDeps extends { [name in string]: unknown },
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => BlueprintParams<AnyApiFactory>;
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:kubernetes/auth-providers': ExtensionDefinition<{
       kind: 'api';
@@ -60,7 +60,7 @@ const _default: FrontendPlugin<
         TDeps extends { [name in string]: unknown },
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => BlueprintParams<AnyApiFactory>;
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:kubernetes/cluster-link-formatter': ExtensionDefinition<{
       kind: 'api';
@@ -79,7 +79,7 @@ const _default: FrontendPlugin<
         TDeps extends { [name in string]: unknown },
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => BlueprintParams<AnyApiFactory>;
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:kubernetes/proxy': ExtensionDefinition<{
       kind: 'api';
@@ -98,7 +98,7 @@ const _default: FrontendPlugin<
         TDeps extends { [name in string]: unknown },
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => BlueprintParams<AnyApiFactory>;
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'entity-content:kubernetes/kubernetes': ExtensionDefinition<{
       kind: 'entity-content';

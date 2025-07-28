@@ -7,11 +7,11 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { BlueprintParams } from '@backstage/frontend-plugin-api/src/wiring/createExtensionBlueprint';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -54,7 +54,7 @@ const _default: FrontendPlugin<
         TDeps extends { [name in string]: unknown },
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => BlueprintParams<AnyApiFactory>;
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:techdocs/storage': ExtensionDefinition<{
       kind: 'api';
@@ -73,7 +73,7 @@ const _default: FrontendPlugin<
         TDeps extends { [name in string]: unknown },
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => BlueprintParams<AnyApiFactory>;
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'empty-state:techdocs/entity-content': ExtensionDefinition<{
       config: {};

@@ -66,6 +66,9 @@ export {
   type CreateExtensionBlueprintOptions,
   type ExtensionBlueprint,
   type ExtensionBlueprintParameters,
+  type ExtensionBlueprintParams,
+  type ExtensionBlueprintParamsDefiner,
   createExtensionBlueprint,
+  createExtensionBlueprintParams,
 } from './createExtensionBlueprint';
 export { type ResolveInputValueOverrides } from './resolveInputOverrides';

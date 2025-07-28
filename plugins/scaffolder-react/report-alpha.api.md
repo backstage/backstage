@@ -8,12 +8,12 @@ import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
-import { BlueprintParams } from '@backstage/frontend-plugin-api/src/wiring/createExtensionBlueprint';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
@@ -226,7 +226,7 @@ export const formFieldsApi: ExtensionDefinition<{
     TDeps extends { [name in string]: unknown },
   >(
     params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => BlueprintParams<AnyApiFactory>;
+  ) => ExtensionBlueprintParams<AnyApiFactory>;
 }>;
 
 // @alpha @deprecated (undocumented)
