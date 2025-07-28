@@ -72,25 +72,41 @@ export class McpService {
         throw new NotFoundError(`Action "${params.name}" not found`);
       }
 
-      const { output } = await this.actions.invoke({
-        id: action.id,
-        input: params.arguments as JsonObject,
-        credentials,
-      });
+      try {
+        const { output } = await this.actions.invoke({
+          id: action.id,
+          input: params.arguments as JsonObject,
+          credentials,
+        });
 
-      return {
-        // todo(blam): unfortunately structuredContent is not supported by most clients yet.
-        // so the validation for the output happens in the default actions registry
-        // and we return it as json text instead for now.
-        content: [
-          {
-            type: 'text',
-            text: ['```json', JSON.stringify(output, null, 2), '```'].join(
-              '\n',
-            ),
-          },
-        ],
-      };
+        return {
+          // todo(blam): unfortunately structuredContent is not supported by most clients yet.
+          // so the validation for the output happens in the default actions registry
+          // and we return it as json text instead for now.
+          content: [
+            {
+              type: 'text',
+              text: ['```json', JSON.stringify(output, null, 2), '```'].join(
+                '\n',
+              ),
+            },
+          ],
+        };
+      } catch (e) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: [
+                '```json',
+                JSON.stringify(e?.body?.error ?? e, null, 2),
+                '```',
+              ].join('\n'),
+            },
+          ],
+          isError: true,
+        };
+      }
     });
 
     return server;

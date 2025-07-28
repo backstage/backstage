@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import { mcpPlugin } from './plugin';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
-import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types';
+import {
+  CallToolResultSchema,
+  ListToolsResultSchema,
+} from '@modelcontextprotocol/sdk/types';
+import { InputError } from '@backstage/errors';
 
 describe('Mcp Backend', () => {
   const mockPluginWithActions = createBackendPlugin({
@@ -41,6 +49,19 @@ describe('Mcp Backend', () => {
               output: { greeting: `Hello ${input.name}!` },
             }),
           });
+
+          actionsRegistry.register({
+            name: 'throw-error',
+            title: 'Throw an error',
+            description: 'Throw an error',
+            schema: {
+              input: z => z.object({}),
+              output: z => z.object({}),
+            },
+            action: async () => {
+              throw new InputError('Something went wrong with the input?');
+            },
+          });
         },
       });
     },
@@ -51,6 +72,9 @@ describe('Mcp Backend', () => {
       features: [
         mcpPlugin,
         mockPluginWithActions,
+        mockServices.httpAuth.factory({
+          defaultCredentials: mockCredentials.service(),
+        }),
         mockServices.rootConfig.factory({
           data: {
             backend: {
@@ -94,30 +118,28 @@ describe('Mcp Backend', () => {
       ListToolsResultSchema,
     );
 
-    expect(result.tools).toEqual([
-      {
-        annotations: {
-          destructiveHint: true,
-          idempotentHint: false,
-          openWorldHint: false,
-          readOnlyHint: false,
-          title: 'Make Greeting',
-        },
-        description: 'Make a greeting',
-        inputSchema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
-          properties: {
-            name: {
-              type: 'string',
-            },
-          },
-          required: ['name'],
-          type: 'object',
-        },
-        name: 'make-greeting',
+    expect(result.tools).toContainEqual({
+      annotations: {
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false,
+        readOnlyHint: false,
+        title: 'Make Greeting',
       },
-    ]);
+      description: 'Make a greeting',
+      inputSchema: {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        additionalProperties: false,
+        properties: {
+          name: {
+            type: 'string',
+          },
+        },
+        required: ['name'],
+        type: 'object',
+      },
+      name: 'make-greeting',
+    });
   });
 
   it('should support sse spec', async () => {
@@ -137,29 +159,67 @@ describe('Mcp Backend', () => {
 
     await client.close();
 
-    expect(result.tools).toEqual([
-      {
-        annotations: {
-          destructiveHint: true,
-          idempotentHint: false,
-          openWorldHint: false,
-          readOnlyHint: false,
-          title: 'Make Greeting',
-        },
-        description: 'Make a greeting',
-        inputSchema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
-          properties: {
-            name: {
-              type: 'string',
-            },
-          },
-          required: ['name'],
-          type: 'object',
-        },
-        name: 'make-greeting',
+    expect(result.tools).toContainEqual({
+      annotations: {
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false,
+        readOnlyHint: false,
+        title: 'Make Greeting',
       },
-    ]);
+      description: 'Make a greeting',
+      inputSchema: {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        additionalProperties: false,
+        properties: {
+          name: {
+            type: 'string',
+          },
+        },
+        required: ['name'],
+        type: 'object',
+      },
+      name: 'make-greeting',
+    });
+  });
+
+  it('should propogate errors properly from the actions', async () => {
+    const { client, serverAddress } = await getContext();
+    const transport = new StreamableHTTPClientTransport(
+      new URL(`${serverAddress}/api/mcp-actions/v1`),
+    );
+
+    await client.connect(transport);
+
+    await expect(
+      client.request(
+        { method: 'tools/call', params: { name: 'throw-error' } },
+        CallToolResultSchema,
+      ),
+    ).resolves.toEqual({
+      content: [
+        {
+          type: 'text',
+          text: [
+            '```json',
+            JSON.stringify(
+              {
+                name: 'InputError',
+                message:
+                  'Failed execution of action "local:throw-error"; caused by InputError: Something went wrong with the input?',
+                cause: {
+                  name: 'InputError',
+                  message: 'Something went wrong with the input?',
+                },
+              },
+              null,
+              2,
+            ),
+            '```',
+          ].join('\n'),
+        },
+      ],
+      isError: true,
+    });
   });
 });
