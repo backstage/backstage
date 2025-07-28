@@ -29,26 +29,29 @@ describe('createComponentRef', () => {
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
       mode: 'sync',
-      defaultComponent: ({ bar }) => <Test key={bar} />,
+      defaultComponent: ({ foo }) => <Test key={foo} />,
     });
 
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
       mode: 'async',
-      defaultComponent: async () => <Test />,
+      defaultComponent:
+        async () =>
+        ({ foo }) =>
+          <Test key={foo} />,
     });
 
-    // @ts-expect-error - this should be an error as mode is sync
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
       mode: 'sync',
-      defaultComponent: async ({ bar }) => <Test key={bar} />,
+      // @ts-expect-error - this should be an error as mode is sync
+      defaultComponent: async ({ foo }) => <Test key={foo} />,
     });
 
-    // @ts-expect-error - this should be an error as mode is async
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
       mode: 'async',
+      // @ts-expect-error - this should be an error as mode is async
       defaultComponent: ({ bar }) => <Test key={bar} />,
     });
 
@@ -72,6 +75,12 @@ describe('createComponentRef', () => {
       mode: 'sync',
       // @ts-expect-error - this should be an error as foo is not a string
       transformProps: props => ({ foo: 1 }),
+    });
+
+    createComponentRef<{ foo: string }, { bar: string }>({
+      id: 'foo',
+      mode: 'sync',
+      transformProps: props => ({ foo: props.bar }),
     });
 
     expect(true).toBe(true);
