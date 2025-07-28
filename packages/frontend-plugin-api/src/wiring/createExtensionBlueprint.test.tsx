@@ -1380,6 +1380,16 @@ describe('createExtensionBlueprint', () => {
           }),
       });
 
+      TestExtensionBlueprint.make({
+        params: define =>
+          define({
+            a: 'x',
+            b: 'x',
+            // @ts-expect-error extra param
+            c: 'y',
+          }),
+      });
+
       const extension = TestExtensionBlueprint.make({
         params: define =>
           define({
@@ -1424,6 +1434,16 @@ describe('createExtensionBlueprint', () => {
             a: 'z',
             // @ts-expect-error b doesn't match a
             b: 'w',
+          }),
+      });
+
+      extension.override({
+        params: define =>
+          define({
+            a: 'z',
+            b: 'z',
+            // @ts-expect-error extra param
+            c: 'w',
           }),
       });
 
