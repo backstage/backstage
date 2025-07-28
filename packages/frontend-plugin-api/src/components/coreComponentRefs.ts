@@ -23,16 +23,19 @@ import { createComponentRef } from './createComponentRef';
 
 const coreProgressComponentRef = createComponentRef<CoreProgressProps>({
   id: 'core.components.progress',
+  mode: 'sync',
 });
 
 const coreNotFoundErrorPageComponentRef =
   createComponentRef<CoreNotFoundErrorPageProps>({
     id: 'core.components.notFoundErrorPage',
+    mode: 'sync',
   });
 
 const coreErrorBoundaryFallbackComponentRef =
   createComponentRef<CoreErrorBoundaryFallbackProps>({
     id: 'core.components.errorBoundaryFallback',
+    mode: 'sync',
   });
 
 /** @public */
