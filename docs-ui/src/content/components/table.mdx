@@ -1,6 +1,205 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { TableSnippet } from '@/snippets/stories-snippets';
+import {
+  tablePropDefs,
+  tablePaginationPropDefs,
+  tableUsageSnippet,
+  tableBasicSnippet,
+  tableRowClickSnippet,
+  tableHybridSnippet,
+  tableCellInteractionsSnippet,
+  tablePaginationSnippet,
+  tableSelectionSnippet,
+  tableSortingSnippet,
+} from './table.props';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
 
 <PageTitle
   title="Table"
-  description="A table component that can be used to display data in a grid. (Coming soon)"
+  description="A flexible table component built on top of TanStack Table with built-in styling, interactions, and pagination support."
 />
+
+<Snippet
+  py={4}
+  preview={<TableSnippet story="Uncontrolled" />}
+  code={tableBasicSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={tableUsageSnippet} />
+
+## API reference
+
+### Table
+
+The main table component that renders data in a structured grid format.
+
+<PropsTable data={tablePropDefs} />
+
+### TablePagination
+
+A pagination component designed to work with the Table component.
+
+<PropsTable data={tablePaginationPropDefs} />
+
+## Examples
+
+### Basic Table
+
+A simple table with data display.
+
+<Snippet
+  py={4}
+  open
+  preview={<TableSnippet story="Uncontrolled" />}
+  code={tableBasicSnippet}
+/>
+
+### Row Clicks
+
+The Table supports a hybrid interaction model where you can add row-level click handlers while still allowing cell-level interactions to take precedence.
+
+<Snippet
+  py={4}
+  open
+  preview={<TableSnippet story="WithRowClick" />}
+  code={tableRowClickSnippet}
+/>
+
+### Hybrid Interactions
+
+This demonstrates the most common pattern: specific cells (like names) have links for navigation, while clicking empty row areas triggers a different action like selection or quick preview.
+
+<Snippet
+  py={4}
+  open
+  preview={<TableSnippet story="WithNavigationLinks" />}
+  code={tableHybridSnippet}
+/>
+
+### Cell-Level Interactions
+
+Different cells can have completely different interaction behaviors. Links navigate, buttons trigger actions, and read-only cells allow row clicks.
+
+<Snippet
+  py={4}
+  open
+  preview={<TableSnippet story="WithMixedInteractions" />}
+  code={tableCellInteractionsSnippet}
+/>
+
+### Pagination
+
+Enable pagination by adding the pagination row model and using the TablePagination component.
+
+<Snippet
+  py={4}
+  open
+  preview={<TableSnippet story="Controlled" />}
+  code={tablePaginationSnippet}
+/>
+
+## Advanced Features
+
+### Row Selection
+
+Enable row selection using TanStack Table's built-in selection features.
+
+<CodeBlock code={tableSelectionSnippet} />
+
+### Sorting
+
+Enable column sorting by adding the sorting row model.
+
+<CodeBlock code={tableSortingSnippet} />
+
+## Interaction Patterns
+
+The Table component supports a **two-level interaction model**:
+
+1. **Primary**: Cell-level interactions (Links, buttons, etc.) - handled in column definitions
+2. **Secondary**: Row-level background handler - handles clicks on empty row areas
+
+### When to Use Each Pattern
+
+**Use `onRowClick` only:**
+
+- Simple tables where entire rows navigate to the same place
+- Selection-based interactions
+- Quick actions that apply to the whole row
+
+**Use cell-level interactions only:**
+
+- Complex tables with many different interactive elements
+- When you need precise control over each interaction
+- When different cells need different behaviors
+
+**Use hybrid approach:**
+
+- **Most common case** - Some cells have specific actions, others are background-clickable
+- Data tables with primary actions (links) and secondary actions (selection/preview)
+- When you want the convenience of row clicking but flexibility of cell control
+
+### Event Handling
+
+Cell-level interactions should call `e.stopPropagation()` to prevent row clicks:
+
+```tsx
+// ✅ Correct - prevents row click
+<Link
+  to="/somewhere"
+  onClick={(e) => e.stopPropagation()}
+>
+  Navigate
+</Link>
+
+// ✅ Also correct for custom actions
+<button onClick={(e) => {
+  e.stopPropagation();
+  handleAction();
+}}>
+  Action
+</button>
+```
+
+## Best Practices
+
+1. **Use Link components for navigation** - Better UX and accessibility
+2. **Handle keyboard modifiers** - Support Cmd/Ctrl+click for new tabs
+3. **Use `stopPropagation()`** in cell interactions to prevent row clicks
+4. **Provide visual feedback** - Use appropriate cursor styles
+5. **Consider accessibility** - Screen readers understand Links and buttons in context
+
+## TypeScript Support
+
+The Table component is fully typed with generic support:
+
+```tsx
+interface MyDataType {
+  id: string;
+  name: string;
+  status: string;
+}
+
+const table = useReactTable<MyDataType>({
+  data: myData, // ✅ Typed as MyDataType[]
+  columns: myColumns, // ✅ Typed as ColumnDef<MyDataType>[]
+  getCoreRowModel: getCoreRowModel(),
+});
+
+const handleRowClick = (row: MyDataType) => {
+  // ✅ row is fully typed as MyDataType
+  console.log(row.name);
+};
+
+return <Table table={table} onRowClick={handleRowClick} />;
+```
+
+<Theming component="Table" />
+
+<ChangelogComponent component="table" />

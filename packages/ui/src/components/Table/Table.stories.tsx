@@ -24,9 +24,11 @@ import {
   getSortedRowModel,
   useReactTable,
   PaginationState,
+  ColumnDef,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import { TableCellText } from './TableCellText/TableCellText';
 
 const meta = {
   title: 'Components/Table',
@@ -79,6 +81,76 @@ export const Controlled: Story = {
         pagination,
       },
       onPaginationChange: setPagination,
+    });
+
+    return (
+      <>
+        <Table table={table} />
+        <TablePagination table={table} />
+      </>
+    );
+  },
+};
+
+export const WithRowClick: Story = {
+  render: () => {
+    const table = useReactTable<DataProps>({
+      data,
+      columns, // Use default columns with no custom cell interactions
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+    });
+
+    const handleRowClick = (rowData: DataProps) => {
+      console.log('Pure row click:', rowData.name);
+      alert(`Navigating to: ${rowData.name}`);
+    };
+
+    return (
+      <>
+        <Table table={table} onRowClick={handleRowClick} />
+        <TablePagination table={table} />
+      </>
+    );
+  },
+};
+
+export const WithClickableCells: Story = {
+  render: () => {
+    // Create columns with clickable name cells
+    const clickableColumns: ColumnDef<DataProps>[] = [
+      ...columns.slice(0, 1), // Keep select and name columns, but modify name
+      {
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ row }) => (
+          <div
+            onClick={e => {
+              e.stopPropagation(); // Prevent row click
+              alert(`Clicked on: ${row.original.name}`);
+              console.log('Cell clicked:', row.original);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            <TableCellText
+              title={row.getValue('name')}
+              description={row.original.description}
+            />
+          </div>
+        ),
+        size: 450,
+        enableSorting: false,
+      },
+      ...columns.slice(2), // Keep remaining columns
+    ];
+
+    const table = useReactTable<DataProps>({
+      data,
+      columns: clickableColumns,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
     });
 
     return (

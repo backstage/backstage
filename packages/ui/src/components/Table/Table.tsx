@@ -44,7 +44,7 @@ function getAriaSort(sortDirection: string | false) {
 export function Table<TData>(
   props: TableProps<TData> & { ref?: React.ForwardedRef<HTMLTableElement> },
 ) {
-  const { className, table, ref, ...rest } = props;
+  const { className, table, onRowClick, ref, ...rest } = props;
 
   return (
     <RawTable
@@ -76,11 +76,11 @@ export function Table<TData>(
       <RawTableBody>
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map(row => {
-            const rowData = row.original as TData & { onClick?: () => void };
-            const handleRowClick = rowData.onClick
+            const handleRowClick = onRowClick
               ? (e: React.MouseEvent<HTMLTableRowElement>) => {
+                  // Only call onRowClick if the event hasn't been handled by a child element
                   if (!e.isPropagationStopped()) {
-                    rowData.onClick!();
+                    onRowClick(row.original, e);
                   }
                 }
               : undefined;
@@ -89,7 +89,7 @@ export function Table<TData>(
               <RawTableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                data-clickable={!!rowData.onClick}
+                data-clickable={!!onRowClick}
                 onClick={handleRowClick}
               >
                 {row.getVisibleCells().map(cell => (

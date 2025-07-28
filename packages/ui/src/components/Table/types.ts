@@ -20,4 +20,13 @@ import { Table } from '@tanstack/react-table';
 export interface TableProps<TData>
   extends React.HTMLAttributes<HTMLTableElement> {
   table: Table<TData>;
+  /**
+   * Background click handler for rows. This will be called when clicking on empty
+   * areas of a row that don't have their own click handlers. Cell-level interactions
+   * (like Links or buttons) will automatically prevent this from firing.
+   */
+  onRowClick?: (
+    row: TData,
+    event: React.MouseEvent<HTMLTableRowElement>,
+  ) => void;
 }
