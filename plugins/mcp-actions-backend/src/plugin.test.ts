@@ -202,14 +202,7 @@ describe('Mcp Backend', () => {
           type: 'text',
           text: [
             '```json',
-            JSON.stringify(
-              {
-                name: 'InputError',
-                message: 'Something went wrong with the input?',
-              },
-              null,
-              2,
-            ),
+            'InputError: Something went wrong with the input?',
             '```',
           ].join('\n'),
         },

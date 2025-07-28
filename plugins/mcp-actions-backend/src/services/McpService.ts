@@ -22,7 +22,13 @@ import {
 import { JsonObject } from '@backstage/types';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { version } from '@backstage/plugin-mcp-actions-backend/package.json';
-import { NotFoundError } from '@backstage/errors';
+import {
+  isError,
+  NotFoundError,
+  serializeError,
+  stringifyError,
+} from '@backstage/errors';
+import { extractDefaultResponseErrorMessage } from '../lib/extractDefaultResponseErrorMessage';
 
 export class McpService {
   constructor(private readonly actions: ActionsService) {}
@@ -92,16 +98,17 @@ export class McpService {
             },
           ],
         };
-      } catch (e) {
+      } catch (e: unknown) {
+        const errorMessageContent = isError(e)
+          ? extractDefaultResponseErrorMessage(e) ?? stringifyError(e)
+          : // If it's not an error object, then we just stringify it anyways and hope for the best.
+            JSON.stringify(e, null, 2);
+
         return {
           content: [
             {
               type: 'text',
-              text: [
-                '```json',
-                JSON.stringify(e?.body?.error?.cause ?? e, null, 2),
-                '```',
-              ].join('\n'),
+              text: ['```json', errorMessageContent, '```'].join('\n'),
             },
           ],
           isError: true,
