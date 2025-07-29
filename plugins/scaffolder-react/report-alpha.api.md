@@ -20,7 +20,6 @@ import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldSchema } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
-import { FormField } from '@internal/scaffolder';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -156,6 +155,12 @@ export const FormDecoratorBlueprint: ExtensionBlueprint<{
     >;
   };
 }>;
+
+// @alpha (undocumented)
+export interface FormField {
+  // (undocumented)
+  readonly $$type: '@backstage/scaffolder/FormField';
+}
 
 // @alpha
 export const FormFieldBlueprint: ExtensionBlueprint<{

@@ -19,9 +19,9 @@ import {
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { formFieldsApiRef } from './ref';
-import { ScaffolderFormFieldsApi } from './types';
+import { FormField, ScaffolderFormFieldsApi } from './types';
 import { FormFieldBlueprint } from '../blueprints';
-import { FormField, OpaqueFormField } from '@internal/scaffolder';
+import { OpaqueFormField } from '@internal/scaffolder';
 
 class DefaultScaffolderFormFieldsApi implements ScaffolderFormFieldsApi {
   constructor(
