@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.10.2-next.0
+
+### Patch Changes
+
+- d421b16: This change introduces single user versions of the user group resolution code in the multi org provider that will not page through all membership when updating a single user.
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-catalog-backend@3.0.1-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/integration@1.17.1
+  - @backstage/plugin-catalog-common@1.1.5
+
 ## 0.10.1
 
 ### Patch Changes
