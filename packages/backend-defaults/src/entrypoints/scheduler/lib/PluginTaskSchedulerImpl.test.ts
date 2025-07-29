@@ -448,7 +448,6 @@ describe('PluginTaskManagerImpl', () => {
     it.each(databases.eachSupportedId())(
       'POST /.backstage/scheduler/v1/tasks/:id/trigger is protected, %p',
       async databaseId => {
-        console.log('database id', databaseId);
         const { manager } = await init(
           databaseId,
           mockServices.auth(),
