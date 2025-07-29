@@ -18,6 +18,7 @@ import { coreExtensionData } from './coreExtensionData';
 import {
   createExtensionBlueprint,
   createExtensionBlueprintParams,
+  ExtensionBlueprintParams,
 } from './createExtensionBlueprint';
 import {
   createExtensionTester,
@@ -1579,6 +1580,36 @@ describe('createExtensionBlueprint', () => {
           }),
         ).get(testDataRef),
       ).toBe(`21 31`);
+    });
+
+    it('should support overloads', () => {
+      const TestTransformExtensionBlueprint = createExtensionBlueprint({
+        kind: 'test-extension',
+        attachTo: { id: 'test', input: 'default' },
+        output: [testDataRef],
+        defineParams: (params => createExtensionBlueprintParams(params)) as {
+          (params: { x: 1 }): ExtensionBlueprintParams<{ x: number }>;
+          (params: { x: 2 }): ExtensionBlueprintParams<{ x: number }>;
+        },
+        factory(params) {
+          return [testDataRef(`x: ${params.x}`)];
+        },
+      });
+
+      const extension = TestTransformExtensionBlueprint.make({
+        params: define => define({ x: 1 }),
+      });
+
+      expect(createExtensionTester(extension).get(testDataRef)).toBe(`x: 1`);
+
+      TestTransformExtensionBlueprint.make({
+        params: define => define({ x: 2 }),
+      });
+
+      TestTransformExtensionBlueprint.make({
+        // @ts-expect-error doesn't match any overload
+        params: define => define({ x: 3 }),
+      });
     });
   });
 });
