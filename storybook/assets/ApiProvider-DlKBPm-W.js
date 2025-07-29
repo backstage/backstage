@@ -1,0 +1,6 @@
+var c=Object.defineProperty;var u=(r,e,t)=>e in r?c(r,e,{enumerable:!0,configurable:!0,writable:!0,value:t}):r[e]=t;var s=(r,e,t)=>u(r,typeof e!="symbol"?e+"":e,t);import{j as m}from"./jsx-runtime-Cw0GR0a5.js";import{r as l}from"./index-CTjT7uj6.js";import{P as o}from"./index-BRV0Se7Z.js";import{b as f}from"./ApiRef-CqkoWjZn.js";import{a as g}from"./ConfigApi-D1qiBdfc.js";class h{constructor(...e){s(this,"holders");this.holders=e}get(e){for(const t of this.holders){const n=t.get(e);if(n)return n}}}const a=f("api-context"),p=r=>{var i;const{apis:e,children:t}=r,n=(i=l.useContext(a))==null?void 0:i.atVersion(1),d=n?new h(e,n):e;return m.jsx(a.Provider,{value:g({1:d}),children:t})};p.propTypes={apis:o.shape({get:o.func.isRequired}).isRequired,children:o.node};p.__docgenInfo={description:`Provides an {@link @backstage/core-plugin-api#ApiHolder} for consumption in
+the React tree.
+
+@public`,methods:[],displayName:"ApiProvider",props:{apis:{required:!0,tsType:{name:"signature",type:"object",raw:`{
+  get<T>(api: ApiRef<T>): T | undefined;
+}`,signature:{properties:[{key:"get",value:{name:"union",raw:"T | undefined",elements:[{name:"T"},{name:"undefined"}],required:!0}}]}},description:"",type:{name:"shape",value:{get:{name:"func",required:!0}}}},children:{required:!1,tsType:{name:"ReactNode"},description:"",type:{name:"node"}}}};export{p as A};
