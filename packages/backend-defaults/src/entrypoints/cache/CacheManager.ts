@@ -213,6 +213,25 @@ export class CacheManager {
     return redisOptions;
   }
 
+  /**
+   * Construct the full namespace based on the options and pluginId.
+   *
+   * @param pluginId - The plugin ID to namespace
+   * @param storeOptions - Optional cache store configuration options
+   * @returns The constructed namespace string combining the configured namespace with pluginId
+   */
+  private static constructNamespace(
+    pluginId: string,
+    storeOptions: CacheStoreOptions | undefined,
+  ): string {
+    if (storeOptions?.client?.namespace) {
+      const separator = storeOptions.client.keyPrefixSeparator ?? ':';
+      return `${storeOptions.client.namespace}${separator}${pluginId}`;
+    }
+
+    return pluginId;
+  }
+
   /** @internal */
   constructor(
     store: string,
@@ -286,7 +305,7 @@ export class CacheManager {
         });
       }
       return new Keyv({
-        namespace: pluginId,
+        namespace: CacheManager.constructNamespace(pluginId, this.storeOptions),
         ttl: defaultTtl,
         store: stores[pluginId],
         emitErrors: false,
@@ -326,7 +345,7 @@ export class CacheManager {
         });
       }
       return new Keyv({
-        namespace: pluginId,
+        namespace: CacheManager.constructNamespace(pluginId, this.storeOptions),
         ttl: defaultTtl,
         store: stores[pluginId],
         emitErrors: false,
