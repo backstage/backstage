@@ -75,7 +75,7 @@
     "d3-zoom": "^3.0.0",
     "js-yaml": "^4.1.0",
     "linkify-react": "4.1.3",
-    "linkifyjs": "4.1.3",
+    "linkifyjs": "4.3.2",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
