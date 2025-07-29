@@ -286,13 +286,7 @@ export interface ScaffolderApi {
    * @param taskId - the id of the task
    */
   retry?(
-    {
-      secrets,
-      taskId,
-    }: {
-      secrets?: Record<string, string>;
-      taskId: string;
-    },
+    taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{ id: string }>;
 

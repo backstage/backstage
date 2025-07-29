@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -988,7 +988,7 @@ export const spec = {
         operationId: 'Retry',
         description: 'Starts the task again from the point where it failed.',
         requestBody: {
-          required: true,
+          required: false,
           content: {
             'application/json': {
               schema: {

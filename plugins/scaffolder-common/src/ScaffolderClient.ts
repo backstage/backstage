@@ -382,20 +382,11 @@ export class ScaffolderClient implements ScaffolderApi {
    * {@inheritdoc ScaffolderApi.retry}
    */
   async retry?(
-    {
-      secrets,
-      taskId,
-    }: {
-      secrets?: Record<string, string>;
-      taskId: string;
-    },
+    taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{ id: string }> {
     return await this.requestRequired(
-      await this.apiClient.retry(
-        { body: { secrets }, path: { taskId } },
-        options,
-      ),
+      await this.apiClient.retry({ body: {}, path: { taskId } }, options),
     );
   }
 

@@ -667,7 +667,8 @@ paths:
       operationId: Retry
       description: Starts the task again from the point where it failed.
       requestBody:
-        required: true
+        # this should probably be marked as required, but for legacy reasons we're not.
+        required: false
         content:
           application/json:
             schema:
