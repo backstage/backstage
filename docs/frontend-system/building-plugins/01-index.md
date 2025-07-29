@@ -154,19 +154,18 @@ export function ExamplePage() {
 ```
 
 ```tsx title="in src/plugin.ts - Registering a factory for our API"
-import { createApiFactory, ApiBlueprint } from '@backstage/frontend-plugin-api';
+import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 import { exampleApiRef, DefaultExampleApi } from './api';
 
 // highlight-add-start
 const exampleApi = ApiBlueprint.make({
   name: 'example',
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: exampleApiRef,
       deps: {},
       factory: () => new DefaultExampleApi(),
     }),
-  },
 });
 // highlight-add-end
 

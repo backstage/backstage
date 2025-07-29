@@ -46,14 +46,13 @@ Your utility APIs can depend on other utility APIs in their factories. You do th
 import {
   configApiRef,
   ApiBlueprint,
-  createApiFactory,
   discoveryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { MyApiImpl } from './MyApiImpl';
 
 const myApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: myApiRef,
       deps: {
         configApi: configApiRef,
@@ -63,7 +62,6 @@ const myApi = ApiBlueprint.make({
         return new MyApiImpl({ configApi, discoveryApi });
       },
     }),
-  },
 });
 ```
 
