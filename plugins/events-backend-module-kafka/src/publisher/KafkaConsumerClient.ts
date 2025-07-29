@@ -25,8 +25,6 @@ import { loggerServiceAdapter } from './LoggerServiceAdapter';
  * KafkaConsumerClient
  *
  * This class creates the Kafka client that will be used to create the KafkaConsumingEventPublisher
- *
- * @public
  */
 export class KafkaConsumerClient {
   private readonly kafka: Kafka;

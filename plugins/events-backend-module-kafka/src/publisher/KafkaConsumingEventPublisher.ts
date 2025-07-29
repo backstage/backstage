@@ -21,11 +21,8 @@ import { KafkaConsumerConfig } from './config';
 type EventMetadata = EventParams['metadata'];
 
 /**
- *
  * This class subscribes to Kafka topics and publishes events received to the registered subscriber.
  * The message payload will be used as the event payload and passed to the subscribers.
- *
- * @public
  */
 export class KafkaConsumingEventPublisher {
   private readonly kafkaConsumer: Consumer;

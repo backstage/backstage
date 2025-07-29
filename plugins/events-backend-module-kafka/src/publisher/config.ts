@@ -17,18 +17,12 @@ import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
 import { ConsumerConfig, ConsumerSubscribeTopics, KafkaConfig } from 'kafkajs';
 
-/**
- * @public
- */
 export interface KafkaConsumerConfig {
   backstageTopic: string;
   consumerConfig: ConsumerConfig;
   consumerSubscribeTopics: ConsumerSubscribeTopics;
 }
 
-/**
- * @public
- */
 export interface KafkaEventSourceConfig {
   kafkaConfig: KafkaConfig;
   kafkaConsumerConfigs: KafkaConsumerConfig[];
