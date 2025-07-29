@@ -16,6 +16,7 @@
 
 import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '@backstage/types';
+import { OpaqueType } from '@internal/opaque';
 import {
   ExtensionAttachToSpec,
   ExtensionDefinition,
@@ -38,12 +39,72 @@ import {
 import { ExtensionDataContainer } from './types';
 
 /**
+ * A function used to define a parameter mapping function in order to facilitate
+ * advanced parameter typing for extension blueprints.
+ *
+ * @remarks
+ *
+ * This function is primarily intended to enable the use of inferred type
+ * parameters for blueprint params, but it can also be used to transoform the
+ * params before they are handed ot the blueprint.
+ *
+ * The function must return an object created with
+ * {@link createExtensionBlueprintParams}.
+ *
+ * @public
+ */
+export type ExtensionBlueprintParamsDefiner<
+  TParams extends object = object,
+  TInput = any,
+> = (params: TInput) => ExtensionBlueprintParams<TParams>;
+
+/**
+ * An opaque type that represents a set of parameters to be passed to a blueprint.
+ *
+ * @remarks
+ *
+ * Created with {@link createExtensionBlueprintParams}.
+ *
+ * @public
+ */
+export type ExtensionBlueprintParams<T extends object = object> = {
+  $$type: '@backstage/BlueprintParams';
+  T: T;
+};
+
+const OpaqueBlueprintParams = OpaqueType.create<{
+  public: ExtensionBlueprintParams;
+  versions: {
+    version: 'v1';
+    params: object;
+  };
+}>({
+  type: '@backstage/BlueprintParams',
+  versions: ['v1'],
+});
+
+/**
+ * Wraps a plain blueprint parameter object in an opaque {@link ExtensionBlueprintParams} object.
+ *
+ * This is used in the definition of the `defineParams` option of {@link ExtensionBlueprint}.
+ *
+ * @public
+ * @param params - The plain blueprint parameter object to wrap.
+ * @returns The wrapped blueprint parameter object.
+ */
+export function createExtensionBlueprintParams<T extends object = object>(
+  params: T,
+): ExtensionBlueprintParams<T> {
+  return OpaqueBlueprintParams.createInstance('v1', { T: null as any, params });
+}
+
+/**
  * @public
  */
 export type CreateExtensionBlueprintOptions<
   TKind extends string,
   TName extends string | undefined,
-  TParams,
+  TParams extends object | ExtensionBlueprintParamsDefiner,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
@@ -64,8 +125,51 @@ export type CreateExtensionBlueprintOptions<
   config?: {
     schema: TConfigSchema;
   };
+  /**
+   * This option is used to further refine the blueprint params. When this
+   * option is used, the blueprint will require params to be passed in callback
+   * form. This function can both transform the params before they are handed to
+   * the blueprint factory, but importantly it also allows you to define
+   * inferred type parameters for your blueprint params.
+   *
+   * @example
+   * Blueprint definition with inferred type parameters:
+   * ```ts
+   * const ExampleBlueprint = createExtensionBlueprint({
+   *   kind: 'example',
+   *   attachTo: { id: 'example', input: 'example' },
+   *   output: [exampleComponentDataRef, exampleFetcherDataRef],
+   *   defineParams<T>(params: {
+   *     component(props: ExampleProps<T>): JSX.Element | null
+   *     fetcher(options: FetchOptions): Promise<FetchResult<T>>
+   *   }) {
+   *     return createExtensionBlueprintParams(params);
+   *   },
+   *   *factory(params) {
+   *     yield exampleComponentDataRef(params.component)
+   *     yield exampleFetcherDataRef(params.fetcher)
+   *   },
+   * });
+   * ```
+   *
+   * @example
+   * Usage of the above example blueprint:
+   * ```ts
+   * const example = ExampleBlueprint.make({
+   *   params: define => define({
+   *     component: ...,
+   *     fetcher: ...,
+   *   }),
+   * });
+   * ```
+   */
+  defineParams?: TParams extends ExtensionBlueprintParamsDefiner
+    ? TParams
+    : 'The defineParams option must be a function if provided, see the docs for details';
   factory(
-    params: TParams,
+    params: TParams extends ExtensionBlueprintParamsDefiner
+      ? ReturnType<TParams>['T']
+      : TParams,
     context: {
       node: AppNode;
       apis: ApiHolder;
@@ -83,7 +187,7 @@ export type CreateExtensionBlueprintOptions<
 export type ExtensionBlueprintParameters = {
   kind: string;
   name?: string;
-  params?: object;
+  params?: object | ExtensionBlueprintParamsDefiner;
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
   output?: AnyExtensionDataRef;
@@ -96,19 +200,45 @@ export type ExtensionBlueprintParameters = {
   dataRefs?: { [name in string]: AnyExtensionDataRef };
 };
 
+/** @ignore */
+type ParamsFactory<TDefiner extends ExtensionBlueprintParamsDefiner> = (
+  define: TDefiner,
+) => ReturnType<TDefiner>;
+
+/**
+ * Represents any form of params input that can be passed to a blueprint.
+ * This also includes the invalid form of passing a plain params object to a blueprint that uses a definition callback.
+ *
+ * @ignore
+ */
+type AnyParamsInput<TParams extends object | ExtensionBlueprintParamsDefiner> =
+  TParams extends ExtensionBlueprintParamsDefiner<infer IParams>
+    ? IParams | ParamsFactory<TParams>
+    :
+        | TParams
+        | ParamsFactory<ExtensionBlueprintParamsDefiner<TParams, TParams>>;
+
 /**
  * @public
  */
 export interface ExtensionBlueprint<
+  // TParamsMapper extends (params: any) => object,
   T extends ExtensionBlueprintParameters = ExtensionBlueprintParameters,
 > {
   dataRefs: T['dataRefs'];
 
-  make<TNewName extends string | undefined>(args: {
+  make<
+    TNewName extends string | undefined,
+    TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+  >(args: {
     name?: TNewName;
     attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
-    params: T['params'];
+    params: TParamsInput extends ExtensionBlueprintParamsDefiner
+      ? TParamsInput
+      : T['params'] extends ExtensionBlueprintParamsDefiner
+      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: define => define(<params>) })`'
+      : TParamsInput;
   }): ExtensionDefinition<{
     kind: T['kind'];
     name: string | undefined extends TNewName ? T['name'] : TNewName;
@@ -154,8 +284,14 @@ export interface ExtensionBlueprint<
       };
     };
     factory(
-      originalFactory: (
-        params: T['params'],
+      originalFactory: <
+        TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+      >(
+        params: TParamsInput extends ExtensionBlueprintParamsDefiner
+          ? TParamsInput
+          : T['params'] extends ExtensionBlueprintParamsDefiner
+          ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+          : TParamsInput,
         context?: {
           config?: T['config'];
           inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
@@ -205,6 +341,76 @@ export interface ExtensionBlueprint<
   }>;
 }
 
+function unwrapParamsFactory<TParams extends object>(
+  // Allow `Function` because `typeof <object> === 'function'` allows it, but in practice this should always be a param factory
+  params: ParamsFactory<ExtensionBlueprintParamsDefiner> | Function,
+  defineParams: ExtensionBlueprintParamsDefiner,
+  kind: string,
+): TParams {
+  const paramDefinition = (
+    params as ParamsFactory<ExtensionBlueprintParamsDefiner>
+  )(defineParams);
+  try {
+    return OpaqueBlueprintParams.toInternal(paramDefinition).params as TParams;
+  } catch (e) {
+    throw new TypeError(
+      `Invalid invocation of blueprint with kind '${kind}', the parameter definition callback function did not return a valid parameter definition object; Caused by: ${e.message}`,
+    );
+  }
+}
+
+function unwrapParams<TParams extends object>(
+  params: object | ParamsFactory<ExtensionBlueprintParamsDefiner> | string,
+  ctx: { node: AppNode; [ctxParamsSymbol]?: any },
+  defineParams: ExtensionBlueprintParamsDefiner | undefined,
+  kind: string,
+): TParams {
+  const overrideParams = ctx[ctxParamsSymbol] as
+    | object
+    | ParamsFactory<ExtensionBlueprintParamsDefiner>
+    | undefined;
+
+  if (defineParams) {
+    if (overrideParams) {
+      if (typeof overrideParams !== 'function') {
+        throw new TypeError(
+          `Invalid extension override of blueprint with kind '${kind}', the override params were passed as a plain object, but this blueprint requires them to be passed in callback form`,
+        );
+      }
+      return unwrapParamsFactory(overrideParams, defineParams, kind);
+    }
+
+    if (typeof params !== 'function') {
+      throw new TypeError(
+        `Invalid invocation of blueprint with kind '${kind}', the parameters where passed as a plain object, but this blueprint requires them to be passed in callback form`,
+      );
+    }
+    return unwrapParamsFactory(params, defineParams, kind);
+  }
+
+  const base =
+    typeof params === 'function'
+      ? unwrapParamsFactory<TParams>(
+          params,
+          createExtensionBlueprintParams,
+          kind,
+        )
+      : (params as TParams);
+  const overrides =
+    typeof overrideParams === 'function'
+      ? unwrapParamsFactory<TParams>(
+          overrideParams,
+          createExtensionBlueprintParams,
+          kind,
+        )
+      : (overrideParams as Partial<TParams>);
+
+  return {
+    ...base,
+    ...overrides,
+  };
+}
+
 /**
  * A simpler replacement for wrapping up `createExtension` inside a kind or type. This allows for a cleaner API for creating
  * types and instances of those types.
@@ -212,7 +418,7 @@ export interface ExtensionBlueprint<
  * @public
  */
 export function createExtensionBlueprint<
-  TParams extends object,
+  TParams extends object | ExtensionBlueprintParamsDefiner,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
@@ -254,6 +460,10 @@ export function createExtensionBlueprint<
       >;
   dataRefs: TDataRefs;
 }> {
+  const defineParams = options.defineParams as
+    | ExtensionBlueprintParamsDefiner
+    | undefined;
+
   return {
     dataRefs: options.dataRefs,
     make(args) {
@@ -267,7 +477,7 @@ export function createExtensionBlueprint<
         config: options.config,
         factory: ctx =>
           options.factory(
-            { ...args.params, ...(ctx as any)[ctxParamsSymbol] },
+            unwrapParams(args.params, ctx, defineParams, options.kind),
             ctx,
           ) as Iterable<ExtensionDataValue<any, any>>,
       }) as ExtensionDefinition;
@@ -295,7 +505,7 @@ export function createExtensionBlueprint<
             (innerParams, innerContext) => {
               return createExtensionDataContainer<UOutput>(
                 options.factory(
-                  { ...innerParams, ...(ctx as any)[ctxParamsSymbol] },
+                  unwrapParams(innerParams, ctx, defineParams, options.kind),
                   {
                     apis,
                     node,

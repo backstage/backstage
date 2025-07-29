@@ -18,7 +18,6 @@ import {
   createComponentExtension,
   createExtensionInput,
   ApiBlueprint,
-  createApiFactory,
   componentsApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -36,15 +35,17 @@ export const ComponentsApi = ApiBlueprint.makeWithOverrides({
     ),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory({
-      factory: createApiFactory(
-        componentsApiRef,
-        DefaultComponentsApi.fromComponents(
-          inputs.components.map(i =>
-            i.get(createComponentExtension.componentDataRef),
+    return originalFactory(define =>
+      define({
+        api: componentsApiRef,
+        deps: {},
+        factory: () =>
+          DefaultComponentsApi.fromComponents(
+            inputs.components.map(i =>
+              i.get(createComponentExtension.componentDataRef),
+            ),
           ),
-        ),
-      ),
-    });
+      }),
+    );
   },
 });

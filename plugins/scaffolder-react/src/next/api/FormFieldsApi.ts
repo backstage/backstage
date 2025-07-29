@@ -16,7 +16,6 @@
 
 import {
   ApiBlueprint,
-  createApiFactory,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { formFieldsApiRef } from './ref';
@@ -53,12 +52,12 @@ export const formFieldsApi = ApiBlueprint.makeWithOverrides({
       e.get(FormFieldBlueprint.dataRefs.formFieldLoader),
     );
 
-    return originalFactory({
-      factory: createApiFactory({
+    return originalFactory(define =>
+      define({
         api: formFieldsApiRef,
         deps: {},
         factory: () => new DefaultScaffolderFormFieldsApi(formFieldLoaders),
       }),
-    });
+    );
   },
 });
