@@ -19,7 +19,6 @@ import {
   useState,
   useMemo,
   useCallback,
-  useId,
   ChangeEvent,
   KeyboardEvent,
   useRef,
@@ -28,6 +27,13 @@ import {
 import clsx from 'clsx';
 import { MenuComboboxOption, MenuComboboxProps } from './types';
 import { Icon } from '../..';
+
+// React 17 compatible unique ID generator
+let comboboxIdCounter = 0;
+function generateComboboxId(): string {
+  comboboxIdCounter += 1;
+  return `combobox-${comboboxIdCounter.toString(36)}`;
+}
 
 const getListboxItemId = (listboxId: string, optionValue: string): string =>
   `${listboxId}-option-${optionValue}`;
@@ -96,7 +102,7 @@ export const Combobox = forwardRef<HTMLDivElement, MenuComboboxProps>(
       ...rest
     } = props;
 
-    const triggerId = useId();
+    const triggerId = generateComboboxId();
     const listboxId = `${triggerId}-listbox`;
 
     // State management
