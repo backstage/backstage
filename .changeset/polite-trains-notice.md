@@ -2,4 +2,4 @@
 '@backstage/ui': patch
 ---
 
-Updated Combobox to not use the useId() hook to support React 17.
+Updated Menu component in Backstage UI to use useId() from React Aria instead of React to support React 17.
