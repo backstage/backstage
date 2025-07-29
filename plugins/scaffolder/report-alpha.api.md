@@ -14,7 +14,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
-import { FormField } from '@internal/scaffolder';
+import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
@@ -280,8 +280,6 @@ export const formDecoratorsApi: ExtensionDefinition<{
 
 // @alpha (undocumented)
 export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi>;
-
-export { FormField };
 
 export { formFieldsApiRef };
 

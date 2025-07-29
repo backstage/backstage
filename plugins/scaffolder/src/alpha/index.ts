@@ -30,6 +30,4 @@ export {
   type ScaffolderFormFieldsApi,
 } from '@backstage/plugin-scaffolder-react/alpha';
 
-export { type FormField } from '@internal/scaffolder';
-
 export { default } from './plugin';
