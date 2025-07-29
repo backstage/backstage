@@ -16,11 +16,10 @@
 import { lazy, Suspense } from 'react';
 import { ComponentRef } from './createComponentRef';
 import { OpaqueComponentRef } from '@internal/frontend';
-import { Progress } from '@backstage/core-components';
 
 export function makeComponentFromRef<
-  InternalComponentProps extends object,
-  ExternalComponentProps extends object,
+  InternalComponentProps extends {},
+  ExternalComponentProps extends {},
 >({
   ref,
 }: {
@@ -52,6 +51,7 @@ export function makeComponentFromRef<
     );
 
     return (
+      // todo: is this necessary? can we remove this?
       <Suspense>
         <DefaultImplementation {...innerProps} />
       </Suspense>

@@ -18,8 +18,8 @@ import { OpaqueComponentRef } from '@internal/frontend';
 
 /** @public */
 export type ComponentRef<
-  TInnerComponentProps = {},
-  TExternalComponentProps = TInnerComponentProps,
+  TInnerComponentProps extends {} = {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
 > = {
   id: string;
   TProps: TInnerComponentProps;
@@ -28,8 +28,8 @@ export type ComponentRef<
 };
 
 export interface ComponentRefOptions<
-  TInnerComponentProps extends object,
-  TExternalComponentProps extends object,
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {},
   TMode extends 'sync' | 'async',
 > {
   id: string;
@@ -47,8 +47,8 @@ export interface ComponentRefOptions<
  * @public
  */
 export function createComponentRef<
-  TInnerComponentProps extends object,
-  TExternalComponentProps extends object = TInnerComponentProps,
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
 >(
   options: ComponentRefOptions<
     TInnerComponentProps,
@@ -62,8 +62,8 @@ export function createComponentRef<
  * @public
  */
 export function createComponentRef<
-  TInnerComponentProps extends object,
-  TExternalComponentProps extends object = TInnerComponentProps,
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
 >(
   options: ComponentRefOptions<
     TInnerComponentProps,
@@ -73,8 +73,8 @@ export function createComponentRef<
 ): ComponentRef<TInnerComponentProps, TExternalComponentProps>;
 
 export function createComponentRef<
-  TInnerComponentProps extends object,
-  TExternalComponentProps extends object,
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {},
 >(
   options: ComponentRefOptions<
     TInnerComponentProps,
@@ -84,8 +84,8 @@ export function createComponentRef<
 ): ComponentRef<TInnerComponentProps, TExternalComponentProps> {
   return OpaqueComponentRef.createInstance('v1', {
     id: options.id,
-    TProps: {} as TInnerComponentProps,
-    TExternalProps: {} as TExternalComponentProps,
+    TProps: null as unknown as TInnerComponentProps,
+    TExternalProps: null as unknown as TExternalComponentProps,
     toString() {
       return `ComponentRef{id=${options.id}}`;
     },
@@ -93,6 +93,6 @@ export function createComponentRef<
       mode: options.mode,
       defaultComponent: options.defaultComponent,
       transformProps: options.transformProps,
-    },
+    } as (typeof OpaqueComponentRef.TInternal)['options'],
   });
 }
