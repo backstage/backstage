@@ -20,23 +20,11 @@ import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { CatalogApi } from '@backstage/catalog-client';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import {
-  DiscoveryService,
+import type {
+  AuthService,
+  HttpAuthService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-
-/**
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- * @public
- */
-export interface RouterOptions {
-  logger: Logger;
-  config: RootConfigService;
-  catalogApi: CatalogApi;
-  clusterSupplier?: KubernetesClustersSupplier;
-  discovery: DiscoveryService;
-  permissions: PermissionEvaluator;
-}
 
 /**
  * creates and configure a new router for handling the kubernetes backend APIs
@@ -53,9 +41,15 @@ export interface RouterOptions {
  *
  * @public
  */
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
+export async function createRouter(options: {
+  logger: Logger;
+  config: RootConfigService;
+  catalogApi: CatalogApi;
+  clusterSupplier?: KubernetesClustersSupplier;
+  permissions: PermissionEvaluator;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+}): Promise<express.Router> {
   const { router } = await KubernetesBuilder.createBuilder(options)
     .setClusterSupplier(options.clusterSupplier)
     .build();

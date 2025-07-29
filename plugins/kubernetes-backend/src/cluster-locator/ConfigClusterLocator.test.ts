@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
