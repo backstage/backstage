@@ -16,22 +16,20 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { LogEntry, logLevel } from 'kafkajs';
 
-export const loggerServiceAdapter =
-  (loggerService: LoggerService) => (_level: logLevel) => {
+export const loggerServiceAdapter = (loggerService: LoggerService) => {
+  const logMethods: Record<logLevel, (message: string, meta?: object) => void> =
+    {
+      [logLevel.ERROR]: loggerService.error,
+      [logLevel.WARN]: loggerService.warn,
+      [logLevel.INFO]: loggerService.info,
+      [logLevel.DEBUG]: loggerService.debug,
+      [logLevel.NOTHING]: () => {},
+    };
+
+  return (_level: logLevel) => {
     return (entry: LogEntry) => {
       const { namespace, level, log } = entry;
       const { message, ...extra } = log;
-
-      const logMethods: Record<
-        logLevel,
-        (message: string, meta?: object) => void
-      > = {
-        [logLevel.ERROR]: loggerService.error,
-        [logLevel.WARN]: loggerService.warn,
-        [logLevel.INFO]: loggerService.info,
-        [logLevel.DEBUG]: loggerService.debug,
-        [logLevel.NOTHING]: () => {},
-      };
 
       // Use loggerService method that matches the level
       logMethods[level].call(
@@ -43,3 +41,4 @@ export const loggerServiceAdapter =
       );
     };
   };
+};
