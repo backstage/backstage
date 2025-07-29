@@ -59,7 +59,7 @@ function isGitlabError(e: unknown): e is GitlabError {
 }
 
 function isGitbeakerRequestError(e: unknown): e is GitbeakerRequestError {
-  return isError(e) && (e as any).name === 'GitbeakerRequestError';
+  return isError(e) && e.name === 'GitbeakerRequestError';
 }
 
 export function getErrorMessage(e: unknown): string {
