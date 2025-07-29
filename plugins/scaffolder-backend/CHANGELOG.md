@@ -1,5 +1,42 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.2.0-next.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+
+### Patch Changes
+
+- caee2eb: Fixed WinstonLogger throwing when redactions were null or undefined
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.2-next.0
+  - @backstage/backend-openapi-utils@0.6.0-next.0
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.4-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-auth-node@0.6.6-next.0
+  - @backstage/plugin-permission-node@0.10.3-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 2.1.0
 
 ### Minor Changes
