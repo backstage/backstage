@@ -114,13 +114,7 @@ export interface ScaffolderApi {
     options?: ScaffolderRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
   retry?(
-    {
-      secrets,
-      taskId,
-    }: {
-      secrets?: Record<string, string>;
-      taskId: string;
-    },
+    taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{
     id: string;
@@ -213,13 +207,7 @@ export class ScaffolderClient implements ScaffolderApi {
     options?: ScaffolderRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
   retry?(
-    {
-      secrets,
-      taskId,
-    }: {
-      secrets?: Record<string, string>;
-      taskId: string;
-    },
+    taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{
     id: string;
