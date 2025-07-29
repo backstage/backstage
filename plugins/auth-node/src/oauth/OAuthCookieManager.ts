@@ -47,7 +47,7 @@ const defaultCookieConfigurer: CookieConfigurer = ({
     ? pathname.slice(0, -'/handler/frame'.length)
     : `${pathname}/${providerId}`;
 
-  return { domain, path, secure, sameSite };
+  return { path, secure, sameSite };
 };
 
 /** @internal */
@@ -182,6 +182,15 @@ export class OAuthCookieManager {
         }
         output = output.cookie(key, '', this.getRemoveCookieOptions());
       }
+    }
+
+    // If using the default cookieConfigurer, delete old cookie with domain set to the callbackUrl's domain (legacy behavior)
+    if (this.cookieConfigurer === defaultCookieConfigurer) {
+      const { hostname: domain } = new URL(this.options.callbackUrl);
+      output = output.cookie(name, '', {
+        ...this.getRemoveCookieOptions(),
+        domain: `.${domain}`,
+      });
     }
 
     return output.cookie(name, val, options);
