@@ -27,13 +27,7 @@ import {
 import clsx from 'clsx';
 import { MenuComboboxOption, MenuComboboxProps } from './types';
 import { Icon } from '../..';
-
-// React 17 compatible unique ID generator
-let comboboxIdCounter = 0;
-function generateComboboxId(): string {
-  comboboxIdCounter += 1;
-  return `combobox-${comboboxIdCounter.toString(36)}`;
-}
+import { useId } from 'react-aria';
 
 const getListboxItemId = (listboxId: string, optionValue: string): string =>
   `${listboxId}-option-${optionValue}`;
@@ -102,7 +96,7 @@ export const Combobox = forwardRef<HTMLDivElement, MenuComboboxProps>(
       ...rest
     } = props;
 
-    const triggerId = generateComboboxId();
+    const triggerId = useId();
     const listboxId = `${triggerId}-listbox`;
 
     // State management
