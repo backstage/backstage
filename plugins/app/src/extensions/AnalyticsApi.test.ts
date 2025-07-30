@@ -37,7 +37,7 @@ describe('AnalyticsApi', () => {
   const captureEventSpy1 = jest.fn();
   const MockImplementation1 = createExtension({
     name: 'mock-implementation-1',
-    attachTo: { id: 'api:analytics', input: 'analyticsImplementations' },
+    attachTo: { id: 'api:analytics', input: 'implementations' },
     output: [AnalyticsImplementationBlueprint.dataRefs.factory],
     factory() {
       return [
@@ -53,7 +53,7 @@ describe('AnalyticsApi', () => {
   const captureEventSpy2 = jest.fn();
   const MockImplementation2 = createExtension({
     name: 'mock-implementation-2',
-    attachTo: { id: 'api:analytics', input: 'analyticsImplementations' },
+    attachTo: { id: 'api:analytics', input: 'implementations' },
     output: [AnalyticsImplementationBlueprint.dataRefs.factory],
     factory() {
       return [

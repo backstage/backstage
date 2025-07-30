@@ -25,7 +25,7 @@ import {
 export const AnalyticsApi = ApiBlueprint.makeWithOverrides({
   name: 'analytics',
   inputs: {
-    analyticsImplementations: createExtensionInput([
+    implementations: createExtensionInput([
       AnalyticsImplementationBlueprint.dataRefs.factory,
     ]),
   },
@@ -33,7 +33,7 @@ export const AnalyticsApi = ApiBlueprint.makeWithOverrides({
     // Pull out and aggregate deps from every implementation input into an
     // object keyed by the apiRef ID to be passed to this API implementation as
     // if they were its own deps.
-    const aggregatedDeps = inputs.analyticsImplementations
+    const aggregatedDeps = inputs.implementations
       .flatMap<ApiRef<unknown>>(impls =>
         Object.values(
           impls.get(AnalyticsImplementationBlueprint.dataRefs.factory).deps,
@@ -49,7 +49,7 @@ export const AnalyticsApi = ApiBlueprint.makeWithOverrides({
         api: analyticsApiRef,
         deps: aggregatedDeps,
         factory: analyticsApiDeps => {
-          const actualApis = inputs.analyticsImplementations
+          const actualApis = inputs.implementations
             .map(impl =>
               impl.get(AnalyticsImplementationBlueprint.dataRefs.factory),
             )
