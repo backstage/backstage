@@ -68,7 +68,7 @@ import {
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
 import { DefaultDialogApi } from './apis/DefaultDialogApi';
-import { AnalyticsApi } from './extensions/AnalyticsApi';
+import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
   ApiBlueprint.make({
@@ -101,7 +101,7 @@ export const apis = [
         factory: () => new AlertApiForwarder(),
       }),
   }),
-  AnalyticsApi,
+  analyticsApi,
   ApiBlueprint.make({
     name: 'error',
     params: defineParams =>

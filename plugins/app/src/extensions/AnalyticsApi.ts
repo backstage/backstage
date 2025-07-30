@@ -22,7 +22,7 @@ import {
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 
-export const AnalyticsApi = ApiBlueprint.makeWithOverrides({
+export const analyticsApi = ApiBlueprint.makeWithOverrides({
   name: 'analytics',
   inputs: {
     implementations: createExtensionInput([
