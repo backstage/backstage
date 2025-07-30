@@ -10,6 +10,10 @@ export const overview: Page[] = [
     slug: '',
   },
   {
+    title: 'Installation',
+    slug: 'install',
+  },
+  {
     title: 'About',
     slug: 'about',
   },
@@ -19,7 +23,7 @@ export const overview: Page[] = [
   },
 ];
 
-export const theme: Page[] = [
+export const coreConcepts: Page[] = [
   {
     title: 'Iconography',
     slug: 'iconography',
@@ -35,10 +39,6 @@ export const theme: Page[] = [
   {
     title: 'Theming',
     slug: 'theming',
-  },
-  {
-    title: 'Typography',
-    slug: 'typography',
   },
 ];
 
@@ -102,8 +102,13 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
-    title: 'Heading',
-    slug: 'heading',
+    title: 'Header',
+    slug: 'header',
+    status: 'alpha',
+  },
+  {
+    title: 'HeaderPage',
+    slug: 'header-page',
     status: 'alpha',
   },
   {

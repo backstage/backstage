@@ -1,5 +1,28 @@
 # @backstage/frontend-app-api
 
+## 0.11.5-next.1
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/frontend-defaults@0.2.5-next.1
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.2.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
 ## 0.11.4
 
 ### Patch Changes

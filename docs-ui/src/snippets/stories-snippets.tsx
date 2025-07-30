@@ -8,7 +8,6 @@ import * as ButtonLinkStories from '../../../packages/ui/src/components/ButtonLi
 import * as CheckboxStories from '../../../packages/ui/src/components/Checkbox/Checkbox.stories';
 import * as ContainerStories from '../../../packages/ui/src/components/Container/Container.stories';
 import * as GridStories from '../../../packages/ui/src/components/Grid/Grid.stories';
-import * as HeadingStories from '../../../packages/ui/src/components/Heading/Heading.stories';
 import * as IconStories from '../../../packages/ui/src/components/Icon/Icon.stories';
 import * as TextFieldStories from '../../../packages/ui/src/components/TextField/TextField.stories';
 import * as TextStories from '../../../packages/ui/src/components/Text/Text.stories';
@@ -25,231 +24,46 @@ import * as SearchFieldStories from '../../../packages/ui/src/components/SearchF
 import * as TooltipStories from '../../../packages/ui/src/components/Tooltip/Tooltip.stories';
 import * as SkeletonStories from '../../../packages/ui/src/components/Skeleton/Skeleton.stories';
 import * as CardStories from '../../../packages/ui/src/components/Card/Card.stories';
+import * as HeaderStories from '../../../packages/ui/src/components/Header/Header.stories';
+import * as HeaderPageStories from '../../../packages/ui/src/components/HeaderPage/HeaderPage.stories';
 
-export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
-  const stories = composeStories(BoxStories);
-  const StoryComponent = stories[story as keyof typeof stories];
+// Helper function to create snippet components
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createSnippetComponent = (stories: any) => {
+  return function SnippetComponent({ story }: { story: string }) {
+    const composedStories = composeStories(stories);
+    const StoryComponent = composedStories[
+      story as keyof typeof composedStories
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ] as any;
 
-  return StoryComponent ? <StoryComponent /> : null;
+    return StoryComponent ? <StoryComponent /> : null;
+  };
 };
 
-export const ButtonSnippet = ({
-  story,
-}: {
-  story: keyof typeof ButtonStories;
-}) => {
-  const stories = composeStories(ButtonStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const ButtonIconSnippet = ({
-  story,
-}: {
-  story: keyof typeof ButtonIconStories;
-}) => {
-  const stories = composeStories(ButtonIconStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const ButtonLinkSnippet = ({
-  story,
-}: {
-  story: keyof typeof ButtonLinkStories;
-}) => {
-  const stories = composeStories(ButtonLinkStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const CheckboxSnippet = ({
-  story,
-}: {
-  story: keyof typeof CheckboxStories;
-}) => {
-  const stories = composeStories(CheckboxStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const ContainerSnippet = ({
-  story,
-}: {
-  story: keyof typeof ContainerStories;
-}) => {
-  const stories = composeStories(ContainerStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const FlexSnippet = ({ story }: { story: keyof typeof FlexStories }) => {
-  const stories = composeStories(FlexStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const TextFieldSnippet = ({
-  story,
-}: {
-  story: keyof typeof TextFieldStories;
-}) => {
-  const stories = composeStories(TextFieldStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const GridSnippet = ({ story }: { story: keyof typeof GridStories }) => {
-  const stories = composeStories(GridStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const HeadingSnippet = ({
-  story,
-}: {
-  story: keyof typeof HeadingStories;
-}) => {
-  const stories = composeStories(HeadingStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const IconSnippet = ({ story }: { story: keyof typeof IconStories }) => {
-  const stories = composeStories(IconStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const TextSnippet = ({ story }: { story: keyof typeof TextStories }) => {
-  const stories = composeStories(TextStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const SelectSnippet = ({
-  story,
-}: {
-  story: keyof typeof SelectStories;
-}) => {
-  const stories = composeStories(SelectStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const MenuSnippet = ({ story }: { story: keyof typeof MenuStories }) => {
-  const stories = composeStories(MenuStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const LinkSnippet = ({ story }: { story: keyof typeof LinkStories }) => {
-  const stories = composeStories(LinkStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const AvatarSnippet = ({
-  story,
-}: {
-  story: keyof typeof AvatarStories;
-}) => {
-  const stories = composeStories(AvatarStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const CollapsibleSnippet = ({
-  story,
-}: {
-  story: keyof typeof CollapsibleStories;
-}) => {
-  const stories = composeStories(CollapsibleStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const TabsSnippet = ({ story }: { story: keyof typeof TabsStories }) => {
-  const stories = composeStories(TabsStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const SwitchSnippet = ({
-  story,
-}: {
-  story: keyof typeof SwitchStories;
-}) => {
-  const stories = composeStories(SwitchStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const RadioGroupSnippet = ({
-  story,
-}: {
-  story: keyof typeof RadioGroupStories;
-}) => {
-  const stories = composeStories(RadioGroupStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const SearchFieldSnippet = ({
-  story,
-}: {
-  story: keyof typeof SearchFieldStories;
-}) => {
-  const stories = composeStories(SearchFieldStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const TooltipSnippet = ({
-  story,
-}: {
-  story: keyof typeof TooltipStories;
-}) => {
-  const stories = composeStories(TooltipStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const SkeletonSnippet = ({
-  story,
-}: {
-  story: keyof typeof SkeletonStories;
-}) => {
-  const stories = composeStories(SkeletonStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
-export const CardSnippet = ({ story }: { story: keyof typeof CardStories }) => {
-  const stories = composeStories(CardStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
+// Create snippet components using the helper function
+export const BoxSnippet = createSnippetComponent(BoxStories);
+export const ButtonSnippet = createSnippetComponent(ButtonStories);
+export const ButtonIconSnippet = createSnippetComponent(ButtonIconStories);
+export const ButtonLinkSnippet = createSnippetComponent(ButtonLinkStories);
+export const CheckboxSnippet = createSnippetComponent(CheckboxStories);
+export const ContainerSnippet = createSnippetComponent(ContainerStories);
+export const GridSnippet = createSnippetComponent(GridStories);
+export const IconSnippet = createSnippetComponent(IconStories);
+export const TextFieldSnippet = createSnippetComponent(TextFieldStories);
+export const TextSnippet = createSnippetComponent(TextStories);
+export const FlexSnippet = createSnippetComponent(FlexStories);
+export const SelectSnippet = createSnippetComponent(SelectStories);
+export const MenuSnippet = createSnippetComponent(MenuStories);
+export const LinkSnippet = createSnippetComponent(LinkStories);
+export const AvatarSnippet = createSnippetComponent(AvatarStories);
+export const CollapsibleSnippet = createSnippetComponent(CollapsibleStories);
+export const RadioGroupSnippet = createSnippetComponent(RadioGroupStories);
+export const TabsSnippet = createSnippetComponent(TabsStories);
+export const SwitchSnippet = createSnippetComponent(SwitchStories);
+export const SearchFieldSnippet = createSnippetComponent(SearchFieldStories);
+export const TooltipSnippet = createSnippetComponent(TooltipStories);
+export const SkeletonSnippet = createSnippetComponent(SkeletonStories);
+export const CardSnippet = createSnippetComponent(CardStories);
+export const HeaderSnippet = createSnippetComponent(HeaderStories);
+export const HeaderPageSnippet = createSnippetComponent(HeaderPageStories);

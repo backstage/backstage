@@ -30,5 +30,9 @@ export {
   defaultOrganizationTeamTransformer,
   type TransformerContext,
 } from './defaultTransformers';
-export { assignGroupsToUsers, buildOrgHierarchy } from './org';
+export {
+  assignGroupsToUser,
+  assignGroupsToUsers,
+  buildOrgHierarchy,
+} from './org';
 export { parseGithubOrgUrl } from './util';

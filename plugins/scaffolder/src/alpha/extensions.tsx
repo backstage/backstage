@@ -22,7 +22,6 @@ import {
   NavItemBlueprint,
   PageBlueprint,
   ApiBlueprint,
-  createApiFactory,
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
@@ -74,8 +73,8 @@ export const repoUrlPickerFormField = FormFieldBlueprint.make({
 });
 
 export const scaffolderApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: scaffolderApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -91,5 +90,4 @@ export const scaffolderApi = ApiBlueprint.make({
           identityApi,
         }),
     }),
-  },
 });

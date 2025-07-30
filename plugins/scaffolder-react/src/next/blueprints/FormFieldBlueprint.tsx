@@ -19,8 +19,9 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { z } from 'zod';
 
-import { OpaqueFormField, FormField } from '@internal/scaffolder';
+import { OpaqueFormField } from '@internal/scaffolder';
 import { FormFieldExtensionData } from './types';
+import { FormField } from '../api';
 
 const formFieldExtensionDataRef = createExtensionDataRef<
   () => Promise<FormField>

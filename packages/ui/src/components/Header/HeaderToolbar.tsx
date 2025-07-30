@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-aria-components';
+import { Link, RouterProvider } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useRef, useState, useEffect } from 'react';
 import { RiArrowRightSLine, RiMore2Line, RiShapesLine } from '@remixicon/react';
@@ -22,7 +22,12 @@ import type { HeaderToolbarProps } from './types';
 import { ButtonIcon } from '../ButtonIcon';
 import { Menu } from '../Menu';
 import { Text } from '../Text';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { useNavigate, useHref } from 'react-router-dom';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
  * A component that renders a toolbar.
@@ -30,16 +35,23 @@ import { motion, useScroll, useTransform } from 'motion/react';
  * @internal
  */
 export const HeaderToolbar = (props: HeaderToolbarProps) => {
-  const { icon, title, menuItems, breadcrumbs, customActions, hasTabs } = props;
+  const {
+    icon,
+    title,
+    titleLink,
+    menuItems,
+    breadcrumbs,
+    customActions,
+    hasTabs,
+  } = props;
   const { classNames } = useStyles('Header');
-
-  const { scrollY } = useScroll();
-  const breadcrumbOpacity = useTransform(scrollY, [80, 120], [0, 1]);
+  let navigate = useNavigate();
 
   // Refs for collision detection
   const toolbarWrapperRef = useRef<HTMLDivElement>(null);
   const toolbarContentRef = useRef<HTMLDivElement>(null);
   const toolbarControlsRef = useRef<HTMLDivElement>(null);
+  const breadcrumbsRef = useRef<HTMLDivElement>(null);
 
   // State for breadcrumb visibility
   const [showBreadcrumbs, setShowBreadcrumbs] = useState(true);
@@ -87,80 +99,106 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
     };
   }, []);
 
+  useGSAP(() => {
+    gsap.to(breadcrumbsRef.current, {
+      scrollTrigger: {
+        start: '10% 10%',
+        end: '20% 20%',
+        scrub: true,
+      },
+      opacity: 1,
+      duration: 1,
+      ease: 'power2.inOut',
+    });
+  });
+
+  const titleContent = (
+    <>
+      <div className={classNames.toolbarIcon}>{icon || <RiShapesLine />}</div>
+      <Text variant="body-medium">{title || 'Your plugin'}</Text>
+    </>
+  );
+
   return (
-    <div className={classNames.toolbar} data-has-tabs={hasTabs}>
-      <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
-        <div className={classNames.toolbarContent} ref={toolbarContentRef}>
-          <div className={classNames.toolbarName}>
-            <div className={classNames.toolbarIcon}>
-              {icon || <RiShapesLine />}
-            </div>
-            <Text variant="body">{title || 'Your plugin'}</Text>
+    <RouterProvider navigate={navigate} useHref={useHref}>
+      <div className={classNames.toolbar} data-has-tabs={hasTabs}>
+        <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
+          <div className={classNames.toolbarContent} ref={toolbarContentRef}>
+            <Text as="h1" variant="body-medium">
+              {titleLink ? (
+                <Link className={classNames.toolbarName} href={titleLink}>
+                  {titleContent}
+                </Link>
+              ) : (
+                <div className={classNames.toolbarName}>{titleContent}</div>
+              )}
+            </Text>
+            {breadcrumbs && (
+              <div
+                ref={breadcrumbsRef}
+                className={classNames.breadcrumbs}
+                style={{
+                  opacity: 0,
+                  visibility: showBreadcrumbs ? 'visible' : 'hidden',
+                }}
+              >
+                <RiArrowRightSLine
+                  size={16}
+                  className={classNames.breadcrumbSeparator}
+                />
+                {breadcrumbs.map((breadcrumb, index) => (
+                  <div key={breadcrumb.label} className={classNames.breadcrumb}>
+                    <Link
+                      href={breadcrumb.href}
+                      className={classNames.breadcrumbLink}
+                      data-active={index === breadcrumbs.length - 1}
+                    >
+                      {breadcrumb.label}
+                    </Link>
+                    {index < breadcrumbs.length - 1 && (
+                      <RiArrowRightSLine
+                        size={16}
+                        className={classNames.breadcrumbSeparator}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          {breadcrumbs && (
-            <motion.div
-              className={classNames.breadcrumbs}
-              style={{
-                opacity: breadcrumbOpacity,
-                visibility: showBreadcrumbs ? 'visible' : 'hidden',
-              }}
-            >
-              <RiArrowRightSLine
-                size={16}
-                className={classNames.breadcrumbSeparator}
-              />
-              {breadcrumbs.map((breadcrumb, index) => (
-                <div key={breadcrumb.label} className={classNames.breadcrumb}>
-                  <Link
-                    href={breadcrumb.href}
-                    className={classNames.breadcrumbLink}
-                    data-active={index === breadcrumbs.length - 1}
-                  >
-                    {breadcrumb.label}
-                  </Link>
-                  {index < breadcrumbs.length - 1 && (
-                    <RiArrowRightSLine
-                      size={16}
-                      className={classNames.breadcrumbSeparator}
+          <div className={classNames.toolbarControls} ref={toolbarControlsRef}>
+            {customActions}
+            {menuItems && (
+              <Menu.Root>
+                <Menu.Trigger
+                  render={props => (
+                    <ButtonIcon
+                      size="small"
+                      icon={<RiMore2Line />}
+                      variant="tertiary"
+                      {...props}
                     />
                   )}
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </div>
-        <div className={classNames.toolbarControls} ref={toolbarControlsRef}>
-          {customActions}
-          {menuItems && (
-            <Menu.Root>
-              <Menu.Trigger
-                render={props => (
-                  <ButtonIcon
-                    size="small"
-                    icon={<RiMore2Line />}
-                    variant="tertiary"
-                    {...props}
-                  />
-                )}
-              />
-              <Menu.Portal>
-                <Menu.Positioner sideOffset={4} align="end">
-                  <Menu.Popup>
-                    {menuItems.map(option => (
-                      <Menu.Item
-                        key={option.value}
-                        onClick={() => option.onClick?.()}
-                      >
-                        {option.label}
-                      </Menu.Item>
-                    ))}
-                  </Menu.Popup>
-                </Menu.Positioner>
-              </Menu.Portal>
-            </Menu.Root>
-          )}
+                />
+                <Menu.Portal>
+                  <Menu.Positioner sideOffset={4} align="end">
+                    <Menu.Popup>
+                      {menuItems.map(option => (
+                        <Menu.Item
+                          key={option.value}
+                          onClick={() => option.onClick?.()}
+                        >
+                          {option.label}
+                        </Menu.Item>
+                      ))}
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </RouterProvider>
   );
 };

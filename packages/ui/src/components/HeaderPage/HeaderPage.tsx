@@ -15,8 +15,8 @@
  */
 
 import type { HeaderPageProps } from './types';
-import { Heading } from '../Heading';
 import { Menu } from '../Menu';
+import { Text } from '../Text';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiMore2Line } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
@@ -34,7 +34,9 @@ export const HeaderPage = (props: HeaderPageProps) => {
   return (
     <div className={classNames.root}>
       <div className={classNames.content}>
-        <Heading variant="title4">{title}</Heading>
+        <Text variant="title-small" weight="bold" as="h2">
+          {title}
+        </Text>
         <div className={classNames.controls}>
           {customActions}
           {menuItems && (
@@ -72,7 +74,12 @@ export const HeaderPage = (props: HeaderPageProps) => {
           <Tabs>
             <TabList>
               {tabs.map(tab => (
-                <Tab key={tab.id} id={tab.id} href={tab.href}>
+                <Tab
+                  key={tab.id}
+                  id={tab.id}
+                  href={tab.href}
+                  matchStrategy={tab.matchStrategy}
+                >
                   {tab.label}
                 </Tab>
               ))}

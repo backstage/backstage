@@ -28,8 +28,6 @@ export * from './components/Box';
 export * from './components/Grid';
 export * from './components/Flex';
 export * from './components/Container';
-export * from './components/Text';
-export * from './components/Heading';
 
 // UI components
 export * from './components/Avatar';
@@ -47,6 +45,7 @@ export * from './components/Checkbox';
 export * from './components/RadioGroup';
 export * from './components/Table';
 export * from './components/Tabs';
+export * from './components/Text';
 export * from './components/TextField';
 export * from './components/Tooltip';
 export * from './components/Menu';

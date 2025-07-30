@@ -1,0 +1,36 @@
+import { CodeBlock } from '@/components/CodeBlock';
+
+# How to install Backstage UI
+
+## 1. Import the package
+
+Import the package using a package manager.
+
+<CodeBlock lang="shell" code={`yarn add @backstage/ui`} />
+
+## 2. Import the css files
+
+Import the global CSS file at the root of your application.
+
+```tsx
+import '@backstage/ui/css/styles.css';
+```
+
+## 3. Start building ✨
+
+Now you can start building your plugin using the new design system.
+
+```tsx
+import { Flex, Button, Text } from '@backstage/ui';
+
+<Flex>
+  <Text>Hello World</Text>
+  <Button>Click me</Button>
+</Flex>;
+```
+
+## Next steps
+
+Now that you have the basics down, you can start building your plugin using the new design system.
+Please familiarise yourself first with our theming principles. This will help you understand the core concepts of the design system.
+If you have any questions, please reach out to us on [Discord](https://discord.gg/MUpMjP2).

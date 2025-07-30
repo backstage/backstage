@@ -125,6 +125,11 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<AddLocationResponse>;
   // (undocumented)
+  analyzeLocation(
+    location: AnalyzeLocationRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<AnalyzeLocationResponse>;
+  // (undocumented)
   getEntities(
     request: GetEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,

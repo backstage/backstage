@@ -346,7 +346,11 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           ignoreQueryPrefix: true,
         });
         const newParams = qs.stringify(
-          { ...oldParams, filters: queryParams, cursor, offset, limit },
+          {
+            ...oldParams,
+            filters: queryParams,
+            ...(paginationMode === 'none' ? {} : { cursor, limit, offset }),
+          },
           { addQueryPrefix: true, arrayFormat: 'repeat' },
         );
         const newUrl = `${window.location.pathname}${newParams}`;

@@ -40,7 +40,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    href: '/home',
+    href: '/',
     children: 'Sign up for Backstage',
   },
 };
@@ -72,131 +72,169 @@ export const AllVariants: Story = {
 };
 
 export const AllColors: Story = {
-  args: {
-    ...Default.args,
-  },
-  render: args => (
+  render: () => (
     <Flex gap="4" direction="column">
       <Link
         href="https://ui.backstage.io"
         variant="title-small"
         color="primary"
-        {...args}
+        children="I am primary"
       />
       <Link
         href="https://ui.backstage.io"
         variant="title-small"
         color="secondary"
-        {...args}
+        children="I am secondary"
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="danger"
+        children="I am danger"
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="warning"
+        children="I am warning"
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="success"
+        children="I am success"
       />
     </Flex>
   ),
 };
 
 export const AllWeights: Story = {
-  args: {
-    ...Default.args,
-  },
-  render: args => (
+  render: () => (
     <Flex gap="4" direction="column">
-      <Link
-        href="https://ui.backstage.io"
-        variant="title-large"
-        weight="regular"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="title-large"
-        weight="bold"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="title-medium"
-        weight="regular"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="title-medium"
-        weight="bold"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="title-small"
-        weight="regular"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="title-small"
-        weight="bold"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="title-x-small"
-        weight="regular"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="title-x-small"
-        weight="bold"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="body-large"
-        weight="regular"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="body-large"
-        weight="bold"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="body-medium"
-        weight="regular"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="body-medium"
-        weight="bold"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="body-small"
-        weight="regular"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="body-small"
-        weight="bold"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="body-x-small"
-        weight="regular"
-        {...args}
-      />
-      <Link
-        href="https://ui.backstage.io"
-        variant="body-x-small"
-        weight="bold"
-        {...args}
-      />
+      <Flex>
+        <Link
+          href="https://ui.backstage.io"
+          variant="title-large"
+          weight="regular"
+          children="A fox"
+        />
+        <Link
+          href="https://ui.backstage.io"
+          variant="title-large"
+          weight="bold"
+          children="A turtle"
+        />
+      </Flex>
+      <Flex>
+        <Link
+          href="https://ui.backstage.io"
+          variant="title-medium"
+          weight="regular"
+          children="A fox"
+        />
+        <Link
+          href="https://ui.backstage.io"
+          variant="title-medium"
+          weight="bold"
+          children="A turtle"
+        />
+      </Flex>
+      <Flex>
+        <Link
+          href="https://ui.backstage.io"
+          variant="title-small"
+          weight="regular"
+          children="A fox"
+        />
+        <Link
+          href="https://ui.backstage.io"
+          variant="title-small"
+          weight="bold"
+          children="A turtle"
+        />
+      </Flex>
+      <Flex>
+        <Link
+          href="https://ui.backstage.io"
+          variant="title-x-small"
+          weight="regular"
+          children="A fox"
+        />
+        <Link
+          href="https://ui.backstage.io"
+          variant="title-x-small"
+          weight="bold"
+          children="A turtle"
+        />
+      </Flex>
+      <Flex>
+        <Link
+          href="https://ui.backstage.io"
+          variant="body-large"
+          weight="regular"
+          children="A fox"
+        />
+        <Link
+          href="https://ui.backstage.io"
+          variant="body-large"
+          weight="bold"
+          children="A turtle"
+        />
+      </Flex>
+      <Flex>
+        <Link
+          href="https://ui.backstage.io"
+          variant="body-medium"
+          weight="regular"
+          children="A fox"
+        />
+        <Link
+          href="https://ui.backstage.io"
+          variant="body-medium"
+          weight="bold"
+          children="A turtle"
+        />
+      </Flex>
+      <Flex>
+        <Link
+          href="https://ui.backstage.io"
+          variant="body-small"
+          weight="regular"
+          children="A fox"
+        />
+        <Link
+          href="https://ui.backstage.io"
+          variant="body-small"
+          weight="bold"
+          children="A turtle"
+        />
+      </Flex>
+      <Flex>
+        <Link
+          href="https://ui.backstage.io"
+          variant="body-x-small"
+          weight="regular"
+          children="A fox"
+        />
+        <Link
+          href="https://ui.backstage.io"
+          variant="body-x-small"
+          weight="bold"
+          children="A turtle"
+        />
+      </Flex>
     </Flex>
   ),
+};
+
+export const Truncate: Story = {
+  args: {
+    children:
+      "A man looks at a painting in a museum and says, “Brothers and sisters I have none, but that man's father is my father's son.” Who is in the painting?",
+    href: '/',
+    truncate: true,
+    style: { width: '480px' },
+  },
 };
 
 export const Responsive: Story = {

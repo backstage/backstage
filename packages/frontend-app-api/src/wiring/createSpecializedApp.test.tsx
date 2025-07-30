@@ -31,11 +31,7 @@ import {
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
-import {
-  configApiRef,
-  createApiFactory,
-  featureFlagsApiRef,
-} from '@backstage/core-plugin-api';
+import { configApiRef, featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { Fragment } from 'react';
@@ -148,16 +144,20 @@ describe('createSpecializedApp', () => {
               ],
             }),
             ApiBlueprint.make({
-              params: {
-                factory: createApiFactory(featureFlagsApiRef, {
-                  registerFlag(flag) {
-                    flags.push(flag);
-                  },
-                  getRegisteredFlags() {
-                    return flags;
-                  },
-                } as typeof featureFlagsApiRef.T),
-              },
+              params: define =>
+                define({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () =>
+                    ({
+                      registerFlag(flag) {
+                        flags.push(flag);
+                      },
+                      getRegisteredFlags() {
+                        return flags;
+                      },
+                    } as typeof featureFlagsApiRef.T),
+                }),
             }),
           ],
         }),
@@ -253,15 +253,14 @@ describe('createSpecializedApp', () => {
           pluginId: 'first',
           extensions: [
             ApiBlueprint.make({
-              params: {
-                factory: createApiFactory({
+              params: define =>
+                define({
                   api: analyticsApiRef,
                   deps: {},
                   factory: () => {
                     throw new Error('BROKEN');
                   },
                 }),
-              },
             }),
           ],
         }),
@@ -295,13 +294,12 @@ describe('createSpecializedApp', () => {
               },
             }),
             ApiBlueprint.make({
-              params: {
-                factory: createApiFactory({
+              params: define =>
+                define({
                   api: analyticsApiRef,
                   deps: {},
                   factory: mockAnalyticsApi,
                 }),
-              },
             }),
           ],
         }),

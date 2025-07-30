@@ -28,8 +28,8 @@ import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
-import { TabProps } from 'react-aria-components';
-import type { TabsProps as TabsProps_2 } from 'react-aria-components';
+import type { TabProps as TabProps_2 } from 'react-aria-components';
+import { TabsProps as TabsProps_2 } from 'react-aria-components';
 import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
@@ -46,25 +46,6 @@ export type ArbitraryStylingPropDef = {
   customProperties: `--${string}`[];
   parseValue?: (value: string) => string | undefined;
 };
-
-// @public (undocumented)
-export type AsProps =
-  | 'div'
-  | 'span'
-  | 'p'
-  | 'article'
-  | 'section'
-  | 'main'
-  | 'nav'
-  | 'aside'
-  | 'ul'
-  | 'ol'
-  | 'li'
-  | 'details'
-  | 'summary'
-  | 'dd'
-  | 'dl'
-  | 'dt';
 
 // @public (undocumented)
 export const Avatar: ForwardRefExoticComponent<
@@ -341,7 +322,7 @@ export const componentDefinitions: {
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium', 'large'];
-      readonly variant: readonly ['primary', 'secondary', 'ghost'];
+      readonly variant: readonly ['primary', 'secondary', 'tertiary'];
     };
   };
   readonly ButtonIcon: {
@@ -1040,9 +1021,13 @@ export interface HeaderProps {
   // (undocumented)
   menuItems?: HeaderMenuItem[];
   // (undocumented)
+  onTabSelectionChange?: TabsProps_2['onSelectionChange'];
+  // (undocumented)
   tabs?: HeaderTab[];
   // (undocumented)
   title?: string;
+  // (undocumented)
+  titleLink?: string;
 }
 
 // @public
@@ -1053,46 +1038,8 @@ export interface HeaderTab {
   id: string;
   // (undocumented)
   label: string;
+  matchStrategy?: TabMatchStrategy;
 }
-
-// @public (undocumented)
-export const Heading: {
-  <T extends ElementType = 'h1'>(
-    props: HeadingProps<T> & {
-      ref?: React.ComponentPropsWithRef<T>['ref'];
-    },
-  ): React.ReactElement<HeadingProps<T>, T>;
-  displayName: string;
-};
-
-// @public (undocumented)
-export type HeadingOwnProps = {
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-  variant?:
-    | 'display'
-    | 'title1'
-    | 'title2'
-    | 'title3'
-    | 'title4'
-    | 'title5'
-    | Partial<
-        Record<
-          Breakpoint,
-          'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
-        >
-      >;
-  color?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-  truncate?: boolean;
-  className?: string;
-  style?: React.CSSProperties;
-};
-
-// @public (undocumented)
-export type HeadingProps<T extends ElementType = 'h1'> = HeadingOwnProps &
-  Omit<ComponentPropsWithRef<T>, keyof HeadingOwnProps>;
 
 // @public (undocumented)
 export const heightPropDefs: {
@@ -1233,34 +1180,15 @@ export const Link: ForwardRefExoticComponent<
 export interface LinkProps extends LinkProps_2 {
   // (undocumented)
   color?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+    | TextColors
+    | TextColorStatus
+    | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   // (undocumented)
-  variant?:
-    | 'title-large'
-    | 'title-medium'
-    | 'title-small'
-    | 'title-x-small'
-    | 'body-large'
-    | 'body-medium'
-    | 'body-small'
-    | 'body-x-small'
-    | Partial<
-        Record<
-          Breakpoint,
-          | 'title-large'
-          | 'title-medium'
-          | 'title-small'
-          | 'title-x-small'
-          | 'body-large'
-          | 'body-medium'
-          | 'body-small'
-          | 'body-x-small'
-        >
-      >;
+  truncate?: boolean;
   // (undocumented)
-  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+  variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
+  // (undocumented)
+  weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
 }
 
 // @public (undocumented)
@@ -1718,10 +1646,18 @@ export const TabList: (props: TabListProps) => JSX_2.Element;
 export interface TabListProps extends Omit<TabListProps_2<object>, 'items'> {}
 
 // @public
+export type TabMatchStrategy = 'exact' | 'prefix';
+
+// @public
 export const TabPanel: (props: TabPanelProps) => JSX_2.Element;
 
 // @public
 export interface TabPanelProps extends TabPanelProps_2 {}
+
+// @public
+export interface TabProps extends TabProps_2 {
+  matchStrategy?: 'exact' | 'prefix';
+}
 
 // @public
 export const Tabs: (props: TabsProps) => JSX_2.Element | null;
@@ -1741,6 +1677,12 @@ const Text_2: {
 export { Text_2 as Text };
 
 // @public (undocumented)
+export type TextColors = 'primary' | 'secondary';
+
+// @public (undocumented)
+export type TextColorStatus = 'danger' | 'warning' | 'success';
+
+// @public (undocumented)
 export const TextField: ForwardRefExoticComponent<
   TextFieldProps & RefAttributes<HTMLDivElement>
 >;
@@ -1756,34 +1698,47 @@ export interface TextFieldProps
 
 // @public (undocumented)
 export type TextOwnProps = {
-  as?: 'p' | 'span' | 'label';
-  variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
+  as?:
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'h4'
+    | 'h5'
+    | 'h6'
+    | 'p'
+    | 'span'
     | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
-  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+    | 'div'
+    | 'strong'
+    | 'em'
+    | 'small'
+    | 'legend';
+  variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
+  weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
-    | 'primary'
-    | 'secondary'
-    | 'danger'
-    | 'warning'
-    | 'success'
-    | Partial<
-        Record<
-          Breakpoint,
-          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
-        >
-      >;
+    | TextColors
+    | TextColorStatus
+    | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
-  className?: string;
-  style?: React.CSSProperties;
 };
 
 // @public (undocumented)
-export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
+export type TextProps<T extends ElementType = 'span'> = TextOwnProps &
   Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;
+
+// @public (undocumented)
+export type TextVariants =
+  | 'title-large'
+  | 'title-medium'
+  | 'title-small'
+  | 'title-x-small'
+  | 'body-large'
+  | 'body-medium'
+  | 'body-small'
+  | 'body-x-small';
+
+// @public (undocumented)
+export type TextWeights = 'regular' | 'bold';
 
 // @public (undocumented)
 export const Tooltip: ForwardRefExoticComponent<

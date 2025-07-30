@@ -15,35 +15,40 @@
  */
 
 import type { ElementType, ComponentPropsWithRef } from 'react';
-import type { Breakpoint } from '../../types';
+import type {
+  Breakpoint,
+  TextVariants,
+  TextWeights,
+  TextColors,
+  TextColorStatus,
+} from '../../types';
 
 /** @public */
 export type TextOwnProps = {
-  as?: 'p' | 'span' | 'label';
-  variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
+  as?:
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'h4'
+    | 'h5'
+    | 'h6'
+    | 'p'
+    | 'span'
     | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
-  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+    | 'div'
+    | 'strong'
+    | 'em'
+    | 'small'
+    | 'legend';
+  variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
+  weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
-    | 'primary'
-    | 'secondary'
-    | 'danger'
-    | 'warning'
-    | 'success'
-    | Partial<
-        Record<
-          Breakpoint,
-          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
-        >
-      >;
+    | TextColors
+    | TextColorStatus
+    | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
-  className?: string;
-  style?: React.CSSProperties;
 };
 
 /** @public */
-export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
+export type TextProps<T extends ElementType = 'span'> = TextOwnProps &
   Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;

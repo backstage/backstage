@@ -15,7 +15,6 @@
  */
 
 import {
-  createApiFactory,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
@@ -34,8 +33,8 @@ import { rootRouteRef } from '../routes';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: devToolsApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -44,7 +43,6 @@ export const devToolsApi = ApiBlueprint.make({
       factory: ({ discoveryApi, fetchApi }) =>
         new DevToolsClient({ discoveryApi, fetchApi }),
     }),
-  },
 });
 
 /** @alpha */

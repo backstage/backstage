@@ -1,8 +1,9 @@
 .h1 {
-  font-size: 2.5rem;
-  margin-top: 4rem;
-  margin-bottom: 1.5rem;
+  font-size: 3rem;
+  margin-top: 0;
+  margin-bottom: 1.25rem;
   color: var(--primary);
+  font-weight: 400;
 }
 
 .h2 {
@@ -10,6 +11,7 @@
   margin-top: 3rem;
   margin-bottom: 1.5rem;
   color: var(--primary);
+  font-weight: 400;
 }
 
 .h3 {
@@ -17,6 +19,7 @@
   margin-top: 2rem;
   margin-bottom: 0.5rem;
   color: var(--primary);
+  font-weight: 400;
 }
 
 .p {

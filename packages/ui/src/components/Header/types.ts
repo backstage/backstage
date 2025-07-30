@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { TabsProps } from 'react-aria-components';
+import { TabMatchStrategy } from '../Tabs';
+
 /**
  * Props for the main Header component.
  *
@@ -22,10 +25,12 @@
 export interface HeaderProps {
   icon?: React.ReactNode;
   title?: string;
+  titleLink?: string;
   breadcrumbs?: HeaderBreadcrumb[];
   customActions?: React.ReactNode;
   menuItems?: HeaderMenuItem[];
   tabs?: HeaderTab[];
+  onTabSelectionChange?: TabsProps['onSelectionChange'];
 }
 
 /**
@@ -37,6 +42,12 @@ export interface HeaderTab {
   id: string;
   label: string;
   href?: string;
+  /**
+   * Strategy for matching the current route to determine if this tab should be active.
+   * - 'exact': Tab href must exactly match the current pathname (default)
+   * - 'prefix': Tab is active if current pathname starts with tab href
+   */
+  matchStrategy?: TabMatchStrategy;
 }
 
 /**
@@ -68,6 +79,7 @@ export interface HeaderBreadcrumb {
 export interface HeaderToolbarProps {
   icon?: HeaderProps['icon'];
   title?: HeaderProps['title'];
+  titleLink?: HeaderProps['titleLink'];
   breadcrumbs?: HeaderProps['breadcrumbs'];
   customActions?: HeaderProps['customActions'];
   menuItems?: HeaderProps['menuItems'];

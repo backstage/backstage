@@ -110,4 +110,12 @@ describe('WinstonLogger', () => {
       `={"foo":{"bar":{"baz":"qux"}}}`,
     );
   });
+
+  it('should handle null and undefined values in redactions without crashing', () => {
+    const { add } = WinstonLogger.redacter();
+
+    expect(() => {
+      add([null as any, undefined as any, 'valid-secret']);
+    }).not.toThrow();
+  });
 });

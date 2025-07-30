@@ -12,11 +12,14 @@ import {
   buttonResponsiveSnippet,
   buttonAsLinkSnippet,
 } from './button.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
 
-# Button
-
-A button component that can be used to trigger actions.
+<PageTitle
+  title="Button"
+  description="A button component that can be used to trigger actions."
+/>
 
 <Snippet
   align="center"
@@ -25,11 +28,9 @@ A button component that can be used to trigger actions.
   code={buttonVariantsSnippet}
 />
 
-<ComponentInfos
-  component="button"
-  classNames={['bui-Button']}
-  usageCode={buttonSnippetUsage}
-/>
+## Usage
+
+<CodeBlock code={buttonSnippetUsage} />
 
 ## API reference
 
@@ -102,3 +103,7 @@ If you want to use a button as a link, please use the `ButtonLink` component.
   preview={<ButtonLinkSnippet story="Variants" />}
   code={buttonAsLinkSnippet}
 />
+
+<Theming component="Button" />
+
+<ChangelogComponent component="button" />

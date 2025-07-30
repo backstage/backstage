@@ -54,7 +54,7 @@ const TableCellProfile = forwardRef<HTMLDivElement, TableCellProfileProps>(
         {name && to ? (
           <Link href={to}>{name}</Link>
         ) : (
-          <Text variant="body">{name}</Text>
+          <Text variant="body-medium">{name}</Text>
         )}
       </div>
     );

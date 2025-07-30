@@ -26,6 +26,13 @@ app:
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
 
+    - nav-item:search: false
+    - nav-item:user-settings: false
+    - nav-item:catalog
+    - nav-item:api-docs
+    - nav-item:scaffolder
+    - nav-item:app-visualizer
+
     # Pages
     - page:catalog/entity:
         config:

@@ -10,12 +10,16 @@ import {
   textWeightsSnippet,
   textTruncateSnippet,
   textResponsiveSnippet,
+  textColorsSnippet,
 } from './text.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Text
-
-The `Text` component is used to display content on your page.
+<PageTitle
+  title="Text"
+  description="The `Text` component is used to display content on your page."
+/>
 
 <Snippet
   py={4}
@@ -23,11 +27,9 @@ The `Text` component is used to display content on your page.
   code={textDefaultSnippet}
 />
 
-<ComponentInfos
-  component="text"
-  classNames={['bui-Text']}
-  usageCode={textUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={textUsageSnippet} />
 
 ## API reference
 
@@ -57,10 +59,20 @@ appearance of the text.
   code={textWeightsSnippet}
 />
 
+### All colors
+
+The `Text` component has a `color` prop that can be used to change the
+appearance of the text.
+
+<Snippet
+  open
+  preview={<TextSnippet story="AllColors" />}
+  code={textColorsSnippet}
+/>
+
 ### Truncate
 
-The `Text` component has a `truncate` prop that can be used to truncate the
-text.
+The `Text` component has a `truncate` prop that can be used to truncate the text.
 
 <Snippet
   open
@@ -74,3 +86,7 @@ You can also use the `variant` prop to change the appearance of the text based
 on the screen size.
 
 <CodeBlock code={textResponsiveSnippet} />
+
+<Theming component="Text" />
+
+<ChangelogComponent component="text" />

@@ -32,7 +32,16 @@ declare module 'react-aria-components' {
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const { tabs, icon, title, menuItems, breadcrumbs, customActions } = props;
+  const {
+    tabs,
+    icon,
+    title,
+    titleLink,
+    menuItems,
+    breadcrumbs,
+    customActions,
+    onTabSelectionChange,
+  } = props;
 
   const { classNames } = useStyles('Header');
 
@@ -43,6 +52,7 @@ export const Header = (props: HeaderProps) => {
       <HeaderToolbar
         icon={icon}
         title={title}
+        titleLink={titleLink}
         menuItems={menuItems}
         breadcrumbs={breadcrumbs}
         customActions={customActions}
@@ -50,10 +60,15 @@ export const Header = (props: HeaderProps) => {
       />
       {tabs && (
         <div className={classNames.tabsWrapper}>
-          <Tabs>
+          <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (
-                <Tab key={tab.id} id={tab.id} href={tab.href}>
+                <Tab
+                  key={tab.id}
+                  id={tab.id}
+                  href={tab.href}
+                  matchStrategy={tab.matchStrategy}
+                >
                   {tab.label}
                 </Tab>
               ))}

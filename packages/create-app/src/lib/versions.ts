@@ -32,12 +32,16 @@ leaving any imports in place.
 import { version as root } from '../../../../package.json';
 
 import { version as appDefaults } from '../../../app-defaults/package.json';
+import { version as frontendDefaults } from '../../../frontend-defaults/package.json';
+import { version as frontendPluginApi } from '../../../frontend-plugin-api/package.json';
 import { version as backendDefaults } from '../../../backend-defaults/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as coreAppApi } from '../../../core-app-api/package.json';
+import { version as coreCompatApi } from '../../../core-compat-api/package.json';
+import { version as frontendTestUtils } from '../../../frontend-test-utils/package.json';
 import { version as coreComponents } from '../../../core-components/package.json';
 import { version as corePluginApi } from '../../../core-plugin-api/package.json';
 import { version as e2eTestUtils } from '../../../e2e-test-utils/package.json';
@@ -90,14 +94,18 @@ import { version as pluginUserSettings } from '../../../../plugins/user-settings
 export const packageVersions = {
   root,
   '@backstage/app-defaults': appDefaults,
+  '@backstage/frontend-defaults': frontendDefaults,
+  '@backstage/frontend-plugin-api': frontendPluginApi,
   '@backstage/backend-defaults': backendDefaults,
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
+  '@backstage/core-compat-api': coreCompatApi,
   '@backstage/core-components': coreComponents,
   '@backstage/core-plugin-api': corePluginApi,
+  '@backstage/frontend-test-utils': frontendTestUtils,
   '@backstage/e2e-test-utils': e2eTestUtils,
   '@backstage/errors': errors,
   '@backstage/integration-react': integrationReact,

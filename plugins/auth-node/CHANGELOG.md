@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-node
 
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.6.5
 
 ### Patch Changes

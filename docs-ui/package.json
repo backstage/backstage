@@ -22,6 +22,7 @@
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "15.3.4",
+    "@remixicon/react": "^4.6.0",
     "@storybook/react": "^8.6.8",
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
@@ -32,7 +33,6 @@
     "prop-types": "^15.8.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-frame-component": "^5.2.7",
     "shiki": "^1.26.1",
     "storybook": "^8.6.8"
   },
