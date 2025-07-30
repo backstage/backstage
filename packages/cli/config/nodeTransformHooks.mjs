@@ -27,11 +27,13 @@ import { existsSync } from 'fs';
 const DEFAULT_MODULE_FORMAT = 'commonjs';
 
 // Source file extensions to look for when using bundle resolution strategy
-const SRC_EXTS = ['.ts', '.js'];
-const TS_EXTS = ['.ts', '.mts', '.cts'];
+const SRC_EXTS = ['.ts', '.tsx', '.js', '.jsx'];
+const TS_EXTS = ['.ts', '.tsx', '.mts', '.cts'];
 const moduleTypeTable = {
   '.mjs': 'module',
   '.mts': 'module',
+  '.tsx': 'module',
+  '.jsx': 'module',
   '.cjs': 'commonjs',
   '.cts': 'commonjs',
   '.ts': undefined,
@@ -268,6 +270,11 @@ export async function load(url, context, nextLoad) {
       target: 'es2022',
       parser: {
         syntax: 'typescript',
+      },
+      transform: {
+        react: {
+          runtime: 'automatic',
+        },
       },
     },
   });
