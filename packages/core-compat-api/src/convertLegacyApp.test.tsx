@@ -232,31 +232,32 @@ describe('convertLegacyApp', () => {
     const catalogOverride = catalogPlugin.withOverrides({
       extensions: [
         catalogPlugin.getExtension('api:catalog').override({
-          params: {
-            factory: createApiFactory(
-              catalogApiRef,
-              catalogApiMock({
-                entities: [
-                  {
-                    apiVersion: 'backstage.io/v1alpha1',
-                    kind: 'test',
-                    metadata: {
-                      name: 'x',
+          params: define =>
+            define({
+              api: catalogApiRef,
+              deps: {},
+              factory: () =>
+                catalogApiMock({
+                  entities: [
+                    {
+                      apiVersion: 'backstage.io/v1alpha1',
+                      kind: 'test',
+                      metadata: {
+                        name: 'x',
+                      },
+                      spec: {},
                     },
-                    spec: {},
-                  },
-                  {
-                    apiVersion: 'backstage.io/v1alpha1',
-                    kind: 'other',
-                    metadata: {
-                      name: 'x',
+                    {
+                      apiVersion: 'backstage.io/v1alpha1',
+                      kind: 'other',
+                      metadata: {
+                        name: 'x',
+                      },
+                      spec: {},
                     },
-                    spec: {},
-                  },
-                ],
-              }),
-            ),
-          },
+                  ],
+                }),
+            }),
         }),
       ],
     });

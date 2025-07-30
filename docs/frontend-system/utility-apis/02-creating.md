@@ -45,7 +45,6 @@ The plugin itself now wants to provide this API and its default implementation, 
 ```tsx title="in @internal/plugin-example"
 import {
   ApiBlueprint,
-  createApiFactory,
   createFrontendPlugin,
   storageApiRef,
   StorageApi,
@@ -63,15 +62,14 @@ class WorkImpl implements WorkApi {
 
 const workApi = ApiBlueprint.make({
   name: 'work',
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: workApiRef,
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) => {
         return new WorkImpl({ storageApi });
       },
     }),
-  },
 });
 
 /**

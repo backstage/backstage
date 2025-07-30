@@ -346,6 +346,59 @@ export async function getOrganizationTeamsFromUsers(
   return { teams };
 }
 
+export async function getOrganizationTeamsForUser(
+  client: typeof graphql,
+  org: string,
+  userLogin: string,
+  teamTransformer: TeamTransformer,
+): Promise<{ teams: Entity[] }> {
+  const query = `
+   query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
+  organization(login: $org) {
+    teams(first: 100, after: $cursor, userLogins: $userLogins) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        slug
+        combinedSlug
+        name
+        description
+        avatarUrl
+        editTeamUrl
+        parentTeam {
+          slug
+        }
+      }
+    }
+  }
+}`;
+
+  const materialisedTeams = async (
+    item: GithubTeamResponse,
+    ctx: TransformerContext,
+  ): Promise<Entity | undefined> => {
+    const team: GithubTeam = {
+      ...item,
+      members: [{ login: userLogin }],
+    };
+
+    return await teamTransformer(team, ctx);
+  };
+
+  const teams = await queryWithPaging(
+    client,
+    query,
+    org,
+    r => r.organization?.teams,
+    materialisedTeams,
+    { org, userLogins: [userLogin] },
+  );
+
+  return { teams };
+}
+
 export async function getOrganizationsFromUser(
   client: typeof graphql,
   user: string,

@@ -737,9 +737,10 @@ describe('scaffolderPlugin', () => {
     });
 
     // Retry the task by ID
-    response = await request(server).post(
-      `/api/scaffolder/v2/tasks/${taskId}/retry`,
-    );
+    response = await request(server)
+      .post(`/api/scaffolder/v2/tasks/${taskId}/retry`)
+      .send({});
+
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({ id: taskId });
 

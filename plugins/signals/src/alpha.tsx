@@ -17,7 +17,6 @@
 import {
   ApiBlueprint,
   AppRootElementBlueprint,
-  createApiFactory,
   createFrontendPlugin,
   discoveryApiRef,
   identityApiRef,
@@ -28,8 +27,8 @@ import { SignalsDisplay } from './plugin';
 import { compatWrapper } from '@backstage/core-compat-api';
 
 const api = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: signalApiRef,
       deps: {
         identity: identityApiRef,
@@ -42,7 +41,6 @@ const api = ApiBlueprint.make({
         });
       },
     }),
-  },
 });
 
 const signalsDisplayAppRootElement = AppRootElementBlueprint.make({
