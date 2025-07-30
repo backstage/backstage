@@ -21,6 +21,8 @@ import {
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import CancelIcon from '@material-ui/icons/Cancel';
+import CachedIcon from '@material-ui/icons/Cached';
+
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -33,7 +35,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   UnregisterEntityDialog,
   useEntity,
+  catalogApiRef,
 } from '@backstage/plugin-catalog-react';
+import {
+  ANNOTATION_LOCATION,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../routes';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { useEffect } from 'react';
@@ -134,8 +141,49 @@ export const unregisterEntityContextMenuItem =
     },
   });
 
+export const refreshEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
+  {
+    name: 'refresh-entity',
+    params: {
+      icon: <CachedIcon fontSize="small" />,
+      useProps: () => {
+        const { entity } = useEntity();
+        const catalogApi = useApi(catalogApiRef);
+        const alertApi = useApi(alertApiRef);
+        const { t } = useTranslationRef(catalogTranslationRef);
+
+        const hasLocationAnnotation = Boolean(
+          entity.metadata.annotations?.[ANNOTATION_LOCATION],
+        );
+
+        return {
+          title: t('entityContextMenu.refreshMenuTitle'),
+          disabled: !hasLocationAnnotation,
+          onClick: async () => {
+            try {
+              await catalogApi.refreshEntity(stringifyEntityRef(entity));
+              alertApi.post({
+                message: t('entityContextMenu.refreshedMessage'),
+                severity: 'success',
+                display: 'transient',
+              });
+            } catch (error) {
+              alertApi.post({
+                message: t('entityContextMenu.refreshError'),
+                severity: 'error',
+                display: 'transient',
+              });
+            }
+          },
+        };
+      },
+    },
+  },
+);
+
 export default [
   unregisterEntityContextMenuItem,
   inspectEntityContextMenuItem,
   copyEntityUrlContextMenuItem,
+  refreshEntityContextMenuItem,
 ];

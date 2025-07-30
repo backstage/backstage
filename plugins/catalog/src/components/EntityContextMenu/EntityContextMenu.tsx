@@ -26,6 +26,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
+import CachedIcon from '@material-ui/icons/Cached';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
@@ -36,6 +37,11 @@ import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { EntityContextMenuProvider } from '../../context';
+import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
+import {
+  ANNOTATION_LOCATION,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
@@ -82,6 +88,11 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     catalogEntityDeletePermission,
   );
   const isAllowed = unregisterPermission.allowed;
+  const { entity } = useEntity();
+  const catalogApi = useApi(catalogApiRef);
+  const hasLocationAnnotation = Boolean(
+    entity.metadata.annotations?.[ANNOTATION_LOCATION],
+  );
 
   const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -183,6 +194,33 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
                 </ListItemIcon>
                 <ListItemText
                   primary={t('entityContextMenu.copyURLMenuTitle')}
+                />
+              </MenuItem>
+              <MenuItem
+                disabled={!hasLocationAnnotation}
+                onClick={async () => {
+                  onClose();
+                  try {
+                    await catalogApi.refreshEntity(stringifyEntityRef(entity));
+                    alertApi.post({
+                      message: t('entityContextMenu.refreshedMessage'),
+                      severity: 'success',
+                      display: 'transient',
+                    });
+                  } catch (error) {
+                    alertApi.post({
+                      message: t('entityContextMenu.refreshError'),
+                      severity: 'error',
+                      display: 'transient',
+                    });
+                  }
+                }}
+              >
+                <ListItemIcon>
+                  <CachedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={t('entityContextMenu.refreshMenuTitle')}
                 />
               </MenuItem>
             </>

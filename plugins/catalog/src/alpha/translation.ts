@@ -97,6 +97,9 @@ export const catalogTranslationRef = createTranslationRef({
       inspectMenuTitle: 'Inspect entity',
       copyURLMenuTitle: 'Copy entity URL',
       unregisterMenuTitle: 'Unregister entity',
+      refreshMenuTitle: 'Refresh Entity',
+      refreshedMessage: 'Entity refreshed successfully',
+      refreshError: 'Failed to refresh entity',
     },
     entityLabelsCard: {
       title: 'Labels',
