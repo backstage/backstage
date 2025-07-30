@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { AnalyticsApi } from './AnalyticsApi';
+import { analyticsApi } from './AnalyticsApi';
 import {
   AnalyticsImplementationBlueprint,
   AnalyticsImplementation,
@@ -24,7 +24,7 @@ import {
   identityApiRef,
 } from '@backstage/frontend-plugin-api';
 
-describe('AnalyticsApi', () => {
+describe('analyticsApi', () => {
   const mockEvent = {
     action: '',
     subject: '',
@@ -73,7 +73,7 @@ describe('AnalyticsApi', () => {
 
   it('wires up a single AnalyticsImplementationFactory', async () => {
     // Given the Analytics API and a single mock implementation
-    const tester = createExtensionTester(AnalyticsApi).add(MockImplementation1);
+    const tester = createExtensionTester(analyticsApi).add(MockImplementation1);
     const apiFactory = tester.get(ApiBlueprint.dataRefs.factory);
 
     // Then the API's deps should contain the mock implementation's deps.
@@ -101,7 +101,7 @@ describe('AnalyticsApi', () => {
 
   it('wires up more than one AnalyticsImplementationFactory', () => {
     // Given the Analytics API and two mock implementations
-    const tester = createExtensionTester(AnalyticsApi)
+    const tester = createExtensionTester(analyticsApi)
       .add(MockImplementation1)
       .add(MockImplementation2);
     const apiFactory = tester.get(ApiBlueprint.dataRefs.factory);
@@ -142,7 +142,7 @@ describe('AnalyticsApi', () => {
 
   it('works fine with no AnalyticsImplementationFactory instances provided', () => {
     // Given the Analytics API and no mock implementations
-    const tester = createExtensionTester(AnalyticsApi);
+    const tester = createExtensionTester(analyticsApi);
     const apiFactory = tester.get(ApiBlueprint.dataRefs.factory);
 
     // Then the API's deps should be empty
