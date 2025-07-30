@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from 'react';
 import { useBreakpoint, breakpoints } from './useBreakpoint';
 import { componentDefinitions } from '../utils/componentDefinitions';
 import type { ComponentDefinitionName, ComponentClassNames } from '../types';
@@ -53,6 +54,90 @@ function resolveResponsiveValue(
 }
 
 /**
+ * Check if a value is responsive (an object with breakpoint keys)
+ */
+function isResponsiveValue(value: any): boolean {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Check if any props contain responsive values
+ */
+function hasResponsiveProps(props: Record<string, any>): boolean {
+  return Object.values(props).some(isResponsiveValue);
+}
+
+/**
+ * Hook for components with non-responsive props (no breakpoint dependency)
+ */
+function useStylesNonResponsive<T extends ComponentDefinitionName>(
+  componentName: T,
+  props: Record<string, any>,
+) {
+  const classNames = componentDefinitions[componentName]
+    .classNames as ComponentClassNames<T>;
+
+  const { dataAttributes, resolvedProps } = useMemo(() => {
+    const dataAttributes: Record<string, string> = {};
+    const resolvedProps: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(props)) {
+      if (value !== undefined && value !== null) {
+        resolvedProps[key] = value;
+        dataAttributes[`data-${key}`] = value;
+      }
+    }
+
+    return { dataAttributes, resolvedProps };
+  }, [props]);
+
+  return {
+    classNames,
+    dataAttributes,
+    resolvedProps,
+  };
+}
+
+/**
+ * Hook for components with responsive props (includes breakpoint dependency)
+ */
+function useStylesResponsive<T extends ComponentDefinitionName>(
+  componentName: T,
+  props: Record<string, any>,
+) {
+  const classNames = componentDefinitions[componentName]
+    .classNames as ComponentClassNames<T>;
+
+  const { breakpoint } = useBreakpoint();
+
+  const { dataAttributes, resolvedProps } = useMemo(() => {
+    const dataAttributes: Record<string, string> = {};
+    const resolvedProps: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(props)) {
+      if (value !== undefined && value !== null) {
+        const resolvedValue = isResponsiveValue(value)
+          ? resolveResponsiveValue(value, breakpoint)
+          : value;
+
+        if (resolvedValue !== undefined) {
+          resolvedProps[key] = resolvedValue;
+          dataAttributes[`data-${key}`] = resolvedValue;
+        }
+      }
+    }
+
+    return { dataAttributes, resolvedProps };
+  }, [props, breakpoint]);
+
+  return {
+    classNames,
+    dataAttributes,
+    resolvedProps,
+  };
+}
+
+/**
  * React hook to get class names and data attributes for a component with responsive support
  * @param componentName - The name of the component
  * @param props - Object with prop values (can be responsive)
@@ -66,27 +151,10 @@ export function useStyles<T extends ComponentDefinitionName>(
   dataAttributes: Record<string, string>;
   resolvedProps: Record<string, string>;
 } {
-  const { breakpoint } = useBreakpoint();
-  const classNames = componentDefinitions[componentName]
-    .classNames as ComponentClassNames<T>;
-
-  // Resolve responsive values and generate data attributes
-  const dataAttributes: Record<string, string> = {};
-  const resolvedProps: Record<string, string> = {};
-
-  for (const [key, value] of Object.entries(props)) {
-    if (value !== undefined && value !== null) {
-      const resolvedValue = resolveResponsiveValue(value, breakpoint);
-      if (resolvedValue !== undefined) {
-        resolvedProps[key] = resolvedValue;
-        dataAttributes[`data-${key}`] = resolvedValue;
-      }
-    }
+  // Choose the appropriate hook based on whether props contain responsive values
+  if (hasResponsiveProps(props)) {
+    return useStylesResponsive(componentName, props);
+  } else {
+    return useStylesNonResponsive(componentName, props);
   }
-
-  return {
-    classNames,
-    dataAttributes,
-    resolvedProps, // Also return resolved props for convenience
-  };
 }
