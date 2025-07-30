@@ -171,7 +171,7 @@ export const columnFactories: Readonly<{
     defaultKind?: string;
   }): TableColumn<T>;
   createEntityRelationColumn<T extends Entity>(options: {
-    title: string;
+    title: string | JSX.Element;
     relation: string;
     defaultKind?: string;
     filter?: {
@@ -575,7 +575,7 @@ export const EntityTable: {
       defaultKind?: string;
     }): TableColumn<T>;
     createEntityRelationColumn<T extends Entity>(options: {
-      title: string;
+      title: string | JSX.Element;
       relation: string;
       defaultKind?: string;
       filter?: {
