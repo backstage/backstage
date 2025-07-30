@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AnalyticsBlueprint } from './AnalyticsBlueprint';
+import { AnalyticsImplementationBlueprint } from './AnalyticsImplementationBlueprint';
 
 describe('AnalyticsBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
@@ -23,7 +23,7 @@ describe('AnalyticsBlueprint', () => {
       factory: () => ({ captureEvent: () => {} }),
     };
 
-    const extension = AnalyticsBlueprint.make({
+    const extension = AnalyticsImplementationBlueprint.make({
       params: define => define(factory),
       name: 'test',
     });

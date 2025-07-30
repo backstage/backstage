@@ -16,7 +16,7 @@
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { AnalyticsApi } from './AnalyticsApi';
 import {
-  AnalyticsBlueprint,
+  AnalyticsImplementationBlueprint,
   AnalyticsImplementation,
   ApiBlueprint,
   configApiRef,
@@ -38,10 +38,10 @@ describe('AnalyticsApi', () => {
   const MockImplementation1 = createExtension({
     name: 'mock-implementation-1',
     attachTo: { id: 'api:analytics', input: 'analyticsImplementations' },
-    output: [AnalyticsBlueprint.dataRefs.factory],
+    output: [AnalyticsImplementationBlueprint.dataRefs.factory],
     factory() {
       return [
-        AnalyticsBlueprint.dataRefs.factory({
+        AnalyticsImplementationBlueprint.dataRefs.factory({
           deps: { configApi: configApiRef },
           factory: deps => ({
             captureEvent: event => captureEventSpy1(event, deps),
@@ -54,10 +54,10 @@ describe('AnalyticsApi', () => {
   const MockImplementation2 = createExtension({
     name: 'mock-implementation-2',
     attachTo: { id: 'api:analytics', input: 'analyticsImplementations' },
-    output: [AnalyticsBlueprint.dataRefs.factory],
+    output: [AnalyticsImplementationBlueprint.dataRefs.factory],
     factory() {
       return [
-        AnalyticsBlueprint.dataRefs.factory({
+        AnalyticsImplementationBlueprint.dataRefs.factory({
           deps: { config: configApiRef, identityApi: identityApiRef },
           factory: deps => ({
             captureEvent: event => captureEventSpy2(event, deps),

@@ -2,12 +2,12 @@
 '@backstage/frontend-plugin-api': patch
 ---
 
-Plugins should now use the new `AnalyticsBlueprint` to define and provide concrete analytics implementations. For example:
+Plugins should now use the new `AnalyticsImplementationBlueprint` to define and provide concrete analytics implementations. For example:
 
 ```ts
-import { AnalyticsBlueprint } from '@backstage/frontend-plugin-api';
+import { AnalyticsImplementationBlueprint } from '@backstage/frontend-plugin-api';
 
-const AcmeAnalytics = AnalyticsBlueprint.make({
+const AcmeAnalytics = AnalyticsImplementationBlueprint.make({
   name: 'acme-analytics',
   params: define =>
     define({
