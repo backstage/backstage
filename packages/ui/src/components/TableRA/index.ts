@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export { Table } from './Table';
-export { TableHeader } from './TableHeader';
-export { TableBody } from './TableBody';
-export { Column } from './Column';
+export { Table } from './components/Table';
+export { TableHeader } from './components/TableHeader';
+export { TableBody } from './components/TableBody';
+export { Column } from './components/Column';
+export { Row } from './components/Row';
+export { Cell } from './components/Cell';
+export { CellProfile } from './components/CellProfile';

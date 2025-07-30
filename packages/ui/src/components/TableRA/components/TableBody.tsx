@@ -18,7 +18,10 @@ import {
   TableBody as ReactAriaTableBody,
   type TableBodyProps,
 } from 'react-aria-components';
+import { useStyles } from '../../../hooks/useStyles';
 
 export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
-  return <ReactAriaTableBody {...props} />;
+  const { classNames } = useStyles('TableRA');
+
+  return <ReactAriaTableBody className={classNames.body} {...props} />;
 };

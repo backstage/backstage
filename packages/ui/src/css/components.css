@@ -40,6 +40,8 @@
 @import '../components/Table/TableCellProfile/TableCellProfile.styles.css';
 @import '../components/Table/TablePagination/TablePagination.styles.css';
 
+@import '../components/TableRA/Table.styles.css';
+
 @import '../components/Tabs/Tabs.styles.css';
 @import '../components/Text/styles.css';
 @import '../components/TextField/TextField.styles.css';

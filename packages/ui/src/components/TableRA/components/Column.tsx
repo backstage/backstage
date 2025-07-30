@@ -18,18 +18,21 @@ import {
   Column as ReactAriaColumn,
   type ColumnProps,
 } from 'react-aria-components';
-import { Icon } from '../Icon';
+import { Icon } from '../../Icon';
+import { useStyles } from '../../../hooks/useStyles';
 
 export const Column = (
   props: Omit<ColumnProps, 'children'> & { children?: React.ReactNode },
 ) => {
+  const { classNames } = useStyles('TableRA');
+
   return (
-    <ReactAriaColumn {...props}>
+    <ReactAriaColumn className={classNames.head} {...props}>
       {({ allowsSorting, sortDirection }) => (
-        <div className="column-header">
+        <>
           {props.children}
           {allowsSorting && (
-            <span aria-hidden="true" className="sort-indicator">
+            <span aria-hidden="true" className={classNames.headSortButton}>
               {sortDirection === 'ascending' ? (
                 <Icon name="arrow-up" size={16} />
               ) : (
@@ -37,7 +40,7 @@ export const Column = (
               )}
             </span>
           )}
-        </div>
+        </>
       )}
     </ReactAriaColumn>
   );

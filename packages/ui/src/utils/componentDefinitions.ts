@@ -250,6 +250,26 @@ export const componentDefinitions = {
       cellProfileLink: 'bui-TableCellProfileLink',
     },
   },
+  TableRA: {
+    classNames: {
+      table: 'bui-Table',
+      header: 'bui-TableHeader',
+      body: 'bui-TableBody',
+      row: 'bui-TableRow',
+      head: 'bui-TableHead',
+      headSortButton: 'bui-TableHeadSortButton',
+      caption: 'bui-TableCaption',
+      cell: 'bui-TableCell',
+      cellContentWrapper: 'bui-TableCellContentWrapper',
+      cellContent: 'bui-TableCellTextContent',
+      cellIcon: 'bui-TableCellTextIcon',
+      cellProfileAvatar: 'bui-TableCellProfileAvatar',
+      cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage',
+      cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback',
+      cellProfileName: 'bui-TableCellProfileName',
+      cellProfileLink: 'bui-TableCellProfileLink',
+    },
+  },
   Tabs: {
     classNames: {
       tabs: 'bui-Tabs',

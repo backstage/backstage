@@ -15,10 +15,33 @@
  */
 
 import {
-  Table as ReactAriaTable,
-  type TableProps,
+  Row as ReactAriaRow,
+  RowProps,
+  useTableOptions,
+  Cell,
+  Collection,
+  Checkbox,
 } from 'react-aria-components';
+import { useStyles } from '../../../hooks/useStyles';
 
-export const Table = (props: TableProps) => {
-  return <ReactAriaTable {...props} />;
-};
+export function Row<T extends object>({
+  id,
+  columns,
+  children,
+  ...otherProps
+}: RowProps<T>) {
+  const { classNames } = useStyles('TableRA');
+
+  let { selectionBehavior } = useTableOptions();
+
+  return (
+    <ReactAriaRow id={id} className={classNames.row} {...otherProps}>
+      {selectionBehavior === 'toggle' && (
+        <Cell>
+          <Checkbox slot="selection" />
+        </Cell>
+      )}
+      <Collection items={columns}>{children}</Collection>
+    </ReactAriaRow>
+  );
+}

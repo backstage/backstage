@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
 import type { Meta, StoryFn, StoryObj } from '@storybook/react';
-import { Table, TableHeader, Column, TableBody } from '.';
-import { MemoryRouter } from 'react-router-dom';
 import {
-  Table as ReactAriaTable,
-  TableHeader as ReactAriaTableHeader,
-  Column as ReactAriaColumn,
-  Cell,
-  Row as ReactAriaRow,
-  Cell as ReactAriaCell,
+  Table,
+  TableHeader,
+  Column,
+  TableBody,
   Row,
-  Checkbox,
-} from 'react-aria-components';
+  Cell,
+  CellProfile as CellProfileBUI,
+} from '.';
+import { MemoryRouter } from 'react-router-dom';
+import { data as data1 } from './mocked-data1';
+import { data as data2 } from './mocked-data2';
+import { data as data3 } from './mocked-data3';
+import { RiCactusLine } from '@remixicon/react';
+import { TablePagination } from '../TablePagination';
 
 const meta = {
   title: 'Components/TableRA',
@@ -48,43 +52,120 @@ export const Uncontrolled: Story = {
       <Table>
         <TableHeader>
           <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
           <Column>Type</Column>
-          <Column>Size</Column>
-          <Column>Date Modified</Column>
+          <Column>Lifecycle</Column>
         </TableHeader>
         <TableBody>
-          <ReactAriaRow>
-            <ReactAriaCell>
-              <Checkbox slot="selection" />
-            </ReactAriaCell>
-            <ReactAriaCell>Games</ReactAriaCell>
-            <ReactAriaCell>File folder</ReactAriaCell>
-            <ReactAriaCell>6/7/2020</ReactAriaCell>
-          </ReactAriaRow>
-          <ReactAriaRow>
-            <ReactAriaCell>
-              <Checkbox slot="selection" />
-            </ReactAriaCell>
-            <ReactAriaCell>Program Files</ReactAriaCell>
-            <ReactAriaCell>File folder</ReactAriaCell>
-            <ReactAriaCell>4/7/2021</ReactAriaCell>
-          </ReactAriaRow>
-          <ReactAriaRow>
-            <ReactAriaCell>
-              <Checkbox slot="selection" />
-            </ReactAriaCell>
-            <ReactAriaCell>bootmgr</ReactAriaCell>
-            <ReactAriaCell>System file</ReactAriaCell>
-            <ReactAriaCell>11/20/2010</ReactAriaCell>
-          </ReactAriaRow>
-          <ReactAriaRow>
-            <ReactAriaCell>
-              <Checkbox slot="selection" />
-            </ReactAriaCell>
-            <ReactAriaCell>log.txt</ReactAriaCell>
-            <ReactAriaCell>Text Document</ReactAriaCell>
-            <ReactAriaCell>1/18/2016</ReactAriaCell>
-          </ReactAriaRow>
+          {data1.map(item => (
+            <Row key={item.name}>
+              <Cell
+                title={item.name}
+                leadingIcon={<RiCactusLine />}
+                description={item.description}
+              />
+              <CellProfileBUI
+                name={item.owner.name}
+                src={item.owner.profilePicture}
+                href={item.owner.link}
+              />
+              <Cell title={item.type} />
+              <Cell title={item.lifecycle} />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const WithPagination: Story = {
+  render: () => {
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
+    const newData = data1.slice(
+      pageIndex * pageSize,
+      (pageIndex + 1) * pageSize,
+    );
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Name</Column>
+            <Column>Owner</Column>
+            <Column>Type</Column>
+            <Column>Lifecycle</Column>
+          </TableHeader>
+          <TableBody>
+            {newData.map(item => (
+              <Row key={item.name}>
+                <Cell
+                  title={item.name}
+                  leadingIcon={<RiCactusLine />}
+                  description={item.description}
+                />
+                <Cell title={item.owner.name} />
+                <Cell title={item.type} />
+                <Cell title={item.lifecycle} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          rowCount={data1.length}
+          setPageIndex={setPageIndex}
+          setPageSize={setPageSize}
+        />
+      </>
+    );
+  },
+};
+
+export const CellText: Story = {
+  render: () => {
+    return (
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+        </TableHeader>
+        <TableBody>
+          {data2.map(item => (
+            <Row key={item.name}>
+              <Cell
+                title={item.name}
+                leadingIcon={item.icon}
+                description={item.description}
+              />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const CellProfile: Story = {
+  render: () => {
+    return (
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+        </TableHeader>
+        <TableBody>
+          {data3.map(item => (
+            <Row key={item.name}>
+              <CellProfileBUI
+                name={item.name}
+                src={item.profilePicture}
+                href={item.link}
+                description={item.description}
+              />
+            </Row>
+          ))}
         </TableBody>
       </Table>
     );
