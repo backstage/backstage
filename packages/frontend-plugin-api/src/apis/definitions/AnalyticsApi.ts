@@ -16,7 +16,7 @@
 
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { AnalyticsContextValue } from '../../analytics/types';
-import type { AnalyticsBlueprint } from '../../blueprints/';
+import type { AnalyticsImplementationBlueprint } from '../../blueprints/';
 
 /**
  * Represents an event worth tracking in an analytics system that could inform
@@ -149,8 +149,8 @@ export type AnalyticsApi = {
  *
  * @remarks
  *
- * To define a concrete Analytics Implementation, use {@link AnalyticsBlueprint}
- * instead.
+ * To define a concrete Analytics Implementation, use
+ * {@link AnalyticsImplementationBlueprint} instead.
  *
  * @public
  */

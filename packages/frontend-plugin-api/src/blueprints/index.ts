@@ -15,9 +15,9 @@
  */
 
 export {
-  AnalyticsBlueprint,
+  AnalyticsImplementationBlueprint,
   type AnalyticsImplementationFactory,
-} from './AnalyticsBlueprint';
+} from './AnalyticsImplementationBlueprint';
 export { ApiBlueprint } from './ApiBlueprint';
 export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';

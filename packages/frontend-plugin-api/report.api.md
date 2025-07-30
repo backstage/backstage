@@ -108,30 +108,6 @@ export type AnalyticsApi = {
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
 
 // @public
-export const AnalyticsBlueprint: ExtensionBlueprint<{
-  kind: 'analytics';
-  name: undefined;
-  params: <TDeps extends { [name in string]: unknown }>(
-    params: AnalyticsImplementationFactory<TDeps>,
-  ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>>;
-  output: ConfigurableExtensionDataRef<
-    AnalyticsImplementationFactory<{}>,
-    'core.analytics.factory',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    factory: ConfigurableExtensionDataRef<
-      AnalyticsImplementationFactory<{}>,
-      'core.analytics.factory',
-      {}
-    >;
-  };
-}>;
-
-// @public
 export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
@@ -163,6 +139,30 @@ export type AnalyticsEventAttributes = {
 export type AnalyticsImplementation = {
   captureEvent(event: AnalyticsEvent): void;
 };
+
+// @public
+export const AnalyticsImplementationBlueprint: ExtensionBlueprint<{
+  kind: 'analytics';
+  name: undefined;
+  params: <TDeps extends { [name in string]: unknown }>(
+    params: AnalyticsImplementationFactory<TDeps>,
+  ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>>;
+  output: ConfigurableExtensionDataRef<
+    AnalyticsImplementationFactory<{}>,
+    'core.analytics.factory',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    factory: ConfigurableExtensionDataRef<
+      AnalyticsImplementationFactory<{}>,
+      'core.analytics.factory',
+      {}
+    >;
+  };
+}>;
 
 // @public (undocumented)
 export type AnalyticsImplementationFactory<
