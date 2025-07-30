@@ -242,7 +242,7 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {
-        analyticsImplementations: ExtensionInput<
+        implementations: ExtensionInput<
           ConfigurableExtensionDataRef<
             AnalyticsImplementationFactory<{}>,
             'core.analytics.factory',

@@ -35,7 +35,7 @@ describe('AnalyticsBlueprint', () => {
         "attachTo": [
           {
             "id": "api:app/analytics",
-            "input": "analyticsImplementations",
+            "input": "implementations",
           },
         ],
         "configSchema": undefined,
