@@ -46,6 +46,11 @@ const ref4 = createRouteRef();
 const ref5 = createRouteRef();
 const refOrder: RouteRef<AnyRouteRefParams>[] = [ref1, ref2, ref3, ref4, ref5];
 
+const emptyRouteRefsById = {
+  routes: new Map(),
+  externalRoutes: new Map(),
+};
+
 function createTestExtension(options: {
   name: string;
   parent?: string;
@@ -99,7 +104,7 @@ function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
 
   instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
-  return extractRouteInfoFromAppNode(tree.root);
+  return extractRouteInfoFromAppNode(tree.root, emptyRouteRefsById);
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {

@@ -237,12 +237,10 @@ export function createSpecializedApp(options?: {
   const factories = createApiFactories({ tree });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
+
+  const routeRefsById = collectRouteIds(features);
   const routeResolutionApi = new RouteResolutionApiProxy(
-    resolveRouteBindings(
-      options?.bindRoutes,
-      config,
-      collectRouteIds(features),
-    ),
+    resolveRouteBindings(options?.bindRoutes, config, routeRefsById),
     appBasePath,
   );
 
@@ -288,7 +286,7 @@ export function createSpecializedApp(options?: {
     mergeExtensionFactoryMiddleware(options?.extensionFactoryMiddleware),
   );
 
-  const routeInfo = extractRouteInfoFromAppNode(tree.root);
+  const routeInfo = extractRouteInfoFromAppNode(tree.root, routeRefsById);
 
   routeResolutionApi.initialize(routeInfo);
   appTreeApi.initialize(routeInfo);

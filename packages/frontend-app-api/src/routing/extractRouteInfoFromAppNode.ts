@@ -18,6 +18,9 @@ import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { toLegacyPlugin } from './toLegacyPlugin';
+import { RouteRefsById } from './collectRouteIds';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalRouteRef } from '../../../frontend-plugin-api/src/routing/RouteRef';
 
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
@@ -40,7 +43,40 @@ export function joinPaths(...paths: string[]): string {
   return normalized;
 }
 
-export function extractRouteInfoFromAppNode(node: AppNode): {
+function createRouteAliasResolver(routeRefsById: RouteRefsById) {
+  return (routeRef?: RouteRef) => {
+    if (!routeRef) {
+      return undefined;
+    }
+
+    let currentRef = routeRef;
+    for (let i = 0; i < 100; i++) {
+      const alias = toInternalRouteRef(currentRef).alias;
+      if (alias) {
+        const aliasRef = routeRefsById.routes.get(alias);
+        if (!aliasRef) {
+          throw new Error(
+            `Unable to resolve RouteRef alias '${alias}' for ${currentRef}`,
+          );
+        }
+        if (aliasRef.$$type === '@backstage/SubRouteRef') {
+          throw new Error(
+            `RouteRef alias '${alias}' for ${currentRef} points to a SubRouteRef, which is not supported`,
+          );
+        }
+        currentRef = aliasRef;
+      } else {
+        return currentRef;
+      }
+    }
+    throw new Error(`Alias loop detected for ${routeRef}`);
+  };
+}
+
+export function extractRouteInfoFromAppNode(
+  node: AppNode,
+  routeRefsById: RouteRefsById,
+): {
   routePaths: Map<RouteRef, string>;
   routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
@@ -54,6 +90,8 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
   // ref or extension/source based on our current location.
   const routeObjects = new Array<BackstageRouteObject>();
 
+  const routeAliasResolver = createRouteAliasResolver(routeRefsById);
+
   function visit(
     current: AppNode,
     collectedPath?: string,
@@ -65,7 +103,11 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
     const routePath = current.instance
       ?.getData(coreExtensionData.routePath)
       ?.replace(/^\//, '');
-    const routeRef = current.instance?.getData(coreExtensionData.routeRef);
+
+    const routeRef = routeAliasResolver(
+      current.instance?.getData(coreExtensionData.routeRef),
+    );
+
     const parentChildren = parentObj?.children ?? routeObjects;
     let currentObj = parentObj;
 
