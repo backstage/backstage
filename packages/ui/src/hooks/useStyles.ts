@@ -13,10 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo } from 'react';
-import { useBreakpoint, breakpoints } from './useBreakpoint';
+import { useMemo, useState, useEffect } from 'react';
+import { breakpoints } from './useBreakpoint';
 import { componentDefinitions } from '../utils/componentDefinitions';
 import type { ComponentDefinitionName, ComponentClassNames } from '../types';
+
+/**
+ * Lazy breakpoint hook that only subscribes to changes when needed
+ */
+function useLazyBreakpoint(hasResponsiveProps: boolean) {
+  const [breakpoint, setBreakpoint] = useState<string>(() => {
+    if (typeof window === 'undefined') return 'initial';
+
+    const width = window.innerWidth;
+    if (width >= 1536) return 'xl';
+    if (width >= 1280) return 'lg';
+    if (width >= 1024) return 'md';
+    if (width >= 768) return 'sm';
+    if (width >= 640) return 'xs';
+    return 'initial';
+  });
+
+  useEffect(() => {
+    // Only set up resize listener if we have responsive props
+    if (!hasResponsiveProps || typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      const width = window.innerWidth;
+      let newBreakpoint: string;
+
+      if (width >= 1536) newBreakpoint = 'xl';
+      else if (width >= 1280) newBreakpoint = 'lg';
+      else if (width >= 1024) newBreakpoint = 'md';
+      else if (width >= 768) newBreakpoint = 'sm';
+      else if (width >= 640) newBreakpoint = 'xs';
+      else newBreakpoint = 'initial';
+
+      setBreakpoint(prev => (prev !== newBreakpoint ? newBreakpoint : prev));
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [hasResponsiveProps]);
+
+  return breakpoint;
+}
 
 /**
  * Resolve a responsive value based on the current breakpoint
@@ -84,76 +125,6 @@ function createPropsKey(props: Record<string, any>): string {
 }
 
 /**
- * Hook for components with non-responsive props (no breakpoint dependency)
- */
-function useStylesNonResponsive<T extends ComponentDefinitionName>(
-  componentName: T,
-  props: Record<string, any>,
-) {
-  const classNames = componentDefinitions[componentName]
-    .classNames as ComponentClassNames<T>;
-
-  const { dataAttributes, resolvedProps } = useMemo(() => {
-    const dataAttributes: Record<string, string> = {};
-    const resolvedProps: Record<string, string> = {};
-
-    for (const [key, value] of Object.entries(props)) {
-      if (value !== undefined && value !== null) {
-        resolvedProps[key] = value;
-        dataAttributes[`data-${key}`] = value;
-      }
-    }
-
-    return { dataAttributes, resolvedProps };
-  }, [createPropsKey(props)]);
-
-  return {
-    classNames,
-    dataAttributes,
-    resolvedProps,
-  };
-}
-
-/**
- * Hook for components with responsive props (includes breakpoint dependency)
- */
-function useStylesResponsive<T extends ComponentDefinitionName>(
-  componentName: T,
-  props: Record<string, any>,
-) {
-  const classNames = componentDefinitions[componentName]
-    .classNames as ComponentClassNames<T>;
-
-  const { breakpoint } = useBreakpoint();
-
-  const { dataAttributes, resolvedProps } = useMemo(() => {
-    const dataAttributes: Record<string, string> = {};
-    const resolvedProps: Record<string, string> = {};
-
-    for (const [key, value] of Object.entries(props)) {
-      if (value !== undefined && value !== null) {
-        const resolvedValue = isResponsiveValue(value)
-          ? resolveResponsiveValue(value, breakpoint)
-          : value;
-
-        if (resolvedValue !== undefined) {
-          resolvedProps[key] = resolvedValue;
-          dataAttributes[`data-${key}`] = resolvedValue;
-        }
-      }
-    }
-
-    return { dataAttributes, resolvedProps };
-  }, [createPropsKey(props), breakpoint]);
-
-  return {
-    classNames,
-    dataAttributes,
-    resolvedProps,
-  };
-}
-
-/**
  * React hook to get class names and data attributes for a component with responsive support
  * @param componentName - The name of the component
  * @param props - Object with prop values (can be responsive)
@@ -167,10 +138,40 @@ export function useStyles<T extends ComponentDefinitionName>(
   dataAttributes: Record<string, string>;
   resolvedProps: Record<string, string>;
 } {
-  // Choose the appropriate hook based on whether props contain responsive values
-  if (hasResponsiveProps(props)) {
-    return useStylesResponsive(componentName, props);
-  } else {
-    return useStylesNonResponsive(componentName, props);
-  }
+  const classNames = componentDefinitions[componentName]
+    .classNames as ComponentClassNames<T>;
+
+  // Check if we have any responsive props
+  const hasResponsive = hasResponsiveProps(props);
+
+  // Use lazy breakpoint hook that only subscribes when needed
+  const breakpoint = useLazyBreakpoint(hasResponsive);
+
+  const { dataAttributes, resolvedProps } = useMemo(() => {
+    const dataAttributes: Record<string, string> = {};
+    const resolvedProps: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(props)) {
+      if (value !== undefined && value !== null) {
+        // Only do responsive resolution if we actually have responsive props
+        const resolvedValue =
+          hasResponsive && isResponsiveValue(value)
+            ? resolveResponsiveValue(value, breakpoint)
+            : value;
+
+        if (resolvedValue !== undefined) {
+          resolvedProps[key] = resolvedValue;
+          dataAttributes[`data-${key}`] = resolvedValue;
+        }
+      }
+    }
+
+    return { dataAttributes, resolvedProps };
+  }, [createPropsKey(props), hasResponsive ? breakpoint : null]);
+
+  return {
+    classNames,
+    dataAttributes,
+    resolvedProps,
+  };
 }
