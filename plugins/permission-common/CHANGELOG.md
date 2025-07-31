@@ -1,5 +1,21 @@
 # @backstage/plugin-permission-common
 
+## 0.9.1
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
 ## 0.9.0
 
 ### Minor Changes

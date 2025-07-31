@@ -344,7 +344,7 @@ export class DefaultCatalogProcessingEngine {
 
   private startOrphanCleanup(): () => void {
     const orphanStrategy =
-      this.config.getOptionalString('catalog.orphanStrategy') ?? 'keep';
+      this.config.getOptionalString('catalog.orphanStrategy') ?? 'delete';
     if (orphanStrategy !== 'delete') {
       return () => {};
     }

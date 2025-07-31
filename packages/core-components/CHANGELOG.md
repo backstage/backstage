@@ -1,5 +1,55 @@
 # @backstage/core-components
 
+## 0.17.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.4
+
+### Patch Changes
+
+- f6ffea6: Add optional message field for auth providers. This is intended to be a user friendly message that displays in the OAuth request dialog. A default message will be displayed if one is not provided.
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+
+## 0.17.4-next.2
+
+### Patch Changes
+
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.17.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.17.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
 ## 0.17.3
 
 ### Patch Changes

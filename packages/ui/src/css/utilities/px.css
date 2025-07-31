@@ -1,0 +1,524 @@
+.bui-px {
+  padding-left: var(--px);
+  padding-right: var(--px);
+}
+
+.bui-px-0\.5 {
+  padding-left: var(--bui-space-0_5);
+  padding-right: var(--bui-space-0_5);
+}
+
+.bui-px-1 {
+  padding-left: var(--bui-space-1);
+  padding-right: var(--bui-space-1);
+}
+
+.bui-px-1\.5 {
+  padding-left: var(--bui-space-1_5);
+  padding-right: var(--bui-space-1_5);
+}
+
+.bui-px-2 {
+  padding-left: var(--bui-space-2);
+  padding-right: var(--bui-space-2);
+}
+
+.bui-px-3 {
+  padding-left: var(--bui-space-3);
+  padding-right: var(--bui-space-3);
+}
+
+.bui-px-4 {
+  padding-left: var(--bui-space-4);
+  padding-right: var(--bui-space-4);
+}
+
+.bui-px-5 {
+  padding-left: var(--bui-space-5);
+  padding-right: var(--bui-space-5);
+}
+
+.bui-px-6 {
+  padding-left: var(--bui-space-6);
+  padding-right: var(--bui-space-6);
+}
+
+.bui-px-7 {
+  padding-left: var(--bui-space-7);
+  padding-right: var(--bui-space-7);
+}
+
+.bui-px-8 {
+  padding-left: var(--bui-space-8);
+  padding-right: var(--bui-space-8);
+}
+
+.bui-px-9 {
+  padding-left: var(--bui-space-9);
+  padding-right: var(--bui-space-9);
+}
+
+.bui-px-10 {
+  padding-left: var(--bui-space-10);
+  padding-right: var(--bui-space-10);
+}
+
+.bui-px-11 {
+  padding-left: var(--bui-space-11);
+  padding-right: var(--bui-space-11);
+}
+
+.bui-px-12 {
+  padding-left: var(--bui-space-12);
+  padding-right: var(--bui-space-12);
+}
+
+.bui-px-13 {
+  padding-left: var(--bui-space-13);
+  padding-right: var(--bui-space-13);
+}
+
+.bui-px-14 {
+  padding-left: var(--bui-space-14);
+  padding-right: var(--bui-space-14);
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:bui-px {
+    padding-left: var(--px-xs);
+    padding-right: var(--px-xs);
+  }
+
+  .xs\:bui-px-0\.5 {
+    padding-left: var(--bui-space-0_5);
+    padding-right: var(--bui-space-0_5);
+  }
+
+  .xs\:bui-px-1 {
+    padding-left: var(--bui-space-1);
+    padding-right: var(--bui-space-1);
+  }
+
+  .xs\:bui-px-1\.5 {
+    padding-left: var(--bui-space-1_5);
+    padding-right: var(--bui-space-1_5);
+  }
+
+  .xs\:bui-px-2 {
+    padding-left: var(--bui-space-2);
+    padding-right: var(--bui-space-2);
+  }
+
+  .xs\:bui-px-3 {
+    padding-left: var(--bui-space-3);
+    padding-right: var(--bui-space-3);
+  }
+
+  .xs\:bui-px-4 {
+    padding-left: var(--bui-space-4);
+    padding-right: var(--bui-space-4);
+  }
+
+  .xs\:bui-px-5 {
+    padding-left: var(--bui-space-5);
+    padding-right: var(--bui-space-5);
+  }
+
+  .xs\:bui-px-6 {
+    padding-left: var(--bui-space-6);
+    padding-right: var(--bui-space-6);
+  }
+
+  .xs\:bui-px-7 {
+    padding-left: var(--bui-space-7);
+    padding-right: var(--bui-space-7);
+  }
+
+  .xs\:bui-px-8 {
+    padding-left: var(--bui-space-8);
+    padding-right: var(--bui-space-8);
+  }
+
+  .xs\:bui-px-9 {
+    padding-left: var(--bui-space-9);
+    padding-right: var(--bui-space-9);
+  }
+
+  .xs\:bui-px-10 {
+    padding-left: var(--bui-space-10);
+    padding-right: var(--bui-space-10);
+  }
+
+  .xs\:bui-px-11 {
+    padding-left: var(--bui-space-11);
+    padding-right: var(--bui-space-11);
+  }
+
+  .xs\:bui-px-12 {
+    padding-left: var(--bui-space-12);
+    padding-right: var(--bui-space-12);
+  }
+
+  .xs\:bui-px-13 {
+    padding-left: var(--bui-space-13);
+    padding-right: var(--bui-space-13);
+  }
+
+  .xs\:bui-px-14 {
+    padding-left: var(--bui-space-14);
+    padding-right: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:bui-px {
+    padding-left: var(--px-sm);
+    padding-right: var(--px-sm);
+  }
+
+  .sm\:bui-px-0\.5 {
+    padding-left: var(--bui-space-0_5);
+    padding-right: var(--bui-space-0_5);
+  }
+
+  .sm\:bui-px-1 {
+    padding-left: var(--bui-space-1);
+    padding-right: var(--bui-space-1);
+  }
+
+  .sm\:bui-px-1\.5 {
+    padding-left: var(--bui-space-1_5);
+    padding-right: var(--bui-space-1_5);
+  }
+
+  .sm\:bui-px-2 {
+    padding-left: var(--bui-space-2);
+    padding-right: var(--bui-space-2);
+  }
+
+  .sm\:bui-px-3 {
+    padding-left: var(--bui-space-3);
+    padding-right: var(--bui-space-3);
+  }
+
+  .sm\:bui-px-4 {
+    padding-left: var(--bui-space-4);
+    padding-right: var(--bui-space-4);
+  }
+
+  .sm\:bui-px-5 {
+    padding-left: var(--bui-space-5);
+    padding-right: var(--bui-space-5);
+  }
+
+  .sm\:bui-px-6 {
+    padding-left: var(--bui-space-6);
+    padding-right: var(--bui-space-6);
+  }
+
+  .sm\:bui-px-7 {
+    padding-left: var(--bui-space-7);
+    padding-right: var(--bui-space-7);
+  }
+
+  .sm\:bui-px-8 {
+    padding-left: var(--bui-space-8);
+    padding-right: var(--bui-space-8);
+  }
+
+  .sm\:bui-px-9 {
+    padding-left: var(--bui-space-9);
+    padding-right: var(--bui-space-9);
+  }
+
+  .sm\:bui-px-10 {
+    padding-left: var(--bui-space-10);
+    padding-right: var(--bui-space-10);
+  }
+
+  .sm\:bui-px-11 {
+    padding-left: var(--bui-space-11);
+    padding-right: var(--bui-space-11);
+  }
+
+  .sm\:bui-px-12 {
+    padding-left: var(--bui-space-12);
+    padding-right: var(--bui-space-12);
+  }
+
+  .sm\:bui-px-13 {
+    padding-left: var(--bui-space-13);
+    padding-right: var(--bui-space-13);
+  }
+
+  .sm\:bui-px-14 {
+    padding-left: var(--bui-space-14);
+    padding-right: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:bui-px {
+    padding-left: var(--px-md);
+    padding-right: var(--px-md);
+  }
+
+  .md\:bui-px-0\.5 {
+    padding-left: var(--bui-space-0_5);
+    padding-right: var(--bui-space-0_5);
+  }
+
+  .md\:bui-px-1 {
+    padding-left: var(--bui-space-1);
+    padding-right: var(--bui-space-1);
+  }
+
+  .md\:bui-px-1\.5 {
+    padding-left: var(--bui-space-1_5);
+    padding-right: var(--bui-space-1_5);
+  }
+
+  .md\:bui-px-2 {
+    padding-left: var(--bui-space-2);
+    padding-right: var(--bui-space-2);
+  }
+
+  .md\:bui-px-3 {
+    padding-left: var(--bui-space-3);
+    padding-right: var(--bui-space-3);
+  }
+
+  .md\:bui-px-4 {
+    padding-left: var(--bui-space-4);
+    padding-right: var(--bui-space-4);
+  }
+
+  .md\:bui-px-5 {
+    padding-left: var(--bui-space-5);
+    padding-right: var(--bui-space-5);
+  }
+
+  .md\:bui-px-6 {
+    padding-left: var(--bui-space-6);
+    padding-right: var(--bui-space-6);
+  }
+
+  .md\:bui-px-7 {
+    padding-left: var(--bui-space-7);
+    padding-right: var(--bui-space-7);
+  }
+
+  .md\:bui-px-8 {
+    padding-left: var(--bui-space-8);
+    padding-right: var(--bui-space-8);
+  }
+
+  .md\:bui-px-9 {
+    padding-left: var(--bui-space-9);
+    padding-right: var(--bui-space-9);
+  }
+
+  .md\:bui-px-10 {
+    padding-left: var(--bui-space-10);
+    padding-right: var(--bui-space-10);
+  }
+
+  .md\:bui-px-11 {
+    padding-left: var(--bui-space-11);
+    padding-right: var(--bui-space-11);
+  }
+
+  .md\:bui-px-12 {
+    padding-left: var(--bui-space-12);
+    padding-right: var(--bui-space-12);
+  }
+
+  .md\:bui-px-13 {
+    padding-left: var(--bui-space-13);
+    padding-right: var(--bui-space-13);
+  }
+
+  .md\:bui-px-14 {
+    padding-left: var(--bui-space-14);
+    padding-right: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:bui-px {
+    padding-left: var(--px-lg);
+    padding-right: var(--px-lg);
+  }
+
+  .lg\:bui-px-0\.5 {
+    padding-left: var(--bui-space-0_5);
+    padding-right: var(--bui-space-0_5);
+  }
+
+  .lg\:bui-px-1 {
+    padding-left: var(--bui-space-1);
+    padding-right: var(--bui-space-1);
+  }
+
+  .lg\:bui-px-1\.5 {
+    padding-left: var(--bui-space-1_5);
+    padding-right: var(--bui-space-1_5);
+  }
+
+  .lg\:bui-px-2 {
+    padding-left: var(--bui-space-2);
+    padding-right: var(--bui-space-2);
+  }
+
+  .lg\:bui-px-3 {
+    padding-left: var(--bui-space-3);
+    padding-right: var(--bui-space-3);
+  }
+
+  .lg\:bui-px-4 {
+    padding-left: var(--bui-space-4);
+    padding-right: var(--bui-space-4);
+  }
+
+  .lg\:bui-px-5 {
+    padding-left: var(--bui-space-5);
+    padding-right: var(--bui-space-5);
+  }
+
+  .lg\:bui-px-6 {
+    padding-left: var(--bui-space-6);
+    padding-right: var(--bui-space-6);
+  }
+
+  .lg\:bui-px-7 {
+    padding-left: var(--bui-space-7);
+    padding-right: var(--bui-space-7);
+  }
+
+  .lg\:bui-px-8 {
+    padding-left: var(--bui-space-8);
+    padding-right: var(--bui-space-8);
+  }
+
+  .lg\:bui-px-9 {
+    padding-left: var(--bui-space-9);
+    padding-right: var(--bui-space-9);
+  }
+
+  .lg\:bui-px-10 {
+    padding-left: var(--bui-space-10);
+    padding-right: var(--bui-space-10);
+  }
+
+  .lg\:bui-px-11 {
+    padding-left: var(--bui-space-11);
+    padding-right: var(--bui-space-11);
+  }
+
+  .lg\:bui-px-12 {
+    padding-left: var(--bui-space-12);
+    padding-right: var(--bui-space-12);
+  }
+
+  .lg\:bui-px-13 {
+    padding-left: var(--bui-space-13);
+    padding-right: var(--bui-space-13);
+  }
+
+  .lg\:bui-px-14 {
+    padding-left: var(--bui-space-14);
+    padding-right: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:bui-px {
+    padding-left: var(--px-xl);
+    padding-right: var(--px-xl);
+  }
+
+  .xl\:bui-px-0\.5 {
+    padding-left: var(--bui-space-0_5);
+    padding-right: var(--bui-space-0_5);
+  }
+
+  .xl\:bui-px-1 {
+    padding-left: var(--bui-space-1);
+    padding-right: var(--bui-space-1);
+  }
+
+  .xl\:bui-px-1\.5 {
+    padding-left: var(--bui-space-1_5);
+    padding-right: var(--bui-space-1_5);
+  }
+
+  .xl\:bui-px-2 {
+    padding-left: var(--bui-space-2);
+    padding-right: var(--bui-space-2);
+  }
+
+  .xl\:bui-px-3 {
+    padding-left: var(--bui-space-3);
+    padding-right: var(--bui-space-3);
+  }
+
+  .xl\:bui-px-4 {
+    padding-left: var(--bui-space-4);
+    padding-right: var(--bui-space-4);
+  }
+
+  .xl\:bui-px-5 {
+    padding-left: var(--bui-space-5);
+    padding-right: var(--bui-space-5);
+  }
+
+  .xl\:bui-px-6 {
+    padding-left: var(--bui-space-6);
+    padding-right: var(--bui-space-6);
+  }
+
+  .xl\:bui-px-7 {
+    padding-left: var(--bui-space-7);
+    padding-right: var(--bui-space-7);
+  }
+
+  .xl\:bui-px-8 {
+    padding-left: var(--bui-space-8);
+    padding-right: var(--bui-space-8);
+  }
+
+  .xl\:bui-px-9 {
+    padding-left: var(--bui-space-9);
+    padding-right: var(--bui-space-9);
+  }
+
+  .xl\:bui-px-10 {
+    padding-left: var(--bui-space-10);
+    padding-right: var(--bui-space-10);
+  }
+
+  .xl\:bui-px-11 {
+    padding-left: var(--bui-space-11);
+    padding-right: var(--bui-space-11);
+  }
+
+  .xl\:bui-px-12 {
+    padding-left: var(--bui-space-12);
+    padding-right: var(--bui-space-12);
+  }
+
+  .xl\:bui-px-13 {
+    padding-left: var(--bui-space-13);
+    padding-right: var(--bui-space-13);
+  }
+
+  .xl\:bui-px-14 {
+    padding-left: var(--bui-space-14);
+    padding-right: var(--bui-space-14);
+  }
+}

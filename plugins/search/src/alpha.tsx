@@ -31,7 +31,6 @@ import {
   useApi,
   discoveryApiRef,
   fetchApiRef,
-  createApiFactory,
 } from '@backstage/core-plugin-api';
 
 import {
@@ -77,14 +76,13 @@ import {
 
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: searchApiRef,
       deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
         new SearchClient({ discoveryApi, fetchApi }),
     }),
-  },
 });
 
 const useSearchPageStyles = makeStyles((theme: Theme) => ({

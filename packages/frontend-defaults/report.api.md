@@ -44,6 +44,10 @@ export interface CreateAppOptions {
     | FrontendFeatureLoader
     | CreateAppFeatureLoader
   )[];
+  // (undocumented)
+  flags?: {
+    allowUnknownExtensionConfig?: boolean;
+  };
   loadingComponent?: ReactNode;
   // (undocumented)
   pluginInfoResolver?: FrontendPluginInfoResolver;

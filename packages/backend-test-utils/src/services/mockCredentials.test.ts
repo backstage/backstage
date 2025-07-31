@@ -170,4 +170,27 @@ describe('mockCredentials', () => {
       "Invalid user entity reference 'wrong', expected <kind>:<namespace>/<name>",
     );
   });
+
+  it('should have a serializable form', () => {
+    expect(String(mockCredentials.service('my-service'))).toMatchInlineSnapshot(
+      `"mockCredentials{servicePrincipal{my-service}}"`,
+    );
+    expect(
+      String(mockCredentials.user('user:default/mock')),
+    ).toMatchInlineSnapshot(
+      `"mockCredentials{userPrincipal{user:default/mock}}"`,
+    );
+    expect(
+      String(
+        mockCredentials.user('user:default/mock', {
+          actor: { subject: 'my-actor' },
+        }),
+      ),
+    ).toMatchInlineSnapshot(
+      `"mockCredentials{userPrincipal{user:default/mock,actor={my-actor}}}"`,
+    );
+    expect(String(mockCredentials.none())).toMatchInlineSnapshot(
+      `"mockCredentials{nonePrincipal}"`,
+    );
+  });
 });

@@ -78,6 +78,35 @@ export const useSanitizerTransformer = (): Transformer => {
       const attributeNameCheck = config?.getOptionalString(
         'allowedCustomElementAttributeNameRegExp',
       );
+      const additionalAllowedURIProtocols =
+        config?.getOptionalStringArray('additionalAllowedURIProtocols') || [];
+
+      // Define allowed URI protocols, including any additional ones from the config.
+      // The default protocols are based on the DOMPurify defaults.
+      const allowedURIProtocols = [
+        'callto',
+        'cid',
+        'ftp',
+        'ftps',
+        'http',
+        'https',
+        'mailto',
+        'matrix',
+        'sms',
+        'tel',
+        'xmpp',
+        ...additionalAllowedURIProtocols,
+      ].filter(Boolean);
+
+      const allowedURIRegExp = new RegExp(
+        // This regex is not exposed by DOMPurify, so we need to define it ourselves.
+        // It is possible for this to drift from the default in future versions of DOMPurify.
+        // See: https://raw.githubusercontent.com/cure53/DOMPurify/master/src/regexp.ts
+        `^(?:${allowedURIProtocols.join(
+          '|',
+        )}:|[^a-z]|[a-z+.-]+(?:[^a-z+.\\-:]|$))`,
+        'i',
+      );
 
       // using outerHTML as we want to preserve the html tag attributes (lang)
       return DOMPurify.sanitize(dom.outerHTML, {
@@ -86,6 +115,7 @@ export const useSanitizerTransformer = (): Transformer => {
         ADD_ATTR: ['http-equiv', 'content', 'dominant-baseline'],
         WHOLE_DOCUMENT: true,
         RETURN_DOM: true,
+        ALLOWED_URI_REGEXP: allowedURIRegExp,
         CUSTOM_ELEMENT_HANDLING: {
           tagNameCheck: tagNameCheck ? new RegExp(tagNameCheck) : undefined,
           attributeNameCheck: attributeNameCheck

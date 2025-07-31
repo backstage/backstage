@@ -1,5 +1,65 @@
 # @backstage/cli
 
+## 0.33.2-next.0
+
+### Patch Changes
+
+- a6af768: Allow js files to be processed by the nodeTransform loader
+- Updated dependencies
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/integration@1.17.1
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.33.1
+
+### Patch Changes
+
+- 50f0ce6: Fixes a module not found error when running `backstage-cli info`.
+- Updated dependencies
+  - @backstage/config-loader@1.10.2
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/integration@1.17.1
+
+## 0.33.1-next.2
+
+### Patch Changes
+
+- 50f0ce6: Fixes a module not found error when running `backstage-cli info`.
+
+## 0.33.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2-next.0
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+
+## 0.33.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
 ## 0.33.0
 
 ### Minor Changes

@@ -27,7 +27,10 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import {
+  createPullRequest,
+  DELETE_FILE,
+} from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from '../util';
 import { examples } from './githubPullRequest.examples';
 import {
@@ -143,6 +146,12 @@ export const createPublishGithubPullRequestAction = (
           z.string({
             description: 'The name for the branch',
           }),
+        filesToDelete: z =>
+          z
+            .array(z.string(), {
+              description: 'List of files that will be deleted',
+            })
+            .optional(),
         targetBranchName: z =>
           z
             .string({
@@ -269,6 +278,7 @@ export const createPublishGithubPullRequestAction = (
       const {
         repoUrl,
         branchName,
+        filesToDelete,
         targetBranchName,
         title,
         description,
@@ -323,8 +333,8 @@ export const createPublishGithubPullRequestAction = (
         file: SerializedFile,
       ): 'utf-8' | 'base64' => (file.symlink ? 'utf-8' : 'base64');
 
-      const files = Object.fromEntries(
-        directoryContents.map(file => [
+      const files = Object.fromEntries([
+        ...directoryContents.map(file => [
           targetPath ? path.posix.join(targetPath, file.path) : file.path,
           {
             // See the properties of tree items
@@ -341,7 +351,13 @@ export const createPublishGithubPullRequestAction = (
             content: file.content.toString(determineFileEncoding(file)),
           },
         ]),
-      );
+        // order of arrays is important so filesToDelete will overwrite
+        // changes from files above
+        ...(filesToDelete || []).map(filePath => [
+          targetPath ? path.posix.join(targetPath, filePath) : filePath,
+          DELETE_FILE,
+        ]),
+      ]);
 
       // If this is a dry run, log and return
       if (ctx.isDryRun) {

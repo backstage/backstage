@@ -22,47 +22,62 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
 import { EntityRelationAggregation } from '../types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../translation';
 
-const useStyles = makeStyles(theme => ({
-  card: {
-    maxHeight: '100%',
+/** @public */
+export type OwnershipCardClassKey =
+  | 'card'
+  | 'cardContent'
+  | 'list'
+  | 'listItemText'
+  | 'listItemSecondaryAction'
+  | 'grid';
+
+const useStyles = makeStyles(
+  theme =>
+    createStyles({
+      card: {
+        maxHeight: '100%',
+      },
+      cardContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      },
+      list: {
+        [theme.breakpoints.down('xs')]: {
+          padding: `0 0 12px`,
+        },
+      },
+      listItemText: {
+        [theme.breakpoints.down('xs')]: {
+          paddingRight: 0,
+          paddingLeft: 0,
+        },
+      },
+      listItemSecondaryAction: {
+        [theme.breakpoints.down('xs')]: {
+          width: '100%',
+          top: 'auto',
+          right: 'auto',
+          position: 'relative',
+          transform: 'unset',
+        },
+      },
+      grid: {
+        overflowY: 'auto',
+        marginTop: 0,
+      },
+    }),
+  {
+    name: 'PluginOrgOwnershipCard',
   },
-  cardContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
-  },
-  list: {
-    [theme.breakpoints.down('xs')]: {
-      padding: `0 0 12px`,
-    },
-  },
-  listItemText: {
-    [theme.breakpoints.down('xs')]: {
-      paddingRight: 0,
-      paddingLeft: 0,
-    },
-  },
-  listItemSecondaryAction: {
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-      top: 'auto',
-      right: 'auto',
-      position: 'relative',
-      transform: 'unset',
-    },
-  },
-  grid: {
-    overflowY: 'auto',
-    marginTop: 0,
-  },
-}));
+);
 
 /** @public */
 export const OwnershipCard = (props: {

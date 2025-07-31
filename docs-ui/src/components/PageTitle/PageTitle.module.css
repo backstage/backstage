@@ -1,0 +1,12 @@
+.container {
+  margin-bottom: 40px;
+}
+
+.component {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--secondary);
+  margin-bottom: 6px;
+}

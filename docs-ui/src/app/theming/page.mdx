@@ -1,0 +1,691 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import * as Table from '@/components/Table';
+import { Chip } from '@/components/Chip';
+import { customTheme } from '@/snippets/code-snippets';
+
+# Theming
+
+Backstage UI theming is built entirely on CSS, without relying on any CSS-in-JS libraries.
+At its core, it provides a solid default theme that is easily customizable using a
+comprehensive set of CSS variables. Additionally, it enables anyone to adapt the design
+to their specific needs. Each component comes with fixed class names, making customization
+even more straightforward.
+
+## Light & Dark modes
+
+By default, Backstage UI supports both light and dark modes using the `data-theme` attribute.
+The light theme is applied by default if no `data-theme` attribute is specified. To create
+a custom theme, you'll need to define both light and dark modes as outlined below. If
+only one mode is defined, the other will fall back to the default theme.
+
+## How to create your own theme
+
+In our [started guide](/), we ask you to import two css files. The `core.css` file includes
+the default set of variables. We recommend to keep this file in place and add your own theme
+on top of it. `core.css` also include an opinionated reset. If you decided to remove `core.css`
+you will have to provide your own reset css.
+
+Here's an example of how your theme.css file should look like:
+
+<CodeBlock lang="css" code={customTheme} />
+
+## CSS class name structure
+
+All Backstage UI components come with a set of CSS classes that you can use to style them. To make it
+easier to identify the class name you can use, we use a specific structure for the class names.
+
+<img
+  src="/css-classname-structure.png"
+  style={{ width: '100%', marginBottom: '32px', marginTop: '16px' }}
+/>
+
+Every component has a unique prefix `.bui-` followed by the component name. Component props
+are represented using the `data-` attribute. That way, class names are easily identifiable.
+
+## Available CSS variables
+
+### Base colors
+
+These colors are used for special purposes like ring, scrollbar, ...
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-black</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Pure black color. This one should be the same in light and dark themes.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-white</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Pure white color. This one should be the same in light and dark themes.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-1</Chip>
+      </Table.Cell>
+      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-2</Chip>
+      </Table.Cell>
+      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-3</Chip>
+      </Table.Cell>
+      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-4</Chip>
+      </Table.Cell>
+      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-5</Chip>
+      </Table.Cell>
+      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-6</Chip>
+      </Table.Cell>
+      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-7</Chip>
+      </Table.Cell>
+      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-8</Chip>
+      </Table.Cell>
+      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Core background colors
+
+These colors are used for the background of your application. We are mostly using for now a
+single elevated background for panels. `--bui-bg` should mostly use as the main background
+color of your app.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>The background color of your Backstage instance.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-surface-1</Chip>
+      </Table.Cell>
+      <Table.Cell>Use for any panels or elevated surfaces.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-surface-2</Chip>
+      </Table.Cell>
+      <Table.Cell>Use for any panels or elevated surfaces.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-solid</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for solid background colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-solid-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for solid background colors when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-solid-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for solid background colors when pressed.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-solid-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for solid background colors when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-tint</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for tint background colors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-tint-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for tint background colors when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-tint-focus</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for tint background colors when active.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-tint-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for tint background colors when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>Used to show errors information.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>Used to show warnings information.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-success</Chip>
+      </Table.Cell>
+      <Table.Cell>Used to show success information.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Foreground colors
+
+Foreground colours are meant to work in pair with a background colours. Typeically this would work
+for icons, texts, shapes, ... Use a matching name to know what foreground color to use. These colors
+are prefixed with `fg` to make it easier to identify.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-primary</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of main background surfaces.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-secondary</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of main background surfaces.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-link</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of main background surfaces.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-link-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of main background surfaces.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of main background surfaces.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-solid</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of solid background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-tint</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of tint background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-tint-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of tint background colors when disabled.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of danger background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of warning background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-success</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of success background colors.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Border colors
+
+These border colors are mostly meant to be used as borders on top of any components with
+low contrast to help as a separator with the different background colors.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--bui-bg-surface-1`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used when the component is interactive and hovered.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used when the component is interactive and focused.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Used when the component is disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--bui-bg-danger`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--bui-bg-warning`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-success</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--bui-bg-success`.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Special colors
+
+These colors are used for special purposes like ring, scrollbar, ...
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-ring</Chip>
+      </Table.Cell>
+      <Table.Cell>The color of the ring.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-scrollbar</Chip>
+      </Table.Cell>
+      <Table.Cell>The color of the scrollbar.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-scrollbar-thumb</Chip>
+      </Table.Cell>
+      <Table.Cell>The color of the scrollbar thumb.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Font families
+
+We have two fonts that we use across Backstage UI. The first one is the sans-serif
+font that we use for the body of the application. The second one is the
+monospace font that we use for code blocks and tables.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-regular</Chip>
+      </Table.Cell>
+      <Table.Cell>The sans-serif font for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-mono</Chip>
+      </Table.Cell>
+      <Table.Cell>The monospace font for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Font weights
+
+We have two font weights that we use across Backstage UI. Regular or Bold.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-weight-regular</Chip>
+      </Table.Cell>
+      <Table.Cell>The regular font weight for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-weight-bold</Chip>
+      </Table.Cell>
+      <Table.Cell>The bold font weight for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Spacing
+
+We built a spacing system based on a single value `--bui-space`. This value is
+used to calculate the spacing for all the components. By default if you would like to
+increase or decrease the spacing between your components you can do it simply by updating
+`--bui-space` and it will apply to all spacing values.
+
+`--bui-space` is not used directly in any components but serve as an easy way to
+calculate the other values.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The base unit for the spacing system. Default value is `0.25rem`.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+Below is the list of all spacing values you can use in your application. We use these
+tokens for pretty much each spacing properties like padding, margin, gaps, ...
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-0_5</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 0.5.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-1</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`).</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-1_5</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 1.5.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-2</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 2.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-3</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 3.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-4</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 4.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-5</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 5.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-6</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 6.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-7</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 7.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-8</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 8.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-9</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 9.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-10</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 10.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-11</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 11.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-12</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 12.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-13</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 13.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-space-14</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--bui-space`) times 14.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Radius
+
+We use a radius system to make sure that the components have a consistent look and feel.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-radius-1</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The radius of the component. Default value is `0.125rem`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-radius-2</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The radius of the component. Default value is `0.25rem`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-radius-3</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The radius of the component. Default value is `0.5rem`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-radius-4</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The radius of the component. Default value is `0.75rem`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-radius-5</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The radius of the component. Default value is `1rem`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-radius-6</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The radius of the component. Default value is `1.25rem`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-radius-full</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The radius of the component. Default value is `9999px`.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>

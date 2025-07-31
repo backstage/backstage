@@ -100,7 +100,7 @@ metadata:
   name: my-template
 spec:
   EXPERIMENTAL_formDecorators:
-    - id: my-decorator
+    - id: myDecorator
       input:
         test: something funky
 
@@ -115,7 +115,7 @@ You can create a decorator using the simple helper method `createScaffolderFormD
 ```ts
 export const mockDecorator = createScaffolderFormDecorator({
   // give the decorator a name
-  id: 'mock-decorator',
+  id: 'mockDecorator',
 
   // define the schema for the input that can be provided in `template.yaml`
   schema: {

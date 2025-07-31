@@ -1,0 +1,134 @@
+.bui-position-absolute {
+  position: absolute;
+}
+
+.bui-position-fixed {
+  position: fixed;
+}
+
+.bui-position-sticky {
+  position: sticky;
+}
+
+.bui-position-relative {
+  position: relative;
+}
+
+.bui-position-static {
+  position: static;
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:bui-position-absolute {
+    position: absolute;
+  }
+
+  .xs\:bui-position-fixed {
+    position: fixed;
+  }
+
+  .xs\:bui-position-sticky {
+    position: sticky;
+  }
+
+  .xs\:bui-position-relative {
+    position: relative;
+  }
+
+  .xs\:bui-position-static {
+    position: static;
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:bui-position-absolute {
+    position: absolute;
+  }
+
+  .sm\:bui-position-fixed {
+    position: fixed;
+  }
+
+  .sm\:bui-position-sticky {
+    position: sticky;
+  }
+
+  .sm\:bui-position-relative {
+    position: relative;
+  }
+
+  .sm\:bui-position-static {
+    position: static;
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:bui-position-absolute {
+    position: absolute;
+  }
+
+  .md\:bui-position-fixed {
+    position: fixed;
+  }
+
+  .md\:bui-position-sticky {
+    position: sticky;
+  }
+
+  .md\:bui-position-relative {
+    position: relative;
+  }
+
+  .md\:bui-position-static {
+    position: static;
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:bui-position-absolute {
+    position: absolute;
+  }
+
+  .lg\:bui-position-fixed {
+    position: fixed;
+  }
+
+  .lg\:bui-position-sticky {
+    position: sticky;
+  }
+
+  .lg\:bui-position-relative {
+    position: relative;
+  }
+
+  .lg\:bui-position-static {
+    position: static;
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:bui-position-absolute {
+    position: absolute;
+  }
+
+  .xl\:bui-position-fixed {
+    position: fixed;
+  }
+
+  .xl\:bui-position-sticky {
+    position: sticky;
+  }
+
+  .xl\:bui-position-relative {
+    position: relative;
+  }
+
+  .xl\:bui-position-static {
+    position: static;
+  }
+}

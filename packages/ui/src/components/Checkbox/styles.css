@@ -1,0 +1,52 @@
+.bui-CheckboxRoot {
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  box-shadow: inset 0 0 0 1px var(--bui-border);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.2s ease-in-out;
+  background-color: var(--bui-bg-surface-1);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.bui-CheckboxRoot:focus-visible {
+  transition: none;
+  outline: 2px solid var(--bui-ring);
+  outline-offset: 2px;
+}
+
+.bui-CheckboxRoot[data-checked] {
+  background-color: var(--bui-bg-solid);
+  box-shadow: none;
+  color: var(--bui-fg-solid);
+}
+
+.bui-CheckboxLabel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--bui-space-2);
+  font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  font-weight: var(--bui-font-weight-regular);
+  color: var(--bui-fg-primary);
+  user-select: none;
+
+  &:hover {
+    & .bui-CheckboxRoot:not([data-checked]) {
+      box-shadow: inset 0 0 0 1px var(--bui-border-hover);
+    }
+  }
+}
+
+.bui-CheckboxIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bui-fg-solid);
+}

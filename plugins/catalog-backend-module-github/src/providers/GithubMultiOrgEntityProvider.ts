@@ -60,6 +60,7 @@ import {
   defaultOrganizationTeamTransformer,
   defaultUserTransformer,
   getOrganizationTeams,
+  assignGroupsToUser,
   getOrganizationUsers,
   GithubTeam,
   TeamTransformer,
@@ -73,6 +74,7 @@ import {
 import {
   getOrganizationsFromUser,
   getOrganizationTeam,
+  getOrganizationTeamsForUser,
   getOrganizationTeamsFromUsers,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
@@ -556,15 +558,15 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           headers: orgHeaders,
         });
 
-        const { teams } = await getOrganizationTeamsFromUsers(
+        const { teams } = await getOrganizationTeamsForUser(
           orgClient,
           userOrg,
-          [login],
+          login,
           this.defaultMultiOrgTeamTransformer.bind(this),
         );
 
         if (isUserEntity(user) && areGroupEntities(teams)) {
-          assignGroupsToUsers([user], teams);
+          assignGroupsToUser(user, teams);
         }
       }
     }
@@ -799,15 +801,15 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           headers: orgHeaders,
         });
 
-        const { teams } = await getOrganizationTeamsFromUsers(
+        const { teams } = await getOrganizationTeamsForUser(
           orgClient,
           userOrg,
-          [login],
+          login,
           this.defaultMultiOrgTeamTransformer.bind(this),
         );
 
         if (areGroupEntities(teams)) {
-          assignGroupsToUsers([user], teams);
+          assignGroupsToUser(user, teams);
         }
       }
 

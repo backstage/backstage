@@ -1,0 +1,64 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { SearchFieldSnippet } from '@/snippets/stories-snippets';
+import {
+  searchFieldPropDefs,
+  searchFieldUsageSnippet,
+  searchFieldDefaultSnippet,
+  searchFieldSizesSnippet,
+  searchFieldDescriptionSnippet,
+} from './search-field.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+
+<PageTitle
+  title="SearchField"
+  description="A SearchField is a text field designed for searches."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SearchFieldSnippet story="WithLabel" />}
+  code={searchFieldDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={searchFieldUsageSnippet} />
+
+## API reference
+
+<PropsTable data={searchFieldPropDefs} />
+
+## Examples
+
+### Sizes
+
+We support two different sizes: `small`, `medium`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SearchFieldSnippet story="Sizes" />}
+  code={searchFieldSizesSnippet}
+/>
+
+### With description
+
+Here's a simple SearchField with a description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SearchFieldSnippet story="WithDescription" />}
+  code={searchFieldDescriptionSnippet}
+/>
+
+<Theming component="SearchField" />
+
+<ChangelogComponent component="search-field" />

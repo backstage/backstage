@@ -218,8 +218,8 @@ export const createPublishGitlabMergeRequestAction: (options: {
   {
     repoUrl: string;
     title: string;
-    description: string;
     branchName: string;
+    description?: string | undefined;
     targetBranchName?: string | undefined;
     sourcePath?: string | undefined;
     targetPath?: string | undefined;

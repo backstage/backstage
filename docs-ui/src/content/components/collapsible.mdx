@@ -1,0 +1,72 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { CollapsibleSnippet } from '@/snippets/stories-snippets';
+import {
+  collapsibleRootPropDefs,
+  collapsibleTriggerPropDefs,
+  collapsiblePanelPropDefs,
+  collapsibleUsageSnippet,
+  collapsibleDefaultSnippet,
+  collapsibleTriggerSnippet,
+  collapsibleOpenSnippet,
+} from './collapsible.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Collapsible"
+  description="A collapsible component that can be used to display content in a box."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  height={240}
+  preview={<CollapsibleSnippet story="Default" />}
+  code={collapsibleDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={collapsibleUsageSnippet} />
+
+## API reference
+
+### Collapsible.Root
+
+Groups all parts of the collapsible. Renders a `<div>` element.
+
+<PropsTable data={collapsibleRootPropDefs} />
+
+### Collapsible.Trigger
+
+The trigger by default render a simple unstyled button. Because menus can be rendered in different ways, we recommend
+using the `render` prop to render a custom trigger.
+
+<CodeBlock code={collapsibleTriggerSnippet} />
+
+<PropsTable data={collapsibleTriggerPropDefs} />
+
+### Collapsible.Panel
+
+A panel with the collapsible contents. Renders a `<div>` element.
+
+<PropsTable data={collapsiblePanelPropDefs} />
+
+## Examples
+
+Open the panel by default by setting the `defaultOpen` prop to `true`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<CollapsibleSnippet story="Open" />}
+  code={collapsibleOpenSnippet}
+/>
+
+<Theming component="Collapsible" />
+
+<ChangelogComponent component="collapsible" />

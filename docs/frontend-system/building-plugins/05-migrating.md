@@ -205,22 +205,17 @@ The major changes we'll make are
 The end result, after simplifying imports and cleaning up a bit, might look like this:
 
 ```tsx title="in @internal/plugin-example"
-import {
-  storageApiRef,
-  createApiFactory,
-  ApiBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { storageApiRef, ApiBlueprint } from '@backstage/frontend-plugin-api';
 import { workApiRef } from '@internal/plugin-example-react';
 import { WorkImpl } from './WorkImpl';
 
 const exampleWorkApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: workApiRef,
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) => new WorkImpl({ storageApi }),
     }),
-  },
 });
 ```
 

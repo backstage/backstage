@@ -1,0 +1,53 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { ContainerSnippet } from '@/snippets/stories-snippets';
+import {
+  containerPropDefs,
+  containerUsageSnippet,
+  containerDefaultSnippet,
+  containerSimpleSnippet,
+  containerResponsiveSnippet,
+} from './container.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Layout"
+  title="Container"
+  description="The container component let you use our default max-width and center the content on the page."
+/>
+
+<Snippet
+  py={4}
+  preview={<ContainerSnippet story="Preview" />}
+  code={containerDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={containerUsageSnippet} />
+
+## API reference
+
+<PropsTable data={containerPropDefs} />
+
+## Examples
+
+### Simple
+
+A simple example of how to use the Container component.
+
+<CodeBlock code={containerSimpleSnippet} />
+
+### Responsive padding & margin
+
+The Container component also supports responsive values, making it easy to
+create responsive designs.
+
+<CodeBlock code={containerResponsiveSnippet} />
+
+<Theming component="Container" />
+
+<ChangelogComponent component="container" />

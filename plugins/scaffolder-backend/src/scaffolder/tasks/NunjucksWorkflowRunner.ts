@@ -60,6 +60,10 @@ import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { convertFiltersToRecord } from '../../util/templating';
+import {
+  CheckpointState,
+  CheckpointContext,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -90,16 +94,6 @@ type TemplateContext = {
     };
   };
 };
-
-type CheckpointState =
-  | {
-      status: 'failed';
-      reason: string;
-    }
-  | {
-      status: 'success';
-      value: JsonValue;
-    };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
@@ -384,10 +378,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           secrets: task.secrets ?? {},
           logger: taskLogger,
           workspacePath,
-          async checkpoint<T extends JsonValue | void>(opts: {
-            key?: string;
-            fn: () => Promise<T> | T;
-          }) {
+          async checkpoint<T extends JsonValue | void>(
+            opts: CheckpointContext<T>,
+          ) {
             const { key: checkpointKey, fn } = opts;
             const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
 
@@ -396,9 +389,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
               if (prevTaskState) {
                 const prevState = (
-                  prevTaskState.state?.checkpoints as {
-                    [key: string]: CheckpointState;
-                  }
+                  prevTaskState.state?.checkpoints as CheckpointState
                 )?.[key];
 
                 if (prevState && prevState.status === 'success') {
@@ -447,6 +438,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           isDryRun: task.isDryRun,
           signal: task.cancelSignal,
           getInitiatorCredentials: () => task.getInitiatorCredentials(),
+          step: {
+            id: step.id,
+            name: step.name,
+          },
         });
       }
 

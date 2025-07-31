@@ -6,16 +6,19 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { AppTheme } from '@backstage/frontend-plugin-api';
 import { ComponentRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconComponent as IconComponent_2 } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { NavContentComponent } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
@@ -100,13 +103,10 @@ const appPlugin: FrontendPlugin<
             optional: false;
           }
         >;
-        logos: ExtensionInput<
+        content: ExtensionInput<
           ConfigurableExtensionDataRef<
-            {
-              logoIcon?: JSX.Element;
-              logoFull?: JSX.Element;
-            },
-            'core.nav-logo.logo-elements',
+            NavContentComponent,
+            'core.nav-content.component',
             {}
           >,
           {
@@ -224,9 +224,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/analytics': ExtensionDefinition<{
       kind: 'api';
@@ -239,9 +243,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/app-language': ExtensionDefinition<{
       kind: 'api';
@@ -254,9 +262,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/app-theme': ExtensionDefinition<{
       config: {};
@@ -277,9 +289,13 @@ const appPlugin: FrontendPlugin<
       };
       kind: 'api';
       name: 'app-theme';
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/atlassian-auth': ExtensionDefinition<{
       kind: 'api';
@@ -292,9 +308,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/bitbucket-auth': ExtensionDefinition<{
       kind: 'api';
@@ -307,9 +327,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/bitbucket-server-auth': ExtensionDefinition<{
       kind: 'api';
@@ -322,9 +346,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/components': ExtensionDefinition<{
       config: {};
@@ -352,9 +380,13 @@ const appPlugin: FrontendPlugin<
       };
       kind: 'api';
       name: 'components';
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/dialog': ExtensionDefinition<{
       kind: 'api';
@@ -367,9 +399,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/discovery': ExtensionDefinition<{
       kind: 'api';
@@ -382,9 +418,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/error': ExtensionDefinition<{
       kind: 'api';
@@ -397,9 +437,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/feature-flags': ExtensionDefinition<{
       kind: 'api';
@@ -412,9 +456,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/fetch': ExtensionDefinition<{
       kind: 'api';
@@ -427,9 +475,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/github-auth': ExtensionDefinition<{
       kind: 'api';
@@ -442,9 +494,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/gitlab-auth': ExtensionDefinition<{
       kind: 'api';
@@ -457,9 +513,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/google-auth': ExtensionDefinition<{
       kind: 'api';
@@ -472,9 +532,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/icons': ExtensionDefinition<{
       config: {};
@@ -501,9 +565,13 @@ const appPlugin: FrontendPlugin<
       };
       kind: 'api';
       name: 'icons';
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/microsoft-auth': ExtensionDefinition<{
       kind: 'api';
@@ -516,9 +584,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/oauth-request': ExtensionDefinition<{
       kind: 'api';
@@ -531,9 +603,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/okta-auth': ExtensionDefinition<{
       kind: 'api';
@@ -546,9 +622,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/onelogin-auth': ExtensionDefinition<{
       kind: 'api';
@@ -561,9 +641,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/permission': ExtensionDefinition<{
       kind: 'api';
@@ -576,9 +660,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/scm-auth': ExtensionDefinition<{
       kind: 'api';
@@ -591,9 +679,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/scm-integrations': ExtensionDefinition<{
       kind: 'api';
@@ -606,9 +698,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/storage': ExtensionDefinition<{
       kind: 'api';
@@ -621,9 +717,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/translations': ExtensionDefinition<{
       config: {};
@@ -655,9 +755,13 @@ const appPlugin: FrontendPlugin<
       };
       kind: 'api';
       name: 'translations';
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/vmware-cloud-auth': ExtensionDefinition<{
       kind: 'api';
@@ -670,9 +774,13 @@ const appPlugin: FrontendPlugin<
         {}
       >;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'app-root-element:app/alert-display': ExtensionDefinition<{
       config: {

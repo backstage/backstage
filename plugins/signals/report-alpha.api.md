@@ -4,9 +4,12 @@
 
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -24,8 +27,27 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'app-root-element:signals/signals-display': ExtensionDefinition<{
+      kind: 'app-root-element';
+      name: 'signals-display';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
       params: {
-        factory: AnyApiFactory;
+        element: JSX.Element | (() => JSX.Element);
       };
     }>;
   }

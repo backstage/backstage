@@ -1,10 +1,10 @@
 .yarn
 dist
 microsite
-canon-docs/.next
-canon-docs/public
-canon-docs/out
-packages/canon/css
+docs-ui/.next
+docs-ui/public
+docs-ui/out
+packages/ui/css
 coverage
 *.hbs
 templates

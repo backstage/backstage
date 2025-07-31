@@ -1,0 +1,92 @@
+import { PropsTable } from '@/components/PropsTable';
+import { TextSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  textPropDefs,
+  textUsageSnippet,
+  textDefaultSnippet,
+  textVariantsSnippet,
+  textWeightsSnippet,
+  textTruncateSnippet,
+  textResponsiveSnippet,
+  textColorsSnippet,
+} from './text.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Text"
+  description="The `Text` component is used to display content on your page."
+/>
+
+<Snippet
+  py={4}
+  preview={<TextSnippet story="Default" />}
+  code={textDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={textUsageSnippet} />
+
+## API reference
+
+<PropsTable data={textPropDefs} />
+
+## Examples
+
+### All variants
+
+The `Text` component has a `variant` prop that can be used to change the
+appearance of the text.
+
+<Snippet
+  open
+  preview={<TextSnippet story="AllVariants" />}
+  code={textVariantsSnippet}
+/>
+
+### All weights
+
+The `Text` component has a `weight` prop that can be used to change the
+appearance of the text.
+
+<Snippet
+  open
+  preview={<TextSnippet story="AllWeights" />}
+  code={textWeightsSnippet}
+/>
+
+### All colors
+
+The `Text` component has a `color` prop that can be used to change the
+appearance of the text.
+
+<Snippet
+  open
+  preview={<TextSnippet story="AllColors" />}
+  code={textColorsSnippet}
+/>
+
+### Truncate
+
+The `Text` component has a `truncate` prop that can be used to truncate the text.
+
+<Snippet
+  open
+  preview={<TextSnippet story="Truncate" />}
+  code={textTruncateSnippet}
+/>
+
+### Responsive
+
+You can also use the `variant` prop to change the appearance of the text based
+on the screen size.
+
+<CodeBlock code={textResponsiveSnippet} />
+
+<Theming component="Text" />
+
+<ChangelogComponent component="text" />

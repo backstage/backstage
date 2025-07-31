@@ -102,12 +102,20 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     UNSTABLE_contextMenuOptions,
     contextMenuItems,
     children,
-    header,
     NotFoundComponent,
     parentEntityRelations,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
+
+  const header = props.header ?? (
+    <EntityHeader
+      parentEntityRelations={parentEntityRelations}
+      UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+      UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+      contextMenuItems={contextMenuItems}
+    />
+  );
 
   const routes = useElementFilter(
     children,
@@ -142,14 +150,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
-      {header ?? (
-        <EntityHeader
-          parentEntityRelations={parentEntityRelations}
-          UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-          UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-          contextMenuItems={contextMenuItems}
-        />
-      )}
+      {!loading && header}
 
       {loading && <Progress />}
 

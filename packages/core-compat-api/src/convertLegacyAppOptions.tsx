@@ -74,7 +74,10 @@ export function convertLegacyAppOptions(
     new Map(allApis.map(api => [api.api.id, api])).values(),
   );
   const extensions: ExtensionDefinition[] = deduplicatedApis.map(factory =>
-    ApiBlueprint.make({ name: factory.api.id, params: { factory } }),
+    ApiBlueprint.make({
+      name: factory.api.id,
+      params: define => define(factory),
+    }),
   );
 
   if (icons) {

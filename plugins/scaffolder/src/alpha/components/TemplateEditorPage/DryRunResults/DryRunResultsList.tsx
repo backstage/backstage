@@ -118,7 +118,7 @@ async function downloadDirectoryContents(
   directoryContents: {
     path: string;
     base64Content: string;
-    executable: boolean;
+    executable?: boolean;
   }[],
   name: string,
 ) {

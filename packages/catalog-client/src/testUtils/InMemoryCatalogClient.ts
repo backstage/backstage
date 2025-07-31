@@ -44,6 +44,10 @@ import {
 import { NotFoundError, NotImplementedError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
+import type {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
 
 function buildEntitySearch(entity: Entity) {
   const rows = traverse(entity);
@@ -105,6 +109,11 @@ function createFilter(
         }
         if (expectedValue === CATALOG_FILTER_EXISTS) {
           continue;
+        }
+        if (Array.isArray(expectedValue)) {
+          return expectedValue.some(value =>
+            searchValues?.includes(String(value).toLocaleLowerCase('en-US')),
+          );
         }
         if (
           !searchValues?.includes(
@@ -261,6 +270,12 @@ export class InMemoryCatalogClient implements CatalogApi {
     _entity: Entity,
     _locationRef: string,
   ): Promise<ValidateEntityResponse> {
+    throw new NotImplementedError('Method not implemented.');
+  }
+
+  async analyzeLocation(
+    _location: AnalyzeLocationRequest,
+  ): Promise<AnalyzeLocationResponse> {
     throw new NotImplementedError('Method not implemented.');
   }
 
