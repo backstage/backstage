@@ -205,6 +205,16 @@
     padding-inline: var(--bui-space-1);
     border: none;
   }
+
+  .bui-HeaderPageSticky {
+    top: 8px;
+  }
+
+  .bui-HeaderPageStickyWrapper {
+    background-color: var(--bui-bg-surface-1);
+    margin-inline: var(--bui-space-2);
+    border-radius: var(--bui-radius-3);
+  }
 }
 
 [data-theme='light'][data-theme-name='spotify'] {
@@ -235,6 +245,10 @@
   }
 
   .bui-HeaderTabsWrapper {
+    border: 1px solid var(--bui-border);
+  }
+
+  .bui-HeaderPageStickyWrapper {
     border: 1px solid var(--bui-border);
   }
 }

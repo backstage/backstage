@@ -26,7 +26,6 @@ export interface HeaderProps {
   icon?: React.ReactNode;
   title?: string;
   titleLink?: string;
-  breadcrumbs?: HeaderBreadcrumb[];
   customActions?: React.ReactNode;
   menuItems?: HeaderMenuItem[];
   tabs?: HeaderTab[];
@@ -62,16 +61,6 @@ export interface HeaderMenuItem {
 }
 
 /**
- * Represents a breadcrumb item in the header.
- *
- * @public
- */
-export interface HeaderBreadcrumb {
-  label: string;
-  href: string;
-}
-
-/**
  * Props for the HeaderToolbar component.
  *
  * @internal
@@ -80,7 +69,6 @@ export interface HeaderToolbarProps {
   icon?: HeaderProps['icon'];
   title?: HeaderProps['title'];
   titleLink?: HeaderProps['titleLink'];
-  breadcrumbs?: HeaderProps['breadcrumbs'];
   customActions?: HeaderProps['customActions'];
   menuItems?: HeaderProps['menuItems'];
   hasTabs?: boolean;
