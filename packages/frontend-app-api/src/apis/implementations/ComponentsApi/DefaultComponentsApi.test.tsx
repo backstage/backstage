@@ -18,9 +18,9 @@ import { createComponentRef } from '@backstage/frontend-plugin-api';
 import { DefaultComponentsApi } from './DefaultComponentsApi';
 import { render, screen } from '@testing-library/react';
 
-const testRefA = createComponentRef({ id: 'test.a' });
-const testRefB1 = createComponentRef({ id: 'test.b' });
-const testRefB2 = createComponentRef({ id: 'test.b' });
+const testRefA = createComponentRef({ id: 'test.a', mode: 'sync' });
+const testRefB1 = createComponentRef({ id: 'test.b', mode: 'sync' });
+const testRefB2 = createComponentRef({ id: 'test.b', mode: 'sync' });
 
 describe('DefaultComponentsApi', () => {
   it('should provide components', () => {
