@@ -35,12 +35,7 @@ export const AppRootWrapperBlueprint = createExtensionBlueprint({
   dataRefs: {
     component: componentDataRef,
   },
-  *factory(params: { Component: ComponentType<PropsWithChildren<{}>> }) {
-    // todo(blam): not sure that this wrapping is even necessary anymore.
-    const Component = (props: PropsWithChildren<{}>) => {
-      return <params.Component>{props.children}</params.Component>;
-    };
-
-    yield componentDataRef(Component);
+  *factory(params: { component: ComponentType<PropsWithChildren<{}>> }) {
+    yield componentDataRef(params.component);
   },
 });

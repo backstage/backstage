@@ -29,7 +29,7 @@ export const RouterBlueprint = createExtensionBlueprint({
   dataRefs: {
     component: componentDataRef,
   },
-  *factory({ Component }: { Component: ComponentType<PropsWithChildren<{}>> }) {
-    yield componentDataRef(Component);
+  *factory({ component }: { component: ComponentType<PropsWithChildren<{}>> }) {
+    yield componentDataRef(component);
   },
 });
