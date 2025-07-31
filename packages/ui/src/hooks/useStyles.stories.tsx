@@ -417,7 +417,7 @@ export const PropsStabilityTest: Story = {
             <button
               onClick={() =>
                 setProps3({
-                  size: { xs: 'small', lg: 'large' },
+                  size: { xs: 'small', md: 'large' },
                   variant: 'warning',
                 })
               }
