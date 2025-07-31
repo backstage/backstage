@@ -27,9 +27,17 @@ import {
   ttlToMilliseconds,
   CacheStoreOptions,
   RedisCacheStoreOptions,
+  InfinispanCacheStoreOptions,
+  InfinispanSslOptions,
+  InfinispanClientBehaviorOptions,
+  InfinispanAuthOptions,
+  InfinispanDataFormatOptions,
+  InfinispanServerConfig,
+  ClientInterface,
 } from './types';
 import { durationToMilliseconds } from '@backstage/types';
 import { readDurationFromConfig } from '@backstage/config';
+import { InfinispanKeyvStore } from './providers/infinispan/InfinispanKeyvStore';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -50,6 +58,7 @@ export class CacheManager {
     valkey: this.createValkeyStoreFactory(),
     memcache: this.createMemcacheStoreFactory(),
     memory: this.createMemoryStoreFactory(),
+    infinispan: this.createInfinispanStoreFactory(),
   };
 
   private readonly logger?: LoggerService;
@@ -112,7 +121,7 @@ export class CacheManager {
   /**
    * Parse store-specific options from configuration.
    *
-   * @param store - The cache store type ('redis', 'valkey', 'memcache', or 'memory')
+   * @param store - The cache store type ('redis', 'valkey', 'memcache', 'infinispan', or 'memory')
    * @param config - The configuration service
    * @param logger - Optional logger for warnings
    * @returns The parsed store options
@@ -124,11 +133,26 @@ export class CacheManager {
   ): CacheStoreOptions | undefined {
     const storeConfigPath = `backend.cache.${store}`;
 
-    if (
-      (store === 'redis' || store === 'valkey') &&
-      config.has(storeConfigPath)
-    ) {
-      return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+    if (!config.has(storeConfigPath)) {
+      logger?.warn(
+        `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
+      );
+      return undefined;
+    }
+
+    switch (store) {
+      case 'redis':
+        return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+      case 'valkey':
+        return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+      case 'infinispan':
+        return CacheManager.parseInfinispanOptions(
+          storeConfigPath,
+          config,
+          logger,
+        );
+      default:
+        break;
     }
 
     return undefined;
@@ -142,7 +166,7 @@ export class CacheManager {
     config: RootConfigService,
     logger?: LoggerService,
   ): RedisCacheStoreOptions {
-    const redisOptions: RedisCacheStoreOptions = {};
+    const redisOptions: RedisCacheStoreOptions = { type: 'redis' };
     const redisConfig = config.getConfig(storeConfigPath);
 
     redisOptions.client = {
@@ -180,6 +204,145 @@ export class CacheManager {
     }
 
     return redisOptions;
+  }
+
+  /**
+   * Parse Infinispan-specific options from configuration.
+   */
+  private static parseInfinispanOptions(
+    storeConfigPath: string,
+    config: RootConfigService,
+    logger?: LoggerService,
+  ): InfinispanCacheStoreOptions {
+    const infinispanConfig = config.getConfig(storeConfigPath);
+    const parsedOptions: Partial<InfinispanCacheStoreOptions> = {
+      type: 'infinispan',
+    };
+    if (infinispanConfig.has('servers')) {
+      const serversConfig = infinispanConfig.get('servers');
+      if (Array.isArray(serversConfig)) {
+        parsedOptions.servers = infinispanConfig.getConfigArray('servers').map(
+          serverConf =>
+            ({
+              host: serverConf.getString('host'),
+              port: serverConf.getNumber('port'),
+            } as InfinispanServerConfig),
+        );
+      } else if (typeof serversConfig === 'object' && serversConfig !== null) {
+        const serverConf = infinispanConfig.getConfig('servers');
+        parsedOptions.servers = {
+          host: serverConf.getString('host'),
+          port: serverConf.getNumber('port'),
+        } as InfinispanServerConfig;
+      } else {
+        logger?.error(
+          `Infinispan 'servers' configuration at ${storeConfigPath} must be an object or an array.`,
+        );
+        throw new Error(
+          `Infinispan 'servers' configuration at ${storeConfigPath} is invalid.`,
+        );
+      }
+    } else {
+      logger?.error(
+        `Infinispan configuration at ${storeConfigPath} is missing the 'servers' definition.`,
+      );
+      throw new Error(
+        `Infinispan configuration at ${storeConfigPath} must define 'servers'.`,
+      );
+    }
+
+    if (infinispanConfig.has('options')) {
+      const clientOptsConfig = infinispanConfig.getConfig('options');
+      const behaviorOptions: Partial<InfinispanClientBehaviorOptions> = {};
+
+      const versionStr = clientOptsConfig.getOptionalString('version');
+      if (
+        versionStr === '2.9' ||
+        versionStr === '2.5' ||
+        versionStr === '2.2'
+      ) {
+        behaviorOptions.version = versionStr as '2.9' | '2.5' | '2.2';
+      } else if (versionStr === undefined || versionStr === null) {
+        behaviorOptions.version = '2.2';
+      } else if (versionStr) {
+        logger?.warn(
+          `Invalid Infinispan client version "${versionStr}" in config at ${storeConfigPath}.options.version. Must be "2.9", "2.5", or "2.2". It will be ignored, and the client may use a default or fail.`,
+        );
+      }
+
+      behaviorOptions.cacheName =
+        clientOptsConfig.getOptionalString('cacheName');
+
+      if (clientOptsConfig.has('dataFormat')) {
+        const dataFormatConfig = clientOptsConfig.getConfig('dataFormat');
+        const dataFormat: Partial<InfinispanDataFormatOptions> = {};
+
+        if (dataFormatConfig.has('keyType')) {
+          dataFormat.keyType = dataFormatConfig.getString('keyType');
+        }
+        if (dataFormatConfig.has('valueType')) {
+          dataFormat.valueType = dataFormatConfig.getString('valueType');
+        }
+
+        behaviorOptions.dataFormat = dataFormat as InfinispanDataFormatOptions;
+      }
+
+      if (clientOptsConfig.has('authentication')) {
+        const authConfig = clientOptsConfig.getConfig('authentication');
+        const auth: Partial<InfinispanAuthOptions> = {};
+
+        if (authConfig.has('enabled')) {
+          auth.enabled = authConfig.getBoolean('enabled');
+        }
+        if (authConfig.has('saslMechanism')) {
+          auth.saslMechanism = authConfig.getString('saslMechanism');
+        }
+        if (authConfig.has('userName')) {
+          auth.userName = authConfig.getString('userName');
+        }
+        if (authConfig.has('password')) {
+          auth.password = authConfig.getString('password');
+        }
+
+        behaviorOptions.authentication = auth as InfinispanAuthOptions;
+      }
+
+      if (clientOptsConfig.has('ssl')) {
+        const sslConfig = clientOptsConfig.getConfig('ssl');
+        const ssl: Partial<InfinispanSslOptions> = {};
+
+        if (sslConfig.has('enabled')) {
+          ssl.enabled = sslConfig.getBoolean('enabled');
+        }
+        if (sslConfig.has('secureProtocol')) {
+          ssl.secureProtocol = sslConfig.getString('secureProtocol');
+        }
+        if (sslConfig.has('caFile')) {
+          ssl.caFile = sslConfig.getString('caFile');
+        }
+        if (sslConfig.has('clientCertificateFile')) {
+          ssl.clientCertificateFile = sslConfig.getString(
+            'clientCertificateFile',
+          );
+        }
+        if (sslConfig.has('clientKeyFile')) {
+          ssl.clientKeyFile = sslConfig.getString('clientKeyFile');
+        }
+        if (sslConfig.has('clientKeyPassword')) {
+          ssl.clientKeyPassword = sslConfig.getString('clientKeyPassword');
+        }
+        if (sslConfig.has('sniHostname')) {
+          ssl.sniHostname = sslConfig.getString('sniHostname');
+        }
+
+        behaviorOptions.ssl = ssl as InfinispanSslOptions;
+      }
+
+      parsedOptions.options =
+        behaviorOptions as InfinispanClientBehaviorOptions;
+    }
+
+    return parsedOptions as InfinispanCacheStoreOptions;
   }
 
   /** @internal */
@@ -231,23 +394,25 @@ export class CacheManager {
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        const redisOptions = this.storeOptions?.client || {
-          keyPrefixSeparator: ':',
-        };
-        if (this.storeOptions?.cluster) {
-          // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvRedis(cluster, redisOptions);
-        } else {
-          // Create a regular Redis connection
-          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
-        }
+        if (this.storeOptions?.type === 'redis') {
+          const redisOptions = this.storeOptions?.client || {
+            keyPrefixSeparator: ':',
+          };
+          if (this.storeOptions?.cluster) {
+            // Create a Redis cluster
+            const cluster = createCluster(this.storeOptions?.cluster);
+            stores[pluginId] = new KeyvRedis(cluster, redisOptions);
+          } else {
+            // Create a regular Redis connection
+            stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+          }
 
-        // Always provide an error handler to avoid stopping the process
-        stores[pluginId].on('error', (err: Error) => {
-          this.logger?.error('Failed to create redis cache client', err);
-          this.errorHandler?.(err);
-        });
+          // Always provide an error handler to avoid stopping the process
+          stores[pluginId].on('error', (err: Error) => {
+            this.logger?.error('Failed to create redis cache client', err);
+            this.errorHandler?.(err);
+          });
+        }
       }
       return new Keyv({
         namespace: pluginId,
@@ -266,23 +431,25 @@ export class CacheManager {
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        const valkeyOptions = this.storeOptions?.client || {
-          keyPrefixSeparator: ':',
-        };
-        if (this.storeOptions?.cluster) {
-          // Create a Valkey cluster (Redis cluster under the hood)
-          const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
-        } else {
-          // Create a regular Valkey connection
-          stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
-        }
+        if (this.storeOptions?.type === 'valkey') {
+          const valkeyOptions = this.storeOptions?.client || {
+            keyPrefixSeparator: ':',
+          };
+          if (this.storeOptions?.cluster) {
+            // Create a Valkey cluster (Redis cluster under the hood)
+            const cluster = createCluster(this.storeOptions?.cluster);
+            stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
+          } else {
+            // Create a regular Valkey connection
+            stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
+          }
 
-        // Always provide an error handler to avoid stopping the process
-        stores[pluginId].on('error', (err: Error) => {
-          this.logger?.error('Failed to create valkey cache client', err);
-          this.errorHandler?.(err);
-        });
+          // Always provide an error handler to avoid stopping the process
+          stores[pluginId].on('error', (err: Error) => {
+            this.logger?.error('Failed to create valkey cache client', err);
+            this.errorHandler?.(err);
+          });
+        }
       }
       return new Keyv({
         namespace: pluginId,
@@ -325,5 +492,104 @@ export class CacheManager {
         emitErrors: false,
         store,
       });
+  }
+
+  private createInfinispanStoreFactory(): StoreFactory {
+    // Use sync version for testing environments
+    const isTest =
+      process.env.NODE_ENV === 'test' || typeof jest !== 'undefined';
+
+    // Create the client promise ONCE and reuse it
+    const clientPromise: Promise<ClientInterface> = isTest
+      ? this.createInfinispanClientSync()
+      : this.createInfinispanClient();
+
+    return (pluginId, defaultTtl) => {
+      const store = new InfinispanKeyvStore({
+        clientPromise,
+        logger: this.logger!,
+        defaultTtl,
+      });
+
+      return new Keyv({
+        namespace: pluginId,
+        ttl: defaultTtl,
+        store,
+        emitErrors: false,
+      });
+    };
+  }
+
+  /**
+   * Creates an Infinispan client based on the provided configuration.
+   * @param options - Configuration options for the Infinispan cache store
+   * @param logger - Logger service for logging operations
+   * @returns Promise that resolves to an Infinispan client
+   * @internal
+   */
+  private async createInfinispanClient(): Promise<ClientInterface> {
+    try {
+      // Dynamic import to avoid loading infinispan if not needed
+      const infinispan = await import('infinispan');
+
+      this.logger?.info('Creating Infinispan client');
+      if (this.storeOptions?.type === 'infinispan') {
+        const client = await infinispan.client(
+          this.storeOptions.servers,
+          this.storeOptions.options as any,
+        );
+
+        this.logger?.info('Infinispan client created successfully');
+        return client;
+      }
+      return Promise.reject(
+        new Error('Infinispan store options are not defined'),
+      );
+    } catch (error: any) {
+      this.logger?.error('Failed to create Infinispan client', {
+        error: error.message,
+      });
+      throw error;
+    }
+  }
+  /**
+   * Creates an Infinispan client synchronously for testing purposes.
+   * @param options - Configuration options for the Infinispan cache store
+   * @param logger - Logger service for logging operations
+   * @returns Promise that resolves to an Infinispan client
+   */
+  private createInfinispanClientSync(): Promise<ClientInterface> {
+    try {
+      // For testing, use direct import without dynamic import
+      const infinispan = require('infinispan');
+
+      this.logger?.info('Creating Infinispan client');
+      if (this.storeOptions?.type === 'infinispan') {
+        const clientPromise = infinispan.client(
+          this.storeOptions?.servers as InfinispanServerConfig[],
+          this.storeOptions?.options as any,
+        );
+
+        return clientPromise
+          .then((client: ClientInterface) => {
+            this.logger?.info('Infinispan client created successfully');
+            return client;
+          })
+          .catch((error: any) => {
+            this.logger?.error('Failed to create Infinispan client', {
+              error: error.message,
+            });
+            throw error;
+          });
+      }
+      return Promise.reject(
+        new Error('Infinispan store options are not defined'),
+      );
+    } catch (error: any) {
+      this.logger?.error('Failed to create Infinispan client', {
+        error: error.message,
+      });
+      return Promise.reject(error);
+    }
   }
 }
