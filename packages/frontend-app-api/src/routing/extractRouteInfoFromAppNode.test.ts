@@ -84,7 +84,10 @@ function createTestExtension(options: {
   });
 }
 
-function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
+function routeInfoFromExtensions(
+  extensions: ExtensionDefinition[],
+  routeRefsById?: Record<string, RouteRef>,
+) {
   const plugin = createFrontendPlugin({
     pluginId: 'test',
     extensions,
@@ -104,7 +107,10 @@ function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
 
   instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
-  return extractRouteInfoFromAppNode(tree.root, emptyRouteRefsById);
+  return extractRouteInfoFromAppNode(tree.root, {
+    ...emptyRouteRefsById,
+    ...(routeRefsById && { routes: new Map(Object.entries(routeRefsById)) }),
+  });
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
@@ -622,5 +628,86 @@ describe('discovery', () => {
         expect.any(Object),
       ),
     ]);
+  });
+
+  describe('route aliases', () => {
+    it('should resolve route aliases', () => {
+      const r1 = createRouteRef();
+      const r2 = createRouteRef({ aliasFor: 'test.r3' });
+      const r3 = createRouteRef();
+
+      const info = routeInfoFromExtensions(
+        [
+          createTestExtension({
+            name: 'page1',
+            path: 'foo',
+            routeRef: createRouteRef({ aliasFor: 'test.r1' }),
+          }),
+          createTestExtension({
+            name: 'page3',
+            path: 'bar',
+            routeRef: createRouteRef({ aliasFor: 'test.r2' }),
+          }),
+        ],
+        {
+          'test.r1': r1,
+          'test.r2': r2,
+          'test.r3': r3,
+        },
+      );
+
+      expect(sortedEntries(info.routePaths)).toEqual([
+        [r1, 'foo'],
+        [r3, 'bar'],
+      ]);
+      expect(sortedEntries(info.routeParents)).toEqual([
+        [r1, undefined],
+        [r3, undefined],
+      ]);
+      expect(info.routeObjects).toEqual([
+        routeObj(
+          'foo',
+          [r1],
+          undefined,
+          undefined,
+          expect.any(Object),
+          expect.any(Object),
+        ),
+        routeObj(
+          'bar',
+          [r3],
+          undefined,
+          undefined,
+          expect.any(Object),
+          expect.any(Object),
+        ),
+      ]);
+    });
+
+    it('should bail on infinite route alias loops', () => {
+      const loop1 = createRouteRef({ aliasFor: 'test.loop2' });
+      const loop2 = createRouteRef({ aliasFor: 'test.loop3' });
+      const loop3 = createRouteRef({ aliasFor: 'test.loop1' });
+
+      expect(() =>
+        routeInfoFromExtensions(
+          [
+            createTestExtension({
+              name: 'page1',
+              path: 'page1',
+              routeRef: createRouteRef({ aliasFor: 'test.loop1' }),
+            }),
+          ],
+
+          {
+            'test.loop1': loop1,
+            'test.loop2': loop2,
+            'test.loop3': loop3,
+          },
+        ),
+      ).toThrow(
+        /Alias loop detected for RouteRef{created at 'at .*extractRouteInfoFromAppNode\.test\.ts:\d+:\d+'}/,
+      );
+    });
   });
 });
