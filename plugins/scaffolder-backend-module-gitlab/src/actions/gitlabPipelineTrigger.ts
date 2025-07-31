@@ -156,11 +156,11 @@ export const createTriggerGitlabPipelineAction = (options: {
               },
             });
             ctx.logger.info(
-              `Deleted pipeline with token id ${pipelineTriggerId}.`,
+              `Deleted pipeline trigger token with token id: ${pipelineTriggerId}.`,
             );
           } catch (error: any) {
             ctx.logger.error(
-              `Failed to delete pipeline with token id ${pipelineTriggerId}.`,
+              `Failed to delete pipeline trigger token with token id: ${pipelineTriggerId}.`,
             );
           }
         }
