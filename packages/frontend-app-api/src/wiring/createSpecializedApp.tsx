@@ -81,6 +81,7 @@ import {
   createPluginInfoAttacher,
   FrontendPluginInfoResolver,
 } from './createPluginInfoAttacher';
+import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -187,6 +188,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
       routeInfo.routeObjects,
       this.routeBindings,
       this.appBasePath,
+      routeInfo.routeAliasResolver,
     );
     this.#routeObjects = routeInfo.routeObjects;
 
@@ -286,7 +288,10 @@ export function createSpecializedApp(options?: {
     mergeExtensionFactoryMiddleware(options?.extensionFactoryMiddleware),
   );
 
-  const routeInfo = extractRouteInfoFromAppNode(tree.root, routeRefsById);
+  const routeInfo = extractRouteInfoFromAppNode(
+    tree.root,
+    createRouteAliasResolver(routeRefsById),
+  );
 
   routeResolutionApi.initialize(routeInfo);
   appTreeApi.initialize(routeInfo);

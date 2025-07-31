@@ -38,6 +38,7 @@ import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
 import { Root } from '../extensions/Root';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { createRouteAliasResolver } from './RouteAliasResolver';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -107,10 +108,13 @@ function routeInfoFromExtensions(
 
   instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
-  return extractRouteInfoFromAppNode(tree.root, {
-    ...emptyRouteRefsById,
-    ...(routeRefsById && { routes: new Map(Object.entries(routeRefsById)) }),
-  });
+  return extractRouteInfoFromAppNode(
+    tree.root,
+    createRouteAliasResolver({
+      ...emptyRouteRefsById,
+      ...(routeRefsById && { routes: new Map(Object.entries(routeRefsById)) }),
+    }),
+  );
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
@@ -682,6 +686,27 @@ describe('discovery', () => {
           expect.any(Object),
         ),
       ]);
+    });
+
+    it('should refuse to resolve aliases pointing to other plugins', () => {
+      expect(() =>
+        routeInfoFromExtensions(
+          [
+            // Source for this is the 'test' plugin
+            createTestExtension({
+              name: 'page1',
+              path: 'page1',
+              routeRef: createRouteRef({ aliasFor: 'other.root' }),
+            }),
+          ],
+
+          {
+            'other.root': createRouteRef(),
+          },
+        ),
+      ).toThrow(
+        /Refused to resolve alias 'other.root' for RouteRef{created at 'at .*extractRouteInfoFromAppNode\.test\.ts:\d+:\d+'} as it points to a different plugin, the expected plugin is 'test' but the alias points to 'other'/,
+      );
     });
 
     it('should bail on infinite route alias loops', () => {
