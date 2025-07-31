@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ComponentType, PropsWithChildren } from 'react';
+import { ReactNode } from 'react';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
 const componentDataRef = createExtensionDataRef<
-  ComponentType<PropsWithChildren<{}>>
+  (props: { children: ReactNode }) => JSX.Element | null
 >().with({ id: 'app.root.wrapper' });
 
 /**
@@ -35,7 +35,9 @@ export const AppRootWrapperBlueprint = createExtensionBlueprint({
   dataRefs: {
     component: componentDataRef,
   },
-  *factory(params: { component: ComponentType<PropsWithChildren<{}>> }) {
+  *factory(params: {
+    component: (props: { children: ReactNode }) => JSX.Element | null;
+  }) {
     yield componentDataRef(params.component);
   },
 });
