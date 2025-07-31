@@ -68,6 +68,22 @@ function hasResponsiveProps(props: Record<string, any>): boolean {
 }
 
 /**
+ * Create a stable key for props to avoid unnecessary re-renders
+ */
+function createPropsKey(props: Record<string, any>): string {
+  const entries = Object.entries(props)
+    .filter(([_, value]) => value !== undefined && value !== null)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => {
+      if (isResponsiveValue(value)) {
+        return `${key}:${JSON.stringify(value)}`;
+      }
+      return `${key}:${value}`;
+    });
+  return entries.join('|');
+}
+
+/**
  * Hook for components with non-responsive props (no breakpoint dependency)
  */
 function useStylesNonResponsive<T extends ComponentDefinitionName>(
@@ -89,7 +105,7 @@ function useStylesNonResponsive<T extends ComponentDefinitionName>(
     }
 
     return { dataAttributes, resolvedProps };
-  }, [props]);
+  }, [createPropsKey(props)]);
 
   return {
     classNames,
@@ -128,7 +144,7 @@ function useStylesResponsive<T extends ComponentDefinitionName>(
     }
 
     return { dataAttributes, resolvedProps };
-  }, [props, breakpoint]);
+  }, [createPropsKey(props), breakpoint]);
 
   return {
     classNames,
