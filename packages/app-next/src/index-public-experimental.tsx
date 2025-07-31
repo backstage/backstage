@@ -15,7 +15,7 @@
  */
 
 import ReactDOM from 'react-dom/client';
-import { createPublicSignInApp } from '@backstage/frontend-defaults';
+import { createPublicSignInApp } from '@backstage/frontend-defaults/alpha';
 import '@backstage/ui/css/styles.css';
 
 const app = createPublicSignInApp();

@@ -21,7 +21,8 @@ import {
   useApi,
 } from '@backstage/frontend-plugin-api';
 import { useAsync, useMountEffect } from '@react-hookz/web';
-import { CreateAppOptions, createApp } from './createApp';
+import { createApp } from '../createApp';
+import { CreateAppOptions } from '@backstage/frontend-defaults';
 import appPlugin from '@backstage/plugin-app';
 
 // This is a copy of the CookieAuthRedirect component from the auth-react
@@ -84,7 +85,7 @@ export function InternalCookieAuthRedirect() {
  * });
  * ```
  *
- * @public
+ * @alpha
  */
 export function createPublicSignInApp(options?: CreateAppOptions) {
   return createApp({
