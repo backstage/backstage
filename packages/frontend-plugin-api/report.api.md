@@ -254,7 +254,7 @@ export const AppRootElementBlueprint: ExtensionBlueprint<{
   kind: 'app-root-element';
   name: undefined;
   params: {
-    element: JSX.Element | (() => JSX.Element);
+    element: JSX.Element;
   };
   output: ConfigurableExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
   inputs: {};
