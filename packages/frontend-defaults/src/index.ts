@@ -25,6 +25,5 @@ export {
   type CreateAppOptions,
   type CreateAppFeatureLoader,
 } from './createApp';
-export { createPublicSignInApp } from './createPublicSignInApp';
 export { discoverAvailableFeatures } from './discovery';
 export { resolveAsyncFeatures } from './resolution';
