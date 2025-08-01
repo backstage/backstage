@@ -29,7 +29,22 @@ The welcome plugin can be integrated into a Backstage app by importing and using
 ```typescript
 import { WelcomePage } from '@internal/plugin-welcome';
 
-// In your app's routing configuration
+// In your app's routing configuration (typically in packages/app/src/App.tsx)
+<Route path="/welcome" element={<WelcomePage />} />
+```
+
+Or you can use the plugin directly in your App.tsx:
+
+```typescript
+import { welcomePlugin, WelcomePage } from '@internal/plugin-welcome';
+
+// Register the plugin
+const app = createApp({
+  plugins: [welcomePlugin],
+  // ... other configuration
+});
+
+// Use the page component
 <Route path="/welcome" element={<WelcomePage />} />
 ```
 
