@@ -65,7 +65,7 @@ export const useSanitizerTransformer = (): Transformer => {
 
       // Only allow http-equiv and content attributes on meta tags. They are required for the redirect feature.
       DOMPurify.addHook('uponSanitizeAttribute', (currNode, data) => {
-        if (currNode.tagName !== 'meta') {
+        if (currNode.tagName !== 'META') {
           if (data.attrName === 'http-equiv' || data.attrName === 'content') {
             currNode.removeAttribute(data.attrName);
           }
