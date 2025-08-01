@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
+import appPlugin from '@backstage/plugin-app';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 import {
   coreExtensionData,
   createFrontendModule,
   identityApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
-import { useAsync, useMountEffect } from '@react-hookz/web';
-import { createApp } from '../createApp';
-import { CreateAppOptions } from '@backstage/frontend-defaults';
-import appPlugin from '@backstage/plugin-app';
 
 // This is a copy of the CookieAuthRedirect component from the auth-react
 // plugin, to avoid a dependency on that package. Long-term we want this to be
@@ -68,41 +66,61 @@ export function InternalCookieAuthRedirect() {
 }
 
 /**
- * Creates an app that is suitable for the public sign-in page, for use in the `index-public-experimental.tsx` file.
+ * This module is intended for use in public sign-in page apps, in the
+ * `index-public-experimental.tsx` file.
  *
  * @remarks
  *
- * This app has an override for the `app/layout` extension, which means that
- * most extension typically installed in an app will be ignored. However, you
- * can still for example install API and root element extensions.
+ * This module is used to enable the public sign-in flow where the build output
+ * is split into one small publicly accessible app, and the full app protected
+ * by auth.
+ *
+ * This module overrides the `app/layout` extension, which means that most
+ * extension typically installed in an app will be ignored. However, you can
+ * still for example install API and root element extensions.
  *
  * A typical setup of this app will only install a custom sign-in page.
  *
  * @example
- * ```ts
- * const app = createPublicSignInApp({
- *   features: [signInPageModule],
- * });
- * ```
+ *
+ *#### In `index-public-experimental.tsx`
+ *
+ *```ts
+ *import { createApp } from '@backstage/frontend-defaults
+ *import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
+ *import { appModuleSignInPage } from './appModuleSignInPage';
+ *
+ *const app = createApp({
+ *  features: [appModuleSignInPage, appModulePublicSignIn],
+ *});
+ *```
+ *
+ *#### In `appModuleSignInPage.tsx`
+ *
+ *```tsx
+ *import { createFrontendModule, SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+ *
+ *export const appModuleSignInPage = createFrontendModule({
+ *  pluginId: 'app',
+ *  extensions: [
+ *    SignInPageBlueprint.make({
+ *      params: {
+ *        ...
+ *      }
+ *    }),
+ *  ],
+ *})
+ *```
  *
  * @alpha
  */
-export function createPublicSignInApp(options?: CreateAppOptions) {
-  return createApp({
-    ...options,
-    features: [
-      ...(options?.features ?? []),
-      // This is a rather than app plugin override in order for it to take precedence over any supplied app plugin override
-      createFrontendModule({
-        pluginId: 'app',
-        extensions: [
-          appPlugin.getExtension('app/layout').override({
-            factory: () => [
-              coreExtensionData.reactElement(<InternalCookieAuthRedirect />),
-            ],
-          }),
-        ],
-      }),
-    ],
-  });
-}
+export const appModulePublicSignIn = createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    appPlugin.getExtension('app/layout').override({
+      factory: () => [
+        coreExtensionData.reactElement(<InternalCookieAuthRedirect />),
+      ],
+    }),
+  ],
+});
