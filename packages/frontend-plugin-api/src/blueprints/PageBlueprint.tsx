@@ -37,21 +37,23 @@ export const PageBlueprint = createExtensionBlueprint({
     },
   },
   *factory(
-    {
-      defaultPath,
-      loader,
-      routeRef,
-    }: {
-      defaultPath: string;
+    params: {
+      /**
+       * @deprecated Use the `path` param instead.
+       */
+      defaultPath?: [Error: `Use the 'path' param instead`];
+      path: string;
       loader: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
     },
     { config, node },
   ) {
-    yield coreExtensionData.routePath(config.path ?? defaultPath);
-    yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
-    if (routeRef) {
-      yield coreExtensionData.routeRef(routeRef);
+    yield coreExtensionData.routePath(config.path ?? params.path);
+    yield coreExtensionData.reactElement(
+      ExtensionBoundary.lazy(node, params.loader),
+    );
+    if (params.routeRef) {
+      yield coreExtensionData.routeRef(params.routeRef);
     }
   },
 });

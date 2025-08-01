@@ -306,7 +306,7 @@ export default createFrontendModule({
   extensions: [
     createPageExtension({
       // Omitting name since it is an index page
-      defaultPath: '/catalog-graph',
+      path: '/catalog-graph',
       routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
       createSchemaFromZod(z => z.object({
         path: z.string().default('/catalog-graph')

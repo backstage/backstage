@@ -54,7 +54,7 @@ const homePage = PageBlueprint.makeWithOverrides({
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory({
-      defaultPath: '/home',
+      path: '/home',
       routeRef: rootRouteRef,
       loader: () =>
         import('./components/').then(m =>

@@ -73,7 +73,7 @@ describe('SearchFilterBlueprint', () => {
       },
       factory(originalFactory, { inputs }) {
         return originalFactory({
-          defaultPath: '/',
+          path: '/',
           loader: async () => {
             const searchFilters = inputs.searchFilters.map(
               t => t.get(searchFilterDataRef).component,
