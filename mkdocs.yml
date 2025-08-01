@@ -22,6 +22,7 @@ nav:
       - Backstage Threat Model: 'overview/threat-model.md'
       - Support and community: 'overview/support.md'
       - Logo assets: 'overview/logos.md'
+  - Glossary: 'references/glossary.md'
   - Getting Started:
       - Creating your Backstage App: 'getting-started/index.md'
       - Configuring Backstage:
