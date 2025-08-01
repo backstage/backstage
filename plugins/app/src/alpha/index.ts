@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
-import { CreateAppOptions, createApp } from './createApp';
-
-/**
- * @public
- * @deprecated Use {@link @backstage/plugin-app/alpha#appModulePublicSignIn} instead.
- */
-export function createPublicSignInApp(options?: CreateAppOptions) {
-  return createApp({
-    ...options,
-    features: [...(options?.features ?? []), appModulePublicSignIn],
-  });
-}
+export { appModulePublicSignIn } from './appModulePublicSignIn';

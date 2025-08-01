@@ -53,7 +53,7 @@ export interface CreateAppOptions {
   pluginInfoResolver?: FrontendPluginInfoResolver;
 }
 
-// @public
+// @public @deprecated (undocumented)
 export function createPublicSignInApp(options?: CreateAppOptions): {
   createRoot(): JSX_2;
 };
