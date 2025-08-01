@@ -147,49 +147,9 @@ export function createFrontendPlugin<
   TRoutes,
   TExternalRoutes,
   MakeSortedExtensionsMap<TExtensions[number], TId>
->;
-/**
- * @public
- * @deprecated The `id` option is deprecated, use `pluginId` instead.
- */
-export function createFrontendPlugin<
-  TId extends string,
-  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
-  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {},
-  TExtensions extends readonly ExtensionDefinition[] = [],
->(
-  options: Omit<
-    PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-    'pluginId'
-  > & { id: string },
-): FrontendPlugin<
-  TRoutes,
-  TExternalRoutes,
-  MakeSortedExtensionsMap<TExtensions[number], TId>
->;
-export function createFrontendPlugin<
-  TId extends string,
-  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
-  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {},
-  TExtensions extends readonly ExtensionDefinition[] = [],
->(
-  options:
-    | PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>
-    | (Omit<
-        PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-        'pluginId'
-      > & { id: string }),
-): FrontendPlugin<
-  TRoutes,
-  TExternalRoutes,
-  MakeSortedExtensionsMap<TExtensions[number], TId>
 > {
-  const pluginId = 'pluginId' in options ? options.pluginId : options.id;
-  if (!pluginId) {
-    throw new Error(
-      "Either 'id' or 'pluginId' must be provided to createFrontendPlugin",
-    );
-  }
+  const pluginId = options.pluginId;
+
   const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,

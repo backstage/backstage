@@ -140,13 +140,6 @@ describe('createFrontendPlugin', () => {
     expect(String(plugin)).toBe('Plugin{id=test}');
   });
 
-  it('should create an empty plugin with deprecated id option', () => {
-    const plugin = createFrontendPlugin({ id: 'test' });
-
-    expect(plugin).toBeDefined();
-    expect(String(plugin)).toBe('Plugin{id=test}');
-  });
-
   it('should create a plugin with extension instances', async () => {
     const plugin = createFrontendPlugin({
       pluginId: 'test',
