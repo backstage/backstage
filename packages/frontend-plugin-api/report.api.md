@@ -1765,17 +1765,14 @@ export interface RouteResolutionApi {
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions,
+    options?: {
+      sourcePath?: string;
+    },
   ): RouteFunc<TParams> | undefined;
 }
 
 // @public
 export const routeResolutionApiRef: ApiRef<RouteResolutionApi>;
-
-// @public (undocumented)
-export type RouteResolutionApiResolveOptions = {
-  sourcePath?: string;
-};
 
 export { SessionApi };
 

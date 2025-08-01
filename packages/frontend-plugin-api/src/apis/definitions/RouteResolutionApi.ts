@@ -44,24 +44,19 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 /**
  * @public
  */
-export type RouteResolutionApiResolveOptions = {
-  /**
-   * An absolute path to use as a starting point when resolving the route.
-   * If no path is provided the route will be resolved from the root of the app.
-   */
-  sourcePath?: string;
-};
-
-/**
- * @public
- */
 export interface RouteResolutionApi {
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions,
+    options?: {
+      /**
+       * An absolute path to use as a starting point when resolving the route.
+       * If no path is provided the route will be resolved from the root of the app.
+       */
+      sourcePath?: string;
+    },
   ): RouteFunc<TParams> | undefined;
 }
 

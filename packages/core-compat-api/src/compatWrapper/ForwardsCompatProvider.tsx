@@ -33,7 +33,6 @@ import {
   RouteFunc,
   RouteRef,
   RouteResolutionApi,
-  RouteResolutionApiResolveOptions,
   SubRouteRef,
   componentsApiRef,
   coreComponentRefs,
@@ -112,7 +111,7 @@ class CompatRouteResolutionApi implements RouteResolutionApi {
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions | undefined,
+    options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     const legacyRef = convertLegacyRouteRef(anyRouteRef as RouteRef<TParams>);
     return this.#routeResolver.resolve(legacyRef, options?.sourcePath ?? '/');
