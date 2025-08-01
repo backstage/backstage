@@ -533,17 +533,17 @@ export type EntityPredicateValue =
 export const EntityTableColumnTitle: ({
   translationKey,
 }: EntityTableColumnTitleProps) =>
+  | 'Title'
   | 'Domain'
   | 'System'
-  | 'Name'
-  | 'Description'
   | 'Lifecycle'
   | 'Namespace'
   | 'Owner'
   | 'Tags'
   | 'Type'
+  | 'Name'
+  | 'Description'
   | 'Targets'
-  | 'Title'
   | 'Label';
 
 // @alpha (undocumented)
