@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { EntityProvider, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
   mockApis,
@@ -25,10 +25,28 @@ import SearchIcon from '@material-ui/icons/Search';
 import { fireEvent, screen } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { EntityContextMenu } from './EntityContextMenu';
+import { alertApiRef } from '@backstage/core-plugin-api';
 
 function render(children: ReactNode) {
   return renderInTestApp(
-    <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
+    <TestApiProvider
+      apis={[
+        [permissionApiRef, mockApis.permission()],
+        [
+          catalogApiRef,
+          {
+            refreshEntity: jest.fn(),
+          },
+        ],
+        [
+          alertApiRef,
+          {
+            post: jest.fn(),
+            alert$: jest.fn(),
+          },
+        ],
+      ]}
+    >
       <EntityProvider
         entity={{ apiVersion: 'a', kind: 'b', metadata: { name: 'c' } }}
         children={children}
