@@ -64,7 +64,7 @@ describe('<MyGroupsPicker />', () => {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
         metadata: { name: 'group1' },
-        spec: { members: ['Bob'] },
+        spec: { type: 'team', members: ['Bob'] },
       },
       {
         apiVersion: 'backstage.io/v1alpha1',
@@ -126,10 +126,12 @@ describe('<MyGroupsPicker />', () => {
     );
 
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
-      filter: {
-        kind: 'Group',
-        'relations.hasMember': ['user:default/bob'],
-      },
+      filter: [
+        {
+          kind: 'Group',
+          'relations.hasMember': ['user:default/bob'],
+        },
+      ],
     });
 
     // Check that getEntities was set up to return the correct data
@@ -140,7 +142,7 @@ describe('<MyGroupsPicker />', () => {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Group',
             metadata: { name: 'group1' },
-            spec: { members: ['Bob'] },
+            spec: { type: 'team', members: ['Bob'] },
           },
           {
             apiVersion: 'backstage.io/v1alpha1',
@@ -217,6 +219,147 @@ describe('<MyGroupsPicker />', () => {
 
     // Assert that 'group3' is not rendered in the component
     expect(queryByText('group3')).not.toBeInTheDocument();
+  });
+
+  it('should only return the groups a user is part of filtered by the catalogFilter when provided', async () => {
+    const userGroups = entities.filter(
+      entity =>
+        entity.spec &&
+        Array.isArray(entity.spec.members) &&
+        entity.spec.members.includes('Bob') &&
+        entity.spec.type === 'team',
+    );
+
+    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
+
+    const props = {
+      onChange,
+      schema,
+      required,
+      uiSchema: {
+        'ui:options': {
+          catalogFilter: [
+            {
+              'spec.type': 'team',
+            },
+          ],
+        },
+      },
+    } as unknown as FieldProps<string>;
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [catalogApiRef, catalogApi],
+          [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        <MyGroupsPicker {...props} />
+      </TestApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
+    );
+
+    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      filter: [
+        {
+          kind: 'Group',
+          'relations.hasMember': ['user:default/bob'],
+          'spec.type': 'team',
+        },
+      ],
+    });
+
+    // Check that getEntities was set up to return the correct data
+    await expect(catalogApi.getEntities.mock.results[0].value).resolves.toEqual(
+      {
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Group',
+            metadata: { name: 'group1' },
+            spec: { type: 'team', members: ['Bob'] },
+          },
+        ],
+      },
+    );
+
+    await expect(
+      catalogApi.getEntities.mock.results[0].value,
+    ).resolves.not.toEqual(
+      expect.objectContaining({
+        items: expect.arrayContaining([
+          expect.objectContaining({
+            metadata: { name: 'group2' },
+          }),
+        ]),
+      }),
+    );
+  });
+
+  it('should ignore other kind filters in the catalogFilter', async () => {
+    const userGroups = entities.filter(
+      entity =>
+        entity.spec &&
+        Array.isArray(entity.spec.members) &&
+        entity.spec.members.includes('Bob') &&
+        entity.spec.type === 'team',
+    );
+
+    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
+
+    const props = {
+      onChange,
+      schema,
+      required,
+      uiSchema: {
+        'ui:options': {
+          catalogFilter: [
+            {
+              'spec.type': 'team',
+              kind: ['Group', 'User'],
+            },
+          ],
+        },
+      },
+    } as unknown as FieldProps<string>;
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [catalogApiRef, catalogApi],
+          [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        <MyGroupsPicker {...props} />
+      </TestApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
+    );
+
+    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      filter: [
+        {
+          kind: 'Group',
+          'relations.hasMember': ['user:default/bob'],
+          'spec.type': 'team',
+        },
+      ],
+    });
   });
 
   it('should call the onChange handler with the correct entityRef and and use a nice display name', async () => {

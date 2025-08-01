@@ -33,7 +33,11 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/esm/useAsync';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_HAS_MEMBER,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { VirtualizedListbox } from '../VirtualizedListbox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -70,11 +74,16 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       return { catalogEntities: [], entityRefToPresentation: new Map() };
     }
 
+    const catalogFilter = asArray(uiSchema['ui:options']?.catalogFilter).map(
+      e => ({
+        ...e,
+        ...{ kind: 'Group' },
+        [`relations.${RELATION_HAS_MEMBER}`]: [userEntityRef],
+      }),
+    );
+
     const { items } = await catalogApi.getEntities({
-      filter: {
-        kind: 'Group',
-        ['relations.hasMember']: [userEntityRef],
-      },
+      filter: catalogFilter,
     });
 
     const entityRefToPresentation = new Map<
@@ -152,3 +161,10 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     </ScaffolderField>
   );
 };
+
+function asArray(catalogFilter: any): any[] {
+  if (catalogFilter) {
+    return Array.isArray(catalogFilter) ? catalogFilter : [catalogFilter];
+  }
+  return [{}];
+}
