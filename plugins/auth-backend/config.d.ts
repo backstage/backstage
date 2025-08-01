@@ -99,6 +99,35 @@ export interface Config {
     backstageTokenExpiration?: HumanDuration | string;
 
     /**
+     * Configuration for long-lasting refresh tokens
+     */
+    refreshTokens?: {
+      /**
+       * Whether to enable refresh token support
+       * @default false
+       */
+      enabled?: boolean;
+
+      /**
+       * Default expiration time for refresh tokens
+       * @default '30 days'
+       */
+      defaultExpiration?: HumanDuration | string;
+
+      /**
+       * Maximum expiration time for refresh tokens
+       * @default '90 days'
+       */
+      maxExpiration?: HumanDuration | string;
+
+      /**
+       * How often to cleanup expired refresh sessions
+       * @default '1 hour'
+       */
+      cleanupInterval?: HumanDuration | string;
+    };
+
+    /**
      * Additional app origins to allow for authenticating
      */
     experimentalExtraAllowedOrigins?: string[];
