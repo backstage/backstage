@@ -43,6 +43,7 @@ interface ListProjectOptions extends CommonListOptions {
   group?: string;
   membership?: boolean;
   topics?: string;
+  simple?: boolean;
 }
 
 interface UserListOptions extends CommonListOptions {
