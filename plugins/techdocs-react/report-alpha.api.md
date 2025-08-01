@@ -10,7 +10,6 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 // @alpha
 export const AddonBlueprint: ExtensionBlueprint<{
   kind: 'addon';
-  name: undefined;
   params: TechDocsAddonOptions;
   output: ConfigurableExtensionDataRef<
     TechDocsAddonOptions,

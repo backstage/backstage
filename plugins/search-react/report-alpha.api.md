@@ -19,7 +19,6 @@ export type BaseSearchResultListItemProps<T = {}> = T & {
 // @alpha (undocumented)
 export const SearchFilterBlueprint: ExtensionBlueprint<{
   kind: 'search-filter';
-  name: undefined;
   params: SearchFilterBlueprintParams;
   output: ConfigurableExtensionDataRef<
     {
@@ -61,7 +60,6 @@ export type SearchFilterExtensionComponentProps = {
 // @alpha (undocumented)
 export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
   kind: 'search-filter-result-type';
-  name: undefined;
   params: SearchFilterResultTypeBlueprintParams;
   output: ConfigurableExtensionDataRef<
     {
@@ -128,7 +126,6 @@ export type SearchResultItemExtensionPredicate = (
 // @alpha
 export const SearchResultListItemBlueprint: ExtensionBlueprint<{
   kind: 'search-result-list-item';
-  name: undefined;
   params: SearchResultListItemBlueprintParams;
   output: ConfigurableExtensionDataRef<
     {
