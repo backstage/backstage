@@ -1,5 +1,5 @@
 ---
-'@backstage/frontend-defaults': minor
+'@backstage/frontend-defaults': patch
 ---
 
-**BREAKING**: Moved `createPublicSignInApp` to the `/alpha` sub-path export.
+Deprecated `createPublicSignInApp`, which has been replaced by the new `appModulePublicSignIn` from `@backstage/plugin-app/alpha` instead.
