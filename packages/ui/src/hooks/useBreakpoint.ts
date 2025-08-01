@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMediaQuery } from './useMediaQuery';
+import { useCallback, useState, useEffect } from 'react';
 import type { Breakpoint } from '../types';
 
 export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
@@ -25,40 +25,111 @@ export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
   { name: 'Extra Large', id: 'xl', value: 1536 },
 ];
 
-/** @public */
-export const useBreakpoint = () => {
-  // Call all media queries at the top level
-  const matches = breakpoints.map(breakpoint => {
-    return useMediaQuery(`(min-width: ${breakpoint.value}px)`);
+// Simple media query hook that only creates one listener
+function useSingleMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia(query).matches;
   });
 
-  // Pre-calculate all the up/down values we need
-  const upMatches = new Map(
-    breakpoints.map(bp => [bp.id, useMediaQuery(`(min-width: ${bp.value}px)`)]),
-  );
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
-  const downMatches = new Map(
-    breakpoints.map(bp => [
-      bp.id,
-      useMediaQuery(`(max-width: ${bp.value - 1}px)`),
-    ]),
-  );
+    const mediaQuery = window.matchMedia(query);
+    const handleChange = () => setMatches(mediaQuery.matches);
 
-  let breakpoint: Breakpoint = breakpoints[0].id;
-  for (let i = matches.length - 1; i >= 0; i--) {
-    if (matches[i]) {
-      breakpoint = breakpoints[i].id;
-      break;
+    // Set initial value
+    setMatches(mediaQuery.matches);
+
+    // Add listener
+    if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleChange);
+    } else {
+      mediaQuery.addEventListener('change', handleChange);
     }
-  }
+
+    return () => {
+      if (mediaQuery.removeListener) {
+        mediaQuery.removeListener(handleChange);
+      } else {
+        mediaQuery.removeEventListener('change', handleChange);
+      }
+    };
+  }, [query]);
+
+  return matches;
+}
+
+// Hook to get current breakpoint efficiently - only triggers on breakpoint changes
+function useCurrentBreakpoint(): Breakpoint {
+  const [breakpoint, setBreakpoint] = useState<Breakpoint>(() => {
+    if (typeof window === 'undefined') return 'initial';
+
+    const width = window.innerWidth;
+    if (width >= 1536) return 'xl';
+    if (width >= 1280) return 'lg';
+    if (width >= 1024) return 'md';
+    if (width >= 768) return 'sm';
+    if (width >= 640) return 'xs';
+    return 'initial';
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      const width = window.innerWidth;
+      let newBreakpoint: Breakpoint;
+
+      if (width >= 1536) newBreakpoint = 'xl';
+      else if (width >= 1280) newBreakpoint = 'lg';
+      else if (width >= 1024) newBreakpoint = 'md';
+      else if (width >= 768) newBreakpoint = 'sm';
+      else if (width >= 640) newBreakpoint = 'xs';
+      else newBreakpoint = 'initial';
+
+      setBreakpoint(prev => (prev !== newBreakpoint ? newBreakpoint : prev));
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return breakpoint;
+}
+
+/** @public */
+export const useBreakpoint = () => {
+  // Use efficient breakpoint detection that only triggers on actual breakpoint changes
+  const currentBreakpoint = useCurrentBreakpoint();
+
+  // Lazy up function - creates media query only when called
+  const up = useCallback((key: Breakpoint): boolean => {
+    const targetBreakpoint = breakpoints.find(bp => bp.id === key);
+    if (!targetBreakpoint) return false;
+
+    // For 'initial', always return true since we're always at or above 0px
+    if (key === 'initial') return true;
+
+    const query = `(min-width: ${targetBreakpoint.value}px)`;
+    return useSingleMediaQuery(query);
+  }, []);
+
+  // Lazy down function - creates media query only when called
+  const down = useCallback((key: Breakpoint): boolean => {
+    const targetBreakpoint = breakpoints.find(bp => bp.id === key);
+    if (!targetBreakpoint) return false;
+
+    // For 'initial', always return false since we can't be below 0px
+    if (key === 'initial') return false;
+
+    const query = `(max-width: ${targetBreakpoint.value - 1}px)`;
+    return useSingleMediaQuery(query);
+  }, []);
 
   return {
-    breakpoint,
-    up: (key: Breakpoint): boolean => {
-      return upMatches.get(key) ?? false;
-    },
-    down: (key: Breakpoint): boolean => {
-      return downMatches.get(key) ?? false;
-    },
+    breakpoint: currentBreakpoint,
+    up,
+    down,
   };
 };
