@@ -16,8 +16,8 @@
 
 import { isChildPath } from '@backstage/cli-common';
 import { NotAllowedError } from '@backstage/errors';
-import { resolve as resolvePath } from 'path';
-import { realpathSync as realPath } from 'fs';
+import { resolve as resolvePath, dirname } from 'path';
+import { realpathSync as realPath, existsSync } from 'fs';
 
 /** @internal */
 export const packagePathMocks = new Map<
@@ -50,6 +50,85 @@ export function resolvePackagePath(name: string, ...paths: string[]) {
       : __non_webpack_require__;
 
   return resolvePath(req.resolve(`${name}/package.json`), '..', ...paths);
+}
+
+/**
+ * Resolve paths to package assets automatically from the calling location.
+ * 
+ * This function provides a portable alternative to resolvePackagePath that doesn't
+ * require package names or __dirname. It uses stack trace analysis to detect the
+ * calling file and automatically resolves assets relative to the package root.
+ *
+ * @param assetPath - Path to the asset directory or file relative to package root
+ * @returns The resolved absolute path to the asset
+ *
+ * @example
+ * ```ts
+ * // From catalog-backend/src/database/migrations.ts
+ * const migrationsDir = resolvePackageAssets('migrations');
+ * 
+ * // From auth-backend/src/providers/oauth2/provider.ts  
+ * const templatesDir = resolvePackageAssets('templates');
+ * ```
+ *
+ * @public
+ */
+export function resolvePackageAssets(assetPath: string): string {
+  // Use stack trace to find the calling file
+  const originalPrepareStackTrace = Error.prepareStackTrace;
+  Error.prepareStackTrace = (_, stack) => stack;
+  const stack = (new Error().stack as any) as NodeJS.CallSite[];
+  Error.prepareStackTrace = originalPrepareStackTrace;
+
+  // Find the first external caller (skip this function)
+  let callerFile: string | undefined;
+  for (let i = 1; i < stack.length; i++) {
+    const fileName = stack[i].getFileName();
+    if (fileName && !fileName.includes('paths.ts') && !fileName.includes('paths.js')) {
+      callerFile = fileName;
+      break;
+    }
+  }
+
+  if (!callerFile) {
+    throw new Error('Unable to determine calling file for asset resolution');
+  }
+
+  // Find the package root by walking up from the caller
+  let currentDir = dirname(callerFile);
+  let packageRoot: string | undefined;
+  
+  while (currentDir !== dirname(currentDir)) {
+    if (existsSync(resolvePath(currentDir, 'package.json'))) {
+      packageRoot = currentDir;
+      break;
+    }
+    currentDir = dirname(currentDir);
+  }
+
+  if (!packageRoot) {
+    // Fallback: resolve relative to caller file
+    return resolvePath(dirname(callerFile), assetPath);
+  }
+
+  // Try multiple locations for the asset
+  const candidatePaths = [
+    // Built assets in dist folder
+    resolvePath(packageRoot, 'dist', assetPath),
+    // Source assets in package root
+    resolvePath(packageRoot, assetPath),
+    // Development-time source location
+    resolvePath(packageRoot, 'src', '..', assetPath),
+  ];
+
+  for (const candidatePath of candidatePaths) {
+    if (existsSync(candidatePath)) {
+      return candidatePath;
+    }
+  }
+
+  // Return the most likely path (package root + asset path) for better error messages
+  return resolvePath(packageRoot, assetPath);
 }
 
 /**
@@ -87,5 +166,6 @@ function resolveRealPath(path: string): string {
 
   return path;
 }
+
 // Re-export isChildPath so that backend packages don't need to depend on cli-common
 export { isChildPath };

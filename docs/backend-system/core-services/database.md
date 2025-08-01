@@ -45,3 +45,9 @@ createBackendPlugin({
   },
 });
 ```
+
+Here, `@internal/my-plugin` should be the name of your package as indicated in the `name` field of your `package.json`.
+
+## Advanced Configuration
+
+See [our documentation on database configuration](../../features/database.md) for information about the configuration options that are available.

@@ -37,6 +37,7 @@ import {
 } from 'rollup';
 
 import { forwardFileImports } from './plugins';
+import { copyAssetDirectories } from './copyAssets';
 import { BuildOptions, Output } from './types';
 import { paths } from '../../../../lib/paths';
 import { BackstagePackageJson } from '@backstage/cli-node';
@@ -268,6 +269,7 @@ export async function makeRollupConfigs(
           target: 'ES2022',
           minify: options.minify,
         }),
+        copyAssetDirectories(),
       ],
     });
   }

@@ -16,14 +16,11 @@
 
 import {
   DatabaseService,
-  resolvePackagePath,
+  resolvePackageAssets,
 } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-auth-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackageAssets('migrations');
 
 /**
  * Ensures that a database connection is established exactly once and only when
