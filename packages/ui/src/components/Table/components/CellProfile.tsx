@@ -33,7 +33,7 @@ export const CellProfile = (props: CellProfileProps) => {
     color = 'primary',
     ...rest
   } = props;
-  const { classNames } = useStyles('TableRA');
+  const { classNames } = useStyles('Table');
 
   return (
     <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>

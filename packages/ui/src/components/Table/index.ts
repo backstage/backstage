@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-export { Table } from './Table';
-export { TableCellText } from './TableCellText/TableCellText';
-export { TableCellProfile } from './TableCellProfile/TableCellProfile';
-export { TablePagination } from './TablePagination';
+export { Table } from './components/Table';
+export { TableHeader } from './components/TableHeader';
+export { TableBody } from './components/TableBody';
+export { Column } from './components/Column';
+export { Row } from './components/Row';
+export { Cell } from './components/Cell';
+export { CellProfile } from './components/CellProfile';
 
-export type { TableProps } from './types';
-export type { TableCellTextProps } from './TableCellText/types';
-export type { TableCellProfileProps } from './TableCellProfile/types';
-export type { TablePaginationProps } from './TablePagination/types';
+export type { CellProps, CellProfileProps } from './types';

@@ -33,7 +33,7 @@ const Cell = (props: CellProps) => {
     ...rest
   } = props;
 
-  const { classNames } = useStyles('TableRA');
+  const { classNames } = useStyles('Table');
 
   return (
     <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>

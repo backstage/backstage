@@ -5,7 +5,9 @@
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
+import { CellProps as CellProps_2 } from 'react-aria-components';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
+import { ColumnProps } from 'react-aria-components';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
@@ -20,11 +22,14 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
+import { RowProps } from 'react-aria-components';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
-import { Table as Table_2 } from '@tanstack/react-table';
+import { TableBodyProps } from 'react-aria-components';
+import { TableHeaderProps } from 'react-aria-components';
+import { TableProps } from 'react-aria-components';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
 import type { TabProps as TabProps_2 } from 'react-aria-components';
@@ -227,6 +232,43 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 // @public (undocumented)
+export const Cell: {
+  (props: CellProps): JSX_2.Element;
+  displayName: string;
+};
+
+// @public (undocumented)
+export const CellProfile: (props: CellProfileProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface CellProfileProps extends CellProps_2 {
+  // (undocumented)
+  color?: 'primary' | 'secondary';
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  src?: string;
+}
+
+// @public (undocumented)
+export interface CellProps extends CellProps_2 {
+  // (undocumented)
+  color?: 'primary' | 'secondary';
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  leadingIcon?: React.ReactNode | null;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
 export const Checkbox: ForwardRefExoticComponent<
   CheckboxProps & RefAttributes<HTMLButtonElement>
 >;
@@ -276,6 +318,13 @@ export const Collapsible: {
       RefAttributes<HTMLButtonElement>
   >;
 };
+
+// @public (undocumented)
+export const Column: (
+  props: Omit<ColumnProps, 'children'> & {
+    children?: React.ReactNode;
+  },
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
@@ -507,17 +556,17 @@ export const componentDefinitions: {
   };
   readonly Table: {
     readonly classNames: {
-      readonly root: 'bui-TableRoot';
+      readonly table: 'bui-Table';
       readonly header: 'bui-TableHeader';
       readonly body: 'bui-TableBody';
       readonly row: 'bui-TableRow';
       readonly head: 'bui-TableHead';
+      readonly headSortButton: 'bui-TableHeadSortButton';
       readonly caption: 'bui-TableCaption';
       readonly cell: 'bui-TableCell';
-      readonly cellText: 'bui-TableCellText';
-      readonly cellTextContent: 'bui-TableCellTextContent';
-      readonly cellTextIcon: 'bui-TableCellTextIcon';
-      readonly cellProfile: 'bui-TableCellProfile';
+      readonly cellContentWrapper: 'bui-TableCellContentWrapper';
+      readonly cellContent: 'bui-TableCellContent';
+      readonly cellIcon: 'bui-TableCellIcon';
       readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
       readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
       readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
@@ -1360,6 +1409,14 @@ export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
 };
 
 // @public (undocumented)
+export function Row<T extends object>({
+  id,
+  columns,
+  children,
+  ...otherProps
+}: RowProps<T>): JSX_2.Element;
+
+// @public (undocumented)
 export const ScrollArea: {
   Root: ForwardRefExoticComponent<
     Omit<ScrollArea_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
@@ -1505,60 +1562,25 @@ export interface SwitchProps extends SwitchProps_2 {
 // @public
 export const Tab: (props: TabProps) => JSX_2.Element;
 
-// @public
-export function Table<TData>(
-  props: TableProps<TData> & {
-    ref?: React.ForwardedRef<HTMLTableElement>;
-  },
-): JSX_2.Element;
+// @public (undocumented)
+export const Table: (props: TableProps) => JSX_2.Element;
 
 // @public (undocumented)
-export const TableCellProfile: ForwardRefExoticComponent<
-  TableCellProfileProps & RefAttributes<HTMLDivElement>
->;
+export const TableBody: <T extends object>(
+  props: TableBodyProps<T>,
+) => JSX_2.Element;
 
 // @public (undocumented)
-export interface TableCellProfileProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  // (undocumented)
-  color?: 'primary' | 'secondary';
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  name?: string;
-  // (undocumented)
-  src?: string;
-}
-
-// @public (undocumented)
-export const TableCellText: ForwardRefExoticComponent<
-  TableCellTextProps & RefAttributes<HTMLDivElement>
->;
-
-// @public (undocumented)
-export interface TableCellTextProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  // (undocumented)
-  color?: 'primary' | 'secondary';
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  leadingIcon?: React.ReactNode;
-  // (undocumented)
-  title: string;
-}
+export const TableHeader: <T extends object>({
+  columns,
+  children,
+}: TableHeaderProps<T>) => JSX_2.Element;
 
 // @public
-export function TablePagination<TData>(
-  props: TablePaginationProps<TData>,
-): JSX_2.Element;
+export function TablePagination(props: TablePaginationProps): JSX_2.Element;
 
 // @public (undocumented)
-export interface TablePaginationProps<TData>
+export interface TablePaginationProps
   extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   onNextPage?: () => void;
@@ -1567,16 +1589,17 @@ export interface TablePaginationProps<TData>
   // (undocumented)
   onPreviousPage?: () => void;
   // (undocumented)
+  pageIndex?: number;
+  // (undocumented)
+  pageSize?: number;
+  // (undocumented)
+  rowCount?: number;
+  // (undocumented)
+  setPageIndex?: (pageIndex: number) => void;
+  // (undocumented)
+  setPageSize?: (pageSize: number) => void;
+  // (undocumented)
   showPageSizeOptions?: boolean;
-  // (undocumented)
-  table?: Table_2<TData>;
-}
-
-// @public (undocumented)
-export interface TableProps<TData>
-  extends React.HTMLAttributes<HTMLTableElement> {
-  // (undocumented)
-  table: Table_2<TData>;
 }
 
 // @public

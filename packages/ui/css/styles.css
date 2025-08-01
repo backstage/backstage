@@ -10023,6 +10023,11 @@
   width: 100%;
 }
 
+.bui-TableHeader {
+  border-bottom: 1px solid var(--bui-border);
+  transition: color .2s ease-in-out;
+}
+
 .bui-TableHead {
   text-align: left;
   padding: var(--bui-space-3);
@@ -10073,22 +10078,24 @@
 .bui-TableCell {
   padding: var(--bui-space-3);
   font-size: var(--bui-font-size-3);
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
 }
 
-.bui-TableCellText {
+.bui-TableCellContentWrapper {
   align-items: center;
   gap: var(--bui-space-2);
   flex-direction: row;
   display: inline-flex;
 }
 
-.bui-TableCellTextIcon, .bui-TableCellTextIcon svg {
+.bui-TableCellIcon, .bui-TableCellIcon svg {
   color: var(--bui-fg-primary);
   align-items: center;
   display: inline-flex;
 }
 
-.bui-TableCellTextContent {
+.bui-TableCellContent {
   gap: var(--bui-space-0_5);
   flex-direction: column;
   display: flex;

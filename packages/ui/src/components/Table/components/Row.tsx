@@ -14,20 +14,35 @@
  * limitations under the License.
  */
 
-import { useStyles } from '../../../hooks/useStyles';
 import {
-  Table as ReactAriaTable,
-  type TableProps,
+  Row as ReactAriaRow,
+  RowProps,
+  useTableOptions,
+  Cell,
+  Collection,
+  Checkbox,
 } from 'react-aria-components';
+import { useStyles } from '../../../hooks/useStyles';
 
-export const Table = (props: TableProps) => {
-  const { classNames } = useStyles('TableRA');
+/** @public */
+export function Row<T extends object>({
+  id,
+  columns,
+  children,
+  ...otherProps
+}: RowProps<T>) {
+  const { classNames } = useStyles('Table');
+
+  let { selectionBehavior } = useTableOptions();
 
   return (
-    <ReactAriaTable
-      className={classNames.table}
-      aria-label="Data table"
-      {...props}
-    />
+    <ReactAriaRow id={id} className={classNames.row} {...otherProps}>
+      {selectionBehavior === 'toggle' && (
+        <Cell>
+          <Checkbox slot="selection" />
+        </Cell>
+      )}
+      <Collection items={columns}>{children}</Collection>
+    </ReactAriaRow>
   );
-};
+}

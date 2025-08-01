@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import { Table } from '@tanstack/react-table';
+import { CellProps as ReactAriaCellProps } from 'react-aria-components';
 
 /** @public */
-export interface TableProps<TData>
-  extends React.HTMLAttributes<HTMLTableElement> {
-  table: Table<TData>;
-  /**
-   * Background click handler for rows. This will be called when clicking on empty
-   * areas of a row that don't have their own click handlers. Cell-level interactions
-   * (like Links or buttons) will automatically prevent this from firing.
-   */
-  onRowClick?: (
-    row: TData,
-    event: React.MouseEvent<HTMLTableRowElement>,
-  ) => void;
+export interface CellProps extends ReactAriaCellProps {
+  title: string;
+  description?: string;
+  color?: 'primary' | 'secondary';
+  leadingIcon?: React.ReactNode | null;
+  href?: string;
+}
+
+/** @public */
+export interface CellProfileProps extends ReactAriaCellProps {
+  src?: string;
+  name?: string;
+  href?: string;
+  description?: string;
+  color?: 'primary' | 'secondary';
 }

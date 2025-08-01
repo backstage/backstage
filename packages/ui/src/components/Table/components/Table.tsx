@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import {
-  TableBody as ReactAriaTableBody,
-  type TableBodyProps,
-} from 'react-aria-components';
 import { useStyles } from '../../../hooks/useStyles';
+import {
+  Table as ReactAriaTable,
+  type TableProps,
+} from 'react-aria-components';
 
-export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
-  const { classNames } = useStyles('TableRA');
+/** @public */
+export const Table = (props: TableProps) => {
+  const { classNames } = useStyles('Table');
 
-  return <ReactAriaTableBody className={classNames.body} {...props} />;
+  return (
+    <ReactAriaTable
+      className={classNames.table}
+      aria-label="Data table"
+      {...props}
+    />
+  );
 };

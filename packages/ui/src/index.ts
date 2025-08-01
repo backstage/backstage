@@ -43,7 +43,7 @@ export * from './components/ButtonIcon';
 export * from './components/ButtonLink';
 export * from './components/Checkbox';
 export * from './components/RadioGroup';
-export * from './components/TableRA';
+export * from './components/Table';
 export * from './components/TablePagination';
 export * from './components/Tabs';
 export * from './components/Text';

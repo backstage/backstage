@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import clsx from 'clsx';
+import {
+  TableBody as ReactAriaTableBody,
+  type TableBodyProps,
+} from 'react-aria-components';
 import { useStyles } from '../../../hooks/useStyles';
 
-/** @internal */
-export const RawTableBody = forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => {
+/** @public */
+export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
   const { classNames } = useStyles('Table');
 
-  return (
-    <tbody ref={ref} className={clsx(classNames.body, className)} {...props} />
-  );
-});
-RawTableBody.displayName = 'RawTableBody';
+  return <ReactAriaTableBody className={classNames.body} {...props} />;
+};

@@ -21,10 +21,11 @@ import {
 import { Icon } from '../../Icon';
 import { useStyles } from '../../../hooks/useStyles';
 
+/** @public */
 export const Column = (
   props: Omit<ColumnProps, 'children'> & { children?: React.ReactNode },
 ) => {
-  const { classNames } = useStyles('TableRA');
+  const { classNames } = useStyles('Table');
 
   return (
     <ReactAriaColumn className={classNames.head} {...props}>

@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
-import { Table, TablePagination } from '.';
-import { data, DataProps } from './mocked-components';
-import { columns } from './mocked-columns';
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-  PaginationState,
-  ColumnDef,
-} from '@tanstack/react-table';
 import { useState } from 'react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import {
+  Table,
+  TableHeader,
+  Column,
+  TableBody,
+  Row,
+  Cell,
+  CellProfile as CellProfileBUI,
+} from '.';
 import { MemoryRouter } from 'react-router-dom';
-import { TableCellText } from './TableCellText/TableCellText';
+import { data as data1 } from './mocked-data1';
+import { data as data2 } from './mocked-data2';
+import { data as data3 } from './mocked-data3';
+import { data as data4 } from './mocked-data4';
+import { RiCactusLine } from '@remixicon/react';
+import { TablePagination } from '../TablePagination';
 
 const meta = {
   title: 'Components/Table',
@@ -44,120 +47,174 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Uncontrolled: Story = {
+export const TableOnly: Story = {
   render: () => {
-    const table = useReactTable<DataProps>({
-      data,
-      columns,
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-    });
+    return (
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+          <Column>Lifecycle</Column>
+        </TableHeader>
+        <TableBody>
+          {data1.map(item => (
+            <Row key={item.name}>
+              <Cell
+                title={item.name}
+                leadingIcon={<RiCactusLine />}
+                description={item.description}
+              />
+              <CellProfileBUI
+                name={item.owner.name}
+                src={item.owner.profilePicture}
+                href={item.owner.link}
+              />
+              <Cell title={item.type} />
+              <Cell title={item.lifecycle} />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  },
+};
 
-    console.log(table.getState().sorting);
+export const WithPagination: Story = {
+  render: () => {
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
+    const newData = data1.slice(
+      pageIndex * pageSize,
+      (pageIndex + 1) * pageSize,
+    );
 
     return (
       <>
-        <Table table={table} />
-        <TablePagination table={table} />
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Name</Column>
+            <Column>Owner</Column>
+            <Column>Type</Column>
+            <Column>Lifecycle</Column>
+          </TableHeader>
+          <TableBody>
+            {newData.map(item => (
+              <Row key={item.name}>
+                <Cell
+                  title={item.name}
+                  leadingIcon={<RiCactusLine />}
+                  description={item.description}
+                />
+                <Cell title={item.owner.name} />
+                <Cell title={item.type} />
+                <Cell title={item.lifecycle} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          rowCount={data1.length}
+          setPageIndex={setPageIndex}
+          setPageSize={setPageSize}
+        />
       </>
     );
   },
 };
 
-export const Controlled: Story = {
+export const TableRockBand: Story = {
   render: () => {
-    const [pagination, setPagination] = useState<PaginationState>({
-      pageIndex: 4,
-      pageSize: 5,
-    });
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(5);
 
-    const table = useReactTable<DataProps>({
-      data,
-      columns,
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      state: {
-        pagination,
-      },
-      onPaginationChange: setPagination,
-    });
+    const newData = data4.slice(
+      pageIndex * pageSize,
+      (pageIndex + 1) * pageSize,
+    );
 
     return (
       <>
-        <Table table={table} />
-        <TablePagination table={table} />
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Band name</Column>
+            <Column>Genre</Column>
+            <Column>Year formed</Column>
+            <Column>Albums</Column>
+          </TableHeader>
+          <TableBody>
+            {newData.map(item => (
+              <Row key={item.name}>
+                <CellProfileBUI
+                  name={item.name}
+                  src={item.image}
+                  href={item.website}
+                />
+                <Cell title={item.genre} />
+                <Cell title={item.yearFormed.toString()} />
+                <Cell title={item.albums.toString()} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          rowCount={data4.length}
+          setPageIndex={setPageIndex}
+          setPageSize={setPageSize}
+        />
       </>
     );
   },
 };
 
-export const WithRowClick: Story = {
+export const CellText: Story = {
   render: () => {
-    const table = useReactTable<DataProps>({
-      data,
-      columns, // Use default columns with no custom cell interactions
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-    });
-
-    const handleRowClick = (rowData: DataProps) => {
-      console.log('Pure row click:', rowData.name);
-      alert(`Navigating to: ${rowData.name}`);
-    };
-
     return (
-      <>
-        <Table table={table} onRowClick={handleRowClick} />
-        <TablePagination table={table} />
-      </>
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+        </TableHeader>
+        <TableBody>
+          {data2.map(item => (
+            <Row key={item.name}>
+              <Cell
+                title={item.name}
+                leadingIcon={item.icon}
+                description={item.description}
+              />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
     );
   },
 };
 
-export const WithClickableCells: Story = {
+export const CellProfile: Story = {
   render: () => {
-    // Create columns with clickable name cells
-    const clickableColumns: ColumnDef<DataProps>[] = [
-      ...columns.slice(0, 1), // Keep select and name columns, but modify name
-      {
-        accessorKey: 'name',
-        header: 'Name',
-        cell: ({ row }) => (
-          <div
-            onClick={e => {
-              e.stopPropagation(); // Prevent row click
-              alert(`Clicked on: ${row.original.name}`);
-              console.log('Cell clicked:', row.original);
-            }}
-            style={{ cursor: 'pointer' }}
-          >
-            <TableCellText
-              title={row.getValue('name')}
-              description={row.original.description}
-            />
-          </div>
-        ),
-        size: 450,
-        enableSorting: false,
-      },
-      ...columns.slice(2), // Keep remaining columns
-    ];
-
-    const table = useReactTable<DataProps>({
-      data,
-      columns: clickableColumns,
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-    });
-
     return (
-      <>
-        <Table table={table} />
-        <TablePagination table={table} />
-      </>
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+        </TableHeader>
+        <TableBody>
+          {data3.map(item => (
+            <Row key={item.name}>
+              <CellProfileBUI
+                name={item.name}
+                src={item.profilePicture}
+                href={item.link}
+                description={item.description}
+              />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
     );
   },
 };

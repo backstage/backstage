@@ -15,33 +15,33 @@
  */
 
 import {
-  Row as ReactAriaRow,
-  RowProps,
-  useTableOptions,
-  Cell,
-  Collection,
+  TableHeader as ReactAriaTableHeader,
+  type TableHeaderProps,
   Checkbox,
 } from 'react-aria-components';
+import { Collection, useTableOptions } from 'react-aria-components';
+import { Column } from './Column';
 import { useStyles } from '../../../hooks/useStyles';
 
-export function Row<T extends object>({
-  id,
+/** @public */
+export const TableHeader = <T extends object>({
   columns,
   children,
-  ...otherProps
-}: RowProps<T>) {
-  const { classNames } = useStyles('TableRA');
+}: TableHeaderProps<T>) => {
+  let { selectionBehavior, selectionMode, allowsDragging } = useTableOptions();
 
-  let { selectionBehavior } = useTableOptions();
+  const { classNames } = useStyles('Table');
 
   return (
-    <ReactAriaRow id={id} className={classNames.row} {...otherProps}>
+    <ReactAriaTableHeader className={classNames.header}>
+      {/* Add extra columns for drag and drop and selection. */}
+      {allowsDragging && <Column />}
       {selectionBehavior === 'toggle' && (
-        <Cell>
-          <Checkbox slot="selection" />
-        </Cell>
+        <Column>
+          {selectionMode === 'multiple' && <Checkbox slot="selection" />}
+        </Column>
       )}
       <Collection items={columns}>{children}</Collection>
-    </ReactAriaRow>
+    </ReactAriaTableHeader>
   );
-}
+};

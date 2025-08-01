@@ -61,218 +61,77 @@ export const tablePaginationPropDefs: Record<string, PropDef> = {
   },
 };
 
-export const tableUsageSnippet = `import { useReactTable, getCoreRowModel, ColumnDef } from '@tanstack/react-table';
-import { Table, TablePagination } from '@backstage/ui/components/Table';
+export const tableUsageSnippet = `import {
+  Cell,
+  CellProfile,
+  Column,
+  Row,
+  Table,
+  TableBody,
+  TableHeader,
+  TablePagination,
+} from '@backstage/ui';
 
-interface Person {
-  firstName: string;
-  lastName: string;
-  age: number;
-  visits: number;
-  status: string;
-}
+<Table>
+  <TableHeader>
+    <Column />
+  </TableHeader>
+  <TableBody>
+    <Row>
+      <Cell />
+      <CellProfile />
+    </Row>
+  </TableBody>
+</Table>
+<TablePagination />`;
 
-const data: Person[] = [
+export const tableBasicSnippet = `import { Table, TablePagination } from '@backstage/ui';
+
+const [pageIndex, setPageIndex] = useState(0);
+const [pageSize, setPageSize] = useState(5);
+
+const data = [
   {
-    firstName: 'tanner',
-    lastName: 'linsley',
-    age: 24,
-    visits: 100,
-    status: 'In Relationship',
+    name: 'The Beatles',
+    image: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/42/Beatles_-...jpg',
+    genre: 'Rock, Pop, Psychedelic Rock',
+    yearFormed: 1960,
+    albums: 13
   },
   // ... more data
 ];
 
-const columns: ColumnDef<Person>[] = [
-  {
-    accessorKey: 'firstName',
-    header: 'First Name',
-  },
-  {
-    accessorKey: 'lastName',
-    header: 'Last Name',
-  },
-  {
-    accessorKey: 'age',
-    header: 'Age',
-  },
-  {
-    accessorKey: 'visits',
-    header: 'Visits',
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-  },
-];
+const newData = data4.slice(
+  pageIndex * pageSize,
+  (pageIndex + 1) * pageSize,
+);
 
-function MyTable() {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  return (
-    <>
-      <Table table={table} />
-      <TablePagination table={table} />
-    </>
-  );
-}`;
-
-export const tableBasicSnippet = `const table = useReactTable({
-  data: myData,
-  columns: myColumns,
-  getCoreRowModel: getCoreRowModel(),
-});
-
-return <Table table={table} />;`;
-
-export const tableRowClickSnippet = `const table = useReactTable({
-  data: myData,
-  columns: myColumns,
-  getCoreRowModel: getCoreRowModel(),
-});
-
-const handleRowClick = (rowData: MyDataType) => {
-  console.log('Row clicked:', rowData);
-  navigate(\`/details/\${rowData.id}\`);
-};
-
-return <Table table={table} onRowClick={handleRowClick} />;`;
-
-export const tableHybridSnippet = `const columns: ColumnDef<MyDataType>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => (
-      <Link 
-        to={\`/items/\${row.original.id}\`}
-        onClick={(e) => e.stopPropagation()} // Prevent row click
-      >
-        <TableCellText title={row.getValue('name')} />
-      </Link>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => <TableCellText title={row.getValue('status')} />,
-  },
-];
-
-const table = useReactTable({
-  data: myData,
-  columns,
-  getCoreRowModel: getCoreRowModel(),
-});
-
-const handleRowClick = (rowData: MyDataType) => {
-  // Called when clicking empty row areas (not the name link)
-  showQuickPreview(rowData);
-};
-
-return <Table table={table} onRowClick={handleRowClick} />;`;
-
-export const tableCellInteractionsSnippet = `const columns: ColumnDef<MyDataType>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => (
-      <Link to={\`/items/\${row.original.id}\`}>
-        <TableCellText title={row.getValue('name')} />
-      </Link>
-    ),
-  },
-  {
-    accessorKey: 'owner',
-    header: 'Owner',  
-    cell: ({ row }) => (
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          openContactModal(row.original.owner);
-        }}
-        style={{ cursor: 'pointer' }}
-      >
-        <TableCellText title={row.original.owner.name} />
-      </div>
-    ),
-  },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row }) => (
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handleEdit(row.original);
-        }}
-      >
-        Edit
-      </button>
-    ),
-  },
-];`;
-
-export const tablePaginationSnippet = `import { 
-  useReactTable, 
-  getCoreRowModel, 
-  getPaginationRowModel 
-} from '@tanstack/react-table';
-import { Table, TablePagination } from '@backstage/ui/components/Table';
-
-const table = useReactTable({
-  data: myData,
-  columns: myColumns,
-  getCoreRowModel: getCoreRowModel(),
-  getPaginationRowModel: getPaginationRowModel(), // Enable pagination
-});
-
-return (
-  <>
-    <Table table={table} />
-    <TablePagination table={table} />
-  </>
-);`;
-
-export const tableSelectionSnippet = `import { useState } from 'react';
-import { 
-  useReactTable, 
-  getCoreRowModel,
-  RowSelectionState
-} from '@tanstack/react-table';
-
-const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-
-const table = useReactTable({
-  data: myData,
-  columns: myColumns,
-  getCoreRowModel: getCoreRowModel(),
-  enableRowSelection: true,
-  state: {
-    rowSelection,
-  },
-  onRowSelectionChange: setRowSelection,
-});
-
-// Access selected rows
-const selectedRows = table.getFilteredSelectedRowModel().rows;
-
-return <Table table={table} />;`;
-
-export const tableSortingSnippet = `import { 
-  useReactTable, 
-  getCoreRowModel, 
-  getSortedRowModel 
-} from '@tanstack/react-table';
-
-const table = useReactTable({
-  data: myData,
-  columns: myColumns,
-  getCoreRowModel: getCoreRowModel(),
-  getSortedRowModel: getSortedRowModel(), // Enable sorting
-});
-
-return <Table table={table} />;`;
+<Table>
+  <TableHeader>
+    <Column isRowHeader>Band name</Column>
+    <Column>Genre</Column>
+    <Column>Year formed</Column>
+    <Column>Albums</Column>
+  </TableHeader>
+  <TableBody>
+    {newData.map(item => (
+      <Row key={item.name}>
+        <CellProfileBUI
+          name={item.name}
+          src={item.image}
+          href={item.website}
+        />
+        <Cell title={item.genre} />
+        <Cell title={item.yearFormed.toString()} />
+        <Cell title={item.albums.toString()} />
+      </Row>
+    ))}
+  </TableBody>
+</Table>
+<TablePagination
+  pageIndex={pageIndex}
+  pageSize={pageSize}
+  rowCount={data4.length}
+  setPageIndex={setPageIndex}
+  setPageSize={setPageSize}
+/>`;
