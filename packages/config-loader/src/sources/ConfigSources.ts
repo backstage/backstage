@@ -182,6 +182,10 @@ export class ConfigSources {
     if (argSources.length === 0) {
       const defaultPath = resolvePath(rootDir, 'app-config.yaml');
       const localPath = resolvePath(rootDir, 'app-config.local.yaml');
+      const envPath = resolvePath(
+        rootDir,
+        `app-config.${process.env.BACKSTAGE_ENVIRONMENT}.yaml`,
+      );
       const alwaysIncludeDefaultConfigSource =
         !options.allowMissingDefaultConfig;
 
@@ -190,6 +194,16 @@ export class ConfigSources {
           FileConfigSource.create({
             watch: options.watch,
             path: defaultPath,
+            substitutionFunc: options.substitutionFunc,
+          }),
+        );
+      }
+
+      if (process.env.BACKSTAGE_ENVIRONMENT && fs.pathExistsSync(envPath)) {
+        argSources.push(
+          FileConfigSource.create({
+            watch: options.watch,
+            path: envPath,
             substitutionFunc: options.substitutionFunc,
           }),
         );
