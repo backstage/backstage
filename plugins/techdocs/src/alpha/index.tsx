@@ -137,7 +137,7 @@ export const techDocsSearchResultListItemExtension =
  */
 const techDocsPage = PageBlueprint.make({
   params: {
-    defaultPath: '/docs',
+    path: '/docs',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('../home/components/TechDocsIndexPage').then(m =>
@@ -165,7 +165,7 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
     });
 
     return originalFactory({
-      defaultPath: '/docs/:namespace/:kind/:name',
+      path: '/docs/:namespace/:kind/:name',
       routeRef: convertLegacyRouteRef(rootDocsRouteRef),
       loader: async () =>
         await import('../Router').then(({ TechDocsReaderRouter }) => {
@@ -199,8 +199,8 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
   factory(originalFactory, context) {
     return originalFactory(
       {
-        defaultPath: 'docs',
-        defaultTitle: 'TechDocs',
+        path: 'docs',
+        title: 'TechDocs',
         routeRef: convertLegacyRouteRef(rootCatalogDocsRouteRef),
         loader: () =>
           import('../Router').then(({ EmbeddedDocsRouter }) => {

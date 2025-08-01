@@ -116,8 +116,8 @@ describe('Entity page', () => {
   const overviewEntityContent = EntityContentBlueprint.make({
     name: 'overview',
     params: {
-      defaultPath: '/overview',
-      defaultTitle: 'Overview',
+      path: '/overview',
+      title: 'Overview',
       loader: async () => <div>Mock Overview content</div>,
     },
   });
@@ -125,9 +125,9 @@ describe('Entity page', () => {
   const techdocsEntityContent = EntityContentBlueprint.make({
     name: 'techdocs',
     params: {
-      defaultPath: '/techdocs',
-      defaultTitle: 'TechDocs',
-      defaultGroup: 'documentation',
+      path: '/techdocs',
+      title: 'TechDocs',
+      group: 'documentation',
       loader: async () => <div>Mock TechDocs content</div>,
     },
   });
@@ -135,9 +135,9 @@ describe('Entity page', () => {
   const apidocsEntityContent = EntityContentBlueprint.make({
     name: 'apidocs',
     params: {
-      defaultPath: '/apidocs',
-      defaultTitle: 'ApiDocs',
-      defaultGroup: 'documentation',
+      path: '/apidocs',
+      title: 'ApiDocs',
+      group: 'documentation',
       loader: async () => <div>Mock ApiDocs content</div>,
     },
   });

@@ -92,7 +92,7 @@ describe('createApp', () => {
           extensions: [
             PageBlueprint.make({
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: async () => <div>First Page</div>,
               },
             }),
@@ -103,7 +103,7 @@ describe('createApp', () => {
           extensions: [
             PageBlueprint.make({
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: async () => <div>Last Page</div>,
               },
             }),
@@ -146,7 +146,7 @@ describe('createApp', () => {
           extensions: [
             PageBlueprint.make({
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: async () => <TestComponent />,
               },
             }),
@@ -177,7 +177,7 @@ describe('createApp', () => {
           extensions: [
             PageBlueprint.make({
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: async () => <div>{config.getString('key')}</div>,
               },
             }),
@@ -289,7 +289,7 @@ describe('createApp', () => {
           extensions: [
             PageBlueprint.make({
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: async () => <div>Derp</div>,
               },
             }),
@@ -315,7 +315,7 @@ describe('createApp', () => {
           extensions: [
             PageBlueprint.make({
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: async () => {
                   const Component = () => {
                     appTreeApi = useApi(appTreeApiRef);
@@ -477,7 +477,7 @@ describe('createApp', () => {
             PageBlueprint.make({
               name: 'test-page',
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: async () => <>Test Page</>,
               },
             }),

@@ -23,7 +23,7 @@ import { rootCatalogKubernetesRouteRef } from '../plugin';
 
 export const kubernetesPage = PageBlueprint.make({
   params: {
-    defaultPath: '/kubernetes',
+    path: '/kubernetes',
     // you can reuse the existing routeRef
     // by wrapping into the convertLegacyRouteRef.
     routeRef: convertLegacyRouteRef(rootCatalogKubernetesRouteRef),

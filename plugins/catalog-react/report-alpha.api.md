@@ -104,8 +104,10 @@ export function convertLegacyEntityContentExtension(
   overrides?: {
     name?: string;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-    defaultPath?: string;
-    defaultTitle?: string;
+    path?: string;
+    title?: string;
+    defaultPath?: [Error: `Use the 'path' override instead`];
+    defaultTitle?: [Error: `Use the 'title' override instead`];
   },
 ): ExtensionDefinition;
 
@@ -185,10 +187,13 @@ export type EntityCardType = 'summary' | 'info' | 'content';
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
   params: {
+    defaultPath?: [Error: `Use the 'path' param instead`];
+    path: string;
+    defaultTitle?: [Error: `Use the 'title' param instead`];
+    title: string;
+    defaultGroup?: [Error: `Use the 'group' param instead`];
+    group?: keyof typeof defaultEntityContentGroups | (string & {});
     loader: () => Promise<JSX.Element>;
-    defaultPath: string;
-    defaultTitle: string;
-    defaultGroup?: keyof typeof defaultEntityContentGroups | (string & {});
     routeRef?: RouteRef;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
   };
