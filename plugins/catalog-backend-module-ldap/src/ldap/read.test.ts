@@ -36,6 +36,7 @@ import {
   ActiveDirectoryVendor,
   DefaultLdapVendor,
   FreeIpaVendor,
+  GoogleLdapVendor,
 } from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
@@ -250,6 +251,67 @@ describe('readLdapUsers', () => {
     expect(userMemberOf.size).toBe(0);
   });
 
+  it('transfers all attributes from Google', async () => {
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        uid: 'uid-value',
+        cn: 'cn-value',
+        mail: 'email-value',
+        description: 'description-value',
+        entryUuid: 'uid-value',
+        memberOf: ['x', 'y', 'z'],
+      },
+    ];
+
+    client.getVendor.mockResolvedValue(GoogleLdapVendor);
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
+    });
+    const config: UserConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        map: {
+          rdn: 'uid',
+          name: 'uid',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          memberOf: 'memberOf',
+        },
+      },
+    ];
+
+    const { users, userMemberOf } = await readLdapUsers(client, config, {});
+
+    expect(users).toEqual([
+      expect.objectContaining({
+        metadata: {
+          name: 'uid-value',
+          description: 'description-value',
+          annotations: {
+            [LDAP_DN_ANNOTATION]: 'dn-value',
+            [LDAP_RDN_ANNOTATION]: 'uid-value',
+            [LDAP_UUID_ANNOTATION]: 'uid-value',
+          },
+        },
+        spec: {
+          profile: {
+            displayName: 'cn-value',
+            email: 'email-value',
+          },
+          memberOf: [],
+        },
+      }),
+    ]);
+
+    expect(userMemberOf).toEqual(
+      new Map([['dn-value', new Set(['x', 'y', 'z'])]]),
+    );
+  });
+
   it('transfers all attributes from Microsoft Active Directory', async () => {
     const searchEntries: Entry[] = [
       {
@@ -438,6 +500,7 @@ describe('readLdapUsers', () => {
       new Map([['dn-VALUE', new Set(['x', 'Y', 'z'])]]),
     );
   });
+
   it('fails to transfer all attributes from for due case sensitivity', async () => {
     const vendor = DefaultLdapVendor;
     const searchEntries: Entry[] = [
@@ -637,6 +700,72 @@ describe('readLdapGroups', () => {
     expect(groupMemberOf).toEqual(
       new Map([['dn-value', new Set(['x', 'y', 'z'])]]),
     );
+  });
+
+  it('transfers all attributes from Google', async () => {
+    client.getVendor.mockResolvedValue(GoogleLdapVendor);
+    const searchEntries: Entry[] = [
+      {
+        dn: 'dn-value',
+        uid: 'uid-value',
+        cn: 'cn-value',
+        mail: 'email-value',
+        tt: 'type-value',
+        description: 'description-value',
+        entryUuid: 'uid-value',
+        member: ['e', 'f', 'g'],
+      },
+    ];
+    client.search.mockResolvedValue({
+      searchEntries,
+      searchReferences: [],
+    });
+    const config: GroupConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        map: {
+          rdn: 'uid',
+          name: 'uid',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          type: 'tt',
+          members: 'member',
+          memberOf: 'memberOf',
+        },
+      },
+    ];
+    const { groups, groupMember, groupMemberOf } = await readLdapGroups(
+      client,
+      config,
+      {},
+    );
+    expect(groups).toEqual([
+      expect.objectContaining({
+        metadata: {
+          name: 'uid-value',
+          description: 'description-value',
+          annotations: {
+            [LDAP_DN_ANNOTATION]: 'dn-value',
+            [LDAP_RDN_ANNOTATION]: 'uid-value',
+            [LDAP_UUID_ANNOTATION]: 'uid-value',
+          },
+        },
+        spec: {
+          type: 'type-value',
+          profile: {
+            displayName: 'cn-value',
+            email: 'email-value',
+          },
+          children: [],
+        },
+      }),
+    ]);
+    expect(groupMember).toEqual(
+      new Map([['dn-value', new Set(['e', 'f', 'g'])]]),
+    );
+    expect(groupMemberOf).toEqual(new Map([['dn-value', new Set()]]));
   });
 
   it('transfers all attributes from Microsoft Active Directory', async () => {
