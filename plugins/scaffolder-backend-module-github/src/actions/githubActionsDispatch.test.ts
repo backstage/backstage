@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,120 +14,252 @@
  * limitations under the License.
  */
 
-import {
-  ScmIntegrations,
-  DefaultGithubCredentialsProvider,
-  GithubCredentialsProvider,
-} from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { ScmIntegrations } from '@backstage/integration';
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
+import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import unzipper from 'unzipper';
+import { Buffer } from 'buffer';
 
-import { Octokit } from 'octokit';
+// FIX 1: Revert to legacy timers
+jest.useFakeTimers();
 
-const octokitMock = Octokit as unknown as jest.Mock;
-const mockOctokit = {
-  rest: {
-    actions: {
-      createWorkflowDispatch: jest.fn(),
-    },
-  },
-};
+// Mock octokit
+const mockCreateWorkflowDispatch = jest.fn();
+const mockListWorkflowRuns = jest.fn();
+const mockGetWorkflowRun = jest.fn();
+const mockListWorkflowRunArtifacts = jest.fn();
+const mockDownloadArtifact = jest.fn();
+
 jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+  Octokit: class {
+    rest = {
+      actions: {
+        createWorkflowDispatch: mockCreateWorkflowDispatch,
+        listWorkflowRuns: mockListWorkflowRuns,
+        getWorkflowRun: mockGetWorkflowRun,
+        listWorkflowRunArtifacts: mockListWorkflowRunArtifacts,
+        downloadArtifact: mockDownloadArtifact,
+      },
+    };
+  },
 }));
+
+// Mock unzipper
+jest.mock('unzipper');
+const mockUnzipper = unzipper as jest.Mocked<any>;
+
+const mockFileBuffer = jest.fn();
+const mockDirectory = {
+  files: [
+    { path: 'test.json', buffer: mockFileBuffer },
+    { path: 'README.md', buffer: jest.fn() },
+  ],
+};
 
 describe('github:actions:dispatch', () => {
   const config = new ConfigReader({
     integrations: {
-      github: [
-        { host: 'github.com', token: 'tokenlols' },
-        { host: 'ghe.github.com' },
-      ],
+      github: [{ host: 'github.com', token: 'test-token' }],
     },
   });
-
   const integrations = ScmIntegrations.fromConfig(config);
-  let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any, any, any>;
+  const action = createGithubActionsDispatchAction({ integrations });
+  const logger = getVoidLogger();
 
-  const mockContext = createMockActionContext({
-    input: {
-      repoUrl: 'github.com?repo=repo&owner=owner',
-      workflowId: 'a-workflow-id',
-      branchOrTagName: 'main',
-    },
-  });
+  // We control the clock so `dispatchTimestamp` and `created_at` match.
+  const MOCK_TIME = new Date('2025-11-05T12:00:00.000Z');
+  const MOCK_TIMESTAMP = MOCK_TIME.getTime();
+
+  const mockRun = {
+    id: 12345,
+    html_url: 'https://github.com/owner/repo/actions/runs/12345',
+    created_at: MOCK_TIME.toISOString(), // Use our controlled time
+    status: 'completed',
+    conclusion: 'success',
+  };
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    octokitMock.mockImplementation(() => mockOctokit);
-    githubCredentialsProvider =
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-    action = createGithubActionsDispatchAction({
-      integrations,
-      githubCredentialsProvider,
-    });
+    jest.clearAllMocks();
+    mockUnzipper.Open.buffer.mockResolvedValue(mockDirectory);
+    // Make Date.now() return our controlled time
+    jest.spyOn(Date, 'now').mockReturnValue(MOCK_TIMESTAMP);
   });
 
-  it('should pass context logger to Octokit client', async () => {
-    await action.handler(mockContext);
+  const baseInput = {
+    repoUrl: 'github.com?owner=owner&repo=repo',
+    workflowId: 'ci.yml',
+    branchOrTagName: 'main',
+    initialWaitSeconds: 5,
+    pollIntervalSeconds: 10,
+    timeoutMinutes: 30,
+    waitForCompletion: false, // FIX 2: Add missing property
+  };
 
-    expect(octokitMock).toHaveBeenCalledWith(
-      expect.objectContaining({ log: mockContext.logger }),
+  it('should dispatch a workflow and not wait', async () => {
+    mockListWorkflowRuns.mockResolvedValue({
+      data: { workflow_runs: [mockRun] },
+    });
+
+    const context = createMockActionContext({
+      input: baseInput,
+      logger,
+      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      output: jest.fn(),
+    });
+
+    const handlerPromise = action.handler(context);
+    jest.runAllTimers(); // Use legacy timers
+    await handlerPromise;
+
+    expect(mockCreateWorkflowDispatch).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      workflow_id: 'ci.yml',
+      ref: 'main',
+      inputs: undefined,
+    });
+    expect(mockListWorkflowRuns).toHaveBeenCalled();
+    expect(mockGetWorkflowRun).not.toHaveBeenCalled();
+    expect(context.output).toHaveBeenCalledWith('runId', mockRun.id);
+    expect(context.output).toHaveBeenCalledWith('runUrl', mockRun.html_url);
+  });
+
+  it('should wait for completion with success', async () => {
+    mockListWorkflowRuns.mockResolvedValue({
+      data: { workflow_runs: [mockRun] },
+    });
+    mockGetWorkflowRun
+      .mockResolvedValueOnce({ data: { ...mockRun, status: 'in_progress' } })
+      .mockResolvedValueOnce({ data: { ...mockRun, status: 'completed' } });
+
+    const context = createMockActionContext({
+      input: {
+        ...baseInput,
+        waitForCompletion: true,
+        pollIntervalSeconds: 1, // Fast poll for test
+      },
+      logger,
+      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      output: jest.fn(),
+    });
+
+    const handlerPromise = action.handler(context);
+    jest.runAllTimers(); // Use legacy timers
+    await handlerPromise;
+
+    expect(mockGetWorkflowRun).toHaveBeenCalledTimes(2);
+    expect(context.output).toHaveBeenCalledWith('runId', mockRun.id);
+    expect(context.output).toHaveBeenCalledWith('runUrl', mockRun.html_url);
+    expect(context.output).toHaveBeenCalledWith('conclusion', 'success');
+  });
+
+  it('should throw if workflow fails', async () => {
+    const failedRun = {
+      ...mockRun,
+      conclusion: 'failure',
+    };
+    mockListWorkflowRuns.mockResolvedValue({
+      data: { workflow_runs: [failedRun] },
+    });
+    mockGetWorkflowRun.mockResolvedValue({ data: failedRun });
+
+    const context = createMockActionContext({
+      input: { ...baseInput, waitForCompletion: true },
+      logger,
+      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      output: jest.fn(),
+    });
+
+    // Use legacy timer fix for rejected promises
+    await expect(async () => {
+      const handlerPromise = action.handler(context);
+      jest.runAllTimers();
+      await handlerPromise;
+    }).rejects.toThrow(/Workflow run failed with conclusion: failure/);
+  });
+
+  it('should throw on timeout', async () => {
+    const inProgressRun = { ...mockRun, status: 'in_progress' };
+    mockListWorkflowRuns.mockResolvedValue({
+      data: { workflow_runs: [inProgressRun] },
+    });
+    mockGetWorkflowRun.mockResolvedValue({ data: inProgressRun });
+
+    const context = createMockActionContext({
+      input: {
+        ...baseInput,
+        waitForCompletion: true,
+        timeoutMinutes: 1, // 1 minute timeout
+        pollIntervalSeconds: 30, // 30 second poll
+      },
+      logger,
+      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      output: jest.fn(),
+    });
+
+    // Use legacy timer fix for timeouts
+    const handlerPromise = action.handler(context);
+
+    // Advance clock by 30s (poll 1)
+    jest.advanceTimersByTime(30000);
+    // Advance clock by 30s (poll 2) - total 60s
+    jest.advanceTimersByTime(30000);
+    // Advance clock by 1ms (to go over the 1min/60s timeout)
+    jest.advanceTimersByTime(1);
+
+    await expect(handlerPromise).rejects.toThrow(
+      /Timed out waiting for workflow completion after 1 minutes/,
     );
   });
 
-  it('should call the githubApis for creating WorkflowDispatch without an input object', async () => {
-    mockOctokit.rest.actions.createWorkflowDispatch.mockResolvedValue({
-      data: {
-        foo: 'bar',
+  it('should fetch and parse artifact JSON', async () => {
+    const artifact = { id: 678, name: 'my-artifact' };
+    const artifactZipData = Buffer.from('zip-file-content');
+    const artifactJsonContent = { foo: 'bar' };
+    mockFileBuffer.mockResolvedValue(
+      Buffer.from(JSON.stringify(artifactJsonContent)),
+    );
+
+    mockListWorkflowRuns.mockResolvedValue({
+      data: { workflow_runs: [mockRun] },
+    });
+    mockGetWorkflowRun.mockResolvedValue({ data: mockRun });
+    mockListWorkflowRunArtifacts.mockResolvedValue({
+      data: { artifacts: [artifact] },
+    });
+    mockDownloadArtifact.mockResolvedValue({ data: artifactZipData });
+
+    const context = createMockActionContext({
+      input: {
+        ...baseInput,
+        waitForCompletion: true,
+        outputArtifactName: 'my-artifact',
       },
+      logger,
+      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      output: jest.fn(),
     });
 
-    const repoUrl = 'github.com?repo=repo&owner=owner';
-    const workflowId = 'dispatch_workflow';
-    const branchOrTagName = 'main';
-    const ctx = Object.assign({}, mockContext, {
-      input: { repoUrl, workflowId, branchOrTagName },
-    });
-    await action.handler(ctx);
+    const handlerPromise = action.handler(context);
+    jest.runAllTimers(); // Use legacy timers
+    await handlerPromise;
 
-    expect(
-      mockOctokit.rest.actions.createWorkflowDispatch,
-    ).toHaveBeenCalledWith({
+    expect(mockListWorkflowRunArtifacts).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
-      workflow_id: workflowId,
-      ref: branchOrTagName,
+      run_id: mockRun.id,
     });
-  });
-
-  it('should call the githubApis for creating WorkflowDispatch with an input object', async () => {
-    mockOctokit.rest.actions.createWorkflowDispatch.mockResolvedValue({
-      data: {
-        foo: 'bar',
-      },
-    });
-
-    const repoUrl = 'github.com?repo=repo&owner=owner';
-    const workflowId = 'dispatch_workflow';
-    const branchOrTagName = 'main';
-    const workflowInputs = '{ "foo": "bar" }';
-    const ctx = Object.assign({}, mockContext, {
-      input: { repoUrl, workflowId, branchOrTagName, workflowInputs },
-    });
-    await action.handler(ctx);
-
-    expect(
-      mockOctokit.rest.actions.createWorkflowDispatch,
-    ).toHaveBeenCalledWith({
+    expect(mockDownloadArtifact).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
-      workflow_id: workflowId,
-      ref: branchOrTagName,
-      inputs: workflowInputs,
+      artifact_id: artifact.id,
+      archive_format: 'zip',
     });
+    expect(mockUnzipper.Open.buffer).toHaveBeenCalledWith(artifactZipData);
+    expect(mockFileBuffer).toHaveBeenCalled();
+    expect(context.output).toHaveBeenCalledWith('outputs', artifactJsonContent);
+    expect(context.output).toHaveBeenCalledWith('conclusion', 'success');
   });
 });
