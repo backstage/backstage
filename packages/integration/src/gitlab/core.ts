@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
 import {
   getGitLabIntegrationRelativePath,
   GitLabIntegrationConfig,
@@ -140,27 +139,60 @@ export async function getProjectId(
       )}`,
     );
 
-    const response = await fetch(
+    const response = await fetchWithRetry(
       repoIDLookup.toString(),
       getGitLabRequestOptions(config, token),
     );
 
-    const data = await response.json();
+    if (response.ok) {
+      const data = await response.json();
+      return Number(data.id);
+    }
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error(
-          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
-        );
-      }
-
+    if (response.status === 401) {
       throw new Error(
-        `GitLab Error '${data.error}', ${data.error_description}`,
+        'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
       );
     }
 
-    return Number(data.id);
+    const data = await response.json();
+    throw new Error(`GitLab Error '${data.error}', ${data.error_description}`);
   } catch (e) {
     throw new Error(`Could not get GitLab project ID for: ${target}, ${e}`);
   }
+}
+
+export interface RetryConfig {
+  maxRetries?: number;
+  retryStatusCodes?: number[];
+}
+
+export async function fetchWithRetry(
+  url: string | URL | Request,
+  options?: RequestInit,
+  config: RetryConfig = {},
+): Promise<Response> {
+  const { maxRetries = 3, retryStatusCodes = [429] } = config;
+  let retries = 0;
+
+  while (retries <= maxRetries) {
+    const response = await fetch(url, options);
+
+    if (!retryStatusCodes.includes(response.status) || retries >= maxRetries) {
+      return response;
+    }
+
+    retries++;
+
+    // Calculate delay from Retry-After header or use exponential backoff
+    const retryAfter = response.headers.get('Retry-After');
+    const delay = retryAfter
+      ? parseInt(retryAfter, 10) * 1000
+      : Math.min(500 * Math.pow(2, retries - 1), 10000); // Exponential backoff, cap at 10 seconds
+
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  // This should never be reached due to the loop condition, but TypeScript needs it
+  throw new Error('Max retries exceeded');
 }
