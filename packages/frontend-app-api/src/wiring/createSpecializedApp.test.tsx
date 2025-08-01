@@ -144,8 +144,8 @@ describe('createSpecializedApp', () => {
               ],
             }),
             ApiBlueprint.make({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   api: featureFlagsApiRef,
                   deps: {},
                   factory: () =>
@@ -253,8 +253,8 @@ describe('createSpecializedApp', () => {
           pluginId: 'first',
           extensions: [
             ApiBlueprint.make({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   api: analyticsApiRef,
                   deps: {},
                   factory: () => {
@@ -294,8 +294,8 @@ describe('createSpecializedApp', () => {
               },
             }),
             ApiBlueprint.make({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   api: analyticsApiRef,
                   deps: {},
                   factory: mockAnalyticsApi,

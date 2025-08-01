@@ -54,8 +54,8 @@ const apiDocsNavItem = NavItemBlueprint.make({
 
 const apiDocsConfigApi = ApiBlueprint.make({
   name: 'config',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: apiDocsConfigRef,
       deps: {},
       factory: () => {
