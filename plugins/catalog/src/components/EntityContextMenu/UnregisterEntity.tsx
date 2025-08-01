@@ -20,6 +20,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { forwardRef } from 'react';
 
 type VisibleType = 'visible' | 'hidden' | 'disable';
 
@@ -34,7 +35,10 @@ interface UnregisterEntityProps {
   onClose: () => void;
 }
 
-export function UnregisterEntity(props: UnregisterEntityProps) {
+export const UnregisterEntity = forwardRef<
+  HTMLLIElement,
+  UnregisterEntityProps
+>((props, ref) => {
   const {
     unregisterEntityOptions,
     isUnregisterAllowed,
@@ -53,16 +57,16 @@ export function UnregisterEntity(props: UnregisterEntityProps) {
         : unregisterEntityOptions?.disableUnregister === 'disable')) ??
     false;
 
-  let unregisterButton = <></>;
-
   if (unregisterEntityOptions?.disableUnregister !== 'hidden') {
-    unregisterButton = (
+    return (
       <MenuItem
+        ref={ref}
         onClick={() => {
           onClose();
           onUnregisterEntity();
         }}
         disabled={isDisabled}
+        {...props}
       >
         <ListItemIcon>
           <CancelIcon fontSize="small" />
@@ -72,5 +76,5 @@ export function UnregisterEntity(props: UnregisterEntityProps) {
     );
   }
 
-  return <>{unregisterButton}</>;
-}
+  return undefined;
+});
