@@ -15,7 +15,6 @@
  */
 
 import {
-  AnyExtensionDataRef,
   AppNode,
   AppTree,
   Extension,
@@ -40,7 +39,7 @@ import { TestApiRegistry } from '@backstage/test-utils';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 /** @public */
-export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
+export class ExtensionQuery<UOutput extends ExtensionDataRef> {
   #node: AppNode;
 
   constructor(node: AppNode) {
@@ -75,7 +74,7 @@ export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
 }
 
 /** @public */
-export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
+export class ExtensionTester<UOutput extends ExtensionDataRef> {
   /** @internal */
   static forSubject<T extends ExtensionDefinitionParameters>(
     subject: ExtensionDefinition<T>,

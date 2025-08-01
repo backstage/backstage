@@ -15,7 +15,6 @@
  */
 
 import {
-  AnyExtensionDataRef,
   ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
@@ -35,7 +34,7 @@ type Mutable<T> = {
 
 function resolveV1InputDataMap(
   dataMap: {
-    [name in string]: AnyExtensionDataRef;
+    [name in string]: ExtensionDataRef;
   },
   attachment: AppNode,
   inputName: string,
@@ -61,10 +60,10 @@ function resolveV1InputDataMap(
 }
 
 function resolveInputDataContainer(
-  extensionData: Array<AnyExtensionDataRef>,
+  extensionData: Array<ExtensionDataRef>,
   attachment: AppNode,
   inputName: string,
-): { node: AppNode } & ExtensionDataContainer<AnyExtensionDataRef> {
+): { node: AppNode } & ExtensionDataContainer<ExtensionDataRef> {
   const dataMap = new Map<string, unknown>();
 
   for (const ref of extensionData) {
@@ -105,7 +104,7 @@ function resolveInputDataContainer(
         };
       }
     },
-  } as { node: AppNode } & ExtensionDataContainer<AnyExtensionDataRef>;
+  } as { node: AppNode } & ExtensionDataContainer<ExtensionDataRef>;
 }
 
 function reportUndeclaredAttachments(
@@ -141,7 +140,7 @@ function resolveV1Inputs(
     [inputName in string]: {
       $$type: '@backstage/ExtensionInput';
       extensionData: {
-        [name in string]: AnyExtensionDataRef;
+        [name in string]: ExtensionDataRef;
       };
       config: { optional: boolean; singleton: boolean };
     };
@@ -194,14 +193,14 @@ function resolveV1Inputs(
 function resolveV2Inputs(
   inputMap: {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   },
   attachments: ReadonlyMap<string, AppNode[]>,
 ): ResolvedExtensionInputs<{
   [inputName in string]: ExtensionInput<
-    AnyExtensionDataRef,
+    ExtensionDataRef,
     { optional: boolean; singleton: boolean }
   >;
 }> {
@@ -236,7 +235,7 @@ function resolveV2Inputs(
     );
   }) as ResolvedExtensionInputs<{
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   }>;

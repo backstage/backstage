@@ -17,11 +17,7 @@
 import { JsonObject } from '@backstage/types';
 import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
-import {
-  AnyExtensionDataRef,
-  ExtensionDataRef,
-  ExtensionDataValue,
-} from './createExtensionDataRef';
+import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { ApiHolder, AppNode } from '../apis';
 import { FrontendModule } from './createFrontendModule';
 import { FrontendPlugin } from './createFrontendPlugin';
@@ -50,7 +46,7 @@ export type ExtensionMap<
 };
 
 /** @public */
-export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
+export type ExtensionDataContainer<UExtensionData extends ExtensionDataRef> =
   Iterable<
     UExtensionData extends ExtensionDataRef<
       infer IData,
@@ -75,7 +71,7 @@ export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {
     config?: JsonObject;
-  }) => ExtensionDataContainer<AnyExtensionDataRef>,
+  }) => ExtensionDataContainer<ExtensionDataRef>,
   context: {
     node: AppNode;
     apis: ApiHolder;
