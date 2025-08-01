@@ -20,18 +20,20 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { render, screen, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
-import { createPublicSignInApp } from './createPublicSignInApp';
+import { appModulePublicSignIn } from './appModulePublicSignIn';
 import { mockApis } from '@backstage/test-utils';
+import { createApp } from '@backstage/frontend-defaults';
 
-describe('createPublicSignInApp', () => {
+describe('appModulePublicSignIn', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it('should render a sign-in page', async () => {
-    const app = createPublicSignInApp({
+    const app = createApp({
       configLoader: async () => ({ config: mockApis.config() }),
       features: [
+        appModulePublicSignIn,
         createFrontendModule({
           pluginId: 'app',
           extensions: [
@@ -57,9 +59,10 @@ describe('createPublicSignInApp', () => {
       .spyOn(HTMLFormElement.prototype, 'submit')
       .mockReturnValue();
 
-    const app = createPublicSignInApp({
+    const app = createApp({
       configLoader: async () => ({ config: mockApis.config() }),
       features: [
+        appModulePublicSignIn,
         createFrontendModule({
           pluginId: 'app',
           extensions: [

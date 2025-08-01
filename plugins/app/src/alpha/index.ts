@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { createPublicSignInApp } from './createPublicSignInApp';
+export { appModulePublicSignIn } from './appModulePublicSignIn';

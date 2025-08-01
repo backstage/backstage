@@ -5,7 +5,9 @@
     "role": "web-library"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
   },
   "repository": {
     "type": "git",
@@ -14,23 +16,8 @@
   },
   "license": "Apache-2.0",
   "sideEffects": false,
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha/index.ts",
-    "./package.json": "./package.json"
-  },
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha/index.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "files": [
     "dist"
   ],
