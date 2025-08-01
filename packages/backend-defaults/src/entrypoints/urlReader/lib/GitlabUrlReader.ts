@@ -15,8 +15,7 @@
  */
 
 // NOTE(freben): Intentionally uses node-fetch because of https://github.com/backstage/backstage/issues/28190
-import fetch, { Response } from 'node-fetch';
-
+import fetch, { Response, RequestInfo, RequestInit } from 'node-fetch';
 import {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
@@ -83,7 +82,7 @@ export class GitlabUrlReader implements UrlReaderService {
 
     let response: Response;
     try {
-      response = await fetch(builtUrl, {
+      response = await fetchWithRetry(builtUrl, {
         headers: {
           ...getGitLabRequestOptions(this.integration.config, token).headers,
           ...(etag && !isArtifact && { 'If-None-Match': etag }),
@@ -149,7 +148,7 @@ export class GitlabUrlReader implements UrlReaderService {
     // Use GitLab API to get the default branch
     // encodeURIComponent is required for GitLab API
     // https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
-    const projectGitlabResponse = await fetch(
+    const projectGitlabResponse = await fetchWithRetry(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
           repoFullName,
@@ -176,7 +175,7 @@ export class GitlabUrlReader implements UrlReaderService {
     if (!!filepath) {
       commitsReqParams.set('path', filepath);
     }
-    const commitsGitlabResponse = await fetch(
+    const commitsGitlabResponse = await fetchWithRetry(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
           repoFullName,
@@ -212,7 +211,7 @@ export class GitlabUrlReader implements UrlReaderService {
       archiveReqParams.set('path', filepath);
     }
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
-    const archiveGitLabResponse = await fetch(
+    const archiveGitLabResponse = await fetchWithRetry(
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
         repoFullName,
       )}/repository/archive?${archiveReqParams.toString()}`,
@@ -387,7 +386,7 @@ export class GitlabUrlReader implements UrlReaderService {
     }
     // Trim an initial / if it exists
     project = project.replace(/^\//, '');
-    const result = await fetch(
+    const result = await fetchWithRetry(
       `${
         pathToProject.origin
       }${relativePath}/api/v4/projects/${encodeURIComponent(project)}`,
@@ -405,4 +404,39 @@ export class GitlabUrlReader implements UrlReaderService {
     }
     return Number(data.id);
   }
+}
+
+export interface RetryConfig {
+  maxRetries?: number;
+  retryStatusCodes?: number[];
+}
+
+export async function fetchWithRetry(
+  url: RequestInfo,
+  init?: RequestInit,
+  config: RetryConfig = {},
+): Promise<Response> {
+  const { maxRetries = 3, retryStatusCodes = [429] } = config;
+  let retries = 0;
+
+  while (retries <= maxRetries) {
+    const response = await fetch(url, init);
+
+    if (!retryStatusCodes.includes(response.status) || retries >= maxRetries) {
+      return response;
+    }
+
+    retries++;
+
+    // Calculate delay from Retry-After header or use exponential backoff
+    const retryAfter = response.headers.get('Retry-After');
+    const delay = retryAfter
+      ? parseInt(retryAfter, 10) * 1000
+      : Math.min(500 * Math.pow(2, retries - 1), 10000); // Exponential backoff, cap at 10 seconds
+
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  // This should never be reached due to the loop condition, but TypeScript needs it
+  throw new Error('Max retries exceeded');
 }
