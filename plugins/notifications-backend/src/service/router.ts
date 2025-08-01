@@ -15,7 +15,6 @@
  */
 
 import express, { Request, Response } from 'express';
-import Router from 'express-promise-router';
 import {
   normalizeSeverity,
   NotificationGetOptions,
@@ -52,6 +51,8 @@ import { getUsersForEntityRef } from './getUsersForEntityRef';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
 import pThrottle from 'p-throttle';
+import { createOpenApiRouter, GetNotificationTopics } from '../schema/openapi';
+import { GetNotificationTopics200ResponseInner } from '../schema/openapi/generated/models';
 
 /** @internal */
 export interface RouterOptions {
@@ -100,7 +101,7 @@ export async function createRouter(
   const defaultNotificationSettings: NotificationSettings | undefined =
     config.getOptional<NotificationSettings>('notifications.defaultSettings');
 
-  const getUser = async (req: Request<unknown>) => {
+  const getUser = async (req: Request<any, any, any, any, any>) => {
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
     const info = await userInfo.getUserInfo(credentials);
     return info.userEntityRef;
@@ -345,7 +346,7 @@ export async function createRouter(
   };
 
   const appendCommonOptions = (
-    req: Request,
+    req: Request<any, any, any, any, any>,
     opts: NotificationGetOptions | TopicGetOptions,
   ) => {
     if (req.query.search) {
@@ -378,11 +379,13 @@ export async function createRouter(
     }
   };
 
-  // TODO: Move to use OpenAPI router instead
-  const router = Router();
-  router.use(express.json());
+  // Use OpenAPI router for validation
+  const router = await createOpenApiRouter();
 
-  const listNotificationsHandler = async (req: Request, res: Response) => {
+  const listNotificationsHandler = async (
+    req: Request<any, any, any, any, any>,
+    res: Response,
+  ) => {
     const user = await getUser(req);
     const opts: NotificationGetOptions = {
       user: user,
@@ -434,7 +437,13 @@ export async function createRouter(
   router.post(
     '/settings',
     async (
-      req: Request<any, NotificationSettings, NotificationSettings>,
+      req: Request<
+        any,
+        NotificationSettings,
+        NotificationSettings,
+        never,
+        Record<string, any>
+      >,
       res,
     ) => {
       const user = await getUser(req);
@@ -464,7 +473,16 @@ export async function createRouter(
   };
 
   // Get topics
-  const listTopicsHandler = async (req: Request, res: Response) => {
+  const listTopicsHandler = async (
+    req: Request<
+      any,
+      GetNotificationTopics200ResponseInner[],
+      any,
+      GetNotificationTopics['query'],
+      any
+    >,
+    res: Response,
+  ) => {
     const user = await getUser(req);
     const opts: TopicGetOptions = {
       user: user,
@@ -649,7 +667,13 @@ export async function createRouter(
   };
 
   const createNotificationHandler = async (
-    req: Request<any, Notification[], NotificationSendOptions>,
+    req: Request<
+      never,
+      Notification[],
+      NotificationSendOptions,
+      never,
+      Record<string, any>
+    >,
     res: Response,
   ) => {
     const credentials = await httpAuth.credentials(req, {

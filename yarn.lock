@@ -6761,6 +6761,7 @@ __metadata:
   resolution: "@backstage/plugin-notifications-backend@workspace:plugins/notifications-backend"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -6777,6 +6778,7 @@ __metadata:
     "@backstage/plugin-notifications-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
+    "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.8"
