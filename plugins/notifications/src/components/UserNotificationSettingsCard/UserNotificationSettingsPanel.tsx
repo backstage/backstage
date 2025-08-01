@@ -15,7 +15,10 @@
  */
 
 import { useState } from 'react';
-import { NotificationSettings } from '@backstage/plugin-notifications-common';
+import {
+  NotificationSettings,
+  OriginSetting,
+} from '@backstage/plugin-notifications-common';
 import Table from '@material-ui/core/Table';
 import MuiTableCell from '@material-ui/core/TableCell';
 import { withStyles } from '@material-ui/core/styles';
@@ -109,6 +112,18 @@ export const UserNotificationSettingsPanel = (props: {
     );
   }
 
+  const uniqueOriginsMap = settings.channels
+    .flatMap(channel => channel.origins)
+    .reduce((map, origin) => {
+      if (!map.has(origin.id)) {
+        map.set(origin.id, origin);
+      }
+      return map;
+    }, new Map<string, OriginSetting>())
+    .values();
+
+  const uniqueOrigins = Array.from(uniqueOriginsMap);
+
   return (
     <Table>
       <TableHead>
@@ -130,30 +145,27 @@ export const UserNotificationSettingsPanel = (props: {
         </TableRow>
       </TableHead>
       <TableBody>
-        {settings.channels.map(channel =>
-          channel.origins.flatMap(origin => [
-            <OriginRow
-              key={origin.id}
-              channel={channel}
-              origin={origin}
-              settings={settings}
-              open={expandedRows.has(origin.id)}
-              handleChange={handleChange}
-              handleRowToggle={handleRowToggle}
-            />,
-            ...(expandedRows.has(origin.id)
-              ? origin.topics?.map(topic => (
-                  <TopicRow
-                    key={`${origin.id}-${topic.id}`}
-                    topic={topic}
-                    origin={origin}
-                    settings={settings}
-                    handleChange={handleChange}
-                  />
-                )) || []
-              : []),
-          ]),
-        )}
+        {uniqueOrigins.flatMap(origin => [
+          <OriginRow
+            key={origin.id}
+            origin={origin}
+            settings={settings}
+            open={expandedRows.has(origin.id)}
+            handleChange={handleChange}
+            handleRowToggle={handleRowToggle}
+          />,
+          ...(expandedRows.has(origin.id)
+            ? origin.topics?.map(topic => (
+                <TopicRow
+                  key={`${origin.id}-${topic.id}`}
+                  topic={topic}
+                  origin={origin}
+                  settings={settings}
+                  handleChange={handleChange}
+                />
+              )) || []
+            : []),
+        ])}
       </TableBody>
     </Table>
   );
