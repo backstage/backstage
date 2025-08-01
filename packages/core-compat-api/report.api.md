@@ -59,7 +59,8 @@ export function convertLegacyPageExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    defaultPath?: string;
+    path?: string;
+    defaultPath?: [Error: `Use the 'path' override instead`];
   },
 ): ExtensionDefinition;
 

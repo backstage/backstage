@@ -47,7 +47,7 @@ import { indexRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
   // The `name` option is omitted because this is an index page
-  defaultPath: '/entities',
+  path: '/entities',
   // highlight-next-line
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
@@ -197,7 +197,7 @@ import {
 import { indexRouteRef, createComponentExternalRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
-  defaultPath: '/entities',
+  path: '/entities',
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
@@ -404,7 +404,7 @@ import {
 import { indexRouteRef, detailsSubRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
-  defaultPath: '/entities',
+  path: '/entities',
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });

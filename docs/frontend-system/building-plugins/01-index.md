@@ -75,7 +75,7 @@ const examplePage = PageBlueprint.make({
     routeRef: rootRouteRef,
 
     // This is the default path of this page, but integrators are free to override it
-    defaultPath: '/example',
+    path: '/example',
 
     // Page extensions are always dynamically loaded using React.lazy().
     // All of the functionality of this page is implemented in the
@@ -198,8 +198,8 @@ import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 // route reference if you want to be able to generate a URL that links to the content.
 const exampleEntityContent = EntityContentBlueprint.make({
   params: {
-    defaultPath: 'example',
-    defaultTitle: 'Example',
+    path: 'example',
+    title: 'Example',
     loader: () =>
       import('./components/ExampleEntityContent').then(m => (
         <m.ExampleEntityContent />

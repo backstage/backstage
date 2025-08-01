@@ -287,7 +287,7 @@ export default createFrontendModule({
     createPageExtension({
       // Omitting name since we are overriding a plugin index page
       // It's up to you whether to use the original default path or not, but links that are hardcoded to the default path won't work if you change it
-      defaultPath: '/api-docs',
+      path: '/api-docs',
       // Associating the page with a different route ref may result in the sidebar item or external plugin route pointing to an unreachable page
       routeRef: convertLegacyRouteRef(rootRoute),
       // Custom page components are loaded here

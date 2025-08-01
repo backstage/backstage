@@ -115,8 +115,8 @@ export function collectEntityPageContents(
               name,
               factory(originalFactory, { apis }) {
                 return originalFactory({
-                  defaultPath: normalizeRoutePath(pageNode.path),
-                  defaultTitle: pageNode.title,
+                  path: normalizeRoutePath(pageNode.path),
+                  title: pageNode.title,
                   filter: mergedIf && (entity => mergedIf(entity, { apis })),
                   loader: () => Promise.resolve(pageNode.children),
                 });

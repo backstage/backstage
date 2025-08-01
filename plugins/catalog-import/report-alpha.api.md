@@ -134,7 +134,8 @@ const _default: FrontendPlugin<
           >;
       inputs: {};
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };

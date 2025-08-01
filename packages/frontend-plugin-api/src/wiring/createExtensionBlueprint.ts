@@ -238,7 +238,7 @@ export interface ExtensionBlueprint<
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintParamsDefiner
       ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: define => define(<params>) })`'
-      : TParamsInput;
+      : T['params'];
   }): ExtensionDefinition<{
     kind: T['kind'];
     name: string | undefined extends TNewName ? T['name'] : TNewName;
@@ -291,7 +291,7 @@ export interface ExtensionBlueprint<
           ? TParamsInput
           : T['params'] extends ExtensionBlueprintParamsDefiner
           ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
-          : TParamsInput,
+          : T['params'],
         context?: {
           config?: T['config'];
           inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;

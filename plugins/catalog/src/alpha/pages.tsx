@@ -58,7 +58,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { inputs, config }) {
     return originalFactory({
-      defaultPath: '/catalog',
+      path: '/catalog',
       routeRef: convertLegacyRouteRef(rootRouteRef),
       loader: async () => {
         const { BaseCatalogPage } = await import('../components/CatalogPage');
@@ -107,7 +107,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
-      defaultPath: '/catalog/:namespace/:kind/:name',
+      path: '/catalog/:namespace/:kind/:name',
       routeRef: convertLegacyRouteRef(entityRouteRef),
       loader: async () => {
         const { EntityLayout } = await import('./components/EntityLayout');
