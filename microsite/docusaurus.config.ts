@@ -300,6 +300,14 @@ const config: Config = {
         },
       },
     ],
+    [
+      'docusaurus-plugin-llms',
+      {
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: true,
+        docsDir: '../docs',
+      },
+    ],
   ],
   themes: ['docusaurus-theme-openapi-docs'],
   themeConfig: {

@@ -46,6 +46,7 @@
     "@docusaurus/tsconfig": "^3.1.1",
     "@types/luxon": "^3.0.0",
     "@types/webpack-env": "^1.18.0",
+    "docusaurus-plugin-llms": "^0.1.5",
     "js-yaml": "^4.1.0",
     "prettier": "^2.6.2",
     "typescript": "~5.2.0",
