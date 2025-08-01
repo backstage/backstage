@@ -378,6 +378,7 @@ replicasets
 repo
 Repo
 repos
+requestors
 rerender
 rerenders
 resourcequotas
@@ -385,6 +386,9 @@ retryable
 reusability
 Reusability
 roadmaps
+rollbar
+rollout
+rollouts
 Roboto
 rollbar
 Rollbar
