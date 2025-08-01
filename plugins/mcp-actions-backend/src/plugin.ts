@@ -42,8 +42,17 @@ export const mcpPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         actions: actionsServiceRef,
         registry: actionsRegistryServiceRef,
+        rootRouter: coreServices.rootHttpRouter,
+        discovery: coreServices.discovery,
       },
-      async init({ actions, logger, httpRouter, httpAuth }) {
+      async init({
+        actions,
+        logger,
+        httpRouter,
+        httpAuth,
+        rootRouter,
+        discovery,
+      }) {
         const mcpService = await McpService.create({
           actions,
         });
@@ -66,6 +75,22 @@ export const mcpPlugin = createBackendPlugin({
         router.use('/v1', streamableRouter);
 
         httpRouter.use(router);
+
+        // todo(blam): there's probably a better way to proxy this, but it's required
+        // for mcp auth spec that it lives on the root of the mcp entrypoint server.
+        const authRouter = Router();
+        authRouter.use('/', async (_, res) => {
+          const authBaseUrl = await discovery.getBaseUrl('auth');
+
+          const oidcResponse = await fetch(
+            `${authBaseUrl}/.well-known/openid-configuration`,
+          );
+
+          const oidcResponseJson = await oidcResponse.json();
+
+          res.json(oidcResponseJson);
+        });
+        rootRouter.use('/.well-known/oauth-authorization-server', authRouter);
       },
     });
   },
