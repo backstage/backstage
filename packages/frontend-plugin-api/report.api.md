@@ -100,7 +100,7 @@ export { alertApiRef };
 
 export { AlertMessage };
 
-// @public
+// @public @deprecated
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
 };
@@ -131,6 +131,45 @@ export type AnalyticsEvent = {
 // @public
 export type AnalyticsEventAttributes = {
   [attribute in string]: string | boolean | number;
+};
+
+// @public
+export type AnalyticsImplementation = {
+  captureEvent(event: AnalyticsEvent): void;
+};
+
+// @public
+export const AnalyticsImplementationBlueprint: ExtensionBlueprint<{
+  kind: 'analytics';
+  name: undefined;
+  params: <TDeps extends { [name in string]: unknown }>(
+    params: AnalyticsImplementationFactory<TDeps>,
+  ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>>;
+  output: ConfigurableExtensionDataRef<
+    AnalyticsImplementationFactory<{}>,
+    'core.analytics.factory',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    factory: ConfigurableExtensionDataRef<
+      AnalyticsImplementationFactory<{}>,
+      'core.analytics.factory',
+      {}
+    >;
+  };
+}>;
+
+// @public (undocumented)
+export type AnalyticsImplementationFactory<
+  Deps extends {
+    [name in string]: unknown;
+  } = {},
+> = {
+  deps: TypesToApiRefs<Deps>;
+  factory(deps: Deps): AnalyticsImplementation;
 };
 
 // @public
