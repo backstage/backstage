@@ -267,7 +267,7 @@ export function createGithubRepoCreateAction(options: {
       | undefined;
     requiredCommitSigning?: boolean | undefined;
     requiredLinearHistory?: boolean | undefined;
-    customProperties?: Record<string, string> | undefined;
+    customProperties?: Record<string, string | string[]> | undefined;
     subscribe?: boolean | undefined;
   },
   {
@@ -426,7 +426,7 @@ export function createPublishGithubAction(options: {
       | undefined;
     requiredCommitSigning?: boolean | undefined;
     requiredLinearHistory?: boolean | undefined;
-    customProperties?: Record<string, string> | undefined;
+    customProperties?: Record<string, string | string[]> | undefined;
     subscribe?: boolean | undefined;
   },
   {
