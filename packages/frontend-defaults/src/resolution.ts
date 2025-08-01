@@ -20,40 +20,14 @@ import {
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
-import { CreateAppFeatureLoader } from './createApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isInternalFrontendFeatureLoader } from '../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
 
 /** @public */
 export async function resolveAsyncFeatures(options: {
   config: Config;
-  features?: (
-    | FrontendFeature
-    | FrontendFeatureLoader
-    | CreateAppFeatureLoader
-  )[];
+  features?: (FrontendFeature | FrontendFeatureLoader)[];
 }): Promise<{ features: FrontendFeature[] }> {
-  const features: (FrontendFeature | FrontendFeatureLoader)[] = [];
-
-  // Separate deprecated CreateAppFeatureLoader elements from the frontend features,
-  // and manage the deprecated elements first.
-  for (const item of options?.features ?? []) {
-    if ('load' in item) {
-      try {
-        const result = await item.load({ config: options.config });
-        features.push(...result.features);
-      } catch (e) {
-        throw new Error(
-          `Failed to read frontend features from loader '${item.getLoaderName()}', ${stringifyError(
-            e,
-          )}`,
-        );
-      }
-    } else {
-      features.push(item);
-    }
-  }
-
   const loadedFeatures: FrontendFeature[] = [];
   const alreadyMetFeatureLoaders: FrontendFeatureLoader[] = [];
   const maxRecursionDepth = 5;
@@ -96,7 +70,7 @@ export async function resolveAsyncFeatures(options: {
     }
   }
 
-  await applyFeatureLoaders(features, 1);
+  await applyFeatureLoaders(options.features ?? [], 1);
 
   return { features: loadedFeatures };
 }
