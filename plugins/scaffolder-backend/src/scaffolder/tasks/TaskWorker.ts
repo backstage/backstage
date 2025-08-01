@@ -29,6 +29,8 @@ import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';
+import { JsonObject } from '@backstage/types';
+import { Config } from '@backstage/config';
 
 /**
  * TaskWorkerOptions
@@ -44,6 +46,7 @@ export type TaskWorkerOptions = {
   permissions?: PermissionEvaluator;
   logger?: LoggerService;
   auditor?: AuditorService;
+  config?: Config;
   gracefulShutdown?: boolean;
 };
 
@@ -59,6 +62,7 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: LoggerService;
   auditor?: AuditorService;
+  config?: Config;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   /**
    * The number of tasks that can be executed at the same time by the worker
@@ -87,12 +91,14 @@ export class TaskWorker {
   private taskQueue: PQueue;
   private logger: LoggerService | undefined;
   private auditor: AuditorService | undefined;
+  private config: Config | undefined;
   private stopWorkers: boolean;
 
   private constructor(private readonly options: TaskWorkerOptions) {
     this.stopWorkers = false;
     this.logger = options.logger;
     this.auditor = options.auditor;
+    this.config = options.config;
     this.taskQueue = new PQueue({
       concurrency: options.concurrentTasksLimit,
     });
@@ -103,6 +109,7 @@ export class TaskWorker {
       taskBroker,
       logger,
       auditor,
+      config,
       actionRegistry,
       integrations,
       workingDirectory,
@@ -130,6 +137,7 @@ export class TaskWorker {
       concurrentTasksLimit,
       permissions,
       auditor,
+      config,
       gracefulShutdown,
     });
   }
@@ -182,15 +190,55 @@ export class TaskWorker {
     });
   }
 
+  private truncateParameters(parameters: JsonObject) {
+    const taskParameterMaxLength =
+      this.config?.getOptionalNumber(
+        'scaffolder.auditor.taskParameterMaxLength',
+      ) ?? 256;
+
+    if (taskParameterMaxLength === -1) {
+      this.logger?.debug(
+        `scaffolder.auditor.taskParameterMaxLength manually disabled via configuration, no task parameter length limit set.`,
+      );
+      return parameters;
+    }
+
+    function truncate(value: unknown): unknown {
+      if (typeof value === 'string') {
+        if (value.length > taskParameterMaxLength) {
+          return value
+            .slice(0, taskParameterMaxLength)
+            .concat('...<truncated>');
+        }
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value.map(truncate);
+      }
+      if (value && typeof value === 'object') {
+        const result: Record<string, unknown> = {};
+        for (const k in value as object) {
+          if (Object.hasOwn(value, k)) {
+            result[k] = truncate((value as any)[k]);
+          }
+        }
+        return result;
+      }
+      return value;
+    }
+
+    return truncate(parameters) as JsonObject;
+  }
+
   async runOneTask(task: TaskContext) {
     const auditorEvent = await this.auditor?.createEvent({
       eventId: 'task',
       severityLevel: 'medium',
       meta: {
         actionType: 'execution',
-        taskId: task.taskId,
         createdBy: task.createdBy,
-        taskParameters: task.spec.parameters,
+        taskId: task.taskId,
+        taskParameters: this.truncateParameters(task.spec.parameters),
         templateRef: task.spec.templateInfo?.entityRef,
       },
     });
