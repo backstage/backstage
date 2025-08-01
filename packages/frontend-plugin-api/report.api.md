@@ -823,7 +823,10 @@ export function createRouteRef<
     | undefined = undefined,
   TParamKeys extends string = string,
 >(config?: {
-  readonly params: string extends TParamKeys ? (keyof TParams)[] : TParamKeys[];
+  readonly params?: string extends TParamKeys
+    ? (keyof TParams)[]
+    : TParamKeys[];
+  aliasFor?: string;
 }): RouteRef<
   keyof TParams extends never
     ? undefined
