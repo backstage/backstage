@@ -199,13 +199,11 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 }
 
 /**
- * Creates an empty app without any default features. This is a low-level API is
- * intended for use in tests or specialized setups. Typically you want to use
- * `createApp` from `@backstage/frontend-defaults` instead.
+ * Options for `createSpecializedApp`.
  *
  * @public
  */
-export function createSpecializedApp(options?: {
+export type CreateSpecializedAppOptions = {
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
@@ -215,7 +213,19 @@ export function createSpecializedApp(options?: {
     | ExtensionFactoryMiddleware[];
   flags?: { allowUnknownExtensionConfig?: boolean };
   pluginInfoResolver?: FrontendPluginInfoResolver;
-}): { apis: ApiHolder; tree: AppTree } {
+};
+
+/**
+ * Creates an empty app without any default features. This is a low-level API is
+ * intended for use in tests or specialized setups. Typically you want to use
+ * `createApp` from `@backstage/frontend-defaults` instead.
+ *
+ * @public
+ */
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
+  apis: ApiHolder;
+  tree: AppTree;
+} {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
     createPluginInfoAttacher(config, options?.pluginInfoResolver),
