@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HumanDuration } from '@backstage/types';
+import { HumanDuration, JsonObject } from '@backstage/types';
 
 export interface Config {
   app: {
@@ -788,6 +788,66 @@ export interface Config {
        * and set the `x-envoy-upstream-healthchecked-cluster` header to a matching value.
        */
       headers?: { [name: string]: string };
+    };
+
+    /**
+     * Options to configure the default RootLoggerService.
+     */
+    logger?: {
+      /**
+       * Configures the global log level for messages.
+       *
+       * This can also be configured using the LOG_LEVEL environment variable, which
+       * takes precedence over this configuration.
+       *
+       * Defaults to 'info'.
+       */
+      level?: 'debug' | 'info' | 'warn' | 'error';
+
+      /**
+       * Additional metadata to include with every log entry.
+       */
+      meta?: JsonObject;
+
+      /**
+       * List of logger overrides.
+       *
+       * Can be used to configure a different level for logs matching certain criterias.
+       * For example, it can be used to ignore 'info' logs of given plugins.
+       *
+       * @example
+       *
+       * ```yaml
+       * logger:
+       *   level: info
+       *   overrides:
+       *     # For catalog and auth plugins, messages less important than 'warn' will be ignored.
+       *     - matchers:
+       *         plugin: [catalog, auth]
+       *       level: warn
+       *     # Ignore all messages that starts with 'Forget'
+       *     - matchers:
+       *         message: '/^Forget/'
+       *       level: warn
+       * ```
+       */
+      overrides?: Array<{
+        /**
+         * Conditions that must be met to override the log level.
+         *
+         * A matcher can be:
+         *
+         * - A string (exact match or regex pattern delimited by slashes, e.g. `/pattern/`)
+         * - A non-string value (compared by strict equality)
+         * - An array of matchers (returns true if any matcher matches)
+         */
+        matchers: JsonObject;
+
+        /**
+         * Log level to use for matched entries.
+         */
+        level: 'debug' | 'info' | 'warn' | 'error';
+      }>;
     };
 
     /**
