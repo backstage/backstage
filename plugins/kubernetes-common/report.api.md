@@ -61,6 +61,10 @@ export const ANNOTATION_KUBERNETES_DASHBOARD_URL =
   'kubernetes.io/dashboard-url';
 
 // @public
+export const ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE =
+  'kubernetes.io/microsoft-entra-id-scope';
+
+// @public
 export const ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER =
   'kubernetes.io/oidc-token-provider';
 

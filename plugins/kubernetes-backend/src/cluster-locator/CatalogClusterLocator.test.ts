@@ -20,6 +20,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE,
 } from '@backstage/plugin-kubernetes-common';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
@@ -70,6 +71,26 @@ const entities: Entity[] = [
       type: 'kubernetes-cluster',
     },
   },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Resource',
+    metadata: {
+      annotations: {
+        'kubernetes.io/api-server': 'https://apiserver.com',
+        'kubernetes.io/api-server-certificate-authority': 'caData',
+        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'microsoft',
+        [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+          'microsoft-entra-id/scope.verb',
+        'kubernetes.io/dashboard-url': 'my-url',
+        'kubernetes.io/dashboard-app': 'my-app',
+      },
+      name: 'owned',
+      namespace: 'default',
+    },
+    spec: {
+      type: 'kubernetes-cluster',
+    },
+  },
 ];
 
 describe('CatalogClusterLocator', () => {
@@ -93,7 +114,7 @@ describe('CatalogClusterLocator', () => {
     );
 
     const result = await clusterSupplier.getClusters({ credentials });
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
     expect(result[0]).toMatchSnapshot();
   });
 
@@ -105,7 +126,19 @@ describe('CatalogClusterLocator', () => {
     );
 
     const result = await clusterSupplier.getClusters({ credentials });
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
     expect(result[1]).toMatchSnapshot();
+  });
+
+  it('returns the microsoft authenticated cluster details provided by annotations', async () => {
+    const credentials = mockCredentials.user();
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      catalogServiceMock({ entities }),
+      mockServices.auth(),
+    );
+
+    const result = await clusterSupplier.getClusters({ credentials });
+    expect(result).toHaveLength(3);
+    expect(result[2]).toMatchSnapshot();
   });
 });

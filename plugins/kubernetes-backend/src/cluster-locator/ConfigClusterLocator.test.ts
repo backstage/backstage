@@ -20,6 +20,7 @@ import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+  ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE,
 } from '@backstage/plugin-kubernetes-common';
 import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
@@ -275,6 +276,31 @@ describe('ConfigClusterLocator', () => {
         authMetadata: {
           [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
         },
+      },
+    ]);
+  });
+
+  it('copies "microsoftEntraIdScope" config value into metadata', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authProvider: 'microsoft',
+          microsoftEntraIdScope: 'microsoft-entra-id/scope.verb',
+        },
+      ],
+    });
+
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
+    const result = await sut.getClusters();
+
+    expect(result).toMatchObject([
+      {
+        authMetadata: expect.objectContaining({
+          [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+            'microsoft-entra-id/scope.verb',
+        }),
       },
     ]);
   });
