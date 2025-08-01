@@ -15,12 +15,14 @@
  */
 
 import {
-  createServiceFactory,
   coreServices,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { transports, format } from 'winston';
-import { WinstonLogger } from '../rootLogger/WinstonLogger';
+import { format, transports } from 'winston';
 import { createConfigSecretEnumerator } from '../rootConfig/createConfigSecretEnumerator';
+import { WinstonLogger } from '../rootLogger/WinstonLogger';
+import { createLevelOverridesFormatter } from './levelOverridesFormatter';
+import { getRootLoggerConfig } from './config';
 
 /**
  * Root-level logging.
@@ -37,15 +39,33 @@ export const rootLoggerServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
   },
   async factory({ config }) {
+    const rootLoggerConfig = getRootLoggerConfig(config);
+
+    const globalLevel =
+      process.env.LOG_LEVEL || rootLoggerConfig.level || 'info';
+
+    const outputFormat =
+      process.env.NODE_ENV === 'production'
+        ? format.json()
+        : WinstonLogger.colorFormat();
+
+    const loggerFormat = rootLoggerConfig.overrides
+      ? format.combine(
+          createLevelOverridesFormatter(
+            rootLoggerConfig.overrides,
+            globalLevel,
+          ),
+          outputFormat,
+        )
+      : outputFormat;
+
     const logger = WinstonLogger.create({
       meta: {
         service: 'backstage',
+        ...rootLoggerConfig.meta,
       },
-      level: process.env.LOG_LEVEL || 'info',
-      format:
-        process.env.NODE_ENV === 'production'
-          ? format.json()
-          : WinstonLogger.colorFormat(),
+      level: globalLevel,
+      format: loggerFormat,
       transports: [new transports.Console()],
     });
 
