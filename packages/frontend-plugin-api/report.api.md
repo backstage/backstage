@@ -915,7 +915,7 @@ export interface ExtensionBlueprint<
     params: TParamsInput extends ExtensionBlueprintParamsDefiner
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintParamsDefiner
-      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: define => define(<params>) })`'
+      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: defineParams => defineParams(<params>) })`'
       : T['params'];
   }): ExtensionDefinition<{
     kind: T['kind'];
@@ -964,7 +964,7 @@ export interface ExtensionBlueprint<
         params: TParamsInput extends ExtensionBlueprintParamsDefiner
           ? TParamsInput
           : T['params'] extends ExtensionBlueprintParamsDefiner
-          ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+          ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
           : T['params'],
         context?: {
           config?: T['config'];
@@ -1182,7 +1182,7 @@ export type ExtensionDefinition<
                     params?: TFactoryParamsReturn extends ExtensionBlueprintParamsDefiner
                       ? TFactoryParamsReturn
                       : T['params'] extends ExtensionBlueprintParamsDefiner
-                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
                       : Partial<T['params']>;
                   })
             >,
@@ -1204,7 +1204,7 @@ export type ExtensionDefinition<
             params?: TParamsInput extends ExtensionBlueprintParamsDefiner
               ? TParamsInput
               : T['params'] extends ExtensionBlueprintParamsDefiner
-              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
               : Partial<T['params']>;
           })
     > &

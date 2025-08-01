@@ -36,8 +36,8 @@ import { rootRouteRef } from '../routes';
 
 /** @alpha */
 export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: catalogUnprocessedEntitiesApiRef,
       deps: {
         discoveryApi: discoveryApiRef,

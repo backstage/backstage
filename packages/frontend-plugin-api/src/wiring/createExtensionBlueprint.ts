@@ -151,7 +151,7 @@ export type CreateExtensionBlueprintOptions<
    * Usage of the above example blueprint:
    * ```ts
    * const example = ExampleBlueprint.make({
-   *   params: define => define({
+   *   params: defineParams => defineParams({
    *     component: ...,
    *     fetcher: ...,
    *   }),
@@ -196,7 +196,7 @@ export type ExtensionBlueprintParameters = {
 
 /** @ignore */
 type ParamsFactory<TDefiner extends ExtensionBlueprintParamsDefiner> = (
-  define: TDefiner,
+  defineParams: TDefiner,
 ) => ReturnType<TDefiner>;
 
 /**
@@ -231,7 +231,7 @@ export interface ExtensionBlueprint<
     params: TParamsInput extends ExtensionBlueprintParamsDefiner
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintParamsDefiner
-      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: define => define(<params>) })`'
+      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: defineParams => defineParams(<params>) })`'
       : T['params'];
   }): ExtensionDefinition<{
     kind: T['kind'];
@@ -284,7 +284,7 @@ export interface ExtensionBlueprint<
         params: TParamsInput extends ExtensionBlueprintParamsDefiner
           ? TParamsInput
           : T['params'] extends ExtensionBlueprintParamsDefiner
-          ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+          ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
           : T['params'],
         context?: {
           config?: T['config'];

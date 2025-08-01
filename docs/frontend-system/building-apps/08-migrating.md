@@ -199,8 +199,8 @@ import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 
 const scmIntegrationsApi = ApiBlueprint.make({
   name: 'scm-integrations',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: scmIntegrationsApiRef,
       deps: { configApi: configApiRef },
       factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
