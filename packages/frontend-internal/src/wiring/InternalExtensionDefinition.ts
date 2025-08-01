@@ -15,11 +15,11 @@
  */
 
 import {
-  AnyExtensionDataRef,
   ApiHolder,
   AppNode,
   ExtensionAttachToSpec,
   ExtensionDataValue,
+  ExtensionDataRef,
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   ExtensionInput,
@@ -43,13 +43,13 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
           [inputName in string]: {
             $$type: '@backstage/ExtensionInput';
             extensionData: {
-              [name in string]: AnyExtensionDataRef;
+              [name in string]: ExtensionDataRef;
             };
             config: { optional: boolean; singleton: boolean };
           };
         };
         readonly output: {
-          [name in string]: AnyExtensionDataRef;
+          [name in string]: ExtensionDataRef;
         };
         factory(context: {
           node: AppNode;
@@ -72,18 +72,18 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: {
           [inputName in string]: ExtensionInput<
-            AnyExtensionDataRef,
+            ExtensionDataRef,
             { optional: boolean; singleton: boolean }
           >;
         };
-        readonly output: Array<AnyExtensionDataRef>;
+        readonly output: Array<ExtensionDataRef>;
         factory(context: {
           node: AppNode;
           apis: ApiHolder;
           config: object;
           inputs: ResolvedExtensionInputs<{
             [inputName in string]: ExtensionInput<
-              AnyExtensionDataRef,
+              ExtensionDataRef,
               { optional: boolean; singleton: boolean }
             >;
           }>;

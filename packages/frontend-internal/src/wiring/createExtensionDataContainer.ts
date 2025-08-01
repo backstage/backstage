@@ -15,13 +15,12 @@
  */
 
 import {
-  AnyExtensionDataRef,
   ExtensionDataContainer,
   ExtensionDataRef,
   ExtensionDataValue,
 } from '@backstage/frontend-plugin-api';
 
-export function createExtensionDataContainer<UData extends AnyExtensionDataRef>(
+export function createExtensionDataContainer<UData extends ExtensionDataRef>(
   values: Iterable<
     UData extends ExtensionDataRef<infer IData, infer IId>
       ? ExtensionDataValue<IData, IId>
