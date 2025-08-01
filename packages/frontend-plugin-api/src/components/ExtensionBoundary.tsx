@@ -31,11 +31,11 @@ import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 
 type RouteTrackerProps = PropsWithChildren<{
-  disableTracking?: boolean;
+  enabled?: boolean;
 }>;
 
 const RouteTracker = (props: RouteTrackerProps) => {
-  const { disableTracking, children } = props;
+  const { enabled, children } = props;
   const analytics = useAnalytics();
 
   // This event, never exposed to end-users of the analytics API,
@@ -43,9 +43,10 @@ const RouteTracker = (props: RouteTrackerProps) => {
   // navigation event when the route navigated to is a gathered
   // mountpoint.
   useEffect(() => {
-    if (disableTracking) return;
-    analytics.captureEvent(routableExtensionRenderedEvent, '');
-  }, [analytics, disableTracking]);
+    if (enabled) {
+      analytics.captureEvent(routableExtensionRenderedEvent, '');
+    }
+  }, [analytics, enabled]);
 
   return <>{children}</>;
 };
@@ -53,20 +54,14 @@ const RouteTracker = (props: RouteTrackerProps) => {
 /** @public */
 export interface ExtensionBoundaryProps {
   node: AppNode;
-  /**
-   * This explicitly marks the extension as routable for the purpose of
-   * capturing analytics events. If not provided, the extension boundary will be
-   * marked as routable if it outputs a routePath.
-   */
-  routable?: boolean;
   children: ReactNode;
 }
 
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
-  const { node, routable, children } = props;
+  const { node, children } = props;
 
-  const doesOutputRoutePath = Boolean(
+  const hasRoutePathOutput = Boolean(
     node.instance?.getData(coreExtensionData.routePath),
   );
 
@@ -85,9 +80,7 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
       <Suspense fallback={<Progress />}>
         <ErrorBoundary plugin={plugin} Fallback={fallback}>
           <AnalyticsContext attributes={attributes}>
-            <RouteTracker disableTracking={!(routable ?? doesOutputRoutePath)}>
-              {children}
-            </RouteTracker>
+            <RouteTracker enabled={hasRoutePathOutput}>{children}</RouteTracker>
           </AnalyticsContext>
         </ErrorBoundary>
       </Suspense>

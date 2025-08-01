@@ -1096,7 +1096,6 @@ export interface ExtensionBoundaryProps {
   children: ReactNode;
   // (undocumented)
   node: AppNode;
-  routable?: boolean;
 }
 
 // @public (undocumented)
