@@ -182,7 +182,7 @@ type RouteResolverProxy = {
 export interface AppRouterProps {
   children?: ReactNode;
   SignInPageComponent?: ComponentType<SignInPageProps>;
-  RouterComponent?: ComponentType<PropsWithChildren<{}>>;
+  RouterComponent?: (props: { children: ReactNode }) => JSX.Element | null;
   extraElements?: Array<JSX.Element>;
 }
 

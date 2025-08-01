@@ -139,7 +139,7 @@ export function convertLegacyAppOptions(
     if (Router) {
       extensions.push(
         RouterBlueprint.make({
-          params: { Component: componentCompatWrapper(Router) },
+          params: { component: componentCompatWrapper(Router) },
         }),
       );
     }

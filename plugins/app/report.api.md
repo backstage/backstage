@@ -130,9 +130,7 @@ const appPlugin: FrontendPlugin<
       inputs: {
         router: ExtensionInput<
           ConfigurableExtensionDataRef<
-            ComponentType<{
-              children?: ReactNode | undefined;
-            }>,
+            (props: { children: ReactNode }) => JSX.Element | null,
             'app.router.wrapper',
             {}
           >,
@@ -168,9 +166,7 @@ const appPlugin: FrontendPlugin<
         >;
         wrappers: ExtensionInput<
           ConfigurableExtensionDataRef<
-            ComponentType<{
-              children?: ReactNode | undefined;
-            }>,
+            (props: { children: ReactNode }) => JSX.Element | null,
             'app.root.wrapper',
             {}
           >,
