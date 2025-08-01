@@ -78,8 +78,8 @@ const visitListenerAppRootElement = AppRootElementBlueprint.make({
 
 const visitsApi = ApiBlueprint.make({
   name: 'visits',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: visitsApiRef,
       deps: {
         storageApi: storageApiRef,

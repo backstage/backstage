@@ -62,8 +62,8 @@ class WorkImpl implements WorkApi {
 
 const workApi = ApiBlueprint.make({
   name: 'work',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: workApiRef,
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) => {

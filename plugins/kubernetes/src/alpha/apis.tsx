@@ -40,8 +40,8 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const kubernetesApiExtension = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: kubernetesApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -59,8 +59,8 @@ export const kubernetesApiExtension = ApiBlueprint.make({
 
 export const kubernetesProxyApi = ApiBlueprint.make({
   name: 'proxy',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: kubernetesProxyApiRef,
       deps: {
         kubernetesApi: kubernetesApiRef,
@@ -74,8 +74,8 @@ export const kubernetesProxyApi = ApiBlueprint.make({
 
 export const kubernetesAuthProvidersApi = ApiBlueprint.make({
   name: 'auth-providers',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: kubernetesAuthProvidersApiRef,
       deps: {
         gitlabAuthApi: gitlabAuthApiRef,
@@ -110,8 +110,8 @@ export const kubernetesAuthProvidersApi = ApiBlueprint.make({
 
 export const kubernetesClusterLinkFormatterApi = ApiBlueprint.make({
   name: 'cluster-link-formatter',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: kubernetesClusterLinkFormatterApiRef,
       deps: { googleAuthApi: googleAuthApiRef },
       factory: deps => {
