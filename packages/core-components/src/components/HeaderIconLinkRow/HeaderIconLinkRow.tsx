@@ -27,6 +27,7 @@ const useStyles = makeStyles(
       gridAutoFlow: 'column',
       gridAutoColumns: 'min-content',
       gridGap: theme.spacing(3),
+      wordBreak: 'keep-all',
     },
   }),
   { name: 'BackstageHeaderIconLinkRow' },
