@@ -67,7 +67,7 @@ export {
   type ExtensionBlueprint,
   type ExtensionBlueprintParameters,
   type ExtensionBlueprintParams,
-  type ExtensionBlueprintParamsDefiner,
+  type ExtensionBlueprintDefineParams,
   createExtensionBlueprint,
   createExtensionBlueprintParams,
 } from './createExtensionBlueprint';
