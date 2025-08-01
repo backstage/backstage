@@ -19,7 +19,7 @@ import { Expand } from '@backstage/types';
 import { ResolvedExtensionInput } from './createExtension';
 import { createExtensionDataContainer } from '@internal/frontend';
 import {
-  AnyExtensionDataRef,
+  ExtensionDataRef,
   ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
@@ -30,12 +30,12 @@ import { ExtensionDataContainer } from './types';
 export type ResolveInputValueOverrides<
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   } = {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   },
@@ -92,7 +92,7 @@ function expectItem<T>(value: T | T[]): T {
 export function resolveInputOverrides(
   declaredInputs?: {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   },

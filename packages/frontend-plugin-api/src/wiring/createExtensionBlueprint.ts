@@ -27,10 +27,7 @@ import {
 } from './createExtension';
 import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
-import {
-  AnyExtensionDataRef,
-  ExtensionDataValue,
-} from './createExtensionDataRef';
+import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { createExtensionDataContainer } from '@internal/frontend';
 import {
   ResolveInputValueOverrides,
@@ -104,16 +101,16 @@ export function createExtensionBlueprintParams<T extends object = object>(
 export type CreateExtensionBlueprintOptions<
   TKind extends string,
   TParams extends object | ExtensionBlueprintParamsDefiner,
-  UOutput extends AnyExtensionDataRef,
+  UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   },
   TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
-  TDataRefs extends { [name in string]: AnyExtensionDataRef },
+  TDataRefs extends { [name in string]: ExtensionDataRef },
 > = {
   kind: TKind;
   attachTo: ExtensionAttachToSpec;
@@ -187,14 +184,14 @@ export type ExtensionBlueprintParameters = {
   params?: object | ExtensionBlueprintParamsDefiner;
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
-  output?: AnyExtensionDataRef;
+  output?: ExtensionDataRef;
   inputs?: {
     [KName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   };
-  dataRefs?: { [name in string]: AnyExtensionDataRef };
+  dataRefs?: { [name in string]: ExtensionDataRef };
 };
 
 /** @ignore */
@@ -258,10 +255,10 @@ export interface ExtensionBlueprint<
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
-    UNewOutput extends AnyExtensionDataRef,
+    UNewOutput extends ExtensionDataRef,
     TExtraInputs extends {
       [inputName in string]: ExtensionInput<
-        AnyExtensionDataRef,
+        ExtensionDataRef,
         { optional: boolean; singleton: boolean }
       >;
     },
@@ -306,7 +303,7 @@ export interface ExtensionBlueprint<
       },
     ): Iterable<UFactoryOutput> &
       VerifyExtensionFactoryOutput<
-        AnyExtensionDataRef extends UNewOutput
+        ExtensionDataRef extends UNewOutput
           ? NonNullable<T['output']>
           : UNewOutput,
         UFactoryOutput
@@ -330,7 +327,7 @@ export interface ExtensionBlueprint<
           }>
         >) &
       T['configInput'];
-    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
     inputs: T['inputs'] & TExtraInputs;
     kind: T['kind'];
     name: string | undefined extends TName ? undefined : TName;
@@ -416,17 +413,17 @@ function unwrapParams<TParams extends object>(
  */
 export function createExtensionBlueprint<
   TParams extends object | ExtensionBlueprintParamsDefiner,
-  UOutput extends AnyExtensionDataRef,
+  UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   },
   TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TKind extends string,
-  TDataRefs extends { [name in string]: AnyExtensionDataRef } = never,
+  TDataRefs extends { [name in string]: ExtensionDataRef } = never,
 >(
   options: CreateExtensionBlueprintOptions<
     TKind,
@@ -467,7 +464,7 @@ export function createExtensionBlueprint<
         attachTo: args.attachTo ?? options.attachTo,
         disabled: args.disabled ?? options.disabled,
         inputs: options.inputs,
-        output: options.output as AnyExtensionDataRef[],
+        output: options.output as ExtensionDataRef[],
         config: options.config,
         factory: ctx =>
           options.factory(
@@ -483,7 +480,7 @@ export function createExtensionBlueprint<
         attachTo: args.attachTo ?? options.attachTo,
         disabled: args.disabled ?? options.disabled,
         inputs: { ...args.inputs, ...options.inputs },
-        output: (args.output ?? options.output) as AnyExtensionDataRef[],
+        output: (args.output ?? options.output) as ExtensionDataRef[],
         config:
           options.config || args.config
             ? {

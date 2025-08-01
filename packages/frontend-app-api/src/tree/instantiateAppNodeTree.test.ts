@@ -15,9 +15,9 @@
  */
 
 import {
-  AnyExtensionDataRef,
   AppNode,
   Extension,
+  ExtensionDataRef,
   ExtensionInput,
   PortableSchema,
   ResolvedExtensionInput,
@@ -89,7 +89,7 @@ function makeInstanceWithId<TConfig, TConfigInput>(
 }
 
 function createV1ExtensionInput(
-  extensionData: Record<string, AnyExtensionDataRef>,
+  extensionData: Record<string, ExtensionDataRef>,
   options: { singleton?: boolean; optional?: boolean } = {},
 ) {
   return {
@@ -107,7 +107,7 @@ function createV1Extension(opts: {
   name?: string;
   attachTo?: { id: string; input: string };
   inputs?: Record<string, ReturnType<typeof createV1ExtensionInput>>;
-  output: Record<string, AnyExtensionDataRef>;
+  output: Record<string, ExtensionDataRef>;
   configSchema?: PortableSchema<any, any>;
   factory: (ctx: { inputs: any; config: any }) => any;
 }): Extension<any, any> {
