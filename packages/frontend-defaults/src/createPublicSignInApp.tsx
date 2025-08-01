@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * APIs for creating Backstage apps with a default setup.
- *
- * @packageDocumentation
- */
+import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
+import { CreateAppOptions, createApp } from './createApp';
 
-export { createApp, type CreateAppOptions } from './createApp';
-export { createPublicSignInApp } from './createPublicSignInApp';
-export { discoverAvailableFeatures } from './discovery';
-export { resolveAsyncFeatures } from './resolution';
+/**
+ * @public
+ * @deprecated Use {@link @backstage/plugin-app/alpha#appModulePublicSignIn} instead.
+ */
+export function createPublicSignInApp(options?: CreateAppOptions) {
+  return createApp({
+    ...options,
+    features: [...(options?.features ?? []), appModulePublicSignIn],
+  });
+}

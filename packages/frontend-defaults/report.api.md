@@ -41,6 +41,11 @@ export interface CreateAppOptions {
   pluginInfoResolver?: FrontendPluginInfoResolver;
 }
 
+// @public @deprecated (undocumented)
+export function createPublicSignInApp(options?: CreateAppOptions): {
+  createRoot(): JSX_2;
+};
+
 // @public (undocumented)
 export function discoverAvailableFeatures(config: Config): {
   features: (FrontendFeature | FrontendFeatureLoader)[];
