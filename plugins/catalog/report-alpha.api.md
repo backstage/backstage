@@ -80,6 +80,9 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.inspectMenuTitle': 'Inspect entity';
     readonly 'entityContextMenu.copyURLMenuTitle': 'Copy entity URL';
     readonly 'entityContextMenu.unregisterMenuTitle': 'Unregister entity';
+    readonly 'entityContextMenu.refreshMenuTitle': 'Refresh Entity';
+    readonly 'entityContextMenu.refreshedMessage': 'Entity refreshed successfully';
+    readonly 'entityContextMenu.refreshError': 'Failed to refresh entity';
     readonly 'entityLabelsCard.title': 'Labels';
     readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
@@ -925,6 +928,27 @@ const _default: FrontendPlugin<
     'entity-context-menu-item:catalog/inspect-entity': ExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'inspect-entity';
+      config: {
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
+    'entity-context-menu-item:catalog/refresh-entity': ExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'refresh-entity';
       config: {
         filter: EntityPredicate | undefined;
       };
