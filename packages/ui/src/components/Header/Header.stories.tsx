@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { Header } from './Header';
-import { HeaderBreadcrumb, HeaderMenuItem, HeaderTab } from './types';
+import { HeaderMenuItem, HeaderTab } from './types';
 import { Button } from '../Button';
 import { HeaderPage } from '../HeaderPage';
 import { MemoryRouter } from 'react-router-dom';
@@ -28,6 +28,7 @@ import {
   RiEmotionHappyLine,
   RiCloudy2Line,
 } from '@remixicon/react';
+import { HeaderPageBreadcrumb } from '../HeaderPage/types';
 
 const meta = {
   title: 'Components/Header',
@@ -86,7 +87,18 @@ const tabs2: HeaderTab[] = [
   },
 ];
 
-const breadcrumbs: HeaderBreadcrumb[] = [
+const menuItems: HeaderMenuItem[] = [
+  {
+    label: 'Settings',
+    value: 'settings',
+  },
+  {
+    label: 'Invite new members',
+    value: 'invite-new-members',
+  },
+];
+
+const breadcrumbs: HeaderPageBreadcrumb[] = [
   {
     label: 'Home',
     href: '/',
@@ -98,17 +110,6 @@ const breadcrumbs: HeaderBreadcrumb[] = [
   {
     label: 'Settings',
     href: '/settings',
-  },
-];
-
-const menuItems: HeaderMenuItem[] = [
-  {
-    label: 'Settings',
-    value: 'settings',
-  },
-  {
-    label: 'Invite new members',
-    value: 'invite-new-members',
   },
 ];
 
@@ -138,7 +139,35 @@ const layoutDecorator = [
       >
         <Story />
         <Container>
-          <Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
             quos.
           </Text>
@@ -195,14 +224,6 @@ export const WithAllOptions: Story = {
   render: WithCustomActions.render,
 };
 
-export const WithBreadcrumbs: Story = {
-  args: {
-    breadcrumbs,
-    tabs,
-  },
-  decorators: [withRouter],
-};
-
 export const WithAllOptionsAndTabs: Story = {
   args: {
     ...WithAllOptions.args,
@@ -234,6 +255,7 @@ export const WithHeaderPage: Story = {
         menuItems={args.menuItems}
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
+        breadcrumbs={breadcrumbs}
       />
     </>
   ),
@@ -242,7 +264,6 @@ export const WithHeaderPage: Story = {
 export const WithLayout: Story = {
   args: {
     menuItems,
-    breadcrumbs,
   },
   decorators: layoutDecorator,
   render: args => (
@@ -253,6 +274,7 @@ export const WithLayout: Story = {
         menuItems={args.menuItems}
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
+        breadcrumbs={breadcrumbs}
       />
     </>
   ),
@@ -261,7 +283,6 @@ export const WithLayout: Story = {
 export const WithLayoutNoTabs: Story = {
   args: {
     menuItems,
-    breadcrumbs,
   },
   decorators: layoutDecorator,
   render: args => (
@@ -275,7 +296,6 @@ export const WithLayoutNoTabs: Story = {
 export const WithEverything: Story = {
   args: {
     menuItems,
-    breadcrumbs,
     tabs,
     titleLink: '/',
   },

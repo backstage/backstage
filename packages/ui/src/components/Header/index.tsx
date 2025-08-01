@@ -15,9 +15,4 @@
  */
 
 export { Header } from './Header';
-export type {
-  HeaderProps,
-  HeaderTab,
-  HeaderMenuItem,
-  HeaderBreadcrumb,
-} from './types';
+export type { HeaderProps, HeaderTab, HeaderMenuItem } from './types';

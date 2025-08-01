@@ -26,4 +26,15 @@ export interface HeaderPageProps {
   customActions?: React.ReactNode;
   menuItems?: HeaderMenuItem[];
   tabs?: HeaderTab[];
+  breadcrumbs?: HeaderPageBreadcrumb[];
+}
+
+/**
+ * Represents a breadcrumb item in the header.
+ *
+ * @public
+ */
+export interface HeaderPageBreadcrumb {
+  label: string;
+  href: string;
 }

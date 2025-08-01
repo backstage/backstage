@@ -18,24 +18,6 @@ export const propDefs: Record<string, PropDef> = {
     type: 'string',
     default: '/',
   },
-  breadcrumbs: {
-    type: 'complex',
-    complexType: {
-      name: 'Breadcrumb[]',
-      properties: {
-        label: {
-          type: 'string',
-          required: true,
-          description: 'Display text for the breadcrumb',
-        },
-        href: {
-          type: 'string',
-          required: true,
-          description: 'URL for the breadcrumb link',
-        },
-      },
-    },
-  },
   customActions: {
     type: 'enum',
     values: ['ReactNode'],
