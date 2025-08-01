@@ -156,6 +156,9 @@ export const createTriggerGitlabPipelineAction = (options: {
               },
             });
             ctx.logger.info(
+              // in version 18.0 of gitlab this was also deleting the pipeline
+              // this is a problem in gitlab which is fixed in version 18.1
+              // https://gitlab.com/gitlab-org/gitlab/-/issues/546669
               `Deleted pipeline trigger token with token id: ${pipelineTriggerId}.`,
             );
           } catch (error: any) {
