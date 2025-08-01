@@ -481,7 +481,7 @@ describe('GitlabDiscoveryProcessor', () => {
       });
       setupFakeServer(
         PROJECTS_URL,
-        request => {
+        _ => {
           return {
             data: [
               {
@@ -514,7 +514,7 @@ describe('GitlabDiscoveryProcessor', () => {
       });
       setupFakeServer(
         PROJECTS_URL,
-        request => {
+        _ => {
           return {
             data: [
               {
@@ -551,7 +551,7 @@ describe('GitlabDiscoveryProcessor', () => {
       const processor = getProcessor(); // Uses defaults: skipForkedRepos=false, includeArchivedRepos=false
       setupFakeServer(
         PROJECTS_URL,
-        request => {
+        _ => {
           return {
             data: [
               {
