@@ -157,8 +157,20 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
     );
   };
 
+  const onKeyDown = (e: React.KeyboardEvent<SVGElement>) => {
+    if (e.key === 'Enter') {
+      onClick();
+    }
+  };
+
   return (
-    <g onClick={onClick} className={classes.clickable}>
+    <g
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+      role="button"
+      tabIndex={0}
+      className={classes.clickable}
+    >
       <rect
         className={classNames(
           classes.node,

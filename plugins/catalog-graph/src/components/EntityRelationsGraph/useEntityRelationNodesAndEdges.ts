@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, KeyboardEvent, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
 import { EntityEdge, EntityNode } from './types';
@@ -41,7 +41,10 @@ export function useEntityRelationNodesAndEdges({
   kinds?: string[];
   relations?: string[];
   entityFilter?: (entity: Entity) => boolean;
-  onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
+  onNodeClick?: (
+    value: EntityNode,
+    event: MouseEvent<unknown> | KeyboardEvent<unknown>,
+  ) => void;
   relationPairs?: RelationPairs;
 }): {
   loading: boolean;
@@ -87,6 +90,11 @@ export function useEntityRelationNodesAndEdges({
 
         if (onNodeClick) {
           node.onClick = event => onNodeClick(node, event);
+          node.onKeyDown = event => {
+            if (event.key === 'Enter') {
+              onNodeClick(node, event);
+            }
+          };
         }
 
         return node;

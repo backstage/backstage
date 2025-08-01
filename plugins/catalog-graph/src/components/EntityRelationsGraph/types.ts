@@ -15,7 +15,7 @@
  */
 
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { MouseEventHandler } from 'react';
+import { KeyboardEventHandler, MouseEventHandler } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 
@@ -66,6 +66,10 @@ export type EntityNodeData = {
    * Optional click handler.
    */
   onClick?: MouseEventHandler<unknown>;
+  /**
+   * Optional key down handler. Behaviour should be similar to the click handler.
+   */
+  onKeyDown?: KeyboardEventHandler<unknown>;
 
   /**
    * Name of the entity.

@@ -28,7 +28,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
-import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
+import { UIEvent, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
@@ -97,7 +97,7 @@ export const CatalogGraphCard = (
   const analytics = useAnalytics();
 
   const defaultOnNodeClick = useCallback(
-    (node: EntityNode, _: MouseEvent<unknown>) => {
+    (node: EntityNode, _: UIEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
       const path = catalogEntityRoute({
         kind: nodeEntityName.kind.toLocaleLowerCase('en-US'),

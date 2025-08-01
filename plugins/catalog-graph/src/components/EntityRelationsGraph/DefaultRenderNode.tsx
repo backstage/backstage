@@ -62,7 +62,7 @@ const useStyles = makeStyles(
 );
 
 export function DefaultRenderNode({
-  node: { id, entity, color = 'default', focused, onClick },
+  node: { id, entity, color = 'default', focused, onClick, onKeyDown },
 }: DependencyGraphTypes.RenderNodeProps<EntityNodeData>) {
   const classes = useStyles();
   const [width, setWidth] = useState(0);
@@ -97,7 +97,13 @@ export function DefaultRenderNode({
   const displayTitle = entityRefPresentationSnapshot.primaryTitle ?? id;
 
   return (
-    <g onClick={onClick} className={classNames(onClick && classes.clickable)}>
+    <g
+      onClick={onClick}
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      role={onClick ? 'button' : undefined}
+      className={classNames(onClick && classes.clickable)}
+    >
       <rect
         className={classNames(
           classes.node,

@@ -113,7 +113,13 @@ Now you can use the new classes in your component with `className={classNames(cl
 
 ```tsx
 return (
-  <g onClick={onClick} className={classNames(onClick && classes.clickable)}>
+  <g
+    onClick={onClick}
+    onKeyDown={onKeyDown}
+    tabIndex={0}
+    role="button"
+    className={classNames(onClick && classes.clickable)}
+  >
     <rect
       className={classNames(
         classes.node,

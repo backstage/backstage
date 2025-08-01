@@ -27,7 +27,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import { MouseEvent, useEffect, useMemo } from 'react';
+import { KeyboardEvent, MouseEvent, useEffect, useMemo } from 'react';
 import { DefaultRenderLabel } from './DefaultRenderLabel';
 import { DefaultRenderNode } from './DefaultRenderNode';
 import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
@@ -83,7 +83,10 @@ export type EntityRelationsGraphProps = {
   relations?: string[];
   entityFilter?: (entity: Entity) => boolean;
   direction?: Direction;
-  onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
+  onNodeClick?: (
+    value: EntityNode,
+    event: KeyboardEvent<unknown> | MouseEvent<unknown>,
+  ) => void;
   relationPairs?: RelationPairs;
   className?: string;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
