@@ -28,7 +28,13 @@ export type CreateAppRouteBinder = <
 ) => void;
 
 // @public
-export function createSpecializedApp(options?: {
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
+  apis: ApiHolder;
+  tree: AppTree;
+};
+
+// @public
+export type CreateSpecializedAppOptions = {
   features?: FrontendFeature_2[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
@@ -40,9 +46,6 @@ export function createSpecializedApp(options?: {
     allowUnknownExtensionConfig?: boolean;
   };
   pluginInfoResolver?: FrontendPluginInfoResolver;
-}): {
-  apis: ApiHolder;
-  tree: AppTree;
 };
 
 // @public @deprecated (undocumented)
