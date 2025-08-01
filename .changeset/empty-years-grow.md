@@ -2,4 +2,4 @@
 '@backstage/ui': minor
 ---
 
-DataTable is now Table in Backstage UI. We are removing the raw Table component to only have a single option for users to choose. This new Table component is using TanStack Table under the hood.
+We are moving our DataTable component to React Aria. We removed our DataTable to only use Table as a single and opinionated option for tables. This new structure is made possible by using React Aria under the hood.
