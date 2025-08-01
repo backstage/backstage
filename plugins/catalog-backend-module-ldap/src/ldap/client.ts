@@ -27,6 +27,7 @@ import {
   LLDAPVendor,
   FreeIpaVendor,
   LdapVendor,
+  GoogleLdapVendor,
 } from './vendors';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -110,79 +111,6 @@ export class LdapClient {
   }
 
   /**
-   * Performs an LDAP search operation, calls a function on each entry to limit memory usage
-   *
-   * @param dn - The fully qualified base DN to search within
-   * @param options - The search options
-   * @param f - The callback to call on each search entry
-   */
-  // async searchStreaming(
-  //   dn: string,
-  //   options: SearchOptions,
-  //   f: (entry: SearchEntry) => Promise<void> | void,
-  // ): Promise<void> {
-  //   try {
-  //     return await new Promise<void>((resolve, reject) => {
-  //       // Note that we clone the (frozen) options, since ldapjs rudely tries to
-  //       // overwrite parts of them
-  //       this.client.search(dn, createOptions(options), (err, res) => {
-  //         if (err) {
-  //           reject(new Error(errorString(err)));
-  //         }
-  //         let awaitList: Array<Promise<void> | void> = [];
-  //         let transformError = false;
-
-  //         const transformReject = (e: Error) => {
-  //           transformError = true;
-  //           reject(
-  //             new Error(
-  //               `Transform function threw an exception, ${stringifyError(e)}`,
-  //             ),
-  //           );
-  //         };
-
-  //         res.on('searchReference', () => {
-  //           this.logger.warn('Received unsupported search referral');
-  //         });
-
-  //         res.on('searchEntry', entry => {
-  //           if (!transformError) awaitList.push(f(entry));
-  //         });
-
-  //         res.on('page', (_, cb) => {
-  //           // awaits completion before fetching next page
-  //           Promise.all(awaitList)
-  //             .then(() => {
-  //               // flush list
-  //               awaitList = [];
-  //               if (cb) cb();
-  //             })
-  //             .catch(transformReject);
-  //         });
-
-  //         res.on('error', e => {
-  //           reject(new Error(errorString(e)));
-  //         });
-
-  //         res.on('end', r => {
-  //           if (!r) {
-  //             throw new Error('Null response');
-  //           } else if (r.status !== 0) {
-  //             throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
-  //           } else {
-  //             Promise.all(awaitList)
-  //               .then(() => resolve())
-  //               .catch(transformReject);
-  //           }
-  //         });
-  //       });
-  //     });
-  //   } catch (e) {
-  //     throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
-  //   }
-  // }
-
-  /**
    * Get the Server Vendor.
    * Currently only detects Microsoft Active Directory Servers.
    *
@@ -201,8 +129,8 @@ export class LdapClient {
           return FreeIpaVendor;
         } else if (root && 'aeRoot' in root) {
           return AEDirVendor;
-          // } else if (clientHost === 'ldap.google.com') {
-          //   return GoogleLdapVendor;
+        } else if (this.isGoogleLDAP(root)) {
+          return GoogleLdapVendor;
         } else if (root && root.vendorName?.toString() === 'LLDAP') {
           return LLDAPVendor;
         }
@@ -213,6 +141,61 @@ export class LdapClient {
         throw err;
       });
     return this.vendor;
+  }
+
+  /**
+   * Check if the LDAP server is Google LDAP by examining RootDSE and schema
+   */
+  private isGoogleLDAP(rootDSE: Entry | undefined): boolean {
+    if (!rootDSE) {
+      return false;
+    }
+
+    // RootDSE characteristics
+    const hasGoogleRootDSEPattern =
+      !rootDSE.namingContexts && // No namingContexts
+      !rootDSE.supportedControl && // No supportedControl
+      !rootDSE.vendorName && // No vendor info
+      !rootDSE.vendorVersion &&
+      rootDSE.subschemaSubentry === 'cn=subschema';
+
+    if (!hasGoogleRootDSEPattern) {
+      return false;
+    }
+
+    try {
+      const schemaHasGoogleAttributes = this.checkGoogleSchema(rootDSE);
+      return schemaHasGoogleAttributes;
+    } catch (error) {
+      throw error('Schema check failed:', error);
+    }
+  }
+
+  // Check a shema for Google-specific patterns
+  private checkGoogleSchema(rootDSE: Entry): boolean {
+    try {
+      const objectClasses = this.parseSchemaValues(rootDSE.objectClasses);
+      const attributeTypes = this.parseSchemaValues(rootDSE.attributeTypes);
+
+      // Check if any Google-specific attributes are present
+      const hasGoogleAttributes =
+        objectClasses.some(oc => oc.includes('googleUid')) ||
+        attributeTypes.some(at => at.includes('googleAdminCreated'));
+
+      return hasGoogleAttributes;
+    } catch (error) {
+      this.logger.warn('Error checking schema:', error);
+      return false;
+    }
+  }
+
+  private parseSchemaValues(
+    schemaValue: Buffer | Buffer[] | string[] | string,
+  ): string[] {
+    if (!schemaValue) return [];
+
+    const values = Array.isArray(schemaValue) ? schemaValue : [schemaValue];
+    return values.map(v => v.toString());
   }
 
   /**
