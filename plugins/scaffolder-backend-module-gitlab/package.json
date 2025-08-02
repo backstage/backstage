@@ -50,6 +50,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@gitbeaker/requester-utils": "^41.2.0",
     "@gitbeaker/rest": "^41.2.0",
     "luxon": "^3.0.0",
     "winston": "^3.2.1",
