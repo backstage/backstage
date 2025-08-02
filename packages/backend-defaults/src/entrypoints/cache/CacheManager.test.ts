@@ -333,4 +333,147 @@ describe('CacheManager store options', () => {
       keyPrefixSeparator: '!',
     });
   });
+
+  it('correctly applies namespace configuration to redis and valkey stores', () => {
+    const testCases = [
+      { store: 'redis', namespace: 'test1', separator: ':' },
+      { store: 'valkey', namespace: 'test2', separator: '!' },
+    ];
+
+    testCases.forEach(({ store, namespace, separator }) => {
+      const manager = CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store,
+                connection: 'redis://localhost:6379',
+                [store]: {
+                  client: {
+                    namespace,
+                    keyPrefixSeparator: separator,
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      manager.forPlugin('testPlugin');
+
+      if (store === 'redis') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+          namespace,
+          keyPrefixSeparator: separator,
+        });
+      } else if (store === 'valkey') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvValkey).toHaveBeenCalledWith('redis://localhost:6379', {
+          namespace,
+          keyPrefixSeparator: separator,
+        });
+      }
+    });
+  });
+
+  it('falls back to pluginId when no namespace is configured', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('testPlugin');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: ':',
+    });
+  });
+
+  describe('Namespace construction', () => {
+    it('returns pluginId when no store options are provided', () => {
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        undefined,
+      );
+      expect(result).toBe('testPlugin');
+    });
+
+    it('returns pluginId when store options have no namespace', () => {
+      const storeOptions = {
+        client: {
+          keyPrefixSeparator: ':',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('testPlugin');
+    });
+
+    it('combines namespace and pluginId with default separator', () => {
+      const storeOptions = {
+        client: {
+          namespace: 'my-app',
+          keyPrefixSeparator: ':',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app:testPlugin');
+    });
+
+    it('combines namespace and pluginId with custom separator', () => {
+      const storeOptions = {
+        client: {
+          namespace: 'my-app',
+          keyPrefixSeparator: '-',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app-testPlugin');
+    });
+
+    it('uses default separator when keyPrefixSeparator is not provided', () => {
+      const storeOptions = {
+        client: {
+          namespace: 'my-app',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app:testPlugin');
+    });
+
+    it('handles empty namespace by falling back to pluginId', () => {
+      const storeOptions = {
+        client: {
+          namespace: '',
+          keyPrefixSeparator: ':',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('testPlugin');
+    });
+  });
 });
