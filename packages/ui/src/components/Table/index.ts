@@ -21,5 +21,12 @@ export { Column } from './components/Column';
 export { Row } from './components/Row';
 export { Cell } from './components/Cell';
 export { CellProfile } from './components/CellProfile';
+export { useTable } from './hooks/useTable';
 
 export type { CellProps, CellProfileProps } from './types';
+export type {
+  UseTableConfig,
+  UseTableResult,
+  UseTablePagination,
+  UseTablePaginationConfig,
+} from './hooks/types';

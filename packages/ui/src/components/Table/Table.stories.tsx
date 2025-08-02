@@ -24,6 +24,7 @@ import {
   Row,
   Cell,
   CellProfile as CellProfileBUI,
+  useTable,
 } from '.';
 import { MemoryRouter } from 'react-router-dom';
 import { data as data1 } from './mocked-data1';
@@ -80,15 +81,9 @@ export const TableOnly: Story = {
   },
 };
 
-export const WithPagination: Story = {
+export const WithPaginationUncontrolled: Story = {
   render: () => {
-    const [pageIndex, setPageIndex] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
-
-    const newData = data1.slice(
-      pageIndex * pageSize,
-      (pageIndex + 1) * pageSize,
-    );
+    const { data, paginationProps } = useTable({ data: data1 });
 
     return (
       <>
@@ -100,7 +95,7 @@ export const WithPagination: Story = {
             <Column>Lifecycle</Column>
           </TableHeader>
           <TableBody>
-            {newData.map(item => (
+            {data?.map(item => (
               <Row key={item.name}>
                 <Cell
                   title={item.name}
@@ -114,27 +109,28 @@ export const WithPagination: Story = {
             ))}
           </TableBody>
         </Table>
-        <TablePagination
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          rowCount={data1.length}
-          setPageIndex={setPageIndex}
-          setPageSize={setPageSize}
-        />
+        <TablePagination {...paginationProps} />
       </>
     );
   },
 };
 
-export const TableRockBand: Story = {
+export const WithPaginationControlled: Story = {
   render: () => {
-    const [pageIndex, setPageIndex] = useState(0);
+    const [offset, setOffset] = useState(0);
     const [pageSize, setPageSize] = useState(5);
 
-    const newData = data4.slice(
-      pageIndex * pageSize,
-      (pageIndex + 1) * pageSize,
-    );
+    const { data, paginationProps } = useTable({
+      data: data4,
+      pagination: {
+        offset,
+        pageSize,
+        onOffsetChange: setOffset,
+        onPageSizeChange: setPageSize,
+        onNextPage: () => console.log('Next page analytics'),
+        onPreviousPage: () => console.log('Previous page analytics'),
+      },
+    });
 
     return (
       <>
@@ -146,7 +142,7 @@ export const TableRockBand: Story = {
             <Column>Albums</Column>
           </TableHeader>
           <TableBody>
-            {newData.map(item => (
+            {data?.map(item => (
               <Row key={item.name}>
                 <CellProfileBUI
                   name={item.name}
@@ -160,27 +156,23 @@ export const TableRockBand: Story = {
             ))}
           </TableBody>
         </Table>
-        <TablePagination
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          rowCount={data4.length}
-          setPageIndex={setPageIndex}
-          setPageSize={setPageSize}
-        />
+        <TablePagination {...paginationProps} />
+        <div style={{ marginTop: '16px', fontSize: '12px', color: '#666' }}>
+          Current state: offset={offset}, pageSize={pageSize}
+        </div>
       </>
     );
   },
 };
 
-export const RowClick: Story = {
+export const TableRockBand: Story = {
   render: () => {
-    const [pageIndex, setPageIndex] = useState(0);
-    const [pageSize, setPageSize] = useState(5);
-
-    const newData = data4.slice(
-      pageIndex * pageSize,
-      (pageIndex + 1) * pageSize,
-    );
+    const { data, paginationProps } = useTable({
+      data: data4,
+      pagination: {
+        defaultPageSize: 5,
+      },
+    });
 
     return (
       <>
@@ -192,7 +184,46 @@ export const RowClick: Story = {
             <Column>Albums</Column>
           </TableHeader>
           <TableBody>
-            {newData.map(item => (
+            {data?.map(item => (
+              <Row key={item.name}>
+                <CellProfileBUI
+                  name={item.name}
+                  src={item.image}
+                  href={item.website}
+                />
+                <Cell title={item.genre} />
+                <Cell title={item.yearFormed.toString()} />
+                <Cell title={item.albums.toString()} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination {...paginationProps} />
+      </>
+    );
+  },
+};
+
+export const RowClick: Story = {
+  render: () => {
+    const { data, paginationProps } = useTable({
+      data: data4,
+      pagination: {
+        defaultPageSize: 5,
+      },
+    });
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Band name</Column>
+            <Column>Genre</Column>
+            <Column>Year formed</Column>
+            <Column>Albums</Column>
+          </TableHeader>
+          <TableBody>
+            {data?.map(item => (
               <Row key={item.name} onAction={() => alert('Row clicked')}>
                 <CellProfileBUI
                   name={item.name}
@@ -206,13 +237,7 @@ export const RowClick: Story = {
             ))}
           </TableBody>
         </Table>
-        <TablePagination
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          rowCount={data4.length}
-          setPageIndex={setPageIndex}
-          setPageSize={setPageSize}
-        />
+        <TablePagination {...paginationProps} />
       </>
     );
   },
@@ -220,13 +245,12 @@ export const RowClick: Story = {
 
 export const RowLink: Story = {
   render: () => {
-    const [pageIndex, setPageIndex] = useState(0);
-    const [pageSize, setPageSize] = useState(5);
-
-    const newData = data4.slice(
-      pageIndex * pageSize,
-      (pageIndex + 1) * pageSize,
-    );
+    const { data, paginationProps } = useTable({
+      data: data4,
+      pagination: {
+        defaultPageSize: 5,
+      },
+    });
 
     return (
       <>
@@ -238,7 +262,7 @@ export const RowLink: Story = {
             <Column>Albums</Column>
           </TableHeader>
           <TableBody>
-            {newData.map(item => (
+            {data?.map(item => (
               <Row key={item.name} href="/band">
                 <CellProfileBUI
                   name={item.name}
@@ -252,13 +276,7 @@ export const RowLink: Story = {
             ))}
           </TableBody>
         </Table>
-        <TablePagination
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          rowCount={data4.length}
-          setPageIndex={setPageIndex}
-          setPageSize={setPageSize}
-        />
+        <TablePagination {...paginationProps} />
       </>
     );
   },

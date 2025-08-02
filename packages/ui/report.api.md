@@ -1581,19 +1581,19 @@ export function TablePagination(props: TablePaginationProps): JSX_2.Element;
 export interface TablePaginationProps
   extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
+  offset?: number;
+  // (undocumented)
   onNextPage?: () => void;
   // (undocumented)
   onPageSizeChange?: (pageSize: number) => void;
   // (undocumented)
   onPreviousPage?: () => void;
   // (undocumented)
-  pageIndex?: number;
-  // (undocumented)
   pageSize?: number;
   // (undocumented)
   rowCount?: number;
   // (undocumented)
-  setPageIndex?: (pageIndex: number) => void;
+  setOffset?: (offset: number) => void;
   // (undocumented)
   setPageSize?: (pageSize: number) => void;
   // (undocumented)
@@ -1726,6 +1726,50 @@ export const useBreakpoint: () => {
 
 // @public (undocumented)
 export const useIcons: () => IconContextProps;
+
+// @public
+export function useTable<T = any>(
+  config?: UseTableConfig<T>,
+): UseTableResult<T>;
+
+// @public (undocumented)
+export interface UseTableConfig<T = any> {
+  data?: T[];
+  pagination?: UseTablePaginationConfig;
+}
+
+// @public (undocumented)
+export interface UseTablePagination<T = any> {
+  data?: T[];
+  nextPage: () => void;
+  offset: number;
+  pageSize: number;
+  paginationProps: TablePaginationProps;
+  previousPage: () => void;
+  setOffset: (offset: number) => void;
+  setPageSize: (pageSize: number) => void;
+}
+
+// @public (undocumented)
+export interface UseTablePaginationConfig {
+  defaultOffset?: number;
+  defaultPageSize?: number;
+  offset?: number;
+  onNextPage?: () => void;
+  onOffsetChange?: (offset: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  onPreviousPage?: () => void;
+  pageSize?: number;
+  rowCount?: number;
+  showPageSizeOptions?: boolean;
+}
+
+// @public (undocumented)
+export interface UseTableResult<T = any> {
+  data?: T[];
+  pagination: UseTablePagination<T>;
+  paginationProps: TablePaginationProps;
+}
 
 // @public (undocumented)
 export interface UtilityProps extends SpaceProps {

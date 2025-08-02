@@ -26,45 +26,41 @@ import type { TablePaginationProps } from './types';
 export function TablePagination(props: TablePaginationProps) {
   const {
     className,
-    pageIndex,
+    offset,
     pageSize,
     rowCount,
     onNextPage,
     onPreviousPage,
     onPageSizeChange,
-    setPageIndex,
+    setOffset,
     setPageSize,
     showPageSizeOptions = true,
     ...rest
   } = props;
 
-  const fromCount = (pageIndex ?? 0) * (pageSize ?? 10) + 1;
-  const toCount = Math.min(
-    ((pageIndex ?? 0) + 1) * (pageSize ?? 10),
-    rowCount ?? 0,
-  );
+  const currentOffset = offset ?? 0;
+  const currentPageSize = pageSize ?? 10;
+
+  const fromCount = currentOffset + 1;
+  const toCount = Math.min(currentOffset + currentPageSize, rowCount ?? 0);
 
   const nextPage = () => {
-    const currentPageIndex = pageIndex ?? 0;
-    const currentPageSize = pageSize ?? 10;
     const totalRows = rowCount ?? 0;
+    const nextOffset = currentOffset + currentPageSize;
 
-    // Check if there are more pages to navigate to
-    const maxPageIndex = Math.ceil(totalRows / currentPageSize) - 1;
-
-    if (currentPageIndex < maxPageIndex) {
+    // Check if there are more items to navigate to
+    if (nextOffset < totalRows) {
       onNextPage?.(); // Analytics tracking
-      setPageIndex?.(currentPageIndex + 1); // Navigate to next page
+      setOffset?.(nextOffset); // Navigate to next page
     }
   };
 
   const previousPage = () => {
-    const currentPageIndex = pageIndex ?? 0;
-
     // Check if we can go to previous page
-    if (currentPageIndex > 0) {
+    if (currentOffset > 0) {
       onPreviousPage?.(); // Analytics tracking
-      setPageIndex?.(currentPageIndex - 1); // Navigate to previous page
+      const prevOffset = Math.max(0, currentOffset - currentPageSize);
+      setOffset?.(prevOffset); // Navigate to previous page
     }
   };
 
@@ -103,7 +99,7 @@ export function TablePagination(props: TablePaginationProps) {
           variant="secondary"
           size="small"
           onClick={previousPage}
-          isDisabled={pageIndex === 0}
+          isDisabled={currentOffset === 0}
           icon={<Icon name="chevron-left" />}
           aria-label="Previous"
         />
@@ -112,10 +108,8 @@ export function TablePagination(props: TablePaginationProps) {
           size="small"
           onClick={nextPage}
           isDisabled={
-            pageIndex !== undefined &&
-            pageSize !== undefined &&
             rowCount !== undefined &&
-            pageIndex >= Math.ceil(rowCount / pageSize) - 1
+            currentOffset + currentPageSize >= rowCount
           }
           icon={<Icon name="chevron-right" />}
           aria-label="Next"

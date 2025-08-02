@@ -22,11 +22,11 @@ const meta = {
   title: 'Components/TablePagination',
   component: TablePagination,
   argTypes: {
-    pageIndex: { control: 'number' },
+    offset: { control: 'number' },
     pageSize: { control: 'radio', options: [5, 10, 20, 30, 40, 50] },
     rowCount: { control: 'number' },
     showPageSizeOptions: { control: 'boolean', defaultValue: true },
-    setPageIndex: { action: 'setPageIndex' },
+    setOffset: { action: 'setOffset' },
     setPageSize: { action: 'setPageSize' },
   },
 } satisfies Meta<typeof TablePagination>;
@@ -36,7 +36,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    pageIndex: 0,
+    offset: 0,
     pageSize: 10,
     rowCount: 100,
   },
@@ -46,8 +46,8 @@ export const Default: Story = {
     return (
       <TablePagination
         {...args}
-        setPageIndex={value => {
-          updateArgs({ pageIndex: value });
+        setOffset={value => {
+          updateArgs({ offset: value });
         }}
         setPageSize={value => {
           updateArgs({ pageSize: value });
