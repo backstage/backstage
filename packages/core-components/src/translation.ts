@@ -120,6 +120,9 @@ export const coreComponentsTranslationRef = createTranslationRef({
         buttonText: "Yes! Don't log me out",
       },
     },
+    dependencyGraph: {
+      fullscreenTooltip: 'Toggle fullscreen',
+    },
     proxiedSignInPage: {
       title:
         'You do not appear to be signed in. Please try reloading the browser page.',
