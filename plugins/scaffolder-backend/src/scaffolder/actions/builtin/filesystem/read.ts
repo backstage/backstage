@@ -18,7 +18,7 @@ import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs/promises';
 import path from 'path';
 import { z as zod } from 'zod';
-import { examples } from './rename.examples';
+import { examples } from './read.examples';
 
 const contentSchema = (z: typeof zod) =>
   z.object({
