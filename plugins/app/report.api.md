@@ -649,6 +649,21 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'api:app/openshift-auth': ExtensionDefinition<{
+      kind: 'api';
+      name: 'openshift-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'api:app/permission': ExtensionDefinition<{
       kind: 'api';
       name: 'permission';

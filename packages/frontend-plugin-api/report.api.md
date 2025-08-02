@@ -68,6 +68,7 @@ import { OAuthScope } from '@backstage/core-plugin-api';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { openshiftAuthApiRef } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -1560,6 +1561,8 @@ export { oktaAuthApiRef };
 export { oneloginAuthApiRef };
 
 export { OpenIdConnectApi };
+
+export { openshiftAuthApiRef };
 
 // @public
 export const PageBlueprint: ExtensionBlueprint<{

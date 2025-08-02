@@ -37,4 +37,5 @@ export {
   microsoftAuthApiRef,
   oneloginAuthApiRef,
   vmwareCloudAuthApiRef,
+  openshiftAuthApiRef,
 } from '@backstage/core-plugin-api';
