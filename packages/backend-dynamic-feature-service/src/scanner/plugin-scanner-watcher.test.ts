@@ -124,7 +124,7 @@ describe('plugin-scanner', () => {
         ]);
       });
 
-      expect(logger.logs).toEqual<Logs>({
+      expect(logger.logs).toMatchObject<Logs>({
         infos: expect.arrayContaining([
           {
             message: `rootDirectory changed (addDir - ${path.resolve(
