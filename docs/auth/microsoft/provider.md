@@ -85,6 +85,10 @@ The Microsoft provider is a structure with three mandatory configuration keys:
 - `additionalScopes` (optional): List of scopes for the App Registration, to be requested in addition to the required ones.
 - `skipUserProfile` (optional): If true, skips loading the user profile even if the `User.Read` scope is present. This is a performance optimization during login and can be used with resolvers that only needs the email address in `spec.profile.email` obtained when the `email` OAuth2 scope is present.
 - `sessionDuration` (optional): Lifespan of the user session.
+- `authorizationURL` (optional): Set the OAuth2 authorization endpoint. Defaults to `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`
+- `apiEntryPoint` (optional): Set the root URL for the [Microsoft Graph Endpoint](https://learn.microsoft.com/en-us/graph/deployments#app-registration-and-token-service-root-endpoints). Defaults to `https://graph.microsoft.com`.
+- `graphApiVersion` (optional): Microsoft Graph API Version. Defaults to `v1.0`.
+- tokenURL (optional): Set the OAuth2 token endpoint. Defaults to `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`.
 
 ### Resolvers
 

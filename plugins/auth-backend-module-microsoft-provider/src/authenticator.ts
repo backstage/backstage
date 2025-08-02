@@ -41,19 +41,27 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     },
   },
   initialize({ callbackUrl, config }) {
+    const apiEntryPoint = config.getOptionalString('apiEntryPoint');
+    const authorizationURL = config.getOptionalString('authorizationURL');
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
+    const graphApiVersion = config.getOptionalString('graphApiVersion');
     const tenantId = config.getString('tenantId');
+    const tokenURL = config.getOptionalString('tokenURL');
     const domainHint = config.getOptionalString('domainHint');
     const skipUserProfile =
       config.getOptionalBoolean('skipUserProfile') ?? false;
 
     const strategy = new ExtendedMicrosoftStrategy(
       {
+        apiEntryPoint: apiEntryPoint,
+        authorizationURL: authorizationURL,
         clientID: clientId,
         clientSecret: clientSecret,
         callbackURL: callbackUrl,
+        graphApiVersion: graphApiVersion,
         tenant: tenantId,
+        tokenURL: tokenURL,
       },
       (
         accessToken: string,
