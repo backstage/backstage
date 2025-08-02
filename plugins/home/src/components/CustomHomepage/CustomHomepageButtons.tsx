@@ -45,6 +45,7 @@ interface CustomHomepageButtonsProps {
   changeEditMode: (mode: boolean) => void;
   defaultConfigAvailable: boolean;
   restoreDefault: () => void;
+  discardChanges: () => void;
 }
 export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
   const {
@@ -55,6 +56,7 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
     changeEditMode,
     defaultConfigAvailable,
     restoreDefault,
+    discardChanges,
   } = props;
   const styles = useStyles();
   const { t } = useTranslationRef(homeTranslationRef);
@@ -117,6 +119,17 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
               {t('customHomepageButtons.save')}
             </Button>
           )}
+          <Button
+            data-testid="edit-cancel-button"
+            className={styles.contentHeaderBtn}
+            variant="contained"
+            color="secondary"
+            onClick={() => discardChanges()}
+            size="small"
+            startIcon={<CancelIcon />}
+          >
+            {t('customHomepageButtons.cancel')}
+          </Button>
         </>
       )}
     </>

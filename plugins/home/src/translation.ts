@@ -30,6 +30,7 @@ export const homeTranslationRef = createTranslationRef({
       clearAll: 'Clear all',
       addWidget: 'Add widget',
       save: 'Save',
+      cancel: 'Cancel',
     },
     customHomepage: {
       noWidgets: "No widgets added. Start by clicking the 'Add widget' button.",
@@ -39,6 +40,12 @@ export const homeTranslationRef = createTranslationRef({
       deleteWidgetTooltip: 'Delete widget',
       submitButtonTitle: 'Submit',
       cancelButtonTitle: 'Cancel',
+    },
+    cancelConfirmDialog: {
+      dialogHeaderTitle: 'Discard Changes',
+      dialogContentText: 'Are you sure? Unsaved changes will be lost.',
+      cancelButtonTitle: 'Cancel',
+      discardButtonTitle: 'Discard Changes',
     },
     starredEntityListItem: {
       removeFavoriteEntityTitle: 'Remove entity from favorites',
