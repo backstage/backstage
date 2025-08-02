@@ -172,6 +172,98 @@ export const TableRockBand: Story = {
   },
 };
 
+export const RowClick: Story = {
+  render: () => {
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(5);
+
+    const newData = data4.slice(
+      pageIndex * pageSize,
+      (pageIndex + 1) * pageSize,
+    );
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Band name</Column>
+            <Column>Genre</Column>
+            <Column>Year formed</Column>
+            <Column>Albums</Column>
+          </TableHeader>
+          <TableBody>
+            {newData.map(item => (
+              <Row key={item.name} onAction={() => alert('Row clicked')}>
+                <CellProfileBUI
+                  name={item.name}
+                  src={item.image}
+                  href={item.website}
+                />
+                <Cell title={item.genre} />
+                <Cell title={item.yearFormed.toString()} />
+                <Cell title={item.albums.toString()} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          rowCount={data4.length}
+          setPageIndex={setPageIndex}
+          setPageSize={setPageSize}
+        />
+      </>
+    );
+  },
+};
+
+export const RowLink: Story = {
+  render: () => {
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(5);
+
+    const newData = data4.slice(
+      pageIndex * pageSize,
+      (pageIndex + 1) * pageSize,
+    );
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Band name</Column>
+            <Column>Genre</Column>
+            <Column>Year formed</Column>
+            <Column>Albums</Column>
+          </TableHeader>
+          <TableBody>
+            {newData.map(item => (
+              <Row key={item.name} href="/band">
+                <CellProfileBUI
+                  name={item.name}
+                  src={item.image}
+                  href={item.website}
+                />
+                <Cell title={item.genre} />
+                <Cell title={item.yearFormed.toString()} />
+                <Cell title={item.albums.toString()} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          rowCount={data4.length}
+          setPageIndex={setPageIndex}
+          setPageSize={setPageSize}
+        />
+      </>
+    );
+  },
+};
+
 export const CellText: Story = {
   render: () => {
     return (

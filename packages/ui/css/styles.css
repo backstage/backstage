@@ -9702,19 +9702,6 @@
   display: flex;
 }
 
-.bui-Hidden {
-  clip: rect(0 0 0 0) !important;
-  clip-path: inset(100%) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-  width: 1px !important;
-  height: 1px !important;
-  margin: -1px !important;
-  padding: 0 !important;
-  position: absolute !important;
-  overflow: hidden !important;
-}
-
 .bui-Icon {
   width: 1rem;
   height: 1rem;
@@ -10069,6 +10056,10 @@
 .bui-TableRow {
   border-bottom: 1px solid var(--bui-border);
   transition: color .2s ease-in-out;
+
+  &[data-react-aria-pressable="true"] {
+    cursor: pointer;
+  }
 }
 
 .bui-TableBody .bui-TableRow:hover {

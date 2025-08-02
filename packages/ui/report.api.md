@@ -1051,9 +1051,6 @@ export const heightPropDefs: {
 export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
-export const Hidden: (props: BoxProps) => JSX_2.Element;
-
-// @public (undocumented)
 export const Icon: (props: IconProps) => JSX_2.Element | null;
 
 // @public (undocumented)
@@ -1413,6 +1410,7 @@ export function Row<T extends object>({
   id,
   columns,
   children,
+  href,
   ...otherProps
 }: RowProps<T>): JSX_2.Element;
 

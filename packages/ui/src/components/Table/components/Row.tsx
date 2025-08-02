@@ -21,28 +21,56 @@ import {
   Cell,
   Collection,
   Checkbox,
+  RouterProvider,
 } from 'react-aria-components';
 import { useStyles } from '../../../hooks/useStyles';
+import { useNavigate } from 'react-router-dom';
+import { useHref } from 'react-router-dom';
+import { isExternalLink } from '../../../utils/isExternalLink';
 
 /** @public */
 export function Row<T extends object>({
   id,
   columns,
   children,
+  href,
   ...otherProps
 }: RowProps<T>) {
   const { classNames } = useStyles('Table');
+  const navigate = useNavigate();
+  const isExternal = isExternalLink(href);
 
   let { selectionBehavior } = useTableOptions();
 
-  return (
-    <ReactAriaRow id={id} className={classNames.row} {...otherProps}>
+  const content = (
+    <>
       {selectionBehavior === 'toggle' && (
         <Cell>
           <Checkbox slot="selection" />
         </Cell>
       )}
       <Collection items={columns}>{children}</Collection>
-    </ReactAriaRow>
+    </>
+  );
+
+  if (isExternal) {
+    return (
+      <ReactAriaRow id={id} className={classNames.row} {...otherProps}>
+        {content}
+      </ReactAriaRow>
+    );
+  }
+
+  return (
+    <RouterProvider navigate={navigate} useHref={useHref}>
+      <ReactAriaRow
+        id={id}
+        className={classNames.row}
+        data-react-aria-pressable="true"
+        {...otherProps}
+      >
+        {content}
+      </ReactAriaRow>
+    </RouterProvider>
   );
 }

@@ -37,7 +37,6 @@ export * from './components/Collapsible';
 export * from './components/FieldLabel';
 export * from './components/Header';
 export * from './components/HeaderPage';
-export * from './components/Hidden';
 export * from './components/Icon';
 export * from './components/ButtonIcon';
 export * from './components/ButtonLink';

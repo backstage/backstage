@@ -66,6 +66,10 @@
 .bui-TableRow {
   border-bottom: 1px solid var(--bui-border);
   transition: color 0.2s ease-in-out;
+
+  &[data-react-aria-pressable='true'] {
+    cursor: pointer;
+  }
 }
 
 .bui-TableBody .bui-TableRow:hover {
