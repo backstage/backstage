@@ -483,7 +483,7 @@ export const componentDefinitions: {
       readonly clear: 'bui-InputClear';
     };
     readonly dataAttributes: {
-      readonly collapsible: readonly [true, false];
+      readonly startCollapsed: readonly [true, false];
     };
   };
   readonly Select: {
