@@ -42,5 +42,5 @@ export interface SearchFieldProps
   /**
    * The icon to render in the input
    */
-  collapsible?: boolean;
+  startCollapsed?: boolean;
 }

@@ -1453,10 +1453,10 @@ export const SearchField: ForwardRefExoticComponent<
 export interface SearchFieldProps
   extends SearchFieldProps_2,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
-  collapsible?: boolean;
   icon?: ReactNode | false;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  startCollapsed?: boolean;
 }
 
 // @public (undocumented)

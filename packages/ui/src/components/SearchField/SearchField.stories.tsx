@@ -159,7 +159,7 @@ export const CustomField: Story = {
 export const Collapsible: Story = {
   args: {
     ...Default.args,
-    collapsible: true,
+    startCollapsed: true,
   },
 
   render: args => (

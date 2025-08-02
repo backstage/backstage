@@ -25,7 +25,7 @@ export const searchFieldPropDefs: Record<string, PropDef> = {
     type: 'string',
     required: true,
   },
-  collapsible: {
+  startCollapsed: {
     type: 'boolean',
     default: 'false',
   },

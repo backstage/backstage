@@ -203,7 +203,7 @@ export const componentDefinitions = {
       clear: 'bui-InputClear',
     },
     dataAttributes: {
-      collapsible: [true, false] as const,
+      startCollapsed: [true, false] as const,
     },
   },
   Select: {
