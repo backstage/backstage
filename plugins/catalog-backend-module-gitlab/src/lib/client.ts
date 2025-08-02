@@ -31,12 +31,16 @@ import {
   PagedResponse,
 } from './types';
 
-export type CommonListOptions = {
+export interface CommonListOptions {
   [key: string]: string | number | boolean | undefined;
   per_page?: number | undefined;
   page?: number | undefined;
   active?: boolean;
-};
+  id_after?: number;
+  order_by?: string;
+  sort?: 'asc' | 'desc';
+  pagination?: 'keyset';
+}
 
 interface ListProjectOptions extends CommonListOptions {
   archived?: boolean;
@@ -502,27 +506,64 @@ export class GitLabClient {
 }
 
 /**
- * Advances through each page and provides each item from a paginated request.
+ * Advances through each page using keyset pagination and provides each item from a paginated request.
  *
  * The async generator function yields each item from repeated calls to the
  * provided request function. The generator walks through each available page by
- * setting the page key in the options passed into the request function and
- * making repeated calls until there are no more pages.
+ * using the id_after parameter in keyset pagination and making repeated calls
+ * until there are no more pages.
+ *
+ * This is particularly useful when dealing with large datasets that exceed GitLab's
+ * offset pagination limits of 50,000 records.
  *
  * @see {@link pagedRequest}
  * @param request - Function which returns a PagedResponse to walk through.
  * @param options - Initial ListOptions for the request function.
  */
 export async function* paginated<T = any>(
-  request: (options: CommonListOptions) => Promise<PagedResponse<T>>,
-  options: CommonListOptions,
+  request: (options: KeysetListOptions) => Promise<PagedResponse<T>>,
+  options: KeysetListOptions,
 ) {
-  let res;
-  do {
-    res = await request(options);
-    options.page = res.nextPage;
+  let hasMore = true;
+  const requestOptions = { ...options };
+
+  // Remove page parameter if it exists as it's not used in keyset pagination
+  delete requestOptions.page;
+
+  // Set pagination to keyset as required by GitLab API
+  requestOptions.pagination = 'keyset';
+
+  // Set default ordering for keyset pagination
+  if (!requestOptions.order_by) {
+    requestOptions.order_by = 'id';
+  }
+  if (!requestOptions.sort) {
+    requestOptions.sort = 'asc';
+  }
+
+  while (hasMore) {
+    const res = await request(requestOptions);
+
+    if (res.items.length === 0) {
+      break;
+    }
+
     for (const item of res.items) {
       yield item;
     }
-  } while (res.nextPage);
+
+    // Get the last item's ID to use as id_after for the next request
+    const lastItem = res.items[res.items.length - 1];
+    if (lastItem && typeof lastItem === 'object' && 'id' in lastItem) {
+      requestOptions.id_after = lastItem.id as number;
+    } else {
+      // If we can't get an ID, we can't continue with keyset pagination
+      hasMore = false;
+    }
+
+    // If we got fewer items than requested, we're on the last page
+    if (res.items.length < (options.per_page || 100)) {
+      hasMore = false;
+    }
+  }
 }

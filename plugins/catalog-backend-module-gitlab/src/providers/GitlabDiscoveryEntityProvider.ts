@@ -211,8 +211,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       options => this.gitLabClient.listProjects(options),
       {
         group: this.config.group,
-        page: 1,
         per_page: 50,
+        order_by: 'id',
+        sort: 'asc' as const,
+        pagination: 'keyset' as const,
         ...(!this.config.includeArchivedRepos && { archived: false }),
         ...(this.config.membership && { membership: true }),
         ...(this.config.topics && { topics: this.config.topics }),
