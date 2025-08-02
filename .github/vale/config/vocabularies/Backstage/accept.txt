@@ -549,3 +549,4 @@ zod
 Zolotusky
 zoomable
 zsh
+resizable
