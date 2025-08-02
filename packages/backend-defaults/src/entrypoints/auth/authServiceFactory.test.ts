@@ -30,6 +30,9 @@ import { setupServer } from 'msw/node';
 import { toInternalBackstageCredentials } from './helpers';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
+import { AccessRestrictionsMap, TokenHandler } from './external/types';
+import { Config } from '@backstage/config';
+import { externalTokenTypeHandlersRef } from './external/ExternalTokenHandler';
 
 const server = setupServer();
 
@@ -450,8 +453,117 @@ describe('authServiceFactory', () => {
         dependencies: [...mockDeps, customPluginTokenHandler],
       });
       const searchAuth = await tester.getSubject('search');
-      searchAuth.authenticate('unlimited-static-token');
+      await searchAuth.authenticate('unlimited-static-token');
       expect(customLogic).toHaveBeenCalledWith('unlimited-static-token');
+    });
+  });
+  describe('add custom  ExternalTokenHandler', () => {
+    it('should allow custom logic to be injected into the plugin token handler', async () => {
+      const customLogic = jest.fn();
+      const customAddEntry = jest.fn();
+      const customConfig = jest.fn();
+      const deps = [
+        discoveryServiceFactory,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost',
+              auth: {
+                keys: [{ secret: 'abc' }],
+                externalAccess: [
+                  {
+                    type: 'static',
+                    options: {
+                      token: 'limited-static-token',
+                      subject: 'limited-static-subject',
+                    },
+                    accessRestrictions: [
+                      { plugin: 'catalog', permission: 'do.it' },
+                    ],
+                  },
+                  {
+                    type: 'static',
+                    options: {
+                      token: 'unlimited-static-token',
+                      subject: 'unlimited-static-subject',
+                    },
+                  },
+                  {
+                    type: 'custom',
+                    options: {
+                      [`custom-config`]: 'custom-config',
+                      foo: 'bar',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        }),
+      ];
+
+      class CustomHandler implements TokenHandler {
+        constructor(options: Config[]) {
+          for (const option of options) {
+            customAddEntry(option);
+          }
+        }
+        async verifyToken(token: string): Promise<
+          | {
+              subject: string;
+              allAccessRestrictions?: AccessRestrictionsMap;
+            }
+          | undefined
+        > {
+          customLogic(token);
+          return {
+            subject: 'foo',
+          };
+        }
+      }
+
+      const customPluginTokenHandler = createServiceFactory({
+        service: externalTokenTypeHandlersRef,
+        deps: {},
+        async factory() {
+          return {
+            type: 'custom',
+            factory: (configs: Config[]) => {
+              customConfig(configs);
+              return new CustomHandler(configs);
+            },
+          };
+        },
+      });
+      const tester = ServiceFactoryTester.from(authServiceFactory, {
+        dependencies: [...deps, customPluginTokenHandler],
+      });
+      const searchAuth = await tester.getSubject('search');
+      await searchAuth.authenticate('custom-token');
+
+      expect(customAddEntry).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            options: expect.objectContaining({
+              [`custom-config`]: 'custom-config',
+              foo: 'bar',
+            }),
+          }),
+        }),
+      );
+      expect(customLogic).toHaveBeenCalledWith('custom-token');
+      expect(customConfig).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            data: expect.objectContaining({
+              options: expect.objectContaining({
+                [`custom-config`]: 'custom-config',
+                foo: 'bar',
+              }),
+            }),
+          }),
+        ]),
+      );
     });
   });
 });

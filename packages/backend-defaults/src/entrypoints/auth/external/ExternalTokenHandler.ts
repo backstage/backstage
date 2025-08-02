@@ -16,18 +16,62 @@
 
 import {
   BackstagePrincipalAccessRestrictions,
+  createServiceRef,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
-import { LegacyTokenHandler } from './legacy';
+import { LegacyConfigWrapper, LegacyTokenHandler } from './legacy';
 import { StaticTokenHandler } from './static';
 import { JWKSHandler } from './jwks';
 import { TokenHandler } from './types';
+import { Config } from '@backstage/config';
+import { groupBy } from 'lodash';
+import { TokenTypeHandler } from './types';
 
 const NEW_CONFIG_KEY = 'backend.auth.externalAccess';
 const OLD_CONFIG_KEY = 'backend.auth.keys';
 let loggedDeprecationWarning = false;
+
+type LegacyTokenTypeHandler = {
+  type: 'legacy';
+  /**
+   * A factory function that takes all token configuration for a given type
+   * and returns a TokenHandler or an array of TokenHandlers.
+   */
+  factory: (
+    configs: (
+      | import('@backstage/config').Config
+      | { legacy: true; config: import('@backstage/config').Config }
+    )[],
+  ) => TokenHandler | TokenHandler[];
+};
+
+/**
+ * @public
+ * This service is used to decorate the default plugin token handler with custom logic.
+ */
+export const externalTokenTypeHandlersRef = createServiceRef<TokenTypeHandler>({
+  id: 'core.auth.externalTokenHandlers',
+  multiton: true,
+  // defaultFactory // :pepe-think: seems like is not possible to use defaultFactory with multiton
+});
+
+const defaultHandlers: (TokenTypeHandler | LegacyTokenTypeHandler)[] = [
+  {
+    type: 'static',
+    factory: configs => new StaticTokenHandler(configs),
+  },
+  {
+    type: 'legacy',
+    factory: (configs: (Config | { legacy: true; config: Config })[]) =>
+      new LegacyTokenHandler(configs),
+  },
+  {
+    type: 'jwks',
+    factory: configs => new JWKSHandler(configs),
+  },
+];
 
 /**
  * Handles all types of external caller token types (i.e. not Backstage user
@@ -40,36 +84,27 @@ export class ExternalTokenHandler {
     ownPluginId: string;
     config: RootConfigService;
     logger: LoggerService;
+    externalTokenHandlers?: TokenTypeHandler[];
   }): ExternalTokenHandler {
-    const { ownPluginId, config, logger } = options;
+    const {
+      ownPluginId,
+      config,
+      logger,
+      externalTokenHandlers: customHandlers,
+    } = options;
 
-    const staticHandler = new StaticTokenHandler();
-    const legacyHandler = new LegacyTokenHandler();
-    const jwksHandler = new JWKSHandler();
-    const handlers: Record<string, TokenHandler> = {
-      static: staticHandler,
-      legacy: legacyHandler,
-      jwks: jwksHandler,
-    };
+    const handlersTypes = [...defaultHandlers, ...(customHandlers ?? [])];
 
-    // Load the new-style handlers
     const handlerConfigs = config.getOptionalConfigArray(NEW_CONFIG_KEY) ?? [];
-    for (const handlerConfig of handlerConfigs) {
-      const type = handlerConfig.getString('type');
-      const handler = handlers[type];
-      if (!handler) {
-        const valid = Object.keys(handlers)
-          .map(k => `'${k}'`)
-          .join(', ');
-        throw new Error(
-          `Unknown type '${type}' in ${NEW_CONFIG_KEY}, expected one of ${valid}`,
-        );
-      }
-      handler.add(handlerConfig);
-    }
+    const handlerConfigByType: Record<string, Config[]> & {
+      legacy?: (Config | LegacyConfigWrapper)[];
+    } = groupBy(handlerConfigs, (handlerConfig: Config) =>
+      handlerConfig.getString('type'),
+    );
 
     // Load the old keys too
     const legacyConfigs = config.getOptionalConfigArray(OLD_CONFIG_KEY) ?? [];
+
     if (legacyConfigs.length && !loggedDeprecationWarning) {
       loggedDeprecationWarning = true;
       logger.warn(
@@ -77,10 +112,35 @@ export class ExternalTokenHandler {
       );
     }
     for (const handlerConfig of legacyConfigs) {
-      legacyHandler.addOld(handlerConfig);
+      handlerConfigByType.legacy ??= [];
+      handlerConfigByType.legacy.push({ legacy: true, config: handlerConfig });
     }
 
-    return new ExternalTokenHandler(ownPluginId, Object.values(handlers));
+    const invalidTypes = Object.keys(handlerConfigByType).filter(
+      type => !handlersTypes.some(handler => handler.type === type),
+    );
+
+    if (invalidTypes.length > 0) {
+      const valid = handlersTypes
+        .map(handler => `'${handler.type}'`)
+        .join(', ');
+      throw new Error(
+        `Unknown type(s) '${invalidTypes.join(
+          ', ',
+        )}' in ${NEW_CONFIG_KEY}, expected one of ${valid}`,
+      );
+    }
+
+    const handlers = handlersTypes.flatMap(handler => {
+      const configs = handlerConfigByType[handler.type] ?? [];
+      const handlerInstances = handler.factory(configs);
+      if (Array.isArray(handlerInstances)) {
+        return handlerInstances;
+      }
+      return [handlerInstances];
+    });
+
+    return new ExternalTokenHandler(ownPluginId, handlers);
   }
 
   constructor(

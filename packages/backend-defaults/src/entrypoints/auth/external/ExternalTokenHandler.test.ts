@@ -85,12 +85,10 @@ describe('ExternalTokenHandler', () => {
 
   it('skips over inner handlers that do not match, and applies plugin restrictions', async () => {
     const handler1: TokenHandler = {
-      add: jest.fn(),
       verifyToken: jest.fn().mockResolvedValue(undefined),
     };
 
     const handler2: TokenHandler = {
-      add: jest.fn(),
       verifyToken: jest.fn().mockResolvedValue({
         subject: 'sub',
         allAccessRestrictions: new Map(
@@ -207,5 +205,208 @@ describe('ExternalTokenHandler', () => {
       subject: 'external:custom-prefix:jwks-subject',
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
     });
+  });
+  it('successfully uses custom token handlers', async () => {
+    const factory = new FakeTokenFactory({
+      issuer: 'my-company',
+      keyDurationSeconds: 100,
+    });
+
+    server.use(
+      rest.get(
+        'https://example.com/.well-known/jwks.json',
+        async (_, res, ctx) => {
+          const keys = await factory.listPublicKeys();
+          return res(ctx.json(keys));
+        },
+      ),
+    );
+
+    const customHandler: TokenHandler = {
+      verifyToken: jest.fn(),
+    };
+    const customHandlerFactory = jest.fn(() => customHandler);
+
+    const handler = ExternalTokenHandler.create({
+      ownPluginId: 'catalog',
+      logger: mockServices.logger.mock(),
+      config: mockServices.rootConfig({
+        data: {
+          backend: {
+            auth: {
+              externalAccess: [
+                {
+                  type: 'internal-custom',
+                  options: {
+                    issuer: 'my-company',
+                    subject: 'internal-subject',
+                    audience: 'backstage',
+                  },
+                  accessRestrictions: [
+                    { plugin: 'catalog', permission: 'catalog.entity.read' },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      }),
+      externalTokenHandlers: [
+        {
+          type: 'internal-custom',
+          factory: customHandlerFactory,
+        },
+      ],
+    });
+
+    expect(customHandlerFactory).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          data: {
+            type: 'internal-custom',
+            options: {
+              issuer: 'my-company',
+              subject: 'internal-subject',
+              audience: 'backstage',
+            },
+            accessRestrictions: [
+              { plugin: 'catalog', permission: 'catalog.entity.read' },
+            ],
+          },
+        }),
+      ]),
+    );
+
+    const customToken = await factory.issueToken({
+      claims: { sub: 'internal-subject' },
+    });
+
+    await handler.verifyToken(customToken);
+
+    expect(customHandler.verifyToken).toHaveBeenCalled();
+  });
+  it('should fail if config contains types not declared', async () => {
+    const createHandler = () =>
+      ExternalTokenHandler.create({
+        ownPluginId: 'catalog',
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              auth: {
+                externalAccess: [
+                  {
+                    type: 'internal-custom',
+                    options: {
+                      issuer: 'my-company',
+                      subject: 'internal-subject',
+                      audience: 'backstage',
+                    },
+                    accessRestrictions: [
+                      { plugin: 'catalog', permission: 'catalog.entity.read' },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        }),
+      });
+
+    expect(createHandler).toThrowErrorMatchingInlineSnapshot(
+      `"Unknown type(s) 'internal-custom' in backend.auth.externalAccess, expected one of 'static', 'legacy', 'jwks'"`,
+    );
+  });
+
+  it('should show valid custom types in errors', async () => {
+    const createHandler = () =>
+      ExternalTokenHandler.create({
+        ownPluginId: 'catalog',
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              auth: {
+                externalAccess: [
+                  {
+                    type: 'internal-custom-invalid',
+                    options: {
+                      issuer: 'my-company',
+                      subject: 'internal-subject',
+                      audience: 'backstage',
+                    },
+                    accessRestrictions: [
+                      { plugin: 'catalog', permission: 'catalog.entity.read' },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        }),
+        externalTokenHandlers: [
+          {
+            type: 'internal-custom',
+            factory: () => ({
+              verifyToken: jest.fn(),
+            }),
+          },
+        ],
+      });
+
+    expect(createHandler).toThrowErrorMatchingInlineSnapshot(
+      `"Unknown type(s) 'internal-custom-invalid' in backend.auth.externalAccess, expected one of 'static', 'legacy', 'jwks', 'internal-custom'"`,
+    );
+  });
+  it('should show all invalid config types', async () => {
+    const createHandler = () =>
+      ExternalTokenHandler.create({
+        ownPluginId: 'catalog',
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              auth: {
+                externalAccess: [
+                  {
+                    type: 'internal-custom-invalid',
+                    options: {
+                      issuer: 'my-company',
+                      subject: 'internal-subject',
+                      audience: 'backstage',
+                    },
+                    accessRestrictions: [
+                      { plugin: 'catalog', permission: 'catalog.entity.read' },
+                    ],
+                  },
+                  {
+                    type: 'internal-custom-invalid-2',
+                    options: {
+                      issuer: 'my-company',
+                      subject: 'internal-subject',
+                      audience: 'backstage',
+                    },
+                    accessRestrictions: [
+                      { plugin: 'catalog', permission: 'catalog.entity.read' },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        }),
+        externalTokenHandlers: [
+          {
+            type: 'internal-custom',
+            factory: () => ({
+              verifyToken: jest.fn(),
+            }),
+          },
+        ],
+      });
+
+    expect(createHandler).toThrowErrorMatchingInlineSnapshot(
+      `"Unknown type(s) 'internal-custom-invalid, internal-custom-invalid-2' in backend.auth.externalAccess, expected one of 'static', 'legacy', 'jwks', 'internal-custom'"`,
+    );
   });
 });

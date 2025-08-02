@@ -21,7 +21,6 @@ import { DateTime } from 'luxon';
 import { LegacyTokenHandler } from './legacy';
 
 describe('LegacyTokenHandler', () => {
-  const tokenHandler = new LegacyTokenHandler();
   const key1 = randomBytes(24);
   const key2 = randomBytes(24);
   const key3 = randomBytes(24);
@@ -36,7 +35,7 @@ describe('LegacyTokenHandler', () => {
     }),
   );
 
-  tokenHandler.add(
+  const configs = [
     new ConfigReader({
       options: {
         secret: key1.toString('base64'),
@@ -44,8 +43,7 @@ describe('LegacyTokenHandler', () => {
       },
       accessRestrictions: [{ plugin: 'scaffolder' }],
     }),
-  );
-  tokenHandler.add(
+
     new ConfigReader({
       options: {
         secret: key2.toString('base64'),
@@ -55,12 +53,14 @@ describe('LegacyTokenHandler', () => {
         { plugin: 'catalog', permission: 'catalog.entity.read' },
       ],
     }),
-  );
-  tokenHandler.addOld(
-    new ConfigReader({
-      secret: key3.toString('base64'),
-    }),
-  );
+    {
+      legacy: true,
+      config: new ConfigReader({
+        secret: key3.toString('base64'),
+      }),
+    },
+  ];
+  const tokenHandler = new LegacyTokenHandler(configs);
 
   it('should verify valid tokens', async () => {
     const token1 = await new SignJWT({
@@ -163,94 +163,113 @@ describe('LegacyTokenHandler', () => {
   });
 
   it('rejects bad config', () => {
-    const handler = new LegacyTokenHandler();
+    const handler = new LegacyTokenHandler([]);
 
     // new style add, bad secrets
-    expect(() =>
-      handler.add(
-        new ConfigReader({ options: { _missingsecret: true, subject: 'ok' } }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({
+            options: { _missingsecret: true, subject: 'ok' },
+          }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Missing required config value at 'options.secret' in 'mock-config'"`,
     );
-    expect(() =>
-      handler.add(new ConfigReader({ options: { secret: '', subject: 'ok' } })),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({ options: { secret: '', subject: 'ok' } }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid type in config for key 'options.secret' in 'mock-config', got empty-string, wanted string"`,
     );
-    expect(() =>
-      handler.add(
-        new ConfigReader({ options: { secret: 'has spaces', subject: 'ok' } }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({
+            options: { secret: 'has spaces', subject: 'ok' },
+          }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Illegal secret, must be a valid base64 string"`,
     );
-    expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: { secret: 'hasnewline\n', subject: 'ok' },
-        }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({
+            options: { secret: 'hasnewline\n', subject: 'ok' },
+          }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Illegal secret, must be a valid base64 string"`,
     );
-    expect(() =>
-      handler.add(new ConfigReader({ options: { secret: 3, subject: 'ok' } })),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({ options: { secret: 3, subject: 'ok' } }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid type in config for key 'options.secret' in 'mock-config', got number, wanted string"`,
     );
 
     // new style add, bad subjects
-    expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: { secret: 'b2s=', _missingsubject: true },
-        }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({
+            options: { secret: 'b2s=', _missingsubject: true },
+          }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Missing required config value at 'options.subject' in 'mock-config'"`,
     );
-    expect(() =>
-      handler.add(
-        new ConfigReader({ options: { secret: 'b2s=', subject: '' } }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({ options: { secret: 'b2s=', subject: '' } }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid type in config for key 'options.subject' in 'mock-config', got empty-string, wanted string"`,
     );
-    expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: { secret: 'b2s=', subject: 'has spaces' },
-        }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({
+            options: { secret: 'b2s=', subject: 'has spaces' },
+          }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Illegal subject, must be a set of non-space characters"`,
     );
-    expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: { secret: 'b2s=', subject: 'hasnewline\n' },
-        }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({
+            options: { secret: 'b2s=', subject: 'hasnewline\n' },
+          }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Illegal subject, must be a set of non-space characters"`,
     );
-    expect(() =>
-      handler.add(
-        new ConfigReader({ options: { secret: 'b2s=', subject: 3 } }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({ options: { secret: 'b2s=', subject: 3 } }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid type in config for key 'options.subject' in 'mock-config', got number, wanted string"`,
     );
 
     // new style add, bad access restrictions
-    expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: { secret: 'b2s=', subject: 'subject' },
-          accessRestrictions: [{ plugin: ['a'] }],
-        }),
-      ),
+    expect(
+      () =>
+        new LegacyTokenHandler([
+          new ConfigReader({
+            options: { secret: 'b2s=', subject: 'subject' },
+            accessRestrictions: [{ plugin: ['a'] }],
+          }),
+        ]),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid type in config for key 'accessRestrictions[0].plugin' in 'mock-config', got array, wanted string"`,
     );

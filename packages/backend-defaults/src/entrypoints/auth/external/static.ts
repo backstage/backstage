@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { readAccessRestrictionsFromConfig } from './helpers';
-import { AccessRestriptionsMap, TokenHandler } from './types';
+import { AccessRestrictionsMap, TokenHandler } from './types';
 
 const MIN_TOKEN_LENGTH = 8;
 
@@ -30,11 +30,16 @@ export class StaticTokenHandler implements TokenHandler {
     string,
     {
       subject: string;
-      allAccessRestrictions?: AccessRestriptionsMap;
+      allAccessRestrictions?: AccessRestrictionsMap;
     }
   >();
 
-  add(config: Config) {
+  constructor(configs: Config[]) {
+    for (const config of configs) {
+      this.add(config);
+    }
+  }
+  private add(config: Config) {
     const token = config.getString('options.token');
     const subject = config.getString('options.subject');
     const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
@@ -54,6 +59,7 @@ export class StaticTokenHandler implements TokenHandler {
     }
 
     this.#entries.set(token, { subject, allAccessRestrictions });
+    return this;
   }
 
   async verifyToken(token: string) {

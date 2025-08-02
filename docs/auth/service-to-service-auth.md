@@ -414,8 +414,12 @@ Each entry has one or more of the following fields:
 
 ## Adding custom or logic for validation and issuing of tokens
 
-The `pluginTokenHandlerDecoratorServiceRef` can be used to decorate the existing token handler without having to re-implement the entire `AuthService` implementation.
+The `pluginTokenHandlerDecoratorServiceRef` and `externalTokenTypeHandlersRef` can be used to extend the existing token handler without having to re-implement the entire `AuthService` implementation.
 This is particularly useful when you want to add additional logic to the handler, such as logging or metrics or custom token validation.
+
+### PluginTokenHandler decoration
+
+The `pluginTokenHandlerDecoratorServiceRef` can be used to decorate the default PluginTokenHandler used for create and verify tokens from plugins.
 
 The `PluginTokenHandler` interface has two methods:
 
@@ -438,4 +442,70 @@ const decoratedPluginTokenHandler = createServiceFactory({
       new CustomTokenHandler(defaultImplementation);
   },
 });
+```
+
+### Adding custom ExternalTokenHandler
+
+The `externalTokenTypeHandlersRef` can be used to add custom external token handlers to the default implementation.
+
+Your service factory must return an object with a `type` property that matches the token type in your configuration (e.g., 'custom', 'api-key'). When Backstage encounters tokens of this type, it calls your `factory` method with all the configuration entries that match this type. Your factory can return either a single token handler or an array of handlers to process and validate these tokens.
+
+:::note Note
+
+During token verification, all the token handlers are tested. Consider this when adding many token handlers, as it may impact performance.
+
+:::
+
+For example, if we want to add a custom external token handler for the `custom` type:
+
+our config would look like this:
+
+```yaml title="in e.g. app-config.production.yaml"
+backend:
+  auth:
+    externalAccess:
+      - type: custom
+        options:
+          customOptions: additional-value
+        accessRestrictions:
+          - plugin: events
+      - type: custom
+        options:
+          customOptions: another-value
+        accessRestrictions:
+          - plugin: events
+```
+
+And we can implement the custom token handler like this:
+
+```ts
+import {
+  TokenHandler,
+  externalTokenTypeHandlersRef,
+} from '@backstage/backend-defaults/auth';
+import { Config } from '@backstage/config';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
+
+const customExternalTokenHandlers = createServiceFactory({
+  service: externalTokenTypeHandlersRef,
+  deps: {},
+  async factory() {
+    return {
+      type: 'custom',
+      factory: (configs: Config[]) => new CustomTokenHandler(configs), // can return a simple handler or an array of handlers
+    };
+  },
+});
+```
+
+The `CustomTokenHandler` only requires implementing an async `verifyToken` method that returns `undefined` when the token verification fails for the given token:
+
+```ts
+class CustomTokenHandler {
+  async verifyToken(token: string): Promise<{ subject: string } | undefined> {
+    // Your custom token validation logic here
+    // Return undefined if token is invalid
+    // Return { subject: 'your-subject', accessRestrictions: [...] } if token is valid
+  }
+}
 ```
