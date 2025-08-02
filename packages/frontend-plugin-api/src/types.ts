@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 import { FrontendPlugin } from './wiring';
 
 /** @public */
 export type CoreProgressProps = {};
 
 /** @public */
-export type CoreNotFoundErrorPageProps = {
-  children?: ReactNode;
-};
+export type CoreNotFoundErrorPageProps = PropsWithChildren<{
+  status?: string;
+  statusMessage?: string;
+  additionalInfo?: string;
+}>;
 
 /** @public */
 export type CoreErrorBoundaryFallbackProps = {

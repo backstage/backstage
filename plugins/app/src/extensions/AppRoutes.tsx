@@ -49,7 +49,9 @@ export const AppRoutes = createExtension({
         })),
         {
           path: '*',
-          element: <NotFoundErrorPage />,
+          element: (
+            <NotFoundErrorPage status="404" statusMessage="Page not found" />
+          ),
         },
       ]);
 
