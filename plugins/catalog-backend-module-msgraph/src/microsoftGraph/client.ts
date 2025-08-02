@@ -195,8 +195,7 @@ export class MicrosoftGraphClient {
       },
       {
         addQueryPrefix: true,
-        // Microsoft Graph doesn't like an encoded query string
-        encode: false,
+        encode: true,
       },
     );
 
