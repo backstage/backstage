@@ -38,4 +38,9 @@ export interface SearchFieldProps
    * The placeholder text for the input
    */
   placeholder?: string;
+
+  /**
+   * The icon to render in the input
+   */
+  collapsible?: boolean;
 }

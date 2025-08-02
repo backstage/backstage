@@ -482,6 +482,9 @@ export const componentDefinitions: {
       readonly root: 'bui-SearchField';
       readonly clear: 'bui-InputClear';
     };
+    readonly dataAttributes: {
+      readonly collapsible: readonly [true, false];
+    };
   };
   readonly Select: {
     readonly classNames: {
@@ -1450,6 +1453,7 @@ export const SearchField: ForwardRefExoticComponent<
 export interface SearchFieldProps
   extends SearchFieldProps_2,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  collapsible?: boolean;
   icon?: ReactNode | false;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;

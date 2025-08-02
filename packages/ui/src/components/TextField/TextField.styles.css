@@ -19,6 +19,7 @@
   flex-direction: column;
   font-family: var(--bui-font-regular);
   width: 100%;
+  flex-shrink: 0;
 }
 
 .bui-InputWrapper {
@@ -49,6 +50,9 @@
   margin-right: var(--bui-space-1);
   color: var(--bui-fg-primary);
   flex-shrink: 0;
+  pointer-events: none;
+  /* To animate the icon when the input is collapsed */
+  transition: left 0.2s ease-in-out;
 
   &[data-size='small'],
   &[data-size='small'] svg {
@@ -67,7 +71,7 @@
   display: flex;
   align-items: center;
   padding: 0 var(--bui-space-3);
-  border-radius: var(--bui-radius-3);
+  border-radius: var(--bui-radius-2);
   border: 1px solid var(--bui-border);
   background-color: var(--bui-bg-surface-1);
   font-size: var(--bui-font-size-3);

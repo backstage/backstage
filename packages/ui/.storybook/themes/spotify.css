@@ -205,6 +205,10 @@
     padding-inline: var(--bui-space-1);
     border: none;
   }
+
+  .bui-Input {
+    border-radius: var(--bui-radius-3);
+  }
 }
 
 [data-theme='light'][data-theme-name='spotify'] {
