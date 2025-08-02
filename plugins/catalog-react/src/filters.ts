@@ -317,6 +317,10 @@ export class EntityOrphanFilter implements EntityFilter {
     const orphan = entity.metadata.annotations?.['backstage.io/orphan'];
     return orphan !== undefined && this.value.toString() === orphan;
   }
+
+  toQueryValue(): string {
+    return String(this.value);
+  }
 }
 
 /**
@@ -330,6 +334,10 @@ export class EntityErrorFilter implements EntityFilter {
     const error =
       ((entity as AlphaEntity)?.status?.items?.length as number) > 0;
     return error !== undefined && this.value === error;
+  }
+
+  toQueryValue(): string {
+    return String(this.value);
   }
 }
 

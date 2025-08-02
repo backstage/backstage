@@ -109,4 +109,77 @@ describe('<EntityProcessingStatusPicker/>', () => {
       error: undefined,
     });
   });
+
+  it('initializes from URL parameters - orphan', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { orphan: 'true' },
+        }}
+      >
+        <EntityProcessingStatusPicker />
+      </MockEntityListContextProvider>,
+    );
+
+    // Should initialize filters from URL parameters
+    expect(updateFilters).toHaveBeenCalledWith({
+      orphan: new EntityOrphanFilter(true),
+      error: undefined,
+    });
+
+    // UI should show the selection
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    expect(screen.getByLabelText('Is Orphan')).toBeChecked();
+  });
+
+  it('initializes from URL parameters - error', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { error: 'true' },
+        }}
+      >
+        <EntityProcessingStatusPicker />
+      </MockEntityListContextProvider>,
+    );
+
+    // Should initialize filters from URL parameters
+    expect(updateFilters).toHaveBeenCalledWith({
+      orphan: undefined,
+      error: new EntityErrorFilter(true),
+    });
+
+    // UI should show the selection
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    expect(screen.getByLabelText('Has Error')).toBeChecked();
+  });
+
+  it('initializes from URL parameters - both', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { orphan: 'true', error: 'true' },
+        }}
+      >
+        <EntityProcessingStatusPicker />
+      </MockEntityListContextProvider>,
+    );
+
+    // Should initialize filters from URL parameters
+    expect(updateFilters).toHaveBeenCalledWith({
+      orphan: new EntityOrphanFilter(true),
+      error: new EntityErrorFilter(true),
+    });
+
+    // UI should show both selections
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    expect(screen.getByLabelText('Is Orphan')).toBeChecked();
+    expect(screen.getByLabelText('Has Error')).toBeChecked();
+  });
 });

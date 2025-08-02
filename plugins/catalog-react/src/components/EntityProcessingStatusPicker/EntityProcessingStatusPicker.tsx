@@ -21,7 +21,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useEntityList } from '../../hooks';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -45,12 +45,40 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityProcessingStatusPicker = () => {
   const classes = useStyles();
-  const { updateFilters } = useEntityList();
+  const { updateFilters, queryParameters } = useEntityList();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
+  // Initialize from URL parameters
+  const initialSelectedItems = useMemo(() => {
+    const items: string[] = [];
+    if (queryParameters.orphan === 'true') {
+      items.push('Is Orphan');
+    }
+    if (queryParameters.error === 'true') {
+      items.push('Has Error');
+    }
+    return items;
+  }, [queryParameters.orphan, queryParameters.error]);
+
   const [selectedAdvancedItems, setSelectedAdvancedItems] = useState<string[]>(
-    [],
+    initialSelectedItems,
   );
+
+  // Update state when URL parameters change
+  useEffect(() => {
+    setSelectedAdvancedItems(initialSelectedItems);
+  }, [initialSelectedItems]);
+
+  // Initialize filters based on URL parameters
+  useEffect(() => {
+    const hasOrphan = queryParameters.orphan === 'true';
+    const hasError = queryParameters.error === 'true';
+    
+    updateFilters({
+      orphan: hasOrphan ? new EntityOrphanFilter(true) : undefined,
+      error: hasError ? new EntityErrorFilter(true) : undefined,
+    });
+  }, [queryParameters.orphan, queryParameters.error, updateFilters]);
 
   function orphanChange(value: boolean) {
     updateFilters({
