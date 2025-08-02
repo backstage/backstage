@@ -20,6 +20,7 @@ import { buildBundle, getModuleFederationOptions } from './bundler';
 import { getEnvironmentParallelism } from '../../../lib/parallel';
 import { loadCliConfig } from '../../config/lib/config';
 import { BackstagePackageJson } from '@backstage/cli-node';
+import { buildModuleFederationHostDependencyFilter } from './bundler/moduleFederation';
 
 interface BuildAppOptions {
   targetDir: string;
@@ -34,19 +35,25 @@ export async function buildFrontend(options: BuildAppOptions) {
   const packageJson = (await fs.readJson(
     resolvePath(targetDir, 'package.json'),
   )) as BackstagePackageJson;
+  const moduleFederation = await getModuleFederationOptions(
+    packageJson,
+    resolvePath(targetDir),
+    options.isModuleFederationRemote,
+  );
+  const filterDependencies = buildModuleFederationHostDependencyFilter(
+    packageJson,
+    moduleFederation,
+  );
   await buildBundle({
     targetDir,
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
-    moduleFederation: await getModuleFederationOptions(
-      packageJson,
-      resolvePath(targetDir),
-      options.isModuleFederationRemote,
-    ),
+    moduleFederation,
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: packageJson.name,
+      filterDependencies,
     })),
     rspack,
   });

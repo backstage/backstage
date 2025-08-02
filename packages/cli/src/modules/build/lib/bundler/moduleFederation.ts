@@ -81,3 +81,27 @@ export async function getModuleFederationOptions(
     exposes,
   };
 }
+
+export function buildModuleFederationHostDependencyFilter(
+  packageJson: BackstagePackageJson,
+  moduleFederationOptions?: ModuleFederationOptions,
+) {
+  if (moduleFederationOptions?.mode !== 'remote') {
+    return undefined;
+  }
+
+  return (depName: string) => {
+    if (packageJson.backstage?.pluginPackages?.includes(depName)) {
+      return true;
+    }
+
+    // reject all backstage core dependencies: the schemas would be
+    // brought by the main frontend application (== the module federation host)
+    if (depName.startsWith('@backstage/')) {
+      return false;
+    }
+
+    // all other packages should be included in the schema of the plugin module federation remote.
+    return true;
+  };
+}
