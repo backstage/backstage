@@ -281,7 +281,7 @@ function pluginPath(pluginId: string): string {
   return `plugin.${pluginId}`;
 }
 
-function normalizeConnection(
+export function normalizeConnection(
   connection: Knex.StaticConnectionConfig | JsonObject | string | undefined,
 ): Partial<Knex.StaticConnectionConfig> {
   if (typeof connection === 'undefined' || connection === null) {

@@ -27,6 +27,7 @@ import { stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { MysqlConnector } from './connectors/mysql';
 import { PgConnector } from './connectors/postgres';
+import { PgLiteConnector } from './connectors/pglite';
 import { Sqlite3Connector } from './connectors/sqlite3';
 import { Connector } from './types';
 
@@ -252,6 +253,7 @@ export class DatabaseManager {
         databaseConfig,
         {
           pg: new PgConnector(databaseConfig, prefix),
+          pglite: new PgLiteConnector(databaseConfig),
           sqlite3: new Sqlite3Connector(databaseConfig),
           'better-sqlite3': new Sqlite3Connector(databaseConfig),
           mysql: new MysqlConnector(databaseConfig, prefix),
