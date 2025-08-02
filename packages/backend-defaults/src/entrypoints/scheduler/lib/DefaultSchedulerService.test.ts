@@ -28,6 +28,8 @@ describe('TaskScheduler', () => {
   const databases = TestDatabases.create();
   const rootLifecycle = mockServices.rootLifecycle.mock();
   const httpRouter = mockServices.httpRouter.mock();
+  const auth = mockServices.auth.mock();
+  const httpAuth = mockServices.httpAuth.mock();
   const pluginMetadata = {
     getId: () => 'test',
   } satisfies PluginMetadataService;
@@ -45,6 +47,8 @@ describe('TaskScheduler', () => {
         rootLifecycle,
         httpRouter,
         pluginMetadata,
+        auth,
+        httpAuth,
       });
       const fn = jest.fn();
 
@@ -74,6 +78,8 @@ describe('TaskScheduler', () => {
         rootLifecycle,
         httpRouter,
         pluginMetadata,
+        auth,
+        httpAuth,
       });
       const fn = jest.fn();
 

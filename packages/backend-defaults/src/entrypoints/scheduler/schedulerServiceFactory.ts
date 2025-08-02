@@ -37,6 +37,8 @@ export const schedulerServiceFactory = createServiceFactory({
     rootLifecycle: coreServices.rootLifecycle,
     httpRouter: coreServices.httpRouter,
     pluginMetadata: coreServices.pluginMetadata,
+    auth: coreServices.auth,
+    httpAuth: coreServices.httpAuth,
   },
   async factory({
     database,
@@ -44,6 +46,8 @@ export const schedulerServiceFactory = createServiceFactory({
     rootLifecycle,
     httpRouter,
     pluginMetadata,
+    auth,
+    httpAuth,
   }) {
     return DefaultSchedulerService.create({
       database,
@@ -51,6 +55,8 @@ export const schedulerServiceFactory = createServiceFactory({
       rootLifecycle,
       httpRouter,
       pluginMetadata,
+      auth,
+      httpAuth,
     });
   },
 });

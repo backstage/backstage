@@ -15,6 +15,8 @@
  */
 
 import {
+  AuthService,
+  HttpAuthService,
   LoggerService,
   RootLifecycleService,
   SchedulerService,
@@ -33,6 +35,7 @@ import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2, TaskApiTasksResponse } from './types';
 import { delegateAbortController, TRACER_ID, validateId } from './util';
+import { NotAllowedError } from '@backstage/errors';
 
 const tracer = trace.getTracer(TRACER_ID);
 
@@ -44,6 +47,8 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
   private readonly globalWorkersById = new Map<string, TaskWorker>();
   private readonly allScheduledTasks: SchedulerServiceTaskDescriptor[] = [];
   private readonly shutdownInitiated: Promise<boolean>;
+  private readonly auth: AuthService;
+  private readonly httpAuth: HttpAuthService;
 
   private readonly counter: Counter;
   private readonly duration: Histogram;
@@ -55,6 +60,8 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: LoggerService,
     rootLifecycle: RootLifecycleService,
+    auth: AuthService,
+    httpAuth: HttpAuthService,
   ) {
     const meter = metrics.getMeter('default');
     this.counter = meter.createCounter('backend_tasks.task.runs.count', {
@@ -78,6 +85,8 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     this.shutdownInitiated = new Promise(shutdownInitiated => {
       rootLifecycle.addShutdownHook(() => shutdownInitiated(true));
     });
+    this.auth = auth;
+    this.httpAuth = httpAuth;
   }
 
   async triggerTask(id: string): Promise<void> {
@@ -155,7 +164,20 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
   getRouter(): express.Router {
     const router = Router();
 
-    router.get('/.backstage/scheduler/v1/tasks', async (_, res) => {
+    router.get('/.backstage/scheduler/v1/tasks', async (req, res) => {
+      const credentials = await this.httpAuth.credentials(req);
+      if (this.auth.isPrincipal(credentials, 'user')) {
+        if (!credentials.principal.actor) {
+          throw new NotAllowedError(
+            `Tasks API must be invoked by a service, not a user`,
+          );
+        }
+      } else if (this.auth.isPrincipal(credentials, 'none')) {
+        throw new NotAllowedError(
+          `Tasks API must be invoked by a service, not an anonymous request`,
+        );
+      }
+
       const globalState = await TaskWorker.taskStates(
         await this.databaseFactory(),
       );
@@ -184,6 +206,19 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     router.post(
       '/.backstage/scheduler/v1/tasks/:id/trigger',
       async (req, res) => {
+        const credentials = await this.httpAuth.credentials(req);
+        if (this.auth.isPrincipal(credentials, 'user')) {
+          if (!credentials.principal.actor) {
+            throw new NotAllowedError(
+              `Tasks API must be invoked by a service, not a user`,
+            );
+          }
+        } else if (this.auth.isPrincipal(credentials, 'none')) {
+          throw new NotAllowedError(
+            `Tasks API must be invoked by a service, not an anonymous request`,
+          );
+        }
+
         const { id } = req.params;
         await this.triggerTask(id);
         res.status(200).end();

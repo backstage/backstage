@@ -15,7 +15,9 @@
  */
 
 import {
+  AuthService,
   DatabaseService,
+  HttpAuthService,
   HttpRouterService,
   LoggerService,
   PluginMetadataService,
@@ -40,6 +42,8 @@ export class DefaultSchedulerService {
     rootLifecycle: RootLifecycleService;
     httpRouter: HttpRouterService;
     pluginMetadata: PluginMetadataService;
+    auth: AuthService;
+    httpAuth: HttpAuthService;
   }): SchedulerService {
     const databaseFactory = once(async () => {
       const knex = await options.database.getClient();
@@ -68,6 +72,8 @@ export class DefaultSchedulerService {
       databaseFactory,
       options.logger,
       options.rootLifecycle,
+      options.auth,
+      options.httpAuth,
     );
 
     options.httpRouter.use(scheduler.getRouter());
