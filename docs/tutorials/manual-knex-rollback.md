@@ -16,7 +16,7 @@ Currently, we don't have a simple way to check which migrations and which plugin
 This guide covers a simple way to rollback migrations using Knex. We have plans to support this in Backstage's CLI ([issue](https://github.com/backstage/backstage/issues/6366)), but for now it is possible to use Knex CLI to manage migrations in necessary cases.
 
 To start, you are going to need two things: database access and the plugin migrations directory you want to handle. We are going to use environment variables to access the database and we'll be using the `@backstage/plugin-catalog-backend` plugin as an example. In most cases, there is a `migrations` directory in the root of the plugin package, but you can check the `package.json` file to confirm the directory.
-You can get more information about how Backstage handles Databases in [Configuring Plugin Databases](./configuring-plugin-databases.md). This tutorial follows the information in the [Knex migration guide](https://knexjs.org/guide/migrations.html), so you can get more details about the commands there.
+You can get more information about how Backstage handles Databases in [Configuring Plugin Databases](../getting-started/config/database.md). This tutorial follows the information in the [Knex migration guide](https://knexjs.org/guide/migrations.html), so you can get more details about the commands there.
 
 You can interact with Knex running the commands below in the project root:
 

@@ -548,9 +548,7 @@ export default {
       {
         Technical: [
           'tutorials/quickstart-app-plugin',
-          'tutorials/configuring-plugin-databases',
           'tutorials/manual-knex-rollback',
-          'tutorials/switching-sqlite-postgres',
           'tutorials/using-backstage-proxy-within-plugin',
           'tutorials/enable-public-entry',
           'tutorials/setup-opentelemetry',
