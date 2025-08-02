@@ -149,6 +149,22 @@ const generateMockTemplate = () => ({
           },
         },
       },
+      {
+        title: 'test secret with pattern',
+        properties: {
+          test: {
+            title: 'test secret with pattern',
+            type: 'string',
+            'ui:autofocus': true,
+            'ui:options': { rows: 5 },
+            'ui:widget': 'password',
+            'ui:field': 'Secret',
+            maxLength: 8,
+            minLength: 8,
+            pattern: '^[a-z]{1}[a-z0-9]{2,7}$',
+          },
+        },
+      },
     ],
   },
 });
@@ -510,6 +526,25 @@ describe('scaffolder router', () => {
               },
             },
           },
+          {
+            title: 'test secret with pattern',
+            schema: {
+              title: 'test secret with pattern',
+              properties: {
+                test: {
+                  title: 'test secret with pattern',
+                  type: 'string',
+                  'ui:autofocus': true,
+                  'ui:options': { rows: 5 },
+                  'ui:widget': 'password',
+                  'ui:field': 'Secret',
+                  maxLength: 8,
+                  minLength: 8,
+                  pattern: '^[a-z]{1}[a-z0-9]{2,7}$',
+                },
+              },
+            },
+          },
         ],
       });
     });
@@ -633,6 +668,66 @@ describe('scaffolder router', () => {
 
       expect(response.status).toEqual(201);
       expect(response.body.id).toBe('a-random-id');
+    });
+
+    it('should validate secrets field with secret value', async () => {
+      const { router, taskBroker } = await createTestRouter();
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+      const mockToken = mockCredentials.user.token();
+
+      broker.mockResolvedValue({
+        taskId: 'random-id',
+      });
+
+      const res = await request(router)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'test-secret-with-pattern',
+          }),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+            test: '********',
+          },
+          secrets: { test: 'testtest' },
+        });
+
+      expect(res.status).toEqual(201);
+      expect(res.body.id).toBe('random-id');
+    });
+
+    it('should throw error when validate secrets field do not met secret value conditions', async () => {
+      const { router, taskBroker } = await createTestRouter();
+
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+      const mockToken = mockCredentials.user.token();
+
+      broker.mockResolvedValue({
+        taskId: 'random-id',
+      });
+
+      const res = await request(router)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'test-secret-with-pattern',
+          }),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+            test: '********',
+          },
+          secrets: { test: 'testtes' },
+        });
+
+      expect(res.status).toEqual(400);
     });
 
     it('should call the broker with a correct spec', async () => {

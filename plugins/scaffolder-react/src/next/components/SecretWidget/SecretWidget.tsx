@@ -53,8 +53,8 @@ export const SecretWidget = (
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
-    onChange(Array(newValue.length).fill('*').join(''));
     debouncedSetSecrets(newValue);
+    onChange(newValue);
   };
 
   return (
