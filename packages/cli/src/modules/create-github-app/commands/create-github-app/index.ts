@@ -43,8 +43,16 @@ export default async (org: string) => {
         checked: true,
       },
       {
-        name: 'Read and Write to content and actions (required by Software Templates to create new repositories)',
+        name: 'Read and Write to content and actions (provides content and actions write access)',
         value: 'write',
+      },
+      {
+        name: 'Administration (required for repository creation, deletion, settings, teams, and collaborators)',
+        value: 'administration',
+      },
+      {
+        name: 'Workflows (required if repositories contain GitHub Workflows)',
+        value: 'workflows',
       },
     ],
   });
