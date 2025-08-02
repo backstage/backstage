@@ -337,3 +337,19 @@ export async function fetchYarnLockSeedTask(dir: string) {
     return false;
   }
 }
+
+/**
+ * Tries to get the version from a given command if possible
+ *
+ * @param command - command to run
+ * @returns object - version with the version found and N/A if not found, error contains any error and undefined otherwise
+ */
+export async function tryCommandForVersion(command: string) {
+  try {
+    const result = await exec(command);
+
+    return { version: result.stdout, error: undefined };
+  } catch (error) {
+    return { version: 'N/A', error: String(error) };
+  }
+}
