@@ -131,27 +131,28 @@ Usage: techdocs-cli generate|build [options]
 Generate TechDocs documentation site using MkDocs.
 
 Options:
-  --source-dir <PATH>             Source directory containing mkdocs.yml and docs/ directory. (default: ".")
-  --output-dir <PATH>             Output directory containing generated TechDocs site. (default: "./site/")
-  --docker-image <DOCKER_IMAGE>   The mkdocs docker container to use (default: "spotify/techdocs:v1.0.3")
-  --no-pull                       Do not pull the latest docker image
-  --no-docker                     Do not use Docker, use MkDocs executable and plugins in current user environment.
-  --techdocs-ref <HOST_TYPE:URL>  The repository hosting documentation source files e.g.
-                                  url:https://ghe.mycompany.net.com/org/repo.
-                                  This value is same as the backstage.io/techdocs-ref annotation of the corresponding
-                                  Backstage entity.
-                                  It is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml
-                                  if not found.
-  --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
-                                  in techdocs_metadata.json.
-  --defaultPlugin <PLUGIN_NAME>   Plugins which should be added automatically to the mkdocs.yaml file. (default: [])
-  --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
-                                  Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
-  --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
-                                  in case a default <docs-dir>/index.md is not provided. (default: false)
-  --runAsDefaultUser              Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
-  -v --verbose                    Enable verbose output. (default: false)
-  -h, --help                      display help for command
+  --source-dir <PATH>                      Source directory containing mkdocs.yml and docs/ directory. (default: ".")
+  --output-dir <PATH>                      Output directory containing generated TechDocs site. (default: "./site/")
+  --docker-image <DOCKER_IMAGE>            The mkdocs docker container to use (default: "spotify/techdocs:v1.0.3")
+  --no-pull                                Do not pull the latest docker image
+  --no-docker                              Do not use Docker, use MkDocs executable and plugins in current user environment.
+  --techdocs-ref <HOST_TYPE:URL>           The repository hosting documentation source files e.g.
+                                           url:https://ghe.mycompany.net.com/org/repo.
+                                           This value is same as the backstage.io/techdocs-ref annotation of the corresponding
+                                           Backstage entity.
+                                           It is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml
+                                           if not found.
+  --etag <ETAG>                            A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
+                                           in techdocs_metadata.json.
+  --defaultPlugin <PLUGIN_NAME>            Plugins which should be added automatically to the mkdocs.yaml file. (default: [])
+  --omitTechdocsCoreMkdocsPlugin           An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
+                                           Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
+  --legacyCopyReadmeMdToIndexMd            Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
+                                           in case a default <docs-dir>/index.md is not provided. (default: false)
+  --runAsDefaultUser                       Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
+  -c, --mkdocs-config-file-name <FILENAME> Yaml file to use as config by mkdocs.
+  -v --verbose                             Enable verbose output. (default: false)
+  -h, --help                               display help for command
 ```
 
 ### Publish generated TechDocs sites

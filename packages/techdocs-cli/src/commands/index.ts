@@ -80,6 +80,10 @@ export function registerCommands(program: Command) {
       'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
       false,
     )
+    .option(
+      '-c, --mkdocs-config-file-name <FILENAME>',
+      'Mkdocs config file name',
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate'), 'default'));
 
