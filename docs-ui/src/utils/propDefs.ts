@@ -28,6 +28,7 @@ export type PropDef = {
   default?: string;
   required?: boolean;
   responsive?: boolean;
+  description?: string;
 };
 
 export { breakpoints };

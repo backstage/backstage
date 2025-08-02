@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
-import { TableCellText } from './TableCellText';
+import { CellProps as ReactAriaCellProps } from 'react-aria-components';
 
-const meta = {
-  title: 'Components/Table/TableCellText',
-  component: TableCellText,
-} satisfies Meta<typeof TableCellText>;
+/** @public */
+export interface CellProps extends ReactAriaCellProps {
+  title: string;
+  description?: string;
+  color?: 'primary' | 'secondary';
+  leadingIcon?: React.ReactNode | null;
+  href?: string;
+}
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
-  args: {
-    title: 'Hello world',
-  },
-};
-
-export const WithDescription: Story = {
-  args: {
-    ...Default.args,
-    description: 'This is a description',
-  },
-};
+/** @public */
+export interface CellProfileProps extends ReactAriaCellProps {
+  src?: string;
+  name?: string;
+  href?: string;
+  description?: string;
+  color?: 'primary' | 'secondary';
+}

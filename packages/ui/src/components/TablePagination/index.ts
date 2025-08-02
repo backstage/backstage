@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-/** @public */
-export interface TableCellTextProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  title: string;
-  description?: string;
-}
+export { TablePagination } from './TablePagination';
+export type { TablePaginationProps } from './types';

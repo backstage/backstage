@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@
 @import '../components/Checkbox/styles.css';
 @import '../components/Collapsible/Collapsible.styles.css';
 @import '../components/Container/styles.css';
-@import '../components/DataTable/Root/DataTableRoot.styles.css';
-@import '../components/DataTable/Pagination/DataTablePagination.styles.css';
 @import '../components/FieldError/FieldError.styles.css';
 @import '../components/FieldLabel/FieldLabel.styles.css';
 @import '../components/Flex/styles.css';
@@ -35,11 +33,8 @@
 @import '../components/Menu/Menu.styles.css';
 @import '../components/Popover/Popover.styles.css';
 @import '../components/RadioGroup/RadioGroup.styles.css';
-@import '../components/Table/styles.css';
-@import '../components/Table/TableCell/TableCell.styles.css';
-@import '../components/Table/TableCellText/TableCellText.styles.css';
-@import '../components/Table/TableCellLink/TableCellLink.styles.css';
-@import '../components/Table/TableCellProfile/TableCellProfile.styles.css';
+@import '../components/Table/Table.styles.css';
+@import '../components/TablePagination/TablePagination.styles.css';
 @import '../components/Tabs/Tabs.styles.css';
 @import '../components/Text/styles.css';
 @import '../components/TextField/TextField.styles.css';
