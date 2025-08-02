@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-tasks-react
+  title: '@backstage/plugin-tasks-react'
+  description: Web library for the tasks plugin
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers

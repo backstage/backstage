@@ -59,6 +59,7 @@ backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
+backend.add(import('@backstage/plugin-tasks-backend'));
 backend.add(import('./instanceMetadata'));
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));

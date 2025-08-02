@@ -298,3 +298,9 @@ auth:
 
 permission:
   enabled: true
+
+tasks:
+  enabledPlugins:
+    - search
+    - catalog
+    - notifications
