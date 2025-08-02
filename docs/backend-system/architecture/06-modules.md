@@ -18,7 +18,7 @@ The following is an example on how to create a module that adds a new processor 
 ```ts
 // plugins/catalog-backend-module-example-processor/src/module.ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { MyCustomProcessor } from './MyCustomProcessor';
 
 export const catalogModuleExampleCustomProcessor = createBackendModule({
