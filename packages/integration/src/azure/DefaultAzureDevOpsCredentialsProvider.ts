@@ -110,6 +110,18 @@ export class DefaultAzureDevOpsCredentialsProvider
     return undefined;
   }
 
+  private forVisualstudioOrganization(
+    url: URL,
+  ): AzureDevOpsCredentialsProvider | undefined {
+    const parts = url.host.split('.');
+    if (url.host.includes('visualstudio.com') && parts.length > 0) {
+      // url format: https://{organization}.visualstudio.com
+      return this.providers.get(`${url.host}/${parts[0]}`);
+    }
+
+    return undefined;
+  }
+
   private forHost(url: URL): AzureDevOpsCredentialsProvider | undefined {
     return this.providers.get(url.host);
   }
@@ -121,6 +133,7 @@ export class DefaultAzureDevOpsCredentialsProvider
     const provider =
       this.forAzureDevOpsOrganization(url) ??
       this.forAzureDevOpsServerOrganization(url) ??
+      this.forVisualstudioOrganization(url) ??
       this.forHost(url);
 
     if (provider === undefined) {
