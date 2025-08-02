@@ -82,6 +82,14 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
  */
 export type EntityOwnerPickerProps = {
   mode?: 'owners-only' | 'all';
+  /**
+   * An array of entity kinds for which the owner filter should be hidden and cleared.
+   *
+   * Defaults to `['user', 'group']` if not provided.
+   *
+   * Example: `['user', 'group', 'location']`
+   */
+  hideForKinds?: string[];
 };
 
 function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
@@ -123,7 +131,8 @@ function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
 /** @public */
 export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   const classes = useStyles();
-  const { mode = 'owners-only' } = props || {};
+  const { mode = 'owners-only', hideForKinds = ['user', 'group'] } =
+    props || {};
   const {
     updateFilters,
     filters,
@@ -167,10 +176,22 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     });
   }, [selectedOwners, updateFilters]);
 
+  useEffect(() => {
+    const kind = filters.kind?.value.toLocaleLowerCase('en-US') ?? '';
+    if (hideForKinds.includes(kind)) {
+      updateFilters({ owners: undefined });
+    } else {
+      updateFilters({
+        owners: selectedOwners.length
+          ? new EntityOwnerFilter(selectedOwners)
+          : undefined,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.kind]);
+
   if (
-    ['user', 'group'].includes(
-      filters.kind?.value.toLocaleLowerCase('en-US') || '',
-    )
+    hideForKinds.includes(filters.kind?.value.toLocaleLowerCase('en-US') || '')
   ) {
     return null;
   }
