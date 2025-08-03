@@ -16,25 +16,15 @@
 
 import { EventEmitter } from 'events';
 import { LoggerService } from '@backstage/backend-plugin-api';
-
-/**
- * Options for putting values into Infinispan cache.
- * @public
- */
-export interface PutOptions {
-  lifespan?: string;
-  maxIdle?: string;
-  previous?: boolean;
-  flags?: string[];
-}
+import { InfinispanPutOptions } from '../../types';
 
 /**
  * Interface defining the required methods for an Infinispan client.
  * @public
  */
-export interface ClientInterface {
+export interface InfinispanClientCacheInterface {
   get(key: string): Promise<string | null | undefined>;
-  put(key: string, value: string, options?: PutOptions): Promise<any>;
+  put(key: string, value: string, options?: InfinispanPutOptions): Promise<any>;
   remove(key: string): Promise<boolean>;
   clear(): Promise<void>;
   disconnect(): Promise<void>;
@@ -46,10 +36,9 @@ export interface ClientInterface {
 
 /**
  * Options for creating an InfinispanKeyvStore instance.
- * @public
  */
 export interface InfinispanKeyvStoreOptions {
-  clientPromise: Promise<ClientInterface>;
+  clientPromise: Promise<InfinispanClientCacheInterface>;
   logger: LoggerService;
   defaultTtl?: number; // TTL in milliseconds
 }
@@ -58,14 +47,12 @@ export interface InfinispanKeyvStoreOptions {
  * A Keyv store implementation that uses Infinispan as the backend.
  * This store implements the Keyv store interface and provides caching functionality
  * using Infinispan's distributed cache capabilities.
- *
- * @internal
  */
 export class InfinispanKeyvStore extends EventEmitter {
-  private readonly clientPromise: Promise<ClientInterface>;
+  private readonly clientPromise: Promise<InfinispanClientCacheInterface>;
   private readonly logger: LoggerService;
   private readonly defaultTtl?: number;
-  private resolvedClient: ClientInterface | null = null;
+  private resolvedClient: InfinispanClientCacheInterface | null = null;
 
   public readonly namespace?: string; // Keyv expects this
 
@@ -103,7 +90,7 @@ export class InfinispanKeyvStore extends EventEmitter {
       });
   }
 
-  private async getClient(): Promise<ClientInterface> {
+  private async getClient(): Promise<InfinispanClientCacheInterface> {
     if (this.resolvedClient) {
       return this.resolvedClient;
     }
@@ -141,13 +128,15 @@ export class InfinispanKeyvStore extends EventEmitter {
     this.logger.debug(`Setting key: ${key}`, { ttlInput: ttl });
     const currentTtl = ttl ?? this.defaultTtl;
     this.logger.debug(`Calculated currentTtl for key ${key}: ${currentTtl}ms`); // Log do TTL calculado
-    const storeOptions: PutOptions = {};
+    const storeOptions: InfinispanPutOptions = {};
 
     if (typeof currentTtl === 'number' && currentTtl > 0) {
       storeOptions.lifespan = `${currentTtl}ms`; // Ensure time unit is passed as string
       // Ensure this matches client expectations. If client expects string '10s', convert here.
       // For now, assuming number in ms is fine or string like '10000ms'.
       // The PutOptions defines lifespan as string | number | null.
+    } else if (typeof currentTtl === 'string') {
+      storeOptions.lifespan = currentTtl;
     }
 
     try {
