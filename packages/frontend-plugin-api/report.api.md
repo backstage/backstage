@@ -151,14 +151,8 @@ export { AnyApiFactory };
 
 export { AnyApiRef };
 
-// @public (undocumented)
-export type AnyExtensionDataRef = ExtensionDataRef<
-  unknown,
-  string,
-  {
-    optional?: true;
-  }
->;
+// @public @deprecated (undocumented)
+export type AnyExtensionDataRef = ExtensionDataRef;
 
 // @public (undocumented)
 export type AnyExternalRoutes = {
@@ -432,7 +426,7 @@ export function createComponentExtension<TProps extends {}>(options: {
   >;
   inputs: {
     [x: string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;
@@ -464,10 +458,10 @@ export function createComponentRef<T extends {} = {}>(options: {
 
 // @public (undocumented)
 export function createExtension<
-  UOutput extends AnyExtensionDataRef,
+  UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;
@@ -512,10 +506,10 @@ export function createExtension<
 // @public
 export function createExtensionBlueprint<
   TParams extends object | ExtensionBlueprintParamsDefiner,
-  UOutput extends AnyExtensionDataRef,
+  UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;
@@ -528,7 +522,7 @@ export function createExtensionBlueprint<
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TKind extends string,
   TDataRefs extends {
-    [name in string]: AnyExtensionDataRef;
+    [name in string]: ExtensionDataRef;
   } = never,
 >(
   options: CreateExtensionBlueprintOptions<
@@ -564,10 +558,10 @@ export function createExtensionBlueprint<
 export type CreateExtensionBlueprintOptions<
   TKind extends string,
   TParams extends object | ExtensionBlueprintParamsDefiner,
-  UOutput extends AnyExtensionDataRef,
+  UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;
@@ -579,7 +573,7 @@ export type CreateExtensionBlueprintOptions<
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TDataRefs extends {
-    [name in string]: AnyExtensionDataRef;
+    [name in string]: ExtensionDataRef;
   },
 > = {
   kind: TKind;
@@ -654,10 +648,10 @@ export function createExtensionInput<
 export type CreateExtensionOptions<
   TKind extends string | undefined,
   TName extends string | undefined,
-  UOutput extends AnyExtensionDataRef,
+  UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;
@@ -938,10 +932,10 @@ export interface ExtensionBlueprint<
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
-    UNewOutput extends AnyExtensionDataRef,
+    UNewOutput extends ExtensionDataRef,
     TExtraInputs extends {
       [inputName in string]: ExtensionInput<
-        AnyExtensionDataRef,
+        ExtensionDataRef,
         {
           optional: boolean;
           singleton: boolean;
@@ -989,7 +983,7 @@ export interface ExtensionBlueprint<
       },
     ): Iterable<UFactoryOutput> &
       VerifyExtensionFactoryOutput<
-        AnyExtensionDataRef extends UNewOutput
+        ExtensionDataRef extends UNewOutput
           ? NonNullable<T['output']>
           : UNewOutput,
         UFactoryOutput
@@ -1013,7 +1007,7 @@ export interface ExtensionBlueprint<
           }>
         >) &
       T['configInput'];
-    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
     inputs: T['inputs'] & TExtraInputs;
     kind: T['kind'];
     name: string | undefined extends TName ? undefined : TName;
@@ -1031,10 +1025,10 @@ export type ExtensionBlueprintParameters = {
   config?: {
     [K in string]: any;
   };
-  output?: AnyExtensionDataRef;
+  output?: ExtensionDataRef;
   inputs?: {
     [KName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;
@@ -1042,7 +1036,7 @@ export type ExtensionBlueprintParameters = {
     >;
   };
   dataRefs?: {
-    [name in string]: AnyExtensionDataRef;
+    [name in string]: ExtensionDataRef;
   };
 };
 
@@ -1084,7 +1078,7 @@ export interface ExtensionBoundaryProps {
 }
 
 // @public (undocumented)
-export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
+export type ExtensionDataContainer<UExtensionData extends ExtensionDataRef> =
   Iterable<
     UExtensionData extends ExtensionDataRef<
       infer IData,
@@ -1107,11 +1101,13 @@ export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
 
 // @public (undocumented)
 export type ExtensionDataRef<
-  TData,
+  TData = unknown,
   TId extends string = string,
   TConfig extends {
     optional?: true;
-  } = {},
+  } = {
+    optional?: true;
+  },
 > = {
   readonly $$type: '@backstage/ExtensionDataRef';
   readonly id: TId;
@@ -1143,10 +1139,10 @@ export type ExtensionDefinition<
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
-    UNewOutput extends AnyExtensionDataRef,
+    UNewOutput extends ExtensionDataRef,
     TExtraInputs extends {
       [inputName in string]: ExtensionInput<
-        AnyExtensionDataRef,
+        ExtensionDataRef,
         {
           optional: boolean;
           singleton: boolean;
@@ -1213,7 +1209,7 @@ export type ExtensionDefinition<
           })
     > &
       VerifyExtensionFactoryOutput<
-        AnyExtensionDataRef extends UNewOutput
+        ExtensionDataRef extends UNewOutput
           ? NonNullable<T['output']>
           : UNewOutput,
         UFactoryOutput
@@ -1221,7 +1217,7 @@ export type ExtensionDefinition<
   ): ExtensionDefinition<{
     kind: T['kind'];
     name: T['name'];
-    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
     inputs: T['inputs'] & TExtraInputs;
     config: T['config'] & {
       [key in keyof TExtensionConfigSchema]: z.infer<
@@ -1249,10 +1245,10 @@ export type ExtensionDefinitionParameters = {
   config?: {
     [K in string]: any;
   };
-  output?: AnyExtensionDataRef;
+  output?: ExtensionDataRef;
   inputs?: {
     [KName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;
@@ -1266,7 +1262,7 @@ export type ExtensionDefinitionParameters = {
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {
     config?: JsonObject;
-  }) => ExtensionDataContainer<AnyExtensionDataRef>,
+  }) => ExtensionDataContainer<ExtensionDataRef>,
   context: {
     node: AppNode;
     apis: ApiHolder;
@@ -1606,7 +1602,7 @@ export { ProfileInfoApi };
 // @public
 export type ResolvedExtensionInput<
   TExtensionInput extends ExtensionInput<any, any>,
-> = TExtensionInput['extensionData'] extends Array<AnyExtensionDataRef>
+> = TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
   ? {
       node: AppNode;
     } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
@@ -1629,7 +1625,7 @@ export type ResolvedExtensionInputs<
 export type ResolveInputValueOverrides<
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;
@@ -1637,7 +1633,7 @@ export type ResolveInputValueOverrides<
     >;
   } = {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
         optional: boolean;
         singleton: boolean;

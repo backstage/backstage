@@ -5,7 +5,6 @@
 ```ts
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
-import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ApiMock } from '@backstage/test-utils';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
@@ -45,7 +44,7 @@ export function createExtensionTester<T extends ExtensionDefinitionParameters>(
 export { ErrorWithContext };
 
 // @public (undocumented)
-export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
+export class ExtensionQuery<UOutput extends ExtensionDataRef> {
   constructor(node: AppNode);
   // (undocumented)
   get<TId extends UOutput['id']>(
@@ -62,7 +61,7 @@ export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
 }
 
 // @public (undocumented)
-export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
+export class ExtensionTester<UOutput extends ExtensionDataRef> {
   // (undocumented)
   add<T extends ExtensionDefinitionParameters>(
     extension: ExtensionDefinition<T>,
