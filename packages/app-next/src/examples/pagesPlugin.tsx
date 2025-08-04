@@ -44,7 +44,7 @@ function PluginInfo() {
   const [info, setInfo] = useState<FrontendPluginInfo | undefined>(undefined);
 
   useEffect(() => {
-    node?.spec.source?.info().then(setInfo);
+    node?.spec.plugin?.info().then(setInfo);
   }, [node]);
 
   return (
