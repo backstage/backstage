@@ -246,6 +246,9 @@ export type ToolkitContentProps = {
 };
 
 // @public
+export const useColorVariants: () => Record<string, string[]>;
+
+// @public
 export type Visit = {
   id: string;
   name: string;
@@ -265,6 +268,18 @@ export type VisitedByTypeProps = {
   numVisitsTotal?: number;
   loading?: boolean;
   kind: VisitedByTypeKind;
+};
+
+// @public
+export const VisitListContextProvider: ({
+  children,
+  colorVariants,
+}: VisitListContextProviderProps) => JSX_2.Element;
+
+// @public
+export type VisitListContextProviderProps = {
+  children: ReactNode;
+  colorVariants?: Record<string, string[]>;
 };
 
 // @public

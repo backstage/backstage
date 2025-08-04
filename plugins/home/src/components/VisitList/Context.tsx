@@ -18,15 +18,27 @@ import { colorVariants as defaultColorVariants } from '@backstage/theme';
 
 const VisitListContext = createContext(defaultColorVariants);
 
+/**
+ * Hook to access color variants from the VisitList context
+ * @public
+ */
 export const useColorVariants = () => {
   return useContext(VisitListContext);
 };
 
-type VisitListContextProviderProps = {
+/**
+ * Props for VisitListContextProvider
+ * @public
+ */
+export type VisitListContextProviderProps = {
   children: ReactNode;
   colorVariants?: Record<string, string[]>;
 };
 
+/**
+ * Context provider for VisitList color variants (used for chip colors)
+ * @public
+ */
 export const VisitListContextProvider = ({
   children,
   colorVariants = defaultColorVariants,
