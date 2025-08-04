@@ -750,6 +750,52 @@ export interface Config {
           connection: string;
           /** An optional default TTL (in milliseconds). */
           defaultTtl?: number | HumanDuration | string;
+        }
+      | {
+          store: 'infinispan';
+          /**
+           * Configuration for the Infinispan cache store.
+           */
+          infinispan?: {
+            /**
+             * Infinispan server host. Defaults to `127.0.0.1`.
+             */
+            host?: string;
+            /**
+             * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+             */
+            port?: number;
+            /**
+             * Username for authentication.
+             */
+            username?: string;
+            /**
+             * Password for authentication.
+             * @visibility secret
+             */
+            password?: string;
+            /**
+             * SASL mechanism for authentication (e.g., DIGEST-MD5, PLAIN, SCRAM-SHA-1). Defaults to `DIGEST-MD5` if username/password are provided.
+             */
+            saslMechanism?: string;
+            /**
+             * Server name for authentication (required by some SASL mechanisms).
+             */
+            serverName?: string;
+            /**
+             * Default cache name to use if not specified by the plugin.
+             */
+            cacheName?: string;
+            /**
+             * TLS/SSL configuration.
+             */
+            tls?: {
+              /**
+               * Enable TLS connection. Defaults to `false`.
+               */
+              enabled: boolean;
+            };
+          };
         };
 
     cors?: {

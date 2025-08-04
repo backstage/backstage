@@ -24,6 +24,7 @@ import { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
  * @public
  */
 export type RedisCacheStoreOptions = {
+  type: 'redis' | 'valkey';
   client?: KeyvRedisOptions;
   cluster?: RedisClusterOptions;
 };
@@ -33,7 +34,9 @@ export type RedisCacheStoreOptions = {
  *
  * @public
  */
-export type CacheStoreOptions = RedisCacheStoreOptions;
+export type CacheStoreOptions =
+  | RedisCacheStoreOptions
+  | InfinispanCacheStoreOptions;
 
 /**
  * Options given when constructing a {@link CacheManager}.
@@ -55,4 +58,104 @@ export type CacheManagerOptions = {
 
 export function ttlToMilliseconds(ttl: number | HumanDuration): number {
   return typeof ttl === 'number' ? ttl : durationToMilliseconds(ttl);
+}
+
+/**
+ * Configuration for a single Infinispan server.
+ * @public
+ */
+export interface InfinispanServerConfig {
+  host: string;
+  port: number;
+}
+
+/**
+ * SSL/TLS options for the Infinispan client.
+ * @public
+ */
+export interface InfinispanSslOptions {
+  enabled: boolean;
+  secureProtocol?: string | null;
+  caFile?: string | null;
+  clientCertificateFile?: string | null;
+  clientKeyFile?: string | null;
+  clientKeyPassword?: string | null;
+  sniHostname?: string | null;
+}
+
+/**
+ * Authentication options for the Infinispan client.
+ * @public
+ */
+export interface InfinispanAuthOptions {
+  enabled: boolean;
+  saslMechanism?: string;
+  userName?: string;
+  password?: string;
+  token?: string;
+  realm?: string;
+}
+
+/**
+ * Options for the Infinispan cache store, designed to be configured
+ * in app-config.yaml under `backend.cache.infinispan`.
+ * @public
+ */
+export type InfinispanCacheStoreOptions = {
+  type: 'infinispan';
+  servers: InfinispanServerConfig | InfinispanServerConfig[];
+  options?: InfinispanClientBehaviorOptions;
+};
+
+/**
+ * Data format options for the Infinispan client.
+ * @public
+ */
+export interface InfinispanDataFormatOptions {
+  keyType?: string;
+  valueType?: string;
+  mediaType?: 'text/plain' | 'application/json';
+}
+
+/**
+ * Detailed client behavior options for the Infinispan client.
+ * @public
+ */
+export interface InfinispanClientBehaviorOptions {
+  version?: '2.9' | '2.5' | '2.2';
+  cacheName?: string;
+  maxRetries?: number;
+  connectionTimeout?: number;
+  socketTimeout?: number;
+  authentication?: InfinispanAuthOptions;
+  ssl?: InfinispanSslOptions;
+  dataFormat?: InfinispanDataFormatOptions;
+  topologyUpdates?: boolean;
+}
+
+/**
+ * Interface defining the required methods for an Infinispan client.
+ * Re-exported from InfinispanKeyvStore for convenience.
+ * @public
+ */
+export interface ClientInterface {
+  get(key: string): Promise<string | null | undefined>;
+  put(key: string, value: string, options?: any): Promise<any>;
+  remove(key: string): Promise<boolean>;
+  clear(): Promise<void>;
+  disconnect(): Promise<void>;
+  on?(event: 'error' | string, listener: (...args: any[]) => void): this;
+  connect?(): Promise<any>;
+  query?(query: string): Promise<any[] | null>;
+  containsKey?(key: string): Promise<boolean>;
+}
+
+/**
+ * Options for creating an InfinispanKeyvStore instance.
+ * @public
+ */
+export interface InfinispanKeyvStoreOptions {
+  clientPromise: Promise<ClientInterface>;
+  logger: LoggerService;
+  defaultTtl?: number; // TTL in milliseconds
 }
