@@ -47,7 +47,7 @@ const _default: FrontendPlugin<
       >;
       inputs: {};
       params: {
-        element: JSX.Element | (() => JSX.Element);
+        element: JSX.Element;
       };
     }>;
   }

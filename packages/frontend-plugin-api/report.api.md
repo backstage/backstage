@@ -252,7 +252,7 @@ export interface AppNodeSpec {
 export const AppRootElementBlueprint: ExtensionBlueprint<{
   kind: 'app-root-element';
   params: {
-    element: JSX.Element | (() => JSX.Element);
+    element: JSX.Element;
   };
   output: ConfigurableExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
   inputs: {};

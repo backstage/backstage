@@ -812,7 +812,7 @@ const appPlugin: FrontendPlugin<
       kind: 'app-root-element';
       name: 'alert-display';
       params: {
-        element: JSX.Element | (() => JSX.Element);
+        element: JSX.Element;
       };
     }>;
     'app-root-element:app/dialog-display': ExtensionDefinition<{
@@ -835,7 +835,7 @@ const appPlugin: FrontendPlugin<
       kind: 'app-root-element';
       name: 'dialog-display';
       params: {
-        element: JSX.Element | (() => JSX.Element);
+        element: JSX.Element;
       };
     }>;
     'app-root-element:app/oauth-request-dialog': ExtensionDefinition<{
@@ -850,7 +850,7 @@ const appPlugin: FrontendPlugin<
       >;
       inputs: {};
       params: {
-        element: JSX.Element | (() => JSX.Element);
+        element: JSX.Element;
       };
     }>;
     'sign-in-page:app': ExtensionDefinition<{
