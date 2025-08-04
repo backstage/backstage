@@ -34,12 +34,20 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { ScaffolderFormDecoratorsApi } from '../../api/types';
 import { formDecoratorsApiRef } from '../../api/ref';
+import { visitsApiRef } from '@backstage/plugin-home';
 
 jest.mock('react-router-dom', () => {
   return {
     ...(jest.requireActual('react-router-dom') as any),
     useParams: () => ({
       templateName: 'test',
+    }),
+    useLocation: () => ({
+      pathname: '/create/templates/default/test-template',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
     }),
   };
 });
@@ -60,6 +68,12 @@ const scaffolderDecoratorsMock: jest.Mocked<ScaffolderFormDecoratorsApi> = {
   getFormDecorators: jest.fn().mockResolvedValue([]),
 };
 
+const visitsApiMock = {
+  updateName: jest.fn().mockResolvedValue(undefined),
+  visit: jest.fn(),
+  getVisits: jest.fn().mockResolvedValue([]),
+};
+
 const catalogApi = catalogApiMock.mock();
 const analyticsApi = mockApis.analytics();
 
@@ -68,7 +82,7 @@ const apis = TestApiRegistry.from(
   [formDecoratorsApiRef, scaffolderDecoratorsMock],
   [catalogApiRef, catalogApi],
   [analyticsApiRef, analyticsApi],
-  [catalogApiRef, catalogApi],
+  [visitsApiRef, visitsApiMock],
 );
 
 const entityRefResponse = {
@@ -220,6 +234,60 @@ describe('TemplateWizardPage', () => {
         },
       );
       expect(queryByTestId('menu-button')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('useUpdateVisitName hook', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call visitsApi.updateName when template title is available', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+        title: 'Test Template Title',
+      });
+      catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      expect(visitsApiMock.updateName).toHaveBeenCalledWith(
+        '/create/templates/default/test-template',
+        'Template Test Template Title',
+      );
+    });
+
+    it('should not call visitsApi.updateName when template title is undefined', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+      } as any);
+      catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      expect(visitsApiMock.updateName).not.toHaveBeenCalled();
     });
   });
 });
