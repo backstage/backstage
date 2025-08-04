@@ -69,7 +69,6 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
-    "@backstage/plugin-home": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",

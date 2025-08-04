@@ -25,6 +25,8 @@ import {
   useApi,
   useRouteRef,
   useRouteRefParams,
+  useApiHolder,
+  createApiRef,
 } from '@backstage/core-plugin-api';
 import {
   scaffolderApiRef,
@@ -54,16 +56,27 @@ import { scaffolderTranslationRef } from '../../../translation';
 
 import { TemplateWizardPageContextMenu } from './TemplateWizardPageContextMenu';
 import { useFormDecorators } from '../../hooks';
-import { visitsApiRef } from '@backstage/plugin-home';
 import { useLocation } from 'react-router-dom';
+
+const visitsApiRef = createApiRef<{
+  updateName: (pathname: string, name: string) => Promise<void>;
+}>({
+  id: 'homepage.visits',
+});
 
 const useUpdateVisitName = (manifest: TemplateParameterSchema | undefined) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
-  const visitsApi = useApi(visitsApiRef);
+  const apiHolder = useApiHolder();
   const { pathname } = useLocation();
 
   useEffect(() => {
     if (!manifest?.title) return;
+
+    const visitsApi = apiHolder.get(visitsApiRef);
+    if (!visitsApi) {
+      return;
+    }
+
     visitsApi
       .updateName(
         pathname,
@@ -72,7 +85,7 @@ const useUpdateVisitName = (manifest: TemplateParameterSchema | undefined) => {
         }),
       )
       .catch(() => {});
-  }, [manifest?.title, pathname, visitsApi, t]);
+  }, [manifest?.title, pathname, apiHolder, t]);
 };
 
 /**
