@@ -39908,15 +39908,15 @@ __metadata:
   linkType: hard
 
 "morgan@npm:^1.10.0":
-  version: 1.10.0
-  resolution: "morgan@npm:1.10.0"
+  version: 1.10.1
+  resolution: "morgan@npm:1.10.1"
   dependencies:
     basic-auth: "npm:~2.0.1"
     debug: "npm:2.6.9"
     depd: "npm:~2.0.0"
     on-finished: "npm:~2.3.0"
-    on-headers: "npm:~1.0.2"
-  checksum: 10/4497ace00dac65318658595528c1924942c900aae88b7adc5e69e18dd78fb5d1fcccdc2048404ce7d88b5344dc088c492e3aa7cf8023f1e601c6b0f4ff806b93
+    on-headers: "npm:~1.1.0"
+  checksum: 10/f6a611bdcb9bebe8283381c49efedee81f50b75f6cbc52430cda1743ec35443c92d5e5d4384ce38b102d8c102162c92da563471def3cf840b4980160f278f8ba
   languageName: node
   linkType: hard
 
