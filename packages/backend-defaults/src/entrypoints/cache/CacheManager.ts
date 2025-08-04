@@ -27,9 +27,16 @@ import {
   ttlToMilliseconds,
   CacheStoreOptions,
   RedisCacheStoreOptions,
+  InfinispanClientBehaviorOptions,
+  InfinispanServerConfig,
 } from './types';
+import { InfinispanOptionsMapper } from './providers/infinispan/InfinispanOptionsMapper';
 import { durationToMilliseconds } from '@backstage/types';
-import { readDurationFromConfig } from '@backstage/config';
+import { ConfigReader, readDurationFromConfig } from '@backstage/config';
+import {
+  InfinispanClientCacheInterface,
+  InfinispanKeyvStore,
+} from './providers/infinispan/InfinispanKeyvStore';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -50,6 +57,7 @@ export class CacheManager {
     valkey: this.createValkeyStoreFactory(),
     memcache: this.createMemcacheStoreFactory(),
     memory: this.createMemoryStoreFactory(),
+    infinispan: this.createInfinispanStoreFactory(),
   };
 
   private readonly logger?: LoggerService;
@@ -64,6 +72,8 @@ export class CacheManager {
    * config section, specifically the `.cache` key.
    *
    * @param config - The loaded application configuration.
+   * @param options - Optional configuration for the CacheManager.
+   * @returns A new CacheManager instance.
    */
   static fromConfig(
     config: RootConfigService,
@@ -112,7 +122,7 @@ export class CacheManager {
   /**
    * Parse store-specific options from configuration.
    *
-   * @param store - The cache store type ('redis', 'valkey', 'memcache', or 'memory')
+   * @param store - The cache store type ('redis', 'valkey', 'memcache', 'infinispan', or 'memory')
    * @param config - The configuration service
    * @param logger - Optional logger for warnings
    * @returns The parsed store options
@@ -124,11 +134,27 @@ export class CacheManager {
   ): CacheStoreOptions | undefined {
     const storeConfigPath = `backend.cache.${store}`;
 
-    if (
-      (store === 'redis' || store === 'valkey') &&
-      config.has(storeConfigPath)
-    ) {
-      return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+    if (!config.has(storeConfigPath)) {
+      logger?.warn(
+        `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
+      );
+    }
+
+    if (store === 'redis' || store === 'valkey') {
+      return CacheManager.parseRedisOptions(
+        store,
+        storeConfigPath,
+        config,
+        logger,
+      );
+    }
+
+    if (store === 'infinispan') {
+      return InfinispanOptionsMapper.parseInfinispanOptions(
+        storeConfigPath,
+        config,
+        logger,
+      );
     }
 
     return undefined;
@@ -138,12 +164,17 @@ export class CacheManager {
    * Parse Redis-specific options from configuration.
    */
   private static parseRedisOptions(
+    store: string,
     storeConfigPath: string,
     config: RootConfigService,
     logger?: LoggerService,
   ): RedisCacheStoreOptions {
-    const redisOptions: RedisCacheStoreOptions = {};
-    const redisConfig = config.getConfig(storeConfigPath);
+    const redisOptions: RedisCacheStoreOptions = {
+      type: store as 'redis' | 'valkey',
+    };
+
+    const redisConfig =
+      config.getOptionalConfig(storeConfigPath) ?? new ConfigReader({});
 
     redisOptions.client = {
       namespace: redisConfig.getOptionalString('client.namespace'),
@@ -231,23 +262,25 @@ export class CacheManager {
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        const redisOptions = this.storeOptions?.client || {
-          keyPrefixSeparator: ':',
-        };
-        if (this.storeOptions?.cluster) {
-          // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvRedis(cluster, redisOptions);
-        } else {
-          // Create a regular Redis connection
-          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
-        }
+        if (this.storeOptions?.type === 'redis') {
+          const redisOptions = this.storeOptions?.client || {
+            keyPrefixSeparator: ':',
+          };
+          if (this.storeOptions?.cluster) {
+            // Create a Redis cluster
+            const cluster = createCluster(this.storeOptions?.cluster);
+            stores[pluginId] = new KeyvRedis(cluster, redisOptions);
+          } else {
+            // Create a regular Redis connection
+            stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+          }
 
-        // Always provide an error handler to avoid stopping the process
-        stores[pluginId].on('error', (err: Error) => {
-          this.logger?.error('Failed to create redis cache client', err);
-          this.errorHandler?.(err);
-        });
+          // Always provide an error handler to avoid stopping the process
+          stores[pluginId].on('error', (err: Error) => {
+            this.logger?.error('Failed to create redis cache client', err);
+            this.errorHandler?.(err);
+          });
+        }
       }
       return new Keyv({
         namespace: pluginId,
@@ -266,23 +299,25 @@ export class CacheManager {
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        const valkeyOptions = this.storeOptions?.client || {
-          keyPrefixSeparator: ':',
-        };
-        if (this.storeOptions?.cluster) {
-          // Create a Valkey cluster (Redis cluster under the hood)
-          const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
-        } else {
-          // Create a regular Valkey connection
-          stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
-        }
+        if (this.storeOptions?.type === 'valkey') {
+          const valkeyOptions = this.storeOptions?.client || {
+            keyPrefixSeparator: ':',
+          };
+          if (this.storeOptions?.cluster) {
+            // Create a Valkey cluster (Redis cluster under the hood)
+            const cluster = createCluster(this.storeOptions?.cluster);
+            stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
+          } else {
+            // Create a regular Valkey connection
+            stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
+          }
 
-        // Always provide an error handler to avoid stopping the process
-        stores[pluginId].on('error', (err: Error) => {
-          this.logger?.error('Failed to create valkey cache client', err);
-          this.errorHandler?.(err);
-        });
+          // Always provide an error handler to avoid stopping the process
+          stores[pluginId].on('error', (err: Error) => {
+            this.logger?.error('Failed to create valkey cache client', err);
+            this.errorHandler?.(err);
+          });
+        }
       }
       return new Keyv({
         namespace: pluginId,
@@ -325,5 +360,97 @@ export class CacheManager {
         emitErrors: false,
         store,
       });
+  }
+
+  private createInfinispanStoreFactory(): StoreFactory {
+    const stores: Record<string, InfinispanKeyvStore> = {};
+
+    return (pluginId, defaultTtl) => {
+      if (!stores[pluginId]) {
+        if (this.storeOptions?.type === 'infinispan') {
+          // Use sync version for testing environments
+          const isTest =
+            process.env.NODE_ENV === 'test' || typeof jest !== 'undefined';
+
+          // Create the client promise ONCE and reuse it
+          const clientPromise: Promise<InfinispanClientCacheInterface> = isTest
+            ? this.createInfinispanClientSync()
+            : this.createInfinispanClientAsync();
+
+          this.logger?.info(
+            `Creating Infinispan cache client for plugin ${pluginId} isTest = ${isTest}`,
+          );
+          const storeInstance = new InfinispanKeyvStore({
+            clientPromise,
+            logger: this.logger!,
+          });
+
+          stores[pluginId] = storeInstance;
+
+          // Always provide an error handler to avoid stopping the process
+          storeInstance.on('error', (err: Error) => {
+            this.logger?.error('Failed to create infinispan cache client', err);
+            this.errorHandler?.(err);
+          });
+        }
+      }
+
+      return new Keyv({
+        namespace: pluginId,
+        ttl: defaultTtl,
+        store: stores[pluginId],
+        emitErrors: false,
+      });
+    };
+  }
+
+  /**
+   * Creates an Infinispan client using dynamic import (production use).
+   * @returns Promise that resolves to an Infinispan client
+   */
+  private async createInfinispanClientAsync(): Promise<InfinispanClientCacheInterface> {
+    return this.createInfinispanClient(false);
+  }
+
+  /**
+   * Creates an Infinispan client using synchronous import (testing purposes).
+   * @returns Promise that resolves to an Infinispan client
+   */
+  private createInfinispanClientSync(): Promise<InfinispanClientCacheInterface> {
+    return this.createInfinispanClient(true);
+  }
+
+  /**
+   * Creates an Infinispan client based on the provided configuration.
+   * @param useSync - Whether to use synchronous import (for testing) or dynamic import
+   * @returns Promise that resolves to an Infinispan client
+   */
+  private async createInfinispanClient(
+    useSync: boolean = false,
+  ): Promise<InfinispanClientCacheInterface> {
+    try {
+      this.logger?.info('Creating Infinispan client');
+
+      if (this.storeOptions?.type === 'infinispan') {
+        // Import infinispan based on the useSync parameter
+        const infinispan = useSync
+          ? require('infinispan')
+          : await import('infinispan');
+
+        const client = await infinispan.client(
+          this.storeOptions.servers as InfinispanServerConfig[],
+          this.storeOptions.options as InfinispanClientBehaviorOptions,
+        );
+
+        this.logger?.info('Infinispan client created successfully');
+        return client;
+      }
+      throw new Error('Infinispan store options are not defined');
+    } catch (error: any) {
+      this.logger?.error('Failed to create Infinispan client', {
+        error: error.message,
+      });
+      throw error;
+    }
   }
 }

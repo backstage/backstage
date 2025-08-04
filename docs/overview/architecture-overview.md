@@ -284,8 +284,8 @@ stores as a means of improving performance or reliability. Similar to how
 databases are supported, plugins receive logically separated cache connections,
 which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
 
-At this time of writing, Backstage can be configured to use one of three cache
-stores: memory, which is mainly used for local testing, memcache or Redis,
+At this time of writing, Backstage can be configured to use one of five cache
+stores: memory, which is mainly used for local testing, memcache, redis, valkey or infinispan,
 which are cache stores better suited for production deployment. The right cache
 store for your Backstage instance will depend on your own run-time constraints
 and those required of the plugins you're running.
@@ -314,6 +314,40 @@ backend:
   cache:
     store: redis
     connection: redis://user:pass@cache.example.com:6379
+```
+
+### Use Infinispan for cache
+
+#### Minimal configuration
+
+- defaults, no `authentication`, expects cache named `cache` and host `127.0.0.1:11222`)
+
+```yaml
+backend:
+  cache:
+    store: infinispan
+```
+
+#### Extended configuration
+
+- Unlike Redis, Infinispan will **not** create the cache for you. It's expected you've configured the cache in your infinispan server prior to configuration here.
+- A full list of configuration items are available: https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html including support for backup clusters.
+
+```yaml
+backend:
+  cache:
+    store: infinispan
+    infinispan:
+      servers:
+        - host: 127.0.0.1
+          port: 11222
+      cacheName: backstage-cache
+      mediaType: application/json
+      authentication:
+        enabled: true
+        userName: yourusername
+        password: yourpassword
+        saslMechanism: PLAIN
 ```
 
 Contributions supporting other cache stores are welcome!

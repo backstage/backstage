@@ -24,6 +24,7 @@ import { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
  * @public
  */
 export type RedisCacheStoreOptions = {
+  type: 'redis' | 'valkey';
   client?: KeyvRedisOptions;
   cluster?: RedisClusterOptions;
 };
@@ -33,7 +34,9 @@ export type RedisCacheStoreOptions = {
  *
  * @public
  */
-export type CacheStoreOptions = RedisCacheStoreOptions;
+export type CacheStoreOptions =
+  | RedisCacheStoreOptions
+  | InfinispanCacheStoreOptions;
 
 /**
  * Options given when constructing a {@link CacheManager}.
@@ -56,3 +59,95 @@ export type CacheManagerOptions = {
 export function ttlToMilliseconds(ttl: number | HumanDuration): number {
   return typeof ttl === 'number' ? ttl : durationToMilliseconds(ttl);
 }
+
+/**
+ * Configuration for a single Infinispan server.
+ */
+export type InfinispanServerConfig = {
+  host: string;
+  port: number;
+};
+
+/**
+ * Options for putting values into Infinispan cache.
+ */
+export type InfinispanPutOptions = {
+  lifespan?: string;
+  maxIdle?: string;
+  previous?: boolean;
+  flags?: string[];
+};
+/**
+ * SSL/TLS options for the Infinispan client.
+ */
+export type InfinispanSslOptions = {
+  enabled: boolean;
+  secureProtocol?: string;
+  trustCerts?: string[]; // Array of trusted CA certificates
+  clientAuth?: InfinispanClientAuthOptions;
+  cryptoStore?: InfinispanCryptoStoreOptions;
+  sniHostName?: string;
+};
+
+/**
+ * Authentication options for the Infinispan client.
+ * This is used for client-side authentication with the Infinispan server.
+ */
+export type InfinispanClientAuthOptions = {
+  key?: string;
+  passphrase?: string;
+  cert?: string;
+};
+
+/**
+ * Options for the Infinispan client crypto store.
+ * This is used for storing keys and certificates securely.
+ */
+export type InfinispanCryptoStoreOptions = {
+  path?: string;
+  passphrase?: string;
+};
+
+/**
+ * Authentication options for the Infinispan client.
+ */
+export type InfinispanAuthOptions = {
+  enabled: boolean;
+  saslMechanism?: string;
+  userName?: string;
+  password?: string;
+  token?: string;
+  authzid?: string;
+};
+
+/**
+ * Options for the Infinispan cache store, designed to be configured
+ * in app-config.yaml under `backend.cache.infinispan`.
+ */
+export type InfinispanCacheStoreOptions = {
+  type: 'infinispan';
+  servers: InfinispanServerConfig | InfinispanServerConfig[];
+  options?: InfinispanClientBehaviorOptions;
+};
+
+export type InfinispanClusterConfig = {
+  name?: string;
+  servers: InfinispanServerConfig[];
+};
+
+/**
+ * Detailed client behavior options for the Infinispan client.
+ * @public
+ */
+export type InfinispanClientBehaviorOptions = {
+  version?: '2.9' | '2.5' | '2.2';
+  cacheName?: string;
+  maxRetries?: number;
+  connectionTimeout?: number;
+  socketTimeout?: number;
+  authentication?: InfinispanAuthOptions;
+  ssl?: InfinispanSslOptions;
+  mediaType?: 'text/plain' | 'application/json';
+  topologyUpdates?: boolean;
+  clusters?: InfinispanClusterConfig[];
+};
