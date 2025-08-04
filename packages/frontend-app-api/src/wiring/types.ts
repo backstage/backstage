@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendFeature as PluginApiFrontendFeature } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from '../routing/types';
 import { RouteAliasResolver } from '../routing/RouteAliasResolver';
-
-/** @public
- * @deprecated Use {@link @backstage/frontend-plugin-api#FrontendFeature} instead.
- */
-export type FrontendFeature = PluginApiFrontendFeature;
 
 /** @internal */
 export type RouteInfo = {

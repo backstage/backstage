@@ -13,7 +13,7 @@ import { ErrorWithContext } from '@backstage/test-utils';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
-import { FrontendFeature } from '@backstage/frontend-app-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { mockApis } from '@backstage/test-utils';
 import { MockConfigApi } from '@backstage/test-utils';

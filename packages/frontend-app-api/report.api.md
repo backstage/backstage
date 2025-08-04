@@ -8,7 +8,7 @@ import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendFeature as FrontendFeature_2 } from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -35,7 +35,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
 
 // @public
 export type CreateSpecializedAppOptions = {
-  features?: FrontendFeature_2[];
+  features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   apis?: ApiHolder;
@@ -47,9 +47,6 @@ export type CreateSpecializedAppOptions = {
   };
   pluginInfoResolver?: FrontendPluginInfoResolver;
 };
-
-// @public @deprecated (undocumented)
-export type FrontendFeature = FrontendFeature_2;
 
 // @public
 export type FrontendPluginInfoResolver = (ctx: {
