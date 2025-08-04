@@ -114,9 +114,12 @@ export const AnalyticsContext: (options: {
 }) => JSX_2.Element;
 
 // @public
-export type AnalyticsContextValue = CommonAnalyticsContext & {
-  [param in string]: string | boolean | number | undefined;
-};
+export interface AnalyticsContextValue {
+  // (undocumented)
+  [key: string]: string | boolean | number | undefined;
+  extensionId: string;
+  pluginId: string;
+}
 
 // @public
 export type AnalyticsEvent = {
@@ -328,12 +331,6 @@ export { BackstageUserIdentity };
 export { bitbucketAuthApiRef };
 
 export { bitbucketServerAuthApiRef };
-
-// @public
-export type CommonAnalyticsContext = {
-  pluginId: string;
-  extensionId: string;
-};
 
 // @public (undocumented)
 export type ComponentRef<T extends {} = {}> = {
