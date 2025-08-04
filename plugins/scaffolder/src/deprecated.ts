@@ -21,22 +21,8 @@
  */
 
 import {
-  createScaffolderFieldExtension as createScaffolderFieldExtensionTemp,
-  ScaffolderFieldExtensions as ScaffolderFieldExtensionsTemp,
-  useTemplateSecrets as useTemplateSecretsTemp,
-  scaffolderApiRef as scaffolderApiRefTemp,
-  createScaffolderLayout as createScaffolderLayoutTemp,
-  ScaffolderLayouts as ScaffolderLayoutsTemp,
-  type LayoutOptions as LayoutOptionsTemp,
-  type LayoutTemplate as LayoutTemplateTemp,
   type ScaffolderApi as ScaffolderApiTemp,
-  type ScaffolderUseTemplateSecrets as ScaffolderUseTemplateSecretsTemp,
   type TemplateParameterSchema as TemplateParameterSchemaTemp,
-  type CustomFieldExtensionSchema as CustomFieldExtensionSchemaTemp,
-  type CustomFieldValidator as CustomFieldValidatorTemp,
-  type FieldExtensionOptions as FieldExtensionOptionsTemp,
-  type FieldExtensionComponentProps as FieldExtensionComponentPropsTemp,
-  type FieldExtensionComponent as FieldExtensionComponentTemp,
   type ListActionsResponse as ListActionsResponseTemp,
   type LogEvent as LogEventTemp,
   type ScaffolderDryRunOptions as ScaffolderDryRunOptionsTemp,
@@ -50,6 +36,23 @@ import {
   type ScaffolderTask as ScaffolderTaskTemp,
   type ScaffolderTaskOutput as ScaffolderTaskOutputTemp,
   type ScaffolderTaskStatus as ScaffolderTaskStatusTemp,
+} from '@backstage/plugin-scaffolder-common';
+
+import {
+  createScaffolderFieldExtension as createScaffolderFieldExtensionTemp,
+  ScaffolderFieldExtensions as ScaffolderFieldExtensionsTemp,
+  useTemplateSecrets as useTemplateSecretsTemp,
+  scaffolderApiRef as scaffolderApiRefTemp,
+  createScaffolderLayout as createScaffolderLayoutTemp,
+  ScaffolderLayouts as ScaffolderLayoutsTemp,
+  type LayoutOptions as LayoutOptionsTemp,
+  type LayoutTemplate as LayoutTemplateTemp,
+  type ScaffolderUseTemplateSecrets as ScaffolderUseTemplateSecretsTemp,
+  type CustomFieldExtensionSchema as CustomFieldExtensionSchemaTemp,
+  type CustomFieldValidator as CustomFieldValidatorTemp,
+  type FieldExtensionOptions as FieldExtensionOptionsTemp,
+  type FieldExtensionComponentProps as FieldExtensionComponentPropsTemp,
+  type FieldExtensionComponent as FieldExtensionComponentTemp,
 } from '@backstage/plugin-scaffolder-react';
 
 import { rootRouteRef as rootRouteRefTemp } from './routes';
@@ -82,7 +85,7 @@ export const useTemplateSecrets = useTemplateSecretsTemp;
 export const scaffolderApiRef = scaffolderApiRefTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderApi} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderApi} instead as this has now been moved.
  */
 export type ScaffolderApi = ScaffolderApiTemp;
 /**
@@ -92,7 +95,7 @@ export type ScaffolderApi = ScaffolderApiTemp;
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecretsTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#TemplateParameterSchema} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#TemplateParameterSchema} instead as this has now been moved.
  */
 export type TemplateParameterSchema = TemplateParameterSchemaTemp;
 /**
@@ -127,69 +130,69 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> =
   FieldExtensionComponentTemp<_TReturnValue, _TInputProps>;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ListActionsResponse} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ListActionsResponse} instead as this has now been moved.
  */
 export type ListActionsResponse = ListActionsResponseTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#LogEvent} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#LogEvent} instead as this has now been moved.
  */
 export type LogEvent = LogEventTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderDryRunOptions} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderDryRunOptions} instead as this has now been moved.
  */
 export type ScaffolderDryRunOptions = ScaffolderDryRunOptionsTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderDryRunResponse} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderDryRunResponse} instead as this has now been moved.
  */
 export type ScaffolderDryRunResponse = ScaffolderDryRunResponseTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderGetIntegrationsListOptions} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderGetIntegrationsListOptions} instead as this has now been moved.
  */
 export type ScaffolderGetIntegrationsListOptions =
   ScaffolderGetIntegrationsListOptionsTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderGetIntegrationsListResponse} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderGetIntegrationsListResponse} instead as this has now been moved.
  */
 export type ScaffolderGetIntegrationsListResponse =
   ScaffolderGetIntegrationsListResponseTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderOutputlink} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderOutputlink} instead as this has now been moved.
  */
 export type ScaffolderOutputlink = ScaffolderOutputLinkTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderScaffoldOptions} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderScaffoldOptions} instead as this has now been moved.
  */
 export type ScaffolderScaffoldOptions = ScaffolderScaffoldOptionsTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderScaffoldResponse} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderScaffoldResponse} instead as this has now been moved.
  */
 export type ScaffolderScaffoldResponse = ScaffolderScaffoldResponseTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderStreamLogsOptions} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderStreamLogsOptions} instead as this has now been moved.
  */
 export type ScaffolderStreamLogsOptions = ScaffolderStreamLogsOptionsTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderTask} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderTask} instead as this has now been moved.
  */
 export type ScaffolderTask = ScaffolderTaskTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderTaskOutput} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderTaskOutput} instead as this has now been moved.
  */
 export type ScaffolderTaskOutput = ScaffolderTaskOutputTemp;
 /**
  * @public
- * @deprecated use import from {@link @backstage/plugin-scaffolder-react#ScaffolderTaskStatus} instead as this has now been moved.
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#ScaffolderTaskStatus} instead as this has now been moved.
  */
 export type ScaffolderTaskStatus = ScaffolderTaskStatusTemp;
 /**

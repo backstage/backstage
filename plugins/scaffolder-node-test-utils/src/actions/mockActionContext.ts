@@ -54,6 +54,10 @@ export function createMockActionContext<
     task: {
       id: 'mock-task-id',
     },
+    step: {
+      id: 'mock-step-id',
+      name: 'mock step name',
+    },
   };
 
   const createDefaultWorkspace = () => ({

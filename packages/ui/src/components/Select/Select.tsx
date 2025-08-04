@@ -58,7 +58,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
       console.warn(
-        'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        'Select requires either a visible label, aria-label, or aria-labelledby for accessibility',
       );
     }
   }, [label, ariaLabel, ariaLabelledBy]);

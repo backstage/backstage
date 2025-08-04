@@ -16,6 +16,7 @@
 
 export const defaultTemplates = [
   '@backstage/cli/templates/frontend-plugin',
+  '@backstage/cli/templates/frontend-plugin-module',
   '@backstage/cli/templates/backend-plugin',
   '@backstage/cli/templates/backend-plugin-module',
   '@backstage/cli/templates/plugin-web-library',

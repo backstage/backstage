@@ -116,6 +116,7 @@ export type ResolveExtensionId<
 > = TExtension extends ExtensionDefinition<{
   kind: infer IKind extends string | undefined;
   name: infer IName extends string | undefined;
+  params: any;
 }>
   ? [string] extends [IKind | IName]
     ? never

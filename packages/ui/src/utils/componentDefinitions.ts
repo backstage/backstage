@@ -42,7 +42,7 @@ export const componentDefinitions = {
     },
     dataAttributes: {
       size: ['small', 'medium', 'large'] as const,
-      variant: ['primary', 'secondary', 'ghost'] as const,
+      variant: ['primary', 'secondary', 'tertiary'] as const,
     },
   },
   ButtonIcon: {

@@ -1,5 +1,121 @@
 # @backstage/frontend-plugin-api
 
+## 0.11.0-next.0
+
+### Minor Changes
+
+- 29786f6: **BREAKING**: The `NavLogoBlueprint` has been removed and replaced by `NavContentBlueprint`, which instead replaces the entire navbar. The default navbar has also been switched to a more minimal implementation.
+
+  To use `NavContentBlueprint` to install new logos, you can use it as follows:
+
+  ```tsx
+  NavContentBlueprint.make({
+    params: {
+      component: ({ items }) => {
+        return compatWrapper(
+          <Sidebar>
+            <SidebarLogo />
+
+            {/* Other sidebar content */}
+
+            <SidebarScrollWrapper>
+              {items.map((item, index) => (
+                <SidebarItem {...item} key={index} />
+              ))}
+            </SidebarScrollWrapper>
+
+            {/* Other sidebar content */}
+          </Sidebar>,
+        );
+      },
+    },
+  });
+  ```
+
+- 805c298: **BREAKING**: The `ApiBlueprint` has been updated to use the new advanced type parameters through the new `defineParams` blueprint option. This is an immediate breaking change that requires all existing usages of `ApiBlueprint` to switch to the new callback format. Existing extensions created with the old format are still compatible with the latest version of the plugin API however, meaning that this does not break existing plugins.
+
+  To update existing usages of `ApiBlueprint`, you remove the outer level of the `params` object and replace `createApiFactory(...)` with `define => define(...)`.
+
+  For example, the following old usage:
+
+  ```ts
+  ApiBlueprint.make({
+    name: 'error',
+    params: {
+      factory: createApiFactory({
+        api: errorApiRef,
+        deps: { alertApi: alertApiRef },
+        factory: ({ alertApi }) => {
+          return ...;
+        },
+      })
+    },
+  })
+  ```
+
+  is migrated to the following:
+
+  ```ts
+  ApiBlueprint.make({
+    name: 'error',
+    params: define =>
+      define({
+        api: errorApiRef,
+        deps: { alertApi: alertApiRef },
+        factory: ({ alertApi }) => {
+          return ...;
+        },
+      }),
+  })
+  ```
+
+- 805c298: Added support for advanced parameter types in extension blueprints. The primary purpose of this is to allow extension authors to use type inference in the definition of the blueprint parameters. This often removes the need for extra imports and improves discoverability of blueprint parameters.
+
+  This feature is introduced through the new `defineParams` option of `createExtensionBlueprint`, along with accompanying `createExtensionBlueprintParams` function to help implement the new format.
+
+  The following is an example of how to create an extension blueprint that uses the new option:
+
+  ```ts
+  const ExampleBlueprint = createExtensionBlueprint({
+    kind: 'example',
+    attachTo: { id: 'example', input: 'example' },
+    output: [exampleComponentDataRef, exampleFetcherDataRef],
+    defineParams<T>(params: {
+      component(props: ExampleProps<T>): JSX.Element | null;
+      fetcher(options: FetchOptions): Promise<FetchResult<T>>;
+    }) {
+      // The returned params must be wrapped with `createExtensionBlueprintParams`
+      return createExtensionBlueprintParams(params);
+    },
+    *factory(params) {
+      // These params are now inferred
+      yield exampleComponentDataRef(params.component);
+      yield exampleFetcherDataRef(params.fetcher);
+    },
+  });
+  ```
+
+  Usage of the above example looks as follows:
+
+  ```ts
+  const example = ExampleBlueprint.make({
+    params: define => define({
+      component: ...,
+      fetcher: ...,
+    }),
+  });
+  ```
+
+  This `define => define(<params>)` is also known as the "callback syntax" and is required if a blueprint is created with the new `defineParams` option. The callback syntax can also optionally be used for other blueprints too, which means that it is not a breaking change to remove the `defineParams` option, as long as the external parameter types remain compatible.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.10.4
 
 ### Patch Changes

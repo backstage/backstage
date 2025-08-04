@@ -607,7 +607,7 @@ export class DatabaseTaskStore implements TaskStore {
 
     const events = rawEvents.map(event => {
       try {
-        const body = JSON.parse(event.body) as JsonObject;
+        const body = JSON.parse(event.body) as SerializedTaskEvent['body'];
         return {
           id: Number(event.id),
           isTaskRecoverable,

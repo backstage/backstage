@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-gitlab",
-  "version": "0.3.3",
+  "version": "0.3.4-next.0",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "events",

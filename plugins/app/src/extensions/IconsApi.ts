@@ -18,7 +18,6 @@ import {
   createExtensionInput,
   IconBundleBlueprint,
   ApiBlueprint,
-  createApiFactory,
   iconsApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -37,15 +36,17 @@ export const IconsApi = ApiBlueprint.makeWithOverrides({
     }),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory({
-      factory: createApiFactory(
-        iconsApiRef,
-        new DefaultIconsApi(
-          inputs.icons
-            .map(i => i.get(IconBundleBlueprint.dataRefs.icons))
-            .reduce((acc, bundle) => ({ ...acc, ...bundle }), defaultIcons),
-        ),
-      ),
-    });
+    return originalFactory(define =>
+      define({
+        api: iconsApiRef,
+        deps: {},
+        factory: () =>
+          new DefaultIconsApi(
+            inputs.icons
+              .map(i => i.get(IconBundleBlueprint.dataRefs.icons))
+              .reduce((acc, bundle) => ({ ...acc, ...bundle }), defaultIcons),
+          ),
+      }),
+    );
   },
 });

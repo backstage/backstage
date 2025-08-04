@@ -17,7 +17,6 @@
 import {
   ApiBlueprint,
   PageBlueprint,
-  createApiFactory,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
@@ -41,14 +40,13 @@ const page = PageBlueprint.make({
 });
 
 const api = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: notificationsApiRef,
       deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
         new NotificationsClient({ discoveryApi, fetchApi }),
     }),
-  },
 });
 
 /** @alpha */

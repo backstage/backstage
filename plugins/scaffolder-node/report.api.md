@@ -53,6 +53,10 @@ export type ActionContext<
   };
   signal?: AbortSignal;
   each?: JsonObject;
+  step?: {
+    id?: string;
+    name?: string;
+  };
 };
 
 // @public (undocumented)
@@ -340,7 +344,11 @@ export type SerializedTaskEvent = {
   id: number;
   isTaskRecoverable?: boolean;
   taskId: string;
-  body: JsonObject;
+  body: {
+    message: string;
+    stepId?: string;
+    status?: TaskStatus;
+  } & JsonObject;
   type: TaskEventType;
   createdAt: string;
 };
@@ -485,7 +493,8 @@ export type TaskStatus =
   | 'completed'
   | 'failed'
   | 'open'
-  | 'processing';
+  | 'processing'
+  | 'skipped';
 
 // @public (undocumented)
 export type TemplateAction<

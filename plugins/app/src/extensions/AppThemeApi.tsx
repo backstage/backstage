@@ -24,7 +24,6 @@ import {
   createExtensionInput,
   ThemeBlueprint,
   ApiBlueprint,
-  createApiFactory,
   appThemeApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -41,14 +40,16 @@ export const AppThemeApi = ApiBlueprint.makeWithOverrides({
     }),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory({
-      factory: createApiFactory(
-        appThemeApiRef,
-        AppThemeSelector.createWithStorage(
-          inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
-        ),
-      ),
-    });
+    return originalFactory(define =>
+      define({
+        api: appThemeApiRef,
+        deps: {},
+        factory: () =>
+          AppThemeSelector.createWithStorage(
+            inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
+          ),
+      }),
+    );
   },
 });
 

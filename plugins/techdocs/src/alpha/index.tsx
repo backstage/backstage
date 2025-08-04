@@ -26,7 +26,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   configApiRef,
-  createApiFactory,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
@@ -68,8 +67,8 @@ const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
 /** @alpha */
 const techDocsStorageApi = ApiBlueprint.make({
   name: 'storage',
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: techdocsStorageApiRef,
       deps: {
         configApi: configApiRef,
@@ -83,13 +82,12 @@ const techDocsStorageApi = ApiBlueprint.make({
           fetchApi,
         }),
     }),
-  },
 });
 
 /** @alpha */
 const techDocsClientApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: define =>
+    define({
       api: techdocsApiRef,
       deps: {
         configApi: configApiRef,
@@ -103,7 +101,6 @@ const techDocsClientApi = ApiBlueprint.make({
           fetchApi,
         }),
     }),
-  },
 });
 
 /** @alpha */

@@ -34,7 +34,7 @@ export const HeaderPage = (props: HeaderPageProps) => {
   return (
     <div className={classNames.root}>
       <div className={classNames.content}>
-        <Text variant="title-small" weight="bold">
+        <Text variant="title-small" weight="bold" as="h2">
           {title}
         </Text>
         <div className={classNames.controls}>

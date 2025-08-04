@@ -169,27 +169,74 @@ export const WithOptions: Story = {
 };
 
 export const WithCustomActions: Story = {
+  args: {},
+  decorators: [withRouter],
+  render: args => (
+    <Header
+      {...args}
+      customActions={
+        <>
+          <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+          <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+          <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+        </>
+      }
+    />
+  ),
+};
+
+export const WithAllOptions: Story = {
   args: {
-    customActions: <Button>Custom action</Button>,
+    title: 'My plugin',
+    titleLink: '/',
     menuItems,
   },
   decorators: [withRouter],
+  render: WithCustomActions.render,
 };
 
 export const WithBreadcrumbs: Story = {
   args: {
     breadcrumbs,
+    tabs,
   },
   decorators: [withRouter],
 };
 
-export const WithAllComponents: Story = {
+export const WithAllOptionsAndTabs: Story = {
   args: {
-    menuItems,
+    ...WithAllOptions.args,
     tabs,
-    breadcrumbs,
   },
   decorators: [withRouter],
+  render: WithAllOptions.render,
+};
+
+export const WithHeaderPage: Story = {
+  args: {
+    ...WithAllOptionsAndTabs.args,
+  },
+  decorators: [withRouter],
+  render: args => (
+    <>
+      <Header
+        {...args}
+        customActions={
+          <>
+            <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+            <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+            <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+          </>
+        }
+      />
+      <HeaderPage
+        title="Page title"
+        menuItems={args.menuItems}
+        tabs={tabs2}
+        customActions={<Button>Custom action</Button>}
+      />
+    </>
+  ),
 };
 
 export const WithLayout: Story = {

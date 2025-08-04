@@ -89,7 +89,10 @@ describe('createPublicSignInApp', () => {
     });
 
     expect(baseElement).toMatchInlineSnapshot(`
-      <body>
+      <body
+        data-theme-mode="light"
+        data-theme-name="backstage"
+      >
         <div>
           <form
             action="http://localhost/"

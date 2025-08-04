@@ -1,0 +1,59 @@
+{
+  "name": "app",
+  "version": "0.0.0",
+  "private": true,
+  "bundled": true,
+  "backstage": {
+    "role": "frontend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint"
+  },
+  "dependencies": {
+    "@backstage/core-compat-api": "^{{ version '@backstage/core-compat-api'}}",
+    "@backstage/frontend-defaults": "^{{ version '@backstage/frontend-defaults'}}",
+    "@backstage/frontend-plugin-api": "^{{ version '@backstage/frontend-plugin-api'}}",
+    "@backstage/plugin-catalog": "^{{ version '@backstage/plugin-catalog'}}",
+    "@backstage/plugin-org": "^{{ version '@backstage/plugin-org'}}",
+    "@backstage/plugin-scaffolder": "^{{ version '@backstage/plugin-scaffolder'}}",
+    "@backstage/plugin-search": "^{{ version '@backstage/plugin-search'}}",
+    "@backstage/plugin-user-settings": "^{{ version '@backstage/plugin-user-settings'}}",
+    "@backstage/core-components": "^{{ version '@backstage/core-components'}}",
+    "@backstage/ui": "^{{ version '@backstage/ui'}}",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router": "^6.3.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "devDependencies": {
+    "@backstage/frontend-test-utils": "^{{ version '@backstage/frontend-test-utils'}}",
+    "@playwright/test": "^1.32.3",
+    "@testing-library/dom": "^9.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/react-dom": "*",
+    "cross-env": "^7.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "files": [
+    "dist"
+  ]
+}

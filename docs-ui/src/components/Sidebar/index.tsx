@@ -1,13 +1,17 @@
 'use client';
 
 import styles from './Sidebar.module.css';
-import { components, overview, layoutComponents, theme } from '@/utils/data';
+import {
+  components,
+  overview,
+  layoutComponents,
+  coreConcepts,
+} from '@/utils/data';
 import { ScrollArea } from '@base-ui-components/react/scroll-area';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Fragment } from 'react';
-import { RiGithubLine, RiNpmjsLine } from '@remixicon/react';
 
 const data = [
   {
@@ -16,9 +20,9 @@ const data = [
     url: '',
   },
   {
-    title: 'Theme',
-    content: theme,
-    url: '/theme',
+    title: 'Core Concepts',
+    content: coreConcepts,
+    url: '',
   },
   {
     title: 'Layout Components',
@@ -32,30 +36,12 @@ const data = [
   },
 ];
 
-interface SidebarProps {
-  version: string;
-}
-
-export const Sidebar = ({ version }: SidebarProps) => {
+export const Sidebar = () => {
   const pathname = usePathname();
   const isPlayground = pathname.includes('/playground');
 
   return (
     <div className={styles.sidebar}>
-      <div className={styles.version}>
-        Version {version}
-        <div className={styles.versionLinks}>
-          <a
-            href="https://github.com/backstage/backstage/tree/master/packages/ui"
-            target="_blank"
-          >
-            <RiGithubLine size={16} />
-          </a>
-          <a href="https://www.npmjs.com/package/@backstage/ui" target="_blank">
-            <RiNpmjsLine size={16} />
-          </a>
-        </div>
-      </div>
       <ScrollArea.Root className={styles.root}>
         <ScrollArea.Viewport className={styles.viewport}>
           <div className={styles.content}>

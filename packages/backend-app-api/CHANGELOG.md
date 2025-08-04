@@ -1,5 +1,14 @@
 # @backstage/backend-app-api
 
+## 1.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
 ## 1.2.5
 
 ### Patch Changes
