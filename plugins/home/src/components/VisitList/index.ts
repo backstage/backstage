@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { VisitList } from './VisitList';
+export { VisitListContextProvider, useColorVariants } from './Context';

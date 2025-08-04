@@ -356,6 +356,43 @@ home:
 
 In order to validate the config you can use `backstage/cli config:check`
 
+### Custom Chip Colors
+
+If you want to provide your own chip colors for the recent and top visited lists, you can wrap the components in `VisitListContextProvider` with custom `colorVariants`. The colors provided will be used instead of the hard coded [colorVariants](https://github.com/backstage/backstage/blob/2da352043425bcab4c4422e4d2820c26c0a83382/packages/theme/src/base/pageTheme.ts#L46) provided via `@backstage/theme`.
+
+```tsx
+import {
+  CustomHomepageGrid,
+  HomePageTopVisited,
+  HomePageRecentlyVisited,
+  VisitListContextProvider,
+} from '@backstage/plugin-home';
+
+const customColorVariants = {
+  purple: ['#b39ddb'],
+  blue: ['#90caf9'],
+  softGreen: ['#a5d6a7'],
+  yellow: ['#fff59d'],
+  orange: ['#ffb74d'],
+  tan: ['#ffe0b2'],
+  red: ['#ef9a9a'],
+  gray: ['#bdbdbd'],
+  brown: ['#bcaaa4'],
+  pink: ['#f48fb1'],
+};
+
+export default function HomePage() {
+  return (
+    <VisitListContextProvider colorVariants={customColorVariants}>
+      <CustomHomepageGrid title="Your Dashboard">
+        <HomePageRecentlyVisited />
+        <HomePageTopVisited />
+      </CustomHomepageGrid>
+    </VisitListContextProvider>
+  );
+}
+```
+
 ## Contributing
 
 ### Homepage Components

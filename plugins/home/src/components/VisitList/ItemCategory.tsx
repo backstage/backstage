@@ -16,7 +16,7 @@
 
 import Chip from '@material-ui/core/Chip';
 import { makeStyles } from '@material-ui/core/styles';
-import { colorVariants } from '@backstage/theme';
+import { useColorVariants } from './Context';
 import { Visit } from '../../api/VisitsApi';
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 
@@ -34,13 +34,19 @@ const maybeEntity = (visit: Visit): CompoundEntityRef | undefined => {
     return undefined;
   }
 };
-const getColorByIndex = (index: number) => {
+const getColorByIndex = (
+  index: number,
+  colorVariants: Record<string, string[]>,
+): string => {
   const variants = Object.keys(colorVariants);
   const variantIndex = index % variants.length;
   return colorVariants[variants[variantIndex]][0];
 };
-const getChipColor = (entity: CompoundEntityRef | undefined): string => {
-  const defaultColor = getColorByIndex(0);
+const getChipColor = (
+  entity: CompoundEntityRef | undefined,
+  colorVariants: Record<string, string[]>,
+): string => {
+  const defaultColor = getColorByIndex(0, colorVariants);
   if (!entity) return defaultColor;
 
   // IDEA: Use or replicate useAllKinds hook thus supporting all software catalog
@@ -61,10 +67,13 @@ const getChipColor = (entity: CompoundEntityRef | undefined): string => {
   const foundIndex = entityKinds.indexOf(
     entity.kind.toLocaleLowerCase('en-US'),
   );
-  return foundIndex === -1 ? defaultColor : getColorByIndex(foundIndex + 1);
+  return foundIndex === -1
+    ? defaultColor
+    : getColorByIndex(foundIndex + 1, colorVariants);
 };
 
 export const ItemCategory = ({ visit }: { visit: Visit }) => {
+  const colorVariants = useColorVariants();
   const classes = useStyles();
   const entity = maybeEntity(visit);
 
@@ -73,7 +82,7 @@ export const ItemCategory = ({ visit }: { visit: Visit }) => {
       size="small"
       className={classes.chip}
       label={(entity?.kind ?? 'Other').toLocaleLowerCase('en-US')}
-      style={{ background: getChipColor(entity) }}
+      style={{ background: getChipColor(entity, colorVariants) }}
     />
   );
 };
