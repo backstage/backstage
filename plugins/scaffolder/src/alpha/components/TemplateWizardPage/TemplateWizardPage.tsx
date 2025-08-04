@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ComponentType, useCallback, useState } from 'react';
+import { ComponentType, useCallback, useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
@@ -33,6 +33,7 @@ import {
   FormProps,
   FieldExtensionOptions,
   ReviewStepProps,
+  TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
@@ -53,6 +54,26 @@ import { scaffolderTranslationRef } from '../../../translation';
 
 import { TemplateWizardPageContextMenu } from './TemplateWizardPageContextMenu';
 import { useFormDecorators } from '../../hooks';
+import { visitsApiRef } from '@backstage/plugin-home';
+import { useLocation } from 'react-router-dom';
+
+const useUpdateVisitName = (manifest: TemplateParameterSchema | undefined) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+  const visitsApi = useApi(visitsApiRef);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (!manifest?.title) return;
+    visitsApi
+      .updateName(
+        pathname,
+        t('templateWizardPage.templateWithTitle', {
+          templateTitle: manifest.title,
+        }),
+      )
+      .catch(() => {});
+  }, [manifest?.title, pathname, visitsApi, t]);
+};
 
 /**
  * @alpha
@@ -92,6 +113,8 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
 
   const { manifest } = useTemplateParameterSchema(templateRef);
   const decorators = useFormDecorators();
+
+  useUpdateVisitName(manifest);
 
   const { value: editUrl } = useAsync(async () => {
     const data = await catalogApi.getEntityByRef(templateRef);
@@ -138,7 +161,13 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="website">
         <Header
-          pageTitleOverride={t('templateWizardPage.pageTitle')}
+          pageTitleOverride={
+            manifest?.title
+              ? t('templateWizardPage.templateWithTitle', {
+                  templateTitle: manifest.title,
+                })
+              : t('templateWizardPage.pageTitle')
+          }
           title={t('templateWizardPage.title')}
           subtitle={t('templateWizardPage.subtitle')}
           {...props.headerOptions}
