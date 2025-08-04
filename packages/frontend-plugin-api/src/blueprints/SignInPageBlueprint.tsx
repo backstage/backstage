@@ -48,7 +48,7 @@ export const SignInPageBlueprint = createExtensionBlueprint({
     );
 
     yield componentDataRef(props => (
-      <ExtensionBoundary node={node} routable>
+      <ExtensionBoundary node={node}>
         <ExtensionComponent {...props} />
       </ExtensionBoundary>
     ));
