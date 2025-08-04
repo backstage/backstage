@@ -160,7 +160,7 @@ export function renderInTestApp(
     }),
     RouterBlueprint.make({
       params: {
-        Component: ({ children }) => (
+        component: ({ children }) => (
           <MemoryRouter initialEntries={options?.initialRouteEntries}>
             {children}
           </MemoryRouter>

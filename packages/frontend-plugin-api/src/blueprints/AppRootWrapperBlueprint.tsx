@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ComponentType, PropsWithChildren } from 'react';
+import { ReactNode } from 'react';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
 const componentDataRef = createExtensionDataRef<
-  ComponentType<PropsWithChildren<{}>>
+  (props: { children: ReactNode }) => JSX.Element | null
 >().with({ id: 'app.root.wrapper' });
 
 /**
@@ -35,12 +35,11 @@ export const AppRootWrapperBlueprint = createExtensionBlueprint({
   dataRefs: {
     component: componentDataRef,
   },
-  *factory(params: { Component: ComponentType<PropsWithChildren<{}>> }) {
-    // todo(blam): not sure that this wrapping is even necessary anymore.
-    const Component = (props: PropsWithChildren<{}>) => {
-      return <params.Component>{props.children}</params.Component>;
-    };
-
-    yield componentDataRef(Component);
+  *factory(params: {
+    /** @deprecated use the `component` parameter instead */
+    Component?: [error: 'Use the `component` parameter instead'];
+    component: (props: { children: ReactNode }) => JSX.Element | null;
+  }) {
+    yield componentDataRef(params.component);
   },
 });

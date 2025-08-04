@@ -27,7 +27,7 @@ describe('RouterBlueprint', () => {
   it('should return an extension when calling make with sensible defaults', () => {
     const extension = RouterBlueprint.make({
       params: {
-        Component: props => <div>{props.children}</div>,
+        component: props => <div>{props.children}</div>,
       },
     });
 
@@ -58,7 +58,7 @@ describe('RouterBlueprint', () => {
   it('should work with simple options', async () => {
     const extension = RouterBlueprint.make({
       params: {
-        Component: ({ children }) => (
+        component: ({ children }) => (
           <MemoryRouter>
             <div data-testid="test-router">{children}</div>
           </MemoryRouter>
@@ -94,7 +94,7 @@ describe('RouterBlueprint', () => {
       },
       *factory(originalFactory, { inputs, config }) {
         yield* originalFactory({
-          Component: ({ children }) => (
+          component: ({ children }) => (
             <MemoryRouter>
               <div
                 data-testid={`test-router-${config.name}-${inputs.children.length}`}

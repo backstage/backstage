@@ -71,7 +71,6 @@ import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
-import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -268,12 +267,11 @@ export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   kind: 'app-root-wrapper';
   name: undefined;
   params: {
-    Component: ComponentType<PropsWithChildren<{}>>;
+    Component?: [error: 'Use the `component` parameter instead'];
+    component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ConfigurableExtensionDataRef<
-    ComponentType<{
-      children?: ReactNode | undefined;
-    }>,
+    (props: { children: ReactNode }) => JSX.Element | null,
     'app.root.wrapper',
     {}
   >;
@@ -282,9 +280,7 @@ export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     component: ConfigurableExtensionDataRef<
-      ComponentType<{
-        children?: ReactNode | undefined;
-      }>,
+      (props: { children: ReactNode }) => JSX.Element | null,
       'app.root.wrapper',
       {}
     >;
@@ -1726,12 +1722,11 @@ export const RouterBlueprint: ExtensionBlueprint<{
   kind: 'app-router-component';
   name: undefined;
   params: {
-    Component: ComponentType<PropsWithChildren<{}>>;
+    Component?: [error: 'Use the `component` parameter instead'];
+    component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ConfigurableExtensionDataRef<
-    ComponentType<{
-      children?: ReactNode | undefined;
-    }>,
+    (props: { children: ReactNode }) => JSX.Element | null,
     'app.router.wrapper',
     {}
   >;
@@ -1740,9 +1735,7 @@ export const RouterBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     component: ConfigurableExtensionDataRef<
-      ComponentType<{
-        children?: ReactNode | undefined;
-      }>,
+      (props: { children: ReactNode }) => JSX.Element | null,
       'app.router.wrapper',
       {}
     >;
