@@ -136,10 +136,7 @@ export class CacheManager {
 
     if (!config.has(storeConfigPath)) {
       logger?.warn(
-        `No configuration found for cache store '${store}' at '${storeConfigPath}'. Using default options assumed Redis-like store.`,
-      );
-      console.log(
-        `No configuration found for cache store '${store}' at '${storeConfigPath}'. Using default options assumed Redis-like store.`,
+        `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
       );
     }
 
