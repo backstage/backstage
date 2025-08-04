@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { renderInTestApp } from '@backstage/frontend-test-utils';
 import { createComponentRef } from '../components';
+import { makeComponentFromRef } from '../components/makeComponentFromRef';
 import { ComponentImplementationBlueprint } from './ComponentImplementationBlueprint';
+import { PageBlueprint } from './PageBlueprint';
+import { waitFor, screen } from '@testing-library/react';
 
 describe('ComponentImplementationBlueprint', () => {
-  it('should allow defining a component override for sync component ref', () => {
+  it('should allow defining a component override for a component ref', () => {
     const componentRef = createComponentRef({
       id: 'test.component',
       loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
@@ -37,5 +41,116 @@ describe('ComponentImplementationBlueprint', () => {
     });
 
     expect(extension).toBeDefined();
+  });
+
+  it('should render default component refs in the app', async () => {
+    const testComponentRef = createComponentRef({
+      id: 'test.component',
+      loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
+    });
+
+    const TestComponent = makeComponentFromRef({ ref: testComponentRef });
+
+    renderInTestApp(<div />, {
+      extensions: [
+        PageBlueprint.make({
+          params: define =>
+            define({
+              // todo(blam): there's a bug that this path cannot be `/`?
+              defaultPath: '/test',
+              loader: async () => <TestComponent hello="test!" />,
+            }),
+        }),
+      ],
+      initialRouteEntries: ['/test'],
+    });
+
+    await waitFor(() => expect(screen.getByText('test!')).toBeInTheDocument());
+  });
+
+  it('should render a component ref without a default implementation', async () => {
+    const testComponentRef = createComponentRef({
+      id: 'test.component',
+    });
+
+    const TestComponent = makeComponentFromRef({ ref: testComponentRef });
+
+    renderInTestApp(<div />, {
+      extensions: [
+        PageBlueprint.make({
+          params: define =>
+            define({
+              defaultPath: '/test',
+              loader: async () => <TestComponent />,
+            }),
+        }),
+      ],
+      initialRouteEntries: ['/test'],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('test.component')).toBeInTheDocument(),
+    );
+  });
+
+  it('should render a component ref with an async loader implementation', async () => {
+    const testComponentRef = createComponentRef({
+      id: 'test.component',
+      loader: async () => (props: { hello: string }) =>
+        <div>{props.hello}</div>,
+    });
+
+    const TestComponent = makeComponentFromRef({ ref: testComponentRef });
+
+    renderInTestApp(<div />, {
+      extensions: [
+        PageBlueprint.make({
+          params: define =>
+            define({
+              // todo(blam): there's a bug that this path cannot be `/`?
+              defaultPath: '/test',
+              loader: async () => <TestComponent hello="test!" />,
+            }),
+        }),
+      ],
+      initialRouteEntries: ['/test'],
+    });
+
+    await waitFor(() => expect(screen.getByText('test!')).toBeInTheDocument());
+  });
+
+  it('should allow overriding a component ref with the blueprint', async () => {
+    const testComponentRef = createComponentRef({
+      id: 'test.component',
+      loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
+    });
+
+    const TestComponent = makeComponentFromRef({ ref: testComponentRef });
+
+    const extension = ComponentImplementationBlueprint.make({
+      params: define =>
+        define({
+          ref: testComponentRef,
+          loader: () => props => <div>Override {props.hello}</div>,
+        }),
+    });
+
+    renderInTestApp(<div />, {
+      extensions: [
+        extension,
+        PageBlueprint.make({
+          params: define =>
+            define({
+              defaultPath: '/test',
+              loader: async () => <TestComponent hello="test!" />,
+            }),
+        }),
+      ],
+      initialRouteEntries: ['/test'],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText('Override test!')).toBeInTheDocument(),
+    );
   });
 });

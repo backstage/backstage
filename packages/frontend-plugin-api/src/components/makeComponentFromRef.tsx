@@ -16,6 +16,7 @@
 import { lazy, Suspense } from 'react';
 import { ComponentRef } from './createComponentRef';
 import { OpaqueComponentRef } from '@internal/frontend';
+import { componentsApiRef, useApi } from '../apis';
 
 export function makeComponentFromRef<
   InternalComponentProps extends {},
@@ -31,6 +32,7 @@ export function makeComponentFromRef<
   );
 
   const ComponentRefImpl = (props: ExternalComponentProps) => {
+    const api = useApi(componentsApiRef);
     const innerProps = options.transformProps?.(props) ?? props;
 
     const ComponentOrPromise = options.loader?.() ?? FallbackComponent;
