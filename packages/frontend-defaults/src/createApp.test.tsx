@@ -131,7 +131,7 @@ describe('createApp', () => {
       );
 
       useEffect(() => {
-        appNode?.spec.source?.info().then(setInfo);
+        appNode?.spec.plugin?.info().then(setInfo);
       }, [appNode]);
 
       return <div>Package name: {info?.packageName}</div>;

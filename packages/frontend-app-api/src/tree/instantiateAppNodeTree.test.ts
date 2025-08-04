@@ -56,7 +56,6 @@ function makeSpec<TConfig, TConfigInput>(
     attachTo: extension.attachTo,
     disabled: extension.disabled,
     extension: extension as Extension<unknown, unknown>,
-    source: undefined,
     plugin: undefined,
     ...spec,
   };
