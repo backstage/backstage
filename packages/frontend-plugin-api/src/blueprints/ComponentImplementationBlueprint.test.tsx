@@ -20,15 +20,14 @@ describe('ComponentImplementationBlueprint', () => {
   it('should allow defining a component override for sync component ref', () => {
     const componentRef = createComponentRef({
       id: 'test.component',
-      mode: 'sync',
-      defaultComponent: (props: { hello: string }) => <div>{props.hello}</div>,
+      loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
     });
 
     const extension = ComponentImplementationBlueprint.make({
       params: define =>
         define({
           ref: componentRef,
-          component: props => {
+          loader: () => props => {
             // @ts-expect-error
             const t: number = props.hello;
 

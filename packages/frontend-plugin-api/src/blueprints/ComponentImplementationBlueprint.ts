@@ -22,10 +22,9 @@ import {
 
 export const componentDataRef = createExtensionDataRef<{
   ref: ComponentRef;
-  component:
-    | ((props: {}) => JSX.Element | null)
+  loader:
+    | (() => (props: {}) => JSX.Element | null)
     | (() => Promise<(props: {}) => JSX.Element | null>);
-  type: 'sync' | 'async';
 }>().with({ id: 'core.component.component' });
 
 export const ComponentImplementationBlueprint = createExtensionBlueprint({
@@ -37,16 +36,10 @@ export const ComponentImplementationBlueprint = createExtensionBlueprint({
   },
   defineParams<Ref extends ComponentRef<any>>(params: {
     ref: Ref;
-    component: Ref extends ComponentRef<
-      infer IInnerComponentProps,
-      any,
-      infer IMode
-    >
-      ? IMode extends 'sync'
-        ? (props: IInnerComponentProps) => JSX.Element
-        : IMode extends 'async'
-        ? () => Promise<(props: IInnerComponentProps) => JSX.Element>
-        : never
+    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+      ?
+          | (() => (props: IInnerComponentProps) => JSX.Element | null)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
       : never;
   }) {
     return createExtensionBlueprintParams(params);
@@ -54,8 +47,7 @@ export const ComponentImplementationBlueprint = createExtensionBlueprint({
   *factory(params) {
     yield componentDataRef({
       ref: params.ref,
-      component: params.component,
-      type: params.ref.mode,
+      loader: params.loader,
     });
   },
 });

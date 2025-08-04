@@ -20,12 +20,10 @@ import { OpaqueComponentRef } from '@internal/frontend';
 export type ComponentRef<
   TInnerComponentProps extends {} = {},
   TExternalComponentProps extends {} = TInnerComponentProps,
-  TMode extends 'sync' | 'async' = 'sync' | 'async',
 > = {
   id: string;
   TProps: TInnerComponentProps;
   TExternalProps: TExternalComponentProps;
-  TMode: TMode;
   $$type: '@backstage/ComponentRef';
 };
 
@@ -34,66 +32,27 @@ export type ComponentRefOptions<
   TExternalComponentProps extends {} = TInnerComponentProps,
 > = {
   id: string;
-  componentAsync: TMode extends 'async'
-    ? () => Promise<(props: TInnerComponentProps) => JSX.Element | null>
-    : TMode extends 'sync'
-    ? (props: TInnerComponentProps) => JSX.Element | null
-    : never;
+  loader?:
+    | (() => (props: TInnerComponentProps) => JSX.Element | null)
+    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>);
   transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
 };
 
-/**
- * Creates a new component ref that is synchronous.
- * @public
- */
 export function createComponentRef<
   TInnerComponentProps extends {},
   TExternalComponentProps extends {} = TInnerComponentProps,
 >(
-  options: ComponentRefOptions<
-    TInnerComponentProps,
-    TExternalComponentProps,
-    'sync'
-  >,
-): ComponentRef<TInnerComponentProps, TExternalComponentProps, 'sync'>;
-
-/**
- * Creates a new component ref that is asynchronous.
- * @public
- */
-export function createComponentRef<
-  TInnerComponentProps extends {},
-  TExternalComponentProps extends {} = TInnerComponentProps,
->(
-  options: ComponentRefOptions<
-    TInnerComponentProps,
-    TExternalComponentProps,
-    'async'
-  >,
-): ComponentRef<TInnerComponentProps, TExternalComponentProps, 'async'>;
-
-export function createComponentRef<
-  TInnerComponentProps extends {},
-  TExternalComponentProps extends {} = TInnerComponentProps,
-  TMode extends 'sync' | 'async' = 'sync' | 'async',
->(
-  options: ComponentRefOptions<
-    TInnerComponentProps,
-    TExternalComponentProps,
-    TMode
-  >,
+  options: ComponentRefOptions<TInnerComponentProps, TExternalComponentProps>,
 ): ComponentRef<TInnerComponentProps, TExternalComponentProps> {
   return OpaqueComponentRef.createInstance('v1', {
     id: options.id,
     TProps: null as unknown as TInnerComponentProps,
     TExternalProps: null as unknown as TExternalComponentProps,
-    TMode: null as unknown as TMode,
     toString() {
       return `ComponentRef{id=${options.id}}`;
     },
     options: {
-      mode: options.mode,
-      defaultComponent: options.defaultComponent,
+      loader: options.loader,
       transformProps: options.transformProps,
     } as (typeof OpaqueComponentRef.TInternal)['options'],
   });

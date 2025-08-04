@@ -21,19 +21,12 @@ export const OpaqueComponentRef = OpaqueType.create<{
   public: ComponentRef;
   versions: {
     readonly version: 'v1';
-    readonly options:
-      | {
-          mode: 'sync';
-          transformProps?: (props: object) => object;
-          defaultComponent?: (props: object) => JSX.Element | null;
-        }
-      | {
-          mode: 'async';
-          transformProps?: (props: object) => object;
-          defaultComponent?: () => Promise<
-            (props: object) => JSX.Element | null
-          >;
-        };
+    readonly options: {
+      transformProps?: (props: object) => object;
+      loader?:
+        | (() => (props: object) => JSX.Element | null)
+        | (() => Promise<(props: object) => JSX.Element | null>);
+    };
   };
 }>({
   versions: ['v1'],

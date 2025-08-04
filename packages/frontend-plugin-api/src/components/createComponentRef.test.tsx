@@ -18,7 +18,7 @@ import { createComponentRef } from './createComponentRef';
 
 describe('createComponentRef', () => {
   it('can be created and read', () => {
-    const ref = createComponentRef({ id: 'foo', mode: 'sync' });
+    const ref = createComponentRef({ id: 'foo' });
     expect(ref.id).toBe('foo');
     expect(String(ref)).toBe('ComponentRef{id=foo}');
   });
@@ -28,14 +28,15 @@ describe('createComponentRef', () => {
 
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
-      mode: 'sync',
-      defaultComponent: ({ foo }) => <Test key={foo} />,
+      loader:
+        () =>
+        ({ foo }) =>
+          <Test key={foo} />,
     });
 
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
-      mode: 'async',
-      defaultComponent:
+      loader:
         async () =>
         ({ foo }) =>
           <Test key={foo} />,
@@ -43,21 +44,6 @@ describe('createComponentRef', () => {
 
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
-      mode: 'sync',
-      // @ts-expect-error - this should be an error as mode is sync
-      defaultComponent: async ({ foo }) => <Test key={foo} />,
-    });
-
-    createComponentRef<{ foo: string }, { bar: string }>({
-      id: 'foo',
-      mode: 'async',
-      // @ts-expect-error - this should be an error as mode is async
-      defaultComponent: ({ bar }) => <Test key={bar} />,
-    });
-
-    createComponentRef<{ foo: string }, { bar: string }>({
-      id: 'foo',
-      mode: 'sync',
     });
 
     expect(Test).toBeDefined();
@@ -66,21 +52,13 @@ describe('createComponentRef', () => {
   it('should allow transformings props', () => {
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
-      mode: 'sync',
       transformProps: props => ({ foo: props.bar }),
     });
 
     createComponentRef<{ foo: string }, { bar: string }>({
       id: 'foo',
-      mode: 'sync',
       // @ts-expect-error - this should be an error as foo is not a string
       transformProps: props => ({ foo: 1 }),
-    });
-
-    createComponentRef<{ foo: string }, { bar: string }>({
-      id: 'foo',
-      mode: 'sync',
-      transformProps: props => ({ foo: props.bar }),
     });
 
     expect(true).toBe(true);

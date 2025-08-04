@@ -22,15 +22,16 @@ describe('makeComponentFromRef', () => {
     it('should create a component from a ref for sync component', () => {
       const ref = createComponentRef({
         id: 'random',
-        mode: 'sync',
-        defaultComponent: (props: { name: string }) => {
+        loader: () => (props: { name: string }) => {
           return <div data-testid="test">{props.name}</div>;
         },
+        transformProps: (props: { id: string }) => ({
+          name: props.id,
+        }),
       });
 
       const Component = makeComponentFromRef({ ref });
-
-      render(<Component name="test" />);
+      render(<Component id="test" />);
 
       expect(screen.getByTestId('test')).toHaveTextContent('test');
     });
@@ -38,7 +39,6 @@ describe('makeComponentFromRef', () => {
     it('should render a fallback when theres no default implementation provided', () => {
       const ref = createComponentRef({
         id: 'random',
-        mode: 'sync',
       });
 
       const Component = makeComponentFromRef({ ref });
@@ -51,11 +51,10 @@ describe('makeComponentFromRef', () => {
     it('should map props from external to internal', () => {
       const ref = createComponentRef({
         id: 'random',
-        mode: 'sync',
         transformProps: (props: { name: string }) => ({
           uppercase: props.name.toUpperCase(),
         }),
-        defaultComponent: props => {
+        loader: () => props => {
           // @ts-expect-error as uppercase is types as a string
           const test: number = props.uppercase;
 
@@ -75,8 +74,7 @@ describe('makeComponentFromRef', () => {
     it('should create a component from a ref for async component', async () => {
       const ref = createComponentRef({
         id: 'random',
-        mode: 'async',
-        defaultComponent: async () => (props: { name: string }) => {
+        loader: async () => (props: { name: string }) => {
           return <div data-testid="test">{props.name}</div>;
         },
       });
@@ -91,7 +89,6 @@ describe('makeComponentFromRef', () => {
     it('should render a fallback when theres no default implementation provided', async () => {
       const ref = createComponentRef({
         id: 'random',
-        mode: 'async',
       });
 
       const Component = makeComponentFromRef({ ref });
@@ -104,11 +101,10 @@ describe('makeComponentFromRef', () => {
     it('should map props from external to internal', async () => {
       const ref = createComponentRef({
         id: 'random',
-        mode: 'async',
         transformProps: (props: { name: string }) => ({
           uppercase: props.name.toUpperCase(),
         }),
-        defaultComponent: async () => props => {
+        loader: async () => props => {
           // @ts-expect-error as uppercase is types as a string
           const test: number = props.uppercase;
 

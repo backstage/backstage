@@ -33,29 +33,24 @@ export function makeComponentFromRef<
   const ComponentRefImpl = (props: ExternalComponentProps) => {
     const innerProps = options.transformProps?.(props) ?? props;
 
-    if (options.mode === 'sync') {
-      const DefaultImplementation =
-        options.defaultComponent ?? FallbackComponent;
+    const ComponentOrPromise = options.loader?.() ?? FallbackComponent;
 
-      return <DefaultImplementation {...innerProps} />;
+    if ('then' in ComponentOrPromise) {
+      const DefaultImplementation = lazy(() =>
+        ComponentOrPromise.then(c => {
+          return { default: c };
+        }),
+      );
+
+      return (
+        // todo: is this necessary? can we remove this?
+        <Suspense>
+          <DefaultImplementation {...innerProps} />
+        </Suspense>
+      );
     }
 
-    const DefaultImplementation = lazy(
-      () =>
-        options.defaultComponent?.().then(c => {
-          return { default: c };
-        }) ??
-        Promise.resolve({
-          default: FallbackComponent,
-        }),
-    );
-
-    return (
-      // todo: is this necessary? can we remove this?
-      <Suspense>
-        <DefaultImplementation {...innerProps} />
-      </Suspense>
-    );
+    return <ComponentOrPromise {...innerProps} />;
   };
 
   return ComponentRefImpl;
