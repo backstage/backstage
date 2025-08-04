@@ -135,7 +135,6 @@ export const Form: (
 // @alpha
 export const FormDecoratorBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-decorator';
-  name: undefined;
   params: {
     decorator: ScaffolderFormDecorator;
   };
@@ -165,7 +164,6 @@ export interface FormField {
 // @alpha
 export const FormFieldBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-field';
-  name: undefined;
   params: {
     field: () => Promise<FormField>;
   };

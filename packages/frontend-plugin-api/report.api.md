@@ -180,7 +180,6 @@ export type AnyRoutes = {
 // @public
 export const ApiBlueprint: ExtensionBlueprint<{
   kind: 'api';
-  name: undefined;
   params: <
     TApi,
     TImpl extends TApi,
@@ -252,7 +251,6 @@ export interface AppNodeSpec {
 // @public
 export const AppRootElementBlueprint: ExtensionBlueprint<{
   kind: 'app-root-element';
-  name: undefined;
   params: {
     element: JSX.Element | (() => JSX.Element);
   };
@@ -266,7 +264,6 @@ export const AppRootElementBlueprint: ExtensionBlueprint<{
 // @public
 export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   kind: 'app-root-wrapper';
-  name: undefined;
   params: {
     Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
@@ -530,14 +527,12 @@ export function createExtensionBlueprint<
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TKind extends string,
-  TName extends string | undefined = undefined,
   TDataRefs extends {
     [name in string]: AnyExtensionDataRef;
   } = never,
 >(
   options: CreateExtensionBlueprintOptions<
     TKind,
-    TName,
     TParams,
     UOutput,
     TInputs,
@@ -547,7 +542,6 @@ export function createExtensionBlueprint<
   >,
 ): ExtensionBlueprint<{
   kind: TKind;
-  name: TName;
   params: TParams;
   output: UOutput;
   inputs: string extends keyof TInputs ? {} : TInputs;
@@ -569,7 +563,6 @@ export function createExtensionBlueprint<
 // @public (undocumented)
 export type CreateExtensionBlueprintOptions<
   TKind extends string,
-  TName extends string | undefined,
   TParams extends object | ExtensionBlueprintParamsDefiner,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -594,7 +587,6 @@ export type CreateExtensionBlueprintOptions<
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
-  name?: TName;
   config?: {
     schema: TConfigSchema;
   };
@@ -920,10 +912,10 @@ export interface ExtensionBlueprint<
   dataRefs: T['dataRefs'];
   // (undocumented)
   make<
-    TNewName extends string | undefined,
+    TName extends string | undefined,
     TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
   >(args: {
-    name?: TNewName;
+    name?: TName;
     attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
     params: TParamsInput extends ExtensionBlueprintParamsDefiner
@@ -933,7 +925,7 @@ export interface ExtensionBlueprint<
       : TParamsInput;
   }): ExtensionDefinition<{
     kind: T['kind'];
-    name: string | undefined extends TNewName ? T['name'] : TNewName;
+    name: string | undefined extends TName ? undefined : TName;
     config: T['config'];
     configInput: T['configInput'];
     output: T['output'];
@@ -941,7 +933,7 @@ export interface ExtensionBlueprint<
     params: T['params'];
   }>;
   makeWithOverrides<
-    TNewName extends string | undefined,
+    TName extends string | undefined,
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
@@ -957,7 +949,7 @@ export interface ExtensionBlueprint<
       >;
     },
   >(args: {
-    name?: TNewName;
+    name?: TName;
     attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
     inputs?: TExtraInputs & {
@@ -1024,7 +1016,7 @@ export interface ExtensionBlueprint<
     output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
     inputs: T['inputs'] & TExtraInputs;
     kind: T['kind'];
-    name: string | undefined extends TNewName ? T['name'] : TNewName;
+    name: string | undefined extends TName ? undefined : TName;
     params: T['params'];
   }>;
 }
@@ -1032,7 +1024,6 @@ export interface ExtensionBlueprint<
 // @public (undocumented)
 export type ExtensionBlueprintParameters = {
   kind: string;
-  name?: string;
   params?: object | ExtensionBlueprintParamsDefiner;
   configInput?: {
     [K in string]: any;
@@ -1415,7 +1406,6 @@ export { googleAuthApiRef };
 // @public (undocumented)
 export const IconBundleBlueprint: ExtensionBlueprint<{
   kind: 'icon-bundle';
-  name: undefined;
   params: {
     icons: { [key in string]: IconComponent };
   };
@@ -1465,7 +1455,6 @@ export { microsoftAuthApiRef };
 // @public
 export const NavContentBlueprint: ExtensionBlueprint_2<{
   kind: 'nav-content';
-  name: undefined;
   params: {
     component: NavContentComponent;
   };
@@ -1505,7 +1494,6 @@ export interface NavContentComponentProps {
 // @public
 export const NavItemBlueprint: ExtensionBlueprint<{
   kind: 'nav-item';
-  name: undefined;
   params: {
     title: string;
     icon: IconComponent_3;
@@ -1557,7 +1545,6 @@ export { OpenIdConnectApi };
 // @public
 export const PageBlueprint: ExtensionBlueprint<{
   kind: 'page';
-  name: undefined;
   params: {
     defaultPath: string;
     loader: () => Promise<JSX.Element>;
@@ -1715,7 +1702,6 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 // @public (undocumented)
 export const RouterBlueprint: ExtensionBlueprint<{
   kind: 'app-router-component';
-  name: undefined;
   params: {
     Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
@@ -1771,7 +1757,6 @@ export { SessionState };
 // @public
 export const SignInPageBlueprint: ExtensionBlueprint<{
   kind: 'sign-in-page';
-  name: undefined;
   params: {
     loader: () => Promise<ComponentType<SignInPageProps>>;
   };
@@ -1813,7 +1798,6 @@ export interface SubRouteRef<
 // @public
 export const ThemeBlueprint: ExtensionBlueprint<{
   kind: 'theme';
-  name: undefined;
   params: {
     theme: AppTheme;
   };
@@ -1829,7 +1813,6 @@ export const ThemeBlueprint: ExtensionBlueprint<{
 // @public
 export const TranslationBlueprint: ExtensionBlueprint<{
   kind: 'translation';
-  name: undefined;
   params: {
     resource: TranslationResource | TranslationMessages;
   };
