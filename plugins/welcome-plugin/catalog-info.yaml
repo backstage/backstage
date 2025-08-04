@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: welcome-plugin
+  description: A simple welcome plugin for Backstage
+  annotations:
+    backstage.io/source-location: url:https://github.com/backstage/backstage/tree/master/plugins/welcome-plugin
+spec:
+  type: library
+  lifecycle: experimental
+  owner: platform-team
