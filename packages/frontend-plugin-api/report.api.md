@@ -267,6 +267,7 @@ export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   kind: 'app-root-wrapper';
   name: undefined;
   params: {
+    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ConfigurableExtensionDataRef<
@@ -1719,6 +1720,7 @@ export const RouterBlueprint: ExtensionBlueprint<{
   kind: 'app-router-component';
   name: undefined;
   params: {
+    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ConfigurableExtensionDataRef<
