@@ -99,7 +99,7 @@ export { alertApiRef };
 
 export { AlertMessage };
 
-// @public @deprecated
+// @public
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
 };
@@ -143,7 +143,6 @@ export type AnalyticsImplementation = {
 // @public
 export const AnalyticsImplementationBlueprint: ExtensionBlueprint<{
   kind: 'analytics';
-  name: undefined;
   params: <TDeps extends { [name in string]: unknown }>(
     params: AnalyticsImplementationFactory<TDeps>,
   ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>>;

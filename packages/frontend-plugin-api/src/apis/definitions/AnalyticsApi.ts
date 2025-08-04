@@ -133,8 +133,6 @@ export type AnalyticsImplementation = {
  * with relevant methods for instrumentation.
  *
  * @public
- * @deprecated This type is now deprecated and will be removed in an upcoming
- *   release. Use the {@link AnalyticsImplementation} type instead.
  */
 export type AnalyticsApi = {
   /**
