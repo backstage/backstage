@@ -11228,11 +11228,11 @@ __metadata:
   linkType: hard
 
 "@keyv/valkey@npm:^1.0.1":
-  version: 1.0.6
-  resolution: "@keyv/valkey@npm:1.0.6"
+  version: 1.0.8
+  resolution: "@keyv/valkey@npm:1.0.8"
   dependencies:
     iovalkey: "npm:^0.3.3"
-  checksum: 10/36e48930928845e6a14dfb4f9f8069851ff10d3aeef62277f78c8dcea735f8dca5faf4399f67fc2730231b24270d9ab6be77a46e122e9006d3f6e55cc5c0b97a
+  checksum: 10/bca81d5603dab9f5f5c1759c25961c5c3e837b3de56775436a8a4b851c08acdb8689bd7db58d3c6bcd0ceead84241f4276b5f7638317ba75bbb2cb4c4ac71c02
   languageName: node
   linkType: hard
 
