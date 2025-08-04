@@ -34,7 +34,13 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { ScaffolderFormDecoratorsApi } from '../../api/types';
 import { formDecoratorsApiRef } from '../../api/ref';
-import { visitsApiRef } from '@backstage/plugin-home';
+import { createApiRef } from '@backstage/core-plugin-api';
+
+const visitsApiRef = createApiRef<{
+  updateName: (pathname: string, name: string) => Promise<void>;
+}>({
+  id: 'homepage.visits',
+});
 
 jest.mock('react-router-dom', () => {
   return {
@@ -70,8 +76,6 @@ const scaffolderDecoratorsMock: jest.Mocked<ScaffolderFormDecoratorsApi> = {
 
 const visitsApiMock = {
   updateName: jest.fn().mockResolvedValue(undefined),
-  visit: jest.fn(),
-  getVisits: jest.fn().mockResolvedValue([]),
 };
 
 const catalogApi = catalogApiMock.mock();
@@ -83,6 +87,13 @@ const apis = TestApiRegistry.from(
   [catalogApiRef, catalogApi],
   [analyticsApiRef, analyticsApi],
   [visitsApiRef, visitsApiMock],
+);
+
+const apisWithoutVisits = TestApiRegistry.from(
+  [scaffolderApiRef, scaffolderApiMock],
+  [formDecoratorsApiRef, scaffolderDecoratorsMock],
+  [catalogApiRef, catalogApi],
+  [analyticsApiRef, analyticsApi],
 );
 
 const entityRefResponse = {
@@ -242,7 +253,7 @@ describe('TemplateWizardPage', () => {
       jest.clearAllMocks();
     });
 
-    it('should call visitsApi.updateName when template title is available', async () => {
+    it('should call visitsApi.updateName when template title is available and visits API is registered', async () => {
       scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
         steps: [],
         title: 'Test Template Title',
@@ -276,6 +287,29 @@ describe('TemplateWizardPage', () => {
 
       await renderInTestApp(
         <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      expect(visitsApiMock.updateName).not.toHaveBeenCalled();
+    });
+
+    it('should work gracefully when visits API is not available (home plugin not installed)', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+        title: 'Test Template Title',
+      });
+      catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+      await renderInTestApp(
+        <ApiProvider apis={apisWithoutVisits}>
           <SecretsContextProvider>
             <TemplateWizardPage customFieldExtensions={[]} />
           </SecretsContextProvider>
