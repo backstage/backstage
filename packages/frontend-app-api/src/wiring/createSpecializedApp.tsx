@@ -25,7 +25,6 @@ import {
   SubRouteRef,
   AnyRouteRefParams,
   RouteFunc,
-  RouteResolutionApiResolveOptions,
   RouteResolutionApi,
   createApiFactory,
   routeResolutionApiRef,
@@ -170,7 +169,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions,
+    options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     if (!this.#delegate) {
       throw new Error(

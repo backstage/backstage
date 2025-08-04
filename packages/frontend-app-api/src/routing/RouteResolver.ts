@@ -21,7 +21,6 @@ import {
   SubRouteRef,
   AnyRouteRefParams,
   RouteFunc,
-  RouteResolutionApiResolveOptions,
   RouteResolutionApi,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
@@ -198,7 +197,7 @@ export class RouteResolver implements RouteResolutionApi {
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions,
+    options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     // First figure out what our target absolute ref is, as well as our target path.
     const [targetRef, targetPath] = resolveTargetRef(
