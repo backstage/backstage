@@ -51,7 +51,7 @@ export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
 /** @alpha */
 export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
   params: {
-    defaultPath: '/catalog-unprocessed-entities',
+    path: '/catalog-unprocessed-entities',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('../components/UnprocessedEntities').then(m =>

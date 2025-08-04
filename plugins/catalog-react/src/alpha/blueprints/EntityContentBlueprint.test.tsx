@@ -32,8 +32,8 @@ describe('EntityContentBlueprint', () => {
     const extension = EntityContentBlueprint.make({
       name: 'test',
       params: {
-        defaultPath: '/test',
-        defaultTitle: 'Test',
+        path: '/test',
+        title: 'Test',
         loader: async () => <div>Test!</div>,
       },
     });
@@ -253,8 +253,8 @@ describe('EntityContentBlueprint', () => {
     const extension = EntityContentBlueprint.make({
       name: 'test',
       params: {
-        defaultPath: '/test',
-        defaultTitle: 'Test',
+        path: '/test',
+        title: 'Test',
         routeRef: mockRouteRef,
         loader: async () => <div>Test!</div>,
       },
@@ -277,8 +277,8 @@ describe('EntityContentBlueprint', () => {
         EntityContentBlueprint.make({
           name: 'test',
           params: {
-            defaultPath: '/test',
-            defaultTitle: 'Test',
+            path: '/test',
+            title: 'Test',
             loader: async () => <div>Test!</div>,
             filter: 'test',
           },
@@ -291,8 +291,8 @@ describe('EntityContentBlueprint', () => {
         EntityContentBlueprint.make({
           name: 'test',
           params: {
-            defaultPath: '/test',
-            defaultTitle: 'Test',
+            path: '/test',
+            title: 'Test',
             loader: async () => <div>Test!</div>,
           },
         }),
@@ -305,8 +305,8 @@ describe('EntityContentBlueprint', () => {
         EntityContentBlueprint.make({
           name: 'test',
           params: {
-            defaultPath: '/test',
-            defaultTitle: 'Test',
+            path: '/test',
+            title: 'Test',
             filter: mockFilter,
             loader: async () => <div>Test!</div>,
           },
@@ -328,8 +328,8 @@ describe('EntityContentBlueprint', () => {
       },
       factory(originalFactory, { inputs, config }) {
         return originalFactory({
-          defaultPath: '/test',
-          defaultTitle: 'Test',
+          path: '/test',
+          title: 'Test',
           loader: async () => (
             <div data-testid="test">
               config: {config.mock}

@@ -41,7 +41,7 @@ describe('resolveAsyncFeatures', () => {
           extensions: [
             PageBlueprint.make({
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: () => new Promise(() => {}),
               },
             }),
@@ -79,7 +79,7 @@ describe('resolveAsyncFeatures', () => {
             extensions: [
               PageBlueprint.make({
                 params: {
-                  defaultPath: '/',
+                  path: '/',
                   loader: () => new Promise(() => {}),
                 },
               }),

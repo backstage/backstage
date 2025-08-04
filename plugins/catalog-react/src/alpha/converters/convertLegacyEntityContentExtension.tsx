@@ -37,8 +37,18 @@ export function convertLegacyEntityContentExtension(
   overrides?: {
     name?: string;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-    defaultPath?: string;
-    defaultTitle?: string;
+    path?: string;
+    title?: string;
+
+    /**
+     * @deprecated Use the `path` param instead.
+     */
+    defaultPath?: [Error: `Use the 'path' override instead`];
+
+    /**
+     * @deprecated Use the `path` param instead.
+     */
+    defaultTitle?: [Error: `Use the 'title' override instead`];
   },
 ): ExtensionDefinition {
   const element = <LegacyExtension />;
@@ -77,8 +87,8 @@ export function convertLegacyEntityContentExtension(
     name: overrides?.name ?? name,
     params: {
       filter: overrides?.filter,
-      defaultPath: overrides?.defaultPath ?? `/${kebabCase(infix)}`,
-      defaultTitle: overrides?.defaultTitle ?? startCase(infix),
+      path: overrides?.path ?? `/${kebabCase(infix)}`,
+      title: overrides?.title ?? startCase(infix),
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
       loader: async () => compatWrapper(element),
     },

@@ -70,7 +70,7 @@ describe('convertLegacyPlugin', () => {
       {
         extensions: [
           PageBlueprint.make({
-            params: { defaultPath: '/test', loader: async () => ({} as any) },
+            params: { path: '/test', loader: async () => ({} as any) },
           }),
         ],
       },

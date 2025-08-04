@@ -18,7 +18,7 @@ The following is a simple example of how one might use the blueprint `make` meth
 ```tsx
 const myPageExtension = PageBlueprint.make({
   params: {
-    defaultPath: '/my-page',
+    path: '/my-page',
     loader: () => import('./components/MyPage').then(m => <m.MyPage />),
   },
 });
@@ -44,7 +44,7 @@ const myPageExtension = PageBlueprint.makeWithOverrides({
     // Call and forward the result from the original factory, providing
     // the blueprint parameters as the first argument.
     return originalFactory({
-      defaultPath: '/my-page',
+      path: '/my-page',
       loader: () =>
         import('./components/MyPage').then(m => (
           // We can now access values from the factory context when providing
@@ -101,7 +101,7 @@ The following is an example of how one might create a new extension blueprint:
 
 ```tsx
 export interface MyWidgetBlueprintParams {
-  defaultTitle: string;
+  title: string;
   element: JSX.Element;
 }
 
@@ -119,7 +119,7 @@ export const MyWidgetBlueprint = createExtensionBlueprint({
       // Note that while this is a valid pattern, you might often want to
       // return separate pieces of data instead, more on that below.
       coreExtensionData.reactElement(
-        <MyWidgetContainer title={config.title ?? params.defaultTitle}>
+        <MyWidgetContainer title={config.title ?? params.title}>
           {params.element}
         </MyWidgetContainer>,
       ),
@@ -175,7 +175,7 @@ To do that, we create a new extension data reference for our widget title. This 
 
 ```tsx
 export interface MyWidgetBlueprintParams {
-  defaultTitle: string;
+  title: string;
   element: JSX.Element;
 }
 
@@ -194,7 +194,7 @@ export const MyWidgetBlueprint = createExtensionBlueprint({
   output: [widgetTitleRef, coreExtensionData.reactElement],
   factory(params: MyWidgetBlueprintParams, { config }) {
     return [
-      widgetTitleRef(config.title ?? params.defaultTitle),
+      widgetTitleRef(config.title ?? params.title),
       coreExtensionData.reactElement(params.element),
     ];
   },

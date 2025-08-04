@@ -115,7 +115,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
-      defaultPath: '/search',
+      path: '/search',
       routeRef: convertLegacyRouteRef(rootRouteRef),
       loader: async () => {
         const getResultItemComponent = (result: SearchResult) => {

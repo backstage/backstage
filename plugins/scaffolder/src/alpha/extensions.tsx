@@ -46,7 +46,7 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
     );
     return originalFactory({
       routeRef: convertLegacyRouteRef(rootRouteRef),
-      defaultPath: '/create',
+      path: '/create',
       loader: () =>
         import('../components/Router/Router').then(m =>
           compatWrapper(
