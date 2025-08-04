@@ -2,4 +2,4 @@
 '@backstage/ui': patch
 ---
 
-Add `collapsible` prop on the `SearchField` component in BUI.
+Add `startCollapsed` prop on the `SearchField` component in BUI.
