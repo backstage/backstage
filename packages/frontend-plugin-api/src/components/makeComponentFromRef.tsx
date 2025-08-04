@@ -32,6 +32,8 @@ export function makeComponentFromRef<
   );
 
   const ComponentRefImpl = (props: ExternalComponentProps) => {
+    // todo(blam): use the component that's in the API ref instead if it's defined.
+    // otherwise use the fallback..
     const api = useApi(componentsApiRef);
     const innerProps = options.transformProps?.(props) ?? props;
 

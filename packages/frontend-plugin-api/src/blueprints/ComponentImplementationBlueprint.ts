@@ -44,10 +44,10 @@ export const ComponentImplementationBlueprint = createExtensionBlueprint({
   }) {
     return createExtensionBlueprintParams(params);
   },
-  *factory(params) {
-    yield componentDataRef({
+  factory: params => [
+    componentDataRef({
       ref: params.ref,
       loader: params.loader,
-    });
-  },
+    }),
+  ],
 });
