@@ -12859,8 +12859,8 @@ __metadata:
   linkType: hard
 
 "@octokit/core@npm:^5.0.0, @octokit/core@npm:^5.2.0":
-  version: 5.2.1
-  resolution: "@octokit/core@npm:5.2.1"
+  version: 5.2.2
+  resolution: "@octokit/core@npm:5.2.2"
   dependencies:
     "@octokit/auth-token": "npm:^4.0.0"
     "@octokit/graphql": "npm:^7.1.0"
@@ -12869,7 +12869,7 @@ __metadata:
     "@octokit/types": "npm:^13.0.0"
     before-after-hook: "npm:^2.2.0"
     universal-user-agent: "npm:^6.0.0"
-  checksum: 10/9d95da740f350811dc5aadbf6670f3ddb8735f7c80029add497311ca0b13c4919fea473110e3fd9e85929e51ee64797fad8732e2f31703d55d80bdab1fdc846b
+  checksum: 10/0c39b43e562a8acf8f1d563a85f3c0e55e6d678ae16a4b3d6341060b3d5315c021dfa1bd15dc818fa4cc5612eb5cd518b13cb7c194e3c92ca3da9c0dc6a854b5
   languageName: node
   linkType: hard
 
