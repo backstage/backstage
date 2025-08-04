@@ -34,8 +34,8 @@ backend:
     defaultTtl: 3600000 # 1 hour in milliseconds or use ISO 8601 format e.g., PT1H
     infinispan:
       servers:
-      - host: 127.0.0.1
-        port: 11222
+        - host: 127.0.0.1
+          port: 11222
       version: '2.9'
       cacheName: backstage-cache
       authentication:
@@ -43,7 +43,6 @@ backend:
         userName: admin
         password: admin
         saslMechanism: PLAIN
-
 
   # Used for enabling authentication, secret is shared by all backend plugins
   # See https://backstage.io/docs/auth/service-to-service-auth for
