@@ -16,6 +16,7 @@
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature as PluginApiFrontendFeature } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from '../routing/types';
+import { RouteAliasResolver } from '../routing/RouteAliasResolver';
 
 /** @public
  * @deprecated Use {@link @backstage/frontend-plugin-api#FrontendFeature} instead.
@@ -27,4 +28,5 @@ export type RouteInfo = {
   routePaths: Map<RouteRef, string>;
   routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
+  routeAliasResolver: RouteAliasResolver;
 };
