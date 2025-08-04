@@ -27,7 +27,7 @@ import { z } from 'zod';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 import { ExtensionDataContainer } from './types';
-import { ExtensionBlueprintParamsDefiner } from './createExtensionBlueprint';
+import { ExtensionBlueprintDefineParams } from './createExtensionBlueprint';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -159,7 +159,7 @@ export type ExtensionDefinitionParameters = {
       { optional: boolean; singleton: boolean }
     >;
   };
-  params?: object | ExtensionBlueprintParamsDefiner;
+  params?: object | ExtensionBlueprintDefineParams;
 };
 
 /**
@@ -167,14 +167,14 @@ export type ExtensionDefinitionParameters = {
  * It can't be exported because it breaks API reports.
  * @ignore
  */
-type AnyParamsInput<TParams extends object | ExtensionBlueprintParamsDefiner> =
-  TParams extends ExtensionBlueprintParamsDefiner<infer IParams>
+type AnyParamsInput<TParams extends object | ExtensionBlueprintDefineParams> =
+  TParams extends ExtensionBlueprintDefineParams<infer IParams>
     ? IParams | ((define: TParams) => ReturnType<TParams>)
     :
         | TParams
         | ((
-            define: ExtensionBlueprintParamsDefiner<TParams, TParams>,
-          ) => ReturnType<ExtensionBlueprintParamsDefiner<TParams, TParams>>);
+            define: ExtensionBlueprintDefineParams<TParams, TParams>,
+          ) => ReturnType<ExtensionBlueprintDefineParams<TParams, TParams>>);
 
 /** @public */
 export type ExtensionDefinition<
@@ -225,10 +225,10 @@ export type ExtensionDefinition<
               } & ([T['params']] extends [never]
                 ? {}
                 : {
-                    params?: TFactoryParamsReturn extends ExtensionBlueprintParamsDefiner
+                    params?: TFactoryParamsReturn extends ExtensionBlueprintDefineParams
                       ? TFactoryParamsReturn
-                      : T['params'] extends ExtensionBlueprintParamsDefiner
-                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+                      : T['params'] extends ExtensionBlueprintDefineParams
+                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
                       : Partial<T['params']>;
                   })
             >,
@@ -247,10 +247,10 @@ export type ExtensionDefinition<
       } & ([T['params']] extends [never]
         ? {}
         : {
-            params?: TParamsInput extends ExtensionBlueprintParamsDefiner
+            params?: TParamsInput extends ExtensionBlueprintDefineParams
               ? TParamsInput
-              : T['params'] extends ExtensionBlueprintParamsDefiner
-              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+              : T['params'] extends ExtensionBlueprintDefineParams
+              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
               : Partial<T['params']>;
           })
     > &

@@ -881,9 +881,9 @@ describe('createExtensionBlueprint', () => {
     });
 
     const extensionDef = blueprint.make({
-      // Using define is optional in this case
-      params: define =>
-        define({
+      // Using defineParams is optional in this case
+      params: defineParams =>
+        defineParams({
           test1: 'orig-1',
           test2: 'orig-2',
         }),
@@ -925,7 +925,7 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Partial override with original define
+    // Partial override with original defineParams
     expect(
       getOutputs(
         extensionDef.override({
@@ -941,12 +941,12 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Override with define
+    // Override with defineParams
     expect(
       getOutputs(
         extension.override({
-          params: define =>
-            define({
+          params: defineParams =>
+            defineParams({
               test1: 'override-1',
               test2: 'override-2',
               // @ts-expect-error
@@ -959,12 +959,12 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Override with define with original define
+    // Override with defineParams with original defineParams
     expect(
       getOutputs(
         extensionDef.override({
-          params: define =>
-            define({
+          params: defineParams =>
+            defineParams({
               test1: 'override-1',
               test2: 'override-2',
               // @ts-expect-error
@@ -1015,7 +1015,7 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Partial override via factory with original define
+    // Partial override via factory with original defineParams
     expect(
       getOutputs(
         extensionDef.override({
@@ -1035,14 +1035,14 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Override via factory with define
+    // Override via factory with defineParams
     expect(
       getOutputs(
         extension.override({
           factory(origFactory) {
             return origFactory({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   test1: 'override-1',
                   test2: 'override-2',
                   // @ts-expect-error
@@ -1057,14 +1057,14 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Override via factory with define with original define
+    // Override via factory with defineParams with original defineParams
     expect(
       getOutputs(
         extensionDef.override({
           factory(origFactory) {
             return origFactory({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   test1: 'override-1',
                   test2: 'override-2',
                   // @ts-expect-error
@@ -1131,9 +1131,9 @@ describe('createExtensionBlueprint', () => {
     });
 
     const extensionDef = blueprint.make({
-      // Using define is optional in this case
-      params: define =>
-        define({
+      // Using defineParams is optional in this case
+      params: defineParams =>
+        defineParams({
           test1: 'orig-1',
           test2: 'orig-2',
         }),
@@ -1175,7 +1175,7 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Partial override with original define
+    // Partial override with original defineParams
     expect(
       getOutputs(
         extensionDef.override({
@@ -1191,12 +1191,12 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Override with define
+    // Override with defineParams
     expect(
       getOutputs(
         extension.override({
-          params: define =>
-            define({
+          params: defineParams =>
+            defineParams({
               test1: 'override-1',
               test2: 'override-2',
               // @ts-expect-error
@@ -1209,12 +1209,12 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Override with define with original define
+    // Override with defineParams with original defineParams
     expect(
       getOutputs(
         extensionDef.override({
-          params: define =>
-            define({
+          params: defineParams =>
+            defineParams({
               test1: 'override-1',
               test2: 'override-2',
               // @ts-expect-error
@@ -1266,7 +1266,7 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Partial override via factory with original define
+    // Partial override via factory with original defineParams
     expect(
       getOutputs(
         extensionDef.override({
@@ -1286,14 +1286,14 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Override via factory with define
+    // Override via factory with defineParams
     expect(
       getOutputs(
         extension.override({
           factory(origFactory) {
             return origFactory({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   test1: 'override-1',
                   test2: 'override-2',
                   // @ts-expect-error
@@ -1308,14 +1308,14 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
-    // Override via factory with define with original define
+    // Override via factory with defineParams with original defineParams
     expect(
       getOutputs(
         extensionDef.override({
           factory(origFactory) {
             return origFactory({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   test1: 'override-1',
                   test2: 'override-2',
                   // @ts-expect-error
@@ -1373,8 +1373,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       TestExtensionBlueprint.make({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 'x',
             // @ts-expect-error b doesn't match a
             b: 'y',
@@ -1382,8 +1382,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       TestExtensionBlueprint.make({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 'x',
             b: 'x',
             // @ts-expect-error extra param
@@ -1392,8 +1392,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       const extension = TestExtensionBlueprint.make({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 'x',
             b: 'x',
           }),
@@ -1430,8 +1430,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       extension.override({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 'z',
             // @ts-expect-error b doesn't match a
             b: 'w',
@@ -1439,8 +1439,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       extension.override({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 'z',
             b: 'z',
             // @ts-expect-error extra param
@@ -1449,8 +1449,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       const override = extension.override({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 'z',
             b: 'z',
           }),
@@ -1472,8 +1472,8 @@ describe('createExtensionBlueprint', () => {
 
       TestExtensionBlueprint.makeWithOverrides({
         factory(originalFactory) {
-          return originalFactory(define =>
-            define({
+          return originalFactory(defineParams =>
+            defineParams({
               a: 'x',
               // @ts-expect-error b doesn't match a
               b: 'y',
@@ -1484,8 +1484,8 @@ describe('createExtensionBlueprint', () => {
 
       const extension = TestExtensionBlueprint.makeWithOverrides({
         factory(originalFactory) {
-          return originalFactory(define =>
-            define({
+          return originalFactory(defineParams =>
+            defineParams({
               a: 'x',
               b: 'x',
             }),
@@ -1524,8 +1524,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       extension.override({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 'z',
             // @ts-expect-error b doesn't match a
             b: 'w',
@@ -1533,8 +1533,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       const override = extension.override({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 'z',
             b: 'z',
           }),
@@ -1560,8 +1560,8 @@ describe('createExtensionBlueprint', () => {
       });
 
       const extension = TestTransformExtensionBlueprint.make({
-        params: define =>
-          define({
+        params: defineParams =>
+          defineParams({
             a: 0,
             b: 10,
           }),
@@ -1572,8 +1572,8 @@ describe('createExtensionBlueprint', () => {
       expect(
         createExtensionTester(
           extension.override({
-            params: define =>
-              define({
+            params: defineParams =>
+              defineParams({
                 a: 20,
                 b: 30,
               }),
@@ -1597,18 +1597,18 @@ describe('createExtensionBlueprint', () => {
       });
 
       const extension = TestTransformExtensionBlueprint.make({
-        params: define => define({ x: 1 }),
+        params: defineParams => defineParams({ x: 1 }),
       });
 
       expect(createExtensionTester(extension).get(testDataRef)).toBe(`x: 1`);
 
       TestTransformExtensionBlueprint.make({
-        params: define => define({ x: 2 }),
+        params: defineParams => defineParams({ x: 2 }),
       });
 
       TestTransformExtensionBlueprint.make({
         // @ts-expect-error doesn't match any overload
-        params: define => define({ x: 3 }),
+        params: defineParams => defineParams({ x: 3 }),
       });
     });
   });

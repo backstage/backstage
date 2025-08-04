@@ -232,8 +232,8 @@ describe('convertLegacyApp', () => {
     const catalogOverride = catalogPlugin.withOverrides({
       extensions: [
         catalogPlugin.getExtension('api:catalog').override({
-          params: define =>
-            define({
+          params: defineParams =>
+            defineParams({
               api: catalogApiRef,
               deps: {},
               factory: () =>

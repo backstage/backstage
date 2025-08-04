@@ -67,8 +67,8 @@ const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
 /** @alpha */
 const techDocsStorageApi = ApiBlueprint.make({
   name: 'storage',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: techdocsStorageApiRef,
       deps: {
         configApi: configApiRef,
@@ -86,8 +86,8 @@ const techDocsStorageApi = ApiBlueprint.make({
 
 /** @alpha */
 const techDocsClientApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: techdocsApiRef,
       deps: {
         configApi: configApiRef,

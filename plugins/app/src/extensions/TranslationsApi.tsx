@@ -38,8 +38,8 @@ export const TranslationsApi = ApiBlueprint.makeWithOverrides({
     ),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory(define =>
-      define({
+    return originalFactory(defineParams =>
+      defineParams({
         api: translationApiRef,
         deps: { languageApi: appLanguageApiRef },
         factory: ({ languageApi }) =>

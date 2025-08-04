@@ -35,8 +35,8 @@ export const ComponentsApi = ApiBlueprint.makeWithOverrides({
     ),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory(define =>
-      define({
+    return originalFactory(defineParams =>
+      defineParams({
         api: componentsApiRef,
         deps: {},
         factory: () =>

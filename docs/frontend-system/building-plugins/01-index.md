@@ -160,8 +160,8 @@ import { exampleApiRef, DefaultExampleApi } from './api';
 // highlight-add-start
 const exampleApi = ApiBlueprint.make({
   name: 'example',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: exampleApiRef,
       deps: {},
       factory: () => new DefaultExampleApi(),

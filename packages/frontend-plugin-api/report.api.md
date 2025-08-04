@@ -505,7 +505,7 @@ export function createExtension<
 
 // @public
 export function createExtensionBlueprint<
-  TParams extends object | ExtensionBlueprintParamsDefiner,
+  TParams extends object | ExtensionBlueprintDefineParams,
   UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
@@ -557,7 +557,7 @@ export function createExtensionBlueprint<
 // @public (undocumented)
 export type CreateExtensionBlueprintOptions<
   TKind extends string,
-  TParams extends object | ExtensionBlueprintParamsDefiner,
+  TParams extends object | ExtensionBlueprintDefineParams,
   UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
@@ -584,11 +584,11 @@ export type CreateExtensionBlueprintOptions<
   config?: {
     schema: TConfigSchema;
   };
-  defineParams?: TParams extends ExtensionBlueprintParamsDefiner
+  defineParams?: TParams extends ExtensionBlueprintDefineParams
     ? TParams
     : 'The defineParams option must be a function if provided, see the docs for details';
   factory(
-    params: TParams extends ExtensionBlueprintParamsDefiner
+    params: TParams extends ExtensionBlueprintDefineParams
       ? ReturnType<TParams>['T']
       : TParams,
     context: {
@@ -912,10 +912,10 @@ export interface ExtensionBlueprint<
     name?: TName;
     attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
-    params: TParamsInput extends ExtensionBlueprintParamsDefiner
+    params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
-      : T['params'] extends ExtensionBlueprintParamsDefiner
-      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: define => define(<params>) })`'
+      : T['params'] extends ExtensionBlueprintDefineParams
+      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: defineParams => defineParams(<params>) })`'
       : T['params'];
   }): ExtensionDefinition<{
     kind: T['kind'];
@@ -961,10 +961,10 @@ export interface ExtensionBlueprint<
       originalFactory: <
         TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
       >(
-        params: TParamsInput extends ExtensionBlueprintParamsDefiner
+        params: TParamsInput extends ExtensionBlueprintDefineParams
           ? TParamsInput
-          : T['params'] extends ExtensionBlueprintParamsDefiner
-          ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+          : T['params'] extends ExtensionBlueprintDefineParams
+          ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
           : T['params'],
         context?: {
           config?: T['config'];
@@ -1015,10 +1015,16 @@ export interface ExtensionBlueprint<
   }>;
 }
 
+// @public
+export type ExtensionBlueprintDefineParams<
+  TParams extends object = object,
+  TInput = any,
+> = (params: TInput) => ExtensionBlueprintParams<TParams>;
+
 // @public (undocumented)
 export type ExtensionBlueprintParameters = {
   kind: string;
-  params?: object | ExtensionBlueprintParamsDefiner;
+  params?: object | ExtensionBlueprintDefineParams;
   configInput?: {
     [K in string]: any;
   };
@@ -1045,12 +1051,6 @@ export type ExtensionBlueprintParams<T extends object = object> = {
   $$type: '@backstage/BlueprintParams';
   T: T;
 };
-
-// @public
-export type ExtensionBlueprintParamsDefiner<
-  TParams extends object = object,
-  TInput = any,
-> = (params: TInput) => ExtensionBlueprintParams<TParams>;
 
 // @public (undocumented)
 export function ExtensionBoundary(props: ExtensionBoundaryProps): JSX_2.Element;
@@ -1179,10 +1179,10 @@ export type ExtensionDefinition<
               } & ([T['params']] extends [never]
                 ? {}
                 : {
-                    params?: TFactoryParamsReturn extends ExtensionBlueprintParamsDefiner
+                    params?: TFactoryParamsReturn extends ExtensionBlueprintDefineParams
                       ? TFactoryParamsReturn
-                      : T['params'] extends ExtensionBlueprintParamsDefiner
-                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+                      : T['params'] extends ExtensionBlueprintDefineParams
+                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
                       : Partial<T['params']>;
                   })
             >,
@@ -1201,10 +1201,10 @@ export type ExtensionDefinition<
       } & ([T['params']] extends [never]
         ? {}
         : {
-            params?: TParamsInput extends ExtensionBlueprintParamsDefiner
+            params?: TParamsInput extends ExtensionBlueprintDefineParams
               ? TParamsInput
-              : T['params'] extends ExtensionBlueprintParamsDefiner
-              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+              : T['params'] extends ExtensionBlueprintDefineParams
+              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
               : Partial<T['params']>;
           })
     > &
@@ -1255,7 +1255,7 @@ export type ExtensionDefinitionParameters = {
       }
     >;
   };
-  params?: object | ExtensionBlueprintParamsDefiner;
+  params?: object | ExtensionBlueprintDefineParams;
 };
 
 // @public (undocumented)

@@ -52,8 +52,8 @@ const catalogImportPage = PageBlueprint.make({
 });
 
 const catalogImportApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: catalogImportApiRef,
       deps: {
         discoveryApi: discoveryApiRef,

@@ -73,8 +73,8 @@ export const repoUrlPickerFormField = FormFieldBlueprint.make({
 });
 
 export const scaffolderApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: scaffolderApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
