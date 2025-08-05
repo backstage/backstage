@@ -283,10 +283,10 @@ describe('PermissionClient', () => {
 
     it('should include multiple authorize requests in a request body', async () => {
       client.authorize([mockAuthorizeConditional], {
-        identityKey: 'test:user',
+        token: '1234.1234.signature1',
       });
       client.authorize([mockAuthorizeConditional2], {
-        identityKey: 'test:user',
+        token: '1234.1234.signature2',
       });
 
       await new Promise(resolve => setTimeout(resolve, 150));

@@ -48,11 +48,8 @@ export class IdentityPermissionApi implements PermissionApi {
     request: AuthorizePermissionRequest,
   ): Promise<AuthorizePermissionResponse> {
     const { token } = await this.identityApi.getCredentials();
-    const identity = await this.identityApi.getBackstageIdentity();
-
     const response = await this.permissionClient.authorize([request], {
       token,
-      identityKey: `backstageCredentials{userPrincipal{${identity.userEntityRef}}}`,
     });
     return response[0];
   }

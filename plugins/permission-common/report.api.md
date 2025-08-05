@@ -192,7 +192,6 @@ export type PermissionClientOptions = {
 // @public
 export type PermissionClientRequestOptions = {
   token?: string;
-  identityKey?: string;
 };
 
 // @public

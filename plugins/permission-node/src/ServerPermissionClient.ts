@@ -120,7 +120,6 @@ export class ServerPermissionClient implements PermissionsService {
 
       return {
         token,
-        identityKey: String(options.credentials),
       };
     }
 

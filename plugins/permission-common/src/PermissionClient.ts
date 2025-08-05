@@ -119,7 +119,6 @@ const responseSchema = <T>(
  */
 export type PermissionClientRequestOptions = {
   token?: string;
-  identityKey?: string;
 };
 
 /**
@@ -190,7 +189,9 @@ export class PermissionClient implements PermissionEvaluator {
 
     if (this.enableDataloaderRequests) {
       const loader = this.getAuthorizeLoader(options);
-      return Promise.all(requests.map(r => loader.load(r)));
+      if (loader) {
+        return Promise.all(requests.map(r => loader.load(r)));
+      }
     }
 
     if (this.enableBatchedRequests) {
@@ -216,7 +217,9 @@ export class PermissionClient implements PermissionEvaluator {
 
     if (this.enableDataloaderRequests) {
       const loader = this.getAuthorizeConditionalLoader(options);
-      return Promise.all(queries.map(q => loader.load(q)));
+      if (loader) {
+        return Promise.all(queries.map(q => loader.load(q)));
+      }
     }
 
     return this.makeRequest(queries, queryPermissionResponseSchema, options);
@@ -330,12 +333,24 @@ export class PermissionClient implements PermissionEvaluator {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
+  private getLoaderKey(options?: PermissionClientRequestOptions) {
+    const parts = options?.token ? options.token.split('.') : [];
+    if (parts.length !== 3) {
+      return undefined;
+    }
+    // Remove the signature part of the JWT token to use as a cache key for the loaders
+    return `${parts[0]}.${parts[1]}`;
+  }
+
   private getAuthorizeLoader(options?: PermissionClientRequestOptions) {
-    if (options?.identityKey) {
-      const loader = this.authorizeLoaderMap.get(options.identityKey);
-      if (loader) {
-        return loader;
-      }
+    const key = this.getLoaderKey(options);
+    if (!key) {
+      return undefined;
+    }
+
+    const loader = this.authorizeLoaderMap.get(key);
+    if (loader) {
+      return loader;
     }
 
     const newLoader = new DataLoader<
@@ -364,22 +379,21 @@ export class PermissionClient implements PermissionEvaluator {
       },
     );
 
-    if (options?.identityKey) {
-      this.authorizeLoaderMap.set(options.identityKey, newLoader);
-    }
+    this.authorizeLoaderMap.set(key, newLoader);
     return newLoader;
   }
 
   private getAuthorizeConditionalLoader(
     options?: PermissionClientRequestOptions,
   ) {
-    if (options?.identityKey) {
-      const loader = this.authorizeConditionalLoaderMap.get(
-        options.identityKey,
-      );
-      if (loader) {
-        return loader;
-      }
+    const key = this.getLoaderKey(options);
+    if (!key) {
+      return undefined;
+    }
+
+    const loader = this.authorizeConditionalLoaderMap.get(key);
+    if (loader) {
+      return loader;
     }
 
     const newLoader = new DataLoader<
@@ -405,9 +419,7 @@ export class PermissionClient implements PermissionEvaluator {
       },
     );
 
-    if (options?.identityKey) {
-      this.authorizeConditionalLoaderMap.set(options.identityKey, newLoader);
-    }
+    this.authorizeConditionalLoaderMap.set(key, newLoader);
     return newLoader;
   }
 
