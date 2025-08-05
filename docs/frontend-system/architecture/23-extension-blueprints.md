@@ -26,7 +26,7 @@ const myPageExtension = PageBlueprint.make({
 
 The returned `myPageExtension` is an extension which is ready to be used in a plugin. It is the same type of object as is returned by the lower level `createExtension` function.
 
-## Creating an extension from a blueprint with overrides
+### Creating an extension from a blueprint with overrides
 
 Every extension blueprint also provides a `makeWithOverrides` method. It is useful in cases where you want to provide additional integration points for an extension created with a blueprint. You might for example want to define additional inputs or configuration schema, or use the existing configuration to dynamically compute the parameters passed to the blueprint.
 
@@ -34,13 +34,22 @@ The following is an example of how one might use the blueprint `makeWithOverride
 
 ```tsx
 const myPageExtension = PageBlueprint.makeWithOverrides({
+  // This defines additional configuration options for the extension.
   config: {
     schema: {
       layout: z => z.enum(['grid', 'rows']).default('grid'),
     },
   },
-  // The original blueprint factory is provided as the first argument
-  factory(originalFactory, { config }) {
+  // This defines additional inputs for the extension.
+  inputs: {
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
+  },
+  // The original blueprint factory is provided as the first argument.
+  // By convention the name is `originalFactory`, but you can also pick a different name.
+  factory(originalFactory, { config, inputs }) {
     // Call and forward the result from the original factory, providing
     // the blueprint parameters as the first argument.
     return originalFactory({
@@ -48,8 +57,11 @@ const myPageExtension = PageBlueprint.makeWithOverrides({
       loader: () =>
         import('./components/MyPage').then(m => (
           // We can now access values from the factory context when providing
-          // the blueprint parameters, such as config values.
-          <m.MyPage layout={config.layout} />
+          // the blueprint parameters, such as config values and inputs.
+          <m.MyPage
+            layout={config.layout}
+            content={inputs.content?.get(coreExtensionData.reactElement)}
+          />
         )),
     });
   },
@@ -58,7 +70,7 @@ const myPageExtension = PageBlueprint.makeWithOverrides({
 
 When using `makeWithOverrides`, we no longer pass the blueprint parameters directly. Instead, we provide a `factory` function that receives the original blueprint factory as the first argument, and the extension factory context as the second. We can then call the original blueprint factory with the blueprint parameters and forward the result as the return value of out factory. Notice that when passing the blueprint parameters using this pattern we have access to a lot more information than when using the `make` method, at the cost of being more complex.
 
-Apart from the addition of the blueprint parameters of the first argument to the original factory function, the `makeWithOverrides` method works the same way as [extension overrides](./25-extension-overrides.md). All the same options and rules apply, including the ability to define additional inputs, override outputs, and so on. We therefore defer to the [extension overrides](./25-extension-overrides.md) documentation for more information on how to use the `makeWithOverrides` method.
+Apart from the addition of the blueprint parameters of the first argument to the original factory function, the `makeWithOverrides` method works the same way as [extension overrides](./25-extension-overrides.md). All the same options and rules apply, including the ability to define additional inputs, override outputs, and so on. For more details and examples on how this works, please refer to the [extension overrides](./25-extension-overrides.md) documentation. The patterns in that section also apply to the creation of extensions with the `makeWithOverrides` method.
 
 ### Creating an extension from a blueprint with advanced parameter types
 
