@@ -7,7 +7,6 @@ owners:
   - '@kurtaking'
 project-areas:
   - core-framework
-  - observability
 creation-date: 2025-06-23
 ---
 
@@ -33,13 +32,11 @@ creation-date: 2025-06-23
 
 ## Summary
 
-Add a core `MetricsService` to Backstage's framework to provide a unified interface for metrics instrumentation. The service offers OpenTelemetry-based capabilities with support for app configuration (e.g. `app-config.yaml`).
-
-This approach leverages industry standards while focusing the `MetricsService` on distinct Backstage concerns, following the same pattern as other core services (DatabaseService builds on Knex, LoggerService builds on Winston, HttpRouterService builds on Express, etc.).
+Add a core `MetricsService` to Backstage's framework to provide a unified interface for metrics instrumentation. The service offers industry standards while focusing the `MetricsService` on distinct Backstage concerns, following the same pattern as other core services (DatabaseService builds on Knex, LoggerService builds on Winston, HttpRouterService builds on Express, etc.).
 
 ## Motivation
 
-There is no guidance when it comes to metrics instrumentation. While individual plugins may implement their own metrics, there's no standardized approach for metrics collection, naming, or configuration.
+There is no guidance when it comes to metrics instrumentation. While individual plugins may implement their own metrics, there's no standardized approach leading to inconsistent metrics patterns across the ecosystem.
 
 By providing a core metrics service:
 
@@ -52,19 +49,18 @@ By providing a core metrics service:
 - Consistent metrics patterns across all plugins
 - Aligned with OpenTelemetry industry standards
 - Provide a familiar interface as other core services
-- Standardized initialization and lifecycle management
 
 The catalog and scaffolder plugins will be updated to use the new metrics service in the initial alpha release.
 
 ### Non-Goals
 
-- Adding metrics to plugins that don't currently have it (outside of catalog and scaffolder)
+- Adding metrics to plugins missing existing metrics (outside of catalog and scaffolder)
 - Tracing and other telemetry concerns are out of scope for this BEP.
 - Refactoring the existing `LoggerService`. Future work to unify observability related concerns would be ideal, but not a goal.
 
 ## Proposal
 
-Following similar patterns to other core services, create a new `RootMetricsService` responsible for initializing the OpenTelemetry SDK, root-level concerns, and the creation of plugin-specific `MetricsService` instances. The root service delegates to the plugin-scoped `MetricsService` to initialize a meter for each registered plugin based on the `service.name` and optional `service.version` provided in the app's `app-config.yaml` file. This is based on the recommendation in the OpenTelemetry [documentation](https://opentelemetry.io/docs/languages/js/instrumentation/#acquiring-a-meter).
+Following similar patterns to other core services, create a new `RootMetricsService` responsible for root-level concerns and the creation of plugin-specific `MetricsService` instances. The root service delegates to the plugin-scoped `MetricsService` to initialize a meter for each registered plugin based on the `service.name` and optional `service.version` provided in the app's `app-config.yaml` file. This is based on the recommendation in the OpenTelemetry [documentation](https://opentelemetry.io/docs/languages/js/instrumentation/#acquiring-a-meter).
 
 ## Naming Conventions
 
@@ -75,8 +71,8 @@ All Backstage metrics follow this hierarchical pattern:
 **Where:**
 
 - `backstage` is the root namespace for all Backstage metrics
-- `{scope}` is the system scope (either **plugin** or **core**)
-- `{scope_name}` is the name of the plugin or core service (e.g., `catalog`, `scaffolder`, `database`)
+- `{scope}` is the system scope (either **plugin** or **service**)
+- `{scope_name}` is the name of the plugin or service (e.g., `catalog`, `scaffolder`, `database`, `scheduler`)
 - `{metric_name}` is the hierarchical metric name as provided by the plugin author (e.g., `entities.processed.total`, `tasks.completed.total`)
 
 ### Scope
@@ -84,7 +80,7 @@ All Backstage metrics follow this hierarchical pattern:
 The `scope` represents where it belongs in the Backstage ecosystem.
 
 - `plugin` - A plugin-specific metric (e.g. `backstage.plugin.catalog.entities.count`)
-- `core` - A core service metric (e.g. `backstage.core.database.connections.active`)
+- `service` - A core service metric (e.g. `backstage.service.database.connections.active`)
 
 ### Plugin-Scoped Metrics
 
@@ -100,13 +96,13 @@ backstage.plugin.auth.sessions.active.total # todo: technically a core service a
 
 ### Core Metrics
 
-Pattern: `backstage.core.{core_service}.{metric_name}`
+Pattern: `backstage.service.{core_service}.{metric_name}`
 
 ```yaml
 # Examples
-backstage.core.database.connections.active
-backstage.core.scheduler.tasks.queued.total
-backstage.core.httpRouter.requests.total
+backstage.service.database.connections.active
+backstage.service.scheduler.tasks.queued.total
+backstage.service.httpRouter.requests.total
 ```
 
 ## Design Details
