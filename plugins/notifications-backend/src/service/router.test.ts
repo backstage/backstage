@@ -501,6 +501,91 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     });
   });
 
+  describe('POST /notifications with custom receiver resolver', () => {
+    const httpAuth = mockServices.httpAuth({
+      defaultCredentials: mockCredentials.service(),
+    });
+
+    const recipientResolver = jest.fn();
+
+    beforeAll(async () => {
+      const router = await createRouter({
+        logger: mockServices.logger.mock(),
+        store,
+        signals: signalService,
+        userInfo,
+        config,
+        httpAuth,
+        auth,
+        catalog,
+        recipientResolver,
+      });
+      app = express().use(router).use(mockErrorHandler());
+    });
+
+    beforeEach(async () => {
+      jest.resetAllMocks();
+      const client = await database.getClient();
+      await client('notification').del();
+      await client('broadcast').del();
+      await client('user_settings').del();
+    });
+
+    const sendNotification = async (data: NotificationSendOptions) =>
+      request(app)
+        .post('/notifications')
+        .send(data)
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json');
+
+    it('should use custom recipient resolver', async () => {
+      recipientResolver.mockResolvedValue(['user:default/mock']);
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['system:default/mock'],
+        },
+        payload: {
+          title: 'test notification',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          created: expect.any(String),
+          id: expect.any(String),
+          origin: 'external:test-service',
+          payload: {
+            severity: 'normal',
+            title: 'test notification',
+          },
+          user: 'user:default/mock',
+        },
+      ]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(1);
+    });
+
+    it('should return error if recipient resolver returns something other than an array of user entity refs', async () => {
+      recipientResolver.mockResolvedValue(['system:default/mock']);
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['system:default/mock'],
+        },
+        payload: {
+          title: 'test notification',
+        },
+      });
+      expect(response.status).toEqual(400);
+    });
+  });
+
   describe('GET /', () => {
     const httpAuth = mockServices.httpAuth({
       defaultCredentials: mockCredentials.user(),

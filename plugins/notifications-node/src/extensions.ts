@@ -101,11 +101,27 @@ export interface NotificationProcessor {
 }
 
 /**
+ * NotificationRecipientResolver is a function that resolves the individual users to receive the notification
+ * based on the entity reference(s) and the excluded entity reference(s).
+ *
+ * The function should return a list of user entity references that should receive the notification.
+ *
+ * @public
+ */
+export type NotificationRecipientResolver = (
+  entityRef: string | string[] | null,
+  excludeEntityRefs: string | string[],
+) => Promise<string[]>;
+
+/**
  * @public
  */
 export interface NotificationsProcessingExtensionPoint {
   addProcessor(
     ...processors: Array<NotificationProcessor | Array<NotificationProcessor>>
+  ): void;
+  setNotificationRecipientResolver(
+    resolver: NotificationRecipientResolver,
   ): void;
 }
 
