@@ -23,9 +23,10 @@ import {
   Extension,
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
-import { AnyExternalRoutes, AnyRoutes, FeatureFlagConfig } from './types';
+import { FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
 import { JsonObject } from '@backstage/types';
+import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 
 /**
  * Information about the plugin.
@@ -89,8 +90,12 @@ export type FrontendPluginInfoOptions = {
 
 /** @public */
 export interface FrontendPlugin<
-  TRoutes extends AnyRoutes = AnyRoutes,
-  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {
+    [name in string]: RouteRef | SubRouteRef;
+  },
+  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {
+    [name in string]: ExternalRouteRef;
+  },
   TExtensionMap extends { [id in string]: ExtensionDefinition } = {
     [id in string]: ExtensionDefinition;
   },
@@ -118,8 +123,8 @@ export interface FrontendPlugin<
 /** @public */
 export interface PluginOptions<
   TId extends string,
-  TRoutes extends AnyRoutes,
-  TExternalRoutes extends AnyExternalRoutes,
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef },
+  TExternalRoutes extends { [name in string]: ExternalRouteRef },
   TExtensions extends readonly ExtensionDefinition[],
 > {
   pluginId: TId;
@@ -133,8 +138,8 @@ export interface PluginOptions<
 /** @public */
 export function createFrontendPlugin<
   TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
+  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {},
   TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
@@ -149,8 +154,8 @@ export function createFrontendPlugin<
  */
 export function createFrontendPlugin<
   TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
+  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {},
   TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: Omit<
@@ -164,8 +169,8 @@ export function createFrontendPlugin<
 >;
 export function createFrontendPlugin<
   TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
+  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {},
   TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options:
