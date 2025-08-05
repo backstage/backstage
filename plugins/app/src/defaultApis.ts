@@ -17,7 +17,6 @@
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   AlertApiForwarder,
-  NoOpAnalyticsApi,
   ErrorApiForwarder,
   ErrorAlerter,
   GoogleAuth,
@@ -40,7 +39,6 @@ import {
 
 import {
   alertApiRef,
-  analyticsApiRef,
   errorApiRef,
   discoveryApiRef,
   fetchApiRef,
@@ -70,6 +68,7 @@ import {
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
 import { DefaultDialogApi } from './apis/DefaultDialogApi';
+import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
   ApiBlueprint.make({
@@ -102,15 +101,7 @@ export const apis = [
         factory: () => new AlertApiForwarder(),
       }),
   }),
-  ApiBlueprint.make({
-    name: 'analytics',
-    params: defineParams =>
-      defineParams({
-        api: analyticsApiRef,
-        deps: {},
-        factory: () => new NoOpAnalyticsApi(),
-      }),
-  }),
+  analyticsApi,
   ApiBlueprint.make({
     name: 'error',
     params: defineParams =>

@@ -136,6 +136,44 @@ export type AnalyticsEventAttributes = {
 };
 
 // @public
+export type AnalyticsImplementation = {
+  captureEvent(event: AnalyticsEvent): void;
+};
+
+// @public
+export const AnalyticsImplementationBlueprint: ExtensionBlueprint<{
+  kind: 'analytics';
+  params: <TDeps extends { [name in string]: unknown }>(
+    params: AnalyticsImplementationFactory<TDeps>,
+  ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>>;
+  output: ConfigurableExtensionDataRef<
+    AnalyticsImplementationFactory<{}>,
+    'core.analytics.factory',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    factory: ConfigurableExtensionDataRef<
+      AnalyticsImplementationFactory<{}>,
+      'core.analytics.factory',
+      {}
+    >;
+  };
+}>;
+
+// @public (undocumented)
+export type AnalyticsImplementationFactory<
+  Deps extends {
+    [name in string]: unknown;
+  } = {},
+> = {
+  deps: TypesToApiRefs<Deps>;
+  factory(deps: Deps): AnalyticsImplementation;
+};
+
+// @public
 export type AnalyticsTracker = {
   captureEvent: (
     action: string,
