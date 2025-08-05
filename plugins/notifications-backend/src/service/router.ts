@@ -26,6 +26,7 @@ import { v4 as uuid } from 'uuid';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   NotificationProcessor,
+  NotificationRecipientResolver,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
 import { InputError, NotFoundError } from '@backstage/errors';
@@ -52,6 +53,7 @@ import { getUsersForEntityRef } from './getUsersForEntityRef';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
 import pThrottle from 'p-throttle';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 /** @internal */
 export interface RouterOptions {
@@ -64,6 +66,7 @@ export interface RouterOptions {
   signals?: SignalsService;
   catalog: CatalogService;
   processors?: NotificationProcessor[];
+  recipientResolver?: NotificationRecipientResolver;
 }
 
 /** @internal */
@@ -80,6 +83,7 @@ export async function createRouter(
     catalog,
     processors = [],
     signals,
+    recipientResolver,
   } = options;
 
   const WEB_NOTIFICATION_CHANNEL = 'Web';
@@ -639,6 +643,17 @@ export async function createRouter(
     opts: NotificationSendOptions,
     origin: string,
   ): Promise<Notification[]> => {
+    if (
+      users.find(u => {
+        const compound = parseEntityRef(u);
+        return compound.kind.toLocaleLowerCase('en-US') !== 'user';
+      })
+    ) {
+      throw new InputError(
+        'Invalid user entity reference provided in recipients',
+      );
+    }
+
     const { scope } = opts.payload;
     const uniqueUsers = [...new Set(users)];
     const throttled = throttle((user: string) =>
@@ -702,11 +717,16 @@ export async function createRouter(
       const entityRef = recipients.entityRef;
 
       try {
-        users = await getUsersForEntityRef(
-          entityRef,
-          recipients.excludeEntityRef ?? [],
-          { auth, catalog },
-        );
+        users = recipientResolver
+          ? await recipientResolver(
+              entityRef,
+              recipients.excludeEntityRef ?? [],
+            )
+          : await getUsersForEntityRef(
+              entityRef,
+              recipients.excludeEntityRef ?? [],
+              { auth, catalog },
+            );
       } catch (e) {
         throw new InputError('Failed to resolve notification receivers', e);
       }

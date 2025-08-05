@@ -22,6 +22,7 @@ import { createRouter } from './service/router';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import {
   NotificationProcessor,
+  NotificationRecipientResolver,
   notificationsProcessingExtensionPoint,
   NotificationsProcessingExtensionPoint,
 } from '@backstage/plugin-notifications-node';
@@ -33,6 +34,7 @@ class NotificationsProcessingExtensionPointImpl
   implements NotificationsProcessingExtensionPoint
 {
   #processors = new Array<NotificationProcessor>();
+  #recipientResolver: NotificationRecipientResolver | undefined = undefined;
 
   addProcessor(
     ...processors: Array<NotificationProcessor | Array<NotificationProcessor>>
@@ -42,6 +44,21 @@ class NotificationsProcessingExtensionPointImpl
 
   get processors() {
     return this.#processors;
+  }
+
+  setNotificationRecipientResolver(
+    resolver: NotificationRecipientResolver,
+  ): void {
+    if (this.#recipientResolver) {
+      throw new Error(
+        'Notification recipient resolver is already set. You can only set it once.',
+      );
+    }
+    this.#recipientResolver = resolver;
+  }
+
+  get recipientResolver() {
+    return this.#recipientResolver;
   }
 }
 
@@ -98,6 +115,7 @@ export const notificationsPlugin = createBackendPlugin({
             catalog,
             signals,
             processors: processingExtensions.processors,
+            recipientResolver: processingExtensions.recipientResolver,
           }),
         );
         httpRouter.addAuthPolicy({
