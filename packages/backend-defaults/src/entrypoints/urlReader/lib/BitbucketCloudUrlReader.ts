@@ -70,11 +70,6 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
         `Bitbucket Cloud integration for '${host}' has configured a username but is missing both token and appPassword.`,
       );
     }
-    if (!username && !token) {
-      throw new Error(
-        `Bitbucket Cloud integration for '${host}' must configure either a token or a username + appPassword.`,
-      );
-    }
   }
 
   async read(url: string): Promise<Buffer> {
