@@ -34,11 +34,7 @@ const appPlugin: FrontendPlugin<
     app: ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         root: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
@@ -55,11 +51,7 @@ const appPlugin: FrontendPlugin<
     'app/layout': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         nav: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
@@ -83,11 +75,7 @@ const appPlugin: FrontendPlugin<
     'app/nav': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         items: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -123,11 +111,7 @@ const appPlugin: FrontendPlugin<
     'app/root': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         router: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -184,11 +168,7 @@ const appPlugin: FrontendPlugin<
     'app/routes': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         routes: ExtensionInput<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -215,11 +195,7 @@ const appPlugin: FrontendPlugin<
       name: 'alert';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -232,11 +208,7 @@ const appPlugin: FrontendPlugin<
     'api:app/analytics': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         implementations: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -265,11 +237,7 @@ const appPlugin: FrontendPlugin<
       name: 'app-language';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -282,11 +250,7 @@ const appPlugin: FrontendPlugin<
     'api:app/app-theme': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         themes: ExtensionInput<
           ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>,
@@ -311,11 +275,7 @@ const appPlugin: FrontendPlugin<
       name: 'atlassian-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -330,11 +290,7 @@ const appPlugin: FrontendPlugin<
       name: 'bitbucket-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -349,11 +305,7 @@ const appPlugin: FrontendPlugin<
       name: 'bitbucket-server-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -366,11 +318,7 @@ const appPlugin: FrontendPlugin<
     'api:app/components': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         components: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -402,11 +350,7 @@ const appPlugin: FrontendPlugin<
       name: 'dialog';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -421,11 +365,7 @@ const appPlugin: FrontendPlugin<
       name: 'discovery';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -440,11 +380,7 @@ const appPlugin: FrontendPlugin<
       name: 'error';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -459,11 +395,7 @@ const appPlugin: FrontendPlugin<
       name: 'feature-flags';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -478,11 +410,7 @@ const appPlugin: FrontendPlugin<
       name: 'fetch';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -497,11 +425,7 @@ const appPlugin: FrontendPlugin<
       name: 'github-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -516,11 +440,7 @@ const appPlugin: FrontendPlugin<
       name: 'gitlab-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -535,11 +455,7 @@ const appPlugin: FrontendPlugin<
       name: 'google-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -552,11 +468,7 @@ const appPlugin: FrontendPlugin<
     'api:app/icons': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -587,11 +499,7 @@ const appPlugin: FrontendPlugin<
       name: 'microsoft-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -606,11 +514,7 @@ const appPlugin: FrontendPlugin<
       name: 'oauth-request';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -625,11 +529,7 @@ const appPlugin: FrontendPlugin<
       name: 'okta-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -644,11 +544,7 @@ const appPlugin: FrontendPlugin<
       name: 'onelogin-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -663,11 +559,7 @@ const appPlugin: FrontendPlugin<
       name: 'permission';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -682,11 +574,7 @@ const appPlugin: FrontendPlugin<
       name: 'scm-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -701,11 +589,7 @@ const appPlugin: FrontendPlugin<
       name: 'scm-integrations';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -720,11 +604,7 @@ const appPlugin: FrontendPlugin<
       name: 'storage';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -737,11 +617,7 @@ const appPlugin: FrontendPlugin<
     'api:app/translations': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         translations: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -777,11 +653,7 @@ const appPlugin: FrontendPlugin<
       name: 'vmware-cloud-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -808,11 +680,7 @@ const appPlugin: FrontendPlugin<
           | undefined;
         transientTimeoutMs?: number | undefined;
       };
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         [x: string]: ExtensionInput<
           ExtensionDataRef,
@@ -831,11 +699,7 @@ const appPlugin: FrontendPlugin<
     'app-root-element:app/dialog-display': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         [x: string]: ExtensionInput<
           ExtensionDataRef,
@@ -856,11 +720,7 @@ const appPlugin: FrontendPlugin<
       name: 'oauth-request-dialog';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};
       params: {
         element: JSX.Element;
@@ -871,7 +731,7 @@ const appPlugin: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         ComponentType<SignInPageProps>,
         'core.sign-in-page.component',
         {}
@@ -886,7 +746,7 @@ const appPlugin: FrontendPlugin<
       name: 'dark';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
+      output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
       inputs: {};
       params: {
         theme: AppTheme;
@@ -897,7 +757,7 @@ const appPlugin: FrontendPlugin<
       name: 'light';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
+      output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
       inputs: {};
       params: {
         theme: AppTheme;
