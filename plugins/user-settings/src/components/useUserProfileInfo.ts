@@ -37,15 +37,24 @@ export const useUserProfile = () => {
     const catalogProfile = (await catalogApi.getEntityByRef(
       backStageIdentity.userEntityRef,
     )) as unknown as UserEntity;
-    if (
-      identityProfile.picture === undefined &&
-      catalogProfile?.spec?.profile?.picture
-    ) {
-      identityProfile = {
-        ...identityProfile,
-        picture: catalogProfile.spec.profile.picture,
-      };
-    }
+    // Merge catalog profile fields into identity profile if missing
+    const fieldsToMerge: (keyof ProfileInfo)[] = [
+      'picture',
+      'displayName',
+      'email',
+    ];
+    identityProfile = fieldsToMerge.reduce((profile, field) => {
+      if (
+        profile[field] === undefined &&
+        catalogProfile?.spec?.profile?.[field]
+      ) {
+        return {
+          ...profile,
+          [field]: catalogProfile.spec.profile[field],
+        };
+      }
+      return profile;
+    }, identityProfile);
     return {
       profile: identityProfile,
       identity: backStageIdentity,
