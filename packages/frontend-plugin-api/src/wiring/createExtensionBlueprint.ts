@@ -435,7 +435,14 @@ export function createExtensionBlueprint<
 ): ExtensionBlueprint<{
   kind: TKind;
   params: TParams;
-  output: UOutput;
+  // This inference and remapping back to ExtensionDataRef eliminates any occurrences ConfigurationExtensionDataRef
+  output: UOutput extends ExtensionDataRef<
+    infer IData,
+    infer IId,
+    infer IConfig
+  >
+    ? ExtensionDataRef<IData, IId, IConfig>
+    : never;
   inputs: string extends keyof TInputs ? {} : TInputs;
   config: string extends keyof TConfigSchema
     ? {}
@@ -492,7 +499,15 @@ export function createExtensionBlueprint<
           const { node, config, inputs, apis } = ctx;
           return args.factory(
             (innerParams, innerContext) => {
-              return createExtensionDataContainer<UOutput>(
+              return createExtensionDataContainer<
+                UOutput extends ExtensionDataRef<
+                  infer IData,
+                  infer IId,
+                  infer IConfig
+                >
+                  ? ExtensionDataRef<IData, IId, IConfig>
+                  : never
+              >(
                 options.factory(
                   unwrapParams(innerParams, ctx, defineParams, options.kind),
                   {
@@ -522,7 +537,7 @@ export function createExtensionBlueprint<
   } as ExtensionBlueprint<{
     kind: TKind;
     params: TParams;
-    output: UOutput;
+    output: any;
     inputs: string extends keyof TInputs ? {} : TInputs;
     config: string extends keyof TConfigSchema
       ? {}

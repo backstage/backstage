@@ -316,7 +316,14 @@ export function createExtension<
           [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
         }>
       >;
-  output: UOutput;
+  // This inference and remapping back to ExtensionDataRef eliminates any occurrences ConfigurationExtensionDataRef
+  output: UOutput extends ExtensionDataRef<
+    infer IData,
+    infer IId,
+    infer IConfig
+  >
+    ? ExtensionDataRef<IData, IId, IConfig>
+    : never;
   inputs: TInputs;
   params: never;
   kind: string | undefined extends TKind ? undefined : TKind;

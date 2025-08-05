@@ -41,6 +41,7 @@ import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { Expand } from '@backstage/types';
 import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
@@ -146,7 +147,7 @@ export const AnalyticsImplementationBlueprint: ExtensionBlueprint<{
   params: <TDeps extends { [name in string]: unknown }>(
     params: AnalyticsImplementationFactory<TDeps>,
   ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>>;
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     AnalyticsImplementationFactory<{}>,
     'core.analytics.factory',
     {}
@@ -209,7 +210,7 @@ export const ApiBlueprint: ExtensionBlueprint<{
   >(
     params: ApiFactory<TApi, TImpl, TDeps>,
   ) => ExtensionBlueprintParams<AnyApiFactory>;
-  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -276,7 +277,7 @@ export const AppRootElementBlueprint: ExtensionBlueprint<{
   params: {
     element: JSX.Element;
   };
-  output: ConfigurableExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
+  output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -290,7 +291,7 @@ export const AppRootWrapperBlueprint: ExtensionBlueprint<{
     Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     (props: { children: ReactNode }) => JSX.Element | null,
     'app.root.wrapper',
     {}
@@ -444,7 +445,7 @@ export function createComponentExtension<TProps extends {}>(options: {
 }): ExtensionDefinition<{
   config: {};
   configInput: {};
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       ref: ComponentRef;
       impl: ComponentType;
@@ -524,7 +525,13 @@ export function createExtension<
           [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
         }>
       >;
-  output: UOutput;
+  output: UOutput extends ExtensionDataRef<
+    infer IData,
+    infer IId,
+    infer IConfig
+  >
+    ? ExtensionDataRef<IData, IId, IConfig>
+    : never;
   inputs: TInputs;
   params: never;
   kind: string | undefined extends TKind ? undefined : TKind;
@@ -565,7 +572,13 @@ export function createExtensionBlueprint<
 ): ExtensionBlueprint<{
   kind: TKind;
   params: TParams;
-  output: UOutput;
+  output: UOutput extends ExtensionDataRef<
+    infer IData,
+    infer IId,
+    infer IConfig
+  >
+    ? ExtensionDataRef<IData, IId, IConfig>
+    : never;
   inputs: string extends keyof TInputs ? {} : TInputs;
   config: string extends keyof TConfigSchema
     ? {}
@@ -1449,7 +1462,7 @@ export const IconBundleBlueprint: ExtensionBlueprint<{
   params: {
     icons: { [key in string]: IconComponent };
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       [x: string]: IconComponent;
     },
@@ -1498,7 +1511,7 @@ export const NavContentBlueprint: ExtensionBlueprint_2<{
   params: {
     component: NavContentComponent;
   };
-  output: ConfigurableExtensionDataRef_2<
+  output: ExtensionDataRef_2<
     NavContentComponent,
     'core.nav-content.component',
     {}
@@ -1539,7 +1552,7 @@ export const NavItemBlueprint: ExtensionBlueprint<{
     icon: IconComponent_3;
     routeRef: RouteRef<undefined>;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       title: string;
       icon: IconComponent_3;
@@ -1592,9 +1605,9 @@ export const PageBlueprint: ExtensionBlueprint<{
     routeRef?: RouteRef;
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<string, 'core.routing.path', {}>
+    | ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
         'core.routing.ref',
         {
@@ -1751,7 +1764,7 @@ export const RouterBlueprint: ExtensionBlueprint<{
     Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     (props: { children: ReactNode }) => JSX.Element | null,
     'app.router.wrapper',
     {}
@@ -1805,7 +1818,7 @@ export const SignInPageBlueprint: ExtensionBlueprint<{
   params: {
     loader: () => Promise<ComponentType<SignInPageProps>>;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     ComponentType<SignInPageProps>,
     'core.sign-in-page.component',
     {}
@@ -1846,7 +1859,7 @@ export const ThemeBlueprint: ExtensionBlueprint<{
   params: {
     theme: AppTheme;
   };
-  output: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
+  output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -1861,7 +1874,7 @@ export const TranslationBlueprint: ExtensionBlueprint<{
   params: {
     resource: TranslationResource | TranslationMessages;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     | TranslationResource<string>
     | TranslationMessages<
         string,
