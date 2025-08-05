@@ -232,7 +232,7 @@ Client type and configuration for plugins need to be defined under
 is specific to that plugin. We will now explore more detailed example
 configurations below.
 
-### Minimal In-Memory Configuration
+#### Minimal In-Memory Configuration
 
 In the example below, we are using `better-sqlite3` in-memory databases for all
 plugins. You may want to use this configuration for testing or other non-durable
@@ -245,7 +245,7 @@ backend:
     connection: ':memory:'
 ```
 
-### PostgreSQL
+#### PostgreSQL
 
 The example below uses PostgreSQL (`pg`) as the database client for all plugins.
 The `auth` plugin uses a user defined database name instead of the automatically
@@ -266,7 +266,7 @@ backend:
           database: pg_auth_set_by_user
 ```
 
-### Custom Database Name Prefix
+#### Custom Database Name Prefix
 
 The configuration below uses `example_prefix_` as the database name prefix
 instead of `backstage_plugin_`. Plugins such as `auth` and `catalog` will use
@@ -303,7 +303,7 @@ backend:
         connection: 'postgresql://bank:reserve@some.example-pg-instance.tld:5432/shuffle_ransack_playback'
 ```
 
-### PostgreSQL and SQLite 3
+#### PostgreSQL and SQLite 3
 
 The example below uses PostgreSQL (`pg`) as the database client for all plugins
 except the `auth` plugin which uses `better-sqlite3`. As the `auth` plugin's client
