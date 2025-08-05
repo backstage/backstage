@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.7.0-next.2
+
+### Patch Changes
+
+- d4e603e: Updated Menu component in Backstage UI to use useId() from React Aria instead of React to support React 17.
+
 ## 0.7.0-next.1
 
 ### Patch Changes
