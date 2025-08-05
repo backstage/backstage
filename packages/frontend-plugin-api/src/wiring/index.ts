@@ -55,8 +55,6 @@ export {
 } from './createFrontendFeatureLoader';
 export { type Extension } from './resolveExtensionDefinition';
 export {
-  type AnyRoutes,
-  type AnyExternalRoutes,
   type ExtensionDataContainer,
   type FeatureFlagConfig,
   type ExtensionFactoryMiddleware,

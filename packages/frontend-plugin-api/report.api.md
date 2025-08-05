@@ -192,22 +192,12 @@ export { AnyApiRef };
 // @public @deprecated (undocumented)
 export type AnyExtensionDataRef = ExtensionDataRef;
 
-// @public (undocumented)
-export type AnyExternalRoutes = {
-  [name in string]: ExternalRouteRef;
-};
-
 // @public
 export type AnyRouteRefParams =
   | {
       [param in string]: string;
     }
   | undefined;
-
-// @public (undocumented)
-export type AnyRoutes = {
-  [name in string]: RouteRef | SubRouteRef;
-};
 
 // @public
 export const ApiBlueprint: ExtensionBlueprint<{
@@ -799,8 +789,12 @@ export interface CreateFrontendModuleOptions<
 // @public (undocumented)
 export function createFrontendPlugin<
   TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
+  TRoutes extends {
+    [name in string]: RouteRef | SubRouteRef;
+  } = {},
+  TExternalRoutes extends {
+    [name in string]: ExternalRouteRef;
+  } = {},
   TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
@@ -813,8 +807,12 @@ export function createFrontendPlugin<
 // @public @deprecated (undocumented)
 export function createFrontendPlugin<
   TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
+  TRoutes extends {
+    [name in string]: RouteRef | SubRouteRef;
+  } = {},
+  TExternalRoutes extends {
+    [name in string]: ExternalRouteRef;
+  } = {},
   TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: Omit<
@@ -1383,8 +1381,16 @@ export interface FrontendModule {
 
 // @public (undocumented)
 export interface FrontendPlugin<
-  TRoutes extends AnyRoutes = AnyRoutes,
-  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TRoutes extends {
+    [name in string]: RouteRef | SubRouteRef;
+  } = {
+    [name in string]: RouteRef | SubRouteRef;
+  },
+  TExternalRoutes extends {
+    [name in string]: ExternalRouteRef;
+  } = {
+    [name in string]: ExternalRouteRef;
+  },
   TExtensionMap extends {
     [id in string]: ExtensionDefinition;
   } = {
@@ -1610,8 +1616,12 @@ export { PendingOAuthRequest };
 // @public (undocumented)
 export interface PluginOptions<
   TId extends string,
-  TRoutes extends AnyRoutes,
-  TExternalRoutes extends AnyExternalRoutes,
+  TRoutes extends {
+    [name in string]: RouteRef | SubRouteRef;
+  },
+  TExternalRoutes extends {
+    [name in string]: ExternalRouteRef;
+  },
   TExtensions extends readonly ExtensionDefinition[],
 > {
   // (undocumented)
