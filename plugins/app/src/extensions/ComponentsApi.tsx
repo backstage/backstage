@@ -15,7 +15,7 @@
  */
 
 import {
-  createComponentExtension,
+  AdaptableComponentBlueprint,
   createExtensionInput,
   ApiBlueprint,
   componentsApiRef,
@@ -30,7 +30,7 @@ export const ComponentsApi = ApiBlueprint.makeWithOverrides({
   name: 'components',
   inputs: {
     components: createExtensionInput(
-      [createComponentExtension.componentDataRef],
+      [AdaptableComponentBlueprint.dataRefs.component],
       { replaces: [{ id: 'app', input: 'components' }] },
     ),
   },
@@ -42,7 +42,7 @@ export const ComponentsApi = ApiBlueprint.makeWithOverrides({
         factory: () =>
           DefaultComponentsApi.fromComponents(
             inputs.components.map(i =>
-              i.get(createComponentExtension.componentDataRef),
+              i.get(AdaptableComponentBlueprint.dataRefs.component),
             ),
           ),
       }),

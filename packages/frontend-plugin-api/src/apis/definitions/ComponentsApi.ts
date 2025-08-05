@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import { createApiRef, useApi } from '@backstage/core-plugin-api';
 import { ComponentRef } from '../../components';
+import { createApiRef } from '../system/ApiRef';
 
 /**
  * API for looking up components based on component refs.
@@ -24,8 +23,15 @@ import { ComponentRef } from '../../components';
  * @public
  */
 export interface ComponentsApi {
-  // TODO: Should component refs also provide the default implementation so that we're guaranteed to get a component?
-  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T>;
+  getComponent<
+    TInnerComponentProps extends {},
+    TExternalComponentProps extends {} = TInnerComponentProps,
+  >(
+    ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>,
+  ):
+    | (() => (props: TInnerComponentProps) => JSX.Element | null)
+    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
+    | undefined;
 }
 
 /**
@@ -36,14 +42,3 @@ export interface ComponentsApi {
 export const componentsApiRef = createApiRef<ComponentsApi>({
   id: 'core.components',
 });
-
-/**
- * @public
- * Returns the component associated with the given ref.
- */
-export function useComponentRef<T extends {}>(
-  ref: ComponentRef<T>,
-): ComponentType<T> {
-  const componentsApi = useApi(componentsApiRef);
-  return componentsApi.getComponent<T>(ref);
-}

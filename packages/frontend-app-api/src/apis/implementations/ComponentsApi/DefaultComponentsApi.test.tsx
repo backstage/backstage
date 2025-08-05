@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-import { createComponentRef } from '@backstage/frontend-plugin-api';
+import { createAdaptableComponent } from '@backstage/frontend-plugin-api';
 import { DefaultComponentsApi } from './DefaultComponentsApi';
 import { render, screen } from '@testing-library/react';
 
-const testRefA = createComponentRef({ id: 'test.a' });
-const testRefB1 = createComponentRef({ id: 'test.b' });
-const testRefB2 = createComponentRef({ id: 'test.b' });
+const { ref: testRefA } = createAdaptableComponent({ id: 'test.a' });
+const { ref: testRefB1 } = createAdaptableComponent({ id: 'test.b' });
+const { ref: testRefB2 } = createAdaptableComponent({ id: 'test.b' });
 
 describe('DefaultComponentsApi', () => {
   it('should provide components', () => {
     const api = DefaultComponentsApi.fromComponents([
       {
         ref: testRefA,
-        impl: () => <div>test.a</div>,
+        loader: () => () => <div>test.a</div>,
       },
     ]);
 
-    const ComponentA = api.getComponent(testRefA);
+    const ComponentA = api.getComponent(testRefA)?.() as () => JSX.Element;
+
     render(<ComponentA />);
 
     expect(screen.getByText('test.a')).toBeInTheDocument();
@@ -41,12 +42,12 @@ describe('DefaultComponentsApi', () => {
     const api = DefaultComponentsApi.fromComponents([
       {
         ref: testRefB1,
-        impl: () => <div>test.b</div>,
+        loader: () => () => <div>test.b</div>,
       },
     ]);
 
-    const ComponentB1 = api.getComponent(testRefB1);
-    const ComponentB2 = api.getComponent(testRefB2);
+    const ComponentB1 = api.getComponent(testRefB1)?.() as () => JSX.Element;
+    const ComponentB2 = api.getComponent(testRefB2)?.() as () => JSX.Element;
 
     expect(ComponentB1).toBe(ComponentB2);
 

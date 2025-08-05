@@ -16,10 +16,9 @@
 
 import { ComponentType } from 'react';
 import {
+  AdaptableComponentBlueprint,
   ApiBlueprint,
-  coreComponentRefs,
   CoreErrorBoundaryFallbackProps,
-  createComponentExtension,
   createExtension,
   createFrontendModule,
   ExtensionDefinition,
@@ -39,6 +38,11 @@ import {
 } from '@backstage/core-plugin-api';
 import { toLegacyPlugin } from './compatWrapper/BackwardsCompatProvider';
 import { compatWrapper } from './compatWrapper';
+import { Progress as AdaptableProgress } from '@backstage/core-components';
+import {
+  NotFoundErrorPage as AdaptableNotFoundErrorPage,
+  ErrorBoundary as AdaptableErrorBoundary,
+} from '@backstage/plugin-app';
 
 function componentCompatWrapper<TProps extends {}>(
   Component: ComponentType<TProps>,
@@ -154,20 +158,27 @@ export function convertLegacyAppOptions(
     }
     if (Progress) {
       extensions.push(
-        createComponentExtension({
-          ref: coreComponentRefs.progress,
-          loader: { sync: () => componentCompatWrapper(Progress) },
+        AdaptableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: AdaptableProgress,
+              loader: () => componentCompatWrapper(Progress),
+            }),
         }),
       );
     }
     if (NotFoundErrorPage) {
       extensions.push(
-        createComponentExtension({
-          ref: coreComponentRefs.notFoundErrorPage,
-          loader: { sync: () => componentCompatWrapper(NotFoundErrorPage) },
+        AdaptableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: AdaptableNotFoundErrorPage,
+              loader: () => componentCompatWrapper(NotFoundErrorPage),
+            }),
         }),
       );
     }
+
     if (ErrorBoundaryFallback) {
       const WrappedErrorBoundaryFallback = (
         props: CoreErrorBoundaryFallbackProps,
@@ -178,12 +189,16 @@ export function convertLegacyAppOptions(
             plugin={props.plugin && toLegacyPlugin(props.plugin)}
           />,
         );
+
       extensions.push(
-        createComponentExtension({
-          ref: coreComponentRefs.errorBoundaryFallback,
-          loader: {
-            sync: () => componentCompatWrapper(WrappedErrorBoundaryFallback),
-          },
+        AdaptableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: AdaptableErrorBoundary,
+              loader: () =>
+                // todo: types + props lols
+                componentCompatWrapper(WrappedErrorBoundaryFallback),
+            }),
         }),
       );
     }

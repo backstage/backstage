@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  createComponentExtension,
-  coreComponentRefs,
-} from '@backstage/frontend-plugin-api';
+import { AdaptableComponentBlueprint } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@backstage/core-components';
+import { NotFoundErrorPage } from '@backstage/plugin-app';
 
 export function CustomNotFoundErrorPage() {
   return (
@@ -50,8 +48,11 @@ export function CustomNotFoundErrorPage() {
   );
 }
 
-export default createComponentExtension({
+export default AdaptableComponentBlueprint.make({
   name: 'not-found-error-page',
-  ref: coreComponentRefs.notFoundErrorPage,
-  loader: { sync: () => CustomNotFoundErrorPage },
+  params: define =>
+    define({
+      component: NotFoundErrorPage,
+      loader: () => CustomNotFoundErrorPage,
+    }),
 });

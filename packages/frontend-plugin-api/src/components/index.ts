@@ -18,6 +18,8 @@ export {
   ExtensionBoundary,
   type ExtensionBoundaryProps,
 } from './ExtensionBoundary';
-export { coreComponentRefs } from './coreComponentRefs';
-export { createComponentRef, type ComponentRef } from './createComponentRef';
+export {
+  createAdaptableComponent,
+  type ComponentRef,
+} from './createAdaptableComponent';
 export { useAppNode } from './AppNodeProvider';

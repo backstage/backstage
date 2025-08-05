@@ -24,7 +24,6 @@ export * from './analytics';
 export * from './apis';
 export * from './blueprints';
 export * from './components';
-export * from './extensions';
 export * from './icons';
 export * from './routing';
 export * from './schema';

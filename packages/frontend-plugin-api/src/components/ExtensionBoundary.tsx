@@ -25,8 +25,8 @@ import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorBoundary } from './ErrorBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { AppNode, useComponentRef } from '../apis';
-import { coreComponentRefs } from './coreComponentRefs';
+import { AppNode } from '../apis';
+import { Progress } from '@backstage/core-components';
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 
@@ -66,8 +66,9 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   );
 
   const plugin = node.spec.plugin;
-  const Progress = useComponentRef(coreComponentRefs.progress);
-  const fallback = useComponentRef(coreComponentRefs.errorBoundaryFallback);
+
+  // todo: fallback
+  const fallback = () => <div>Fallback</div>;
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {

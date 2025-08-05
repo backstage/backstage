@@ -24,8 +24,6 @@ import {
   createFrontendPlugin as createNewPlugin,
   FrontendPlugin as NewFrontendPlugin,
   appTreeApiRef,
-  componentsApiRef,
-  coreComponentRefs,
   iconsApiRef,
   useApi,
   routeResolutionApiRef,
@@ -43,6 +41,9 @@ import {
   getOrCreateGlobalSingleton,
 } from '@backstage/version-bridge';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
+
+import { ErrorBoundary, NotFoundErrorPage } from '@backstage/plugin-app';
+import { Progress } from '@backstage/core-components';
 
 // Make sure that we only convert each new plugin instance to its legacy equivalent once
 const legacyPluginStore = getOrCreateGlobalSingleton(
@@ -92,7 +93,6 @@ function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
 // Recreates the old AppContext APIs using the various new APIs that replaced it
 function LegacyAppContextProvider(props: { children: ReactNode }) {
   const appTreeApi = useApi(appTreeApiRef);
-  const componentsApi = useApi(componentsApiRef);
   const iconsApi = useApi(iconsApiRef);
 
   const appContext = useMemo(() => {
@@ -100,15 +100,9 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
 
     let gatheredPlugins: LegacyBackstagePlugin[] | undefined = undefined;
 
-    const ErrorBoundaryFallback = componentsApi.getComponent(
-      coreComponentRefs.errorBoundaryFallback,
-    );
     const ErrorBoundaryFallbackWrapper: AppComponents['ErrorBoundaryFallback'] =
       ({ plugin, ...rest }) => (
-        <ErrorBoundaryFallback
-          {...rest}
-          plugin={plugin && toNewPlugin(plugin)}
-        />
+        <ErrorBoundary {...rest} plugin={plugin && toNewPlugin(plugin)} />
       );
 
     return {
@@ -141,15 +135,13 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
 
       getComponents(): AppComponents {
         return {
-          NotFoundErrorPage: componentsApi.getComponent(
-            coreComponentRefs.notFoundErrorPage,
-          ),
+          NotFoundErrorPage: NotFoundErrorPage,
           BootErrorPage() {
             throw new Error(
               'The BootErrorPage app component should not be accessed by plugins',
             );
           },
-          Progress: componentsApi.getComponent(coreComponentRefs.progress),
+          Progress: Progress,
           Router() {
             throw new Error(
               'The Router app component should not be accessed by plugins',
@@ -159,7 +151,7 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
         };
       },
     };
-  }, [appTreeApi, componentsApi, iconsApi]);
+  }, [appTreeApi, iconsApi]);
 
   return (
     <AppContextProvider appContext={appContext}>

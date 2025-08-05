@@ -21,7 +21,10 @@ import LinearProgress, {
 import { useTheme } from '@material-ui/core/styles';
 import { PropsWithChildren, useEffect, useState } from 'react';
 
-export function Progress(props: PropsWithChildren<LinearProgressProps>) {
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createAdaptableComponent } from '../../../../frontend-plugin-api/src/components/createAdaptableComponent';
+
+function ProgressComponent(props: PropsWithChildren<LinearProgressProps>) {
   const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -39,3 +42,8 @@ export function Progress(props: PropsWithChildren<LinearProgressProps>) {
     <Box display="none" data-testid="progress" />
   );
 }
+
+export const Progress = createAdaptableComponent({
+  id: 'core.components.progress',
+  loader: () => ProgressComponent,
+});

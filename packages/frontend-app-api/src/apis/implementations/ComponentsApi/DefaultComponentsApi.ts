@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
 import {
   ComponentRef,
   ComponentsApi,
-  createComponentExtension,
+  AdaptableComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 /**
@@ -27,13 +26,18 @@ import {
  * @internal
  */
 export class DefaultComponentsApi implements ComponentsApi {
-  #components: Map<string, ComponentType<any>>;
+  #components: Map<
+    string,
+    | (() => (props: object) => JSX.Element | null)
+    | (() => Promise<(props: object) => JSX.Element | null>)
+    | undefined
+  >;
 
   static fromComponents(
-    components: Array<typeof createComponentExtension.componentDataRef.T>,
+    components: Array<typeof AdaptableComponentBlueprint.dataRefs.component.T>,
   ) {
     return new DefaultComponentsApi(
-      new Map(components.map(entry => [entry.ref.id, entry.impl])),
+      new Map(components.map(entry => [entry.ref.id, entry.loader])),
     );
   }
 
@@ -41,11 +45,13 @@ export class DefaultComponentsApi implements ComponentsApi {
     this.#components = components;
   }
 
-  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T> {
+  getComponent(
+    ref: ComponentRef<any>,
+  ):
+    | (() => (props: object) => JSX.Element | null)
+    | (() => Promise<(props: object) => JSX.Element | null>)
+    | undefined {
     const impl = this.#components.get(ref.id);
-    if (!impl) {
-      throw new Error(`No implementation found for component ref ${ref}`);
-    }
     return impl;
   }
 }

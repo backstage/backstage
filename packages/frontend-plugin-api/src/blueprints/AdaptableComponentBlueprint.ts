@@ -27,7 +27,7 @@ export const componentDataRef = createExtensionDataRef<{
     | (() => Promise<(props: {}) => JSX.Element | null>);
 }>().with({ id: 'core.component.component' });
 
-export const ComponentImplementationBlueprint = createExtensionBlueprint({
+export const AdaptableComponentBlueprint = createExtensionBlueprint({
   kind: 'component',
   attachTo: { id: 'api:app/components', input: 'components' },
   output: [componentDataRef],
@@ -35,7 +35,9 @@ export const ComponentImplementationBlueprint = createExtensionBlueprint({
     component: componentDataRef,
   },
   defineParams<Ref extends ComponentRef<any>>(params: {
-    ref: Ref;
+    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+      ? { ref: Ref } & ((props: IExternalComponentProps) => JSX.Element)
+      : never;
     loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
       ?
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
@@ -46,7 +48,7 @@ export const ComponentImplementationBlueprint = createExtensionBlueprint({
   },
   factory: params => [
     componentDataRef({
-      ref: params.ref,
+      ref: params.component.ref,
       loader: params.loader,
     }),
   ],

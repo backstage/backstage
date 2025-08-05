@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 import { renderInTestApp } from '@backstage/frontend-test-utils';
-import { createComponentRef } from '../components';
-import { makeComponentFromRef } from '../components/makeComponentFromRef';
-import { ComponentImplementationBlueprint } from './ComponentImplementationBlueprint';
+import { createAdaptableComponent } from '../components';
+import { AdaptableComponentBlueprint } from './AdaptableComponentBlueprint';
 import { PageBlueprint } from './PageBlueprint';
 import { waitFor, screen } from '@testing-library/react';
 
-describe('ComponentImplementationBlueprint', () => {
+describe('AdaptableComponentBlueprint', () => {
   it('should allow defining a component override for a component ref', () => {
-    const componentRef = createComponentRef({
+    const Component = createAdaptableComponent({
       id: 'test.component',
       loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
     });
 
-    const extension = ComponentImplementationBlueprint.make({
+    const extension = AdaptableComponentBlueprint.make({
       params: define =>
         define({
-          ref: componentRef,
+          component: Component,
           loader: () => props => {
             // @ts-expect-error
             const t: number = props.hello;
@@ -44,12 +43,10 @@ describe('ComponentImplementationBlueprint', () => {
   });
 
   it('should render default component refs in the app', async () => {
-    const testComponentRef = createComponentRef({
+    const TestComponent = createAdaptableComponent({
       id: 'test.component',
       loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
     });
-
-    const TestComponent = makeComponentFromRef({ ref: testComponentRef });
 
     renderInTestApp(<div />, {
       extensions: [
@@ -69,11 +66,9 @@ describe('ComponentImplementationBlueprint', () => {
   });
 
   it('should render a component ref without a default implementation', async () => {
-    const testComponentRef = createComponentRef({
+    const TestComponent = createAdaptableComponent({
       id: 'test.component',
     });
-
-    const TestComponent = makeComponentFromRef({ ref: testComponentRef });
 
     renderInTestApp(<div />, {
       extensions: [
@@ -94,13 +89,11 @@ describe('ComponentImplementationBlueprint', () => {
   });
 
   it('should render a component ref with an async loader implementation', async () => {
-    const testComponentRef = createComponentRef({
+    const TestComponent = createAdaptableComponent({
       id: 'test.component',
       loader: async () => (props: { hello: string }) =>
         <div>{props.hello}</div>,
     });
-
-    const TestComponent = makeComponentFromRef({ ref: testComponentRef });
 
     renderInTestApp(<div />, {
       extensions: [
@@ -120,17 +113,15 @@ describe('ComponentImplementationBlueprint', () => {
   });
 
   it('should allow overriding a component ref with the blueprint', async () => {
-    const testComponentRef = createComponentRef({
+    const TestComponent = createAdaptableComponent({
       id: 'test.component',
       loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
     });
 
-    const TestComponent = makeComponentFromRef({ ref: testComponentRef });
-
-    const extension = ComponentImplementationBlueprint.make({
+    const extension = AdaptableComponentBlueprint.make({
       params: define =>
         define({
-          ref: testComponentRef,
+          component: TestComponent,
           loader: () => props => <div>Override {props.hello}</div>,
         }),
     });

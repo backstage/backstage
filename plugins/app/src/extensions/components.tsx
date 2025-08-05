@@ -14,40 +14,14 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
+import { createAdaptableComponent } from '@backstage/frontend-plugin-api';
 
-import {
-  createComponentExtension,
-  coreComponentRefs,
-} from '@backstage/frontend-plugin-api';
-import { ErrorPanel } from '@backstage/core-components';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { components as defaultComponents } from '../../../../packages/app-defaults/src/defaults';
-
-export const DefaultProgressComponent = createComponentExtension({
-  ref: coreComponentRefs.progress,
-  loader: { sync: () => defaultComponents.Progress },
+export const NotFoundErrorPage = createAdaptableComponent({
+  id: 'core.components.notFoundErrorPage',
+  // todo: implementation
 });
 
-export const DefaultNotFoundErrorPageComponent = createComponentExtension({
-  ref: coreComponentRefs.notFoundErrorPage,
-  loader: { sync: () => defaultComponents.NotFoundErrorPage },
-});
-
-export const DefaultErrorBoundaryComponent = createComponentExtension({
-  ref: coreComponentRefs.errorBoundaryFallback,
-  loader: {
-    sync: () => props => {
-      const { plugin, error, resetError } = props;
-      const title = `Error in ${plugin?.id}`;
-
-      return (
-        <ErrorPanel title={title} error={error} defaultExpanded>
-          <Button variant="outlined" onClick={resetError}>
-            Retry
-          </Button>
-        </ErrorPanel>
-      );
-    },
-  },
+export const ErrorBoundary = createAdaptableComponent({
+  id: 'core.components.errorBoundaryFallback',
+  // todo: implementation
 });
