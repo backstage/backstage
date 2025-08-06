@@ -292,7 +292,7 @@ As with other CNCF projects, Backstage has adopted a [Developers Certificate of 
 
 To certify the code you submit to the repository, you'll need to add a `Signed-off-by` line to your commits.
 
-`$ git commit -s -m 'Awesome commit message'`
+`$ git commit -S -m 'Awesome commit message'`
 
 Which will look something like the following in the repo;
 
