@@ -23114,9 +23114,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/codemirror-extensions-basic-setup@npm:4.23.7":
-  version: 4.23.7
-  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.23.7"
+"@uiw/codemirror-extensions-basic-setup@npm:4.24.2":
+  version: 4.24.2
+  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.24.2"
   dependencies:
     "@codemirror/autocomplete": "npm:^6.0.0"
     "@codemirror/commands": "npm:^6.0.0"
@@ -23133,19 +23133,19 @@ __metadata:
     "@codemirror/search": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: 10/7b8cbb9ccc931bc1a6909d009e653f78797e4b851aa9fb8e11f90ae1cea233e643a1951ad4ad9e10123ef166808acee1acff24732ea9fc15cd77164f6b179b91
+  checksum: 10/077f64b4bbb6178038d30a3cb2961c0ff89c0836b73210d0ac3fca828c3ba8fbce61e42635ec2e2997cdffff5472b75ad58541c4e62f98d52b83d475da0c56eb
   languageName: node
   linkType: hard
 
 "@uiw/react-codemirror@npm:^4.9.3":
-  version: 4.23.7
-  resolution: "@uiw/react-codemirror@npm:4.23.7"
+  version: 4.24.2
+  resolution: "@uiw/react-codemirror@npm:4.24.2"
   dependencies:
     "@babel/runtime": "npm:^7.18.6"
     "@codemirror/commands": "npm:^6.1.0"
     "@codemirror/state": "npm:^6.1.1"
     "@codemirror/theme-one-dark": "npm:^6.0.0"
-    "@uiw/codemirror-extensions-basic-setup": "npm:4.23.7"
+    "@uiw/codemirror-extensions-basic-setup": "npm:4.24.2"
     codemirror: "npm:^6.0.0"
   peerDependencies:
     "@babel/runtime": ">=7.11.0"
@@ -23153,9 +23153,9 @@ __metadata:
     "@codemirror/theme-one-dark": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
     codemirror: ">=6.0.0"
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-  checksum: 10/dc6f1fd2f1863120e29ea331b2e279054bf508f00656d3fed97779f17818ae00b6cf9d74d3b0996800174d444b59702da74ca88c303db563daad85c0824fc952
+    react: ">=17.0.0"
+    react-dom: ">=17.0.0"
+  checksum: 10/f0816fcf40c451c8bc15319d62f5b8d62a04c12c2bc053569212b31edba7c7164e45fd161ebb683a03fd5a50697b91a6ac4cab2d2d1a45da5f2626d959c399a0
   languageName: node
   linkType: hard
 
