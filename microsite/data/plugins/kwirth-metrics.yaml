@@ -1,0 +1,11 @@
+title: Kwirth Metrics
+author: Julio Fernandez
+authorUrl: https://github.com/jfvilas
+category: Monitoring
+description: Show real-time charts of your Kubernetes objects metrics (CPU, mem, I/O, network...). No Prometheus is needed, just one Kwirth pod with no persistence.
+documentation: https://github.com/jfvilas/plugin-kwirth-metrics/blob/master/README.md
+iconUrl: https://raw.githubusercontent.com/jfvilas/plugin-kwirth-metrics/refs/heads/master/src/assets/kwirthmetrics-logo.png
+npmPackageName: '@parseable/backstage-plugin-logstream'
+tags:
+  - monitoring
+addedDate: '2025-08-06'
