@@ -275,7 +275,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const clearLayout = () => {
-    setWidgets([]);
+    setWidgets(widgets.filter(w => !w.deletable));
   };
 
   const changeEditMode = (mode: boolean) => {
