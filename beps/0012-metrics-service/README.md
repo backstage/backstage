@@ -32,11 +32,11 @@ creation-date: 2025-06-23
 
 ## Summary
 
-Add a core `MetricsService` to Backstage's framework to provide a unified interface for metrics instrumentation. The service offers industry standards while focusing the `MetricsService` on distinct Backstage concerns, following the same pattern as other core services (DatabaseService builds on Knex, LoggerService builds on Winston, HttpRouterService builds on Express, etc.).
+Add a core `MetricsService` to Backstage's framework to provide a unified interface for metrics instrumentation. The service offers industry standards (OTEL) while focusing the `MetricsService` on distinct Backstage concerns, following the same pattern as other core services (DatabaseService builds on Knex, LoggerService builds on Winston, HttpRouterService builds on Express, etc.).
 
 ## Motivation
 
-There is no guidance when it comes to metrics instrumentation. While individual plugins may implement their own metrics, there's no standardized approach leading to inconsistent metrics patterns across the ecosystem.
+While individual plugins may implement their own metrics, there's no standardized approach leading to inconsistent metrics patterns across the ecosystem. For example, both `catalog_entities_count` and `catalog.processed.entities.count` are examples of existing metric patterns. Ideally, these would be standardized to `backstage.plugin.catalog.entities.count` and `backstage.plugin.catalog.entities.processed.total` respectively.
 
 By providing a core metrics service:
 
@@ -54,6 +54,7 @@ The catalog and scaffolder plugins will be updated to use the new metrics servic
 
 ### Non-Goals
 
+- Providing a way to configure the OpenTelemetry SDK. This is out of scope for this BEP.
 - Adding metrics to plugins missing existing metrics (outside of catalog and scaffolder)
 - Tracing and other telemetry concerns are out of scope for this BEP.
 - Refactoring the existing `LoggerService`. Future work to unify observability related concerns would be ideal, but not a goal.
@@ -114,13 +115,6 @@ backstage.service.httpRouter.requests.total
 
 ### Integration with OpenTelemetry Auto-Instrumentation
 
-The `RootMetricsService` will automatically enable instrumentation for known libraries leveraged by the Backstage framework. Configuration will be provided to enable or disable auto-instrumentation via inclusion or exclusion lists.
-
-- Express
-- Knex
-- Winston
-- etc.
-
 The `MetricsService` **complements** rather than duplicates auto-instrumentation by focusing on **application-level metrics** that only Backstage can provide. For example, the catalog plugin may want to track the number of entities processed by the `refresh` operation and the kind of entity being processed.
 
 ```ts
@@ -135,60 +129,9 @@ entityMetrics.add(entities.length, { operation: 'refresh', kind: 'Component' });
 
 ### Configuration
 
-```ts
-// Not final, but this is the general idea...
-interface MetricsConfig {
-  enabled: boolean;
+A challenging factor of only introducing a `MetricsService` is the need to collect other OTEL-related configuration such as resources, tracing providers, views, and more prior to starting the SDK. This means that in order to introduce a `MetricsService`, we must support all OTEL Node SDK configuration along with it. Along with this, the official recommendation from the OTEL team is to not initialize and start the SDK on behalf of the user.
 
-  resource: {
-    serviceName?: string;
-    serviceVersion?: string;
-    environment?: string;
-  };
-
-  collection?: {
-    exportIntervalMillis?: number;
-    // ...
-  };
-
-  exporters: Array<{
-    type: 'prometheus' | 'otlp' | 'console' | '...';
-    config?: Record<string, any>;
-  }>;
-
-  autoInstrumentation: {
-    enabled: boolean;
-    include?: string[];
-    exclude?: string[];
-  };
-}
-```
-
-```yaml
-backend:
-  metrics:
-    enabled: true
-
-    resource:
-      serviceName: backstage
-      serviceVersion: 0.0.1
-      environment: production
-
-    # Collection settings
-    collection:
-      exportIntervalMillis: 15000
-
-    exporters:
-      - type: prometheus
-        config:
-          port: 9464
-      # ...
-      - type: console
-
-    autoInstrumentation:
-      enabled: true
-      exclude: ['express']
-```
+With this, we will not include any configuration as part of this BEP. Users will be responsible for initializing the SDK based on the current guidance
 
 ### Interface
 
@@ -219,21 +162,22 @@ interface MetricsService {
 
 #### Root Metrics Service
 
-The `RootMetricsService` is responsible for initializing the OpenTelemetry SDK and creating plugin-scoped metrics services. If the end user wants to initialize their own SDK, they are responsible for initializing the OpenTelemetry SDK with their own configuration. The `RootMetricsService` is responsible for providing metrics to other root services and creating plugin-scoped metrics services.
+The `RootMetricsService` is responsible for providing metrics to other root services and creating both plugin-scoped and service-scoped `MetricsService` instances.
 
 ```ts
 interface RootMetricsService {
+  // note: no config is provided to the root service.
+  static forRoot(): RootMetricsService;
   forPlugin(pluginId: string): MetricsService;
+  forService(serviceName: string, scope: 'plugin' | 'service'): MetricsService;
 }
 
 export const rootMetricsServiceFactory = createServiceFactory({
   // depends on as little as possible so that it can be initialized as early as possible.
   service: rootMetricsServiceRef,
-  deps: {
-    rootConfig: coreServices.rootConfig,
-  },
-  factory: ({ rootConfig }) => {
-    return DefaultRootMetricsService.fromConfig(rootConfig);
+  deps: {},
+  factory: () => {
+    return DefaultRootMetricsService.forRoot();
   },
 });
 ```
@@ -242,32 +186,19 @@ export const rootMetricsServiceFactory = createServiceFactory({
 class DefaultRootMetricsService implements RootMetricsService {
   private sdk: NodeSDK;
 
-  static fromConfig(config: Config): RootMetricsService {
-    const metricsConfig = config.getOptionalConfig('backend.metrics');
-
-    const sdk = new NodeSDK({
-      resource: createResourceFromConfig(metricsConfig),
-      instrumentations: [
-        getNodeAutoInstrumentations({
-          ...getAutoInstrumentationConfig(metricsConfig),
-        }),
-      ],
-      metricReader: createMetricReadersFromConfig(metricsConfig),
-    });
-
-    sdk.start();
-
-    return new DefaultRootMetricsService(sdk);
+  static forRoot(): RootMetricsService {
+    /**
+     * By this point, the user should have already initialized the SDK with their own configuration.
+     */
+    return new DefaultRootMetricsService();
   }
-
-  constructor(private sdk: NodeSDK) {}
 
   forPlugin(pluginId: string): MetricsService {
     return new PluginMetricsService(pluginId);
   }
 
-  async shutdown(): Promise<void> {
-    await this.sdk.shutdown();
+  forService(serviceName: string, scope: 'plugin' | 'service'): MetricsService {
+    return new ServiceMetricsService(serviceName, scope);
   }
 }
 ```
@@ -321,15 +252,14 @@ entitiesProcessed.add(100);
 
 ## Release Plan
 
-1. Create a new `RootMetricsService` that initializes the OpenTelemetry SDK and creates plugin-scoped metrics services.
-1. Create the plugin-scoped `MetricsService` that provides a metrics service for plugins.
+1. Create the new metrics-related services.
 1. Create alpha-related documentation to add to existing core service [docs](https://backstage.io/docs/backend-system/core-services/index).
 1. Release the metrics service under `@alpha`.
 1. Mark all existing metrics implementations as deprecated.
 1. Refactor catalog and scaffolder plugins to use the new (alpha) `MetricsService`.
 1. Offer a migration path for existing adopters to migrate to the new metrics service.
-1. Release the metrics service
-1. Update all documentation to reference the new metrics service.
+1. Release the metrics service under `@public`
+1. Update remaining documentation to reference the new metrics service.
 1. Create follow-up action items to integrate the new metrics service into the core system.
 1. Fully deprecate all existing metrics implementations like the existing Prometheus one-off implementations.
 
@@ -339,9 +269,10 @@ TBD
 
 ## Dependencies
 
-1. The root metrics service MUST BE initialized as EARLY as possible to prevent dependents from receiving no-op meters
+1. The otel sdk MUST BE initialized as EARLY as possible to prevent dependents from receiving no-op meters - we will not change the current guidance on this
 1. There are one-off implementations of metrics in the wild that may conflict with the proposed service. However, this is unlikely to be a problem as the SDK should continue to pick things up.
 
 ## Alternatives
 
-Plugin authors continue to implement their own metrics as they see fit.
+- Plugin authors continue to implement their own metrics as they see fit.
+- A combined TelemetryService that provides both metrics and tracing.
