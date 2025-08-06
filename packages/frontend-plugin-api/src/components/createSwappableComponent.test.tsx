@@ -15,11 +15,11 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import { createAdaptableComponent } from './createAdaptableComponent';
+import { createSwappableComponent } from './createSwappableComponent';
 
-describe('createAdaptableComponent', () => {
+describe('createSwappableComponent', () => {
   it('can be created and read', () => {
-    const { ref } = createAdaptableComponent({ id: 'foo' });
+    const { ref } = createSwappableComponent({ id: 'foo' });
     expect(ref.id).toBe('foo');
     expect(String(ref)).toBe('ComponentRef{id=foo}');
   });
@@ -27,7 +27,7 @@ describe('createAdaptableComponent', () => {
   it('should allow defining a default component implementation', () => {
     const Test = () => <div>test</div>;
 
-    createAdaptableComponent<{ foo: string }, { bar: string }>({
+    createSwappableComponent<{ foo: string }, { bar: string }>({
       id: 'foo',
       loader:
         () =>
@@ -35,7 +35,7 @@ describe('createAdaptableComponent', () => {
           <Test key={foo} />,
     });
 
-    createAdaptableComponent<{ foo: string }, { bar: string }>({
+    createSwappableComponent<{ foo: string }, { bar: string }>({
       id: 'foo',
       loader:
         async () =>
@@ -43,7 +43,7 @@ describe('createAdaptableComponent', () => {
           <Test key={foo} />,
     });
 
-    createAdaptableComponent<{ foo: string }, { bar: string }>({
+    createSwappableComponent<{ foo: string }, { bar: string }>({
       id: 'foo',
     });
 
@@ -51,12 +51,12 @@ describe('createAdaptableComponent', () => {
   });
 
   it('should allow transformings props', () => {
-    createAdaptableComponent<{ foo: string }, { bar: string }>({
+    createSwappableComponent<{ foo: string }, { bar: string }>({
       id: 'foo',
       transformProps: props => ({ foo: props.bar }),
     });
 
-    createAdaptableComponent<{ foo: string }, { bar: string }>({
+    createSwappableComponent<{ foo: string }, { bar: string }>({
       id: 'foo',
       // @ts-expect-error - this should be an error as foo is not a string
       transformProps: props => ({ foo: 1 }),
@@ -67,7 +67,7 @@ describe('createAdaptableComponent', () => {
 
   describe('sync', () => {
     it('should create a component from a ref for sync component', () => {
-      const Component = createAdaptableComponent({
+      const Component = createSwappableComponent({
         id: 'random',
         loader: () => (props: { name: string }) => {
           return <div data-testid="test">{props.name}</div>;
@@ -83,7 +83,7 @@ describe('createAdaptableComponent', () => {
     });
 
     it('should render a fallback when theres no default implementation provided', () => {
-      const Component = createAdaptableComponent({
+      const Component = createSwappableComponent({
         id: 'random',
       });
 
@@ -93,7 +93,7 @@ describe('createAdaptableComponent', () => {
     });
 
     it('should map props from external to internal', () => {
-      const Component = createAdaptableComponent({
+      const Component = createSwappableComponent({
         id: 'random',
         transformProps: (props: { name: string }) => ({
           uppercase: props.name.toUpperCase(),
@@ -114,7 +114,7 @@ describe('createAdaptableComponent', () => {
 
   describe('async', () => {
     it('should create a component from a ref for async component', async () => {
-      const Component = createAdaptableComponent({
+      const Component = createSwappableComponent({
         id: 'random',
         loader: async () => (props: { name: string }) => {
           return <div data-testid="test">{props.name}</div>;
@@ -127,7 +127,7 @@ describe('createAdaptableComponent', () => {
     });
 
     it('should render a fallback when theres no default implementation provided', async () => {
-      const Component = createAdaptableComponent({
+      const Component = createSwappableComponent({
         id: 'random',
       });
 
@@ -137,7 +137,7 @@ describe('createAdaptableComponent', () => {
     });
 
     it('should map props from external to internal', async () => {
-      const Component = createAdaptableComponent({
+      const Component = createSwappableComponent({
         id: 'random',
         transformProps: (props: { name: string }) => ({
           uppercase: props.name.toUpperCase(),

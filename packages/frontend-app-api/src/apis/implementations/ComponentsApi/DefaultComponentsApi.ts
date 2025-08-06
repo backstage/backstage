@@ -17,7 +17,7 @@
 import {
   ComponentRef,
   ComponentsApi,
-  AdaptableComponentBlueprint,
+  SwappableComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 /**
@@ -34,7 +34,7 @@ export class DefaultComponentsApi implements ComponentsApi {
   >;
 
   static fromComponents(
-    components: Array<typeof AdaptableComponentBlueprint.dataRefs.component.T>,
+    components: Array<typeof SwappableComponentBlueprint.dataRefs.component.T>,
   ) {
     return new DefaultComponentsApi(
       new Map(components.map(entry => [entry.ref.id, entry.loader])),

@@ -19,9 +19,9 @@ export {
   type ExtensionBoundaryProps,
 } from './ExtensionBoundary';
 export {
-  createAdaptableComponent,
-  type CreateAdaptableComponentOptions,
+  createSwappableComponent,
+  type CreateSwappableComponentOptions,
   type ComponentRef,
-} from './createAdaptableComponent';
+} from './createSwappableComponent';
 export { useAppNode } from './AppNodeProvider';
-export * from './DefaultAdaptableComponents';
+export * from './DefaultSwappableComponents';

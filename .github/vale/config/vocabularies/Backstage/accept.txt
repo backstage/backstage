@@ -467,6 +467,7 @@ Superfences
 superset
 supertype
 SVGs
+Swappable
 talkdesk
 Talkdesk
 Tanzu

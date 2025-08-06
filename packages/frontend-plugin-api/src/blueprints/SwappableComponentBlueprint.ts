@@ -28,11 +28,11 @@ export const componentDataRef = createExtensionDataRef<{
 }>().with({ id: 'core.component.component' });
 
 /**
- * Blueprint for creating adaptable components from a componentRef and a loader
+ * Blueprint for creating swappable components from a componentRef and a loader
  *
  * @public
  */
-export const AdaptableComponentBlueprint = createExtensionBlueprint({
+export const SwappableComponentBlueprint = createExtensionBlueprint({
   kind: 'component',
   attachTo: { id: 'api:app/components', input: 'components' },
   output: [componentDataRef],

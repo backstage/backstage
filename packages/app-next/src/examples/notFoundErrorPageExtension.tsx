@@ -15,14 +15,14 @@
  */
 
 import {
-  AdaptableComponentBlueprint,
+  SwappableComponentBlueprint,
   NotFoundErrorPage,
 } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@backstage/core-components';
 
-export function CustomNotFoundErrorPage() {
+function CustomNotFoundErrorPage() {
   return (
     <Box
       component="article"
@@ -50,7 +50,7 @@ export function CustomNotFoundErrorPage() {
   );
 }
 
-export default AdaptableComponentBlueprint.make({
+export default SwappableComponentBlueprint.make({
   name: 'not-found-error-page',
   params: define =>
     define({

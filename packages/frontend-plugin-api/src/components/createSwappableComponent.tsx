@@ -30,11 +30,11 @@ export type ComponentRef<
 };
 
 /**
- * Options for creating an AdaptableComponent.
+ * Options for creating an SwappableComponent.
  *
  * @public
  */
-export type CreateAdaptableComponentOptions<
+export type CreateSwappableComponentOptions<
   TInnerComponentProps extends {},
   TExternalComponentProps extends {} = TInnerComponentProps,
 > = {
@@ -96,15 +96,15 @@ function makeComponentFromRef<
 }
 
 /**
- * Creates a AdaptableComponent that can be used to render the component, optionally overriden by the app.
+ * Creates a SwappableComponent that can be used to render the component, optionally overriden by the app.
  *
  * @public
  */
-export function createAdaptableComponent<
+export function createSwappableComponent<
   TInnerComponentProps extends {},
   TExternalComponentProps extends {} = TInnerComponentProps,
 >(
-  options: CreateAdaptableComponentOptions<
+  options: CreateSwappableComponentOptions<
     TInnerComponentProps,
     TExternalComponentProps
   >,

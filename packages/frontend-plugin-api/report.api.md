@@ -94,59 +94,6 @@ import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 import { withApis } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
-// @public
-export const AdaptableComponentBlueprint: ExtensionBlueprint<{
-  kind: 'component';
-  params: <Ref extends ComponentRef<any>>(params: {
-    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
-      ? {
-          ref: Ref;
-        } & ((props: IExternalComponentProps) => JSX.Element)
-      : never;
-    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
-      ?
-          | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
-      : never;
-  }) => ExtensionBlueprintParams<{
-    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
-      ? {
-          ref: Ref;
-        } & ((props: IExternalComponentProps) => JSX.Element)
-      : never;
-    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
-      ?
-          | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
-      : never;
-  }>;
-  output: ExtensionDataRef<
-    {
-      ref: ComponentRef;
-      loader:
-        | (() => (props: {}) => JSX.Element | null)
-        | (() => Promise<(props: {}) => JSX.Element | null>);
-    },
-    'core.component.component',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    component: ConfigurableExtensionDataRef<
-      {
-        ref: ComponentRef;
-        loader:
-          | (() => (props: {}) => JSX.Element | null)
-          | (() => Promise<(props: {}) => JSX.Element | null>);
-      },
-      'core.component.component',
-      {}
-    >;
-  };
-}>;
-
 export { AlertApi };
 
 export { alertApiRef };
@@ -484,31 +431,6 @@ export type CoreNotFoundErrorPageProps = {
 
 // @public (undocumented)
 export type CoreProgressProps = {};
-
-// @public
-export function createAdaptableComponent<
-  TInnerComponentProps extends {},
-  TExternalComponentProps extends {} = TInnerComponentProps,
->(
-  options: CreateAdaptableComponentOptions<
-    TInnerComponentProps,
-    TExternalComponentProps
-  >,
-): ((props: TExternalComponentProps) => JSX.Element) & {
-  ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>;
-};
-
-// @public
-export type CreateAdaptableComponentOptions<
-  TInnerComponentProps extends {},
-  TExternalComponentProps extends {} = TInnerComponentProps,
-> = {
-  id: string;
-  loader?:
-    | (() => (props: TInnerComponentProps) => JSX.Element | null)
-    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>);
-  transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
-};
 
 export { createApiFactory };
 
@@ -900,6 +822,31 @@ export function createSubRouteRef<
   path: Path;
   parent: RouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
+
+// @public
+export function createSwappableComponent<
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+>(
+  options: CreateSwappableComponentOptions<
+    TInnerComponentProps,
+    TExternalComponentProps
+  >,
+): ((props: TExternalComponentProps) => JSX.Element) & {
+  ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>;
+};
+
+// @public
+export type CreateSwappableComponentOptions<
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+> = {
+  id: string;
+  loader?:
+    | (() => (props: TInnerComponentProps) => JSX.Element | null)
+    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>);
+  transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
+};
 
 export { createTranslationMessages };
 
@@ -1903,6 +1850,59 @@ export interface SubRouteRef<
   // (undocumented)
   readonly T: TParams;
 }
+
+// @public
+export const SwappableComponentBlueprint: ExtensionBlueprint<{
+  kind: 'component';
+  params: <Ref extends ComponentRef<any>>(params: {
+    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+      ? {
+          ref: Ref;
+        } & ((props: IExternalComponentProps) => JSX.Element)
+      : never;
+    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+      ?
+          | (() => (props: IInnerComponentProps) => JSX.Element | null)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
+      : never;
+  }) => ExtensionBlueprintParams<{
+    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+      ? {
+          ref: Ref;
+        } & ((props: IExternalComponentProps) => JSX.Element)
+      : never;
+    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+      ?
+          | (() => (props: IInnerComponentProps) => JSX.Element | null)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
+      : never;
+  }>;
+  output: ExtensionDataRef<
+    {
+      ref: ComponentRef;
+      loader:
+        | (() => (props: {}) => JSX.Element | null)
+        | (() => Promise<(props: {}) => JSX.Element | null>);
+    },
+    'core.component.component',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef<
+      {
+        ref: ComponentRef;
+        loader:
+          | (() => (props: {}) => JSX.Element | null)
+          | (() => Promise<(props: {}) => JSX.Element | null>);
+      },
+      'core.component.component',
+      {}
+    >;
+  };
+}>;
 
 // @public
 export const ThemeBlueprint: ExtensionBlueprint<{

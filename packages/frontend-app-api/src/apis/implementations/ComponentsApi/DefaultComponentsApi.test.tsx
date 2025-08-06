@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { createAdaptableComponent } from '@backstage/frontend-plugin-api';
+import { createSwappableComponent } from '@backstage/frontend-plugin-api';
 import { DefaultComponentsApi } from './DefaultComponentsApi';
 import { render, screen } from '@testing-library/react';
 
-const { ref: testRefA } = createAdaptableComponent({ id: 'test.a' });
-const { ref: testRefB1 } = createAdaptableComponent({ id: 'test.b' });
-const { ref: testRefB2 } = createAdaptableComponent({ id: 'test.b' });
+const { ref: testRefA } = createSwappableComponent({ id: 'test.a' });
+const { ref: testRefB1 } = createSwappableComponent({ id: 'test.b' });
+const { ref: testRefB2 } = createSwappableComponent({ id: 'test.b' });
 
 describe('DefaultComponentsApi', () => {
   it('should provide components', () => {

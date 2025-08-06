@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 import { renderInTestApp } from '@backstage/frontend-test-utils';
-import { createAdaptableComponent } from '../components';
-import { AdaptableComponentBlueprint } from './AdaptableComponentBlueprint';
+import { createSwappableComponent } from '../components';
+import { SwappableComponentBlueprint } from './SwappableComponentBlueprint';
 import { PageBlueprint } from './PageBlueprint';
 import { waitFor, screen } from '@testing-library/react';
 
-describe('AdaptableComponentBlueprint', () => {
+describe('SwappableComponentBlueprint', () => {
   it('should allow defining a component override for a component ref', () => {
-    const Component = createAdaptableComponent({
+    const Component = createSwappableComponent({
       id: 'test.component',
       loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
     });
 
-    const extension = AdaptableComponentBlueprint.make({
+    const extension = SwappableComponentBlueprint.make({
       params: define =>
         define({
           component: Component,
@@ -43,7 +43,7 @@ describe('AdaptableComponentBlueprint', () => {
   });
 
   it('should render default component refs in the app', async () => {
-    const TestComponent = createAdaptableComponent({
+    const TestComponent = createSwappableComponent({
       id: 'test.component',
       loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
     });
@@ -66,7 +66,7 @@ describe('AdaptableComponentBlueprint', () => {
   });
 
   it('should render a component ref without a default implementation', async () => {
-    const TestComponent = createAdaptableComponent({
+    const TestComponent = createSwappableComponent({
       id: 'test.component',
     });
 
@@ -89,7 +89,7 @@ describe('AdaptableComponentBlueprint', () => {
   });
 
   it('should render a component ref with an async loader implementation', async () => {
-    const TestComponent = createAdaptableComponent({
+    const TestComponent = createSwappableComponent({
       id: 'test.component',
       loader: async () => (props: { hello: string }) =>
         <div>{props.hello}</div>,
@@ -113,12 +113,12 @@ describe('AdaptableComponentBlueprint', () => {
   });
 
   it('should allow overriding a component ref with the blueprint', async () => {
-    const TestComponent = createAdaptableComponent({
+    const TestComponent = createSwappableComponent({
       id: 'test.component',
       loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
     });
 
-    const extension = AdaptableComponentBlueprint.make({
+    const extension = SwappableComponentBlueprint.make({
       params: define =>
         define({
           component: TestComponent,

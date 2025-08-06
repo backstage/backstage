@@ -16,7 +16,7 @@
 
 import { ComponentType } from 'react';
 import {
-  AdaptableComponentBlueprint,
+  SwappableComponentBlueprint,
   ApiBlueprint,
   CoreErrorBoundaryFallbackProps,
   createExtension,
@@ -27,9 +27,9 @@ import {
   RouterBlueprint,
   SignInPageBlueprint,
   ThemeBlueprint,
-  ErrorBoundary as AdaptableErrorBoundary,
-  NotFoundErrorPage as AdaptableNotFoundErrorPage,
-  Progress as AdaptableProgress,
+  ErrorBoundary as SwappableErrorBoundary,
+  NotFoundErrorPage as SwappableNotFoundErrorPage,
+  Progress as SwappableProgress,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -156,10 +156,10 @@ export function convertLegacyAppOptions(
     }
     if (Progress) {
       extensions.push(
-        AdaptableComponentBlueprint.make({
+        SwappableComponentBlueprint.make({
           params: define =>
             define({
-              component: AdaptableProgress,
+              component: SwappableProgress,
               loader: () => componentCompatWrapper(Progress),
             }),
         }),
@@ -168,10 +168,10 @@ export function convertLegacyAppOptions(
 
     if (NotFoundErrorPage) {
       extensions.push(
-        AdaptableComponentBlueprint.make({
+        SwappableComponentBlueprint.make({
           params: define =>
             define({
-              component: AdaptableNotFoundErrorPage,
+              component: SwappableNotFoundErrorPage,
               loader: () => componentCompatWrapper(NotFoundErrorPage),
             }),
         }),
@@ -190,10 +190,10 @@ export function convertLegacyAppOptions(
         );
 
       extensions.push(
-        AdaptableComponentBlueprint.make({
+        SwappableComponentBlueprint.make({
           params: define =>
             define({
-              component: AdaptableErrorBoundary,
+              component: SwappableErrorBoundary,
               loader: () =>
                 componentCompatWrapper(WrappedErrorBoundaryFallback),
             }),

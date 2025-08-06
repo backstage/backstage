@@ -29,7 +29,7 @@ import { AppNode } from '../apis';
 import { Progress } from '@backstage/core-components';
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
-import { ErrorBoundary as ErrorBoundaryComponent } from './DefaultAdaptableComponents';
+import { ErrorBoundary as ErrorBoundaryComponent } from './DefaultSwappableComponents';
 
 type RouteTrackerProps = PropsWithChildren<{
   enabled?: boolean;

@@ -19,12 +19,12 @@ import {
   CoreNotFoundErrorPageProps,
   CoreProgressProps,
 } from '../types';
-import { createAdaptableComponent } from './createAdaptableComponent';
+import { createSwappableComponent } from './createSwappableComponent';
 
 /**
  * @public
  */
-export const Progress = createAdaptableComponent<CoreProgressProps>({
+export const Progress = createSwappableComponent<CoreProgressProps>({
   id: 'core.components.progress',
 });
 
@@ -32,7 +32,7 @@ export const Progress = createAdaptableComponent<CoreProgressProps>({
  * @public
  */
 export const NotFoundErrorPage =
-  createAdaptableComponent<CoreNotFoundErrorPageProps>({
+  createSwappableComponent<CoreNotFoundErrorPageProps>({
     id: 'core.components.notFoundErrorPage',
   });
 
@@ -40,6 +40,6 @@ export const NotFoundErrorPage =
  * @public
  */
 export const ErrorBoundary =
-  createAdaptableComponent<CoreErrorBoundaryFallbackProps>({
+  createSwappableComponent<CoreErrorBoundaryFallbackProps>({
     id: 'core.components.errorBoundary',
   });
