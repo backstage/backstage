@@ -69,7 +69,7 @@
     "@backstage/plugin-permission-react": "workspace:^",
     "@kubernetes-models/apimachinery": "^2.0.0",
     "@kubernetes-models/base": "^5.0.0",
-    "@kubernetes/client-node": "1.1.2",
+    "@kubernetes/client-node": "1.3.0",
     "@material-ui/core": "^4.12.2",
     "@xterm/addon-attach": "^0.11.0",
     "@xterm/addon-fit": "^0.10.0",
