@@ -18,9 +18,9 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
+  NotFoundErrorPage,
 } from '@backstage/frontend-plugin-api';
 import { useRoutes } from 'react-router-dom';
-import { NotFoundErrorPage } from './components';
 
 export const AppRoutes = createExtension({
   name: 'routes',

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createAdaptableComponent } from '@backstage/frontend-plugin-api';
 
-export {
-  ExtensionBoundary,
-  type ExtensionBoundaryProps,
-} from './ExtensionBoundary';
-export {
-  createAdaptableComponent,
-  type ComponentRef,
-} from './createAdaptableComponent';
-export { useAppNode } from './AppNodeProvider';
-export * from './DefaultAdaptableComponents';
+export const Progress = createAdaptableComponent({
+  id: 'core.components.progress',
+});
+
+export const NotFoundErrorPage = createAdaptableComponent({
+  id: 'core.components.notFoundErrorPage',
+});
+
+export const ErrorBoundary = createAdaptableComponent({
+  id: 'core.components.errorBoundary',
+});

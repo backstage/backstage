@@ -54,7 +54,7 @@ describe('AdaptableComponentBlueprint', () => {
           params: define =>
             define({
               // todo(blam): there's a bug that this path cannot be `/`?
-              defaultPath: '/test',
+              path: '/test',
               loader: async () => <TestComponent hello="test!" />,
             }),
         }),
@@ -75,7 +75,7 @@ describe('AdaptableComponentBlueprint', () => {
         PageBlueprint.make({
           params: define =>
             define({
-              defaultPath: '/test',
+              path: '/test',
               loader: async () => <TestComponent />,
             }),
         }),
@@ -101,7 +101,7 @@ describe('AdaptableComponentBlueprint', () => {
           params: define =>
             define({
               // todo(blam): there's a bug that this path cannot be `/`?
-              defaultPath: '/test',
+              path: '/test',
               loader: async () => <TestComponent hello="test!" />,
             }),
         }),
@@ -132,7 +132,7 @@ describe('AdaptableComponentBlueprint', () => {
         PageBlueprint.make({
           params: define =>
             define({
-              defaultPath: '/test',
+              path: '/test',
               loader: async () => <TestComponent hello="test!" />,
             }),
         }),

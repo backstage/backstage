@@ -15,5 +15,3 @@
  */
 
 export { appPlugin as default } from './plugin';
-// todo: remove
-export * from './extensions/components';

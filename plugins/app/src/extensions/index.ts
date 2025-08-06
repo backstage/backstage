@@ -26,9 +26,8 @@ export { FeatureFlagsApi } from './FeatureFlagsApi';
 export { TranslationsApi } from './TranslationsApi';
 export { DefaultSignInPage } from './DefaultSignInPage';
 export { dialogDisplayAppRootElement } from './DialogDisplay';
-// todo: move these
-export { ErrorBoundary, NotFoundErrorPage } from './components';
 export {
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
 } from './elements';
+export { Progress, NotFoundErrorPage, ErrorBoundary } from './components';

@@ -33,6 +33,9 @@ import {
   alertDisplayAppRootElement,
   DefaultSignInPage,
   dialogDisplayAppRootElement,
+  Progress,
+  NotFoundErrorPage,
+  ErrorBoundary,
 } from './extensions';
 import { apis } from './defaultApis';
 
@@ -59,5 +62,8 @@ export const appPlugin = createFrontendPlugin({
     oauthRequestDialogAppRootElement,
     alertDisplayAppRootElement,
     dialogDisplayAppRootElement,
+    Progress,
+    NotFoundErrorPage,
+    ErrorBoundary,
   ],
 });

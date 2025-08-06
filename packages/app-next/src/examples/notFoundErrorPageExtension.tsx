@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { AdaptableComponentBlueprint } from '@backstage/frontend-plugin-api';
+import {
+  AdaptableComponentBlueprint,
+  NotFoundErrorPage,
+} from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@backstage/core-components';
-import { NotFoundErrorPage } from '@backstage/plugin-app';
 
 export function CustomNotFoundErrorPage() {
   return (

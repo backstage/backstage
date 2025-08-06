@@ -35,7 +35,6 @@ import {
   RouteResolutionApi,
   SubRouteRef,
   componentsApiRef,
-  coreComponentRefs,
   iconsApiRef,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';

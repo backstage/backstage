@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  NotFoundErrorPage as AdaptableNotFoundErrorPage,
+  Progress as AdaptableProgress,
+  ErrorBoundary as AdaptableErrorBoundary,
+  AdaptableComponentBlueprint,
+} from '@backstage/frontend-plugin-api';
 
-import { createAdaptableComponent } from '@backstage/frontend-plugin-api';
+import { Progress as ProgressComponent } from '@backstage/core-components';
 
-export const NotFoundErrorPage = createAdaptableComponent({
-  id: 'core.components.notFoundErrorPage',
-  // todo: implementation
+export const Progress = AdaptableComponentBlueprint.make({
+  name: 'core.components.progress',
+  params: define =>
+    define({
+      component: AdaptableProgress,
+      loader: () => ProgressComponent,
+    }),
 });
 
-export const ErrorBoundary = createAdaptableComponent({
-  id: 'core.components.errorBoundaryFallback',
-  // todo: implementation
+export const NotFoundErrorPage = AdaptableComponentBlueprint.make({
+  name: 'core.components.notFoundErrorPage',
+  params: define =>
+    define({
+      component: AdaptableNotFoundErrorPage,
+      loader: () => NotFoundErrorPageComponent,
+    }),
+});
+
+export const ErrorBoundary = AdaptableComponentBlueprint.make({
+  name: 'core.components.errorBoundary',
+  params: define =>
+    define({
+      component: AdaptableErrorBoundary,
+      loader: () => ErrorBoundaryComponent,
+    }),
 });
