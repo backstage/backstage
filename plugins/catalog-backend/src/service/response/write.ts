@@ -116,7 +116,6 @@ export function createResponseDataWriter(
     function onClose() {
       res.off('drain', onDrain);
       res.off('close', onClose);
-      res.off('finish', onClose);
       resolve('closed');
     }
     function onDrain() {
@@ -125,7 +124,6 @@ export function createResponseDataWriter(
     }
     res.on('drain', onDrain);
     res.on('close', onClose);
-    res.on('finish', onClose);
   });
 
   return async data => {
