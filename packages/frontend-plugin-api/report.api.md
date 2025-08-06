@@ -880,14 +880,14 @@ export { createTranslationResource };
 
 // @public
 export interface DialogApi {
-  show<TResult = {}>(
+  show<TResult = void>(
     elementOrComponent:
       | JSX.Element
       | ((props: {
           dialog: DialogApiDialog<TResult | undefined>;
         }) => JSX.Element),
   ): DialogApiDialog<TResult | undefined>;
-  showModal<TResult = {}>(
+  showModal<TResult = void>(
     elementOrComponent:
       | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
@@ -895,7 +895,7 @@ export interface DialogApi {
 }
 
 // @public
-export interface DialogApiDialog<TResult = unknown> {
+export interface DialogApiDialog<TResult = void> {
   close(
     ...args: undefined extends TResult ? [result?: TResult] : [result: TResult]
   ): void;
