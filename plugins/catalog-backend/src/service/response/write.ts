@@ -129,6 +129,12 @@ export function createResponseDataWriter(
   });
 
   return async data => {
+    if (drainPromise) {
+      throw new Error(
+        'Attempted overlapping write while waiting for previous write to drain',
+      );
+    }
+
     if (res.write(data, 'utf8')) {
       return 'ok';
     }
