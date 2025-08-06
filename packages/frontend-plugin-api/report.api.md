@@ -12,7 +12,6 @@ import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-pl
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
-import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api/src/apis/system/types';
 import { ApiRefConfig } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
@@ -430,7 +429,7 @@ export interface ComponentsApi {
 }
 
 // @public
-export const componentsApiRef: ApiRef_2<ComponentsApi>;
+export const componentsApiRef: ApiRef<ComponentsApi>;
 
 export { ConfigApi };
 

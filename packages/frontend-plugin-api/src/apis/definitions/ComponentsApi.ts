@@ -15,7 +15,7 @@
  */
 
 import { ComponentRef } from '../../components';
-import { createApiRef } from '../system/ApiRef';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 /**
  * API for looking up components based on component refs.
