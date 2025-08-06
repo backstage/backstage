@@ -1,0 +1,1 @@
+function l(e,a){if(!(e instanceof a))throw new TypeError("Cannot call a class as a function")}const o=Object.freeze(Object.defineProperty({__proto__:null,default:l},Symbol.toStringTag,{value:"Module"}));export{l as _,o as c};
