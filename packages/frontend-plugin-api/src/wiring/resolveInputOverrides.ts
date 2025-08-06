@@ -119,6 +119,7 @@ export function resolveInputOverrides(
       if (providedData) {
         const providedContainer = createExtensionDataContainer(
           providedData as Iterable<ExtensionDataValue<any, any>>,
+          'extension input override',
           declaredInput.extensionData,
         );
         if (!originalInput) {
@@ -157,6 +158,7 @@ export function resolveInputOverrides(
           newInputs[name] = providedData.map((data, i) => {
             const providedContainer = createExtensionDataContainer(
               data as Iterable<ExtensionDataValue<any, any>>,
+              'extension input override',
               declaredInput.extensionData,
             );
             return Object.assign(providedContainer, {

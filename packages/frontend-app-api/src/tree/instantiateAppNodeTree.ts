@@ -309,10 +309,19 @@ export function createAppNodeInstance(options: {
                   inputs: context.inputs,
                   config: overrideContext?.config ?? context.config,
                 }),
+                'extension factory',
               );
             }, context),
+            'extension factory middleware',
           )
         : internalExtension.factory(context);
+
+      if (
+        typeof outputDataValues !== 'object' ||
+        !outputDataValues?.[Symbol.iterator]
+      ) {
+        throw new Error('extension factory did not provide an iterable object');
+      }
 
       const outputDataMap = new Map<string, unknown>();
       for (const value of outputDataValues) {
