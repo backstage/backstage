@@ -1,0 +1,10 @@
+---
+title: Kwirth Metrics
+author: Julio Fernandez
+authorUrl: https://github.com/jfvilas
+category: Monitoring
+description: Kwirth Metrics plugin allows showing resource metrics charts about your Backstage entities running in Kubernetes. CPU, I/O, memory, network... all in real-time.
+documentation: https://github.com/jfvilas/plugin-kwirth-metrics
+iconUrl: https://raw.githubusercontent.com/jfvilas/plugin-kwirth-metrics/master/src/assets/kwirthmetrics-logo.png
+npmPackageName: '@jfvilas/plugin-kwirth-metrics'
+addedDate: 2025-07-30
