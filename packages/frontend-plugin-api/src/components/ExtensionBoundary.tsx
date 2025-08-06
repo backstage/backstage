@@ -29,6 +29,7 @@ import { AppNode } from '../apis';
 import { Progress } from '@backstage/core-components';
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
+import { ErrorBoundary as ErrorBoundaryComponent } from './DefaultAdaptableComponents';
 
 type RouteTrackerProps = PropsWithChildren<{
   enabled?: boolean;
@@ -67,9 +68,6 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 
   const plugin = node.spec.plugin;
 
-  // todo: fallback
-  const fallback = () => <div>Fallback</div>;
-
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
     extensionId: node.spec.id,
@@ -79,7 +77,7 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   return (
     <AppNodeProvider node={node}>
       <Suspense fallback={<Progress />}>
-        <ErrorBoundary plugin={plugin} Fallback={fallback}>
+        <ErrorBoundary plugin={plugin} Fallback={ErrorBoundaryComponent}>
           <AnalyticsContext attributes={attributes}>
             <RouteTracker enabled={hasRoutePathOutput}>{children}</RouteTracker>
           </AnalyticsContext>

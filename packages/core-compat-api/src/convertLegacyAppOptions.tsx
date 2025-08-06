@@ -27,6 +27,9 @@ import {
   RouterBlueprint,
   SignInPageBlueprint,
   ThemeBlueprint,
+  ErrorBoundary as AdaptableErrorBoundary,
+  NotFoundErrorPage as AdaptableNotFoundErrorPage,
+  Progress as AdaptableProgress,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -38,11 +41,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { toLegacyPlugin } from './compatWrapper/BackwardsCompatProvider';
 import { compatWrapper } from './compatWrapper';
-import {
-  ErrorBoundary as AdaptableErrorBoundary,
-  NotFoundErrorPage as AdaptableNotFoundErrorPage,
-  Progress as AdaptableProgress,
-} from '@backstage/frontend-plugin-api';
 
 function componentCompatWrapper<TProps extends {}>(
   Component: ComponentType<TProps>,
@@ -197,7 +195,6 @@ export function convertLegacyAppOptions(
             define({
               component: AdaptableErrorBoundary,
               loader: () =>
-                // todo: types + props lols
                 componentCompatWrapper(WrappedErrorBoundaryFallback),
             }),
         }),

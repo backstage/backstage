@@ -25,14 +25,10 @@ import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
-import { ComponentRef as ComponentRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
-import { CoreErrorBoundaryFallbackProps as CoreErrorBoundaryFallbackProps_2 } from '@backstage/frontend-plugin-api';
-import { CoreNotFoundErrorPageProps as CoreNotFoundErrorPageProps_2 } from '@backstage/frontend-plugin-api';
-import { CoreProgressProps as CoreProgressProps_2 } from '@backstage/frontend-plugin-api';
 import { createApiFactory } from '@backstage/core-plugin-api';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
@@ -958,11 +954,11 @@ export { errorApiRef };
 
 // @public (undocumented)
 export const ErrorBoundary: ((
-  props: CoreErrorBoundaryFallbackProps_2,
+  props: CoreErrorBoundaryFallbackProps,
 ) => JSX.Element) & {
-  ref: ComponentRef_2<
-    CoreErrorBoundaryFallbackProps_2,
-    CoreErrorBoundaryFallbackProps_2
+  ref: ComponentRef<
+    CoreErrorBoundaryFallbackProps,
+    CoreErrorBoundaryFallbackProps
   >;
 };
 
@@ -1623,12 +1619,9 @@ export const NavItemBlueprint: ExtensionBlueprint<{
 
 // @public (undocumented)
 export const NotFoundErrorPage: ((
-  props: CoreNotFoundErrorPageProps_2,
+  props: CoreNotFoundErrorPageProps,
 ) => JSX.Element) & {
-  ref: ComponentRef_2<
-    CoreNotFoundErrorPageProps_2,
-    CoreNotFoundErrorPageProps_2
-  >;
+  ref: ComponentRef<CoreNotFoundErrorPageProps, CoreNotFoundErrorPageProps>;
 };
 
 export { OAuthApi };
@@ -1716,8 +1709,8 @@ export { ProfileInfo };
 export { ProfileInfoApi };
 
 // @public (undocumented)
-export const Progress: ((props: CoreProgressProps_2) => JSX.Element) & {
-  ref: ComponentRef_2<CoreProgressProps_2, CoreProgressProps_2>;
+export const Progress: ((props: CoreProgressProps) => JSX.Element) & {
+  ref: ComponentRef<CoreProgressProps, CoreProgressProps>;
 };
 
 // @public
