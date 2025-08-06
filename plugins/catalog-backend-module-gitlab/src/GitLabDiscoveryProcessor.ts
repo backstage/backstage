@@ -102,7 +102,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     }
 
     const client = new GitLabClient({
-      config: integration.config,
+      integration: integration,
       logger: this.logger,
     });
     this.logger.debug(`Reading GitLab projects from ${location.target}`);

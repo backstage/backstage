@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// NOTE(freben): Intentionally uses node-fetch because of https://github.com/backstage/backstage/issues/28190
-import fetch, { Response } from 'node-fetch';
-
 import {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
@@ -41,10 +38,8 @@ import {
 import parseGitUrl from 'git-url-parse';
 import { trimEnd, trimStart } from 'lodash';
 import { Minimatch } from 'minimatch';
-import { Readable } from 'node:stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
-import { parseLastModified } from './util';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on GitLab.
@@ -89,14 +84,14 @@ export class GitlabUrlReader implements UrlReaderService {
 
     let response: Response;
     try {
-      response = await fetch(builtUrl, {
+      response = await this.integration.fetch(builtUrl, {
         headers: {
           ...getGitLabRequestOptions(this.integration.config, token).headers,
           ...(etag && !isArtifact && { 'If-None-Match': etag }),
           ...(lastModifiedAfter &&
             !isArtifact && {
-              'If-Modified-Since': lastModifiedAfter.toUTCString(),
-            }),
+            'If-Modified-Since': lastModifiedAfter.toUTCString(),
+          }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -115,12 +110,7 @@ export class GitlabUrlReader implements UrlReaderService {
     }
 
     if (response.ok) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-        etag: response.headers.get('ETag') ?? undefined,
-        lastModifiedAt: parseLastModified(
-          response.headers.get('Last-Modified'),
-        ),
-      });
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -155,7 +145,7 @@ export class GitlabUrlReader implements UrlReaderService {
     // Use GitLab API to get the default branch
     // encodeURIComponent is required for GitLab API
     // https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
-    const projectGitlabResponse = await fetch(
+    const projectGitlabResponse = await this.integration.fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
           repoFullName,
@@ -182,7 +172,7 @@ export class GitlabUrlReader implements UrlReaderService {
     if (!!filepath) {
       commitsReqParams.set('path', filepath);
     }
-    const commitsGitlabResponse = await fetch(
+    const commitsGitlabResponse = await this.integration.fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
           repoFullName,
@@ -218,23 +208,22 @@ export class GitlabUrlReader implements UrlReaderService {
       archiveReqParams.set('path', filepath);
     }
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
-    const archiveGitLabResponse = await fetch(
-      `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
+    const reqUrl = `${this.integration.config.apiBaseUrl
+      }/projects/${encodeURIComponent(
         repoFullName,
-      )}/repository/archive?${archiveReqParams.toString()}`,
-      {
-        ...getGitLabRequestOptions(this.integration.config, token),
-        // TODO(freben): The signal cast is there because pre-3.x versions of
-        // node-fetch have a very slightly deviating AbortSignal type signature.
-        // The difference does not affect us in practice however. The cast can
-        // be removed after we support ESM for CLI dependencies and migrate to
-        // version 3 of node-fetch.
-        // https://github.com/backstage/backstage/issues/8242
-        ...(signal && { signal: signal as any }),
-      },
-    );
+      )}/repository/archive?${archiveReqParams.toString()}`;
+    const archiveGitLabResponse = await this.integration.fetch(reqUrl, {
+      ...getGitLabRequestOptions(this.integration.config, token),
+      // TODO(freben): The signal cast is there because pre-3.x versions of
+      // node-fetch have a very slightly deviating AbortSignal type signature.
+      // The difference does not affect us in practice however. The cast can
+      // be removed after we support ESM for CLI dependencies and migrate to
+      // version 3 of node-fetch.
+      // https://github.com/backstage/backstage/issues/8242
+      ...(signal && { signal: signal as any }),
+    });
     if (!archiveGitLabResponse.ok) {
-      const message = `Failed to read tree (archive) from ${url}, ${archiveGitLabResponse.status} ${archiveGitLabResponse.statusText}`;
+      const message = `Failed to read tree (archive) from ${url}, ${reqUrl}, ${archiveGitLabResponse.status} ${archiveGitLabResponse.statusText}`;
       if (archiveGitLabResponse.status === 404) {
         throw new NotFoundError(message);
       }
@@ -242,7 +231,7 @@ export class GitlabUrlReader implements UrlReaderService {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: Readable.from(archiveGitLabResponse.body),
+      response: archiveGitLabResponse,
       subpath: filepath,
       etag: commitSha,
       filter: options?.filter,
@@ -337,74 +326,48 @@ export class GitlabUrlReader implements UrlReaderService {
     // If the target is for a job artifact then go down that path
     const targetUrl = new URL(target);
     if (targetUrl.pathname.includes('/-/jobs/artifacts/')) {
-      return this.getGitlabArtifactFetchUrl(targetUrl, token).then(value =>
+      return this.getGitlabArtifactFetchUrl(targetUrl).then(value =>
         value.toString(),
       );
     }
-    // Default to the old behavior of assuming the url is for a file
+    // Default to the optimized behavior - no API call needed for file URLs
     return getGitLabFileFetchUrl(target, this.integration.config, token);
   }
 
   // convert urls of the form:
   //    https://example.com/<namespace>/<project>/-/jobs/artifacts/<ref>/raw/<path_to_file>?job=<job_name>
   // to urls of the form:
-  //    https://example.com/api/v4/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
-  private async getGitlabArtifactFetchUrl(
-    target: URL,
-    token?: string,
-  ): Promise<URL> {
+  //    https://example.com/api/v4/projects/namespace%2Fproject/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
+  private getGitlabArtifactFetchUrl(target: URL): Promise<URL> {
     if (!target.pathname.includes('/-/jobs/artifacts/')) {
       throw new Error('Unable to process url as an GitLab artifact');
     }
     try {
       const [namespaceAndProject, ref] =
         target.pathname.split('/-/jobs/artifacts/');
-      const projectPath = new URL(target);
-      projectPath.pathname = namespaceAndProject;
-      const projectId = await this.resolveProjectToId(projectPath, token);
+
+      // Extract project path directly instead of making API call
       const relativePath = getGitLabIntegrationRelativePath(
         this.integration.config,
       );
+
+      let projectPath = namespaceAndProject;
+      // Check relative path exist and remove it
+      if (relativePath) {
+        projectPath = trimStart(projectPath, relativePath);
+      }
+      // Trim an initial / if it exists
+      projectPath = projectPath.replace(/^\//, '');
+
       const newUrl = new URL(target);
-      newUrl.pathname = `${relativePath}/api/v4/projects/${projectId}/jobs/artifacts/${ref}`;
-      return newUrl;
+      newUrl.pathname = `${relativePath}/api/v4/projects/${encodeURIComponent(
+        projectPath,
+      )}/jobs/artifacts/${ref}`;
+      return Promise.resolve(newUrl);
     } catch (e) {
       throw new Error(
         `Unable to translate GitLab artifact URL: ${target}, ${e}`,
       );
     }
-  }
-
-  private async resolveProjectToId(
-    pathToProject: URL,
-    token?: string,
-  ): Promise<number> {
-    let project = pathToProject.pathname;
-    // Check relative path exist and remove it if so
-    const relativePath = getGitLabIntegrationRelativePath(
-      this.integration.config,
-    );
-    if (relativePath) {
-      project = project.replace(relativePath, '');
-    }
-    // Trim an initial / if it exists
-    project = project.replace(/^\//, '');
-    const result = await fetch(
-      `${
-        pathToProject.origin
-      }${relativePath}/api/v4/projects/${encodeURIComponent(project)}`,
-      getGitLabRequestOptions(this.integration.config, token),
-    );
-    const data = await result.json();
-    if (!result.ok) {
-      if (result.status === 401) {
-        throw new Error(
-          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
-        );
-      }
-
-      throw new Error(`Gitlab error: ${data.error}, ${data.error_description}`);
-    }
-    return Number(data.id);
   }
 }
