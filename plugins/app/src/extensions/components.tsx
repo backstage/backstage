@@ -20,7 +20,12 @@ import {
   AdaptableComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
 
-import { Progress as ProgressComponent } from '@backstage/core-components';
+import {
+  ErrorPage,
+  ErrorPanel,
+  Progress as ProgressComponent,
+} from '@backstage/core-components';
+import Button from '@material-ui/core/Button';
 
 export const Progress = AdaptableComponentBlueprint.make({
   name: 'core.components.progress',
@@ -36,7 +41,8 @@ export const NotFoundErrorPage = AdaptableComponentBlueprint.make({
   params: define =>
     define({
       component: AdaptableNotFoundErrorPage,
-      loader: () => NotFoundErrorPageComponent,
+      loader: () => () =>
+        <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
     }),
 });
 
@@ -45,6 +51,16 @@ export const ErrorBoundary = AdaptableComponentBlueprint.make({
   params: define =>
     define({
       component: AdaptableErrorBoundary,
-      loader: () => ErrorBoundaryComponent,
+      loader: () => props => {
+        const { plugin, error, resetError } = props;
+        const title = `Error in ${plugin?.id}`;
+        return (
+          <ErrorPanel title={title} error={error} defaultExpanded>
+            <Button variant="outlined" onClick={resetError}>
+              Retry
+            </Button>
+          </ErrorPanel>
+        );
+      },
     }),
 });

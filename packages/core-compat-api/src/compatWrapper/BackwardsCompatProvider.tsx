@@ -27,6 +27,9 @@ import {
   iconsApiRef,
   useApi,
   routeResolutionApiRef,
+  ErrorBoundary,
+  NotFoundErrorPage,
+  Progress,
 } from '@backstage/frontend-plugin-api';
 import {
   AppComponents,
@@ -41,9 +44,6 @@ import {
   getOrCreateGlobalSingleton,
 } from '@backstage/version-bridge';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
-
-import { ErrorBoundary, NotFoundErrorPage } from '@backstage/plugin-app';
-import { Progress } from '@backstage/core-components';
 
 // Make sure that we only convert each new plugin instance to its legacy equivalent once
 const legacyPluginStore = getOrCreateGlobalSingleton(

@@ -13,16 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createAdaptableComponent } from '@backstage/frontend-plugin-api';
+import {
+  CoreErrorBoundaryFallbackProps,
+  CoreNotFoundErrorPageProps,
+  CoreProgressProps,
+  createAdaptableComponent,
+} from '@backstage/frontend-plugin-api';
 
-export const Progress = createAdaptableComponent({
+/**
+ * @public
+ */
+export const Progress = createAdaptableComponent<CoreProgressProps>({
   id: 'core.components.progress',
 });
 
-export const NotFoundErrorPage = createAdaptableComponent({
-  id: 'core.components.notFoundErrorPage',
-});
+/**
+ * @public
+ */
+export const NotFoundErrorPage =
+  createAdaptableComponent<CoreNotFoundErrorPageProps>({
+    id: 'core.components.notFoundErrorPage',
+  });
 
-export const ErrorBoundary = createAdaptableComponent({
-  id: 'core.components.errorBoundary',
-});
+/**
+ * @public
+ */
+export const ErrorBoundary =
+  createAdaptableComponent<CoreErrorBoundaryFallbackProps>({
+    id: 'core.components.errorBoundary',
+  });

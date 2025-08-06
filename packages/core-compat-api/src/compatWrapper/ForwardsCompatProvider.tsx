@@ -37,6 +37,9 @@ import {
   componentsApiRef,
   iconsApiRef,
   routeResolutionApiRef,
+  Progress,
+  NotFoundErrorPage,
+  ErrorBoundary,
 } from '@backstage/frontend-plugin-api';
 import { ComponentType, useMemo } from 'react';
 import { ReactNode } from 'react';
@@ -66,14 +69,28 @@ class CompatComponentsApi implements ComponentsApi {
     this.#ErrorBoundaryFallback = ErrorBoundaryFallback;
   }
 
-  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T> {
+  getComponent<
+    TInnerComponentProps extends {},
+    TExternalComponentProps extends {} = TInnerComponentProps,
+  >(
+    ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>,
+  ):
+    | (() => (props: TInnerComponentProps) => JSX.Element | null)
+    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
+    | undefined {
     switch (ref.id) {
-      case coreComponentRefs.progress.id:
-        return this.#Progress as ComponentType<any>;
-      case coreComponentRefs.notFoundErrorPage.id:
-        return this.#NotFoundErrorPage as ComponentType<any>;
-      case coreComponentRefs.errorBoundaryFallback.id:
-        return this.#ErrorBoundaryFallback as ComponentType<any>;
+      case Progress.ref.id:
+        return (() => this.#Progress) as () => (
+          props: object,
+        ) => JSX.Element | null;
+      case NotFoundErrorPage.ref.id:
+        return (() => this.#NotFoundErrorPage) as () => (
+          props: object,
+        ) => JSX.Element | null;
+      case ErrorBoundary.ref.id:
+        return (() => this.#ErrorBoundaryFallback) as () => (
+          props: object,
+        ) => JSX.Element | null;
       default:
         throw new Error(
           `No backwards compatible component is available for ref '${ref.id}'`,

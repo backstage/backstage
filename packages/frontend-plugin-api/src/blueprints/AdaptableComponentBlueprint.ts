@@ -27,6 +27,11 @@ export const componentDataRef = createExtensionDataRef<{
     | (() => Promise<(props: {}) => JSX.Element | null>);
 }>().with({ id: 'core.component.component' });
 
+/**
+ * Blueprint for creating adaptable components from a componentRef and a loader
+ *
+ * @public
+ */
 export const AdaptableComponentBlueprint = createExtensionBlueprint({
   kind: 'component',
   attachTo: { id: 'api:app/components', input: 'components' },

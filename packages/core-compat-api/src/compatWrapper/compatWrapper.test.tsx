@@ -16,13 +16,15 @@
 
 import {
   componentsApiRef,
-  coreComponentRefs,
   coreExtensionData,
   createExtension,
   iconsApiRef,
   useRouteRef as useNewRouteRef,
   createRouteRef as createNewRouteRef,
   useApi,
+  NotFoundErrorPage,
+  ErrorBoundary,
+  Progress,
 } from '@backstage/frontend-plugin-api';
 import {
   createExtensionTester,
@@ -97,13 +99,19 @@ describe('BackwardsCompatProvider', () => {
 
 describe('ForwardsCompatProvider', () => {
   it('should convert the app context', async () => {
+    const defaultComponentRefs = {
+      progress: Progress.ref,
+      notFoundErrorPage: NotFoundErrorPage.ref,
+      errorBoundary: ErrorBoundary.ref,
+    };
+
     function Component() {
       const components = useApi(componentsApiRef);
       const icons = useApi(iconsApiRef);
       return (
         <div data-testid="ctx">
           components:{' '}
-          {Object.entries(coreComponentRefs)
+          {Object.entries(defaultComponentRefs)
             .map(
               ([name, ref]) =>
                 `${name}=${Boolean(components.getComponent(ref))}`,

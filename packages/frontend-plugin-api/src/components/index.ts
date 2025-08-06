@@ -20,6 +20,7 @@ export {
 } from './ExtensionBoundary';
 export {
   createAdaptableComponent,
+  type CreateAdaptableComponentOptions,
   type ComponentRef,
 } from './createAdaptableComponent';
 export { useAppNode } from './AppNodeProvider';

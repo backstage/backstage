@@ -29,7 +29,12 @@ export type ComponentRef<
   $$type: '@backstage/ComponentRef';
 };
 
-export type ComponentRefOptions<
+/**
+ * Options for creating an AdaptableComponent.
+ *
+ * @public
+ */
+export type CreateAdaptableComponentOptions<
   TInnerComponentProps extends {},
   TExternalComponentProps extends {} = TInnerComponentProps,
 > = {
@@ -90,11 +95,19 @@ function makeComponentFromRef<
   return ComponentRefImpl;
 }
 
+/**
+ * Creates a AdaptableComponent that can be used to render the component, optionally overriden by the app.
+ *
+ * @public
+ */
 export function createAdaptableComponent<
   TInnerComponentProps extends {},
   TExternalComponentProps extends {} = TInnerComponentProps,
 >(
-  options: ComponentRefOptions<TInnerComponentProps, TExternalComponentProps>,
+  options: CreateAdaptableComponentOptions<
+    TInnerComponentProps,
+    TExternalComponentProps
+  >,
 ): ((props: TExternalComponentProps) => JSX.Element) & {
   ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>;
 } {

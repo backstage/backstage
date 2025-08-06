@@ -324,7 +324,9 @@ const appPlugin: FrontendPlugin<
           ConfigurableExtensionDataRef<
             {
               ref: ComponentRef;
-              impl: ComponentType;
+              loader:
+                | (() => (props: {}) => JSX.Element | null)
+                | (() => Promise<(props: {}) => JSX.Element | null>);
             },
             'core.component.component',
             {}
@@ -725,6 +727,138 @@ const appPlugin: FrontendPlugin<
       params: {
         element: JSX.Element;
       };
+    }>;
+    'component:app/core.components.errorBoundary': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core.components.errorBoundary';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          ref: ComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.component.component',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends ComponentRef<any>>(params: {
+        component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element)
+          : never;
+        loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element)
+          : never;
+        loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
+    'component:app/core.components.notFoundErrorPage': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core.components.notFoundErrorPage';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          ref: ComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.component.component',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends ComponentRef<any>>(params: {
+        component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element)
+          : never;
+        loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element)
+          : never;
+        loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
+    'component:app/core.components.progress': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core.components.progress';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          ref: ComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.component.component',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends ComponentRef<any>>(params: {
+        component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element)
+          : never;
+        loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element)
+          : never;
+        loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
     }>;
     'sign-in-page:app': ExtensionDefinition<{
       kind: 'sign-in-page';
