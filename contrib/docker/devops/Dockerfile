@@ -1,6 +1,6 @@
 ARG IMAGE_TAG=16-alpine
 
-FROM node:${IMAGE_TAG}
+FROM node:${IMAGE_TAG} #HAVE TO STUDY THIS SHIT 
 
 ARG APK_VIRTUAL_NAME=.backstage
 ARG VALE_INSTALL_URL="https://github.com/errata-ai/vale/releases/download/v2.10.2/vale_2.10.2_Linux_64-bit.tar.gz"
