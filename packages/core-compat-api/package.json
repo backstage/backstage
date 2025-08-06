@@ -31,10 +31,8 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/plugin-app": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "lodash": "^4.17.21"
