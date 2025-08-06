@@ -15,8 +15,8 @@
  */
 
 import {
-  ComponentRef,
-  ComponentsApi,
+  SwappableComponentRef,
+  SwappableComponentsApi,
   SwappableComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
 
@@ -25,7 +25,7 @@ import {
  *
  * @internal
  */
-export class DefaultComponentsApi implements ComponentsApi {
+export class DefaultSwappableComponentsApi implements SwappableComponentsApi {
   #components: Map<
     string,
     | (() => (props: object) => JSX.Element | null)
@@ -36,7 +36,7 @@ export class DefaultComponentsApi implements ComponentsApi {
   static fromComponents(
     components: Array<typeof SwappableComponentBlueprint.dataRefs.component.T>,
   ) {
-    return new DefaultComponentsApi(
+    return new DefaultSwappableComponentsApi(
       new Map(components.map(entry => [entry.ref.id, entry.loader])),
     );
   }
@@ -45,8 +45,8 @@ export class DefaultComponentsApi implements ComponentsApi {
     this.#components = components;
   }
 
-  getComponent(
-    ref: ComponentRef<any>,
+  getComponentLoader(
+    ref: SwappableComponentRef<any>,
   ):
     | (() => (props: object) => JSX.Element | null)
     | (() => Promise<(props: object) => JSX.Element | null>)

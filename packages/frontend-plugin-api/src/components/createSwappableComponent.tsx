@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { OpaqueComponentRef } from '@internal/frontend';
-import { componentsApiRef, useApi } from '../apis';
+import { OpaqueSwappableComponentRef } from '@internal/frontend';
+import { swappableComponentsApiRef, useApi } from '../apis';
 import { lazy, Suspense } from 'react';
 
 /** @public */
-export type ComponentRef<
+export type SwappableComponentRef<
   TInnerComponentProps extends {} = {},
   TExternalComponentProps extends {} = TInnerComponentProps,
 > = {
   id: string;
   TProps: TInnerComponentProps;
   TExternalProps: TExternalComponentProps;
-  $$type: '@backstage/ComponentRef';
+  $$type: '@backstage/SwappableComponentRef';
 };
 
 /**
@@ -47,7 +47,7 @@ export type CreateSwappableComponentOptions<
 
 const useComponentRefApi = () => {
   try {
-    return useApi(componentsApiRef);
+    return useApi(swappableComponentsApiRef);
   } catch (e) {
     return undefined;
   }
@@ -59,9 +59,9 @@ function makeComponentFromRef<
 >({
   ref,
 }: {
-  ref: ComponentRef<InternalComponentProps, ExternalComponentProps>;
+  ref: SwappableComponentRef<InternalComponentProps, ExternalComponentProps>;
 }): (props: ExternalComponentProps) => JSX.Element {
-  const internalRef = OpaqueComponentRef.toInternal(ref);
+  const internalRef = OpaqueSwappableComponentRef.toInternal(ref);
   const FallbackComponent = (p: JSX.IntrinsicAttributes) => (
     <div data-testid={ref.id} {...p} />
   );
@@ -69,7 +69,7 @@ function makeComponentFromRef<
   const ComponentRefImpl = (props: ExternalComponentProps) => {
     const api = useComponentRefApi();
     const ComponentOrPromise =
-      api?.getComponent<any>(ref)?.() ??
+      api?.getComponentLoader<any>(ref)?.() ??
       internalRef.loader?.() ??
       FallbackComponent;
 
@@ -108,25 +108,26 @@ export function createSwappableComponent<
     TInnerComponentProps,
     TExternalComponentProps
   >,
-): ((props: TExternalComponentProps) => JSX.Element) & {
-  ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>;
+): ((props: TExternalComponentProps) => JSX.Element | null) & {
+  ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>;
 } {
-  const ref = OpaqueComponentRef.createInstance('v1', {
+  const ref = OpaqueSwappableComponentRef.createInstance('v1', {
     id: options.id,
     TProps: null as unknown as TInnerComponentProps,
     TExternalProps: null as unknown as TExternalComponentProps,
     toString() {
-      return `ComponentRef{id=${options.id}}`;
+      return `SwappableComponentRef{id=${options.id}}`;
     },
-    loader: options.loader as (typeof OpaqueComponentRef.TInternal)['loader'],
+    loader:
+      options.loader as (typeof OpaqueSwappableComponentRef.TInternal)['loader'],
     transformProps:
-      options.transformProps as (typeof OpaqueComponentRef.TInternal)['transformProps'],
+      options.transformProps as (typeof OpaqueSwappableComponentRef.TInternal)['transformProps'],
   });
 
   const component = makeComponentFromRef({ ref });
   Object.assign(component, { ref });
 
   return component as {
-    ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>;
-  } & ((props: object) => JSX.Element);
+    ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>;
+  } & ((props: object) => JSX.Element | null);
 }

@@ -21,7 +21,7 @@ export {
 export {
   createSwappableComponent,
   type CreateSwappableComponentOptions,
-  type ComponentRef,
+  type SwappableComponentRef,
 } from './createSwappableComponent';
 export { useAppNode } from './AppNodeProvider';
 export * from './DefaultSwappableComponents';

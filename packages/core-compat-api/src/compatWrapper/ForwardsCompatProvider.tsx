@@ -22,8 +22,8 @@ import {
 } from '@backstage/core-plugin-api';
 import {
   AnyRouteRefParams,
-  ComponentRef,
-  ComponentsApi,
+  SwappableComponentRef,
+  SwappableComponentsApi,
   CoreErrorBoundaryFallbackProps,
   CoreNotFoundErrorPageProps,
   CoreProgressProps,
@@ -34,7 +34,7 @@ import {
   RouteRef,
   RouteResolutionApi,
   SubRouteRef,
-  componentsApiRef,
+  swappableComponentsApiRef,
   iconsApiRef,
   routeResolutionApiRef,
   Progress,
@@ -51,7 +51,7 @@ import { useVersionedContext } from '@backstage/version-bridge';
 import { type RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
-class CompatComponentsApi implements ComponentsApi {
+class CompatComponentsApi implements SwappableComponentsApi {
   readonly #Progress: ComponentType<CoreProgressProps>;
   readonly #NotFoundErrorPage: ComponentType<CoreNotFoundErrorPageProps>;
   readonly #ErrorBoundaryFallback: ComponentType<CoreErrorBoundaryFallbackProps>;
@@ -69,11 +69,11 @@ class CompatComponentsApi implements ComponentsApi {
     this.#ErrorBoundaryFallback = ErrorBoundaryFallback;
   }
 
-  getComponent<
+  getComponentLoader<
     TInnerComponentProps extends {},
     TExternalComponentProps extends {} = TInnerComponentProps,
   >(
-    ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>,
+    ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>,
   ):
     | (() => (props: TInnerComponentProps) => JSX.Element | null)
     | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
@@ -135,7 +135,7 @@ class CompatRouteResolutionApi implements RouteResolutionApi {
 }
 
 class ForwardsCompatApis implements ApiHolder {
-  readonly #componentsApi: ComponentsApi;
+  readonly #componentsApi: SwappableComponentsApi;
   readonly #iconsApi: IconsApi;
   readonly #routeResolutionApi: RouteResolutionApi;
 
@@ -146,7 +146,7 @@ class ForwardsCompatApis implements ApiHolder {
   }
 
   get<T>(ref: ApiRef<any>): T | undefined {
-    if (ref.id === componentsApiRef.id) {
+    if (ref.id === swappableComponentsApiRef.id) {
       return this.#componentsApi as T;
     } else if (ref.id === iconsApiRef.id) {
       return this.#iconsApi as T;

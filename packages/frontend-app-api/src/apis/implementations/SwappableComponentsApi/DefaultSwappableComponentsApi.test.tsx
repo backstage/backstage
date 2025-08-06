@@ -15,7 +15,7 @@
  */
 
 import { createSwappableComponent } from '@backstage/frontend-plugin-api';
-import { DefaultComponentsApi } from './DefaultComponentsApi';
+import { DefaultSwappableComponentsApi } from './DefaultSwappableComponentsApi';
 import { render, screen } from '@testing-library/react';
 
 const { ref: testRefA } = createSwappableComponent({ id: 'test.a' });
@@ -24,14 +24,16 @@ const { ref: testRefB2 } = createSwappableComponent({ id: 'test.b' });
 
 describe('DefaultComponentsApi', () => {
   it('should provide components', () => {
-    const api = DefaultComponentsApi.fromComponents([
+    const api = DefaultSwappableComponentsApi.fromComponents([
       {
         ref: testRefA,
         loader: () => () => <div>test.a</div>,
       },
     ]);
 
-    const ComponentA = api.getComponent(testRefA)?.() as () => JSX.Element;
+    const ComponentA = api.getComponentLoader(
+      testRefA,
+    )?.() as () => JSX.Element;
 
     render(<ComponentA />);
 
@@ -40,15 +42,20 @@ describe('DefaultComponentsApi', () => {
 
   it('should key extension refs by ID', () => {
     const mockLoader = jest.fn(() => <div>test.b</div>);
-    const api = DefaultComponentsApi.fromComponents([
+    const api = DefaultSwappableComponentsApi.fromComponents([
       {
         ref: testRefB1,
         loader: () => mockLoader,
       },
     ]);
 
-    const ComponentB2 = api.getComponent(testRefB2)?.() as () => JSX.Element;
-    const ComponentB1 = api.getComponent(testRefB1)?.() as () => JSX.Element;
+    const ComponentB2 = api.getComponentLoader(
+      testRefB2,
+    )?.() as () => JSX.Element;
+
+    const ComponentB1 = api.getComponentLoader(
+      testRefB1,
+    )?.() as () => JSX.Element;
 
     expect(ComponentB1).toBe(ComponentB2);
 

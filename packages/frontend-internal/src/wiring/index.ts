@@ -15,6 +15,6 @@
  */
 
 export { createExtensionDataContainer } from './createExtensionDataContainer';
-export { OpaqueComponentRef } from './InternalComponentRef';
+export { OpaqueSwappableComponentRef } from './InternalSwappableComponentRef';
 export { OpaqueExtensionDefinition } from './InternalExtensionDefinition';
 export { OpaqueFrontendPlugin } from './InternalFrontendPlugin';

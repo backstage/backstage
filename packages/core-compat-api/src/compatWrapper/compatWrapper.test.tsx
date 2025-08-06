@@ -15,7 +15,7 @@
  */
 
 import {
-  componentsApiRef,
+  swappableComponentsApiRef,
   coreExtensionData,
   createExtension,
   iconsApiRef,
@@ -106,7 +106,7 @@ describe('ForwardsCompatProvider', () => {
     };
 
     function Component() {
-      const components = useApi(componentsApiRef);
+      const components = useApi(swappableComponentsApiRef);
       const icons = useApi(iconsApiRef);
       return (
         <div data-testid="ctx">
@@ -114,7 +114,7 @@ describe('ForwardsCompatProvider', () => {
           {Object.entries(defaultComponentRefs)
             .map(
               ([name, ref]) =>
-                `${name}=${Boolean(components.getComponent(ref))}`,
+                `${name}=${Boolean(components.getComponentLoader(ref))}`,
             )
             .join(', ')}
           {'\n'}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentRef } from '../../components';
+import { SwappableComponentRef } from '../../components';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 /**
@@ -22,12 +22,12 @@ import { createApiRef } from '@backstage/core-plugin-api';
  *
  * @public
  */
-export interface ComponentsApi {
-  getComponent<
+export interface SwappableComponentsApi {
+  getComponentLoader<
     TInnerComponentProps extends {},
     TExternalComponentProps extends {} = TInnerComponentProps,
   >(
-    ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>,
+    ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>,
   ):
     | (() => (props: TInnerComponentProps) => JSX.Element | null)
     | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
@@ -35,10 +35,10 @@ export interface ComponentsApi {
 }
 
 /**
- * The `ApiRef` of {@link ComponentsApi}.
+ * The `ApiRef` of {@link SwappableComponentsApi}.
  *
  * @public
  */
-export const componentsApiRef = createApiRef<ComponentsApi>({
-  id: 'core.components',
+export const swappableComponentsApiRef = createApiRef<SwappableComponentsApi>({
+  id: 'core.swappableComponents',
 });

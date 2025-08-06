@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ComponentRef } from '../components';
+import { SwappableComponentRef } from '../components';
 import {
   createExtensionBlueprint,
   createExtensionBlueprintParams,
@@ -21,14 +21,14 @@ import {
 } from '../wiring';
 
 export const componentDataRef = createExtensionDataRef<{
-  ref: ComponentRef;
+  ref: SwappableComponentRef;
   loader:
     | (() => (props: {}) => JSX.Element | null)
     | (() => Promise<(props: {}) => JSX.Element | null>);
 }>().with({ id: 'core.component.component' });
 
 /**
- * Blueprint for creating swappable components from a componentRef and a loader
+ * Blueprint for creating swappable components from a SwappableComponentRef and a loader
  *
  * @public
  */
@@ -39,11 +39,14 @@ export const SwappableComponentBlueprint = createExtensionBlueprint({
   dataRefs: {
     component: componentDataRef,
   },
-  defineParams<Ref extends ComponentRef<any>>(params: {
-    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
-      ? { ref: Ref } & ((props: IExternalComponentProps) => JSX.Element)
+  defineParams<Ref extends SwappableComponentRef<any>>(params: {
+    component: Ref extends SwappableComponentRef<
+      any,
+      infer IExternalComponentProps
+    >
+      ? { ref: Ref } & ((props: IExternalComponentProps) => JSX.Element | null)
       : never;
-    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+    loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
       ?
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
           | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)

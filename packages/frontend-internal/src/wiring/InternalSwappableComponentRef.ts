@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ComponentRef } from '@backstage/frontend-plugin-api';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { OpaqueType } from '@internal/opaque';
 
-export const OpaqueComponentRef = OpaqueType.create<{
-  public: ComponentRef;
+export const OpaqueSwappableComponentRef = OpaqueType.create<{
+  public: SwappableComponentRef;
   versions: {
     readonly version: 'v1';
     readonly transformProps?: (props: object) => object;
@@ -28,5 +28,5 @@ export const OpaqueComponentRef = OpaqueType.create<{
   };
 }>({
   versions: ['v1'],
-  type: '@backstage/ComponentRef',
+  type: '@backstage/SwappableComponentRef',
 });

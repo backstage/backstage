@@ -350,34 +350,6 @@ export { bitbucketAuthApiRef };
 
 export { bitbucketServerAuthApiRef };
 
-// @public (undocumented)
-export type ComponentRef<
-  TInnerComponentProps extends {} = {},
-  TExternalComponentProps extends {} = TInnerComponentProps,
-> = {
-  id: string;
-  TProps: TInnerComponentProps;
-  TExternalProps: TExternalComponentProps;
-  $$type: '@backstage/ComponentRef';
-};
-
-// @public
-export interface ComponentsApi {
-  // (undocumented)
-  getComponent<
-    TInnerComponentProps extends {},
-    TExternalComponentProps extends {} = TInnerComponentProps,
-  >(
-    ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>,
-  ):
-    | (() => (props: TInnerComponentProps) => JSX.Element | null)
-    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
-    | undefined;
-}
-
-// @public
-export const componentsApiRef: ApiRef<ComponentsApi>;
-
 export { ConfigApi };
 
 export { configApiRef };
@@ -832,8 +804,8 @@ export function createSwappableComponent<
     TInnerComponentProps,
     TExternalComponentProps
   >,
-): ((props: TExternalComponentProps) => JSX.Element) & {
-  ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>;
+): ((props: TExternalComponentProps) => JSX.Element | null) & {
+  ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>;
 };
 
 // @public
@@ -901,8 +873,8 @@ export { errorApiRef };
 // @public (undocumented)
 export const ErrorBoundary: ((
   props: CoreErrorBoundaryFallbackProps,
-) => JSX.Element) & {
-  ref: ComponentRef<
+) => JSX.Element | null) & {
+  ref: SwappableComponentRef<
     CoreErrorBoundaryFallbackProps,
     CoreErrorBoundaryFallbackProps
   >;
@@ -1566,8 +1538,11 @@ export const NavItemBlueprint: ExtensionBlueprint<{
 // @public (undocumented)
 export const NotFoundErrorPage: ((
   props: CoreNotFoundErrorPageProps,
-) => JSX.Element) & {
-  ref: ComponentRef<CoreNotFoundErrorPageProps, CoreNotFoundErrorPageProps>;
+) => JSX.Element | null) & {
+  ref: SwappableComponentRef<
+    CoreNotFoundErrorPageProps,
+    CoreNotFoundErrorPageProps
+  >;
 };
 
 export { OAuthApi };
@@ -1655,8 +1630,8 @@ export { ProfileInfo };
 export { ProfileInfoApi };
 
 // @public (undocumented)
-export const Progress: ((props: CoreProgressProps) => JSX.Element) & {
-  ref: ComponentRef<CoreProgressProps, CoreProgressProps>;
+export const Progress: ((props: CoreProgressProps) => JSX.Element | null) & {
+  ref: SwappableComponentRef<CoreProgressProps, CoreProgressProps>;
 };
 
 // @public
@@ -1854,24 +1829,30 @@ export interface SubRouteRef<
 // @public
 export const SwappableComponentBlueprint: ExtensionBlueprint<{
   kind: 'component';
-  params: <Ref extends ComponentRef<any>>(params: {
-    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+  params: <Ref extends SwappableComponentRef<any>>(params: {
+    component: Ref extends SwappableComponentRef<
+      any,
+      infer IExternalComponentProps
+    >
       ? {
           ref: Ref;
-        } & ((props: IExternalComponentProps) => JSX.Element)
+        } & ((props: IExternalComponentProps) => JSX.Element | null)
       : never;
-    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+    loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
       ?
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
           | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
       : never;
   }) => ExtensionBlueprintParams<{
-    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+    component: Ref extends SwappableComponentRef<
+      any,
+      infer IExternalComponentProps
+    >
       ? {
           ref: Ref;
-        } & ((props: IExternalComponentProps) => JSX.Element)
+        } & ((props: IExternalComponentProps) => JSX.Element | null)
       : never;
-    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+    loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
       ?
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
           | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
@@ -1879,7 +1860,7 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
   }>;
   output: ExtensionDataRef<
     {
-      ref: ComponentRef;
+      ref: SwappableComponentRef;
       loader:
         | (() => (props: {}) => JSX.Element | null)
         | (() => Promise<(props: {}) => JSX.Element | null>);
@@ -1893,7 +1874,7 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
   dataRefs: {
     component: ConfigurableExtensionDataRef<
       {
-        ref: ComponentRef;
+        ref: SwappableComponentRef;
         loader:
           | (() => (props: {}) => JSX.Element | null)
           | (() => Promise<(props: {}) => JSX.Element | null>);
@@ -1903,6 +1884,34 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
     >;
   };
 }>;
+
+// @public (undocumented)
+export type SwappableComponentRef<
+  TInnerComponentProps extends {} = {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+> = {
+  id: string;
+  TProps: TInnerComponentProps;
+  TExternalProps: TExternalComponentProps;
+  $$type: '@backstage/SwappableComponentRef';
+};
+
+// @public
+export interface SwappableComponentsApi {
+  // (undocumented)
+  getComponentLoader<
+    TInnerComponentProps extends {},
+    TExternalComponentProps extends {} = TInnerComponentProps,
+  >(
+    ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>,
+  ):
+    | (() => (props: TInnerComponentProps) => JSX.Element | null)
+    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
+    | undefined;
+}
+
+// @public
+export const swappableComponentsApiRef: ApiRef<SwappableComponentsApi>;
 
 // @public
 export const ThemeBlueprint: ExtensionBlueprint<{
