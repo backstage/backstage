@@ -17,7 +17,6 @@
 import { createAdaptableComponent } from '@backstage/frontend-plugin-api';
 import { DefaultComponentsApi } from './DefaultComponentsApi';
 import { render, screen } from '@testing-library/react';
-import { getJSDocOverrideTagNoCache } from 'typescript';
 
 const { ref: testRefA } = createAdaptableComponent({ id: 'test.a' });
 const { ref: testRefB1 } = createAdaptableComponent({ id: 'test.b' });

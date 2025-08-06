@@ -17,9 +17,9 @@ These are the [extension blueprints](../architecture/23-extension-blueprints.md)
 
 An API extension is used to add or override [Utility API factories](../utility-apis/01-index.md) in the app. They are commonly used by plugins for both internal and shared APIs. There are also many built-in Api extensions provided by the framework that you are able to override.
 
-### Component - [Reference](../../reference/frontend-plugin-api.createcomponentextension.md)
+### AdaptableComponent - [Reference](../../reference/frontend-plugin-api.adaptablecomponentblueprint.md)
 
-Components extensions are used to override the component associated with a component reference throughout the app. This uses an extension creator function rather than a blueprint, but will likely be migrated to a blueprint in the future.
+Adaptable Components are extensions that are used to override implementation of components in the app and plugins.
 
 ### NavItem - [Reference](../../reference/frontend-plugin-api.navitemblueprint.md)
 
