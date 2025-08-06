@@ -214,7 +214,7 @@ export async function createRouter(
           let cursor: Cursor | undefined;
 
           try {
-            let currentWrite: Promise<boolean> | undefined = undefined;
+            let currentWrite: Promise<'ok' | 'closed'> | undefined = undefined;
             do {
               const result = await entitiesCatalog.queryEntities(
                 !cursor
@@ -230,7 +230,7 @@ export async function createRouter(
               );
 
               // Wait for previous write to complete
-              if (await currentWrite) {
+              if ((await currentWrite) === 'closed') {
                 return; // Client closed connection
               }
 

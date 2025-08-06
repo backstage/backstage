@@ -16,7 +16,7 @@
 
 import { Response } from 'express';
 import { EntitiesResponseItems } from '../../catalog/types';
-import { JsonValue } from '@backstage/types';
+import { createDeferred, DeferredPromise, JsonValue } from '@backstage/types';
 import { NotFoundError } from '@backstage/errors';
 import { processEntitiesResponseItems } from './process';
 
@@ -50,6 +50,8 @@ export async function writeEntitiesResponse(options: {
   alwaysUseObjectMode?: boolean;
 }) {
   const { res, responseWrapper, alwaysUseObjectMode } = options;
+  const writer = createResponseDataWriter(res);
+
   const items = alwaysUseObjectMode
     ? processEntitiesResponseItems(options.items, e => e)
     : options.items;
@@ -83,7 +85,7 @@ export async function writeEntitiesResponse(options: {
     const prefix = first ? '[' : ',';
     first = false;
 
-    if (await writeResponseData(res, prefix + entity)) {
+    if ((await writer(prefix + entity)) === 'closed') {
       return;
     }
   }
@@ -91,32 +93,55 @@ export async function writeEntitiesResponse(options: {
 }
 
 /**
- * Writes a data to the response and waits if the response buffer needs draining.
+ * Creates a data writer that writes to the response and waits if the response
+ * buffer needs draining.
  *
  * @internal
- * @returns true if the response was closed while waiting for the buffer to drain
+ * @returns A writer function. If a write attempt returns 'closed', the
+ * connection has become closed prematurely and the caller should stop trying to
+ * write.
  */
-export async function writeResponseData(res: Response, data: string | Buffer) {
-  const ok = res.write(data, 'utf8');
-  if (!ok) {
-    if (res.closed) {
-      return true;
+export function createResponseDataWriter(
+  res: Response,
+): (data: string | Buffer) => Promise<'ok' | 'closed'> {
+  // See https://github.com/backstage/backstage/issues/30659
+  //
+  // This code goes to some lengths to just add listeners once at the top,
+  // instead of on every need to drain. Hence it is more complex that seems to
+  // be necessary, just to avoid listener leaks.
+
+  let drainPromise: DeferredPromise<'ok'> | undefined;
+
+  const closePromise = new Promise<'closed'>(resolve => {
+    function onClose() {
+      res.off('drain', onDrain);
+      res.off('close', onClose);
+      resolve('closed');
     }
-    const closed = await new Promise<boolean>(resolve => {
-      function onContinue() {
-        res.off('drain', onContinue);
-        res.off('close', onClose);
-        resolve(false);
-      }
-      function onClose() {
-        res.off('drain', onContinue);
-        res.off('close', onClose);
-        resolve(true);
-      }
-      res.on('drain', onContinue);
-      res.on('close', onClose);
-    });
-    return closed;
-  }
-  return false;
+    function onDrain() {
+      drainPromise?.resolve('ok');
+      drainPromise = undefined;
+    }
+    res.on('drain', onDrain);
+    res.on('close', onClose);
+  });
+
+  return async data => {
+    if (drainPromise) {
+      throw new Error(
+        'Attempted overlapping write while waiting for previous write to drain',
+      );
+    }
+
+    if (res.write(data, 'utf8')) {
+      return 'ok';
+    }
+
+    if (res.closed) {
+      return 'closed';
+    }
+
+    drainPromise = createDeferred();
+    return Promise.race([drainPromise, closePromise]);
+  };
 }

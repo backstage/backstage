@@ -16,10 +16,10 @@
 
 import { EntitiesResponseItems } from '../../catalog/types';
 import { Response } from 'express';
-import { writeResponseData } from './write';
+import { createResponseDataWriter } from './write';
 
 export interface EntityArrayJsonStream {
-  send(entities: EntitiesResponseItems): Promise<boolean>;
+  send(entities: EntitiesResponseItems): Promise<'ok' | 'closed'>;
   complete(): void;
   close(): void;
 }
@@ -28,6 +28,8 @@ export interface EntityArrayJsonStream {
 export function createEntityArrayJsonStream(
   res: Response,
 ): EntityArrayJsonStream {
+  const writer = createResponseDataWriter(res);
+
   // Imitate the httpRouter behavior of pretty-printing in development
   const prettyPrint = process.env.NODE_ENV === 'development';
   let firstSend = true;
@@ -46,11 +48,11 @@ export function createEntityArrayJsonStream(
           const prefix = firstSend ? '[' : ',';
           firstSend = false;
 
-          if (await writeResponseData(res, prefix + item)) {
-            return true;
+          if ((await writer(prefix + item)) === 'closed') {
+            return 'closed';
           }
         }
-        return false;
+        return 'ok';
       }
 
       let data: string;
@@ -63,7 +65,7 @@ export function createEntityArrayJsonStream(
       }
 
       firstSend = false;
-      return writeResponseData(res, data);
+      return writer(data);
     },
     complete() {
       if (firstSend) {
