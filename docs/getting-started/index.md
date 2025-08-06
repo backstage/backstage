@@ -90,7 +90,7 @@ app
   don't add any npm dependencies here as they probably should be installed in
   the intended workspace rather than in the root._
 - **packages/**: Lerna leaf packages or "workspaces". Everything here is going
-  to be a separate package, managed by lerna.
+  to be a separate package, managed by [lerna](https://lerna.js.org/).
 - **packages/app/**: A fully functioning Backstage frontend app that acts as a
   good starting point for you to get to know Backstage.
 - **packages/backend/**: We include a backend that helps power features such as
