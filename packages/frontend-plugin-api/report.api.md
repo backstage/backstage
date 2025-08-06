@@ -12,6 +12,7 @@ import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-pl
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api/src/apis/system/types';
 import { ApiRefConfig } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
@@ -24,10 +25,14 @@ import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
+import { ComponentRef as ComponentRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
+import { CoreErrorBoundaryFallbackProps as CoreErrorBoundaryFallbackProps_2 } from '@backstage/frontend-plugin-api';
+import { CoreNotFoundErrorPageProps as CoreNotFoundErrorPageProps_2 } from '@backstage/frontend-plugin-api';
+import { CoreProgressProps as CoreProgressProps_2 } from '@backstage/frontend-plugin-api';
 import { createApiFactory } from '@backstage/core-plugin-api';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
@@ -93,6 +98,59 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 import { withApis } from '@backstage/core-plugin-api';
 import { z } from 'zod';
+
+// @public
+export const AdaptableComponentBlueprint: ExtensionBlueprint<{
+  kind: 'component';
+  params: <Ref extends ComponentRef<any>>(params: {
+    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+      ? {
+          ref: Ref;
+        } & ((props: IExternalComponentProps) => JSX.Element)
+      : never;
+    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+      ?
+          | (() => (props: IInnerComponentProps) => JSX.Element | null)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
+      : never;
+  }) => ExtensionBlueprintParams<{
+    component: Ref extends ComponentRef<any, infer IExternalComponentProps>
+      ? {
+          ref: Ref;
+        } & ((props: IExternalComponentProps) => JSX.Element)
+      : never;
+    loader: Ref extends ComponentRef<infer IInnerComponentProps, any>
+      ?
+          | (() => (props: IInnerComponentProps) => JSX.Element | null)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
+      : never;
+  }>;
+  output: ExtensionDataRef<
+    {
+      ref: ComponentRef;
+      loader:
+        | (() => (props: {}) => JSX.Element | null)
+        | (() => Promise<(props: {}) => JSX.Element | null>);
+    },
+    'core.component.component',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef<
+      {
+        ref: ComponentRef;
+        loader:
+          | (() => (props: {}) => JSX.Element | null)
+          | (() => Promise<(props: {}) => JSX.Element | null>);
+      },
+      'core.component.component',
+      {}
+    >;
+  };
+}>;
 
 export { AlertApi };
 
@@ -351,19 +409,32 @@ export { bitbucketAuthApiRef };
 export { bitbucketServerAuthApiRef };
 
 // @public (undocumented)
-export type ComponentRef<T extends {} = {}> = {
+export type ComponentRef<
+  TInnerComponentProps extends {} = {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+> = {
   id: string;
-  T: T;
+  TProps: TInnerComponentProps;
+  TExternalProps: TExternalComponentProps;
+  $$type: '@backstage/ComponentRef';
 };
 
 // @public
 export interface ComponentsApi {
   // (undocumented)
-  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T>;
+  getComponent<
+    TInnerComponentProps extends {},
+    TExternalComponentProps extends {} = TInnerComponentProps,
+  >(
+    ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>,
+  ):
+    | (() => (props: TInnerComponentProps) => JSX.Element | null)
+    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
+    | undefined;
 }
 
 // @public
-export const componentsApiRef: ApiRef<ComponentsApi>;
+export const componentsApiRef: ApiRef_2<ComponentsApi>;
 
 export { ConfigApi };
 
@@ -388,13 +459,6 @@ export interface ConfigurableExtensionDataRef<
     }
   >;
 }
-
-// @public (undocumented)
-export const coreComponentRefs: {
-  progress: ComponentRef<CoreProgressProps>;
-  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageProps>;
-  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackProps>;
-};
 
 // @public (undocumented)
 export type CoreErrorBoundaryFallbackProps = {
@@ -426,64 +490,34 @@ export type CoreNotFoundErrorPageProps = {
 // @public (undocumented)
 export type CoreProgressProps = {};
 
+// @public
+export function createAdaptableComponent<
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+>(
+  options: CreateAdaptableComponentOptions<
+    TInnerComponentProps,
+    TExternalComponentProps
+  >,
+): ((props: TExternalComponentProps) => JSX.Element) & {
+  ref: ComponentRef<TInnerComponentProps, TExternalComponentProps>;
+};
+
+// @public
+export type CreateAdaptableComponentOptions<
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+> = {
+  id: string;
+  loader?:
+    | (() => (props: TInnerComponentProps) => JSX.Element | null)
+    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>);
+  transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
+};
+
 export { createApiFactory };
 
 export { createApiRef };
-
-// @public (undocumented)
-export function createComponentExtension<TProps extends {}>(options: {
-  ref: ComponentRef<TProps>;
-  name?: string;
-  disabled?: boolean;
-  loader:
-    | {
-        lazy: () => Promise<ComponentType<TProps>>;
-      }
-    | {
-        sync: () => ComponentType<TProps>;
-      };
-}): ExtensionDefinition<{
-  config: {};
-  configInput: {};
-  output: ExtensionDataRef<
-    {
-      ref: ComponentRef;
-      impl: ComponentType;
-    },
-    'core.component.component',
-    {}
-  >;
-  inputs: {
-    [x: string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
-  };
-  params: never;
-  kind: 'component';
-  name: string;
-}>;
-
-// @public (undocumented)
-export namespace createComponentExtension {
-  const // (undocumented)
-    componentDataRef: ConfigurableExtensionDataRef<
-      {
-        ref: ComponentRef;
-        impl: ComponentType;
-      },
-      'core.component.component',
-      {}
-    >;
-}
-
-// @public (undocumented)
-export function createComponentRef<T extends {} = {}>(options: {
-  id: string;
-}): ComponentRef<T>;
 
 // @public (undocumented)
 export function createExtension<
@@ -921,6 +955,16 @@ export { ErrorApiError };
 export { ErrorApiErrorContext };
 
 export { errorApiRef };
+
+// @public (undocumented)
+export const ErrorBoundary: ((
+  props: CoreErrorBoundaryFallbackProps_2,
+) => JSX.Element) & {
+  ref: ComponentRef_2<
+    CoreErrorBoundaryFallbackProps_2,
+    CoreErrorBoundaryFallbackProps_2
+  >;
+};
 
 // @public (undocumented)
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -1577,6 +1621,16 @@ export const NavItemBlueprint: ExtensionBlueprint<{
   };
 }>;
 
+// @public (undocumented)
+export const NotFoundErrorPage: ((
+  props: CoreNotFoundErrorPageProps_2,
+) => JSX.Element) & {
+  ref: ComponentRef_2<
+    CoreNotFoundErrorPageProps_2,
+    CoreNotFoundErrorPageProps_2
+  >;
+};
+
 export { OAuthApi };
 
 export { OAuthRequestApi };
@@ -1660,6 +1714,11 @@ export type PortableSchema<TOutput, TInput = TOutput> = {
 export { ProfileInfo };
 
 export { ProfileInfoApi };
+
+// @public (undocumented)
+export const Progress: ((props: CoreProgressProps_2) => JSX.Element) & {
+  ref: ComponentRef_2<CoreProgressProps_2, CoreProgressProps_2>;
+};
 
 // @public
 export type ResolvedExtensionInput<
@@ -1928,11 +1987,6 @@ export { useApiHolder };
 
 // @public
 export function useAppNode(): AppNode | undefined;
-
-// @public
-export function useComponentRef<T extends {}>(
-  ref: ComponentRef<T>,
-): ComponentType<T>;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

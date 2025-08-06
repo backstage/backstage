@@ -733,7 +733,7 @@ const appPlugin: FrontendPlugin<
       name: 'core.components.errorBoundary';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           ref: ComponentRef;
           loader:
@@ -777,7 +777,7 @@ const appPlugin: FrontendPlugin<
       name: 'core.components.notFoundErrorPage';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           ref: ComponentRef;
           loader:
@@ -821,7 +821,7 @@ const appPlugin: FrontendPlugin<
       name: 'core.components.progress';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           ref: ComponentRef;
           loader:
