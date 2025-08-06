@@ -21606,12 +21606,12 @@ __metadata:
   linkType: hard
 
 "@types/inquirer@npm:^8.1.3":
-  version: 8.2.11
-  resolution: "@types/inquirer@npm:8.2.11"
+  version: 8.2.12
+  resolution: "@types/inquirer@npm:8.2.12"
   dependencies:
     "@types/through": "npm:*"
     rxjs: "npm:^7.2.0"
-  checksum: 10/3648c8b76fa9d49e1b4e06a42ab5df00e4fdf9e498056b73d0154dcf46388f8ba034a80d7a45fcae7e7c6499ba24376bd4772ad4dfd3a7a9763413b4ee1ab393
+  checksum: 10/b382693011a5f33c92ac1f90a16f3d6fa600c2a294433ca5dc65ab108eccd658b9293e968c34a738ef60d5cd1f2f150ebef7da731aa302201d9978abad1fcb94
   languageName: node
   linkType: hard
 
