@@ -17,6 +17,7 @@
 import { createAdaptableComponent } from '@backstage/frontend-plugin-api';
 import { DefaultComponentsApi } from './DefaultComponentsApi';
 import { render, screen } from '@testing-library/react';
+import { getJSDocOverrideTagNoCache } from 'typescript';
 
 const { ref: testRefA } = createAdaptableComponent({ id: 'test.a' });
 const { ref: testRefB1 } = createAdaptableComponent({ id: 'test.b' });
@@ -39,19 +40,20 @@ describe('DefaultComponentsApi', () => {
   });
 
   it('should key extension refs by ID', () => {
+    const mockLoader = jest.fn(() => <div>test.b</div>);
     const api = DefaultComponentsApi.fromComponents([
       {
         ref: testRefB1,
-        loader: () => () => <div>test.b</div>,
+        loader: () => mockLoader,
       },
     ]);
 
-    const ComponentB1 = api.getComponent(testRefB1)?.() as () => JSX.Element;
     const ComponentB2 = api.getComponent(testRefB2)?.() as () => JSX.Element;
+    const ComponentB1 = api.getComponent(testRefB1)?.() as () => JSX.Element;
 
     expect(ComponentB1).toBe(ComponentB2);
 
-    render(<ComponentB2 />);
+    render(<ComponentB1 />);
 
     expect(screen.getByText('test.b')).toBeInTheDocument();
   });

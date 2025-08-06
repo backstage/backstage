@@ -126,7 +126,7 @@ describe('ForwardsCompatProvider', () => {
     await renderInOldTestApp(compatWrapper(<Component />));
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "components: progress=true, notFoundErrorPage=true, errorBoundaryFallback=true
+      "components: progress=true, notFoundErrorPage=true, errorBoundary=true
       icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning, star, unstarred"
     `);
   });
