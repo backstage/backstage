@@ -51,8 +51,8 @@ import {
 import { MyApiImpl } from './MyApiImpl';
 
 const myApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: myApiRef,
       deps: {
         configApi: configApiRef,

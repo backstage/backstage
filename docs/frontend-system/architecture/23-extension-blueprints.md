@@ -18,7 +18,7 @@ The following is a simple example of how one might use the blueprint `make` meth
 ```tsx
 const myPageExtension = PageBlueprint.make({
   params: {
-    defaultPath: '/my-page',
+    path: '/my-page',
     loader: () => import('./components/MyPage').then(m => <m.MyPage />),
   },
 });
@@ -26,7 +26,7 @@ const myPageExtension = PageBlueprint.make({
 
 The returned `myPageExtension` is an extension which is ready to be used in a plugin. It is the same type of object as is returned by the lower level `createExtension` function.
 
-## Creating an extension from a blueprint with overrides
+### Creating an extension from a blueprint with overrides
 
 Every extension blueprint also provides a `makeWithOverrides` method. It is useful in cases where you want to provide additional integration points for an extension created with a blueprint. You might for example want to define additional inputs or configuration schema, or use the existing configuration to dynamically compute the parameters passed to the blueprint.
 
@@ -34,22 +34,34 @@ The following is an example of how one might use the blueprint `makeWithOverride
 
 ```tsx
 const myPageExtension = PageBlueprint.makeWithOverrides({
+  // This defines additional configuration options for the extension.
   config: {
     schema: {
       layout: z => z.enum(['grid', 'rows']).default('grid'),
     },
   },
-  // The original blueprint factory is provided as the first argument
-  factory(originalFactory, { config }) {
+  // This defines additional inputs for the extension.
+  inputs: {
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
+  },
+  // The original blueprint factory is provided as the first argument.
+  // By convention the name is `originalFactory`, but you can also pick a different name.
+  factory(originalFactory, { config, inputs }) {
     // Call and forward the result from the original factory, providing
     // the blueprint parameters as the first argument.
     return originalFactory({
-      defaultPath: '/my-page',
+      path: '/my-page',
       loader: () =>
         import('./components/MyPage').then(m => (
           // We can now access values from the factory context when providing
-          // the blueprint parameters, such as config values.
-          <m.MyPage layout={config.layout} />
+          // the blueprint parameters, such as config values and inputs.
+          <m.MyPage
+            layout={config.layout}
+            content={inputs.content?.get(coreExtensionData.reactElement)}
+          />
         )),
     });
   },
@@ -58,18 +70,18 @@ const myPageExtension = PageBlueprint.makeWithOverrides({
 
 When using `makeWithOverrides`, we no longer pass the blueprint parameters directly. Instead, we provide a `factory` function that receives the original blueprint factory as the first argument, and the extension factory context as the second. We can then call the original blueprint factory with the blueprint parameters and forward the result as the return value of out factory. Notice that when passing the blueprint parameters using this pattern we have access to a lot more information than when using the `make` method, at the cost of being more complex.
 
-Apart from the addition of the blueprint parameters of the first argument to the original factory function, the `makeWithOverrides` method works the same way as [extension overrides](./25-extension-overrides.md). All the same options and rules apply, including the ability to define additional inputs, override outputs, and so on. We therefore defer to the [extension overrides](./25-extension-overrides.md) documentation for more information on how to use the `makeWithOverrides` method.
+Apart from the addition of the blueprint parameters of the first argument to the original factory function, the `makeWithOverrides` method works the same way as [extension overrides](./25-extension-overrides.md). All the same options and rules apply, including the ability to define additional inputs, override outputs, and so on. For more details and examples on how this works, please refer to the [extension overrides](./25-extension-overrides.md) documentation. The patterns in that section also apply to the creation of extensions with the `makeWithOverrides` method.
 
 ### Creating an extension from a blueprint with advanced parameter types
 
-Some blueprints may be defined with something known as "advanced parameter types". This is a feature that enables type inference and transform of the blueprint parameters, and the way that you pass the parameters look a little bit different. Rather than passing the parameters directly, they are instead passed as a callback function of the form `define => define(<params>)`.
+Some blueprints may be defined with something known as "advanced parameter types". This is a feature that enables type inference and transform of the blueprint parameters, and the way that you pass the parameters look a little bit different. Rather than passing the parameters directly, they are instead passed as a callback function of the form `defineParams => defineParams(<params>)`.
 
 An example of a blueprint that uses advanced parameter types is the `ApiBlueprint` blueprint. Using it to create a simple implementation for the `AlertApi` might look like this:
 
 ```ts
 const alertApiBlueprint = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: alertApiRef,
       deps: {},
       factory: () => new MyAlertApi(),
@@ -82,8 +94,8 @@ This also works with `makeWithOverrides`, where the define callback is passed as
 ```ts
 const alertApiBlueprint = ApiBlueprint.makeWithOverrides({
   factory(originalFactory, { config }) {
-    return originalFactory(define =>
-      define({
+    return originalFactory(defineParams =>
+      defineParams({
         api: alertApiRef,
         deps: {},
         factory: () => new MyAlertApi(config),
@@ -101,7 +113,7 @@ The following is an example of how one might create a new extension blueprint:
 
 ```tsx
 export interface MyWidgetBlueprintParams {
-  defaultTitle: string;
+  title: string;
   element: JSX.Element;
 }
 
@@ -119,7 +131,7 @@ export const MyWidgetBlueprint = createExtensionBlueprint({
       // Note that while this is a valid pattern, you might often want to
       // return separate pieces of data instead, more on that below.
       coreExtensionData.reactElement(
-        <MyWidgetContainer title={config.title ?? params.defaultTitle}>
+        <MyWidgetContainer title={config.title ?? params.title}>
           {params.element}
         </MyWidgetContainer>,
       ),
@@ -175,7 +187,7 @@ To do that, we create a new extension data reference for our widget title. This 
 
 ```tsx
 export interface MyWidgetBlueprintParams {
-  defaultTitle: string;
+  title: string;
   element: JSX.Element;
 }
 
@@ -194,7 +206,7 @@ export const MyWidgetBlueprint = createExtensionBlueprint({
   output: [widgetTitleRef, coreExtensionData.reactElement],
   factory(params: MyWidgetBlueprintParams, { config }) {
     return [
-      widgetTitleRef(config.title ?? params.defaultTitle),
+      widgetTitleRef(config.title ?? params.title),
       coreExtensionData.reactElement(params.element),
     ];
   },

@@ -1,5 +1,108 @@
 # @backstage/frontend-plugin-api
 
+## 0.11.0-next.1
+
+### Minor Changes
+
+- c5f88b5: **BREAKING**: Remove deprecated `source` property from the `AppNodeSpec` type, use `AppNodeSpec.plugin` instead.
+- e4ddf22: **BREAKING**: The `defaultPath` param of `PageBlueprint` has been renamed to `path`. This change does not affect the compatibility of extensions created with older versions of this blueprint.
+- 37f2989: **BREAKING**: Removed the `routable` property from `ExtensionBoundary`. This property was never needed in practice and is instead inferred from whether or not the extension outputs a route reference. It can be safely removed.
+- 3243fa6: **BREAKING**: Removed the ability to define a default extension `name` in blueprints. This option had no practical purpose as blueprints already use the `kind` to identity the source of the extension.
+- a082429: **BREAKING**: The separate `RouteResolutionApiResolveOptions` type has been removed.
+- 5d31d66: **BREAKING**: In an attempt to align some of the API's around providing components to `Blueprints`, we've renamed the parameters for both the `RouterBlueprint` and `AppRootWrapperBlueprint` from `Component` to `component`.
+
+  ```tsx
+  // old
+  RouterBlueprint.make({
+    params: {
+      Component: ({ children }) => <div>{children}</div>,
+    },
+  });
+
+  // new
+  RouterBlueprint.make({
+    params: {
+      component: ({ children }) => <div>{children}</div>,
+    },
+  });
+  ```
+
+  ```tsx
+  // old
+  AppRootWrapperBlueprint.make({
+    params: {
+      Component: ({ children }) => <div>{children}</div>,
+    },
+  });
+
+  // new
+  AppRootWrapperBlueprint.make({
+    params: {
+      component: ({ children }) => <div>{children}</div>,
+    },
+  });
+  ```
+
+  As part of this change, the type for `component` has also changed from `ComponentType<PropsWithChildren<{}>>` to `(props: { children: ReactNode }) => JSX.Element | null` which is not breaking, just a little more reflective of the actual expected component.
+
+- 45ead4a: **BREAKING**: The `AnyRoutes` and `AnyExternalRoutes` types have been removed and their usage has been inlined instead.
+
+  Existing usage can be replaced according to their previous definitions:
+
+  ```ts
+  type AnyRoutes = { [name in string]: RouteRef | SubRouteRef };
+  type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
+  ```
+
+- 121899a: **BREAKING**: The `element` param for `AppRootElementBlueprint` no longer accepts a component. If you are currently passing a component such as `element: () => <MyComponent />` or `element: MyComponent`, simply switch to `element: <MyComponent />`.
+- a321f3b: **BREAKING**: The `CommonAnalyticsContext` has been removed, and inlined into `AnalyticsContextValue` instead.
+
+### Patch Changes
+
+- d9e00e3: Add support for a new `aliasFor` option for `createRouteRef`. This allows for the creation of a new route ref that acts as an alias for an existing route ref that is installed in the app. This is particularly useful when creating modules that override existing plugin pages, without referring to the existing plugin. For example:
+
+  ```tsx
+  export default createFrontendModule({
+    pluginId: 'catalog',
+    extensions: [
+      PageBlueprint.make({
+        params: {
+          defaultPath: '/catalog',
+          routeRef: createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+          loader: () =>
+            import('./CustomCatalogIndexPage').then(m => (
+              <m.CustomCatalogIndexPage />
+            )),
+        },
+      }),
+    ],
+  });
+  ```
+
+- 93b5e38: Plugins should now use the new `AnalyticsImplementationBlueprint` to define and provide concrete analytics implementations. For example:
+
+  ```ts
+  import { AnalyticsImplementationBlueprint } from '@backstage/frontend-plugin-api';
+
+  const AcmeAnalytics = AnalyticsImplementationBlueprint.make({
+    name: 'acme-analytics',
+    params: define =>
+      define({
+        deps: { config: configApiRef },
+        factory: ({ config }) => AcmeAnalyticsImpl.fromConfig(config),
+      }),
+  });
+  ```
+
+- 948de17: Tweaked the return types from `createExtension` and `createExtensionBlueprint` to avoid the forwarding of `ConfigurableExtensionDataRef` into exported types.
+- 147482b: Updated the recommended naming of the blueprint param callback from `define` to `defineParams`, making the syntax `defineParams => defineParams(...)`.
+- 3c3c882: Added added defaults for all type parameters of `ExtensionDataRef` and deprecated `AnyExtensionDataRef`, as it is now redundant.
+- Updated dependencies
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.11.0-next.0
 
 ### Minor Changes

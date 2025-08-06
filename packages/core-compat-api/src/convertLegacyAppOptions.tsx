@@ -76,7 +76,7 @@ export function convertLegacyAppOptions(
   const extensions: ExtensionDefinition[] = deduplicatedApis.map(factory =>
     ApiBlueprint.make({
       name: factory.api.id,
-      params: define => define(factory),
+      params: defineParams => defineParams(factory),
     }),
   );
 
@@ -139,7 +139,7 @@ export function convertLegacyAppOptions(
     if (Router) {
       extensions.push(
         RouterBlueprint.make({
-          params: { Component: componentCompatWrapper(Router) },
+          params: { component: componentCompatWrapper(Router) },
         }),
       );
     }

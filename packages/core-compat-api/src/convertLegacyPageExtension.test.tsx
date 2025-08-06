@@ -75,7 +75,7 @@ describe('convertLegacyPageExtension', () => {
 
     const converted = convertLegacyPageExtension(LegacyExtension, {
       name: 'other',
-      defaultPath: '/other',
+      path: '/other',
     });
 
     const tester = createExtensionTester(converted);

@@ -23,9 +23,9 @@ export type ExtensionDataValue<TData, TId extends string> = {
 
 /** @public */
 export type ExtensionDataRef<
-  TData,
+  TData = unknown,
   TId extends string = string,
-  TConfig extends { optional?: true } = {},
+  TConfig extends { optional?: true } = { optional?: true },
 > = {
   readonly $$type: '@backstage/ExtensionDataRef';
   readonly id: TId;
@@ -39,12 +39,11 @@ export type ExtensionDataRefToValue<TDataRef extends AnyExtensionDataRef> =
     ? ExtensionDataValue<IData, IId>
     : never;
 
-/** @public */
-export type AnyExtensionDataRef = ExtensionDataRef<
-  unknown,
-  string,
-  { optional?: true }
->;
+/**
+ * @deprecated Use `ExtensionDataRef` without type parameters instead.
+ * @public
+ */
+export type AnyExtensionDataRef = ExtensionDataRef;
 
 /** @public */
 export interface ConfigurableExtensionDataRef<

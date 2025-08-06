@@ -89,7 +89,7 @@ const exampleExtension = PageBlueprint.make({
   params: {
     loader: () =>
       import('./components/ExamplePage').then(m => <m.ExamplePage />),
-    defaultPath: '/example',
+    path: '/example',
   },
 });
 ```
@@ -318,7 +318,7 @@ import {
 
 const customSearchPage = PageBlueprint.make({
   params: {
-    defaultPath: '/search',
+    path: '/search',
     loader: () =>
       import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
   },

@@ -17,7 +17,6 @@
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   AlertApiForwarder,
-  NoOpAnalyticsApi,
   ErrorApiForwarder,
   ErrorAlerter,
   GoogleAuth,
@@ -40,7 +39,6 @@ import {
 
 import {
   alertApiRef,
-  analyticsApiRef,
   errorApiRef,
   discoveryApiRef,
   fetchApiRef,
@@ -70,12 +68,13 @@ import {
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
 import { DefaultDialogApi } from './apis/DefaultDialogApi';
+import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
   ApiBlueprint.make({
     name: 'dialog',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: dialogApiRef,
         deps: {},
         factory: () => new DefaultDialogApi(),
@@ -83,8 +82,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'discovery',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: discoveryApiRef,
         deps: { configApi: configApiRef },
         factory: ({ configApi }) =>
@@ -95,26 +94,18 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'alert',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: alertApiRef,
         deps: {},
         factory: () => new AlertApiForwarder(),
       }),
   }),
-  ApiBlueprint.make({
-    name: 'analytics',
-    params: define =>
-      define({
-        api: analyticsApiRef,
-        deps: {},
-        factory: () => new NoOpAnalyticsApi(),
-      }),
-  }),
+  analyticsApi,
   ApiBlueprint.make({
     name: 'error',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: errorApiRef,
         deps: { alertApi: alertApiRef },
         factory: ({ alertApi }) => {
@@ -126,8 +117,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'storage',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: storageApiRef,
         deps: { errorApi: errorApiRef },
         factory: ({ errorApi }) => WebStorage.create({ errorApi }),
@@ -135,8 +126,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'fetch',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: fetchApiRef,
         deps: {
           configApi: configApiRef,
@@ -160,8 +151,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'oauth-request',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: oauthRequestApiRef,
         deps: {},
         factory: () => new OAuthRequestManager(),
@@ -169,8 +160,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'google-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: googleAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -188,8 +179,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'microsoft-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: microsoftAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -207,8 +198,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'github-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: githubAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -227,8 +218,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'okta-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: oktaAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -246,8 +237,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'gitlab-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: gitlabAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -265,8 +256,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'onelogin-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: oneloginAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -284,8 +275,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'bitbucket-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: bitbucketAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -304,8 +295,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'bitbucket-server-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: bitbucketServerAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -324,8 +315,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'atlassian-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: atlassianAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -344,8 +335,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'vmware-cloud-auth',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: vmwareCloudAuthApiRef,
         deps: {
           discoveryApi: discoveryApiRef,
@@ -364,8 +355,8 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'permission',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: permissionApiRef,
         deps: {
           discovery: discoveryApiRef,
@@ -378,12 +369,12 @@ export const apis = [
   }),
   ApiBlueprint.make({
     name: 'scm-auth',
-    params: define => define(ScmAuth.createDefaultApiFactory()),
+    params: defineParams => defineParams(ScmAuth.createDefaultApiFactory()),
   }),
   ApiBlueprint.make({
     name: 'scm-integrations',
-    params: define =>
-      define({
+    params: defineParams =>
+      defineParams({
         api: scmIntegrationsApiRef,
         deps: { configApi: configApiRef },
         factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),

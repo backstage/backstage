@@ -15,9 +15,13 @@
  */
 
 import ReactDOM from 'react-dom/client';
-import { createPublicSignInApp } from '@backstage/frontend-defaults';
+import { createApp } from '@backstage/frontend-defaults';
+import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
+
 import '@backstage/ui/css/styles.css';
 
-const app = createPublicSignInApp();
+const app = createApp({
+  features: [appModulePublicSignIn],
+});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());

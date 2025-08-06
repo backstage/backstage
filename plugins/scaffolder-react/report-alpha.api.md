@@ -14,6 +14,7 @@ import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
@@ -135,11 +136,10 @@ export const Form: (
 // @alpha
 export const FormDecoratorBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-decorator';
-  name: undefined;
   params: {
     decorator: ScaffolderFormDecorator;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     ScaffolderFormDecorator,
     'scaffolder.form-decorator-loader',
     {}
@@ -165,11 +165,10 @@ export interface FormField {
 // @alpha
 export const FormFieldBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-field';
-  name: undefined;
   params: {
     field: () => Promise<FormField>;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     () => Promise<FormField>,
     'scaffolder.form-field-loader',
     {}
@@ -209,7 +208,7 @@ export type FormFieldExtensionData<
 export const formFieldsApi: ExtensionDefinition<{
   config: {};
   configInput: {};
-  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
   inputs: {
     formFields: ExtensionInput<
       ConfigurableExtensionDataRef<

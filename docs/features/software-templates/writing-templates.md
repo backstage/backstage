@@ -366,7 +366,7 @@ your first set of parameter fields would be shown. The same goes for the nested 
 spec. Make sure to use the key `backstage:featureFlag` in your templates if
 you want to use this functionality.
 
-Feature Flags cannot be used in `spec.steps[].if`(the conditional on whether to execute an step/action). But you can use feature flags to display parameters that allow for skipping steps.
+Feature Flags cannot be used in `spec.steps[].if`(the conditional on whether to execute a step/action). But you can use feature flags to display parameters that allow for skipping steps.
 
 ```yaml
 spec:
@@ -807,7 +807,7 @@ Have in mind that changes in this form will not be saved on the template and is 
 
 ### Custom Field Explorer
 
-The custom filed explorer allows you to select any custom field loaded on the backstage instance and test different values and configurations.
+The custom field explorer allows you to select any custom field loaded on the backstage instance and test different values and configurations.
 
 ## Presentation
 

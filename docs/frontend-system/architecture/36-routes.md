@@ -47,7 +47,7 @@ import { indexRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
   // The `name` option is omitted because this is an index page
-  defaultPath: '/entities',
+  path: '/entities',
   // highlight-next-line
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
@@ -197,7 +197,7 @@ import {
 import { indexRouteRef, createComponentExternalRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
-  defaultPath: '/entities',
+  path: '/entities',
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
@@ -404,7 +404,7 @@ import {
 import { indexRouteRef, detailsSubRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
-  defaultPath: '/entities',
+  path: '/entities',
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
@@ -418,4 +418,43 @@ export default createFrontendPlugin({
   },
   extensions: [catalogIndexPage],
 });
+```
+
+## Route Aliases - Overriding Routed Extensions in Modules
+
+It is possible to [override extensions of a plugin using a module](./25-extension-overrides.md#creating-a-frontend-module). In some cases the extension you're overriding may require a route reference. You could import import the plugin instance and access the it via the `routes` property, but this creates a direct dependency on the plugin and risks leading to package duplication issues that would also break the route reference.
+
+Instead of accessing the route reference directly, you can create a new route reference that acts as an alias for the original one from the plugin. For example, you can override the catalog index page with a custom one like this:
+
+```tsx
+const indexRouteRef = createRouteRef({ aliasFor: 'catalog.catalogIndex' });
+
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [
+    PageBlueprint.make({
+      params: {
+        defaultPath: '/catalog',
+        routeRef: indexRouteRef,
+        loader: () =>
+          import('./CustomCatalogIndexPage').then(m => (
+            <m.CustomCatalogIndexPage />
+          )),
+      },
+    }),
+  ],
+});
+```
+
+Aliases are limited to the plugin that they are defined in. These aliases can also be imported and used as usual with for example `useRouteRef`, but they must always be registered in the app via an extension for this to work. For example, the following will not work:
+
+```tsx
+function MyInvalidComponent() {
+  // This is NOT valid
+  const link = useRouteRef(
+    createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+  );
+
+  // ...
+}
 ```

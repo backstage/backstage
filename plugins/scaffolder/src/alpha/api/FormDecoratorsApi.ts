@@ -57,8 +57,8 @@ export const formDecoratorsApi = ApiBlueprint.makeWithOverrides({
       e.get(FormDecoratorBlueprint.dataRefs.formDecoratorLoader),
     );
 
-    return originalFactory(define =>
-      define({
+    return originalFactory(defineParams =>
+      defineParams({
         api: formDecoratorsApiRef,
         deps: {},
         factory: () =>

@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.4-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/plugin-catalog-common@1.1.5
+
 ## 0.13.4-next.1
 
 ### Patch Changes

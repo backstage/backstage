@@ -21,7 +21,7 @@ import {
 
 export const ExamplePage = PageBlueprint.make({
   params: {
-    defaultPath: '/example',
+    path: '/example',
     loader: () => import('./Component').then(m => <m.Component />),
   },
 });

@@ -21,16 +21,13 @@ import {
   resolveInputOverrides,
 } from './resolveInputOverrides';
 import { createExtensionDataContainer } from '@internal/frontend';
-import {
-  AnyExtensionDataRef,
-  ExtensionDataValue,
-} from './createExtensionDataRef';
+import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
 import { z } from 'zod';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 import { ExtensionDataContainer } from './types';
-import { ExtensionBlueprintParamsDefiner } from './createExtensionBlueprint';
+import { ExtensionBlueprintDefineParams } from './createExtensionBlueprint';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -44,7 +41,7 @@ export const ctxParamsSymbol = Symbol('params');
  */
 export type ResolvedExtensionInput<
   TExtensionInput extends ExtensionInput<any, any>,
-> = TExtensionInput['extensionData'] extends Array<AnyExtensionDataRef>
+> = TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
   ? {
       node: AppNode;
     } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
@@ -91,7 +88,7 @@ type JoinStringUnion<
 
 /** @ignore */
 export type VerifyExtensionFactoryOutput<
-  UDeclaredOutput extends AnyExtensionDataRef,
+  UDeclaredOutput extends ExtensionDataRef,
   UFactoryOutput extends ExtensionDataValue<any, any>,
 > = (
   UDeclaredOutput extends any
@@ -120,10 +117,10 @@ export type ExtensionAttachToSpec =
 export type CreateExtensionOptions<
   TKind extends string | undefined,
   TName extends string | undefined,
-  UOutput extends AnyExtensionDataRef,
+  UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   },
@@ -155,14 +152,14 @@ export type ExtensionDefinitionParameters = {
   name?: string;
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
-  output?: AnyExtensionDataRef;
+  output?: ExtensionDataRef;
   inputs?: {
     [KName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   };
-  params?: object | ExtensionBlueprintParamsDefiner;
+  params?: object | ExtensionBlueprintDefineParams;
 };
 
 /**
@@ -170,14 +167,14 @@ export type ExtensionDefinitionParameters = {
  * It can't be exported because it breaks API reports.
  * @ignore
  */
-type AnyParamsInput<TParams extends object | ExtensionBlueprintParamsDefiner> =
-  TParams extends ExtensionBlueprintParamsDefiner<infer IParams>
+type AnyParamsInput<TParams extends object | ExtensionBlueprintDefineParams> =
+  TParams extends ExtensionBlueprintDefineParams<infer IParams>
     ? IParams | ((define: TParams) => ReturnType<TParams>)
     :
         | TParams
         | ((
-            define: ExtensionBlueprintParamsDefiner<TParams, TParams>,
-          ) => ReturnType<ExtensionBlueprintParamsDefiner<TParams, TParams>>);
+            define: ExtensionBlueprintDefineParams<TParams, TParams>,
+          ) => ReturnType<ExtensionBlueprintDefineParams<TParams, TParams>>);
 
 /** @public */
 export type ExtensionDefinition<
@@ -191,10 +188,10 @@ export type ExtensionDefinition<
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
-    UNewOutput extends AnyExtensionDataRef,
+    UNewOutput extends ExtensionDataRef,
     TExtraInputs extends {
       [inputName in string]: ExtensionInput<
-        AnyExtensionDataRef,
+        ExtensionDataRef,
         { optional: boolean; singleton: boolean }
       >;
     },
@@ -228,10 +225,10 @@ export type ExtensionDefinition<
               } & ([T['params']] extends [never]
                 ? {}
                 : {
-                    params?: TFactoryParamsReturn extends ExtensionBlueprintParamsDefiner
+                    params?: TFactoryParamsReturn extends ExtensionBlueprintDefineParams
                       ? TFactoryParamsReturn
-                      : T['params'] extends ExtensionBlueprintParamsDefiner
-                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+                      : T['params'] extends ExtensionBlueprintDefineParams
+                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
                       : Partial<T['params']>;
                   })
             >,
@@ -250,15 +247,15 @@ export type ExtensionDefinition<
       } & ([T['params']] extends [never]
         ? {}
         : {
-            params?: TParamsInput extends ExtensionBlueprintParamsDefiner
+            params?: TParamsInput extends ExtensionBlueprintDefineParams
               ? TParamsInput
-              : T['params'] extends ExtensionBlueprintParamsDefiner
-              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(define => define(<params>))`'
+              : T['params'] extends ExtensionBlueprintDefineParams
+              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
               : Partial<T['params']>;
           })
     > &
       VerifyExtensionFactoryOutput<
-        AnyExtensionDataRef extends UNewOutput
+        ExtensionDataRef extends UNewOutput
           ? NonNullable<T['output']>
           : UNewOutput,
         UFactoryOutput
@@ -266,7 +263,7 @@ export type ExtensionDefinition<
   ): ExtensionDefinition<{
     kind: T['kind'];
     name: T['name'];
-    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
     inputs: T['inputs'] & TExtraInputs;
     config: T['config'] & {
       [key in keyof TExtensionConfigSchema]: z.infer<
@@ -286,10 +283,10 @@ export type ExtensionDefinition<
 
 /** @public */
 export function createExtension<
-  UOutput extends AnyExtensionDataRef,
+  UOutput extends ExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
   },
@@ -319,7 +316,14 @@ export function createExtension<
           [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
         }>
       >;
-  output: UOutput;
+  // This inference and remapping back to ExtensionDataRef eliminates any occurrences ConfigurationExtensionDataRef
+  output: UOutput extends ExtensionDataRef<
+    infer IData,
+    infer IId,
+    infer IConfig
+  >
+    ? ExtensionDataRef<IData, IId, IConfig>
+    : never;
   inputs: TInputs;
   params: never;
   kind: string | undefined extends TKind ? undefined : TKind;
@@ -410,7 +414,7 @@ export function createExtension<
         disabled: overrideOptions.disabled ?? options.disabled,
         inputs: { ...overrideOptions.inputs, ...options.inputs },
         output: (overrideOptions.output ??
-          options.output) as AnyExtensionDataRef[],
+          options.output) as ExtensionDataRef[],
         config:
           options.config || overrideOptions.config
             ? {

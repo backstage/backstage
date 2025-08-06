@@ -4,7 +4,7 @@
 
 **BREAKING**: The `ApiBlueprint` has been updated to use the new advanced type parameters through the new `defineParams` blueprint option. This is an immediate breaking change that requires all existing usages of `ApiBlueprint` to switch to the new callback format. Existing extensions created with the old format are still compatible with the latest version of the plugin API however, meaning that this does not break existing plugins.
 
-To update existing usages of `ApiBlueprint`, you remove the outer level of the `params` object and replace `createApiFactory(...)` with `define => define(...)`.
+To update existing usages of `ApiBlueprint`, you remove the outer level of the `params` object and replace `createApiFactory(...)` with `defineParams => defineParams(...)`.
 
 For example, the following old usage:
 
@@ -28,8 +28,8 @@ is migrated to the following:
 ```ts
 ApiBlueprint.make({
   name: 'error',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: errorApiRef,
       deps: { alertApi: alertApiRef },
       factory: ({ alertApi }) => {

@@ -82,8 +82,8 @@ describe('convertLegacyEntityContentExtension', () => {
 
     const converted = convertLegacyEntityContentExtension(LegacyExtension, {
       name: 'other',
-      defaultPath: '/other',
-      defaultTitle: 'Other',
+      path: '/other',
+      title: 'Other',
       filter: 'my-filter',
     });
 

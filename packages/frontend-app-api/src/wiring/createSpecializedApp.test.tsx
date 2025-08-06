@@ -144,8 +144,8 @@ describe('createSpecializedApp', () => {
               ],
             }),
             ApiBlueprint.make({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   api: featureFlagsApiRef,
                   deps: {},
                   factory: () =>
@@ -253,8 +253,8 @@ describe('createSpecializedApp', () => {
           pluginId: 'first',
           extensions: [
             ApiBlueprint.make({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   api: analyticsApiRef,
                   deps: {},
                   factory: () => {
@@ -294,8 +294,8 @@ describe('createSpecializedApp', () => {
               },
             }),
             ApiBlueprint.make({
-              params: define =>
-                define({
+              params: defineParams =>
+                defineParams({
                   api: analyticsApiRef,
                   deps: {},
                   factory: mockAnalyticsApi,
@@ -691,7 +691,7 @@ describe('createSpecializedApp', () => {
 
       await expect(plugin.info()).rejects.toThrow(errorMsg);
 
-      const installedPlugin = app.tree.nodes.get('test')?.spec.source;
+      const installedPlugin = app.tree.nodes.get('test')?.spec.plugin;
       expect(installedPlugin).toBeDefined();
       const info = await installedPlugin?.info();
       expect(info).toEqual({});
@@ -707,7 +707,7 @@ describe('createSpecializedApp', () => {
       });
 
       const app = createSpecializedApp({ features: [plugin] });
-      const info = await app.tree.nodes.get('test')?.spec.source?.info();
+      const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toMatchObject({
         packageName: '@backstage/frontend-app-api',
       });
@@ -730,7 +730,7 @@ describe('createSpecializedApp', () => {
       });
 
       const app = createSpecializedApp({ features: [overriddenPlugin] });
-      const info = await app.tree.nodes.get('test')?.spec.source?.info();
+      const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toMatchObject({
         packageName: 'test-override',
       });
@@ -754,7 +754,7 @@ describe('createSpecializedApp', () => {
       });
 
       const app = createSpecializedApp({ features: [plugin] });
-      const info = await app.tree.nodes.get('test')?.spec.source?.info();
+      const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toEqual({
         packageName: '@backstage/frontend-app-api',
         version: expect.any(String),
@@ -782,7 +782,7 @@ describe('createSpecializedApp', () => {
           return { info: { packageName: `decorated:${info.packageName}` } };
         },
       });
-      const info = await app.tree.nodes.get('test')?.spec.source?.info();
+      const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toEqual({
         packageName: 'decorated:@backstage/frontend-app-api',
       });

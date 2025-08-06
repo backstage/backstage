@@ -12,6 +12,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
@@ -62,11 +63,7 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -79,11 +76,7 @@ const _default: FrontendPlugin<
     'api:scaffolder/form-decorators': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         formDecorators: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -110,11 +103,7 @@ const _default: FrontendPlugin<
     'api:scaffolder/form-fields': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         formFields: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -152,21 +141,21 @@ const _default: FrontendPlugin<
         title?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
             {
               optional: true;
             }
           >
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
             {
               optional: true;
             }
           >
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<
             () => IconLinkVerticalProps,
             'entity-icon-link-props',
             {}
@@ -182,7 +171,7 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -206,9 +195,9 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -231,7 +220,8 @@ const _default: FrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -241,7 +231,7 @@ const _default: FrontendPlugin<
       name: 'repo-url-picker';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         () => Promise<FormField>,
         'scaffolder.form-field-loader',
         {}
@@ -271,7 +261,7 @@ export class DefaultScaffolderFormDecoratorsApi
 export const formDecoratorsApi: ExtensionDefinition<{
   config: {};
   configInput: {};
-  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
   inputs: {
     formDecorators: ExtensionInput<
       ConfigurableExtensionDataRef<

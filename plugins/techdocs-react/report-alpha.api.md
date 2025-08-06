@@ -6,17 +6,13 @@
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 
 // @alpha
 export const AddonBlueprint: ExtensionBlueprint<{
   kind: 'addon';
-  name: undefined;
   params: TechDocsAddonOptions;
-  output: ConfigurableExtensionDataRef<
-    TechDocsAddonOptions,
-    'techdocs.addon',
-    {}
-  >;
+  output: ExtensionDataRef<TechDocsAddonOptions, 'techdocs.addon', {}>;
   inputs: {};
   config: {};
   configInput: {};

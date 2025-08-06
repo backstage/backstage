@@ -16,10 +16,7 @@
 
 import { Fragment } from 'react';
 import { Link, MemoryRouter } from 'react-router-dom';
-import {
-  createSpecializedApp,
-  FrontendFeature,
-} from '@backstage/frontend-app-api';
+import { createSpecializedApp } from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -33,6 +30,7 @@ import {
   RouterBlueprint,
   NavItemBlueprint,
   createFrontendPlugin,
+  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
 
@@ -160,7 +158,7 @@ export function renderInTestApp(
     }),
     RouterBlueprint.make({
       params: {
-        Component: ({ children }) => (
+        component: ({ children }) => (
           <MemoryRouter initialEntries={options?.initialRouteEntries}>
             {children}
           </MemoryRouter>
