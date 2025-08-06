@@ -323,7 +323,7 @@ export interface AppTree {
 
 // @public
 export interface AppTreeApi {
-  getNodesByRoutePath(sourcePath: string): {
+  getNodesByRoutePath(routePath: string): {
     nodes: AppNode[];
   };
   getTree(): {

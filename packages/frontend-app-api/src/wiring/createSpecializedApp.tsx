@@ -128,10 +128,10 @@ class AppTreeApiProxy implements AppTreeApi {
     return { tree: this.tree };
   }
 
-  getNodesByRoutePath(sourcePath: string): { nodes: AppNode[] } {
+  getNodesByRoutePath(routePath: string): { nodes: AppNode[] } {
     this.checkIfInitialized();
 
-    let path = sourcePath;
+    let path = routePath;
     if (path.startsWith(this.appBasePath)) {
       path = path.slice(this.appBasePath.length);
     }
