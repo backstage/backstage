@@ -306,6 +306,24 @@ export interface Config {
        * @visibility secret
        */
       commitSigningKey?: string;
+      /**
+       * Maximum number of retries for failed requests.
+       * @default 0
+       * @visibility frontend
+       */
+      maxRetries?: number;
+      /**
+       * HTTP status codes that should trigger a retry.
+       * @default []
+       * @visibility frontend
+       */
+      retryStatusCodes?: number[];
+      /**
+       * Rate limit for requests per minute. Set to -1 to disable throttling.
+       * @default -1
+       * @visibility frontend
+       */
+      limitPerMinute?: number;
     }>;
 
     /** Integration configuration for Google Cloud Storage */

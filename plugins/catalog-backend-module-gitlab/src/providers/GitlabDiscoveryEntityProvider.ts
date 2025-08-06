@@ -15,6 +15,7 @@
  */
 
 import {
+  CacheService,
   LoggerService,
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -38,6 +39,7 @@ import {
   paginated,
   readGitlabConfigs,
 } from '../lib';
+import { CacheManager } from '@backstage/backend-defaults/cache';
 
 import * as path from 'path';
 
@@ -65,6 +67,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly events?: EventsService;
   private readonly gitLabClient: GitLabClient;
+  private readonly cache: CacheService;
 
   static fromConfig(
     config: Config,
@@ -82,6 +85,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     const providerConfigs = readGitlabConfigs(config);
     const integrations = ScmIntegrations.fromConfig(config).gitlab;
     const providers: GitlabDiscoveryEntityProvider[] = [];
+    const pluginCache =
+      CacheManager.fromConfig(config).forPlugin('gitlab-discovery');
 
     providerConfigs.forEach(providerConfig => {
       const integration = integrations.byHost(providerConfig.host);
@@ -107,6 +112,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
           config: providerConfig,
           integration,
           taskRunner,
+          pluginCache,
         }),
       );
     });
@@ -125,6 +131,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     logger: LoggerService;
     events?: EventsService;
     taskRunner: SchedulerServiceTaskRunner;
+    pluginCache: CacheService;
   }) {
     this.config = options.config;
     this.integration = options.integration;
@@ -132,15 +139,20 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
+    this.cache = options.pluginCache;
     this.events = options.events;
     this.gitLabClient = new GitLabClient({
-      config: this.integration.config,
+      integration: this.integration,
       logger: this.logger,
     });
   }
 
   getProviderName(): string {
     return `GitlabDiscoveryEntityProvider:${this.config.id}`;
+  }
+
+  private getCacheKey(key: string): string {
+    return `provider/${this.getProviderName()}/${key}`;
   }
 
   async connect(connection: EntityProviderConnection): Promise<void> {
@@ -207,6 +219,19 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
+    const currentTime = new Date().toISOString();
+    // Get the last refresh time from cache
+    const lastRefreshKey = this.getCacheKey('lastRefresh');
+    const lastRefresh = await this.cache.get(lastRefreshKey);
+    const lastRefreshTime = lastRefresh as string | undefined;
+
+    logger.info(
+      `Starting refresh${
+        lastRefreshTime ? ` since ${lastRefreshTime}` : ' (full scan)'
+      }`,
+    );
+
+    // Get projects with last_activity_after filter if we have a last refresh time
     const projects = paginated<GitLabProject>(
       options => this.gitLabClient.listProjects(options),
       {
@@ -216,6 +241,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         ...(!this.config.includeArchivedRepos && { archived: false }),
         ...(this.config.membership && { membership: true }),
         ...(this.config.topics && { topics: this.config.topics }),
+        ...(lastRefreshTime && { last_activity_after: lastRefreshTime }),
       },
     );
 
@@ -224,25 +250,115 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       matches: [],
     };
 
+    const addedEntities: string[] = [];
+    const removedEntities: string[] = [];
+    const modifiedEntities: {
+      projectWebUrl: string;
+      branch: string;
+      filePath: string;
+    }[] = [];
+
     for await (const project of projects) {
       if (await this.shouldProcessProject(project, this.gitLabClient)) {
         res.scanned++;
         res.matches.push(project);
+
+        // Check what happened to the catalog file since last refresh
+        if (lastRefreshTime && project.path_with_namespace) {
+          try {
+            const fileChanges = await this.gitLabClient.getCommitsTouchingFile(
+              project.path_with_namespace,
+              this.config.catalogFile,
+              lastRefreshTime,
+            );
+
+            const locationSpec = this.createLocationSpec(project);
+
+            if (fileChanges.added) {
+              addedEntities.push(locationSpec.target);
+              logger.debug(
+                `Catalog file added in project ${project.path_with_namespace}`,
+              );
+            } else if (fileChanges.deleted) {
+              removedEntities.push(locationSpec.target);
+              logger.debug(
+                `Catalog file deleted in project ${project.path_with_namespace}`,
+              );
+            } else if (fileChanges.modified) {
+              const project_branch =
+                this.config.branch ??
+                project.default_branch ??
+                this.config.fallbackBranch;
+
+              modifiedEntities.push({
+                projectWebUrl: project.web_url,
+                branch: project_branch,
+                filePath: this.config.catalogFile,
+              });
+              logger.debug(
+                `Catalog file modified in project ${project.path_with_namespace}`,
+              );
+            }
+          } catch (error) {
+            logger.error(
+              `Failed to check file changes for project ${project.path_with_namespace}: ${error}`,
+            );
+            // // Fall back to treating as modified
+            // const locationSpec = this.createLocationSpec(project);
+            // modifiedEntities.push(locationSpec.target);
+          }
+        }
       }
     }
 
-    const locations = res.matches.map(p => this.createLocationSpec(p));
+    // If this is the first run (no lastRefreshTime), use full mutation
+    if (!lastRefreshTime) {
+      const locations = res.matches.map(p => this.createLocationSpec(p));
 
-    logger.info(
-      `Processed ${locations.length} from scanned ${res.scanned} projects.`,
-    );
-    await this.connection.applyMutation({
-      type: 'full',
-      entities: locations.map(location => ({
-        locationKey: this.getProviderName(),
-        entity: locationSpecToLocationEntity({ location }),
-      })),
-    });
+      logger.info(
+        `Full scan: Processed ${locations.length} from scanned ${res.scanned} projects.`,
+      );
+
+      await this.connection.applyMutation({
+        type: 'full',
+        entities: locations.map(location => ({
+          locationKey: this.getProviderName(),
+          entity: locationSpecToLocationEntity({ location }),
+        })),
+      });
+    } else {
+      // Use delta mutations for incremental updates
+      if (addedEntities.length > 0 || removedEntities.length > 0) {
+        await this.connection.applyMutation({
+          type: 'delta',
+          added: this.toDeferredEntities(addedEntities),
+          removed: this.toDeferredEntities(removedEntities),
+        });
+      }
+
+      // Use refresh for modified entities
+      if (modifiedEntities.length > 0) {
+        // Create proper refresh keys directly from the stored objects
+        const refreshKeys: string[] = [];
+        for (const entity of modifiedEntities) {
+          refreshKeys.push(
+            `url:${entity.projectWebUrl}/-/tree/${entity.branch}/${entity.filePath}`,
+            `url:${entity.projectWebUrl}/-/blob/${entity.branch}/${entity.filePath}`,
+          );
+        }
+
+        await this.connection.refresh({
+          keys: refreshKeys,
+        });
+      }
+
+      logger.info(
+        `Incremental scan: Added ${addedEntities.length}, removed ${removedEntities.length}, modified ${modifiedEntities.length} entities from ${res.scanned} changed projects.`,
+      );
+    }
+
+    // Update the last refresh time in cache
+    await this.cache.set(lastRefreshKey, currentTime);
   }
 
   private createLocationSpec(project: GitLabProject): LocationSpec {

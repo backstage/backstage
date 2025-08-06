@@ -588,8 +588,8 @@ export function getGitilesAuthenticationUrl(
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
-  token?: string,
-): Promise<string>;
+  _token?: string,
+): string;
 
 // @public
 export function getGitLabIntegrationRelativePath(
@@ -750,6 +750,8 @@ export class GitLabIntegration implements ScmIntegration {
   // (undocumented)
   static factory: ScmIntegrationsFactory<GitLabIntegration>;
   // (undocumented)
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+  // (undocumented)
   resolveEditUrl(url: string): string;
   // (undocumented)
   resolveUrl(options: {
@@ -770,6 +772,9 @@ export type GitLabIntegrationConfig = {
   token?: string;
   baseUrl: string;
   commitSigningKey?: string;
+  maxRetries: number;
+  retryStatusCodes: number[];
+  limitPerMinute: number;
 };
 
 // @public

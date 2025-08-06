@@ -3579,12 +3579,14 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@octokit/auth-app": "npm:^4.0.0"
     "@octokit/rest": "npm:^19.0.3"
+    "@opentelemetry/api": "npm:^1.9.0"
     "@types/luxon": "npm:^3.0.0"
     cross-fetch: "npm:^4.0.0"
     git-url-parse: "npm:^15.0.0"
     lodash: "npm:^4.17.21"
     luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
+    p-throttle: "npm:^4.1.1"
   languageName: unknown
   linkType: soft
 
