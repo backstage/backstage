@@ -42,6 +42,7 @@ export async function writeTemplateContents(
       values: {
         ...roleValues,
         packageName: input.packageName,
+        ...(input.customValues ?? {}),
       },
       templatedValues: template.values,
     });

@@ -114,4 +114,7 @@ export type PortableTemplateInput = {
   packageName: string;
 
   packagePath: string;
+
+  // Arbitrary values passed via --option that don't match predefined prompts
+  customValues?: PortableTemplateParams;
 };

@@ -79,6 +79,24 @@ export async function collectPortableTemplateInput(
     ...promptAnswers,
   };
 
+  // Extract predefined prompt names for filtering
+  const promptNames = new Set(prompts.map(p => p.name).filter(Boolean));
+
+  // Add deprecated parameter names to exclude them from custom values
+  const deprecatedKeys = new Set(['id']); // Known deprecated parameter names
+  const excludedKeys = new Set([
+    ...promptNames,
+    ...Object.keys(deprecatedParams),
+    ...deprecatedKeys,
+  ]);
+
+  // Separate custom values that don't match any prompts, deprecated params, or template values
+  const customValues = Object.fromEntries(
+    Object.entries(parameters).filter(
+      ([key]) => !excludedKeys.has(key) && !template.values.hasOwnProperty(key),
+    ),
+  );
+
   const roleParams = {
     role: template.role,
     name: answers.name,
@@ -101,6 +119,8 @@ export async function collectPortableTemplateInput(
     publishRegistry: config.publishRegistry,
     packageName: packageParams.packageName,
     packagePath: packageParams.packagePath,
+    customValues:
+      Object.keys(customValues).length > 0 ? customValues : undefined,
   };
 }
 
