@@ -131,6 +131,67 @@ If you'd like to see more examples, you can find all the default templates and t
 
 Once your template is ready, [add it to your config](#installing-custom-templates), and you should now be able to select it when running `yarn new`.
 
+## Using Arbitrary Values with --option
+
+The `backstage-cli new` command supports passing arbitrary values via the `--option` flag, allowing you to customize your templates with runtime configuration without hardcoding values.
+
+### Basic Usage
+
+You can pass arbitrary key-value pairs when creating packages from templates:
+
+```bash
+yarn backstage-cli new --select my-template \
+  --option apiUrl=https://api.example.com \
+  --option databaseType=postgres \
+  --option enableFeatureX=true
+```
+
+### Template Configuration
+
+To use arbitrary values in your templates, define them in your `portable-template.yaml` or Use directly inside templates:
+
+```yaml title="in templates/api-plugin/portable-template.yaml"
+name: api-plugin
+role: frontend-plugin
+description: A plugin with configurable API settings
+values:
+  pluginVar: '{{ camelCase pluginId }}Plugin'
+  apiEndpoint: '{{ apiUrl }}'
+  databaseType: '{{ dbType }}'
+  featureEnabled: '{{ enableFeature }}'
+```
+
+### Using Values in Template Files
+
+Use the configured values in your Handlebars template files:
+
+```typescript title="in templates/api-plugin/src/config.ts.hbs"
+export const {{ pluginVar }}Config = {
+  apiEndpoint: '{{ apiEndpoint }}',
+  databaseType: '{{ databaseType }}',
+  featureEnabled: {{ featureEnabled }},
+};
+
+// Direct access to arbitrary values
+export const customSettings = {
+  customApiUrl: '{{ apiUrl }}',
+  databaseType: '{{ dbType }}',
+  featureEnabled: {{ enableFeature }},
+};
+```
+
+```json title="in templates/api-plugin/package.json.hbs"
+{
+  "name": "{{ packageName }}",
+  "description": "Plugin with {{ databaseType }} database and API: {{ apiEndpoint }}",
+  "keywords": ["backstage", "plugin", "{{ databaseType }}"],
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build"
+  }
+}
+```
+
 ### Template Roles
 
 The `role` property in the template yaml file is used to determine what input will be gathered for the template, as well as what actions will be taken after the new package has been created. The following roles are supported:
