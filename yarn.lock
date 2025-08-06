@@ -5090,7 +5090,7 @@ __metadata:
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@davidzemon/passport-okta-oauth": "npm:^0.0.6"
+    "@davidzemon/passport-okta-oauth": "npm:^0.0.7"
     express: "npm:^4.18.2"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
@@ -9076,15 +9076,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@davidzemon/passport-okta-oauth@npm:^0.0.6":
-  version: 0.0.6
-  resolution: "@davidzemon/passport-okta-oauth@npm:0.0.6"
+"@davidzemon/passport-okta-oauth@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "@davidzemon/passport-okta-oauth@npm:0.0.7"
   dependencies:
     "@types/passport-oauth2": "npm:^1.4.11"
     passport-oauth2: "npm:^1.6.1"
     pkginfo: "npm:^0.4.1"
     uid2: "npm:^1.0.0"
-  checksum: 10/d29a26459ff387d7507c031a6814e3581eb47e2dc9dda6848667362973455cd125e2a251b30ad6c093dfd6cd8ee7adf48301f395808b212008a6ee702a507354
+  checksum: 10/50a7a7d070b77ca26f810177300a4253071b2e0418675bf2f5a17c028fbb677152ba54963b27aa0c6965089b58a9a6c5d45044426828a90db68db761b1fcd4aa
   languageName: node
   linkType: hard
 
