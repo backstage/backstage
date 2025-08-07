@@ -1,10 +1,11 @@
 # Knip report
 
-## Unused dependencies (1)
+## Unused dependencies (2)
 
 | Name                              | Location     | Severity |
 | :-------------------------------- | :----------- | :------- |
 | @backstage/plugin-catalog-backend | package.json | error    |
+| @backstage/catalog-client         | package.json | error    |
 
 ## Unused devDependencies (1)
 

@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (30)
+## Unused dependencies (26)
 
 | Name                                             | Location     | Severity |
 | :----------------------------------------------- | :----------- | :------- |
@@ -12,19 +12,15 @@
 | @backstage/plugin-catalog-common                 | package.json | error    |
 | @backstage/plugin-techdocs-react                 | package.json | error    |
 | @backstage/plugin-catalog-graph                  | package.json | error    |
-| @backstage/plugin-notifications                  | package.json | error    |
 | @backstage/plugin-search-common                  | package.json | error    |
 | @backstage/plugin-search-react                   | package.json | error    |
 | @backstage/integration-react                     | package.json | error    |
 | @backstage/plugin-auth-react                     | package.json | error    |
 | @backstage/plugin-scaffolder                     | package.json | error    |
-| @backstage/frontend-app-api                      | package.json | error    |
 | @backstage/core-plugin-api                       | package.json | error    |
 | @backstage/plugin-api-docs                       | package.json | error    |
 | @backstage/plugin-catalog                        | package.json | error    |
 | @backstage/plugin-signals                        | package.json | error    |
-| @backstage/catalog-model                         | package.json | error    |
-| @backstage/plugin-search                         | package.json | error    |
 | @backstage/app-defaults                          | package.json | error    |
 | @backstage/plugin-app                            | package.json | error    |
 | @backstage/plugin-org                            | package.json | error    |

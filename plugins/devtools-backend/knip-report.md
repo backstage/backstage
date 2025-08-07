@@ -1,9 +1,10 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (3)
 
-| Name   | Location     | Severity |
-| :----- | :----------- | :------- |
-| semver | package.json | error    |
-| yn     | package.json | error    |
+| Name                              | Location     | Severity |
+| :-------------------------------- | :----------- | :------- |
+| @backstage/plugin-permission-node | package.json | error    |
+| semver                            | package.json | error    |
+| yn                                | package.json | error    |
 

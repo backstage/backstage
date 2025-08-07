@@ -1,11 +1,10 @@
 # Knip report
 
-## Unused dependencies (3)
+## Unused dependencies (2)
 
 | Name                      | Location     | Severity |
 | :------------------------ | :----------- | :------- |
 | @backstage/version-bridge | package.json | error    |
-| @backstage/types          | package.json | error    |
 | zod                       | package.json | error    |
 
 ## Unused devDependencies (5)
