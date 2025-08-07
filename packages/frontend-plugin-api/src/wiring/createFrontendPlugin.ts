@@ -135,7 +135,36 @@ export interface PluginOptions<
   info?: FrontendPluginInfoOptions;
 }
 
-/** @public */
+/**
+ * Creates a new plugin instance that can be installed in a Backstage app.
+ *
+ * @remarks
+ *
+ * Every plugin instance is created with a unique ID and a set of extensions
+ * that are installed as part of the plugin.
+ *
+ * For more information on how plugins work, see the
+ * {@link https://backstage.io/docs/frontend-system/building-plugins/index | documentation for plugins}
+ * in the frontend system documentation.
+ *
+ * @example
+ *
+ * ```tsx
+ * import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+ *
+ * export const examplePlugin = createFrontendPlugin({
+ *   pluginId: 'example',
+ *   extensions: [
+ *     PageBlueprint.make({
+ *       path: '/example',
+ *       loader: () => import('./ExamplePage').then(m => <m.ExamplePage />),
+ *     }),
+ *   ],
+ * });
+ * ```
+ *
+ * @public
+ */
 export function createFrontendPlugin<
   TId extends string,
   TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
