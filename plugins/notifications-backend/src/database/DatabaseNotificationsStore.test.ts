@@ -69,9 +69,6 @@ const testNotification1: Notification = {
     link: '/catalog',
     severity: 'critical',
     icon: 'docs',
-    metadata: {
-      attribute1: 'value1',
-    },
   },
 };
 const testNotification2: Notification = {
@@ -212,9 +209,6 @@ describe.each(databases.eachSupportedId())(
         expect(notification?.payload?.link).toBe('/catalog');
         expect(notification?.payload?.severity).toBe('critical');
         expect(notification?.payload?.icon).toBe('docs');
-        expect(notification?.payload?.metadata).toEqual({
-          attribute1: 'value1',
-        });
       });
     });
 
