@@ -27,7 +27,7 @@ Object.defineProperty(global, '__@backstage/discovered__', {
 });
 
 const config = new ConfigReader({
-  app: { experimental: { packages: 'all' } },
+  app: { packages: 'all' },
 });
 
 describe('discoverAvailableFeatures', () => {
