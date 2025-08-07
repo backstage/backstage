@@ -47,10 +47,21 @@ describe('createRouter', () => {
         deps: {
           database: coreServices.database,
           httpRouter: coreServices.httpRouter,
+          httpAuth: coreServices.httpAuth,
+          permissions: coreServices.permissions,
+          permissionsRegistry: coreServices.permissionsRegistry,
           lifecycle: coreServices.lifecycle,
           catalogProcessing: catalogProcessingExtensionPoint,
         },
-        async init({ database, httpRouter, lifecycle, catalogProcessing }) {
+        async init({
+          database,
+          httpRouter,
+          httpAuth,
+          permissions,
+          permissionsRegistry,
+          lifecycle,
+          catalogProcessing,
+        }) {
           const knexPromise = initializeDatabaseAfterCatalog({
             database,
             lifecycle,
@@ -63,6 +74,9 @@ describe('createRouter', () => {
               changeListener: createMockChangeListener({
                 timeout: { seconds: 5 },
               }),
+              httpAuth,
+              permissions,
+              permissionsRegistry,
             }),
           );
         },

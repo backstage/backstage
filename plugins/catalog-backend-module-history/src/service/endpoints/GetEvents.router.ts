@@ -15,6 +15,7 @@
  */
 
 import { TypedRouter } from '@backstage/backend-openapi-utils';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { ReadHistoryEventsOptions } from '../../database/operations/readHistoryEvents';
 import { EndpointMap } from '../../schema/openapi';
 import { GetEventsModel } from './GetEvents.model';
@@ -23,11 +24,14 @@ import { toResponseEvent } from './types';
 
 export function bindGetEventsEndpoint(
   router: TypedRouter<EndpointMap>,
+  httpAuth: HttpAuthService,
   model: GetEventsModel,
 ): void {
   router.get('/history/v1/events', async (req, res) => {
     let readOptions: ReadHistoryEventsOptions;
     let block: boolean = false;
+
+    const credentials = await httpAuth.credentials(req);
 
     const controller = new AbortController();
     req.on('close', () => {
@@ -58,6 +62,7 @@ export function bindGetEventsEndpoint(
     const result = await model.getEvents({
       readOptions,
       block,
+      credentials,
       signal: controller.signal,
     });
 

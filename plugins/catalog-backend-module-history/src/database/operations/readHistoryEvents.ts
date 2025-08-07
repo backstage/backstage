@@ -49,6 +49,8 @@ export async function readHistoryEvents(
     query = query.where('entity_id', '=', options.entityId);
   }
 
+  // TODO(freben): Add permissions filter?
+
   query = query.orderBy('event_id', options.order).limit(options.limit);
 
   return await query.then(rows => rows.map(toEventsTableEntry));

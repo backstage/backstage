@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+import {
+  BackstageCredentials,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import { ChangeListener } from '../../database/changeListener/types';
 import { getMaxEventId } from '../../database/operations/getMaxEventId';
@@ -21,12 +30,13 @@ import {
   readHistoryEvents,
   ReadHistoryEventsOptions,
 } from '../../database/operations/readHistoryEvents';
-import { Cursor } from './GetEvents.utils';
 import { EventsTableEntry } from '../../types';
+import { Cursor } from './GetEvents.utils';
 
 export interface GetEventsOptions {
   readOptions: ReadHistoryEventsOptions;
   block: boolean;
+  credentials: BackstageCredentials;
   signal: AbortSignal;
 }
 
@@ -41,6 +51,7 @@ export type GetEventsResult =
       wait: () => Promise<'timeout' | 'aborted' | 'ready'>;
       cursor: Cursor;
     };
+
 export interface GetEventsModel {
   getEvents(options: GetEventsOptions): Promise<GetEventsResult>;
 }
@@ -86,9 +97,10 @@ export class GetEventsModelImpl implements GetEventsModel {
     const listener = await this.#changeListener.setupListener({
       signal: options.signal,
       checker: () =>
-        readHistoryEvents(knex, { ...readOptions, limit: 1 }).then(
-          entries => entries.length > 0,
-        ),
+        readHistoryEvents(knex, {
+          ...readOptions,
+          limit: 1,
+        }).then(entries => entries.length > 0),
     });
 
     const events = skipRead ? [] : await readHistoryEvents(knex, readOptions);
@@ -126,5 +138,53 @@ export class GetEventsModelImpl implements GetEventsModel {
       wait: () => listener.waitForUpdate(),
       cursor,
     };
+  }
+}
+
+/**
+ * Implements authorization on top of the actual {@link GetEventsModel} model.
+ */
+export class AuthorizedGetEventsModelImpl implements GetEventsModel {
+  readonly #inner: GetEventsModel;
+  readonly #permissions: PermissionsService;
+  readonly _transformConditions: ConditionTransformer<EntityFilter>;
+
+  constructor(options: {
+    inner: GetEventsModel;
+    permissions: PermissionsService;
+    transformConditions: ConditionTransformer<EntityFilter>;
+  }) {
+    this.#inner = options.inner;
+    this.#permissions = options.permissions;
+    this._transformConditions = options.transformConditions;
+  }
+
+  async getEvents(options: GetEventsOptions): Promise<GetEventsResult> {
+    const authorizeDecision = (
+      await this.#permissions.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { credentials: options.credentials },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError();
+    }
+
+    /* TODO: Implement
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.#transformConditions(
+        authorizeDecision.conditions,
+      );
+      return this.entitiesCatalog.entities({
+        ...request,
+        filter: request?.filter
+          ? { allOf: [permissionFilter, request.filter] }
+          : permissionFilter,
+      });
+    }
+    */
+
+    return await this.#inner.getEvents(options);
   }
 }

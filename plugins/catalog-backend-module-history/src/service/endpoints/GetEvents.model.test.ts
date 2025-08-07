@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TestDatabases } from '@backstage/backend-test-utils';
+import { mockCredentials, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
 import { createMockChangeListener } from '../../__fixtures__/createMockChangeListener';
@@ -74,6 +74,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { order: 'asc', limit: 10 },
             block: false,
+            credentials: mockCredentials.user(),
             signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
@@ -93,6 +94,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { order: 'asc', limit: 10 },
             block: false,
+            credentials: mockCredentials.user(),
             signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
@@ -141,6 +143,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { order: 'desc', limit: 2 },
             block: false,
+            credentials: mockCredentials.user(),
             signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
@@ -176,6 +179,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { afterEventId: '2', order: 'desc', limit: 2 },
             block: false,
+            credentials: mockCredentials.user(),
             signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
@@ -202,6 +206,7 @@ describe('GetEventsModelImpl', () => {
               entityId: 'wrong',
             },
             block: false,
+            credentials: mockCredentials.user(),
             signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
@@ -234,6 +239,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { afterEventId: 'last', order: 'asc', limit: 1 },
             block: true,
+            credentials: mockCredentials.user(),
             signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
@@ -272,6 +278,7 @@ describe('GetEventsModelImpl', () => {
             limit: 10,
           },
           block: true,
+          credentials: mockCredentials.user(),
           signal: new AbortController().signal,
         });
         expect(result).toEqual({
@@ -327,6 +334,7 @@ describe('GetEventsModelImpl', () => {
             limit: 10,
           },
           block: true,
+          credentials: mockCredentials.user(),
           signal: new AbortController().signal,
         });
         expect(result).toEqual({
@@ -351,6 +359,7 @@ describe('GetEventsModelImpl', () => {
             limit: 10,
           },
           block: true,
+          credentials: mockCredentials.user(),
           signal: new AbortController().signal,
         });
         expect(result).toEqual({
@@ -401,6 +410,7 @@ describe('GetEventsModelImpl', () => {
             limit: 10,
           },
           block: true,
+          credentials: mockCredentials.user(),
           signal: abortController.signal,
         });
         expect(result).toEqual({

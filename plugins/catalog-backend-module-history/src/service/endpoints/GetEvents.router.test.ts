@@ -15,7 +15,7 @@
  */
 
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
 import waitFor from 'wait-for-expect';
@@ -37,7 +37,7 @@ describe('bindGetEventsEndpoint', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const router = await createOpenApiRouter();
-    bindGetEventsEndpoint(router, model);
+    bindGetEventsEndpoint(router, mockServices.httpAuth(), model);
     const middlewares = MiddlewareFactory.create({ config, logger });
     app = express().use(router).use(middlewares.error());
   });
@@ -163,6 +163,7 @@ describe('bindGetEventsEndpoint', () => {
         order: 'desc',
       },
       block: true,
+      credentials: mockCredentials.user(),
       signal: expect.any(AbortSignal),
     });
 
@@ -189,6 +190,7 @@ describe('bindGetEventsEndpoint', () => {
         order: 'asc',
       },
       block: false,
+      credentials: mockCredentials.user(),
       signal: expect.any(AbortSignal),
     });
   });
@@ -232,6 +234,7 @@ describe('bindGetEventsEndpoint', () => {
         order: 'asc',
       },
       block: true,
+      credentials: mockCredentials.user(),
       signal: expect.any(AbortSignal),
     });
   });
