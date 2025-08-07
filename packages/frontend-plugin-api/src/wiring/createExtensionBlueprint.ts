@@ -34,6 +34,7 @@ import {
   resolveInputOverrides,
 } from './resolveInputOverrides';
 import { ExtensionDataContainer } from './types';
+import { PageBlueprint } from '../blueprints/PageBlueprint';
 
 /**
  * A function used to define a parameter mapping function in order to facilitate
@@ -403,9 +404,52 @@ function unwrapParams<TParams extends object>(
 }
 
 /**
- * A simpler replacement for wrapping up `createExtension` inside a kind or type. This allows for a cleaner API for creating
- * types and instances of those types.
+ * Creates a new extension blueprint that encapsulates the creation of
+ * extensions of particular kinds.
  *
+ * @remarks
+ *
+ * For details on how blueprints work, see the
+ * {@link https://backstage.io/docs/frontend-system/architecture/extension-blueprints | documentation for extension blueprints}
+ * in the frontend system documentation.
+ *
+ * Extension blueprints make it much easier for users to create new extensions
+ * for your plugin. Rather than letting them use {@link createExtension}
+ * directly, you can define a set of parameters and default factory for your
+ * blueprint, removing a lot of the boilerplate and complexity that is otherwise
+ * needed to create an extension.
+ *
+ * Each blueprint has its own `kind` that helps identity and group the
+ * extensions that have been created with it. For example the
+ * {@link PageBlueprint} has the kind `'page'`, and extensions created with it
+ * will be given the ID `'page:<plugin-id>[/<name>]'`. Blueprints should always
+ * be exported as `<PascalCaseKind>Blueprint`.
+ *
+ * When creating a blueprint the type of the parameters are inferred from the
+ * `factory` function that you provide. The exception to that is when you need
+ * your blueprint to include inferred type parameters, in which case you need to
+ * use the `defineParams` option. See the documentation for the `defineParams`
+ * option for more details on how that works.
+ *
+ * @example
+ * ```tsx
+ * // In your plugin library
+ * export const GreetingBlueprint = createExtensionBlueprint({
+ *   kind: 'greeting',
+ *   attachTo: { id: 'example', input: 'greetings' },
+ *   output: [coreExtensionData.reactElement],
+ *   factory(params: { greeting: string }) {
+ *     return [coreExtensionData.reactElement(<h1>{params.greeting}</h1>)];
+ *   },
+ * });
+ *
+ * // Someone using your blueprint in their plugin
+ * const exampleGreeting = GreetingBlueprint.make({
+ *   params: {
+ *     greeting: 'Hello, world!',
+ *   },
+ * });
+ * ```
  * @public
  */
 export function createExtensionBlueprint<
