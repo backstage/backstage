@@ -59,12 +59,10 @@
 | @rspack/dev-server           | package.json | error    |
 | @rspack/core                 | package.json | error    |
 
-## Unlisted dependencies (4)
+## Unlisted dependencies (2)
 
 | Name      | Location                                           | Severity |
 | :-------- | :------------------------------------------------- | :------- |
 | react-dom | src/modules/build/lib/bundler/hasReactDomClient.ts | error    |
-| react-dom | src/modules/build/lib/bundler/config.ts            | error    |
-| react     | src/modules/build/lib/bundler/config.ts            | error    |
 | react     | src/modules/build/lib/bundler/server.ts            | error    |
 
