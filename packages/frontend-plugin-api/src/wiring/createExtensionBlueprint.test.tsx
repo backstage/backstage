@@ -391,7 +391,7 @@ describe('createExtensionBlueprint', () => {
     });
 
     const mockInput = (node: string, ...data: ExtensionDataValue<any, any>[]) =>
-      Object.assign(createExtensionDataContainer(data), {
+      Object.assign(createExtensionDataContainer(data, 'mock'), {
         node,
       });
     const mockParentInputs = {

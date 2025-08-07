@@ -521,6 +521,7 @@ export function createExtensionBlueprint<
                     ) as any,
                   },
                 ) as Iterable<any>,
+                'original blueprint factory',
                 options.output,
               );
             },
