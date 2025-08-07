@@ -64,7 +64,7 @@ export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
 // @public
 export type Observable<T> = {
   [Symbol.observable](): Observable<T>;
-  subscribe(observer: Observer_2<T>): Subscription;
+  subscribe(observer: Observer<T>): Subscription;
   subscribe(
     onNext?: (value: T) => void,
     onError?: (error: Error) => void,
@@ -73,12 +73,11 @@ export type Observable<T> = {
 };
 
 // @public
-type Observer_2<T> = {
+export type Observer<T> = {
   next?(value: T): void;
   error?(error: Error): void;
   complete?(): void;
 };
-export { Observer_2 as Observer };
 
 // @public
 export type Subscription = {

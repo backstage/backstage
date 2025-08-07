@@ -448,6 +448,7 @@ export function createExtension<
                   ) as any,
                   [ctxParamsSymbol as any]: innerContext?.params,
                 }) as Iterable<any>,
+                'original extension factory',
                 options.output,
               );
             },
@@ -458,6 +459,15 @@ export function createExtension<
               inputs: inputs as any,
             },
           );
+
+          if (
+            typeof parentResult !== 'object' ||
+            !parentResult?.[Symbol.iterator]
+          ) {
+            throw new Error(
+              'extension factory override did not provide an iterable object',
+            );
+          }
 
           const deduplicatedResult = new Map<
             string,

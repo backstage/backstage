@@ -26,8 +26,13 @@ export function createExtensionDataContainer<UData extends ExtensionDataRef>(
       ? ExtensionDataValue<IData, IId>
       : never
   >,
+  contextName: string,
   declaredRefs?: ExtensionDataRef<any, any, any>[],
 ): ExtensionDataContainer<UData> {
+  if (typeof values !== 'object' || !values?.[Symbol.iterator]) {
+    throw new Error(`${contextName} did not provide an iterable object`);
+  }
+
   const container = new Map<string, ExtensionDataValue<any, any>>();
   const verifyRefs =
     declaredRefs && new Map(declaredRefs.map(ref => [ref.id, ref]));

@@ -373,6 +373,7 @@ function mergeExtensionFactoryMiddleware(
             apis: ctx.apis,
             config: ctxOverrides?.config ?? ctx.config,
           }),
+          'extension factory middleware',
         );
       }, ctx);
     };
