@@ -23,7 +23,7 @@ import { createBinRunner } from '../util';
 
 // Ignore these
 const ignoredPackages = [
-  'packages/canon', // storybook config is different from the rest
+  'packages/ui', // storybook config is different from the rest
 ];
 
 interface KnipExtractionOptions {
