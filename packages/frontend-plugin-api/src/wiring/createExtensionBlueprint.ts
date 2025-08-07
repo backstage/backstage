@@ -30,7 +30,7 @@ import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { createExtensionDataContainer } from '@internal/frontend';
 import {
-  ResolveInputValueOverrides,
+  ResolvedInputValueOverrides,
   resolveInputOverrides,
 } from './resolveInputOverrides';
 import { ExtensionDataContainer } from './types';
@@ -286,7 +286,7 @@ export interface ExtensionBlueprint<
           : T['params'],
         context?: {
           config?: T['config'];
-          inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+          inputs?: ResolvedInputValueOverrides<NonNullable<T['inputs']>>;
         },
       ) => ExtensionDataContainer<NonNullable<T['output']>>,
       context: {

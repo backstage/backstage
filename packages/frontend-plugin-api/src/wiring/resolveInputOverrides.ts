@@ -27,7 +27,7 @@ import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataContainer } from './types';
 
 /** @ignore */
-export type ResolveInputValueOverrides<
+export type ResolvedInputValueOverrides<
   TInputs extends {
     [inputName in string]: ExtensionInput<
       ExtensionDataRef,
@@ -101,7 +101,7 @@ export function resolveInputOverrides(
       | ({ node: AppNode } & ExtensionDataContainer<any>)
       | Array<{ node: AppNode } & ExtensionDataContainer<any>>;
   },
-  inputOverrides?: ResolveInputValueOverrides,
+  inputOverrides?: ResolvedInputValueOverrides,
 ) {
   if (!declaredInputs || !inputs || !inputOverrides) {
     return inputs;

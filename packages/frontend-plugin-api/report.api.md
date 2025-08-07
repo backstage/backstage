@@ -994,7 +994,7 @@ export interface ExtensionBlueprint<
           : T['params'],
         context?: {
           config?: T['config'];
-          inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+          inputs?: ResolvedInputValueOverrides<NonNullable<T['inputs']>>;
         },
       ) => ExtensionDataContainer<NonNullable<T['output']>>,
       context: {
@@ -1201,7 +1201,7 @@ export type ExtensionDefinition<
             context?: Expand<
               {
                 config?: T['config'];
-                inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+                inputs?: ResolvedInputValueOverrides<NonNullable<T['inputs']>>;
               } & ([T['params']] extends [never]
                 ? {}
                 : {

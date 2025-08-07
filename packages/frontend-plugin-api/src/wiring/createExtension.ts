@@ -17,7 +17,7 @@
 import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '@backstage/types';
 import {
-  ResolveInputValueOverrides,
+  ResolvedInputValueOverrides,
   resolveInputOverrides,
 } from './resolveInputOverrides';
 import { createExtensionDataContainer } from '@internal/frontend';
@@ -221,7 +221,7 @@ export type ExtensionDefinition<
             context?: Expand<
               {
                 config?: T['config'];
-                inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+                inputs?: ResolvedInputValueOverrides<NonNullable<T['inputs']>>;
               } & ([T['params']] extends [never]
                 ? {}
                 : {
