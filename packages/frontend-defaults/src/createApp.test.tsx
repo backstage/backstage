@@ -368,9 +368,9 @@ describe('createApp', () => {
           </api:app/app-theme>
           <api:app/swappable-components out=[core.api.factory]>
             components [
-              <component:app/core.components.progress out=[core.component.component] />
-              <component:app/core.components.notFoundErrorPage out=[core.component.component] />
-              <component:app/core.components.errorBoundary out=[core.component.component] />
+              <component:app/core.components.progress out=[core.swappableComponent] />
+              <component:app/core.components.notFoundErrorPage out=[core.swappableComponent] />
+              <component:app/core.components.errorBoundary out=[core.swappableComponent] />
             ]
           </api:app/swappable-components>
           <api:app/icons out=[core.api.factory] />

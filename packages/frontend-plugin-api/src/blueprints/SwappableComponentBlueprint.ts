@@ -25,7 +25,7 @@ export const componentDataRef = createExtensionDataRef<{
   loader:
     | (() => (props: {}) => JSX.Element | null)
     | (() => Promise<(props: {}) => JSX.Element | null>);
-}>().with({ id: 'core.component.component' });
+}>().with({ id: 'core.swappableComponent' });
 
 /**
  * Blueprint for creating swappable components from a SwappableComponentRef and a loader
