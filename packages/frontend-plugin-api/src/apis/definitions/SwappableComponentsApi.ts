@@ -23,15 +23,12 @@ import { createApiRef } from '@backstage/core-plugin-api';
  * @public
  */
 export interface SwappableComponentsApi {
-  getComponentLoader<
+  getComponent<
     TInnerComponentProps extends {},
     TExternalComponentProps extends {} = TInnerComponentProps,
   >(
     ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>,
-  ):
-    | (() => (props: TInnerComponentProps) => JSX.Element | null)
-    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
-    | undefined;
+  ): (props: TInnerComponentProps) => JSX.Element | null;
 }
 
 /**

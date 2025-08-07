@@ -31,9 +31,7 @@ describe('DefaultComponentsApi', () => {
       },
     ]);
 
-    const ComponentA = api.getComponentLoader(
-      testRefA,
-    )?.() as () => JSX.Element;
+    const ComponentA = api.getComponent(testRefA);
 
     render(<ComponentA />);
 
@@ -49,13 +47,9 @@ describe('DefaultComponentsApi', () => {
       },
     ]);
 
-    const ComponentB2 = api.getComponentLoader(
-      testRefB2,
-    )?.() as () => JSX.Element;
+    const ComponentB2 = api.getComponent(testRefB2);
 
-    const ComponentB1 = api.getComponentLoader(
-      testRefB1,
-    )?.() as () => JSX.Element;
+    const ComponentB1 = api.getComponent(testRefB1);
 
     expect(ComponentB1).toBe(ComponentB2);
 

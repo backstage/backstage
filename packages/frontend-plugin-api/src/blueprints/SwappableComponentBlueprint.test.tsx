@@ -112,26 +112,20 @@ describe('SwappableComponentBlueprint', () => {
     await waitFor(() => expect(screen.getByText('test!')).toBeInTheDocument());
   });
 
-  it('should allow overriding a component ref with the blueprint', async () => {
+  it('should render a component ref with an async loader implementation and prop transform', async () => {
     const TestComponent = createSwappableComponent({
       id: 'test.component',
-      loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
-    });
-
-    const extension = SwappableComponentBlueprint.make({
-      params: define =>
-        define({
-          component: TestComponent,
-          loader: () => props => <div>Override {props.hello}</div>,
-        }),
+      loader: async () => (props: { hello: string }) =>
+        <div>{props.hello}</div>,
+      transformProps: ({ hello }) => ({ hello: `tr ${hello}` }),
     });
 
     renderInTestApp(<div />, {
       extensions: [
-        extension,
         PageBlueprint.make({
           params: define =>
             define({
+              // todo(blam): there's a bug that this path cannot be `/`?
               path: '/test',
               loader: async () => <TestComponent hello="test!" />,
             }),
@@ -141,7 +135,7 @@ describe('SwappableComponentBlueprint', () => {
     });
 
     await waitFor(() =>
-      expect(screen.getByText('Override test!')).toBeInTheDocument(),
+      expect(screen.getByText('tr test!')).toBeInTheDocument(),
     );
   });
 });

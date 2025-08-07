@@ -66,7 +66,7 @@ describe('createSwappableComponent', () => {
   });
 
   describe('sync', () => {
-    it('should create a component from a ref for sync component', () => {
+    it('should create a component from a ref for sync component', async () => {
       const Component = createSwappableComponent({
         id: 'random',
         loader: () => (props: { name: string }) => {
@@ -79,20 +79,21 @@ describe('createSwappableComponent', () => {
 
       render(<Component id="test" />);
 
-      expect(screen.getByTestId('test')).toHaveTextContent('test');
+      await expect(screen.findByTestId('test')).resolves.toHaveTextContent(
+        'test',
+      );
     });
 
-    it('should render a fallback when theres no default implementation provided', () => {
+    it('should render a fallback when theres no default implementation provided', async () => {
       const Component = createSwappableComponent({
         id: 'random',
       });
 
       render(<Component />);
-
-      expect(screen.getByTestId('random')).toBeInTheDocument();
+      await expect(screen.findByTestId('random')).resolves.toBeInTheDocument();
     });
 
-    it('should map props from external to internal', () => {
+    it('should map props from external to internal', async () => {
       const Component = createSwappableComponent({
         id: 'random',
         transformProps: (props: { name: string }) => ({
@@ -108,7 +109,9 @@ describe('createSwappableComponent', () => {
 
       render(<Component name="test" />);
 
-      expect(screen.getByTestId('test')).toHaveTextContent('TEST');
+      await expect(screen.findByTestId('test')).resolves.toHaveTextContent(
+        'TEST',
+      );
     });
   });
 

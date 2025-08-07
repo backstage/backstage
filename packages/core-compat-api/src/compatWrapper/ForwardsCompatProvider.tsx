@@ -69,26 +69,19 @@ class CompatComponentsApi implements SwappableComponentsApi {
     this.#ErrorBoundaryFallback = ErrorBoundaryFallback;
   }
 
-  getComponentLoader<
+  getComponent<
     TInnerComponentProps extends {},
     TExternalComponentProps extends {} = TInnerComponentProps,
   >(
     ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>,
-  ):
-    | (() => (props: TInnerComponentProps) => JSX.Element | null)
-    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
-    | undefined {
+  ): (props: TInnerComponentProps) => JSX.Element | null {
     switch (ref.id) {
       case Progress.ref.id:
-        return (() => this.#Progress) as () => (
-          props: object,
-        ) => JSX.Element | null;
+        return this.#Progress as (props: object) => JSX.Element | null;
       case NotFoundErrorPage.ref.id:
-        return (() => this.#NotFoundErrorPage) as () => (
-          props: object,
-        ) => JSX.Element | null;
+        return this.#NotFoundErrorPage as (props: object) => JSX.Element | null;
       case ErrorDisplay.ref.id:
-        return (() => this.#ErrorBoundaryFallback) as () => (
+        return this.#ErrorBoundaryFallback as (
           props: object,
         ) => JSX.Element | null;
       default:

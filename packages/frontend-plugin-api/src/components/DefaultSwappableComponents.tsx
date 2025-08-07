@@ -41,4 +41,6 @@ export const NotFoundErrorPage =
  */
 export const ErrorDisplay = createSwappableComponent<CoreErrorDisplayProps>({
   id: 'core.components.errorDisplay',
+  loader: () => props =>
+    <div data-testid="core.components.errorDisplay">{props.error.message}</div>,
 });

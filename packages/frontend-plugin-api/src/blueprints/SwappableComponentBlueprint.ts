@@ -34,7 +34,7 @@ export const componentDataRef = createExtensionDataRef<{
  */
 export const SwappableComponentBlueprint = createExtensionBlueprint({
   kind: 'component',
-  attachTo: { id: 'api:app/components', input: 'components' },
+  attachTo: { id: 'api:app/swappable-components', input: 'components' },
   output: [componentDataRef],
   dataRefs: {
     component: componentDataRef,

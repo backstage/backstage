@@ -375,7 +375,7 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
-export type CoreErrorBoundaryFallbackProps = {
+export type CoreErrorDisplayProps = {
   plugin?: FrontendPlugin;
   error: Error;
   resetError: () => void;
@@ -871,13 +871,10 @@ export { ErrorApiErrorContext };
 export { errorApiRef };
 
 // @public (undocumented)
-export const ErrorBoundary: ((
-  props: CoreErrorBoundaryFallbackProps,
+export const ErrorDisplay: ((
+  props: CoreErrorDisplayProps,
 ) => JSX.Element | null) & {
-  ref: SwappableComponentRef<
-    CoreErrorBoundaryFallbackProps,
-    CoreErrorBoundaryFallbackProps
-  >;
+  ref: SwappableComponentRef<CoreErrorDisplayProps, CoreErrorDisplayProps>;
 };
 
 // @public (undocumented)
@@ -1899,15 +1896,12 @@ export type SwappableComponentRef<
 // @public
 export interface SwappableComponentsApi {
   // (undocumented)
-  getComponentLoader<
+  getComponent<
     TInnerComponentProps extends {},
     TExternalComponentProps extends {} = TInnerComponentProps,
   >(
     ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>,
-  ):
-    | (() => (props: TInnerComponentProps) => JSX.Element | null)
-    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>)
-    | undefined;
+  ): (props: TInnerComponentProps) => JSX.Element | null;
 }
 
 // @public

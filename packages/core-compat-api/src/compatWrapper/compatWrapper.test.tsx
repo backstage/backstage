@@ -114,7 +114,7 @@ describe('ForwardsCompatProvider', () => {
           {Object.entries(defaultComponentRefs)
             .map(
               ([name, ref]) =>
-                `${name}=${Boolean(components.getComponentLoader(ref))}`,
+                `${name}=${Boolean(components.getComponent(ref))}`,
             )
             .join(', ')}
           {'\n'}

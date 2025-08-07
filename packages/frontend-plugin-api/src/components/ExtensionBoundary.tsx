@@ -26,7 +26,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
 import { AppNode } from '../apis';
-import { Progress } from '@backstage/core-components';
+import { Progress } from '@backstage/frontend-plugin-api';
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 

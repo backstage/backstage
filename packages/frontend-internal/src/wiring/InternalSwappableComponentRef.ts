@@ -22,9 +22,7 @@ export const OpaqueSwappableComponentRef = OpaqueType.create<{
   versions: {
     readonly version: 'v1';
     readonly transformProps?: (props: object) => object;
-    readonly loader?:
-      | (() => (props: object) => JSX.Element | null)
-      | (() => Promise<(props: object) => JSX.Element | null>);
+    readonly defaultComponent: (props: object) => JSX.Element | null;
   };
 }>({
   versions: ['v1'],

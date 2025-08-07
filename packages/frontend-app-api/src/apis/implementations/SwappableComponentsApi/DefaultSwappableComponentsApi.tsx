@@ -19,6 +19,9 @@ import {
   SwappableComponentsApi,
   SwappableComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { OpaqueSwappableComponentRef } from '@internal/frontend';
+
+import { lazy } from 'react';
 
 /**
  * Implementation for the {@linkComponentApi}
@@ -26,18 +29,24 @@ import {
  * @internal
  */
 export class DefaultSwappableComponentsApi implements SwappableComponentsApi {
-  #components: Map<
-    string,
-    | (() => (props: object) => JSX.Element | null)
-    | (() => Promise<(props: object) => JSX.Element | null>)
-    | undefined
-  >;
+  #components: Map<string, ((props: object) => JSX.Element | null) | undefined>;
 
   static fromComponents(
     components: Array<typeof SwappableComponentBlueprint.dataRefs.component.T>,
   ) {
     return new DefaultSwappableComponentsApi(
-      new Map(components.map(entry => [entry.ref.id, entry.loader])),
+      new Map(
+        components.map(entry => {
+          return [
+            entry.ref.id,
+            entry.loader
+              ? lazy(async () => ({
+                  default: await entry.loader!(),
+                }))
+              : undefined,
+          ];
+        }),
+      ),
     );
   }
 
@@ -45,13 +54,21 @@ export class DefaultSwappableComponentsApi implements SwappableComponentsApi {
     this.#components = components;
   }
 
-  getComponentLoader(
+  getComponent(
     ref: SwappableComponentRef<any>,
-  ):
-    | (() => (props: object) => JSX.Element | null)
-    | (() => Promise<(props: object) => JSX.Element | null>)
-    | undefined {
-    const impl = this.#components.get(ref.id);
-    return impl;
+  ): (props: object) => JSX.Element | null {
+    const OverrideComponent = this.#components.get(ref.id);
+    const { defaultComponent: DefaultComponent, transformProps } =
+      OpaqueSwappableComponentRef.toInternal(ref);
+
+    return (props: object) => {
+      const innerProps = transformProps?.(props) ?? props;
+
+      if (OverrideComponent) {
+        return <OverrideComponent {...innerProps} />;
+      }
+
+      return <DefaultComponent {...innerProps} />;
+    };
   }
 }
