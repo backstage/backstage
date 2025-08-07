@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-import { createSwappableComponent } from '@backstage/frontend-plugin-api';
+import {
+  ApiBlueprint,
+  createExtensionInput,
+  createSwappableComponent,
+  SwappableComponentBlueprint,
+  swappableComponentsApiRef,
+} from '@backstage/frontend-plugin-api';
 import { DefaultSwappableComponentsApi } from './DefaultSwappableComponentsApi';
 import { render, screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
 
 const { ref: testRefA } = createSwappableComponent({ id: 'test.a' });
 const { ref: testRefB1 } = createSwappableComponent({ id: 'test.b' });
 const { ref: testRefB2 } = createSwappableComponent({ id: 'test.b' });
 
-describe('DefaultComponentsApi', () => {
+describe('DefaultSwappableComponentsApi', () => {
   it('should provide components', async () => {
     const api = DefaultSwappableComponentsApi.fromComponents([
       {
@@ -52,5 +59,206 @@ describe('DefaultComponentsApi', () => {
     render(<ComponentB2 />);
 
     await expect(screen.findByText('test.b')).resolves.toBeInTheDocument();
+  });
+
+  describe('integration tests', () => {
+    const api = ApiBlueprint.makeWithOverrides({
+      name: 'swappable-components',
+      inputs: {
+        components: createExtensionInput([
+          SwappableComponentBlueprint.dataRefs.component,
+        ]),
+      },
+      factory: (originalFactory, { inputs }) => {
+        return originalFactory(defineParams =>
+          defineParams({
+            api: swappableComponentsApiRef,
+            deps: {},
+            factory: () =>
+              DefaultSwappableComponentsApi.fromComponents(
+                inputs.components.map(i =>
+                  i.get(SwappableComponentBlueprint.dataRefs.component),
+                ),
+              ),
+          }),
+        );
+      },
+    });
+
+    describe('no api provided', () => {
+      it('should render the fallback if no other component is provided', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+        });
+
+        renderInTestApp(<MockComponent />, {});
+
+        await expect(
+          screen.findByTestId('test.mock'),
+        ).resolves.toBeInTheDocument();
+      });
+
+      it('should render the default compnoent if no other component is provided', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+          loader: () => () => <div>test.mock</div>,
+        });
+
+        renderInTestApp(<MockComponent />, {});
+
+        await expect(
+          screen.findByText('test.mock'),
+        ).resolves.toBeInTheDocument();
+      });
+
+      it('should render async loader component if no other component is provided', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+          loader: async () => () => <div>test.mock</div>,
+        });
+
+        renderInTestApp(<MockComponent />, {});
+
+        await expect(
+          screen.findByText('test.mock'),
+        ).resolves.toBeInTheDocument();
+      });
+
+      it('should transform props correctly', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+          loader: () => (props: { inner: string }) =>
+            <div>inner: {props.inner}</div>,
+          transformProps: (props: { external: string }) => ({
+            inner: props.external,
+          }),
+        });
+
+        renderInTestApp(<MockComponent external="test" />, {});
+
+        await expect(
+          screen.findByText('inner: test'),
+        ).resolves.toBeInTheDocument();
+      });
+    });
+
+    describe('with overrides', () => {
+      it('should render the fallback if no other component is provided', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+        });
+
+        renderInTestApp(<MockComponent />, {
+          extensions: [api],
+        });
+
+        await expect(
+          screen.findByTestId('test.mock'),
+        ).resolves.toBeInTheDocument();
+      });
+
+      it('should render the default compnoent if no other component is provided', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+          loader: () => () => <div>test.mock</div>,
+        });
+
+        renderInTestApp(<MockComponent />, {
+          extensions: [api],
+        });
+
+        await expect(
+          screen.findByText('test.mock'),
+        ).resolves.toBeInTheDocument();
+      });
+
+      it('should render async loader component if no other component is provided', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+          loader: async () => () => <div>test.mock</div>,
+        });
+
+        renderInTestApp(<MockComponent />, {
+          extensions: [api],
+        });
+
+        await expect(
+          screen.findByText('test.mock'),
+        ).resolves.toBeInTheDocument();
+      });
+
+      it('should render the component provided by the blueprint', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+          loader: () => () => <div>test.mock</div>,
+        });
+
+        const override = SwappableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: MockComponent,
+              loader: () => () => <div>Overriden!</div>,
+            }),
+        });
+
+        renderInTestApp(<MockComponent />, {
+          extensions: [api, override],
+        });
+
+        await expect(
+          screen.findByText('Overriden!'),
+        ).resolves.toBeInTheDocument();
+      });
+
+      it('should render the async component provided by the blueprint', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+          loader: () => () => <div>test.mock</div>,
+        });
+
+        const override = SwappableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: MockComponent,
+              loader: async () => () => <div>Overriden!</div>,
+            }),
+        });
+
+        renderInTestApp(<MockComponent />, {
+          extensions: [api, override],
+        });
+
+        await expect(
+          screen.findByText('Overriden!'),
+        ).resolves.toBeInTheDocument();
+      });
+
+      it('should transform props correctly', async () => {
+        const MockComponent = createSwappableComponent({
+          id: 'test.mock',
+          loader: () => (props: { inner: string }) =>
+            <div>inner: {props.inner}</div>,
+          transformProps: (props: { external: string }) => ({
+            inner: props.external,
+          }),
+        });
+
+        const override = SwappableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: MockComponent,
+              loader: () => props => <div>overriden: {props.inner}</div>,
+            }),
+        });
+
+        renderInTestApp(<MockComponent external="test" />, {
+          extensions: [api, override],
+        });
+
+        await expect(
+          screen.findByText('overriden: test'),
+        ).resolves.toBeInTheDocument();
+      });
+    });
   });
 });

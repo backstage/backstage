@@ -29,10 +29,9 @@ import { DefaultSwappableComponentsApi } from '../../../../packages/frontend-app
 export const SwappableComponentsApi = ApiBlueprint.makeWithOverrides({
   name: 'swappable-components',
   inputs: {
-    components: createExtensionInput(
-      [SwappableComponentBlueprint.dataRefs.component],
-      { replaces: [{ id: 'app', input: 'components' }] },
-    ),
+    components: createExtensionInput([
+      SwappableComponentBlueprint.dataRefs.component,
+    ]),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory(defineParams =>
