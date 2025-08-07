@@ -69,4 +69,3 @@ export {
   createExtensionBlueprint,
   createExtensionBlueprintParams,
 } from './createExtensionBlueprint';
-export { type ResolveInputValueOverrides } from './resolveInputOverrides';

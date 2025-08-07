@@ -26,7 +26,7 @@ import {
 import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataContainer } from './types';
 
-/** @public */
+/** @ignore */
 export type ResolveInputValueOverrides<
   TInputs extends {
     [inputName in string]: ExtensionInput<
