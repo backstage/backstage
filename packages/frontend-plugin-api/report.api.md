@@ -393,7 +393,7 @@ export { createApiFactory };
 
 export { createApiRef };
 
-// @public (undocumented)
+// @public
 export function createExtension<
   UOutput extends ExtensionDataRef,
   TInputs extends {
@@ -688,7 +688,7 @@ export interface CreateFrontendFeatureLoaderOptions {
       >;
 }
 
-// @public (undocumented)
+// @public
 export function createFrontendModule<
   TId extends string,
   TExtensions extends readonly ExtensionDefinition[] = [],
@@ -707,7 +707,7 @@ export interface CreateFrontendModuleOptions<
   pluginId: TPluginId;
 }
 
-// @public (undocumented)
+// @public
 export function createFrontendPlugin<
   TId extends string,
   TRoutes extends {
