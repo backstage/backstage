@@ -200,20 +200,72 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 }
 
 /**
- * Options for `createSpecializedApp`.
+ * Options for {@link createSpecializedApp}.
  *
  * @public
  */
 export type CreateSpecializedAppOptions = {
+  /**
+   * The list of features to load.
+   */
   features?: FrontendFeature[];
+
+  /**
+   * The config API implementation to use. For most normal apps, this should be
+   * specified.
+   *
+   * If none is given, a new _empty_ config will be used during startup. In
+   * later stages of the app lifecycle, the config API in the API holder will be
+   * used.
+   */
   config?: ConfigApi;
+
+  /**
+   * Allows for the binding of plugins' external route refs within the app.
+   */
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  apis?: ApiHolder;
-  extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
-  flags?: { allowUnknownExtensionConfig?: boolean };
-  pluginInfoResolver?: FrontendPluginInfoResolver;
+
+  /**
+   * Advanced, more rarely used options.
+   */
+  advanced?: {
+    /**
+     * A replacement API holder implementation to use.
+     *
+     * By default, a new API holder will be constructed automatically based on
+     * the other inputs. If you pass in a custom one here, none of that
+     * automation will take place - so you will have to take care to supply all
+     * those APIs yourself.
+     */
+    apis?: ApiHolder;
+
+    /**
+     * If set to true, the system will silently accept and move on if
+     * encountering config for extensions that do not exist. The default is to
+     * reject such config to help catch simple mistakes.
+     *
+     * This flag can be useful in some scenarios where you have a dynamic set of
+     * extensions enabled at different times, but also increases the risk of
+     * accidentally missing e.g. simple typos in your config.
+     */
+    allowUnknownExtensionConfig?: boolean;
+
+    /**
+     * Applies one or more middleware on every extension, as they are added to
+     * the application.
+     *
+     * This is an advanced use case for modifying extension data on the fly as
+     * it gets emitted by extensions being instantiated.
+     */
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+
+    /**
+     * Allows for customizing how plugin info is retrieved.
+     */
+    pluginInfoResolver?: FrontendPluginInfoResolver;
+  };
 };
 
 /**
@@ -229,7 +281,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
 } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
-    createPluginInfoAttacher(config, options?.pluginInfoResolver),
+    createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
   );
 
   const tree = resolveAppTree(
@@ -241,7 +293,8 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
-      allowUnknownExtensionConfig: options?.flags?.allowUnknownExtensionConfig,
+      allowUnknownExtensionConfig:
+        options?.advanced?.allowUnknownExtensionConfig,
     }),
   );
 
@@ -257,7 +310,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
 
   const appIdentityProxy = new AppIdentityProxy();
   const apis =
-    options?.apis ??
+    options?.advanced?.apis ??
     createApiHolder({
       factories,
       staticFactories: [
@@ -294,7 +347,9 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   instantiateAppNodeTree(
     tree.root,
     apis,
-    mergeExtensionFactoryMiddleware(options?.extensionFactoryMiddleware),
+    mergeExtensionFactoryMiddleware(
+      options?.advanced?.extensionFactoryMiddleware,
+    ),
   );
 
   const routeInfo = extractRouteInfoFromAppNode(

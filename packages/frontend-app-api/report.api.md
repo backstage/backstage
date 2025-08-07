@@ -38,14 +38,14 @@ export type CreateSpecializedAppOptions = {
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  apis?: ApiHolder;
-  extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
-  flags?: {
+  advanced?: {
+    apis?: ApiHolder;
     allowUnknownExtensionConfig?: boolean;
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+    pluginInfoResolver?: FrontendPluginInfoResolver;
   };
-  pluginInfoResolver?: FrontendPluginInfoResolver;
 };
 
 // @public
