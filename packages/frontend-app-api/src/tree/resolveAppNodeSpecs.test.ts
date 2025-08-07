@@ -20,7 +20,7 @@ import {
   Extension,
   ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
-import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
+import { resolveAppNodeSpecs, rootPlugin } from './resolveAppNodeSpecs';
 
 function makeExt(
   id: string,
@@ -62,12 +62,15 @@ describe('resolveAppNodeSpecs', () => {
         builtinExtensions: [a],
         parameters: [],
       }),
-    ).toEqual([
+    ).toStrictEqual([
       {
         id: 'a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
     ]);
   });
@@ -87,12 +90,18 @@ describe('resolveAppNodeSpecs', () => {
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'b',
         extension: b,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
     ]);
   });
@@ -120,6 +129,9 @@ describe('resolveAppNodeSpecs', () => {
         extension: b,
         attachTo: { id: 'derp', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'test/a',
@@ -204,12 +216,18 @@ describe('resolveAppNodeSpecs', () => {
         extension: b,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
     ]);
   });
@@ -238,42 +256,63 @@ describe('resolveAppNodeSpecs', () => {
         extension: e,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'd',
         extension: d,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'c',
         extension: c,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'b',
         extension: b,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'f',
         extension: f,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
       {
         id: 'g',
         extension: g,
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
+        config: undefined,
+        plugin: rootPlugin,
+        source: rootPlugin,
       },
     ]);
   });
