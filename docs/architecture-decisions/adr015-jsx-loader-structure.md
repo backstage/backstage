@@ -62,6 +62,14 @@ This option is used in the same cases as the async component loader, but when th
 }
 ```
 
+Note that when consuming this loader we'll need to unconditionally wrap it with `React.lazy`. This is because you can't delay the call to `React.lazy` until rendering, because you're not allowed to call it within a render function. This means that we can't first call the loader to check whether the returned value is a promise or not, and we must instead unconditionally wrap it with `React.lazy`. Therefore the implementation of accepting one of these loaders as an option needs to look something like this:
+
+```tsx
+const LazyComponent = React.lazy(() =>
+  Promise.resolve(options.loader()).then(loaded => ({ default: loaded })),
+);
+```
+
 ## Consequences
 
 We will update all APIs for the new frontend system in the `@backstage/frontend-*` packages.
