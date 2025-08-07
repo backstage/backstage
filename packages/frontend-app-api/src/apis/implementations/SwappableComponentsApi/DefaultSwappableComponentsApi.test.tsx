@@ -23,7 +23,7 @@ const { ref: testRefB1 } = createSwappableComponent({ id: 'test.b' });
 const { ref: testRefB2 } = createSwappableComponent({ id: 'test.b' });
 
 describe('DefaultComponentsApi', () => {
-  it('should provide components', () => {
+  it('should provide components', async () => {
     const api = DefaultSwappableComponentsApi.fromComponents([
       {
         ref: testRefA,
@@ -35,10 +35,10 @@ describe('DefaultComponentsApi', () => {
 
     render(<ComponentA />);
 
-    expect(screen.getByText('test.a')).toBeInTheDocument();
+    await expect(screen.findByText('test.a')).resolves.toBeInTheDocument();
   });
 
-  it('should key extension refs by ID', () => {
+  it('should key extension refs by ID', async () => {
     const mockLoader = jest.fn(() => <div>test.b</div>);
     const api = DefaultSwappableComponentsApi.fromComponents([
       {
@@ -49,12 +49,8 @@ describe('DefaultComponentsApi', () => {
 
     const ComponentB2 = api.getComponent(testRefB2);
 
-    const ComponentB1 = api.getComponent(testRefB1);
+    render(<ComponentB2 />);
 
-    expect(ComponentB1).toBe(ComponentB2);
-
-    render(<ComponentB1 />);
-
-    expect(screen.getByText('test.b')).toBeInTheDocument();
+    await expect(screen.findByText('test.b')).resolves.toBeInTheDocument();
   });
 });

@@ -106,5 +106,5 @@ export function createSwappableComponent<
 
   return ComponentRefImpl as {
     ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>;
-  } & ((props: object) => JSX.Element | null);
+  } & ((props: TExternalComponentProps) => JSX.Element | null);
 }
