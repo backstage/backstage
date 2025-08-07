@@ -34,5 +34,5 @@ export * from './wiring';
 export type {
   CoreProgressProps,
   CoreNotFoundErrorPageProps,
-  CoreErrorBoundaryFallbackProps,
+  CoreErrorDisplayProps,
 } from './types';

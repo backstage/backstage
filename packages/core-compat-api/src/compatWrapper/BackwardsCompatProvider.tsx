@@ -27,7 +27,7 @@ import {
   iconsApiRef,
   useApi,
   routeResolutionApiRef,
-  ErrorBoundary,
+  ErrorDisplay,
   NotFoundErrorPage,
   Progress,
 } from '@backstage/frontend-plugin-api';
@@ -102,7 +102,7 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
 
     const ErrorBoundaryFallbackWrapper: AppComponents['ErrorBoundaryFallback'] =
       ({ plugin, ...rest }) => (
-        <ErrorBoundary {...rest} plugin={plugin && toNewPlugin(plugin)} />
+        <ErrorDisplay {...rest} plugin={plugin && toNewPlugin(plugin)} />
       );
 
     return {

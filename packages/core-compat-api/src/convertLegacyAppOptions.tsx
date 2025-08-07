@@ -18,7 +18,7 @@ import { ComponentType } from 'react';
 import {
   SwappableComponentBlueprint,
   ApiBlueprint,
-  CoreErrorBoundaryFallbackProps,
+  CoreErrorDisplayProps,
   createExtension,
   createFrontendModule,
   ExtensionDefinition,
@@ -27,7 +27,7 @@ import {
   RouterBlueprint,
   SignInPageBlueprint,
   ThemeBlueprint,
-  ErrorBoundary as SwappableErrorBoundary,
+  ErrorDisplay as SwappableErrorDisplay,
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
 } from '@backstage/frontend-plugin-api';
@@ -179,9 +179,7 @@ export function convertLegacyAppOptions(
     }
 
     if (ErrorBoundaryFallback) {
-      const WrappedErrorBoundaryFallback = (
-        props: CoreErrorBoundaryFallbackProps,
-      ) =>
+      const WrappedErrorBoundaryFallback = (props: CoreErrorDisplayProps) =>
         compatWrapper(
           <ErrorBoundaryFallback
             {...props}
@@ -193,7 +191,7 @@ export function convertLegacyAppOptions(
         SwappableComponentBlueprint.make({
           params: define =>
             define({
-              component: SwappableErrorBoundary,
+              component: SwappableErrorDisplay,
               loader: () =>
                 componentCompatWrapper(WrappedErrorBoundaryFallback),
             }),

@@ -15,7 +15,7 @@
  */
 
 import {
-  CoreErrorBoundaryFallbackProps,
+  CoreErrorDisplayProps,
   CoreNotFoundErrorPageProps,
   CoreProgressProps,
 } from '../types';
@@ -39,7 +39,6 @@ export const NotFoundErrorPage =
 /**
  * @public
  */
-export const ErrorBoundary =
-  createSwappableComponent<CoreErrorBoundaryFallbackProps>({
-    id: 'core.components.errorBoundary',
-  });
+export const ErrorDisplay = createSwappableComponent<CoreErrorDisplayProps>({
+  id: 'core.components.errorDisplay',
+});

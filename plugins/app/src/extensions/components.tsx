@@ -16,7 +16,7 @@
 import {
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
-  ErrorBoundary as SwappableErrorBoundary,
+  ErrorDisplay as SwappableErrorDisplay,
   SwappableComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
 
@@ -50,7 +50,7 @@ export const ErrorBoundary = SwappableComponentBlueprint.make({
   name: 'core.components.errorBoundary',
   params: define =>
     define({
-      component: SwappableErrorBoundary,
+      component: SwappableErrorDisplay,
       loader: () => props => {
         const { plugin, error, resetError } = props;
         const title = `Error in ${plugin?.id}`;

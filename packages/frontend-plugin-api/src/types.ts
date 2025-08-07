@@ -26,7 +26,7 @@ export type CoreNotFoundErrorPageProps = {
 };
 
 /** @public */
-export type CoreErrorBoundaryFallbackProps = {
+export type CoreErrorDisplayProps = {
   plugin?: FrontendPlugin;
   error: Error;
   resetError: () => void;

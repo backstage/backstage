@@ -23,7 +23,7 @@ import {
   createRouteRef as createNewRouteRef,
   useApi,
   NotFoundErrorPage,
-  ErrorBoundary,
+  ErrorDisplay,
   Progress,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -102,7 +102,7 @@ describe('ForwardsCompatProvider', () => {
     const defaultComponentRefs = {
       progress: Progress.ref,
       notFoundErrorPage: NotFoundErrorPage.ref,
-      errorBoundary: ErrorBoundary.ref,
+      errorDisplay: ErrorDisplay.ref,
     };
 
     function Component() {
@@ -126,7 +126,7 @@ describe('ForwardsCompatProvider', () => {
     await renderInOldTestApp(compatWrapper(<Component />));
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "components: progress=true, notFoundErrorPage=true, errorBoundary=true
+      "components: progress=true, notFoundErrorPage=true, errorDisplay=true
       icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning, star, unstarred"
     `);
   });

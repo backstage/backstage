@@ -24,7 +24,7 @@ import {
   AnyRouteRefParams,
   SwappableComponentRef,
   SwappableComponentsApi,
-  CoreErrorBoundaryFallbackProps,
+  CoreErrorDisplayProps,
   CoreNotFoundErrorPageProps,
   CoreProgressProps,
   ExternalRouteRef,
@@ -39,7 +39,7 @@ import {
   routeResolutionApiRef,
   Progress,
   NotFoundErrorPage,
-  ErrorBoundary,
+  ErrorDisplay,
 } from '@backstage/frontend-plugin-api';
 import { ComponentType, useMemo } from 'react';
 import { ReactNode } from 'react';
@@ -54,11 +54,11 @@ import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 class CompatComponentsApi implements SwappableComponentsApi {
   readonly #Progress: ComponentType<CoreProgressProps>;
   readonly #NotFoundErrorPage: ComponentType<CoreNotFoundErrorPageProps>;
-  readonly #ErrorBoundaryFallback: ComponentType<CoreErrorBoundaryFallbackProps>;
+  readonly #ErrorBoundaryFallback: ComponentType<CoreErrorDisplayProps>;
 
   constructor(app: AppContext) {
     const components = app.getComponents();
-    const ErrorBoundaryFallback = (props: CoreErrorBoundaryFallbackProps) => (
+    const ErrorBoundaryFallback = (props: CoreErrorDisplayProps) => (
       <components.ErrorBoundaryFallback
         {...props}
         plugin={props.plugin && toLegacyPlugin(props.plugin)}
@@ -87,7 +87,7 @@ class CompatComponentsApi implements SwappableComponentsApi {
         return (() => this.#NotFoundErrorPage) as () => (
           props: object,
         ) => JSX.Element | null;
-      case ErrorBoundary.ref.id:
+      case ErrorDisplay.ref.id:
         return (() => this.#ErrorBoundaryFallback) as () => (
           props: object,
         ) => JSX.Element | null;

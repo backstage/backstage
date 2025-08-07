@@ -40,5 +40,5 @@ export interface SwappableComponentsApi {
  * @public
  */
 export const swappableComponentsApiRef = createApiRef<SwappableComponentsApi>({
-  id: 'core.swappableComponents',
+  id: 'core.swappable-components',
 });

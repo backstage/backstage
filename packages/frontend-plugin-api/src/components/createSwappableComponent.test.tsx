@@ -21,7 +21,7 @@ describe('createSwappableComponent', () => {
   it('can be created and read', () => {
     const { ref } = createSwappableComponent({ id: 'foo' });
     expect(ref.id).toBe('foo');
-    expect(String(ref)).toBe('ComponentRef{id=foo}');
+    expect(String(ref)).toBe('SwappableComponentRef{id=foo}');
   });
 
   it('should allow defining a default component implementation', () => {
