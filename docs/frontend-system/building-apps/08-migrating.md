@@ -244,8 +244,7 @@ Plugins don't even have to be imported manually after installing their package i
 ```yaml title="in app-config.yaml"
 app:
   # Enabling plugin and override features discovery
-  experimental:
-    packages: all # ✨
+  packages: all # ✨
 ```
 
 ### `featureFlags`
