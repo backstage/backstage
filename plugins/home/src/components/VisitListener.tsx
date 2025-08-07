@@ -76,6 +76,25 @@ const getVisitName =
 
 /**
  * @public
+ * Type definition for visit data before it's saved (without auto-generated fields)
+ */
+export type VisitInput = {
+  name: string;
+  pathname: string;
+  entityRef?: string;
+};
+
+/**
+ * @public
+ * Type definition for the visit enrichment function
+ * This allows adding custom properties to visits at save time
+ */
+export type VisitEnrichmentFunction = (
+  visit: VisitInput,
+) => Record<string, any> | Promise<Record<string, any>>;
+
+/**
+ * @public
  * Component responsible for listening to location changes and calling
  * the visitsApi to save visits.
  */
@@ -83,29 +102,46 @@ export const VisitListener = ({
   children,
   toEntityRef,
   visitName,
+  enrichVisit,
 }: {
   children?: ReactNode;
   toEntityRef?: ({ pathname }: { pathname: string }) => string | undefined;
   visitName?: ({ pathname }: { pathname: string }) => string;
+  enrichVisit?: VisitEnrichmentFunction;
 }): JSX.Element => {
   const visitsApi = useApi(visitsApiRef);
   const { pathname } = useLocation();
   const toEntityRefImpl = toEntityRef ?? getToEntityRef();
   const visitNameImpl = visitName ?? getVisitName();
+
   useEffect(() => {
     // Wait for the browser to finish with paint with the assumption react
     // has finished with dom reconciliation.
-    const requestId = requestAnimationFrame(() => {
+    const requestId = requestAnimationFrame(async () => {
+      const baseVisit = {
+        name: visitNameImpl({ pathname }),
+        pathname,
+        entityRef: toEntityRefImpl({ pathname }),
+      };
+
+      let visitToSave = baseVisit;
+
+      if (enrichVisit) {
+        try {
+          const enrichedData = await enrichVisit(baseVisit);
+          visitToSave = { ...baseVisit, ...enrichedData };
+        } catch (error) {
+          // If enrichment fails, save the base visit without enrichment
+          visitToSave = baseVisit;
+        }
+      }
+
       visitsApi.save({
-        visit: {
-          name: visitNameImpl({ pathname }),
-          pathname,
-          entityRef: toEntityRefImpl({ pathname }),
-        },
+        visit: visitToSave,
       });
     });
     return () => cancelAnimationFrame(requestId);
-  }, [visitsApi, pathname, toEntityRefImpl, visitNameImpl]);
+  }, [visitsApi, pathname, toEntityRefImpl, visitNameImpl, enrichVisit]);
 
   return <>{children}</>;
 };
