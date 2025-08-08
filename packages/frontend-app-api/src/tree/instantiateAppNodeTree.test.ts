@@ -57,7 +57,7 @@ function makeSpec<TConfig, TConfigInput>(
     attachTo: extension.attachTo,
     disabled: extension.disabled,
     extension: extension as Extension<unknown, unknown>,
-    plugin: createFrontendPlugin({ pluginId: 'root' }),
+    plugin: createFrontendPlugin({ pluginId: 'app' }),
     ...spec,
   };
 }

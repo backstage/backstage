@@ -38,7 +38,7 @@ const baseSpec = {
   extension,
   attachTo: { id: 'nonexistent', input: 'nonexistent' },
   disabled: false,
-  plugin: createFrontendPlugin({ pluginId: 'root' }),
+  plugin: createFrontendPlugin({ pluginId: 'app' }),
 };
 
 describe('buildAppTree', () => {

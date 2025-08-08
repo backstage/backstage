@@ -30,8 +30,6 @@ import {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
-export const rootPlugin = createFrontendPlugin({ pluginId: 'root' });
-
 /** @internal */
 export function resolveAppNodeSpecs(options: {
   features?: FrontendFeature[];
@@ -93,6 +91,12 @@ export function resolveAppNodeSpecs(options: {
     );
   }
 
+  const appPlugin =
+    plugins.find(plugin => plugin.id === 'app') ??
+    createFrontendPlugin({
+      pluginId: 'app',
+    });
+
   const configuredExtensions = [
     ...pluginExtensions.map(({ plugin, ...extension }) => {
       const internalExtension = toInternalExtension(extension);
@@ -112,8 +116,8 @@ export function resolveAppNodeSpecs(options: {
       return {
         extension: internalExtension,
         params: {
-          source: rootPlugin,
-          plugin: rootPlugin,
+          source: appPlugin,
+          plugin: appPlugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
           config: undefined as unknown,

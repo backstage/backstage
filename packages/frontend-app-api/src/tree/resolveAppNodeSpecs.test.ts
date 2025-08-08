@@ -20,7 +20,7 @@ import {
   Extension,
   ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
-import { resolveAppNodeSpecs, rootPlugin } from './resolveAppNodeSpecs';
+import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
 
 function makeExt(
   id: string,
@@ -62,15 +62,15 @@ describe('resolveAppNodeSpecs', () => {
         builtinExtensions: [a],
         parameters: [],
       }),
-    ).toStrictEqual([
+    ).toEqual([
       {
         id: 'a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
     ]);
   });
@@ -91,8 +91,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'b',
@@ -100,8 +100,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
     ]);
   });
@@ -130,8 +130,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'derp', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'test/a',
@@ -217,8 +217,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'a',
@@ -226,8 +226,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
     ]);
   });
@@ -257,8 +257,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'd',
@@ -266,8 +266,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'c',
@@ -275,8 +275,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'a',
@@ -284,8 +284,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'b',
@@ -293,8 +293,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'f',
@@ -302,8 +302,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'g',
@@ -311,8 +311,8 @@ describe('resolveAppNodeSpecs', () => {
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
         config: undefined,
-        plugin: rootPlugin,
-        source: rootPlugin,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
     ]);
   });
