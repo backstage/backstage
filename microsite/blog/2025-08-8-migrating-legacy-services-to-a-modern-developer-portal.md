@@ -20,7 +20,7 @@ organization, along with tips for addressing both the cultural and
 technical roadblocks you might encounter along the way.
 
 <img width="2260" height="1769" alt="image (1)" src="https://github.com/user-attachments/assets/c711eabd-0e6f-40ca-947e-6a6432dd0258" />
-
+{/* truncate */}
 ### **Why and How a Modern Developer Portal Was Rolled Out**
 
 Historically, many organizations utilized internally built software
