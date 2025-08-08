@@ -24,9 +24,9 @@ import {
   AnyRouteRefParams,
   SwappableComponentRef,
   SwappableComponentsApi,
-  CoreErrorDisplayProps,
-  CoreNotFoundErrorPageProps,
-  CoreProgressProps,
+  ErrorDisplayProps,
+  NotFoundErrorPageProps,
+  ProgressProps,
   ExternalRouteRef,
   IconComponent,
   IconsApi,
@@ -52,13 +52,13 @@ import { type RouteResolver } from '../../../core-plugin-api/src/routing/useRout
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
 class CompatComponentsApi implements SwappableComponentsApi {
-  readonly #Progress: ComponentType<CoreProgressProps>;
-  readonly #NotFoundErrorPage: ComponentType<CoreNotFoundErrorPageProps>;
-  readonly #ErrorBoundaryFallback: ComponentType<CoreErrorDisplayProps>;
+  readonly #Progress: ComponentType<ProgressProps>;
+  readonly #NotFoundErrorPage: ComponentType<NotFoundErrorPageProps>;
+  readonly #ErrorBoundaryFallback: ComponentType<ErrorDisplayProps>;
 
   constructor(app: AppContext) {
     const components = app.getComponents();
-    const ErrorBoundaryFallback = (props: CoreErrorDisplayProps) => (
+    const ErrorBoundaryFallback = (props: ErrorDisplayProps) => (
       <components.ErrorBoundaryFallback
         {...props}
         plugin={props.plugin && toLegacyPlugin(props.plugin)}

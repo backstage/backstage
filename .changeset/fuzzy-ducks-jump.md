@@ -1,5 +1,5 @@
 ---
-'@backstage/core-compat-api': patch
+'@backstage/core-compat-api': minor
 ---
 
-This is primarily an internal change that ensures legacy plugins continue to work with the new component system without requiring immediate migration.
+**BREAKING**: The `componentsApi` implementation has been removed from the plugin and replaced with the new `SwappableComponentsApi` instead. Which means that the `componentsApi` is not longer backwards compatible with legacy plugins.

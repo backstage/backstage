@@ -375,13 +375,6 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
-export type CoreErrorDisplayProps = {
-  plugin?: FrontendPlugin;
-  error: Error;
-  resetError: () => void;
-};
-
-// @public (undocumented)
 export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<
     JSX_3.Element,
@@ -395,14 +388,6 @@ export const coreExtensionData: {
     {}
   >;
 };
-
-// @public (undocumented)
-export type CoreNotFoundErrorPageProps = {
-  children?: ReactNode;
-};
-
-// @public (undocumented)
-export type CoreProgressProps = {};
 
 export { createApiFactory };
 
@@ -872,9 +857,16 @@ export { errorApiRef };
 
 // @public (undocumented)
 export const ErrorDisplay: ((
-  props: CoreErrorDisplayProps,
+  props: ErrorDisplayProps,
 ) => JSX.Element | null) & {
-  ref: SwappableComponentRef<CoreErrorDisplayProps, CoreErrorDisplayProps>;
+  ref: SwappableComponentRef<ErrorDisplayProps, ErrorDisplayProps>;
+};
+
+// @public (undocumented)
+export type ErrorDisplayProps = {
+  plugin?: FrontendPlugin;
+  error: Error;
+  resetError: () => void;
 };
 
 // @public (undocumented)
@@ -1534,12 +1526,14 @@ export const NavItemBlueprint: ExtensionBlueprint<{
 
 // @public (undocumented)
 export const NotFoundErrorPage: ((
-  props: CoreNotFoundErrorPageProps,
+  props: NotFoundErrorPageProps,
 ) => JSX.Element | null) & {
-  ref: SwappableComponentRef<
-    CoreNotFoundErrorPageProps,
-    CoreNotFoundErrorPageProps
-  >;
+  ref: SwappableComponentRef<NotFoundErrorPageProps, NotFoundErrorPageProps>;
+};
+
+// @public (undocumented)
+export type NotFoundErrorPageProps = {
+  children?: ReactNode;
 };
 
 export { OAuthApi };
@@ -1627,9 +1621,12 @@ export { ProfileInfo };
 export { ProfileInfoApi };
 
 // @public (undocumented)
-export const Progress: ((props: CoreProgressProps) => JSX.Element | null) & {
-  ref: SwappableComponentRef<CoreProgressProps, CoreProgressProps>;
+export const Progress: ((props: ProgressProps) => JSX.Element | null) & {
+  ref: SwappableComponentRef<ProgressProps, ProgressProps>;
 };
+
+// @public (undocumented)
+export type ProgressProps = {};
 
 // @public
 export type ResolvedExtensionInput<

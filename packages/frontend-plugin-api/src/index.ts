@@ -32,7 +32,7 @@ export * from './translation';
 export * from './wiring';
 
 export type {
-  CoreProgressProps,
-  CoreNotFoundErrorPageProps,
-  CoreErrorDisplayProps,
+  ProgressProps,
+  NotFoundErrorPageProps,
+  ErrorDisplayProps,
 } from './types';

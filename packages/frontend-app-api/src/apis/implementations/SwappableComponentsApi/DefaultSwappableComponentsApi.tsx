@@ -24,7 +24,7 @@ import { OpaqueSwappableComponentRef } from '@internal/frontend';
 import { lazy } from 'react';
 
 /**
- * Implementation for the {@linkComponentApi}
+ * Implementation for the {@link SwappableComponentsApi}
  *
  * @internal
  */

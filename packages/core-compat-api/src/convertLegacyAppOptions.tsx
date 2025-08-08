@@ -18,7 +18,7 @@ import { ComponentType } from 'react';
 import {
   SwappableComponentBlueprint,
   ApiBlueprint,
-  CoreErrorDisplayProps,
+  ErrorDisplayProps,
   createExtension,
   createFrontendModule,
   ExtensionDefinition,
@@ -179,7 +179,7 @@ export function convertLegacyAppOptions(
     }
 
     if (ErrorBoundaryFallback) {
-      const WrappedErrorBoundaryFallback = (props: CoreErrorDisplayProps) =>
+      const WrappedErrorBoundaryFallback = (props: ErrorDisplayProps) =>
         compatWrapper(
           <ErrorBoundaryFallback
             {...props}
