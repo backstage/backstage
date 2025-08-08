@@ -766,7 +766,8 @@ export function createSwappableComponent<
     TInnerComponentProps,
     TExternalComponentProps
   >,
-): ((props: TExternalComponentProps) => JSX.Element | null) & {
+): {
+  (props: TExternalComponentProps): JSX.Element | null;
   ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>;
 };
 
@@ -833,9 +834,8 @@ export { ErrorApiErrorContext };
 export { errorApiRef };
 
 // @public (undocumented)
-export const ErrorDisplay: ((
-  props: ErrorDisplayProps,
-) => JSX.Element | null) & {
+export const ErrorDisplay: {
+  (props: ErrorDisplayProps): JSX.Element | null;
   ref: SwappableComponentRef<ErrorDisplayProps, ErrorDisplayProps>;
 };
 
@@ -1502,9 +1502,8 @@ export const NavItemBlueprint: ExtensionBlueprint<{
 }>;
 
 // @public (undocumented)
-export const NotFoundErrorPage: ((
-  props: NotFoundErrorPageProps,
-) => JSX.Element | null) & {
+export const NotFoundErrorPage: {
+  (props: NotFoundErrorPageProps): JSX.Element | null;
   ref: SwappableComponentRef<NotFoundErrorPageProps, NotFoundErrorPageProps>;
 };
 
@@ -1598,7 +1597,8 @@ export { ProfileInfo };
 export { ProfileInfoApi };
 
 // @public (undocumented)
-export const Progress: ((props: ProgressProps) => JSX.Element | null) & {
+export const Progress: {
+  (props: ProgressProps): JSX.Element | null;
   ref: SwappableComponentRef<ProgressProps, ProgressProps>;
 };
 
