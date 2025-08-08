@@ -26,7 +26,7 @@ import { ComponentType } from 'react';
 /**
  * This is the old component API that has been replaced by the new SwappableComponentsApi.
  *
- * This backwards compatibility implementation exists to avoid breaking older plugins.$
+ * This backwards compatibility implementation exists to avoid breaking older plugins.
  *
  * This was added for the 1.42 release, and can be removed in the future.
  *
