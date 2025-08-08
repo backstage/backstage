@@ -66,7 +66,8 @@ export function createSwappableComponent<
     TInnerComponentProps,
     TExternalComponentProps
   >,
-): ((props: TExternalComponentProps) => JSX.Element | null) & {
+): {
+  (props: TExternalComponentProps): JSX.Element | null;
   ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>;
 } {
   const FallbackComponent = (p: JSX.IntrinsicAttributes) => (
@@ -105,6 +106,7 @@ export function createSwappableComponent<
   Object.assign(ComponentRefImpl, { ref });
 
   return ComponentRefImpl as {
+    (props: TExternalComponentProps): JSX.Element | null;
     ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>;
-  } & ((props: TExternalComponentProps) => JSX.Element | null);
+  };
 }
