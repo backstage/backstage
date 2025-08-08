@@ -31,7 +31,9 @@ describe('appModulePublicSignIn', () => {
 
   it('should render a sign-in page', async () => {
     const app = createApp({
-      configLoader: async () => ({ config: mockApis.config() }),
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
       features: [
         appModulePublicSignIn,
         createFrontendModule({
@@ -60,7 +62,9 @@ describe('appModulePublicSignIn', () => {
       .mockReturnValue();
 
     const app = createApp({
-      configLoader: async () => ({ config: mockApis.config() }),
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
       features: [
         appModulePublicSignIn,
         createFrontendModule({

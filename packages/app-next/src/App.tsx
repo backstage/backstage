@@ -135,7 +135,9 @@ const app = createApp({
     customHomePageModule,
     ...collectedLegacyPlugins,
   ],
-  pluginInfoResolver,
+  advanced: {
+    pluginInfoResolver,
+  },
   /* Handled through config instead */
   // bindRoutes({ bind }) {
   //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
