@@ -32,7 +32,10 @@ import {
   GetEventsModelImpl,
 } from './endpoints/GetEvents.model';
 import { bindGetEventsEndpoint } from './endpoints/GetEvents.router';
-import { ReadSubscriptionModelImpl } from './endpoints/ReadSubscription.model';
+import {
+  AuthorizedReadSubscriptionModelImpl,
+  ReadSubscriptionModelImpl,
+} from './endpoints/ReadSubscription.model';
 import { bindReadSubscriptionEndpoint } from './endpoints/ReadSubscription.router';
 import { UpsertSubscriptionModelImpl } from './endpoints/UpsertSubscription.model';
 import { bindUpsertSubscriptionEndpoint } from './endpoints/UpsertSubscription.router';
@@ -56,16 +59,18 @@ export async function createRouter(options: {
 
   const router = await createOpenApiRouter();
 
+  const transformConditions = createConditionTransformer(
+    permissionsRegistry.getPermissionRuleset(
+      catalogEntityPermissionResourceRef,
+    ),
+  );
+
   bindGetEventsEndpoint(
     router,
     httpAuth,
     new AuthorizedGetEventsModelImpl({
       permissions,
-      transformConditions: createConditionTransformer(
-        permissionsRegistry.getPermissionRuleset(
-          catalogEntityPermissionResourceRef,
-        ),
-      ),
+      transformConditions,
       inner: new GetEventsModelImpl({
         knexPromise,
         changeListener,
@@ -82,10 +87,14 @@ export async function createRouter(options: {
 
   bindReadSubscriptionEndpoint(
     router,
-    new ReadSubscriptionModelImpl({
-      knexPromise,
-      historyConfig,
-      changeListener,
+    new AuthorizedReadSubscriptionModelImpl({
+      permissions,
+      transformConditions,
+      inner: new ReadSubscriptionModelImpl({
+        knexPromise,
+        historyConfig,
+        changeListener,
+      }),
     }),
   );
 

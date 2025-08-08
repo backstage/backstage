@@ -16,6 +16,7 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
+import waitFor from 'wait-for-expect';
 import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { readHistoryEvents } from './readHistoryEvents';
 
@@ -51,6 +52,13 @@ describe('readHistoryEvents', () => {
       })
       .onConflict('entity_id')
       .merge(['final_entity']);
+
+    await knex('search').insert({
+      entity_id: id,
+      key: 'data',
+      value: String(data),
+      original_value: String(data),
+    });
   }
 
   it.each(databases.eachSupportedId())(
@@ -140,96 +148,183 @@ describe('readHistoryEvents', () => {
     },
   );
 
-  it.each(databases.eachSupportedId())('filters, %p', async databaseId => {
-    const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
+  it.each(databases.eachSupportedId())(
+    'respects filters in options, %p',
+    async databaseId => {
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
-    await setEntity(knex, 'foo', 1);
-    await setEntity(knex, 'bar', 2);
+      await setEntity(knex, 'foo', 1);
+      await setEntity(knex, 'bar', 2);
 
-    await expect(
-      readHistoryEvents(knex, {
-        order: 'asc',
-        limit: 2,
-        entityRef: 'k:ns/foo',
-      }),
-    ).resolves.toEqual([
-      {
-        eventId: '1',
-        eventType: 'entity_created',
-        eventAt: expect.any(Date),
-        entityRef: 'k:ns/foo',
-        entityId: 'id-foo',
-        entityJson: '{"data":1}',
-      },
-    ]);
+      await expect(
+        readHistoryEvents(knex, {
+          order: 'asc',
+          limit: 2,
+          entityRef: 'k:ns/foo',
+        }),
+      ).resolves.toEqual([
+        {
+          eventId: '1',
+          eventType: 'entity_created',
+          eventAt: expect.any(Date),
+          entityRef: 'k:ns/foo',
+          entityId: 'id-foo',
+          entityJson: '{"data":1}',
+        },
+      ]);
 
-    await expect(
-      readHistoryEvents(knex, {
-        order: 'asc',
-        limit: 2,
-        entityRef: 'k:ns/bar',
-      }),
-    ).resolves.toEqual([
-      {
-        eventId: '2',
-        eventType: 'entity_created',
-        eventAt: expect.any(Date),
-        entityRef: 'k:ns/bar',
-        entityId: 'id-bar',
-        entityJson: '{"data":2}',
-      },
-    ]);
+      await expect(
+        readHistoryEvents(knex, {
+          order: 'asc',
+          limit: 2,
+          entityRef: 'k:ns/bar',
+        }),
+      ).resolves.toEqual([
+        {
+          eventId: '2',
+          eventType: 'entity_created',
+          eventAt: expect.any(Date),
+          entityRef: 'k:ns/bar',
+          entityId: 'id-bar',
+          entityJson: '{"data":2}',
+        },
+      ]);
 
-    await expect(
-      readHistoryEvents(knex, {
-        order: 'asc',
-        limit: 2,
-        entityRef: 'wrong',
-      }),
-    ).resolves.toEqual([]);
+      await expect(
+        readHistoryEvents(knex, {
+          order: 'asc',
+          limit: 2,
+          entityRef: 'wrong',
+        }),
+      ).resolves.toEqual([]);
 
-    await expect(
-      readHistoryEvents(knex, {
-        order: 'asc',
-        limit: 2,
-        entityId: 'id-foo',
-      }),
-    ).resolves.toEqual([
-      {
-        eventId: '1',
-        eventType: 'entity_created',
-        eventAt: expect.any(Date),
-        entityRef: 'k:ns/foo',
-        entityId: 'id-foo',
-        entityJson: '{"data":1}',
-      },
-    ]);
+      await expect(
+        readHistoryEvents(knex, {
+          order: 'asc',
+          limit: 2,
+          entityId: 'id-foo',
+        }),
+      ).resolves.toEqual([
+        {
+          eventId: '1',
+          eventType: 'entity_created',
+          eventAt: expect.any(Date),
+          entityRef: 'k:ns/foo',
+          entityId: 'id-foo',
+          entityJson: '{"data":1}',
+        },
+      ]);
 
-    await expect(
-      readHistoryEvents(knex, {
-        order: 'asc',
-        limit: 2,
-        entityId: 'id-bar',
-      }),
-    ).resolves.toEqual([
-      {
-        eventId: '2',
-        eventType: 'entity_created',
-        eventAt: expect.any(Date),
-        entityRef: 'k:ns/bar',
-        entityId: 'id-bar',
-        entityJson: '{"data":2}',
-      },
-    ]);
+      await expect(
+        readHistoryEvents(knex, {
+          order: 'asc',
+          limit: 2,
+          entityId: 'id-bar',
+        }),
+      ).resolves.toEqual([
+        {
+          eventId: '2',
+          eventType: 'entity_created',
+          eventAt: expect.any(Date),
+          entityRef: 'k:ns/bar',
+          entityId: 'id-bar',
+          entityJson: '{"data":2}',
+        },
+      ]);
 
-    await expect(
-      readHistoryEvents(knex, {
-        order: 'asc',
-        limit: 2,
-        entityId: 'wrong',
-      }),
-    ).resolves.toEqual([]);
+      await expect(
+        readHistoryEvents(knex, {
+          order: 'asc',
+          limit: 2,
+          entityId: 'wrong',
+        }),
+      ).resolves.toEqual([]);
 
-    await shutdown();
-  });
+      await shutdown();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'respects filters that apply permissions, %p',
+    async databaseId => {
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
+
+      await setEntity(knex, 'foo', 1);
+      await setEntity(knex, 'bar', 2);
+      await knex('locations').insert({
+        id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+        type: 'url',
+        target: 'https://backstage.io',
+      });
+
+      await waitFor(async () => {
+        await expect(
+          readHistoryEvents(
+            knex,
+            {
+              order: 'asc',
+              limit: 2,
+            },
+            { key: 'data', values: ['1'] },
+          ),
+        ).resolves.toEqual([
+          {
+            eventId: '1',
+            eventType: 'entity_created',
+            eventAt: expect.any(Date),
+            entityRef: 'k:ns/foo',
+            entityId: 'id-foo',
+            entityJson: '{"data":1}',
+            locationId: undefined,
+            locationRef: undefined,
+          },
+          // The location event does not have an entity ID and thus does not get filtered out
+          {
+            eventId: '3',
+            eventType: 'location_created',
+            eventAt: expect.any(Date),
+            entityRef: undefined,
+            entityId: undefined,
+            entityJson: undefined,
+            locationId: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            locationRef: 'url:https://backstage.io',
+          },
+        ]);
+      });
+
+      await waitFor(async () => {
+        await expect(
+          readHistoryEvents(
+            knex,
+            {
+              order: 'asc',
+              limit: 2,
+            },
+            { anyOf: [{ allOf: [{ key: 'data', values: ['2'] }] }] },
+          ),
+        ).resolves.toEqual([
+          {
+            eventId: '2',
+            eventType: 'entity_created',
+            eventAt: expect.any(Date),
+            entityRef: 'k:ns/bar',
+            entityId: 'id-bar',
+            entityJson: '{"data":2}',
+          },
+          {
+            eventId: '3',
+            eventType: 'location_created',
+            eventAt: expect.any(Date),
+            entityRef: undefined,
+            entityId: undefined,
+            entityJson: undefined,
+            locationId: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            locationRef: 'url:https://backstage.io',
+          },
+        ]);
+      });
+
+      await shutdown();
+    },
+  );
 });

@@ -37,6 +37,7 @@ export interface GetEventsOptions {
   readOptions: ReadHistoryEventsOptions;
   block: boolean;
   credentials: BackstageCredentials;
+  filter?: EntityFilter;
   signal: AbortSignal;
 }
 
@@ -97,13 +98,19 @@ export class GetEventsModelImpl implements GetEventsModel {
     const listener = await this.#changeListener.setupListener({
       signal: options.signal,
       checker: () =>
-        readHistoryEvents(knex, {
-          ...readOptions,
-          limit: 1,
-        }).then(entries => entries.length > 0),
+        readHistoryEvents(
+          knex,
+          {
+            ...readOptions,
+            limit: 1,
+          },
+          options.filter,
+        ).then(entries => entries.length > 0),
     });
 
-    const events = skipRead ? [] : await readHistoryEvents(knex, readOptions);
+    const events = skipRead
+      ? []
+      : await readHistoryEvents(knex, readOptions, options.filter);
 
     // Let's generate a cursor for continuing to read, if we got some entries OR
     // if we were reading in ascending order (because then there might be more
@@ -147,7 +154,7 @@ export class GetEventsModelImpl implements GetEventsModel {
 export class AuthorizedGetEventsModelImpl implements GetEventsModel {
   readonly #inner: GetEventsModel;
   readonly #permissions: PermissionsService;
-  readonly _transformConditions: ConditionTransformer<EntityFilter>;
+  readonly #transformConditions: ConditionTransformer<EntityFilter>;
 
   constructor(options: {
     inner: GetEventsModel;
@@ -156,7 +163,7 @@ export class AuthorizedGetEventsModelImpl implements GetEventsModel {
   }) {
     this.#inner = options.inner;
     this.#permissions = options.permissions;
-    this._transformConditions = options.transformConditions;
+    this.#transformConditions = options.transformConditions;
   }
 
   async getEvents(options: GetEventsOptions): Promise<GetEventsResult> {
@@ -171,19 +178,17 @@ export class AuthorizedGetEventsModelImpl implements GetEventsModel {
       throw new NotAllowedError();
     }
 
-    /* TODO: Implement
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
       const permissionFilter: EntityFilter = this.#transformConditions(
         authorizeDecision.conditions,
       );
-      return this.entitiesCatalog.entities({
-        ...request,
-        filter: request?.filter
-          ? { allOf: [permissionFilter, request.filter] }
+      return await this.#inner.getEvents({
+        ...options,
+        filter: options?.filter
+          ? { allOf: [permissionFilter, options.filter] }
           : permissionFilter,
       });
     }
-    */
 
     return await this.#inner.getEvents(options);
   }

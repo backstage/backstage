@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import { EventsTableEntry } from '../../types';
 import { EventsTableRow, toEventsTableEntry } from '../tables';
+import { applyEntityFilterToQuery } from './applyEntityFilterToQuery';
 
 export interface ReadHistoryEventsOptions {
   afterEventId?: string;
@@ -32,6 +34,7 @@ export interface ReadHistoryEventsOptions {
 export async function readHistoryEvents(
   knex: Knex,
   options: ReadHistoryEventsOptions,
+  filter?: EntityFilter,
 ): Promise<EventsTableEntry[]> {
   let query = knex<EventsTableRow>('history_events');
 
@@ -49,7 +52,14 @@ export async function readHistoryEvents(
     query = query.where('entity_id', '=', options.entityId);
   }
 
-  // TODO(freben): Add permissions filter?
+  if (filter) {
+    query = applyEntityFilterToQuery({
+      filter,
+      targetQuery: query,
+      onEntityIdField: 'history_events.entity_id',
+      knex,
+    });
+  }
 
   query = query.orderBy('event_id', options.order).limit(options.limit);
 

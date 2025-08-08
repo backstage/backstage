@@ -15,6 +15,7 @@
  */
 
 import { NotFoundError } from '@backstage/errors';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import { randomUUID } from 'node:crypto';
 import { HistoryConfig } from '../../config';
@@ -56,6 +57,7 @@ export interface ReadHistorySubscriptionOptions {
 export async function readHistorySubscription(
   knex: Knex,
   options: ReadHistorySubscriptionOptions,
+  filter?: EntityFilter,
 ): Promise<{ events: EventsTableEntry[]; ackId: string } | undefined> {
   const { subscriptionId, limit, operation, historyConfig } = options;
 
@@ -100,13 +102,17 @@ export async function readHistorySubscription(
     return undefined;
   }
 
-  const events = await readHistoryEvents(knex, {
-    afterEventId: String(last_acknowledged_event_id),
-    order: 'asc',
-    limit,
-    entityRef: filter_entity_ref ?? undefined,
-    entityId: filter_entity_id ?? undefined,
-  });
+  const events = await readHistoryEvents(
+    knex,
+    {
+      afterEventId: String(last_acknowledged_event_id),
+      order: 'asc',
+      limit,
+      entityRef: filter_entity_ref ?? undefined,
+      entityId: filter_entity_id ?? undefined,
+    },
+    filter,
+  );
 
   if (events.length === 0) {
     return undefined;

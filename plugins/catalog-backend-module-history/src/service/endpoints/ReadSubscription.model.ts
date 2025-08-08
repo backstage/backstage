@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+import {
+  BackstageCredentials,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../../config';
 import { ChangeListener } from '../../database/changeListener/types';
@@ -34,6 +43,8 @@ export type ReadSubscriptionResult =
 export interface ReadSubscriptionModel {
   readSubscription(options: {
     readOptions: ReadSubscriptionOptions;
+    credentials: BackstageCredentials;
+    filter?: EntityFilter;
     signal: AbortSignal;
   }): Promise<ReadSubscriptionResult>;
 }
@@ -55,6 +66,7 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
 
   async readSubscription(options: {
     readOptions: ReadSubscriptionOptions;
+    filter?: EntityFilter;
     signal: AbortSignal;
   }): Promise<ReadSubscriptionResult> {
     const { subscriptionId, limit, block } = options.readOptions;
@@ -73,12 +85,16 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
         }).then(r => r !== undefined),
     });
 
-    const result = await readHistorySubscription(knex, {
-      subscriptionId,
-      operation: 'read',
-      limit,
-      historyConfig: this.#historyConfig,
-    });
+    const result = await readHistorySubscription(
+      knex,
+      {
+        subscriptionId,
+        operation: 'read',
+        limit,
+        historyConfig: this.#historyConfig,
+      },
+      options.filter,
+    );
 
     if (result) {
       return {
@@ -98,5 +114,58 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
       type: 'block',
       wait: () => listener.waitForUpdate(),
     };
+  }
+}
+
+/**
+ * Implements authorization on top of the actual {@link ReadSubscriptionModel} model.
+ */
+export class AuthorizedReadSubscriptionModelImpl
+  implements ReadSubscriptionModel
+{
+  readonly #inner: ReadSubscriptionModel;
+  readonly #permissions: PermissionsService;
+  readonly #transformConditions: ConditionTransformer<EntityFilter>;
+
+  constructor(options: {
+    inner: ReadSubscriptionModel;
+    permissions: PermissionsService;
+    transformConditions: ConditionTransformer<EntityFilter>;
+  }) {
+    this.#inner = options.inner;
+    this.#permissions = options.permissions;
+    this.#transformConditions = options.transformConditions;
+  }
+
+  async readSubscription(options: {
+    readOptions: ReadSubscriptionOptions;
+    credentials: BackstageCredentials;
+    filter?: EntityFilter;
+    signal: AbortSignal;
+  }): Promise<ReadSubscriptionResult> {
+    const authorizeDecision = (
+      await this.#permissions.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { credentials: options.credentials },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError();
+    }
+
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.#transformConditions(
+        authorizeDecision.conditions,
+      );
+      return await this.#inner.readSubscription({
+        ...options,
+        filter: options?.filter
+          ? { allOf: [permissionFilter, options.filter] }
+          : permissionFilter,
+      });
+    }
+
+    return await this.#inner.readSubscription(options);
   }
 }
