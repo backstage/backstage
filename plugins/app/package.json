@@ -25,6 +25,8 @@
     "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -35,8 +37,6 @@
       ]
     }
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
   "files": [
     "dist"
   ],
@@ -57,11 +57,13 @@
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

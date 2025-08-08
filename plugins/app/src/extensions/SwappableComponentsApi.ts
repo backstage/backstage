@@ -20,8 +20,7 @@ import {
   ApiBlueprint,
   swappableComponentsApiRef,
 } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { DefaultSwappableComponentsApi } from '../../../../packages/frontend-app-api/src/apis/implementations/SwappableComponentsApi';
+import { DefaultSwappableComponentsApi } from '../apis/SwappableComponentsApi';
 
 /**
  * Contains the shareable components installed into the app.
