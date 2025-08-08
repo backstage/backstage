@@ -1862,7 +1862,7 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
         | (() => (props: {}) => JSX.Element | null)
         | (() => Promise<(props: {}) => JSX.Element | null>);
     },
-    'core.component.component',
+    'core.swappableComponent',
     {}
   >;
   inputs: {};
@@ -1876,7 +1876,7 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
           | (() => (props: {}) => JSX.Element | null)
           | (() => Promise<(props: {}) => JSX.Element | null>);
       },
-      'core.component.component',
+      'core.swappableComponent',
       {}
     >;
   };

@@ -597,7 +597,7 @@ const appPlugin: FrontendPlugin<
                 | (() => (props: {}) => JSX.Element | null)
                 | (() => Promise<(props: {}) => JSX.Element | null>);
             },
-            'core.component.component',
+            'core.swappableComponent',
             {}
           >,
           {
@@ -740,7 +740,7 @@ const appPlugin: FrontendPlugin<
             | (() => (props: {}) => JSX.Element | null)
             | (() => Promise<(props: {}) => JSX.Element | null>);
         },
-        'core.component.component',
+        'core.swappableComponent',
         {}
       >;
       inputs: {};
@@ -796,7 +796,7 @@ const appPlugin: FrontendPlugin<
             | (() => (props: {}) => JSX.Element | null)
             | (() => Promise<(props: {}) => JSX.Element | null>);
         },
-        'core.component.component',
+        'core.swappableComponent',
         {}
       >;
       inputs: {};
@@ -852,7 +852,7 @@ const appPlugin: FrontendPlugin<
             | (() => (props: {}) => JSX.Element | null)
             | (() => Promise<(props: {}) => JSX.Element | null>);
         },
-        'core.component.component',
+        'core.swappableComponent',
         {}
       >;
       inputs: {};
