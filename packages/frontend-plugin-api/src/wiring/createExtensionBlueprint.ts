@@ -419,7 +419,7 @@ function unwrapParams<TParams extends object>(
  * blueprint, removing a lot of the boilerplate and complexity that is otherwise
  * needed to create an extension.
  *
- * Each blueprint has its own `kind` that helps identity and group the
+ * Each blueprint has its own `kind` that helps identify and group the
  * extensions that have been created with it. For example the
  * {@link PageBlueprint} has the kind `'page'`, and extensions created with it
  * will be given the ID `'page:<plugin-id>[/<name>]'`. Blueprints should always

@@ -308,16 +308,16 @@ export type ExtensionDefinition<
  *
  * @example
  *
- *```ts
- *const myExtension = createExtension({
- *  name: 'example',
- *  attachTo: { id: 'app', input: 'root' },
- *  output: [coreExtensionData.reactElement],
- *  factory() {
- *    return [coreExtensionData.reactElement(<h1>Hello, world!</h1>)];
- *  },
- *});
- *```
+ * ```ts
+ * const myExtension = createExtension({
+ *   name: 'example',
+ *   attachTo: { id: 'app', input: 'root' },
+ *   output: [coreExtensionData.reactElement],
+ *   factory() {
+ *     return [coreExtensionData.reactElement(<h1>Hello, world!</h1>)];
+ *   },
+ * });
+ * ```
  *
  * @public
  */
