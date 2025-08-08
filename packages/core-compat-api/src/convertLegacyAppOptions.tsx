@@ -16,10 +16,9 @@
 
 import { ComponentType } from 'react';
 import {
+  SwappableComponentBlueprint,
   ApiBlueprint,
-  coreComponentRefs,
-  CoreErrorBoundaryFallbackProps,
-  createComponentExtension,
+  ErrorDisplayProps,
   createExtension,
   createFrontendModule,
   ExtensionDefinition,
@@ -28,6 +27,9 @@ import {
   RouterBlueprint,
   SignInPageBlueprint,
   ThemeBlueprint,
+  ErrorDisplay as SwappableErrorDisplay,
+  NotFoundErrorPage as SwappableNotFoundErrorPage,
+  Progress as SwappableProgress,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -154,36 +156,45 @@ export function convertLegacyAppOptions(
     }
     if (Progress) {
       extensions.push(
-        createComponentExtension({
-          ref: coreComponentRefs.progress,
-          loader: { sync: () => componentCompatWrapper(Progress) },
+        SwappableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: SwappableProgress,
+              loader: () => componentCompatWrapper(Progress),
+            }),
         }),
       );
     }
+
     if (NotFoundErrorPage) {
       extensions.push(
-        createComponentExtension({
-          ref: coreComponentRefs.notFoundErrorPage,
-          loader: { sync: () => componentCompatWrapper(NotFoundErrorPage) },
+        SwappableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: SwappableNotFoundErrorPage,
+              loader: () => componentCompatWrapper(NotFoundErrorPage),
+            }),
         }),
       );
     }
+
     if (ErrorBoundaryFallback) {
-      const WrappedErrorBoundaryFallback = (
-        props: CoreErrorBoundaryFallbackProps,
-      ) =>
+      const WrappedErrorBoundaryFallback = (props: ErrorDisplayProps) =>
         compatWrapper(
           <ErrorBoundaryFallback
             {...props}
             plugin={props.plugin && toLegacyPlugin(props.plugin)}
           />,
         );
+
       extensions.push(
-        createComponentExtension({
-          ref: coreComponentRefs.errorBoundaryFallback,
-          loader: {
-            sync: () => componentCompatWrapper(WrappedErrorBoundaryFallback),
-          },
+        SwappableComponentBlueprint.make({
+          params: define =>
+            define({
+              component: SwappableErrorDisplay,
+              loader: () =>
+                componentCompatWrapper(WrappedErrorBoundaryFallback),
+            }),
         }),
       );
     }

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { DefaultComponentsApi } from './DefaultComponentsApi';
+export { DefaultSwappableComponentsApi } from './DefaultSwappableComponentsApi';

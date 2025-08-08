@@ -366,13 +366,13 @@ describe('createApp', () => {
               <theme:app/light out=[core.theme.theme] />
             ]
           </api:app/app-theme>
-          <api:app/components out=[core.api.factory]>
+          <api:app/swappable-components out=[core.api.factory]>
             components [
-              <component:app/core.components.progress out=[core.component.component] />
-              <component:app/core.components.notFoundErrorPage out=[core.component.component] />
-              <component:app/core.components.errorBoundaryFallback out=[core.component.component] />
+              <component:app/core.components.progress out=[core.swappableComponent] />
+              <component:app/core.components.notFoundErrorPage out=[core.swappableComponent] />
+              <component:app/core.components.errorBoundary out=[core.swappableComponent] />
             ]
-          </api:app/components>
+          </api:app/swappable-components>
           <api:app/icons out=[core.api.factory] />
           <api:app/feature-flags out=[core.api.factory] />
           <api:app/translations out=[core.api.factory] />

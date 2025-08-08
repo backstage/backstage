@@ -214,7 +214,6 @@ type AnyParamsInput<TParams extends object | ExtensionBlueprintDefineParams> =
  * @public
  */
 export interface ExtensionBlueprint<
-  // TParamsMapper extends (params: any) => object,
   T extends ExtensionBlueprintParameters = ExtensionBlueprintParameters,
 > {
   dataRefs: T['dataRefs'];

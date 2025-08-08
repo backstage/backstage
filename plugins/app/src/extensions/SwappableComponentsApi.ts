@@ -15,34 +15,33 @@
  */
 
 import {
-  createComponentExtension,
+  SwappableComponentBlueprint,
   createExtensionInput,
   ApiBlueprint,
-  componentsApiRef,
+  swappableComponentsApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { DefaultComponentsApi } from '../../../../packages/frontend-app-api/src/apis/implementations/ComponentsApi';
+import { DefaultSwappableComponentsApi } from '../../../../packages/frontend-app-api/src/apis/implementations/SwappableComponentsApi';
 
 /**
  * Contains the shareable components installed into the app.
  */
-export const ComponentsApi = ApiBlueprint.makeWithOverrides({
-  name: 'components',
+export const SwappableComponentsApi = ApiBlueprint.makeWithOverrides({
+  name: 'swappable-components',
   inputs: {
-    components: createExtensionInput(
-      [createComponentExtension.componentDataRef],
-      { replaces: [{ id: 'app', input: 'components' }] },
-    ),
+    components: createExtensionInput([
+      SwappableComponentBlueprint.dataRefs.component,
+    ]),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory(defineParams =>
       defineParams({
-        api: componentsApiRef,
+        api: swappableComponentsApiRef,
         deps: {},
         factory: () =>
-          DefaultComponentsApi.fromComponents(
+          DefaultSwappableComponentsApi.fromComponents(
             inputs.components.map(i =>
-              i.get(createComponentExtension.componentDataRef),
+              i.get(SwappableComponentBlueprint.dataRefs.component),
             ),
           ),
       }),

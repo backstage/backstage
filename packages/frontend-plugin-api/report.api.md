@@ -350,21 +350,6 @@ export { bitbucketAuthApiRef };
 
 export { bitbucketServerAuthApiRef };
 
-// @public (undocumented)
-export type ComponentRef<T extends {} = {}> = {
-  id: string;
-  T: T;
-};
-
-// @public
-export interface ComponentsApi {
-  // (undocumented)
-  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T>;
-}
-
-// @public
-export const componentsApiRef: ApiRef<ComponentsApi>;
-
 export { ConfigApi };
 
 export { configApiRef };
@@ -390,20 +375,6 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
-export const coreComponentRefs: {
-  progress: ComponentRef<CoreProgressProps>;
-  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageProps>;
-  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackProps>;
-};
-
-// @public (undocumented)
-export type CoreErrorBoundaryFallbackProps = {
-  plugin?: FrontendPlugin;
-  error: Error;
-  resetError: () => void;
-};
-
-// @public (undocumented)
 export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<
     JSX_3.Element,
@@ -418,72 +389,9 @@ export const coreExtensionData: {
   >;
 };
 
-// @public (undocumented)
-export type CoreNotFoundErrorPageProps = {
-  children?: ReactNode;
-};
-
-// @public (undocumented)
-export type CoreProgressProps = {};
-
 export { createApiFactory };
 
 export { createApiRef };
-
-// @public (undocumented)
-export function createComponentExtension<TProps extends {}>(options: {
-  ref: ComponentRef<TProps>;
-  name?: string;
-  disabled?: boolean;
-  loader:
-    | {
-        lazy: () => Promise<ComponentType<TProps>>;
-      }
-    | {
-        sync: () => ComponentType<TProps>;
-      };
-}): ExtensionDefinition<{
-  config: {};
-  configInput: {};
-  output: ExtensionDataRef<
-    {
-      ref: ComponentRef;
-      impl: ComponentType;
-    },
-    'core.component.component',
-    {}
-  >;
-  inputs: {
-    [x: string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
-  };
-  params: never;
-  kind: 'component';
-  name: string;
-}>;
-
-// @public (undocumented)
-export namespace createComponentExtension {
-  const // (undocumented)
-    componentDataRef: ConfigurableExtensionDataRef<
-      {
-        ref: ComponentRef;
-        impl: ComponentType;
-      },
-      'core.component.component',
-      {}
-    >;
-}
-
-// @public (undocumented)
-export function createComponentRef<T extends {} = {}>(options: {
-  id: string;
-}): ComponentRef<T>;
 
 // @public (undocumented)
 export function createExtension<
@@ -849,6 +757,31 @@ export function createSubRouteRef<
   parent: RouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
+// @public
+export function createSwappableComponent<
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+>(
+  options: CreateSwappableComponentOptions<
+    TInnerComponentProps,
+    TExternalComponentProps
+  >,
+): ((props: TExternalComponentProps) => JSX.Element | null) & {
+  ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>;
+};
+
+// @public
+export type CreateSwappableComponentOptions<
+  TInnerComponentProps extends {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+> = {
+  id: string;
+  loader?:
+    | (() => (props: TInnerComponentProps) => JSX.Element | null)
+    | (() => Promise<(props: TInnerComponentProps) => JSX.Element | null>);
+  transformProps?: (props: TExternalComponentProps) => TInnerComponentProps;
+};
+
 export { createTranslationMessages };
 
 export { createTranslationRef };
@@ -898,6 +831,20 @@ export { ErrorApiError };
 export { ErrorApiErrorContext };
 
 export { errorApiRef };
+
+// @public (undocumented)
+export const ErrorDisplay: ((
+  props: ErrorDisplayProps,
+) => JSX.Element | null) & {
+  ref: SwappableComponentRef<ErrorDisplayProps, ErrorDisplayProps>;
+};
+
+// @public (undocumented)
+export type ErrorDisplayProps = {
+  plugin?: FrontendPlugin;
+  error: Error;
+  resetError: () => void;
+};
 
 // @public (undocumented)
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -1554,6 +1501,18 @@ export const NavItemBlueprint: ExtensionBlueprint<{
   };
 }>;
 
+// @public (undocumented)
+export const NotFoundErrorPage: ((
+  props: NotFoundErrorPageProps,
+) => JSX.Element | null) & {
+  ref: SwappableComponentRef<NotFoundErrorPageProps, NotFoundErrorPageProps>;
+};
+
+// @public (undocumented)
+export type NotFoundErrorPageProps = {
+  children?: ReactNode;
+};
+
 export { OAuthApi };
 
 export { OAuthRequestApi };
@@ -1637,6 +1596,14 @@ export type PortableSchema<TOutput, TInput = TOutput> = {
 export { ProfileInfo };
 
 export { ProfileInfoApi };
+
+// @public (undocumented)
+export const Progress: ((props: ProgressProps) => JSX.Element | null) & {
+  ref: SwappableComponentRef<ProgressProps, ProgressProps>;
+};
+
+// @public (undocumented)
+export type ProgressProps = {};
 
 // @public
 export type ResolvedExtensionInput<
@@ -1831,6 +1798,90 @@ export interface SubRouteRef<
 }
 
 // @public
+export const SwappableComponentBlueprint: ExtensionBlueprint<{
+  kind: 'component';
+  params: <Ref extends SwappableComponentRef<any>>(params: {
+    component: Ref extends SwappableComponentRef<
+      any,
+      infer IExternalComponentProps
+    >
+      ? {
+          ref: Ref;
+        } & ((props: IExternalComponentProps) => JSX.Element | null)
+      : never;
+    loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
+      ?
+          | (() => (props: IInnerComponentProps) => JSX.Element | null)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
+      : never;
+  }) => ExtensionBlueprintParams<{
+    component: Ref extends SwappableComponentRef<
+      any,
+      infer IExternalComponentProps
+    >
+      ? {
+          ref: Ref;
+        } & ((props: IExternalComponentProps) => JSX.Element | null)
+      : never;
+    loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
+      ?
+          | (() => (props: IInnerComponentProps) => JSX.Element | null)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
+      : never;
+  }>;
+  output: ExtensionDataRef<
+    {
+      ref: SwappableComponentRef;
+      loader:
+        | (() => (props: {}) => JSX.Element | null)
+        | (() => Promise<(props: {}) => JSX.Element | null>);
+    },
+    'core.swappableComponent',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef<
+      {
+        ref: SwappableComponentRef;
+        loader:
+          | (() => (props: {}) => JSX.Element | null)
+          | (() => Promise<(props: {}) => JSX.Element | null>);
+      },
+      'core.swappableComponent',
+      {}
+    >;
+  };
+}>;
+
+// @public (undocumented)
+export type SwappableComponentRef<
+  TInnerComponentProps extends {} = {},
+  TExternalComponentProps extends {} = TInnerComponentProps,
+> = {
+  id: string;
+  TProps: TInnerComponentProps;
+  TExternalProps: TExternalComponentProps;
+  $$type: '@backstage/SwappableComponentRef';
+};
+
+// @public
+export interface SwappableComponentsApi {
+  // (undocumented)
+  getComponent<
+    TInnerComponentProps extends {},
+    TExternalComponentProps extends {} = TInnerComponentProps,
+  >(
+    ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>,
+  ): (props: TInnerComponentProps) => JSX.Element | null;
+}
+
+// @public
+export const swappableComponentsApiRef: ApiRef<SwappableComponentsApi>;
+
+// @public
 export const ThemeBlueprint: ExtensionBlueprint<{
   kind: 'theme';
   params: {
@@ -1905,11 +1956,6 @@ export { useApiHolder };
 
 // @public
 export function useAppNode(): AppNode | undefined;
-
-// @public
-export function useComponentRef<T extends {}>(
-  ref: ComponentRef<T>,
-): ComponentType<T>;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(
