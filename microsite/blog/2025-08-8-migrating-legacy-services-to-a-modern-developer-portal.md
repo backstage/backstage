@@ -1,4 +1,5 @@
 ---
+# prettier-ignore
 title: 'Migrating legacy services to a modern developer portal: A technical guide to Backstage integration'
 author: Damola Obaleke
 authorURL: https://github.com/damolaobaleke
