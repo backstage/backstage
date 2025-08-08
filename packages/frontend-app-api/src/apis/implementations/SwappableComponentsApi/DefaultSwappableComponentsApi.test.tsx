@@ -197,7 +197,7 @@ describe('DefaultSwappableComponentsApi', () => {
           params: define =>
             define({
               component: MockComponent,
-              loader: () => () => <div>Overriden!</div>,
+              loader: () => () => <div>Overridden!</div>,
             }),
         });
 
@@ -206,7 +206,7 @@ describe('DefaultSwappableComponentsApi', () => {
         });
 
         await expect(
-          screen.findByText('Overriden!'),
+          screen.findByText('Overridden!'),
         ).resolves.toBeInTheDocument();
       });
 
@@ -220,7 +220,7 @@ describe('DefaultSwappableComponentsApi', () => {
           params: define =>
             define({
               component: MockComponent,
-              loader: async () => () => <div>Overriden!</div>,
+              loader: async () => () => <div>Overridden!</div>,
             }),
         });
 
@@ -229,7 +229,7 @@ describe('DefaultSwappableComponentsApi', () => {
         });
 
         await expect(
-          screen.findByText('Overriden!'),
+          screen.findByText('Overridden!'),
         ).resolves.toBeInTheDocument();
       });
 
@@ -247,7 +247,7 @@ describe('DefaultSwappableComponentsApi', () => {
           params: define =>
             define({
               component: MockComponent,
-              loader: () => props => <div>overriden: {props.inner}</div>,
+              loader: () => props => <div>overridden: {props.inner}</div>,
             }),
         });
 
@@ -256,7 +256,7 @@ describe('DefaultSwappableComponentsApi', () => {
         });
 
         await expect(
-          screen.findByText('overriden: test'),
+          screen.findByText('overridden: test'),
         ).resolves.toBeInTheDocument();
       });
     });

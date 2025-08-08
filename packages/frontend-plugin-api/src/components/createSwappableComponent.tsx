@@ -54,7 +54,7 @@ const useComponentRefApi = () => {
 };
 
 /**
- * Creates a SwappableComponent that can be used to render the component, optionally overriden by the app.
+ * Creates a SwappableComponent that can be used to render the component, optionally overridden by the app.
  *
  * @public
  */
