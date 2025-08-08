@@ -39,9 +39,14 @@ export const SwappableComponentsApi = ApiBlueprint.makeWithOverrides({
         deps: {},
         factory: () =>
           DefaultSwappableComponentsApi.fromComponents(
-            inputs.components.map(i =>
-              i.get(SwappableComponentBlueprint.dataRefs.component),
-            ),
+            inputs.components.map(i => {
+              if (i.node.spec.plugin?.id !== 'app') {
+                throw new Error(
+                  `SwappableComponents can only be installed as an extension in the app plugin. You can either use appPlugin.override(), or provide a module for the app-plugin with the extension there instead. id={${i.node.spec.id}}`,
+                );
+              }
+              return i.get(SwappableComponentBlueprint.dataRefs.component);
+            }),
           ),
       }),
     );
