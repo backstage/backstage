@@ -46,15 +46,15 @@ export interface InternalFrontendModule extends FrontendModule {
 }
 
 /**
- * Creates a new module instance that can be installed in a Backstage app.
+ * Creates a new module that can be installed in a Backstage app.
  *
  * @remarks
  *
  * Modules are used to add or override extensions for an existing plugin. If a
  * module provides an extension with the same ID as one provided by the plugin,
- * the extension provided by the module will always take presedence.
+ * the extension provided by the module will always take precedence.
  *
- * Every module instance is created for a specific plugin by providing the
+ * Every module is created for a specific plugin by providing the
  * unique ID of the plugin that the module should be installed for. If that
  * plugin is not present in the app, the module will be ignored and have no
  * effect.
@@ -67,20 +67,20 @@ export interface InternalFrontendModule extends FrontendModule {
  *
  * @example
  *
- *```tsx
- *import { createFrontendModule } from '@backstage/frontend-plugin-api';
+ * ```tsx
+ * import { createFrontendModule } from '@backstage/frontend-plugin-api';
  *
- *export const exampleModuleCustomPage = createFrontendModule({
- *  pluginId: 'example',
- *  extensions: [
- *    // Overrides the default page for the 'example' plugin
- *    PageBlueprint.make({
- *      path: '/example',
- *      loader: () => import('./CustomPage').then(m => <m.CustomPage />),
- *    }),
- *  ],
- *});
- *```
+ * export const exampleModuleCustomPage = createFrontendModule({
+ *   pluginId: 'example',
+ *   extensions: [
+ *     // Overrides the default page for the 'example' plugin
+ *     PageBlueprint.make({
+ *       path: '/example',
+ *       loader: () => import('./CustomPage').then(m => <m.CustomPage />),
+ *     }),
+ *   ],
+ * });
+ * ```
  *
  * @public
  */

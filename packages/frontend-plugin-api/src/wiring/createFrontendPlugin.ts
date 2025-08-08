@@ -136,11 +136,11 @@ export interface PluginOptions<
 }
 
 /**
- * Creates a new plugin instance that can be installed in a Backstage app.
+ * Creates a new plugin that can be installed in a Backstage app.
  *
  * @remarks
  *
- * Every plugin instance is created with a unique ID and a set of extensions
+ * Every plugin is created with a unique ID and a set of extensions
  * that are installed as part of the plugin.
  *
  * For more information on how plugins work, see the
