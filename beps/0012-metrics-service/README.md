@@ -61,7 +61,7 @@ The catalog and scaffolder plugins will be updated to use the new metrics servic
 
 ## Proposal
 
-Following similar patterns to other core services, create a new `RootMetricsService` responsible for root-level concerns and the creation of plugin-specific `MetricsService` instances. The root service delegates to the plugin-scoped `MetricsService` to initialize a meter for each registered plugin based on the `service.name` and optional `service.version` provided in the app's `app-config.yaml` file. This is based on the recommendation in the OpenTelemetry [documentation](https://opentelemetry.io/docs/languages/js/instrumentation/#acquiring-a-meter).
+Following similar patterns to other core services, create a new `RootMetricsService` responsible for root-level concerns and the creation of plugin-specific `MetricsService` instances.
 
 ## Naming Conventions
 
@@ -72,8 +72,8 @@ All Backstage metrics follow this hierarchical pattern:
 **Where:**
 
 - `backstage` is the root namespace for all Backstage metrics
-- `{scope}` is the system scope (either **plugin** or **service**)
-- `{scope_name}` is the name of the plugin or service (e.g., `catalog`, `scaffolder`, `database`, `scheduler`)
+- `{scope}` is the system scope (either **plugin** or **framework**)
+- `{scope_name}` is the name of the plugin or framework service (e.g., `catalog`, `scaffolder`, `database`, `scheduler`)
 - `{metric_name}` is the hierarchical metric name as provided by the plugin author (e.g., `entities.processed.total`, `tasks.completed.total`)
 
 ### Scope
@@ -81,7 +81,7 @@ All Backstage metrics follow this hierarchical pattern:
 The `scope` represents where it belongs in the Backstage ecosystem.
 
 - `plugin` - A plugin-specific metric (e.g. `backstage.plugin.catalog.entities.count`)
-- `service` - A core service metric (e.g. `backstage.service.database.connections.active`)
+- `framework` - A metric provided by the framework (e.g. `backstage.framework.database.connections.active`)
 
 ### Plugin-Scoped Metrics
 
@@ -95,15 +95,15 @@ backstage.plugin.techdocs.builds.active
 backstage.plugin.auth.sessions.active.total # todo: technically a core service and a backend plugin
 ```
 
-### Core Metrics
+### Framework-Scoped Metrics
 
-Pattern: `backstage.service.{core_service}.{metric_name}`
+Pattern: `backstage.framework.{service}.{metric_name}`
 
 ```yaml
 # Examples
-backstage.service.database.connections.active
-backstage.service.scheduler.tasks.queued.total
-backstage.service.httpRouter.requests.total
+backstage.framework.database.connections.active
+backstage.framework.scheduler.tasks.queued.total
+backstage.framework.httpRouter.requests.total
 ```
 
 ## Design Details
@@ -125,17 +125,19 @@ The `MetricsService` **complements** rather than duplicates auto-instrumentation
 // MetricsService provides (manually):
 const entityMetrics = metricsService.createCounter('entities.processed.total');
 entityMetrics.add(entities.length, { operation: 'refresh', kind: 'Component' });
+
+// Metric is now available as `backstage.plugin.catalog.entities.processed.total`
 ```
 
 ### Configuration
 
 A challenging factor of only introducing a `MetricsService` is the need to collect other OTEL-related configuration such as resources, tracing providers, views, and more prior to starting the SDK. This means that in order to introduce a `MetricsService`, we must support all OTEL Node SDK configuration along with it. Along with this, the official recommendation from the OTEL team is to not initialize and start the SDK on behalf of the user.
 
-With this, we will not include any configuration as part of this BEP. Users will be responsible for initializing the SDK based on the current guidance
+With this, **we will not include any configuration** as part of this BEP. Users will be responsible for initializing the SDK based on the current guidance
 
 ### Interface
 
-Provide a wrapper around OpenTelemetry's API while re-exporting the types from the `@opentelemetry/api` package. This introduces concepts already familiar to both the Backstage community and those familiar with OpenTelemetry.
+Provide a wrapper around OpenTelemetry's API while leveraging the types from the `@opentelemetry/api` package. This introduces concepts already familiar to both the Backstage community and those familiar with OpenTelemetry.
 
 ```ts
 interface MetricsService {
@@ -162,7 +164,7 @@ interface MetricsService {
 
 #### Root Metrics Service
 
-The `RootMetricsService` is responsible for providing metrics to other root services and creating both plugin-scoped and service-scoped `MetricsService` instances.
+The `RootMetricsService` is responsible for providing metrics to other root services and creating both plugin-scoped and framework-scoped `MetricsService` instances.
 
 ```ts
 interface RootMetricsService {
@@ -182,27 +184,6 @@ export const rootMetricsServiceFactory = createServiceFactory({
 });
 ```
 
-```ts
-class DefaultRootMetricsService implements RootMetricsService {
-  private sdk: NodeSDK;
-
-  static forRoot(): RootMetricsService {
-    /**
-     * By this point, the user should have already initialized the SDK with their own configuration.
-     */
-    return new DefaultRootMetricsService();
-  }
-
-  forPlugin(pluginId: string): MetricsService {
-    return new PluginMetricsService(pluginId);
-  }
-
-  forService(serviceName: string, scope: 'plugin' | 'service'): MetricsService {
-    return new ServiceMetricsService(serviceName, scope);
-  }
-}
-```
-
 #### Plugin Metrics Service
 
 Each plugin receives a metrics service that automatically namespaces all metrics to match the naming conventions.
@@ -218,22 +199,9 @@ const metricsServiceFactory = createServiceFactory({
     return rootMetrics.forPlugin(pluginMetadata.getId());
   },
 });
-
-class PluginMetricsService implements MetricsService {
-  // ...
-  constructor(private pluginId: string) {
-    this.meter = metrics.getMeter(`backstage.plugin.${pluginId}`);
-  }
-
-  // ... other interface methods
-
-  private prefixMetricName(name: string): string {
-    return `backstage.plugin.${this.pluginId}.${name}`;
-  }
-}
 ```
 
-##### Example
+#### Example
 
 ```ts
 const entitiesProcessed = metricsService.createCounter(
@@ -265,7 +233,9 @@ entitiesProcessed.add(100);
 
 ## Deprecation Plan
 
-TBD
+1. Deprecation warning are added to all existing metrics
+2. New metrics will run in parallel with the deprecated ones for a period of time
+3. All existing metrics are removed from the codebase in the next major version
 
 ## Dependencies
 
