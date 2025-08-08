@@ -2,4 +2,4 @@
 '@backstage/plugin-app': patch
 ---
 
-Force installation of `SwappableComponent` extensions using the `app` plugin
+Log a warning when `SwappableComponent` extensions are installed outside of using the `app` plugin
