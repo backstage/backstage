@@ -56,6 +56,11 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
     }
     return originalFactory({
       type: 'info',
+      filter: {
+        $not: {
+          kind: { $in: ['user', 'group'] },
+        },
+      },
       async loader() {
         const { InternalAboutCard } = await import(
           '../components/AboutCard/AboutCard'
@@ -72,7 +77,7 @@ export const catalogLinksEntityCard = EntityCardBlueprint.make({
   name: 'links',
   params: {
     type: 'info',
-    filter: 'has:links',
+    filter: { 'metadata.links': { $exists: true } },
     loader: async () =>
       import('../components/EntityLinksCard').then(m =>
         compatWrapper(<m.EntityLinksCard variant="gridItem" />),
@@ -84,7 +89,7 @@ export const catalogLabelsEntityCard = EntityCardBlueprint.make({
   name: 'labels',
   params: {
     type: 'info',
-    filter: 'has:labels',
+    filter: { 'metadata.labels': { $exists: true } },
     loader: async () =>
       import('../components/EntityLabelsCard').then(m =>
         compatWrapper(<m.EntityLabelsCard variant="gridItem" />),
@@ -95,7 +100,7 @@ export const catalogLabelsEntityCard = EntityCardBlueprint.make({
 export const catalogDependsOnComponentsEntityCard = EntityCardBlueprint.make({
   name: 'depends-on-components',
   params: {
-    filter: 'kind:component',
+    filter: { kind: 'component' },
     loader: async () =>
       import('../components/DependsOnComponentsCard').then(m =>
         compatWrapper(<m.DependsOnComponentsCard variant="gridItem" />),
@@ -106,7 +111,7 @@ export const catalogDependsOnComponentsEntityCard = EntityCardBlueprint.make({
 export const catalogDependsOnResourcesEntityCard = EntityCardBlueprint.make({
   name: 'depends-on-resources',
   params: {
-    filter: 'kind:component',
+    filter: { kind: 'component' },
     loader: async () =>
       import('../components/DependsOnResourcesCard').then(m =>
         compatWrapper(<m.DependsOnResourcesCard variant="gridItem" />),
@@ -117,7 +122,7 @@ export const catalogDependsOnResourcesEntityCard = EntityCardBlueprint.make({
 export const catalogHasComponentsEntityCard = EntityCardBlueprint.make({
   name: 'has-components',
   params: {
-    filter: 'kind:system',
+    filter: { kind: 'system' },
     loader: async () =>
       import('../components/HasComponentsCard').then(m =>
         compatWrapper(<m.HasComponentsCard variant="gridItem" />),
@@ -128,7 +133,7 @@ export const catalogHasComponentsEntityCard = EntityCardBlueprint.make({
 export const catalogHasResourcesEntityCard = EntityCardBlueprint.make({
   name: 'has-resources',
   params: {
-    filter: 'kind:system',
+    filter: { kind: 'system' },
     loader: async () =>
       import('../components/HasResourcesCard').then(m =>
         compatWrapper(<m.HasResourcesCard variant="gridItem" />),
@@ -139,7 +144,7 @@ export const catalogHasResourcesEntityCard = EntityCardBlueprint.make({
 export const catalogHasSubcomponentsEntityCard = EntityCardBlueprint.make({
   name: 'has-subcomponents',
   params: {
-    filter: 'kind:component',
+    filter: { kind: 'component' },
     loader: async () =>
       import('../components/HasSubcomponentsCard').then(m =>
         compatWrapper(<m.HasSubcomponentsCard variant="gridItem" />),
@@ -150,7 +155,7 @@ export const catalogHasSubcomponentsEntityCard = EntityCardBlueprint.make({
 export const catalogHasSubdomainsEntityCard = EntityCardBlueprint.make({
   name: 'has-subdomains',
   params: {
-    filter: 'kind:domain',
+    filter: { kind: 'domain' },
     loader: async () =>
       import('../components/HasSubdomainsCard').then(m =>
         compatWrapper(<m.HasSubdomainsCard variant="gridItem" />),
@@ -161,7 +166,7 @@ export const catalogHasSubdomainsEntityCard = EntityCardBlueprint.make({
 export const catalogHasSystemsEntityCard = EntityCardBlueprint.make({
   name: 'has-systems',
   params: {
-    filter: 'kind:domain',
+    filter: { kind: 'domain' },
     loader: async () =>
       import('../components/HasSystemsCard').then(m =>
         compatWrapper(<m.HasSystemsCard variant="gridItem" />),

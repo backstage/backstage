@@ -1,5 +1,38 @@
 # @backstage/backend-test-utils
 
+## 1.7.1-next.0
+
+### Patch Changes
+
+- 3a7dad9: Updated `better-sqlite3` to v12
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.2-next.0
+  - @backstage/backend-app-api@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.6.6-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.1
+
+## 1.7.0
+
+### Minor Changes
+
+- ead925a: Add a standard `toString` on credentials objects
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/backend-app-api@1.2.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.5
+  - @backstage/plugin-events-node@0.4.13
+
 ## 1.7.0-next.1
 
 ### Patch Changes

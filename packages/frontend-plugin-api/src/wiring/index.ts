@@ -55,8 +55,6 @@ export {
 } from './createFrontendFeatureLoader';
 export { type Extension } from './resolveExtensionDefinition';
 export {
-  type AnyRoutes,
-  type AnyExternalRoutes,
   type ExtensionDataContainer,
   type FeatureFlagConfig,
   type ExtensionFactoryMiddleware,
@@ -66,6 +64,8 @@ export {
   type CreateExtensionBlueprintOptions,
   type ExtensionBlueprint,
   type ExtensionBlueprintParameters,
+  type ExtensionBlueprintParams,
+  type ExtensionBlueprintDefineParams,
   createExtensionBlueprint,
+  createExtensionBlueprintParams,
 } from './createExtensionBlueprint';
-export { type ResolveInputValueOverrides } from './resolveInputOverrides';

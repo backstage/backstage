@@ -1,5 +1,25 @@
 # @backstage/catalog-client
 
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 6b608e7: Added the analyze-location endpoint to the CatalogClient
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+  - @backstage/errors@1.2.7
+
+## 1.10.2
+
+### Patch Changes
+
+- 6fb4143: allow arrays in the InMemoryCatalogClient to filter entities
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+
 ## 1.10.2-next.0
 
 ### Patch Changes

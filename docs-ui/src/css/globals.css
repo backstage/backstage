@@ -1,0 +1,98 @@
+:root {
+  --bg: #f4f4f4;
+  --panel: #fff;
+  --panel-hover: #fafafa;
+  --primary: #000;
+  --secondary: #929292;
+  --action: #fff;
+  --link: #4f5ce0;
+  --font-regular: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono',
+    'Courier New', monospace;
+  --font-weight-regular: 400;
+  --font-weight-bold: 600;
+  --border: #e5e5e5;
+  --border2: #cdcdcd;
+  --surface-1: #f4f4f4;
+}
+
+[data-theme='dark'] {
+  --bg: #000;
+  --panel: #181818;
+  --panel-hover: #202020;
+  --primary: #fff;
+  --secondary: #818181;
+  --action: #202020;
+  --link: #4856e8;
+  --border: #2a2a2a;
+  --border2: #2a2a2a;
+  --surface-1: #282828;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--primary);
+  font-family: var(--font-regular);
+}
+
+iframe {
+  border: none;
+  width: 100%;
+}
+
+.shiki {
+  margin: 0;
+}
+
+.shiki,
+.shiki span {
+  background-color: transparent !important;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+[data-theme='dark'] .shiki,
+[data-theme='dark'] .shiki span {
+  color: var(--shiki-dark) !important;
+  /* Optional, if you also want font styles */
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+.cm-editor {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.ͼ2 .cm-gutters {
+  background-color: var(--bg);
+  border-right: 1px solid var(--border);
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.ͼ1 .cm-lineNumbers .cm-gutterElement {
+  padding-right: 8px;
+  padding-left: 8px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 34px;
+}
+
+.cm-line {
+  font-size: 0.875rem;
+}
+
+.ͼ1 .cm-line {
+  padding-left: 12px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+.cm-focused {
+  outline: none !important;
+}

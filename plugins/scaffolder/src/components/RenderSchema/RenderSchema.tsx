@@ -102,6 +102,9 @@ const getSubschemas = (schema: JSONSchema7Definition): subSchemasType => {
       base[key as Exclude<keyof JSONSchema7, keyof subSchemasType>] = value;
     }
   }
+  if (!(base?.type === 'object' || 'properties' in base)) {
+    return subschemas;
+  }
   return Object.fromEntries(
     Object.entries(subschemas).map(([key, sub]) => {
       const mergedSubschema = sub.map(alt => {
@@ -358,13 +361,15 @@ export const RenderSchema = ({
       let columns: Column[] | undefined;
       let elements: SchemaRenderElement[] | undefined;
       if (strategy === 'root') {
-        elements = [{ schema }];
-        columns = [typeColumn];
-        if (schema.description) {
-          columns.unshift(descriptionColumn);
-        }
-        if (schema.title) {
-          columns.unshift(titleColumn);
+        if ('type' in schema || !Object.keys(subschemas).length) {
+          elements = [{ schema }];
+          columns = [typeColumn];
+          if (schema.description) {
+            columns.unshift(descriptionColumn);
+          }
+          if (schema.title) {
+            columns.unshift(titleColumn);
+          }
         }
       } else if (schema.properties) {
         columns = [nameColumn, titleColumn, descriptionColumn, typeColumn];

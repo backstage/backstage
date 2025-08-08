@@ -288,6 +288,7 @@ namespaced
 namespaces
 Namespaces
 namespacing
+navbar
 neuro
 newrelic
 nginx
@@ -323,6 +324,8 @@ pagerduty
 pageview
 Pandey
 parallelization
+param
+params
 parseable
 Patrik
 pattison
@@ -367,6 +370,7 @@ readonly
 rebase
 rebasing
 Recharts
+redactions
 Redash
 redis
 reimplement
@@ -376,6 +380,7 @@ replicasets
 repo
 Repo
 repos
+requestors
 rerender
 rerenders
 resourcequotas
@@ -383,6 +388,9 @@ retryable
 reusability
 Reusability
 roadmaps
+rollbar
+rollout
+rollouts
 Roboto
 rollbar
 Rollbar
@@ -459,6 +467,7 @@ Superfences
 superset
 supertype
 SVGs
+swappable
 talkdesk
 Talkdesk
 Tanzu

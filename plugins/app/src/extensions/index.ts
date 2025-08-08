@@ -20,18 +20,14 @@ export { AppNav } from './AppNav';
 export { AppRoot } from './AppRoot';
 export { AppRoutes } from './AppRoutes';
 export { AppThemeApi, DarkTheme, LightTheme } from './AppThemeApi';
-export { ComponentsApi } from './ComponentsApi';
+export { SwappableComponentsApi } from './SwappableComponentsApi';
 export { IconsApi } from './IconsApi';
 export { FeatureFlagsApi } from './FeatureFlagsApi';
 export { TranslationsApi } from './TranslationsApi';
 export { DefaultSignInPage } from './DefaultSignInPage';
 export { dialogDisplayAppRootElement } from './DialogDisplay';
 export {
-  DefaultProgressComponent,
-  DefaultErrorBoundaryComponent,
-  DefaultNotFoundErrorPageComponent,
-} from './components';
-export {
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
 } from './elements';
+export { Progress, NotFoundErrorPage, ErrorBoundary } from './components';

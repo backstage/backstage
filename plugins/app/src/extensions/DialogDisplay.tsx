@@ -31,7 +31,7 @@ function getDialogId() {
   return dialogId.toString(36);
 }
 
-type DialogState = DialogApiDialog & {
+type DialogState = DialogApiDialog<unknown> & {
   id: string;
   modal: boolean;
 };

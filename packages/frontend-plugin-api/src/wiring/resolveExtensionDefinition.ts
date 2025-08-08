@@ -23,10 +23,7 @@ import {
 } from './createExtension';
 import { PortableSchema } from '../schema';
 import { ExtensionInput } from './createExtensionInput';
-import {
-  AnyExtensionDataRef,
-  ExtensionDataValue,
-} from './createExtensionDataRef';
+import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 /** @public */
@@ -50,13 +47,13 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
           [inputName in string]: {
             $$type: '@backstage/ExtensionInput';
             extensionData: {
-              [name in string]: AnyExtensionDataRef;
+              [name in string]: ExtensionDataRef;
             };
             config: { optional: boolean; singleton: boolean };
           };
         };
         readonly output: {
-          [name in string]: AnyExtensionDataRef;
+          [name in string]: ExtensionDataRef;
         };
         factory(context: {
           apis: ApiHolder;
@@ -73,18 +70,18 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
         readonly version: 'v2';
         readonly inputs: {
           [inputName in string]: ExtensionInput<
-            AnyExtensionDataRef,
+            ExtensionDataRef,
             { optional: boolean; singleton: boolean }
           >;
         };
-        readonly output: Array<AnyExtensionDataRef>;
+        readonly output: Array<ExtensionDataRef>;
         factory(options: {
           apis: ApiHolder;
           node: AppNode;
           config: TConfig;
           inputs: ResolvedExtensionInputs<{
             [inputName in string]: ExtensionInput<
-              AnyExtensionDataRef,
+              ExtensionDataRef,
               { optional: boolean; singleton: boolean }
             >;
           }>;
@@ -116,6 +113,7 @@ export type ResolveExtensionId<
 > = TExtension extends ExtensionDefinition<{
   kind: infer IKind extends string | undefined;
   name: infer IName extends string | undefined;
+  params: any;
 }>
   ? [string] extends [IKind | IName]
     ? never

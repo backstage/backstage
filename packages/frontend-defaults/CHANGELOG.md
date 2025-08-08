@@ -1,5 +1,53 @@
 # @backstage/frontend-defaults
 
+## 0.3.0-next.2
+
+### Minor Changes
+
+- 76832a9: **BREAKING**: Removed the deprecated `CreateAppFeatureLoader` and support for it in other APIs. Switch existing usage to use the newer `createFrontendFeatureLoader` from `@backstage/frontend-plugin-api` instead.
+
+### Patch Changes
+
+- 22de964: Deprecated `createPublicSignInApp`, which has been replaced by the new `appModulePublicSignIn` from `@backstage/plugin-app/alpha` instead.
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/frontend-app-api@0.12.0-next.2
+  - @backstage/plugin-app@0.2.0-next.1
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 0.2.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.5-next.1
+  - @backstage/plugin-app@0.2.0-next.0
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- 7adc846: Added support for passing through `allowUnknownExtensionConfig` as a flag
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.5-next.0
+  - @backstage/plugin-app@0.1.11
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/frontend-app-api@0.11.4
+  - @backstage/plugin-app@0.1.11
+  - @backstage/frontend-plugin-api@0.10.4
+
 ## 0.2.4-next.1
 
 ### Patch Changes

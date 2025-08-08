@@ -102,5 +102,6 @@ export namespace catalogServiceMock {
     removeLocationById: jest.fn(),
     getLocationByEntity: jest.fn(),
     validateEntity: jest.fn(),
+    analyzeLocation: jest.fn(),
   }));
 }

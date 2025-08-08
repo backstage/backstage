@@ -25,17 +25,17 @@ import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorBoundary } from './ErrorBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { AppNode, useComponentRef } from '../apis';
-import { coreComponentRefs } from './coreComponentRefs';
+import { AppNode } from '../apis';
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
+import { Progress } from './DefaultSwappableComponents';
 
 type RouteTrackerProps = PropsWithChildren<{
-  disableTracking?: boolean;
+  enabled?: boolean;
 }>;
 
 const RouteTracker = (props: RouteTrackerProps) => {
-  const { disableTracking, children } = props;
+  const { enabled, children } = props;
   const analytics = useAnalytics();
 
   // This event, never exposed to end-users of the analytics API,
@@ -43,9 +43,10 @@ const RouteTracker = (props: RouteTrackerProps) => {
   // navigation event when the route navigated to is a gathered
   // mountpoint.
   useEffect(() => {
-    if (disableTracking) return;
-    analytics.captureEvent(routableExtensionRenderedEvent, '');
-  }, [analytics, disableTracking]);
+    if (enabled) {
+      analytics.captureEvent(routableExtensionRenderedEvent, '');
+    }
+  }, [analytics, enabled]);
 
   return <>{children}</>;
 };
@@ -53,26 +54,18 @@ const RouteTracker = (props: RouteTrackerProps) => {
 /** @public */
 export interface ExtensionBoundaryProps {
   node: AppNode;
-  /**
-   * This explicitly marks the extension as routable for the purpose of
-   * capturing analytics events. If not provided, the extension boundary will be
-   * marked as routable if it outputs a routePath.
-   */
-  routable?: boolean;
   children: ReactNode;
 }
 
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
-  const { node, routable, children } = props;
+  const { node, children } = props;
 
-  const doesOutputRoutePath = Boolean(
+  const hasRoutePathOutput = Boolean(
     node.instance?.getData(coreExtensionData.routePath),
   );
 
   const plugin = node.spec.plugin;
-  const Progress = useComponentRef(coreComponentRefs.progress);
-  const fallback = useComponentRef(coreComponentRefs.errorBoundaryFallback);
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
@@ -83,11 +76,9 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   return (
     <AppNodeProvider node={node}>
       <Suspense fallback={<Progress />}>
-        <ErrorBoundary plugin={plugin} Fallback={fallback}>
+        <ErrorBoundary plugin={plugin}>
           <AnalyticsContext attributes={attributes}>
-            <RouteTracker disableTracking={!(routable ?? doesOutputRoutePath)}>
-              {children}
-            </RouteTracker>
+            <RouteTracker enabled={hasRoutePathOutput}>{children}</RouteTracker>
           </AnalyticsContext>
         </ErrorBoundary>
       </Suspense>

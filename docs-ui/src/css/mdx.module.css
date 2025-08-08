@@ -1,0 +1,51 @@
+.h1 {
+  font-size: 3rem;
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  color: var(--primary);
+  font-weight: 400;
+}
+
+.h2 {
+  font-size: 1.5rem;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  font-weight: 400;
+}
+
+.h3 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  font-weight: 400;
+}
+
+.p {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--secondary);
+}
+
+.ul {
+  margin: 0;
+  padding-left: 2rem;
+}
+
+.li {
+  color: var(--secondary);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.a:hover {
+  text-decoration: underline;
+}

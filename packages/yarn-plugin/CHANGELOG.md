@@ -1,5 +1,11 @@
 # yarn-plugin-backstage
 
+## 0.0.7
+
+### Patch Changes
+
+- d6084b8: Fixed a bug that would prevent the yarn plugin from installing new dependencies with the `backstage:^` protocol.
+
 ## 0.0.7-next.0
 
 ### Patch Changes

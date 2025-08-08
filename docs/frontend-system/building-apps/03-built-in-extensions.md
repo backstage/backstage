@@ -161,10 +161,10 @@ Extension responsible for rendering the logo and items in the app's sidebar.
 
 #### Inputs
 
-| Name  | Description               | Type                                                                                                                                             | Optional | Default | Extension creator                                                                                        |
-| ----- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- | -------------------------------------------------------------------------------------------------------- |
-| logos | A nav logos object.       | [createNavLogoExtension.logoElementsDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createnavlogoextension.logoelementsdataref) | true     | -       | [createNavLogoExtension](https://backstage.io/docs/reference/frontend-plugin-api.createnavlogoextension) |
-| items | Nav items target objects. | [createNavItemExtension.targetDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension.targetdataref)             | true     | -       | [createNavItemExtension](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension) |
+| Name    | Description                                  | Type                                                                                                                                 | Optional | Default | Extension creator                                                                                        |
+| ------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- | -------------------------------------------------------------------------------------------------------- |
+| content | Overrides the default content of the navbar. | [NavContentBlueprint.dataRefs.component](https://backstage.io/docs/reference/frontend-plugin-api.navcontentblueprint)                | true     | -       | [NavContentBlueprint](https://backstage.io/docs/reference/frontend-plugin-api.navcontentblueprint)       |
+| items   | Nav items target objects.                    | [createNavItemExtension.targetDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension.targetdataref) | true     | -       | [createNavItemExtension](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension) |
 
 ### App routes
 

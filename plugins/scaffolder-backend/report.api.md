@@ -445,6 +445,8 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   get spec(): TaskSpecV1beta3;
   // (undocumented)
+  get taskId(): string;
+  // (undocumented)
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 

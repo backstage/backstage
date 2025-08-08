@@ -38,10 +38,6 @@ export interface AppNodeSpec {
   readonly disabled: boolean;
   readonly config?: unknown;
   readonly plugin?: FrontendPlugin;
-  /**
-   * @deprecated Use {@link AppNodeSpec.plugin} instead.
-   */
-  readonly source?: FrontendPlugin;
 }
 
 /**
@@ -117,7 +113,7 @@ export interface AppTreeApi {
   /**
    * Get all nodes in the app that are mounted at a given route path.
    */
-  getNodesByRoutePath(sourcePath: string): { nodes: AppNode[] };
+  getNodesByRoutePath(routePath: string): { nodes: AppNode[] };
 }
 
 /**

@@ -128,20 +128,15 @@ function createTestAppRoot({
 }) {
   return createApp({
     features: [...features],
-    configLoader: async () => ({ config: mockApis.config({ data: config }) }),
+    advanced: {
+      configLoader: async () => ({ config: mockApis.config({ data: config }) }),
+    },
   }).createRoot();
 }
 
 describe('createFrontendPlugin', () => {
   it('should create an empty plugin', () => {
     const plugin = createFrontendPlugin({ pluginId: 'test' });
-
-    expect(plugin).toBeDefined();
-    expect(String(plugin)).toBe('Plugin{id=test}');
-  });
-
-  it('should create an empty plugin with deprecated id option', () => {
-    const plugin = createFrontendPlugin({ id: 'test' });
 
     expect(plugin).toBeDefined();
     expect(String(plugin)).toBe('Plugin{id=test}');

@@ -1,5 +1,91 @@
 # @backstage/plugin-catalog
 
+## 1.31.2-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/plugin-search-react@1.9.3-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.2-next.0
+
+## 1.31.2-next.1
+
+### Patch Changes
+
+- c0ea01b: Fix card scrolling behaviour
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/plugin-search-react@1.9.3-next.0
+  - @backstage/plugin-techdocs-react@1.3.2-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.31.2-next.0
+
+### Patch Changes
+
+- f4622e8: Adding a more sensible default order to the default filters
+- 77eebdc: Support multiple headers in new frontend system, and don't render a header until the entity has finished loading
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-search-react@1.9.2
+
+## 1.31.1
+
+### Patch Changes
+
+- 6991dab: Turn on `pagination` by default in new frontend system, and also make configurable
+- 3ab9b96: Updated card extensions for the new frontend system to use the new entity predicates, and to not show the about card on User and Group pages.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration-react@1.2.9
+  - @backstage/plugin-scaffolder-common@1.6.0
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-search-react@1.9.2
+  - @backstage/plugin-techdocs-react@1.3.1
+
 ## 1.31.1-next.2
 
 ### Patch Changes

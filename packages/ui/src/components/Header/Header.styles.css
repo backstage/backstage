@@ -1,0 +1,129 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.bui-HeaderToolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: var(--bui-space-6);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0px;
+    right: 0px;
+    height: 16px;
+    background-color: var(--bui-bg);
+    z-index: 0;
+  }
+
+  &[data-has-tabs='true'] {
+    margin-bottom: 0;
+  }
+}
+
+.bui-HeaderToolbarWrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bui-bg-surface-1);
+  padding-inline: var(--bui-space-5);
+  border-bottom: 1px solid var(--bui-border);
+  color: var(--bui-fg-primary);
+  height: 52px;
+}
+
+.bui-HeaderToolbarContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--bui-space-2);
+}
+
+.bui-HeaderToolbarName {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--bui-space-2);
+  font-size: var(--bui-font-size-3);
+  font-weight: var(--bui-font-weight-regular);
+  flex-shrink: 0;
+}
+
+.bui-HeaderToolbarIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--bui-fg-primary);
+
+  & svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.bui-HeaderToolbarControls {
+  position: absolute;
+  right: var(--bui-space-5);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--bui-space-2);
+}
+
+.bui-HeaderBreadcrumbs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--bui-space-2);
+  font-size: var(--bui-font-size-3);
+  font-weight: var(--bui-font-weight-regular);
+}
+
+.bui-HeaderBreadcrumb {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--bui-space-2);
+}
+
+.bui-HeaderBreadcrumbLink {
+  color: var(--bui-fg-secondary);
+  text-decoration: none;
+  cursor: pointer;
+
+  &[data-active='true'] {
+    color: var(--bui-fg-primary);
+  }
+}
+
+.bui-HeaderBreadcrumbSeparator {
+  width: 16px;
+  height: 16px;
+  color: var(--bui-fg-secondary);
+}
+
+.bui-HeaderTabsWrapper {
+  margin-bottom: var(--bui-space-4);
+  padding-inline: var(--bui-space-3);
+  border-bottom: 1px solid var(--bui-border);
+  background-color: var(--bui-bg-surface-1);
+}

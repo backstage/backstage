@@ -36,6 +36,7 @@ import {
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
   createGraphqlClient,
+  getOrganizationTeamsForUser,
 } from './github';
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
@@ -52,6 +53,79 @@ describe('github', () => {
   registerMswTestHooks(server);
 
   const graphql = graphqlOctokit.defaults({});
+
+  describe('getOrganizationTeamsForUser', () => {
+    const org = 'my-org';
+    const userLogin = 'testuser';
+
+    it('returns teams for a user', async () => {
+      server.use(
+        graphqlMsw.query('teams', () =>
+          HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      slug: 'team1',
+                      combinedSlug: 'my-org/team1',
+                      name: 'Team 1',
+                      description: 'desc',
+                      avatarUrl: '',
+                      editTeamUrl: '',
+                      parentTeam: null,
+                    },
+                  ],
+                },
+              },
+            },
+          }),
+        ),
+      );
+
+      const mockTransformer = jest.fn().mockImplementation(async team => ({
+        kind: 'Group',
+        metadata: { name: team.slug },
+      }));
+
+      const { teams } = await getOrganizationTeamsForUser(
+        graphql as any,
+        org,
+        userLogin,
+        mockTransformer as any,
+      );
+      expect(Array.isArray(teams)).toBe(true);
+      expect(teams[0]).toEqual({ kind: 'Group', metadata: { name: 'team1' } });
+      expect(mockTransformer).toHaveBeenCalled();
+    });
+
+    it('returns an empty array if no teams found', async () => {
+      server.use(
+        graphqlMsw.query('teams', () =>
+          HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [],
+                },
+              },
+            },
+          }),
+        ),
+      );
+      const mockTransformer = jest.fn().mockResolvedValue(undefined);
+      const { teams } = await getOrganizationTeamsForUser(
+        graphql as any,
+        org,
+        userLogin,
+        mockTransformer as any,
+      );
+      expect(Array.isArray(teams)).toBe(true);
+      expect(teams.length).toBe(0);
+    });
+  });
 
   describe('getOrganizationUsers using defaultUserMapper', () => {
     it('reads members', async () => {

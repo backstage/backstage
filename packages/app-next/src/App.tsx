@@ -44,6 +44,7 @@ import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
+import { appModuleNav } from './modules/appModuleNav';
 
 /*
 
@@ -84,10 +85,10 @@ const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
     // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
     convertLegacyPageExtension(TechDocsIndexPage, {
       name: 'index',
-      defaultPath: '/docs',
+      path: '/docs',
     }),
     convertLegacyPageExtension(TechDocsReaderPage, {
-      defaultPath: '/docs/:namespace/:kind/:name/*',
+      path: '/docs/:namespace/:kind/:name/*',
     }),
     convertLegacyEntityContentExtension(EntityTechdocsContent),
   ],
@@ -130,10 +131,13 @@ const app = createApp({
     appVisualizerPlugin,
     kubernetesPlugin,
     notFoundErrorPageModule,
+    appModuleNav,
     customHomePageModule,
     ...collectedLegacyPlugins,
   ],
-  pluginInfoResolver,
+  advanced: {
+    pluginInfoResolver,
+  },
   /* Handled through config instead */
   // bindRoutes({ bind }) {
   //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });

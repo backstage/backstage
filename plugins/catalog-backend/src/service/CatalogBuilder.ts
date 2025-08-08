@@ -466,11 +466,8 @@ export class CatalogBuilder {
       metrics,
     } = this.env;
 
-    // This is a test metric to check if the metrics are working
-    metrics.createCounter('kurt.test.total').add(1);
-
-    const disableRelationsCompatibility = config.getOptionalBoolean(
-      'catalog.disableRelationsCompatibility',
+    const enableRelationsCompatibility = Boolean(
+      config.getOptionalBoolean('catalog.enableRelationsCompatibility'),
     );
 
     const policy = this.buildEntityPolicy();
@@ -511,7 +508,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       stitcher,
-      disableRelationsCompatibility,
+      enableRelationsCompatibility,
     });
 
     let permissionsService: PermissionsService;
@@ -628,12 +625,10 @@ export class CatalogBuilder {
       httpAuth,
       permissionsService,
       auditor,
-      disableRelationsCompatibility,
+      enableRelationsCompatibility,
     });
 
-    if (
-      config.getOptionalString('catalog.orphanProviderStrategy') === 'delete'
-    ) {
+    if (config.getOptionalString('catalog.orphanProviderStrategy') !== 'keep') {
       await evictEntitiesFromOrphanedProviders({
         db: providerDatabase,
         providers: entityProviders,

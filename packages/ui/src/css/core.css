@@ -1,0 +1,200 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Normalize */
+@import './normalize.css';
+@import './utilities.css';
+
+/* Global reset */
+:where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Light theme tokens */
+:root {
+  /* Font families */
+  --bui-font-regular: system-ui;
+  --bui-font-monospace: ui-monospace, 'Menlo', 'Monaco', 'Consolas',
+    'Liberation Mono', 'Courier New', monospace;
+
+  /* Font weights */
+  --bui-font-weight-regular: 400;
+  --bui-font-weight-bold: 600;
+
+  /* Font sizes */
+  --bui-font-size-1: 0.625rem; /* 10px */
+  --bui-font-size-2: 0.75rem; /* 12px */
+  --bui-font-size-3: 0.875rem; /* 14px */
+  --bui-font-size-4: 1rem; /* 16px */
+  --bui-font-size-5: 1.25rem; /* 20px */
+  --bui-font-size-6: 1.5rem; /* 24px */
+  --bui-font-size-7: 2rem; /* 32px */
+  --bui-font-size-8: 3rem; /* 48px */
+  --bui-font-size-9: 4rem; /* 64px */
+  --bui-font-size-10: 5.75rem; /* 92px */
+
+  /* Spacing */
+  --bui-space: 0.25rem; /* This is the spacing multiplier */
+  --bui-space-0_5: calc(var(--bui-space) * 0.5); /* 2px */
+  --bui-space-1: var(--bui-space); /* 4px */
+  --bui-space-1_5: calc(var(--bui-space) * 1.5); /* 6px */
+  --bui-space-2: calc(var(--bui-space) * 2); /* 8px */
+  --bui-space-3: calc(var(--bui-space) * 3); /* 12px */
+  --bui-space-4: calc(var(--bui-space) * 4); /* 16px */
+  --bui-space-5: calc(var(--bui-space) * 5); /* 20px */
+  --bui-space-6: calc(var(--bui-space) * 6); /* 24px */
+  --bui-space-7: calc(var(--bui-space) * 7); /* 28px */
+  --bui-space-8: calc(var(--bui-space) * 8); /* 32px */
+  --bui-space-9: calc(var(--bui-space) * 9); /* 36px */
+  --bui-space-10: calc(var(--bui-space) * 10); /* 40px */
+  --bui-space-11: calc(var(--bui-space) * 11); /* 44px */
+  --bui-space-12: calc(var(--bui-space) * 12); /* 48px */
+  --bui-space-13: calc(var(--bui-space) * 13); /* 52px */
+  --bui-space-14: calc(var(--bui-space) * 14); /* 56px */
+
+  /* Radius */
+  --bui-radius-1: calc(0.125rem);
+  --bui-radius-2: calc(0.25rem);
+  --bui-radius-3: calc(0.5rem);
+  --bui-radius-4: calc(0.75rem);
+  --bui-radius-5: calc(1rem);
+  --bui-radius-6: calc(1.25rem);
+  --bui-radius-full: 9999px;
+
+  /* Base Colors */
+  --bui-black: #000000;
+  --bui-white: #ffffff;
+
+  /* Gray scale */
+  --bui-gray-1: #f8f8f8;
+  --bui-gray-2: #ececec;
+  --bui-gray-3: #d9d9d9;
+  --bui-gray-4: #c1c1c1;
+  --bui-gray-5: #9e9e9e;
+  --bui-gray-6: #8c8c8c;
+  --bui-gray-7: #757575;
+  --bui-gray-8: #595959;
+
+  /* Background Colors */
+  --bui-bg: var(--bui-gray-1);
+  --bui-bg-surface-1: var(--bui-white);
+  --bui-bg-surface-2: var(--bui-gray-2);
+  --bui-bg-solid: #1f5493;
+  --bui-bg-solid-hover: #163a66;
+  --bui-bg-solid-pressed: #0f2b4e;
+  --bui-bg-solid-disabled: #ebebeb;
+  --bui-bg-tint: transparent;
+  --bui-bg-tint-hover: rgba(31, 84, 147, 0.4);
+  --bui-bg-tint-pressed: rgba(31, 84, 147, 0.6);
+  --bui-bg-tint-disabled: #ebebeb;
+  --bui-bg-danger: #feebe7;
+  --bui-bg-warning: #fff2b2;
+  --bui-bg-success: #e6f6eb;
+
+  /* Foreground Colors */
+  --bui-fg-primary: var(--bui-black);
+  --bui-fg-secondary: var(--bui-gray-7);
+  --bui-fg-link: #1f5493;
+  --bui-fg-link-hover: #1f2d5c;
+  --bui-fg-disabled: #9e9e9e;
+  --bui-fg-solid: var(--bui-white);
+  --bui-fg-solid-disabled: #9c9c9c;
+  --bui-fg-tint: #1f5493;
+  --bui-fg-tint-disabled: var(--bui-gray-5);
+  --bui-fg-danger: #e22b2b;
+  --bui-fg-warning: #e36d05;
+  --bui-fg-success: #1db954;
+
+  /* Border Colors */
+  --bui-border: rgba(0, 0, 0, 0.1);
+  --bui-border-hover: rgba(0, 0, 0, 0.2);
+  --bui-border-pressed: rgba(0, 0, 0, 0.4);
+  --bui-border-disabled: rgba(0, 0, 0, 0.1);
+  --bui-border-danger: #f87a7a;
+  --bui-border-warning: #e36d05;
+  --bui-border-success: #53db83;
+
+  /* Special Colors */
+  --bui-ring: #1f5493;
+  --bui-scrollbar: #a0a0a03b;
+  --bui-scrollbar-thumb: #a0a0a0;
+
+  --bui-animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Dark theme tokens */
+[data-theme='dark'] {
+  /* Gray scale */
+  --bui-gray-1: #191919;
+  --bui-gray-2: #242424;
+  --bui-gray-3: #373737;
+  --bui-gray-4: #464646;
+  --bui-gray-5: #575757;
+  --bui-gray-6: #7b7b7b;
+  --bui-gray-7: #9e9e9e;
+  --bui-gray-8: #b4b4b4;
+
+  /* Background Colors */
+  --bui-bg: #333333;
+  --bui-bg-surface-1: #424242;
+  --bui-bg-surface-2: var(--bui-gray-2);
+  --bui-bg-solid: #9cc9ff;
+  --bui-bg-solid-hover: #83b9fd;
+  --bui-bg-solid-pressed: #83b9fd;
+  --bui-bg-solid-disabled: #222222;
+  --bui-bg-tint: transparent;
+  --bui-bg-tint-hover: rgba(156, 201, 255, 0.12);
+  --bui-bg-tint-pressed: rgba(156, 201, 255, 0.16);
+  --bui-bg-tint-disabled: transparent;
+  --bui-bg-danger: #3b1219;
+  --bui-bg-warning: #302008;
+  --bui-bg-success: #132d21;
+
+  /* Foreground Colors */
+  --bui-fg-primary: var(--bui-white);
+  --bui-fg-secondary: var(--bui-gray-7);
+  --bui-fg-link: #9cc9ff;
+  --bui-fg-link-hover: #7eb5f7;
+  --bui-fg-disabled: var(--bui-gray-7);
+  --bui-fg-solid: #101821;
+  --bui-fg-solid-disabled: var(--bui-gray-5);
+  --bui-fg-tint: #9cc9ff;
+  --bui-fg-tint-disabled: var(--bui-gray-5);
+  --bui-fg-danger: #e22b2b;
+  --bui-fg-warning: #e36d05;
+  --bui-fg-success: #1db954;
+
+  /* Border Colors */
+  --bui-border: rgba(255, 255, 255, 0.12);
+  --bui-border-hover: rgba(255, 255, 255, 0.4);
+  --bui-border-pressed: rgba(255, 255, 255, 0.5);
+  --bui-border-disabled: rgba(255, 255, 255, 0.2);
+  --bui-border-danger: #f87a7a;
+  --bui-border-warning: #e36d05;
+  --bui-border-success: #53db83;
+
+  /* Special Colors */
+  --bui-ring: #1f5493;
+  --bui-scrollbar: #3636363a;
+  --bui-scrollbar-thumb: #575757;
+}
