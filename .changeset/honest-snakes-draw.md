@@ -10,9 +10,11 @@
     "@module-federation/enhanced": "^0.9.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "esbuild-loader": "^4.0.0",
+    "eslint-webpack-plugin": "^4.2.0",
+    "fork-ts-checker-webpack-plugin": "^9.0.0",
     "mini-css-extract-plugin": "^2.4.2",
     "terser-webpack-plugin": "^5.1.3",
-    "webpack": "^5.94.0",
+    "webpack": "^5.96.0",
     "webpack-dev-server": "^5.0.0"
   }
 }

@@ -20,8 +20,8 @@ import { rspack, Configuration } from '@rspack/core';
 
 import { BundlingPaths } from './paths';
 import { Config } from '@backstage/config';
-import ESLintPlugin from 'eslint-webpack-plugin';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import ESLintRspackPlugin from 'eslint-rspack-plugin';
+import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
@@ -156,11 +156,18 @@ export async function createConfig(
   }
 
   if (checksEnabled) {
+    const TsCheckerPlugin = webpack
+      ? (require('fork-ts-checker-webpack-plugin') as typeof import('fork-ts-checker-webpack-plugin'))
+      : TsCheckerRspackPlugin;
+    const ESLintPlugin = webpack
+      ? (require('eslint-webpack-plugin') as typeof import('eslint-webpack-plugin'))
+      : ESLintRspackPlugin;
     plugins.push(
-      new ForkTsCheckerWebpackPlugin({
-        typescript: { configFile: paths.targetTsConfig, memoryLimit: 4096 },
+      new TsCheckerPlugin({
+        typescript: { configFile: paths.targetTsConfig, memoryLimit: 8192 },
       }),
       new ESLintPlugin({
+        cache: false, // Cache seems broken
         context: paths.targetPath,
         files: ['**/*.(ts|tsx|mts|cts|js|jsx|mjs|cjs)'],
       }),
