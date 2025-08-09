@@ -161,7 +161,7 @@ error.code: specific error code
 
 ### Attribute Naming Rules
 
-1. **Use snake_case** for attribute names
+1. **Use `snake_case`** for attribute names
 2. **Be consistent** across related metrics
 3. **Keep cardinality reasonable** (avoid unique identifiers)
 4. **Use semantic names** that clearly indicate the attribute's purpose
