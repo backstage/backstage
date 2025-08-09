@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (27)
+## Unused dependencies (24)
 
 | Name                         | Location     | Severity |
 | :--------------------------- | :----------- | :------- |
@@ -17,14 +17,11 @@
 | eslint-plugin-react          | package.json | error    |
 | @octokit/oauth-app           | package.json | error    |
 | @types/webpack-env           | package.json | error    |
-| @svgr/plugin-svgo            | package.json | error    |
 | @octokit/graphql             | package.json | error    |
-| @svgr/plugin-jsx             | package.json | error    |
 | jest-css-modules             | package.json | error    |
 | git-url-parse                | package.json | error    |
 | jest-runtime                 | package.json | error    |
 | cross-fetch                  | package.json | error    |
-| @svgr/core                   | package.json | error    |
 | @swc/jest                    | package.json | error    |
 | process                      | package.json | error    |
 | sucrase                      | package.json | error    |

@@ -16,7 +16,6 @@
 
 import { RuleSetRule, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { svgrTemplate } from '../../../../lib/svgrTemplate';
 
 type Transforms = {
   loaders: RuleSetRule[];
@@ -115,29 +114,6 @@ export const transforms = (options: TransformOptions): Transforms => {
       resolve: {
         fullySpecified: false,
       },
-    },
-    {
-      test: [/\.icon\.svg$/],
-      use: [
-        {
-          loader: rspack ? 'builtin:swc-loader' : require.resolve('swc-loader'),
-          options: {
-            jsc: {
-              target: 'es2022',
-              externalHelpers: !isBackend,
-              parser: {
-                syntax: 'ecmascript',
-                jsx: !isBackend,
-                dynamicImport: true,
-              },
-            },
-          },
-        },
-        {
-          loader: require.resolve('@svgr/webpack'),
-          options: { babel: false, template: svgrTemplate },
-        },
-      ],
     },
     {
       test: [
