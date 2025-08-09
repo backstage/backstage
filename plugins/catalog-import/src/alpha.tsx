@@ -42,7 +42,7 @@ export * from './translation';
 //       whether this type of override is typically done with an input or by overriding the entire extension.
 const catalogImportPage = PageBlueprint.make({
   params: {
-    defaultPath: '/catalog-import',
+    path: '/catalog-import',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('./components/ImportPage').then(m =>
@@ -52,8 +52,8 @@ const catalogImportPage = PageBlueprint.make({
 });
 
 const catalogImportApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: catalogImportApiRef,
       deps: {
         discoveryApi: discoveryApiRef,

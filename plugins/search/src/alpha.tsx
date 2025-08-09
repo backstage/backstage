@@ -76,8 +76,8 @@ import {
 
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: searchApiRef,
       deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
@@ -115,7 +115,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
-      defaultPath: '/search',
+      path: '/search',
       routeRef: convertLegacyRouteRef(rootRouteRef),
       loader: async () => {
         const getResultItemComponent = (result: SearchResult) => {

@@ -26,9 +26,7 @@ export const AppRootElementBlueprint = createExtensionBlueprint({
   kind: 'app-root-element',
   attachTo: { id: 'app/root', input: 'elements' },
   output: [coreExtensionData.reactElement],
-  *factory(params: { element: JSX.Element | (() => JSX.Element) }) {
-    yield coreExtensionData.reactElement(
-      typeof params.element === 'function' ? params.element() : params.element,
-    );
+  *factory(params: { element: JSX.Element }) {
+    yield coreExtensionData.reactElement(params.element);
   },
 });

@@ -5,8 +5,8 @@
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -21,11 +21,7 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -40,14 +36,10 @@ const _default: FrontendPlugin<
       name: 'signals-display';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};
       params: {
-        element: JSX.Element | (() => JSX.Element);
+        element: JSX.Element;
       };
     }>;
   }

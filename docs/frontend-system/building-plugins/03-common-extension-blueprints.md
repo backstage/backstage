@@ -17,10 +17,6 @@ These are the [extension blueprints](../architecture/23-extension-blueprints.md)
 
 An API extension is used to add or override [Utility API factories](../utility-apis/01-index.md) in the app. They are commonly used by plugins for both internal and shared APIs. There are also many built-in Api extensions provided by the framework that you are able to override.
 
-### Component - [Reference](../../reference/frontend-plugin-api.createcomponentextension.md)
-
-Components extensions are used to override the component associated with a component reference throughout the app. This uses an extension creator function rather than a blueprint, but will likely be migrated to a blueprint in the future.
-
 ### NavItem - [Reference](../../reference/frontend-plugin-api.navitemblueprint.md)
 
 Navigation item extensions are used to provide menu items that link to different parts of the app. By default nav items are attached to the app nav extension, which by default is rendered as the left sidebar in the app.
@@ -32,6 +28,10 @@ Page extensions provide content for a particular route in the app. By default pa
 ### SignInPage - [Reference](../../reference/frontend-plugin-api.signinpageblueprint.md)
 
 Sign-in page extension have a single purpose - to implement a custom sign-in page. They are always attached to the app root extension and are rendered before the rest of the app until the user is signed in.
+
+### SwappableComponent - [Reference](../../reference/frontend-plugin-api.swappablecomponentblueprint.md)
+
+Swappable Components are extensions that are used to replace the implementations of components in the app and plugins.
 
 ### Theme - [Reference](../../reference/frontend-plugin-api.themeblueprint.md)
 

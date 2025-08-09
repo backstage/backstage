@@ -31,7 +31,7 @@ export function convertLegacyPlugin(
   const apiExtensions = Array.from(legacyPlugin.getApis()).map(factory =>
     ApiBlueprint.make({
       name: factory.api.id,
-      params: define => define(factory),
+      params: defineParams => defineParams(factory),
     }),
   );
   return createFrontendPlugin({

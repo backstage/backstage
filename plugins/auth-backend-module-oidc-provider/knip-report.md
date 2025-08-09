@@ -1,10 +1,11 @@
 # Knip report
 
-## Unused dependencies (1)
+## Unused dependencies (2)
 
 | Name     | Location     | Severity |
 | :------- | :----------- | :------- |
 | passport | package.json | error    |
+| zod      | package.json | error    |
 
 ## Unused devDependencies (3)
 

@@ -54,7 +54,7 @@ const homePage = PageBlueprint.makeWithOverrides({
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory({
-      defaultPath: '/home',
+      path: '/home',
       routeRef: rootRouteRef,
       loader: () =>
         import('./components/').then(m =>
@@ -78,8 +78,8 @@ const visitListenerAppRootElement = AppRootElementBlueprint.make({
 
 const visitsApi = ApiBlueprint.make({
   name: 'visits',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: visitsApiRef,
       deps: {
         storageApi: storageApiRef,

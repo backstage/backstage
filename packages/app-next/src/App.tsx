@@ -85,10 +85,10 @@ const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
     // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
     convertLegacyPageExtension(TechDocsIndexPage, {
       name: 'index',
-      defaultPath: '/docs',
+      path: '/docs',
     }),
     convertLegacyPageExtension(TechDocsReaderPage, {
-      defaultPath: '/docs/:namespace/:kind/:name/*',
+      path: '/docs/:namespace/:kind/:name/*',
     }),
     convertLegacyEntityContentExtension(EntityTechdocsContent),
   ],
@@ -135,7 +135,9 @@ const app = createApp({
     customHomePageModule,
     ...collectedLegacyPlugins,
   ],
-  pluginInfoResolver,
+  advanced: {
+    pluginInfoResolver,
+  },
   /* Handled through config instead */
   // bindRoutes({ bind }) {
   //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });

@@ -32,8 +32,8 @@ import {
 } from '../apis';
 
 export const catalogApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: catalogApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -46,8 +46,8 @@ export const catalogApi = ApiBlueprint.make({
 
 export const catalogStarredEntitiesApi = ApiBlueprint.make({
   name: 'starred-entities',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: starredEntitiesApiRef,
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) =>
@@ -57,8 +57,8 @@ export const catalogStarredEntitiesApi = ApiBlueprint.make({
 
 export const entityPresentationApi = ApiBlueprint.make({
   name: 'entity-presentation',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: entityPresentationApiRef,
       deps: { catalogApiImp: catalogApiRef },
       factory: ({ catalogApiImp }) =>

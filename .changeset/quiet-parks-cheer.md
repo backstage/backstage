@@ -32,11 +32,11 @@ Usage of the above example looks as follows:
 
 ```ts
 const example = ExampleBlueprint.make({
-  params: define => define({
+  params: defineParams => defineParams({
     component: ...,
     fetcher: ...,
   }),
 });
 ```
 
-This `define => define(<params>)` is also known as the "callback syntax" and is required if a blueprint is created with the new `defineParams` option. The callback syntax can also optionally be used for other blueprints too, which means that it is not a breaking change to remove the `defineParams` option, as long as the external parameter types remain compatible.
+This `defineParams => defineParams(<params>)` is also known as the "callback syntax" and is required if a blueprint is created with the new `defineParams` option. The callback syntax can also optionally be used for other blueprints too, which means that it is not a breaking change to remove the `defineParams` option, as long as the external parameter types remain compatible.

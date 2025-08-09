@@ -33,8 +33,8 @@ import { rootRouteRef } from '../routes';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: devToolsApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -48,7 +48,7 @@ export const devToolsApi = ApiBlueprint.make({
 /** @alpha */
 export const devToolsPage = PageBlueprint.make({
   params: {
-    defaultPath: '/devtools',
+    path: '/devtools',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('../components/DevToolsPage').then(m =>

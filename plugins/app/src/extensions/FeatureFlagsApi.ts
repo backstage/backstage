@@ -26,8 +26,8 @@ import { LocalStorageFeatureFlags } from '../../../../packages/core-app-api/src/
  */
 export const FeatureFlagsApi = ApiBlueprint.make({
   name: 'feature-flags',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       // TODO: properly discovery feature flags, maybe rework the whole thing
       api: featureFlagsApiRef,
       deps: {},

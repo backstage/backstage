@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Extension } from '@backstage/frontend-plugin-api';
+import { Extension, FrontendFeature } from '@backstage/frontend-plugin-api';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
@@ -25,7 +25,6 @@ import {
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
-import { FrontendFeature } from '../wiring/types';
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {

@@ -39,7 +39,7 @@ const userSettingsPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { inputs }) {
     return originalFactory({
-      defaultPath: '/settings',
+      path: '/settings',
       routeRef: convertLegacyRouteRef(settingsRouteRef),
       loader: () =>
         import('./components/SettingsPage').then(m =>
