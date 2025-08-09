@@ -21,7 +21,7 @@
     }
   }
 
-  &[data-collapsible='true'] {
+  &[data-start-collapsed='true'] {
     transition: width 0.3s ease-in-out;
     padding: 0;
 

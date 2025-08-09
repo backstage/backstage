@@ -46,4 +46,4 @@ export const searchFieldSizesSnippet = `<Flex direction="row" gap="4">
 
 export const searchFieldDescriptionSnippet = `<SearchField label="Label" description="Description" placeholder="Enter a URL" />`;
 
-export const searchFieldCollapsibleSnippet = `<SearchField collapsible />`;
+export const searchFieldCollapsibleSnippet = `<SearchField startCollapsed />`;

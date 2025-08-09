@@ -10380,7 +10380,7 @@
     }
   }
 
-  &[data-collapsible="true"] {
+  &[data-start-collapsed="true"] {
     padding: 0;
     transition: width .3s ease-in-out;
 

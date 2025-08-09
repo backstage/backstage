@@ -40,7 +40,7 @@ export interface SearchFieldProps
   placeholder?: string;
 
   /**
-   * The icon to render in the input
+   * Controls whether the SearchField starts in a collapsed state.
    */
   startCollapsed?: boolean;
 }

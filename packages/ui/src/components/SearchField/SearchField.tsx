@@ -100,7 +100,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
-        data-collapsible={startCollapsed}
+        data-start-collapsed={startCollapsed}
         data-collapsed={isCollapsed}
         onFocusChange={handleClick}
         onChange={handleChange}

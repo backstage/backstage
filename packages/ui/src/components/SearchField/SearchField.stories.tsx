@@ -156,7 +156,7 @@ export const CustomField: Story = {
   ),
 };
 
-export const Collapsible: Story = {
+export const StartCollapsed: Story = {
   args: {
     ...Default.args,
     startCollapsed: true,
@@ -170,9 +170,9 @@ export const Collapsible: Story = {
   ),
 };
 
-export const CollapsibleNextToButtons: Story = {
+export const StartCollapsedWithButtons: Story = {
   args: {
-    ...Collapsible.args,
+    ...StartCollapsed.args,
   },
   render: args => (
     <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: '600px' }}>
