@@ -9,7 +9,7 @@ authorImageURL: https://avatars.githubusercontent.com/u/45045727?v=4
 
 **TL;DR:** As part of our efforts to streamline service management and improve developer experience, our engineering org migrated from a legacy service catalogue to the Backstage Software Catalog. In this post, I'll share what we learned from that journey --- including how to build an automated script to migrate services from an existing internal service catalogue to a modern internal developer portal (IDP) like Backstage. I'll also outline strategies to help drive adoption across your organization, along with tips for addressing both the cultural and technical roadblocks you might encounter along the way.
 
-<img width="2260" height="1769" alt="image (1)" src="https://github.com/user-attachments/assets/c711eabd-0e6f-40ca-947e-6a6432dd0258" />
+![migration flowchart](assets/2025-08-08/image01.png)
 {/* truncate */}
 
 ## Why and How a Modern Developer Portal Was Rolled Out
@@ -22,7 +22,7 @@ team, regardless of size or domain, can efficiently manage projects, access tool
 
 ## Internal Services Landscape
 
-<img width="1150" height="760" alt="image" src="https://github.com/user-attachments/assets/9e30d718-693a-46e5-ad5e-25fa6ffdb535" />
+![internal services](assets/2025-08-08/image02.png)
 
 In large organizations, it's common to manage thousands of GitHub repositories, encompassing a wide array of assets such as front end web applications, backend web services, mobile applications, and APIs. For instance, a typical enterprise might have:
 
@@ -45,7 +45,7 @@ The script handled the heavy lifting of migrating metadata from for example lega
 submitting pull requests they could review and enrich adding ownership metadata, documentation links, or system context before merging. Once merged, the GitHub Entity Provider took over, ingesting the files on a
 scheduled basis and ensuring Backstage stayed up to date. This pattern reduced manual overhead, maintained decentralization, and eliminated the need for a persistent integration with the legacy system. Since the old catalog was being decommissioned, this also aligned with our goal of moving forward cleanly without syncing two sources of truth.
 
-<img width="2763" height="1447" alt="image" src="https://github.com/user-attachments/assets/707bd1a4-2965-4f37-b659-fec225e9f786" />
+![api orchestration](assets/2025-08-08/image03.png)
 
 Several technical steps are typically involved in retrieving existing service definition files ```(e.g., appcatalog.yaml)```, an example yaml file, and then converting them into the modern developer portal\'s preferred
 format ```(e.g.catalog-info.yaml``` for Backstage). Rather than manually creating new definition files, an automated Python script can be developed to generate and add them to the respective repositories or services. Without creating and using these automated scripts, doing these tasks manually can take several hours and could become extremely tedious. For example, in the case of Backstage, it would mean having to explicitly create the ```catalog-info.yaml``` hundreds of times in hundreds of repositories which can also result in hundreds of errors and manual lift.
@@ -108,7 +108,7 @@ request with the encoded Base64 YAML is submitted to the branch using the GitHub
 
 ## Adoption and Impact
 
-<img width="2401" height="1665" alt="image" src="https://github.com/user-attachments/assets/24f2e175-bae0-487b-b347-03f55b63e3f9" />
+![adoption challenges](assets/2025-08-08/image04.png)
 
 Initially, the adoption of a new developer portal can face challenges
 for several reasons:
@@ -160,7 +160,7 @@ engineering teams, particularly those focused on reliability platforms and SRE, 
 
 ## Feature Additions Driving Adoption
 
-<img width="2573" height="1554" alt="image" src="https://github.com/user-attachments/assets/e9cd3a70-0c89-4873-8983-145568ee9800" />
+![plugin ecosystem](assets/2025-08-08/image05.png)
 
 The addition of components like a [Tech Radar](https://www.thoughtworks.com/en-us/radar) can significantly increase engineer interest. A Tech Radar is typically implemented to help engineers and cross-functional teams understand the "paved road" technology stack, what should be used for new systems andwhat existing systems should aspire to move towards. Thoughtworks created this system and can be seen here:
 [https://www.thoughtworks.com/en-us/radar](https://www.thoughtworks.com/en-us/radar)
