@@ -60,7 +60,7 @@ backstage.framework.httpRouter.middleware.duration
 
 ## Metric Name Structure
 
-The `{metric_name}` component should be hierarchical using dot notation to create logical groupings:
+The `{metric_name}` component should be hierarchical using dot notation to create logical groupings.
 
 ### Recommended Hierarchies
 
