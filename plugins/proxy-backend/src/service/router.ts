@@ -292,8 +292,8 @@ export async function createRouter(
     logger: options.logger,
   };
 
-  const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
-  const { pathname: pathPrefix } = new URL(externalUrl);
+  const baseUrl = await options.discovery.getBaseUrl('proxy');
+  const { pathname: pathPrefix } = new URL(baseUrl);
 
   const proxyConfig: ProxyConfig = {
     ...(options.additionalEndpoints ?? {}),
