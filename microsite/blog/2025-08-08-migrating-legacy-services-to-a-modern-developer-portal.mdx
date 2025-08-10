@@ -67,7 +67,7 @@ Upon receiving the encoded Base64 content, it must be decoded to YAML. The decod
 play. A template for catalog-info.yaml is created following the developer portal\'s guidelines. The key-value pairs from this template are then mapped to the values received from the legacy service
 definition file. For example:
 
-```bash
+```python
 results['metadata']['title'] = data['appInfo']['appName']
 # In the new format: metadata.title
 # From the legacy file: appInfo.appName
