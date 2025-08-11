@@ -22,12 +22,14 @@ export const ExampleSwappableComponent = createSwappableComponent({
 
   // This is a loader for loading the default implementation of the component when there's no overriden
   // implementation created with `SwappableComponentBlueprint`.
-  // It can be sync like below, but is can also be async like `loader: () => import('./DefaultImplementation').then(m => m.default)`.
+  // It can be sync like below, but is can also be async like `loader: () => import('./DefaultImplementation').then(m => m.DefaultImplementation)`.
   loader: () => (props: { name: string }) =>
     <div>Your name is {props.name}</div>,
 
   // This is an optional function that can be used to transform the props of the external component.
   // If it's not provided, the props of the external component will be passed through unchanged.
+  // Typically this wouldn't be used and you don't need to define this initially,
+  // this is a nice API to evolve the Swappable Component internal API without breaking usages of it in existing plugins.
   transformProps: (props: { lastName: string; firstName: string }) => ({
     name: `${props.firstName} ${props.lastName}`,
   }),
@@ -47,34 +49,63 @@ import { ExampleSwappableComponent } from '@internal/plugin-example-react';
 ## Overriding a Swappable Component
 
 In order to override a Swappable Component, you need to create a `SwappableComponentBlueprint` and install it with the `app` plugin.
+There's two different ways to add extensions to the `app` plugin, both are documented below in an example of overriding the `Progress` Swappable Component.
 
 ```tsx title="in packages/app/src/App.tsx"
-import { ExampleSwappableComponent } from '@internal/plugin-example-react';
-
-...
-
+import {
+  Progress,
+  SwappableComponentBlueprint,
+  createFrontendModule,
+} from '@backstage/frontend-plugin-api';
+import { MyCustomProgress } from './CustomProgress';
+import { createApp } from '@backstage/frontend-defaults';
+import appPlugin from '@backstage/plugin-app';
 
 const app = createApp({
   features: [
-    // Must be installed inside the App Plugin.
+    // Override an existing extension by ID provided by the app plugin:
     appPlugin.withOverrides({
       extensions: [
-        // Create a binding between the original c
-        SwappableComponentBlueprint.make({
-          params: defineParams => defineParams({
-            component: ExampleSwappableComponent,
-            loader: () => import('./ExampleComponent').then(m => m.SwappableComponent),
-
-            // or sync:
-            // loader: () => MyNewImplementation
-          })
-        })
-      ]
+        appPlugin
+          .getExtension('component:app/core.components.progress')
+          .override({
+            params: defineParams =>
+              defineParams({
+                component: Progress,
+                loader: () => MyCustomProgress,
+              }),
+          }),
+      ],
     }),
-  ...
-  ]
-})
-
+    // OR: Add another extension but with the same component ID:
+    appPlugin.withOverrides({
+      extensions: [
+        SwappableComponentBlueprint.make({
+          name: 'core.components.progress',
+          params: defineParams =>
+            defineParams({
+              component: Progress,
+              loader: () => MyCustomProgress,
+            }),
+        }),
+      ],
+    }),
+    // OR: Use a module for the app plugin:
+    createFrontendModule({
+      pluginId: 'app',
+      extensions: [
+        SwappableComponentBlueprint.make({
+          name: 'core.components.progress',
+          params: defineParams =>
+            defineParams({
+              component: Progress,
+              loader: () => MyCustomProgress,
+            }),
+        }),
+      ],
+    }),
+  ],
+});
 ```
 
 ## Default Swappable Components
