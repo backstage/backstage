@@ -25,6 +25,7 @@ Loading order of these files is as follows:
 1. `app-config.yaml`
 2. `app-config.<BACKSTAGE_ENVIRONMENT>.yaml`
 3. `app-config.local.yaml`
+4. `app-config.<BACKSTAGE_ENVIRONMENT>.local.yaml`
 
 Other sets of files can by loaded by passing `--config <path>` flags.
 Read more about the configuration loading order in the
