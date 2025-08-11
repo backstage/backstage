@@ -31,4 +31,4 @@ export {
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
 } from './elements';
-export { Progress, NotFoundErrorPage, ErrorBoundary } from './components';
+export { Progress, NotFoundErrorPage, ErrorDisplay } from './components';

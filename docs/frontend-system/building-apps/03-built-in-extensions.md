@@ -59,11 +59,11 @@ Extensions that provides default theme inputs for the `App` extension.
 
 Extensions that provides default components inputs for the `App` extension.
 
-|    kind    | namespace |               name                |                         id                         |
-| :--------: | :-------: | :-------------------------------: | :------------------------------------------------: |
-| components |    app    |     core.components.progress      |     `components:app/core.components.progress`      |
-| components |    app    | core.components.notFoundErrorPage | `components:app/core.components.notFoundErrorPage` |
-| components |    app    |   core.components.errorDisplay    |   `components:app/core.components.errorDisplay`    |
+|    kind    | namespace |           name            |                     id                     |
+| :--------: | :-------: | :-----------------------: | :----------------------------------------: |
+| components |    app    |       core-progress       |       `components:app/core-progress`       |
+| components |    app    | core-not-found-error-page | `components:app/core-not-found-error-page` |
+| components |    app    |    core-error-display     |    `components:app/core-error-display`     |
 
 #### Default apis extensions
 
