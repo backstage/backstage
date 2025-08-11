@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
@@ -95,6 +95,48 @@ export type VisitEnrichmentFunction = (
 
 /**
  * @public
+ * Type definition for the transform pathname function
+ * This allows transforming the pathname before it is considered for any other processing
+ */
+export type VisitTransformPathnameFunction = ({
+  pathname,
+}: {
+  pathname: string;
+}) => string;
+
+/**
+ * @internal
+ * Default implementation of visit pathname transform function
+ */
+const getTransformPathname =
+  (): VisitTransformPathnameFunction =>
+  ({ pathname }: { pathname: string }): string => {
+    return pathname;
+  };
+
+/**
+ * @public
+ * Type definition for the can save function
+ * This allows checking whether a visit can be saved
+ */
+export type VisitCanSaveFunction = ({
+  pathname,
+}: {
+  pathname: string;
+}) => boolean;
+
+/**
+ * @internal
+ * Default implementation of visit can save function
+ */
+const getCanSave =
+  (): VisitCanSaveFunction =>
+  (_: { pathname: string }): boolean => {
+    return true;
+  };
+
+/**
+ * @public
  * Component responsible for listening to location changes and calling
  * the visitsApi to save visits.
  */
@@ -103,25 +145,40 @@ export const VisitListener = ({
   toEntityRef,
   visitName,
   enrichVisit,
+  transformPathname,
+  canSave,
 }: {
   children?: ReactNode;
   toEntityRef?: ({ pathname }: { pathname: string }) => string | undefined;
   visitName?: ({ pathname }: { pathname: string }) => string;
   enrichVisit?: VisitEnrichmentFunction;
+  transformPathname?: VisitTransformPathnameFunction;
+  canSave?: VisitCanSaveFunction;
 }): JSX.Element => {
+  const previousVisitPathname = useRef('');
   const visitsApi = useApi(visitsApiRef);
   const { pathname } = useLocation();
   const toEntityRefImpl = toEntityRef ?? getToEntityRef();
   const visitNameImpl = visitName ?? getVisitName();
+  const transformPathnameImpl = transformPathname ?? getTransformPathname();
+  const canSaveImpl = canSave ?? getCanSave();
 
   useEffect(() => {
+    const visitPathname = transformPathnameImpl({ pathname });
+    if (previousVisitPathname.current === visitPathname) {
+      return () => {};
+    }
+    previousVisitPathname.current = visitPathname;
+    if (!canSaveImpl({ pathname: visitPathname })) {
+      return () => {};
+    }
     // Wait for the browser to finish with paint with the assumption react
     // has finished with dom reconciliation.
     const requestId = requestAnimationFrame(async () => {
       const baseVisit = {
-        name: visitNameImpl({ pathname }),
-        pathname,
-        entityRef: toEntityRefImpl({ pathname }),
+        name: visitNameImpl({ pathname: visitPathname }),
+        pathname: visitPathname,
+        entityRef: toEntityRefImpl({ pathname: visitPathname }),
       };
 
       let visitToSave = baseVisit;
@@ -141,7 +198,15 @@ export const VisitListener = ({
       });
     });
     return () => cancelAnimationFrame(requestId);
-  }, [visitsApi, pathname, toEntityRefImpl, visitNameImpl, enrichVisit]);
+  }, [
+    visitsApi,
+    pathname,
+    toEntityRefImpl,
+    visitNameImpl,
+    enrichVisit,
+    transformPathnameImpl,
+    canSaveImpl,
+  ]);
 
   return <>{children}</>;
 };

@@ -265,6 +265,13 @@ export type Visit = {
 };
 
 // @public
+export type VisitCanSaveFunction = ({
+  pathname,
+}: {
+  pathname: string;
+}) => boolean;
+
+// @public
 export interface VisitDisplayContextValue {
   // (undocumented)
   getChipColor: GetChipColorFunction;
@@ -319,11 +326,15 @@ export const VisitListener: ({
   toEntityRef,
   visitName,
   enrichVisit,
+  transformPathname,
+  canSave,
 }: {
   children?: ReactNode;
   toEntityRef?: ({ pathname }: { pathname: string }) => string | undefined;
   visitName?: ({ pathname }: { pathname: string }) => string;
   enrichVisit?: VisitEnrichmentFunction;
+  transformPathname?: VisitTransformPathnameFunction;
+  canSave?: VisitCanSaveFunction;
 }) => JSX.Element;
 
 // @public
@@ -381,6 +392,13 @@ export type VisitsWebStorageApiOptions = {
   identityApi: IdentityApi;
   errorApi: ErrorApi;
 };
+
+// @public
+export type VisitTransformPathnameFunction = ({
+  pathname,
+}: {
+  pathname: string;
+}) => string;
 
 // @public
 export const WelcomeTitle: ({

@@ -49,7 +49,33 @@ const mockVisitsApi = {
 };
 
 describe('<VisitListener/>', () => {
-  afterEach(jest.resetAllMocks);
+  beforeEach(() => {
+    jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((cb: FrameRequestCallback): number => {
+        cb(0);
+        return 0;
+      });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
+  it('uses requestAnimationFrame to defer visit saving', async () => {
+    const pathname = '/catalog/default/component/test-component';
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <VisitListener />
+      </TestApiProvider>,
+      { routeEntries: [pathname] },
+    );
+
+    expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(mockVisitsApi.save).toHaveBeenCalledTimes(1));
+  });
 
   it('registers a visit', async () => {
     const pathname = '/catalog/default/component/playback-order';
@@ -131,144 +157,182 @@ describe('<VisitListener/>', () => {
     );
   });
 
-  describe('requestId tests', () => {
-    beforeEach(() => {
-      // Mock requestAnimationFrame to execute immediately
-      global.requestAnimationFrame = jest.fn(callback => {
-        callback(0);
-        return 1;
-      });
-      global.cancelAnimationFrame = jest.fn();
-    });
+  it('saves base visit when no enrichment function is provided', async () => {
+    const pathname = '/catalog/default/component/test-component';
 
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <VisitListener />
+      </TestApiProvider>,
+      { routeEntries: [pathname] },
+    );
 
-    it('uses requestAnimationFrame to defer visit saving', async () => {
-      const pathname = '/catalog/default/component/test-component';
-
-      await renderInTestApp(
-        <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
-          <VisitListener />
-        </TestApiProvider>,
-        { routeEntries: [pathname] },
-      );
-
-      expect(global.requestAnimationFrame).toHaveBeenCalledTimes(1);
-      await waitFor(() => expect(mockVisitsApi.save).toHaveBeenCalledTimes(1));
-    });
-
-    it('saves base visit when no enrichment function is provided', async () => {
-      const pathname = '/catalog/default/component/test-component';
-
-      await renderInTestApp(
-        <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
-          <VisitListener />
-        </TestApiProvider>,
-        { routeEntries: [pathname] },
-      );
-
-      await waitFor(() =>
-        expect(mockVisitsApi.save).toHaveBeenCalledWith({
-          visit: {
-            pathname,
-            entityRef: 'component:default/test-component',
-            name: 'test-component',
-          },
-        }),
-      );
-    });
-
-    it('enriches visit with additional data when enrichVisit function is provided', async () => {
-      const pathname = '/catalog/default/component/test-component';
-      const enrichVisit: VisitEnrichmentFunction = jest.fn(async _visit => ({
-        customProperty: 'custom-value',
-        category: 'test-category',
-        priority: 1,
-      }));
-
-      await renderInTestApp(
-        <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
-          <VisitListener enrichVisit={enrichVisit} />
-        </TestApiProvider>,
-        { routeEntries: [pathname] },
-      );
-
-      await waitFor(() => {
-        expect(enrichVisit).toHaveBeenCalledWith({
+    await waitFor(() =>
+      expect(mockVisitsApi.save).toHaveBeenCalledWith({
+        visit: {
           pathname,
           entityRef: 'component:default/test-component',
           name: 'test-component',
-        });
-        expect(mockVisitsApi.save).toHaveBeenCalledWith({
-          visit: {
-            pathname,
-            entityRef: 'component:default/test-component',
-            name: 'test-component',
-            customProperty: 'custom-value',
-            category: 'test-category',
-            priority: 1,
-          },
-        });
+        },
+      }),
+    );
+  });
+
+  it('enriches visit with additional data when enrichVisit function is provided', async () => {
+    const pathname = '/catalog/default/component/test-component';
+    const enrichVisit: VisitEnrichmentFunction = jest.fn(async _visit => ({
+      customProperty: 'custom-value',
+      category: 'test-category',
+      priority: 1,
+    }));
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <VisitListener enrichVisit={enrichVisit} />
+      </TestApiProvider>,
+      { routeEntries: [pathname] },
+    );
+
+    await waitFor(() => {
+      expect(enrichVisit).toHaveBeenCalledWith({
+        pathname,
+        entityRef: 'component:default/test-component',
+        name: 'test-component',
       });
-    });
-
-    it('handles synchronous enrichment function', async () => {
-      const pathname = '/catalog/default/component/test-component';
-      const enrichVisit: VisitEnrichmentFunction = jest.fn(_visit => ({
-        syncProperty: 'sync-value',
-      }));
-
-      await renderInTestApp(
-        <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
-          <VisitListener enrichVisit={enrichVisit} />
-        </TestApiProvider>,
-        { routeEntries: [pathname] },
-      );
-
-      await waitFor(() => {
-        expect(enrichVisit).toHaveBeenCalledWith({
+      expect(mockVisitsApi.save).toHaveBeenCalledWith({
+        visit: {
           pathname,
           entityRef: 'component:default/test-component',
           name: 'test-component',
-        });
-        expect(mockVisitsApi.save).toHaveBeenCalledWith({
-          visit: {
-            pathname,
-            entityRef: 'component:default/test-component',
-            name: 'test-component',
-            syncProperty: 'sync-value',
-          },
-        });
+          customProperty: 'custom-value',
+          category: 'test-category',
+          priority: 1,
+        },
       });
     });
+  });
 
-    it('enrichment function can override base visit properties', async () => {
-      const pathname = '/catalog/default/component/test-component';
-      const enrichVisit: VisitEnrichmentFunction = jest.fn(async _visit => ({
-        name: 'Overridden Name',
-        entityRef: 'overridden:ref/value',
-        customField: 'additional-data',
-      }));
+  it('handles synchronous enrichment function', async () => {
+    const pathname = '/catalog/default/component/test-component';
+    const enrichVisit: VisitEnrichmentFunction = jest.fn(_visit => ({
+      syncProperty: 'sync-value',
+    }));
 
-      await renderInTestApp(
-        <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
-          <VisitListener enrichVisit={enrichVisit} />
-        </TestApiProvider>,
-        { routeEntries: [pathname] },
-      );
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <VisitListener enrichVisit={enrichVisit} />
+      </TestApiProvider>,
+      { routeEntries: [pathname] },
+    );
 
-      await waitFor(() => {
-        expect(mockVisitsApi.save).toHaveBeenCalledWith({
-          visit: {
-            pathname,
-            name: 'Overridden Name',
-            entityRef: 'overridden:ref/value',
-            customField: 'additional-data',
-          },
-        });
+    await waitFor(() => {
+      expect(enrichVisit).toHaveBeenCalledWith({
+        pathname,
+        entityRef: 'component:default/test-component',
+        name: 'test-component',
+      });
+      expect(mockVisitsApi.save).toHaveBeenCalledWith({
+        visit: {
+          pathname,
+          entityRef: 'component:default/test-component',
+          name: 'test-component',
+          syncProperty: 'sync-value',
+        },
       });
     });
+  });
+
+  it('enrichment function can override base visit properties', async () => {
+    const pathname = '/catalog/default/component/test-component';
+    const enrichVisit: VisitEnrichmentFunction = jest.fn(async _visit => ({
+      name: 'Overridden Name',
+      entityRef: 'overridden:ref/value',
+      customField: 'additional-data',
+    }));
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <VisitListener enrichVisit={enrichVisit} />
+      </TestApiProvider>,
+      { routeEntries: [pathname] },
+    );
+
+    await waitFor(() => {
+      expect(mockVisitsApi.save).toHaveBeenCalledWith({
+        visit: {
+          pathname,
+          name: 'Overridden Name',
+          entityRef: 'overridden:ref/value',
+          customField: 'additional-data',
+        },
+      });
+    });
+  });
+
+  it('is able to override transformPathname and change the pathname', async () => {
+    const pathname = '/catalog/default/component/playback-order-2/sub-path';
+
+    const transformPathnameOverride = ({
+      pathname: mypathname,
+    }: {
+      pathname: string;
+    }) => mypathname.replace('/sub-path', '');
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <VisitListener transformPathname={transformPathnameOverride} />
+      </TestApiProvider>,
+      { routeEntries: [pathname] },
+    );
+
+    await waitFor(() =>
+      expect(mockVisitsApi.save).toHaveBeenCalledWith({
+        visit: {
+          pathname: '/catalog/default/component/playback-order-2',
+          entityRef: 'component:default/playback-order-2',
+          name: 'playback-order-2',
+        },
+      }),
+    );
+  });
+
+  it('is able to override canSave and save under set conditions', async () => {
+    const pathname = '/catalog';
+
+    const canSaveOverride = ({ pathname: path }: { pathname: string }) =>
+      path === '/catalog';
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <VisitListener canSave={canSaveOverride} />
+      </TestApiProvider>,
+      { routeEntries: [pathname] },
+    );
+
+    await waitFor(() =>
+      expect(mockVisitsApi.save).toHaveBeenCalledWith({
+        visit: {
+          pathname,
+          entityRef: undefined,
+          name: 'catalog',
+        },
+      }),
+    );
+  });
+
+  it('is able to override canSave and not save under set conditions', async () => {
+    const pathname = '/catalog';
+
+    const canSaveOverride = ({ pathname: path }: { pathname: string }) =>
+      path !== '/catalog';
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <VisitListener canSave={canSaveOverride} />
+      </TestApiProvider>,
+      { routeEntries: [pathname] },
+    );
+
+    await waitFor(() => expect(mockVisitsApi.save).not.toHaveBeenCalled());
   });
 });
