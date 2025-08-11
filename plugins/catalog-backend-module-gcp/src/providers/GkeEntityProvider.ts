@@ -90,7 +90,7 @@ export class GkeEntityProvider implements EntityProvider {
         const credentialsObject = JSON.parse(credentials);
         clusterManagerClient = new container.v1.ClusterManagerClient({
           credentials: credentialsObject,
-          scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+          scopes: ['https://www.googleapis.com/auth/container.readonly'],
         });
       } catch (error) {
         throw new Error(
