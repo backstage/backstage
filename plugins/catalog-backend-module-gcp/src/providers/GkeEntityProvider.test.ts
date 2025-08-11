@@ -19,6 +19,13 @@ import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import * as container from '@google-cloud/container';
 import { ConfigReader } from '@backstage/config';
 
+// Mock the container module
+jest.mock('@google-cloud/container', () => ({
+  v1: {
+    ClusterManagerClient: jest.fn(),
+  },
+}));
+
 describe('GkeEntityProvider', () => {
   const clusterManagerClientMock = {
     listClusters: jest.fn(),
@@ -196,5 +203,167 @@ describe('GkeEntityProvider', () => {
     await gkeEntityProvider.refresh();
     expect(connectionMock.applyMutation).toHaveBeenCalledTimes(0);
     expect(logger.error).toHaveBeenCalledTimes(1);
+  });
+
+  describe('credentials support', () => {
+    const MockedClusterManagerClient = container.v1
+      .ClusterManagerClient as jest.MockedClass<
+      typeof container.v1.ClusterManagerClient
+    >;
+
+    beforeEach(() => {
+      jest.resetAllMocks();
+      MockedClusterManagerClient.mockClear();
+      schedulerMock.createScheduledTaskRunner.mockReturnValue(taskRunner);
+    });
+
+    it('should use credentials from config when provided', () => {
+      const mockCredentials = {
+        type: 'service_account',
+        project_id: 'test-project',
+        private_key_id: 'key-id',
+        private_key:
+          '-----BEGIN PRIVATE KEY-----\ntest-key\n-----END PRIVATE KEY-----\n',
+        client_email: 'test@test-project.iam.gserviceaccount.com',
+        client_id: 'client-id',
+        auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+        token_uri: 'https://oauth2.googleapis.com/token',
+        auth_provider_x509_cert_url:
+          'https://www.googleapis.com/oauth2/v1/certs',
+        client_x509_cert_url:
+          'https://www.googleapis.com/robot/v1/metadata/x509/test%40test-project.iam.gserviceaccount.com',
+      };
+
+      GkeEntityProvider.fromConfig({
+        logger: logger as any,
+        config: new ConfigReader({
+          catalog: {
+            providers: {
+              gcp: {
+                gke: {
+                  parents: ['projects/test-project/locations/-'],
+                  schedule: {
+                    frequency: { minutes: 30 },
+                    timeout: { minutes: 3 },
+                  },
+                  googleServiceAccountCredentials:
+                    JSON.stringify(mockCredentials),
+                },
+              },
+            },
+          },
+        }),
+        scheduler: schedulerMock,
+      });
+
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith({
+        credentials: mockCredentials,
+        scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+      });
+    });
+
+    it('should fall back to default credentials when no credentials provided', () => {
+      GkeEntityProvider.fromConfig({
+        logger: logger as any,
+        config: new ConfigReader({
+          catalog: {
+            providers: {
+              gcp: {
+                gke: {
+                  parents: ['projects/test-project/locations/-'],
+                  schedule: {
+                    frequency: { minutes: 30 },
+                    timeout: { minutes: 3 },
+                  },
+                  // No googleServiceAccountCredentials provided
+                },
+              },
+            },
+          },
+        }),
+        scheduler: schedulerMock,
+      });
+
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith();
+    });
+
+    it('should throw error for invalid JSON credentials', () => {
+      expect(() => {
+        GkeEntityProvider.fromConfig({
+          logger: logger as any,
+          config: new ConfigReader({
+            catalog: {
+              providers: {
+                gcp: {
+                  gke: {
+                    parents: ['projects/test-project/locations/-'],
+                    schedule: {
+                      frequency: { minutes: 30 },
+                      timeout: { minutes: 3 },
+                    },
+                    googleServiceAccountCredentials: 'invalid-json',
+                  },
+                },
+              },
+            },
+          }),
+          scheduler: schedulerMock,
+        });
+      }).toThrow(
+        'Failed to parse Google Service Account credentials from config:',
+      );
+    });
+
+    it('should throw error for malformed JSON credentials', () => {
+      expect(() => {
+        GkeEntityProvider.fromConfig({
+          logger: logger as any,
+          config: new ConfigReader({
+            catalog: {
+              providers: {
+                gcp: {
+                  gke: {
+                    parents: ['projects/test-project/locations/-'],
+                    schedule: {
+                      frequency: { minutes: 30 },
+                      timeout: { minutes: 3 },
+                    },
+                    googleServiceAccountCredentials: '{"incomplete": "json"',
+                  },
+                },
+              },
+            },
+          }),
+          scheduler: schedulerMock,
+        });
+      }).toThrow(
+        'Failed to parse Google Service Account credentials from config:',
+      );
+    });
+
+    it('should handle undefined credentials as fallback to default', () => {
+      GkeEntityProvider.fromConfig({
+        logger: logger as any,
+        config: new ConfigReader({
+          catalog: {
+            providers: {
+              gcp: {
+                gke: {
+                  parents: ['projects/test-project/locations/-'],
+                  schedule: {
+                    frequency: { minutes: 30 },
+                    timeout: { minutes: 3 },
+                  },
+                  // googleServiceAccountCredentials is undefined
+                },
+              },
+            },
+          },
+        }),
+        scheduler: schedulerMock,
+      });
+
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith();
+    });
   });
 });

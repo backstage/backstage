@@ -38,6 +38,12 @@ export interface Config {
            * (Optional) TaskScheduleDefinition for the refresh.
            */
           schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+          /**
+           * (Optional) Google Service Account credentials for authentication
+           * JSON string containing the service account key
+           * @visibility secret
+           */
+          googleServiceAccountCredentials?: string;
         };
       };
     };

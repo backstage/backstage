@@ -71,11 +71,38 @@ export class GkeEntityProvider implements EntityProvider {
     scheduler: SchedulerService;
     config: Config;
   }) {
+    const gkeProviderConfig = config.getConfig('catalog.providers.gcp.gke');
+    const credentials = gkeProviderConfig.getOptionalString(
+      'googleServiceAccountCredentials',
+    );
+
+    let clusterManagerClient: container.v1.ClusterManagerClient;
+
+    if (credentials && credentials.trim()) {
+      // Use credentials from config
+      try {
+        const credentialsObject = JSON.parse(credentials);
+        clusterManagerClient = new container.v1.ClusterManagerClient({
+          credentials: credentialsObject,
+          scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+        });
+      } catch (error) {
+        throw new Error(
+          `Failed to parse Google Service Account credentials from config: ${
+            error instanceof Error ? error.message : 'Invalid JSON'
+          }`,
+        );
+      }
+    } else {
+      // Fall back to Application Default Credentials or GOOGLE_APPLICATION_CREDENTIALS
+      clusterManagerClient = new container.v1.ClusterManagerClient();
+    }
+
     return GkeEntityProvider.fromConfigWithClient({
       logger,
       scheduler: scheduler,
       config,
-      clusterManagerClient: new container.v1.ClusterManagerClient(),
+      clusterManagerClient,
     });
   }
 
