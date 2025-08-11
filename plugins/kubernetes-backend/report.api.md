@@ -90,8 +90,12 @@ export type DispatchStrategyOptions = {
   };
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
+export type FetchResponseWrapper = k8sAuthTypes.FetchResponseWrapper;
+
+// @public
 export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
+  constructor(config: Config);
   // (undocumented)
   getCredential(): Promise<KubernetesCredential>;
   // (undocumented)
