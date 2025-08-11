@@ -23,6 +23,7 @@ import {
 } from '@backstage/backend-test-utils';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import catalogBackend from '@backstage/plugin-catalog-backend';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
 import { applyDatabaseMigrations } from '../database/migrations';
@@ -37,6 +38,9 @@ export async function initEmptyDatabase(
   databaseId: TestDatabaseId,
   options?: {
     runMigrations?: boolean;
+    extraFeatures?: Array<
+      BackendFeature | Promise<{ default: BackendFeature }>
+    >;
   },
 ): Promise<{
   knex: Knex;
@@ -55,6 +59,7 @@ export async function initEmptyDatabase(
       }),
       catalogBackend,
       provider,
+      ...(options?.extraFeatures ?? []),
     ],
   });
 

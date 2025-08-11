@@ -35,7 +35,7 @@ describe('bindReadSubscriptionEndpoint', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const router = await createOpenApiRouter();
-    bindReadSubscriptionEndpoint(router, model);
+    bindReadSubscriptionEndpoint(router, mockServices.httpAuth(), model);
     const middlewares = MiddlewareFactory.create({ config, logger });
     app = express().use(router).use(middlewares.error());
   });

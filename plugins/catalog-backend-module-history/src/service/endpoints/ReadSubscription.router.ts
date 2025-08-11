@@ -15,12 +15,14 @@
  */
 
 import { TypedRouter } from '@backstage/backend-openapi-utils';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { EndpointMap } from '../../schema/openapi';
 import { ReadSubscriptionModel } from './ReadSubscription.model';
 import { toResponseEvent } from './types';
 
 export function bindReadSubscriptionEndpoint(
   router: TypedRouter<EndpointMap>,
+  httpAuth: HttpAuthService,
   model: ReadSubscriptionModel,
 ): void {
   router.get(
@@ -29,6 +31,8 @@ export function bindReadSubscriptionEndpoint(
       const { subscriptionId } = req.params;
       const { limit = 100, block = false } = req.query;
 
+      const credentials = await httpAuth.credentials(req);
+
       const controller = new AbortController();
       req.on('close', () => {
         controller.abort();
@@ -36,6 +40,7 @@ export function bindReadSubscriptionEndpoint(
 
       const result = await model.readSubscription({
         readOptions: { subscriptionId, limit, block },
+        credentials,
         signal: controller.signal,
       });
 

@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  BackstageCredentials,
-  PermissionsService,
-} from '@backstage/backend-plugin-api';
-import { NotAllowedError } from '@backstage/errors';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../../config';
 import { ChangeListener } from '../../database/changeListener/types';
 import { readHistorySubscription } from '../../database/operations/readHistorySubscription';
 import { EventsTableEntry } from '../../types';
+import { EntityPermissionFilterBuilder } from '../createEntityPermissionFilterBuilder';
 
 export interface ReadSubscriptionOptions {
   subscriptionId: string;
@@ -124,17 +118,14 @@ export class AuthorizedReadSubscriptionModelImpl
   implements ReadSubscriptionModel
 {
   readonly #inner: ReadSubscriptionModel;
-  readonly #permissions: PermissionsService;
-  readonly #transformConditions: ConditionTransformer<EntityFilter>;
+  readonly #entityPermissionFilterBuilder: EntityPermissionFilterBuilder;
 
   constructor(options: {
     inner: ReadSubscriptionModel;
-    permissions: PermissionsService;
-    transformConditions: ConditionTransformer<EntityFilter>;
+    entityPermissionFilterBuilder: EntityPermissionFilterBuilder;
   }) {
     this.#inner = options.inner;
-    this.#permissions = options.permissions;
-    this.#transformConditions = options.transformConditions;
+    this.#entityPermissionFilterBuilder = options.entityPermissionFilterBuilder;
   }
 
   async readSubscription(options: {
@@ -143,29 +134,14 @@ export class AuthorizedReadSubscriptionModelImpl
     filter?: EntityFilter;
     signal: AbortSignal;
   }): Promise<ReadSubscriptionResult> {
-    const authorizeDecision = (
-      await this.#permissions.authorizeConditional(
-        [{ permission: catalogEntityReadPermission }],
-        { credentials: options.credentials },
-      )
-    )[0];
+    const filter = await this.#entityPermissionFilterBuilder(
+      options.credentials,
+      options.filter,
+    );
 
-    if (authorizeDecision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError();
-    }
-
-    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
-      const permissionFilter: EntityFilter = this.#transformConditions(
-        authorizeDecision.conditions,
-      );
-      return await this.#inner.readSubscription({
-        ...options,
-        filter: options?.filter
-          ? { allOf: [permissionFilter, options.filter] }
-          : permissionFilter,
-      });
-    }
-
-    return await this.#inner.readSubscription(options);
+    return await this.#inner.readSubscription({
+      ...options,
+      filter,
+    });
   }
 }

@@ -58,6 +58,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
+    "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/repo-tools": "workspace:^",
     "supertest": "^7.0.0",
     "wait-for-expect": "^3.0.2"

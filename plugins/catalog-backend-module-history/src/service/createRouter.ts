@@ -19,12 +19,11 @@ import {
   PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
-import { createConditionTransformer } from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../config';
 import { ChangeListener } from '../database/changeListener/types';
 import { createOpenApiRouter } from '../schema/openapi';
+import { createEntityPermissionFilterBuilder } from './createEntityPermissionFilterBuilder';
 import { AckSubscriptionModelImpl } from './endpoints/AckSubscription.model';
 import { bindAckSubscriptionEndpoint } from './endpoints/AckSubscription.router';
 import {
@@ -59,18 +58,16 @@ export async function createRouter(options: {
 
   const router = await createOpenApiRouter();
 
-  const transformConditions = createConditionTransformer(
-    permissionsRegistry.getPermissionRuleset(
-      catalogEntityPermissionResourceRef,
-    ),
+  const entityPermissionFilterBuilder = createEntityPermissionFilterBuilder(
+    permissions,
+    permissionsRegistry,
   );
 
   bindGetEventsEndpoint(
     router,
     httpAuth,
     new AuthorizedGetEventsModelImpl({
-      permissions,
-      transformConditions,
+      entityPermissionFilterBuilder,
       inner: new GetEventsModelImpl({
         knexPromise,
         changeListener,
@@ -87,9 +84,9 @@ export async function createRouter(options: {
 
   bindReadSubscriptionEndpoint(
     router,
+    httpAuth,
     new AuthorizedReadSubscriptionModelImpl({
-      permissions,
-      transformConditions,
+      entityPermissionFilterBuilder,
       inner: new ReadSubscriptionModelImpl({
         knexPromise,
         historyConfig,

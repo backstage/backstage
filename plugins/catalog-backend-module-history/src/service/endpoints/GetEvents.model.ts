@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  BackstageCredentials,
-  PermissionsService,
-} from '@backstage/backend-plugin-api';
-import { NotAllowedError } from '@backstage/errors';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import { ChangeListener } from '../../database/changeListener/types';
 import { getMaxEventId } from '../../database/operations/getMaxEventId';
@@ -31,6 +24,7 @@ import {
   ReadHistoryEventsOptions,
 } from '../../database/operations/readHistoryEvents';
 import { EventsTableEntry } from '../../types';
+import { EntityPermissionFilterBuilder } from '../createEntityPermissionFilterBuilder';
 import { Cursor } from './GetEvents.utils';
 
 export interface GetEventsOptions {
@@ -153,43 +147,25 @@ export class GetEventsModelImpl implements GetEventsModel {
  */
 export class AuthorizedGetEventsModelImpl implements GetEventsModel {
   readonly #inner: GetEventsModel;
-  readonly #permissions: PermissionsService;
-  readonly #transformConditions: ConditionTransformer<EntityFilter>;
+  readonly #entityPermissionFilterBuilder: EntityPermissionFilterBuilder;
 
   constructor(options: {
     inner: GetEventsModel;
-    permissions: PermissionsService;
-    transformConditions: ConditionTransformer<EntityFilter>;
+    entityPermissionFilterBuilder: EntityPermissionFilterBuilder;
   }) {
     this.#inner = options.inner;
-    this.#permissions = options.permissions;
-    this.#transformConditions = options.transformConditions;
+    this.#entityPermissionFilterBuilder = options.entityPermissionFilterBuilder;
   }
 
   async getEvents(options: GetEventsOptions): Promise<GetEventsResult> {
-    const authorizeDecision = (
-      await this.#permissions.authorizeConditional(
-        [{ permission: catalogEntityReadPermission }],
-        { credentials: options.credentials },
-      )
-    )[0];
+    const filter = await this.#entityPermissionFilterBuilder(
+      options.credentials,
+      options.filter,
+    );
 
-    if (authorizeDecision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError();
-    }
-
-    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
-      const permissionFilter: EntityFilter = this.#transformConditions(
-        authorizeDecision.conditions,
-      );
-      return await this.#inner.getEvents({
-        ...options,
-        filter: options?.filter
-          ? { allOf: [permissionFilter, options.filter] }
-          : permissionFilter,
-      });
-    }
-
-    return await this.#inner.getEvents(options);
+    return await this.#inner.getEvents({
+      ...options,
+      filter,
+    });
   }
 }
