@@ -28,7 +28,6 @@ yarn.lock                                         @backstage/maintainers @backst
 /microsite/static                                 @backstage/maintainers @backstage/documentation-maintainers
 /packages                                         @backstage/framework-maintainers
 /packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
-/packages/canon                                   @backstage/design-system-maintainers
 /packages/catalog-client                          @backstage/catalog-maintainers
 /packages/catalog-model                           @backstage/catalog-maintainers
 /packages/cli                                     @backstage/tooling-maintainers

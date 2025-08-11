@@ -54,8 +54,8 @@ const apiDocsNavItem = NavItemBlueprint.make({
 
 const apiDocsConfigApi = ApiBlueprint.make({
   name: 'config',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: apiDocsConfigRef,
       deps: {},
       factory: () => {
@@ -79,7 +79,7 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config }) {
     return originalFactory({
-      defaultPath: '/api-docs',
+      path: '/api-docs',
       routeRef: convertLegacyRouteRef(rootRoute),
       loader: () =>
         import('./components/ApiExplorerPage').then(m =>
@@ -186,8 +186,8 @@ const apiDocsProvidingComponentsEntityCard = EntityCardBlueprint.make({
 const apiDocsDefinitionEntityContent = EntityContentBlueprint.make({
   name: 'definition',
   params: {
-    defaultPath: '/definition',
-    defaultTitle: 'Definition',
+    path: '/definition',
+    title: 'Definition',
     filter: 'kind:api',
     loader: async () =>
       import('./components/ApiDefinitionCard').then(m =>
@@ -205,8 +205,8 @@ const apiDocsDefinitionEntityContent = EntityContentBlueprint.make({
 const apiDocsApisEntityContent = EntityContentBlueprint.make({
   name: 'apis',
   params: {
-    defaultPath: '/apis',
-    defaultTitle: 'APIs',
+    path: '/apis',
+    title: 'APIs',
     filter: 'kind:component',
     loader: async () =>
       import('./components/ApisCards').then(m =>

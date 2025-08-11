@@ -27,8 +27,8 @@ import { SignalsDisplay } from './plugin';
 import { compatWrapper } from '@backstage/core-compat-api';
 
 const api = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: signalApiRef,
       deps: {
         identity: identityApiRef,

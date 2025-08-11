@@ -18,42 +18,24 @@ export function createApp(options?: CreateAppOptions): {
   createRoot(): JSX_2.Element;
 };
 
-// @public @deprecated
-export interface CreateAppFeatureLoader {
-  getLoaderName(): string;
-  load(options: { config: ConfigApi }): Promise<{
-    features: FrontendFeature[];
-  }>;
-}
-
 // @public
 export interface CreateAppOptions {
-  // (undocumented)
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  // (undocumented)
-  configLoader?: () => Promise<{
-    config: ConfigApi;
-  }>;
-  // (undocumented)
-  extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
-  // (undocumented)
-  features?: (
-    | FrontendFeature
-    | FrontendFeatureLoader
-    | CreateAppFeatureLoader
-  )[];
-  // (undocumented)
-  flags?: {
+  advanced?: {
     allowUnknownExtensionConfig?: boolean;
+    configLoader?: () => Promise<{
+      config: ConfigApi;
+    }>;
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+    loadingComponent?: ReactNode;
+    pluginInfoResolver?: FrontendPluginInfoResolver;
   };
-  loadingComponent?: ReactNode;
-  // (undocumented)
-  pluginInfoResolver?: FrontendPluginInfoResolver;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  features?: (FrontendFeature | FrontendFeatureLoader)[];
 }
 
-// @public
+// @public @deprecated (undocumented)
 export function createPublicSignInApp(options?: CreateAppOptions): {
   createRoot(): JSX_2;
 };
@@ -66,11 +48,7 @@ export function discoverAvailableFeatures(config: Config): {
 // @public (undocumented)
 export function resolveAsyncFeatures(options: {
   config: Config;
-  features?: (
-    | FrontendFeature
-    | FrontendFeatureLoader
-    | CreateAppFeatureLoader
-  )[];
+  features?: (FrontendFeature | FrontendFeatureLoader)[];
 }): Promise<{
   features: FrontendFeature[];
 }>;

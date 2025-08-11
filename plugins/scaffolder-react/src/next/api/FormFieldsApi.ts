@@ -52,8 +52,8 @@ export const formFieldsApi = ApiBlueprint.makeWithOverrides({
       e.get(FormFieldBlueprint.dataRefs.formFieldLoader),
     );
 
-    return originalFactory(define =>
-      define({
+    return originalFactory(defineParams =>
+      defineParams({
         api: formFieldsApiRef,
         deps: {},
         factory: () => new DefaultScaffolderFormFieldsApi(formFieldLoaders),

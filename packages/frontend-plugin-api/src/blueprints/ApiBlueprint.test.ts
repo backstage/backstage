@@ -23,8 +23,8 @@ describe('ApiBlueprint', () => {
     const api = createApiRef<{ foo: string }>({ id: 'test' });
 
     const extension = ApiBlueprint.make({
-      params: define =>
-        define({
+      params: defineParams =>
+        defineParams({
           api,
           deps: {},
           factory: () => ({ foo: 'bar' }),
@@ -63,13 +63,17 @@ describe('ApiBlueprint', () => {
     expect('test').not.toBe('failing without assertions');
 
     ApiBlueprint.make({
-      params: define =>
-        define({ api: fooApi, deps: {}, factory: () => ({ foo: 'foo' }) }),
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: {},
+          factory: () => ({ foo: 'foo' }),
+        }),
     });
 
     ApiBlueprint.make({
-      params: define =>
-        define({
+      params: defineParams =>
+        defineParams({
           api: fooApi,
           deps: {},
           // @ts-expect-error missing property
@@ -78,8 +82,8 @@ describe('ApiBlueprint', () => {
     });
 
     ApiBlueprint.make({
-      params: define =>
-        define({
+      params: defineParams =>
+        defineParams({
           api: fooApi,
           deps: {},
           // @ts-expect-error wrong property
@@ -90,8 +94,8 @@ describe('ApiBlueprint', () => {
     });
 
     ApiBlueprint.make({
-      params: define =>
-        define({
+      params: defineParams =>
+        defineParams({
           api: fooApi,
           deps: {},
           factory: () => ({
@@ -102,8 +106,8 @@ describe('ApiBlueprint', () => {
     });
 
     ApiBlueprint.make({
-      params: define =>
-        define({
+      params: defineParams =>
+        defineParams({
           api: fooApi,
           deps: { bar: barApi },
           factory: ({ bar }) => ({ foo: bar.bar }),
@@ -111,8 +115,8 @@ describe('ApiBlueprint', () => {
     });
 
     ApiBlueprint.make({
-      params: define =>
-        define({
+      params: defineParams =>
+        defineParams({
           api: fooApi,
           deps: { bar: barApi },
           factory: ({ bar }) => ({
@@ -123,8 +127,8 @@ describe('ApiBlueprint', () => {
     });
 
     ApiBlueprint.make({
-      params: define =>
-        define({
+      params: defineParams =>
+        defineParams({
           api: fooApi,
           deps: { bar: barApi },
           factory: ({ bar }) => ({
@@ -135,8 +139,8 @@ describe('ApiBlueprint', () => {
     });
 
     ApiBlueprint.make({
-      params: define =>
-        define({
+      params: defineParams =>
+        defineParams({
           api: fooApi,
           deps: {},
           factory: ({ bar }) => ({
@@ -162,7 +166,9 @@ describe('ApiBlueprint', () => {
       },
       name: api.id,
       factory(originalFactory, { config: _config, inputs: _inputs }) {
-        return originalFactory(define => define({ api, deps: {}, factory }));
+        return originalFactory(defineParams =>
+          defineParams({ api, deps: {}, factory }),
+        );
       },
     });
 

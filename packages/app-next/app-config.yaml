@@ -1,6 +1,5 @@
 app:
-  experimental:
-    packages: 'all' # ✨
+  packages: 'all' # ✨
 
   routes:
     bindings:

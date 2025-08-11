@@ -21,7 +21,6 @@ import {
   SubRouteRef,
   AnyRouteRefParams,
   RouteFunc,
-  RouteResolutionApiResolveOptions,
   RouteResolutionApi,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
@@ -35,6 +34,7 @@ import {
 } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
+import { RouteAliasResolver } from './RouteAliasResolver';
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
 export function joinPaths(...paths: string[]): string {
@@ -189,6 +189,7 @@ export class RouteResolver implements RouteResolutionApi {
       RouteRef | SubRouteRef
     >,
     private readonly appBasePath: string, // base path without a trailing slash
+    private readonly routeAliasResolver: RouteAliasResolver,
   ) {}
 
   resolve<TParams extends AnyRouteRefParams>(
@@ -196,11 +197,13 @@ export class RouteResolver implements RouteResolutionApi {
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions,
+    options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     // First figure out what our target absolute ref is, as well as our target path.
     const [targetRef, targetPath] = resolveTargetRef(
-      anyRouteRef,
+      anyRouteRef?.$$type === '@backstage/RouteRef'
+        ? this.routeAliasResolver(anyRouteRef)
+        : anyRouteRef,
       this.routePaths,
       this.routeBindings,
     );

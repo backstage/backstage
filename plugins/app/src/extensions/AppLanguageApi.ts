@@ -21,8 +21,8 @@ import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 
 export const AppLanguageApi = ApiBlueprint.make({
   name: 'app-language',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: appLanguageApiRef,
       deps: {},
       factory: () => AppLanguageSelector.createWithStorage(),

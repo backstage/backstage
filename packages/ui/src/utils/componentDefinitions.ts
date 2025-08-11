@@ -209,6 +209,9 @@ export const componentDefinitions = {
       root: 'bui-SearchField',
       clear: 'bui-InputClear',
     },
+    dataAttributes: {
+      startCollapsed: [true, false] as const,
+    },
   },
   Select: {
     classNames: {

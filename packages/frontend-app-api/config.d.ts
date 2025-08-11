@@ -20,9 +20,26 @@ export interface Config {
       /**
        * @visibility frontend
        * @deepVisibility frontend
+       * @deprecated This is no longer experimental; use `app.packages` instead.
        */
       packages?: 'all' | { include?: string[]; exclude?: string[] };
     };
+
+    /**
+     * Controls what packages are loaded by the new frontend system.
+     *
+     * @remarks
+     *
+     * When using the 'all' option, all feature packages that were added as
+     * dependencies to the app will be loaded automatically.
+     *
+     * The `include` and `exclude` options can be used to more finely control
+     * which individual package names to include or exclude.
+     *
+     * @visibility frontend
+     * @deepVisibility frontend
+     */
+    packages?: 'all' | { include?: string[]; exclude?: string[] };
 
     routes?: {
       /**

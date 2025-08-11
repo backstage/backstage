@@ -206,13 +206,7 @@
     border: none;
   }
 
-  .bui-HeaderPageSticky {
-    top: 8px;
-  }
-
-  .bui-HeaderPageStickyWrapper {
-    background-color: var(--bui-bg-surface-1);
-    margin-inline: var(--bui-space-2);
+  .bui-Input {
     border-radius: var(--bui-radius-3);
   }
 }
@@ -245,10 +239,6 @@
   }
 
   .bui-HeaderTabsWrapper {
-    border: 1px solid var(--bui-border);
-  }
-
-  .bui-HeaderPageStickyWrapper {
     border: 1px solid var(--bui-border);
   }
 }
