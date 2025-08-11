@@ -9517,36 +9517,6 @@
   }
 }
 
-.bui-DataTableRoot {
-  gap: var(--bui-space-3);
-  flex-direction: column;
-  display: flex;
-}
-
-.bui-DataTablePagination {
-  padding-top: var(--bui-space-5);
-  justify-content: space-between;
-  align-items: center;
-  display: flex;
-}
-
-.bui-DataTablePagination--left {
-  justify-content: space-between;
-  align-items: center;
-  display: flex;
-}
-
-.bui-DataTablePagination--right {
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--bui-space-2);
-  display: flex;
-}
-
-.bui-DataTablePagination--select {
-  min-width: 10.5rem;
-}
-
 .bui-FieldError {
   color: var(--bui-fg-danger);
   font-size: var(--bui-font-size-2);
@@ -10051,10 +10021,15 @@
   }
 }
 
-.bui-TableRoot {
+.bui-Table {
   caption-side: bottom;
   border-collapse: collapse;
   width: 100%;
+}
+
+.bui-TableHeader {
+  border-bottom: 1px solid var(--bui-border);
+  transition: color .2s ease-in-out;
 }
 
 .bui-TableHead {
@@ -10064,6 +10039,33 @@
   color: var(--bui-fg-primary);
 }
 
+.bui-TableHeadSortButton {
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+  gap: var(--bui-space-1);
+  display: inline-flex;
+
+  &:hover svg {
+    opacity: .5;
+  }
+
+  & svg {
+    opacity: 0;
+    transition: opacity .1s ease-in-out, transform .1s ease-in-out;
+  }
+
+  &[data-sort-order="asc"] svg {
+    opacity: 1;
+    transform: rotate(0);
+  }
+
+  &[data-sort-order="desc"] svg {
+    opacity: 1;
+    transform: rotate(180deg);
+  }
+}
+
 .bui-TableBody {
   color: var(--bui-fg-primary);
 }
@@ -10071,6 +10073,10 @@
 .bui-TableRow {
   border-bottom: 1px solid var(--bui-border);
   transition: color .2s ease-in-out;
+
+  &[data-react-aria-pressable="true"] {
+    cursor: pointer;
+  }
 }
 
 .bui-TableBody .bui-TableRow:hover {
@@ -10080,9 +10086,24 @@
 .bui-TableCell {
   padding: var(--bui-space-3);
   font-size: var(--bui-font-size-3);
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
 }
 
-.bui-TableCellText, .bui-TableCellLink {
+.bui-TableCellContentWrapper {
+  align-items: center;
+  gap: var(--bui-space-2);
+  flex-direction: row;
+  display: inline-flex;
+}
+
+.bui-TableCellIcon, .bui-TableCellIcon svg {
+  color: var(--bui-fg-primary);
+  align-items: center;
+  display: inline-flex;
+}
+
+.bui-TableCellContent {
   gap: var(--bui-space-0_5);
   flex-direction: column;
   display: flex;
@@ -10128,6 +10149,30 @@
   justify-content: center;
   align-items: center;
   display: flex;
+}
+
+.bui-DataTablePagination {
+  padding-top: var(--bui-space-5);
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.bui-DataTablePagination--left {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.bui-DataTablePagination--right {
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--bui-space-2);
+  display: flex;
+}
+
+.bui-DataTablePagination--select {
+  min-width: 10.5rem;
 }
 
 .bui-Tabs {

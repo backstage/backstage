@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import { Table } from '@tanstack/react-table';
+import { useStyles } from '../../../hooks/useStyles';
+import {
+  Table as ReactAriaTable,
+  type TableProps,
+} from 'react-aria-components';
 
 /** @public */
-export interface DataTableRootProps<TData>
-  extends React.HTMLAttributes<HTMLDivElement> {
-  /**
-   * The table instance.
-   */
-  table: Table<TData>;
-}
+export const Table = (props: TableProps) => {
+  const { classNames } = useStyles('Table');
+
+  return (
+    <ReactAriaTable
+      className={classNames.table}
+      aria-label="Data table"
+      {...props}
+    />
+  );
+};

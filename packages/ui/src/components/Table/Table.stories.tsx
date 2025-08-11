@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,93 +14,317 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Table } from '.';
-
-const invoices = [
-  {
-    invoice: 'INV001',
-    paymentStatus: 'Paid',
-    totalAmount: '$250.00',
-    paymentMethod: 'Credit Card',
-  },
-  {
-    invoice: 'INV002',
-    paymentStatus: 'Pending',
-    totalAmount: '$150.00',
-    paymentMethod: 'PayPal',
-  },
-  {
-    invoice: 'INV003',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$350.00',
-    paymentMethod: 'Bank Transfer',
-  },
-  {
-    invoice: 'INV004',
-    paymentStatus: 'Paid',
-    totalAmount: '$450.00',
-    paymentMethod: 'Credit Card',
-  },
-  {
-    invoice: 'INV005',
-    paymentStatus: 'Paid',
-    totalAmount: '$550.00',
-    paymentMethod: 'PayPal',
-  },
-  {
-    invoice: 'INV006',
-    paymentStatus: 'Pending',
-    totalAmount: '$200.00',
-    paymentMethod: 'Bank Transfer',
-  },
-  {
-    invoice: 'INV007',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$300.00',
-    paymentMethod: 'Credit Card',
-  },
-];
+import { useState } from 'react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import {
+  Table,
+  TableHeader,
+  Column,
+  TableBody,
+  Row,
+  Cell,
+  CellProfile as CellProfileBUI,
+  useTable,
+} from '.';
+import { MemoryRouter } from 'react-router-dom';
+import { data as data1 } from './mocked-data1';
+import { data as data2 } from './mocked-data2';
+import { data as data3 } from './mocked-data3';
+import { data as data4 } from './mocked-data4';
+import { RiCactusLine } from '@remixicon/react';
+import { TablePagination } from '../TablePagination';
 
 const meta = {
   title: 'Components/Table',
-  component: Table.Root,
-  subcomponents: {
-    Body: Table.Body as ComponentType<unknown>,
-    Cell: Table.Cell as ComponentType<unknown>,
-    Head: Table.Head as ComponentType<unknown>,
-    Header: Table.Header as ComponentType<unknown>,
-    Row: Table.Row as ComponentType<unknown>,
-  },
-} satisfies Meta<typeof Table>;
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+} satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: () => (
-    <Table.Root>
-      <Table.Header>
-        <Table.Row>
-          <Table.Head className="w-[100px]">Invoice</Table.Head>
-          <Table.Head>Status</Table.Head>
-          <Table.Head>Method</Table.Head>
-          <Table.Head className="text-right">Amount</Table.Head>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {invoices.map(invoice => (
-          <Table.Row key={invoice.invoice}>
-            <Table.Cell className="font-medium">{invoice.invoice}</Table.Cell>
-            <Table.Cell>{invoice.paymentStatus}</Table.Cell>
-            <Table.Cell>{invoice.paymentMethod}</Table.Cell>
-            <Table.Cell className="text-right">
-              {invoice.totalAmount}
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
-  ),
+export const TableOnly: Story = {
+  render: () => {
+    return (
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+          <Column>Lifecycle</Column>
+        </TableHeader>
+        <TableBody>
+          {data1.map(item => (
+            <Row key={item.name}>
+              <Cell
+                title={item.name}
+                leadingIcon={<RiCactusLine />}
+                description={item.description}
+              />
+              <CellProfileBUI
+                name={item.owner.name}
+                src={item.owner.profilePicture}
+                href={item.owner.link}
+              />
+              <Cell title={item.type} />
+              <Cell title={item.lifecycle} />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const WithPaginationUncontrolled: Story = {
+  render: () => {
+    const { data, paginationProps } = useTable({ data: data1 });
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Name</Column>
+            <Column>Owner</Column>
+            <Column>Type</Column>
+            <Column>Lifecycle</Column>
+          </TableHeader>
+          <TableBody>
+            {data?.map(item => (
+              <Row key={item.name}>
+                <Cell
+                  title={item.name}
+                  leadingIcon={<RiCactusLine />}
+                  description={item.description}
+                />
+                <Cell title={item.owner.name} />
+                <Cell title={item.type} />
+                <Cell title={item.lifecycle} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination {...paginationProps} />
+      </>
+    );
+  },
+};
+
+export const WithPaginationControlled: Story = {
+  render: () => {
+    const [offset, setOffset] = useState(0);
+    const [pageSize, setPageSize] = useState(5);
+
+    const { data, paginationProps } = useTable({
+      data: data4,
+      pagination: {
+        offset,
+        pageSize,
+        onOffsetChange: setOffset,
+        onPageSizeChange: setPageSize,
+        onNextPage: () => console.log('Next page analytics'),
+        onPreviousPage: () => console.log('Previous page analytics'),
+      },
+    });
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Band name</Column>
+            <Column>Genre</Column>
+            <Column>Year formed</Column>
+            <Column>Albums</Column>
+          </TableHeader>
+          <TableBody>
+            {data?.map(item => (
+              <Row key={item.name}>
+                <CellProfileBUI
+                  name={item.name}
+                  src={item.image}
+                  href={item.website}
+                />
+                <Cell title={item.genre} />
+                <Cell title={item.yearFormed.toString()} />
+                <Cell title={item.albums.toString()} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination {...paginationProps} />
+        <div style={{ marginTop: '16px', fontSize: '12px', color: '#666' }}>
+          Current state: offset={offset}, pageSize={pageSize}
+        </div>
+      </>
+    );
+  },
+};
+
+export const TableRockBand: Story = {
+  render: () => {
+    const { data, paginationProps } = useTable({
+      data: data4,
+      pagination: {
+        defaultPageSize: 5,
+      },
+    });
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Band name</Column>
+            <Column>Genre</Column>
+            <Column>Year formed</Column>
+            <Column>Albums</Column>
+          </TableHeader>
+          <TableBody>
+            {data?.map(item => (
+              <Row key={item.name}>
+                <CellProfileBUI
+                  name={item.name}
+                  src={item.image}
+                  href={item.website}
+                />
+                <Cell title={item.genre} />
+                <Cell title={item.yearFormed.toString()} />
+                <Cell title={item.albums.toString()} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination {...paginationProps} />
+      </>
+    );
+  },
+};
+
+export const RowClick: Story = {
+  render: () => {
+    const { data, paginationProps } = useTable({
+      data: data4,
+      pagination: {
+        defaultPageSize: 5,
+      },
+    });
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Band name</Column>
+            <Column>Genre</Column>
+            <Column>Year formed</Column>
+            <Column>Albums</Column>
+          </TableHeader>
+          <TableBody>
+            {data?.map(item => (
+              <Row key={item.name} onAction={() => alert('Row clicked')}>
+                <CellProfileBUI
+                  name={item.name}
+                  src={item.image}
+                  href={item.website}
+                />
+                <Cell title={item.genre} />
+                <Cell title={item.yearFormed.toString()} />
+                <Cell title={item.albums.toString()} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination {...paginationProps} />
+      </>
+    );
+  },
+};
+
+export const RowLink: Story = {
+  render: () => {
+    const { data, paginationProps } = useTable({
+      data: data4,
+      pagination: {
+        defaultPageSize: 5,
+      },
+    });
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <Column isRowHeader>Band name</Column>
+            <Column>Genre</Column>
+            <Column>Year formed</Column>
+            <Column>Albums</Column>
+          </TableHeader>
+          <TableBody>
+            {data?.map(item => (
+              <Row key={item.name} href="/band">
+                <CellProfileBUI
+                  name={item.name}
+                  src={item.image}
+                  href={item.website}
+                />
+                <Cell title={item.genre} />
+                <Cell title={item.yearFormed.toString()} />
+                <Cell title={item.albums.toString()} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination {...paginationProps} />
+      </>
+    );
+  },
+};
+
+export const CellText: Story = {
+  render: () => {
+    return (
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+        </TableHeader>
+        <TableBody>
+          {data2.map(item => (
+            <Row key={item.name}>
+              <Cell
+                title={item.name}
+                leadingIcon={item.icon}
+                description={item.description}
+              />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const CellProfile: Story = {
+  render: () => {
+    return (
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+        </TableHeader>
+        <TableBody>
+          {data3.map(item => (
+            <Row key={item.name}>
+              <CellProfileBUI
+                name={item.name}
+                src={item.profilePicture}
+                href={item.link}
+                description={item.description}
+              />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  },
 };

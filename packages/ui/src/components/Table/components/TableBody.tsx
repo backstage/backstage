@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
-import { TableCell } from './TableCell';
+import {
+  TableBody as ReactAriaTableBody,
+  type TableBodyProps,
+} from 'react-aria-components';
+import { useStyles } from '../../../hooks/useStyles';
 
-const meta = {
-  title: 'Components/Table/TableCell',
-  component: TableCell,
-} satisfies Meta<typeof TableCell>;
+/** @public */
+export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
+  const { classNames } = useStyles('Table');
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
-  args: {
-    children: 'Hello world',
-  },
+  return <ReactAriaTableBody className={classNames.body} {...props} />;
 };

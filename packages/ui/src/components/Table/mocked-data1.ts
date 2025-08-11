@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export interface DataProps {
   name: string;
   owner: {
@@ -23,6 +24,7 @@ export interface DataProps {
   type: 'documentation' | 'library' | 'service' | 'website' | 'other';
   description?: string;
   tags?: string[];
+  lifecycle: 'experimental' | 'production';
 }
 
 export const data: DataProps[] = [
@@ -37,6 +39,7 @@ export const data: DataProps[] = [
     description:
       'A comprehensive service handling user authentication and role-based access control across all applications.',
     tags: ['security', 'authentication', 'authorization'],
+    lifecycle: 'production',
   },
   {
     name: 'user-interface-dashboard-and-analytics-platform',
@@ -49,6 +52,7 @@ export const data: DataProps[] = [
     description:
       'Interactive dashboard providing real-time analytics and data visualization for business metrics.',
     tags: ['analytics', 'visualization', 'dashboard'],
+    lifecycle: 'production',
   },
   {
     name: 'payment-gateway',
@@ -61,6 +65,7 @@ export const data: DataProps[] = [
     description:
       'Secure payment processing system supporting multiple payment methods and currencies.',
     tags: ['payments', 'security', 'finance'],
+    lifecycle: 'production',
   },
   {
     name: 'real-time-analytics-processing-and-visualization-engine',
@@ -73,6 +78,7 @@ export const data: DataProps[] = [
     description:
       'High-performance engine for processing and visualizing streaming data analytics.',
     tags: ['analytics', 'real-time', 'data-processing'],
+    lifecycle: 'experimental',
   },
   {
     name: 'notification-center',
@@ -85,6 +91,7 @@ export const data: DataProps[] = [
     description:
       'Centralized system for managing and delivering notifications across multiple channels.',
     tags: ['notifications', 'messaging'],
+    lifecycle: 'production',
   },
   {
     name: 'administrative-control-panel-and-user-management-interface',
@@ -97,6 +104,7 @@ export const data: DataProps[] = [
     description:
       'Admin interface for managing users, permissions, and system configurations.',
     tags: ['admin', 'user-management', 'configuration'],
+    lifecycle: 'production',
   },
   {
     name: 'search-indexer',
@@ -109,6 +117,7 @@ export const data: DataProps[] = [
     description:
       'Service responsible for indexing and updating searchable content across the platform.',
     tags: ['search', 'indexing'],
+    lifecycle: 'production',
   },
   {
     name: 'cross-platform-mobile-application-framework',
@@ -121,6 +130,7 @@ export const data: DataProps[] = [
     description:
       'Framework enabling development of cross-platform mobile applications with shared codebase.',
     tags: ['mobile', 'framework', 'cross-platform'],
+    lifecycle: 'experimental',
   },
   {
     name: 'database-migration',
@@ -133,6 +143,7 @@ export const data: DataProps[] = [
     description:
       'Tools and scripts for managing database schema migrations and data transformations.',
     tags: ['database', 'migration', 'devops'],
+    lifecycle: 'production',
   },
   {
     name: 'api-gateway',
@@ -145,6 +156,7 @@ export const data: DataProps[] = [
     description:
       'Central entry point for all API requests, handling routing, authentication, and rate limiting.',
     tags: ['api', 'gateway', 'security', 'routing'],
+    lifecycle: 'production',
   },
   {
     name: 'content-management',
@@ -157,6 +169,7 @@ export const data: DataProps[] = [
     description:
       'System for managing and delivering digital content across multiple channels.',
     tags: ['content', 'management', 'delivery'],
+    lifecycle: 'production',
   },
   {
     name: 'enterprise-reporting-and-analytics-dashboard',
@@ -169,6 +182,7 @@ export const data: DataProps[] = [
     description:
       'Comprehensive business intelligence platform for enterprise-wide reporting and analytics.',
     tags: ['analytics', 'reporting', 'business-intelligence'],
+    lifecycle: 'production',
   },
   {
     name: 'image-processing-and-optimization-service',
@@ -181,6 +195,7 @@ export const data: DataProps[] = [
     description:
       'Service for processing, optimizing, and delivering images across different devices and networks.',
     tags: ['media', 'optimization', 'processing'],
+    lifecycle: 'production',
   },
   {
     name: 'customer-portal',
@@ -193,6 +208,7 @@ export const data: DataProps[] = [
     description:
       'Self-service portal for customers to manage their accounts and access services.',
     tags: ['customer', 'self-service'],
+    lifecycle: 'production',
   },
   {
     name: 'log-aggregator',
@@ -205,6 +221,7 @@ export const data: DataProps[] = [
     description:
       'Centralized logging system for collecting, processing, and analyzing application logs.',
     tags: ['logging', 'monitoring', 'devops'],
+    lifecycle: 'production',
   },
   {
     name: 'identity-provider',
@@ -217,6 +234,7 @@ export const data: DataProps[] = [
     description:
       'Service managing user identities and authentication across the organization.',
     tags: ['identity', 'security', 'authentication'],
+    lifecycle: 'production',
   },
   {
     name: 'document-storage',
@@ -229,6 +247,7 @@ export const data: DataProps[] = [
     description:
       'Secure and scalable document storage system with version control and access management.',
     tags: ['storage', 'documents', 'version-control'],
+    lifecycle: 'production',
   },
   {
     name: 'workflow-engine',
@@ -241,6 +260,7 @@ export const data: DataProps[] = [
     description:
       'Engine for defining and executing business processes and workflows.',
     tags: ['workflow', 'automation'],
+    lifecycle: 'experimental',
   },
   {
     name: 'mobile-backend',
@@ -253,6 +273,7 @@ export const data: DataProps[] = [
     description:
       'Backend services supporting mobile applications with optimized APIs and data synchronization.',
     tags: ['mobile', 'backend', 'api'],
+    lifecycle: 'production',
   },
   {
     name: 'system-monitoring-and-alerting-dashboard',
@@ -265,6 +286,7 @@ export const data: DataProps[] = [
     description:
       'Real-time monitoring and alerting system for infrastructure and application health.',
     tags: ['monitoring', 'alerting', 'devops', 'infrastructure'],
+    lifecycle: 'production',
   },
   {
     name: 'email-service',
@@ -277,6 +299,7 @@ export const data: DataProps[] = [
     description:
       'Reliable email delivery service with templates and tracking capabilities.',
     tags: ['email', 'communication'],
+    lifecycle: 'production',
   },
   {
     name: 'data-pipeline',
@@ -289,6 +312,7 @@ export const data: DataProps[] = [
     description:
       'ETL pipeline for processing and transforming large volumes of data.',
     tags: ['data', 'etl', 'pipeline'],
+    lifecycle: 'production',
   },
   {
     name: 'configuration-manager',
@@ -301,6 +325,7 @@ export const data: DataProps[] = [
     description:
       'Centralized system for managing application configurations across environments.',
     tags: ['configuration', 'management'],
+    lifecycle: 'production',
   },
   {
     name: 'testing-framework',
@@ -313,6 +338,7 @@ export const data: DataProps[] = [
     description:
       'Comprehensive testing framework supporting various types of automated tests.',
     tags: ['testing', 'automation', 'qa'],
+    lifecycle: 'production',
   },
   {
     name: 'cache-service',
@@ -325,6 +351,7 @@ export const data: DataProps[] = [
     description:
       'Distributed caching service for improving application performance.',
     tags: ['caching', 'performance'],
+    lifecycle: 'production',
   },
   {
     name: 'billing-system',
@@ -337,6 +364,7 @@ export const data: DataProps[] = [
     description:
       'System for managing customer billing, invoicing, and payment processing.',
     tags: ['billing', 'finance', 'payments'],
+    lifecycle: 'production',
   },
   {
     name: 'comprehensive-product-documentation-and-api-reference',
@@ -349,6 +377,7 @@ export const data: DataProps[] = [
     description:
       'Complete documentation covering product features, APIs, and integration guides.',
     tags: ['documentation', 'api', 'reference'],
+    lifecycle: 'production',
   },
   {
     name: 'queue-manager',
@@ -361,6 +390,7 @@ export const data: DataProps[] = [
     description:
       'Message queue system for asynchronous processing and event handling.',
     tags: ['queue', 'messaging', 'async'],
+    lifecycle: 'production',
   },
   {
     name: 'security-scanner',
@@ -373,6 +403,7 @@ export const data: DataProps[] = [
     description:
       'Automated security scanning tool for identifying vulnerabilities in code and infrastructure.',
     tags: ['security', 'scanning', 'vulnerability'],
+    lifecycle: 'experimental',
   },
   {
     name: 'user-profile',
@@ -385,6 +416,7 @@ export const data: DataProps[] = [
     description:
       'User profile management interface with personalization features.',
     tags: ['user', 'profile', 'personalization'],
+    lifecycle: 'production',
   },
   {
     name: 'data-warehouse',
@@ -397,6 +429,7 @@ export const data: DataProps[] = [
     description:
       'Centralized data repository for business intelligence and analytics.',
     tags: ['data', 'warehouse', 'analytics'],
+    lifecycle: 'production',
   },
   {
     name: 'deployment-automation',
@@ -409,6 +442,7 @@ export const data: DataProps[] = [
     description:
       'Automated deployment pipeline for continuous integration and delivery.',
     tags: ['deployment', 'automation', 'ci-cd', 'devops'],
+    lifecycle: 'production',
   },
   {
     name: 'chat-service',
@@ -421,6 +455,7 @@ export const data: DataProps[] = [
     description:
       'Real-time chat service supporting text, file sharing, and group conversations.',
     tags: ['chat', 'communication', 'real-time'],
+    lifecycle: 'experimental',
   },
   {
     name: 'analytics-dashboard',
@@ -433,6 +468,7 @@ export const data: DataProps[] = [
     description:
       'Interactive dashboard for visualizing and analyzing business metrics.',
     tags: ['analytics', 'dashboard', 'visualization'],
+    lifecycle: 'production',
   },
   {
     name: 'file-uploader',
@@ -445,6 +481,7 @@ export const data: DataProps[] = [
     description:
       'Service for handling secure file uploads with progress tracking and validation.',
     tags: ['storage', 'upload', 'files'],
+    lifecycle: 'production',
   },
   {
     name: 'search-service',
@@ -457,6 +494,7 @@ export const data: DataProps[] = [
     description:
       'Full-text search service with advanced filtering and ranking capabilities.',
     tags: ['search', 'full-text'],
+    lifecycle: 'production',
   },
   {
     name: 'mobile-sdk',
@@ -469,6 +507,7 @@ export const data: DataProps[] = [
     description:
       'Software development kit for building mobile applications with native features.',
     tags: ['mobile', 'sdk', 'development'],
+    lifecycle: 'production',
   },
   {
     name: 'performance-monitor',
@@ -481,6 +520,7 @@ export const data: DataProps[] = [
     description:
       'System for monitoring and analyzing application performance metrics.',
     tags: ['performance', 'monitoring', 'metrics'],
+    lifecycle: 'production',
   },
   {
     name: 'content-delivery',
@@ -493,6 +533,7 @@ export const data: DataProps[] = [
     description:
       'CDN service for optimized content delivery across global networks.',
     tags: ['cdn', 'content', 'delivery'],
+    lifecycle: 'production',
   },
   {
     name: 'user-authentication',
@@ -505,6 +546,7 @@ export const data: DataProps[] = [
     description:
       'Service handling user login, session management, and authentication flows.',
     tags: ['authentication', 'security', 'user'],
+    lifecycle: 'production',
   },
   {
     name: 'data-export',
@@ -517,6 +559,7 @@ export const data: DataProps[] = [
     description:
       'Service for exporting data in various formats with scheduling capabilities.',
     tags: ['data', 'export', 'scheduling'],
+    lifecycle: 'production',
   },
   {
     name: 'admin-api',
@@ -529,6 +572,7 @@ export const data: DataProps[] = [
     description:
       'API endpoints for administrative functions and system management.',
     tags: ['api', 'admin', 'management'],
+    lifecycle: 'production',
   },
   {
     name: 'testing-dashboard',
@@ -540,6 +584,7 @@ export const data: DataProps[] = [
     type: 'website',
     description: 'Dashboard for monitoring test results and quality metrics.',
     tags: ['testing', 'dashboard', 'qa'],
+    lifecycle: 'production',
   },
   {
     name: 'message-broker',
@@ -552,6 +597,7 @@ export const data: DataProps[] = [
     description:
       'Message broker service for reliable event-driven communication between services.',
     tags: ['messaging', 'broker', 'event-driven'],
+    lifecycle: 'production',
   },
   {
     name: 'payment-processor',
@@ -564,6 +610,7 @@ export const data: DataProps[] = [
     description:
       'Service for processing financial transactions and payment methods.',
     tags: ['payments', 'finance', 'processing'],
+    lifecycle: 'production',
   },
   {
     name: 'document-viewer',
@@ -575,6 +622,7 @@ export const data: DataProps[] = [
     type: 'website',
     description: 'Web-based document viewer supporting multiple file formats.',
     tags: ['documents', 'viewer'],
+    lifecycle: 'production',
   },
   {
     name: 'load-balancer',
@@ -587,6 +635,7 @@ export const data: DataProps[] = [
     description:
       'Service for distributing network traffic across multiple servers.',
     tags: ['load-balancing', 'networking', 'infrastructure'],
+    lifecycle: 'production',
   },
   {
     name: 'security-audit',
@@ -599,6 +648,7 @@ export const data: DataProps[] = [
     description:
       'Tools and processes for conducting security audits and compliance checks.',
     tags: ['security', 'audit', 'compliance'],
+    lifecycle: 'production',
   },
   {
     name: 'user-settings',
@@ -611,6 +661,7 @@ export const data: DataProps[] = [
     description:
       'Interface for users to manage their preferences and account settings.',
     tags: ['user', 'settings', 'preferences'],
+    lifecycle: 'production',
   },
   {
     name: 'data-import',
@@ -623,6 +674,7 @@ export const data: DataProps[] = [
     description:
       'Service for importing and validating data from external sources.',
     tags: ['data', 'import', 'validation'],
+    lifecycle: 'production',
   },
   {
     name: 'infrastructure-monitor',
@@ -635,6 +687,7 @@ export const data: DataProps[] = [
     description:
       'Monitoring system for infrastructure components and resources.',
     tags: ['monitoring', 'infrastructure', 'devops'],
+    lifecycle: 'production',
   },
   {
     name: 'notification-manager',
@@ -647,6 +700,7 @@ export const data: DataProps[] = [
     description:
       'Service for managing and delivering notifications across multiple channels.',
     tags: ['notifications', 'management'],
+    lifecycle: 'production',
   },
   {
     name: 'analytics-processor',
@@ -659,6 +713,7 @@ export const data: DataProps[] = [
     description:
       'Service for processing and analyzing business data and metrics.',
     tags: ['analytics', 'processing', 'metrics'],
+    lifecycle: 'production',
   },
   {
     name: 'file-manager',
@@ -670,6 +725,7 @@ export const data: DataProps[] = [
     type: 'website',
     description: 'Web interface for managing files and storage resources.',
     tags: ['files', 'storage', 'management'],
+    lifecycle: 'production',
   },
   {
     name: 'search-index',
@@ -681,6 +737,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for maintaining and updating search indices.',
     tags: ['search', 'indexing'],
+    lifecycle: 'production',
   },
   {
     name: 'mobile-authentication',
@@ -693,6 +750,7 @@ export const data: DataProps[] = [
     description:
       'Authentication service specifically designed for mobile applications.',
     tags: ['mobile', 'authentication', 'security'],
+    lifecycle: 'experimental',
   },
   {
     name: 'system-monitor',
@@ -705,6 +763,7 @@ export const data: DataProps[] = [
     description:
       'Monitoring service for system health and performance metrics.',
     tags: ['monitoring', 'system', 'metrics'],
+    lifecycle: 'production',
   },
   {
     name: 'media-processor',
@@ -716,6 +775,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for processing and optimizing media files.',
     tags: ['media', 'processing', 'optimization'],
+    lifecycle: 'production',
   },
   {
     name: 'user-management',
@@ -727,6 +787,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for managing user accounts and permissions.',
     tags: ['user', 'management', 'security'],
+    lifecycle: 'production',
   },
   {
     name: 'data-transformer',
@@ -739,6 +800,7 @@ export const data: DataProps[] = [
     description:
       'Service for transforming data between different formats and structures.',
     tags: ['data', 'transformation'],
+    lifecycle: 'production',
   },
   {
     name: 'admin-dashboard',
@@ -751,6 +813,7 @@ export const data: DataProps[] = [
     description:
       'Administrative interface for system management and monitoring.',
     tags: ['admin', 'dashboard', 'management'],
+    lifecycle: 'production',
   },
   {
     name: 'test-automation',
@@ -762,6 +825,7 @@ export const data: DataProps[] = [
     type: 'other',
     description: 'Tools and frameworks for automating testing processes.',
     tags: ['testing', 'automation', 'qa'],
+    lifecycle: 'production',
   },
   {
     name: 'event-bus',
@@ -773,6 +837,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Event-driven communication system between services.',
     tags: ['events', 'messaging', 'communication'],
+    lifecycle: 'production',
   },
   {
     name: 'invoice-generator',
@@ -784,6 +849,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for generating and managing invoices.',
     tags: ['invoices', 'finance'],
+    lifecycle: 'production',
   },
   {
     name: 'document-editor',
@@ -795,6 +861,7 @@ export const data: DataProps[] = [
     type: 'website',
     description: 'Web-based document editing interface.',
     tags: ['documents', 'editor'],
+    lifecycle: 'experimental',
   },
   {
     name: 'service-discovery',
@@ -806,6 +873,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for discovering and registering available services.',
     tags: ['discovery', 'services', 'devops'],
+    lifecycle: 'production',
   },
   {
     name: 'security-monitor',
@@ -817,6 +885,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for monitoring security events and threats.',
     tags: ['security', 'monitoring', 'threats'],
+    lifecycle: 'production',
   },
   {
     name: 'user-preferences',
@@ -828,6 +897,7 @@ export const data: DataProps[] = [
     type: 'website',
     description: 'Interface for managing user preferences and settings.',
     tags: ['user', 'preferences'],
+    lifecycle: 'production',
   },
   {
     name: 'data-validator',
@@ -839,6 +909,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for validating data integrity and format.',
     tags: ['data', 'validation'],
+    lifecycle: 'production',
   },
   {
     name: 'infrastructure-automation',
@@ -851,6 +922,7 @@ export const data: DataProps[] = [
     description:
       'Tools for automating infrastructure provisioning and management.',
     tags: ['infrastructure', 'automation', 'devops'],
+    lifecycle: 'production',
   },
   {
     name: 'notification-dispatcher',
@@ -863,6 +935,7 @@ export const data: DataProps[] = [
     description:
       'Service for dispatching notifications to appropriate channels.',
     tags: ['notifications', 'dispatch'],
+    lifecycle: 'production',
   },
   {
     name: 'analytics-collector',
@@ -874,6 +947,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for collecting and aggregating analytics data.',
     tags: ['analytics', 'collection', 'aggregation'],
+    lifecycle: 'production',
   },
   {
     name: 'file-processor',
@@ -885,6 +959,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for processing and managing files.',
     tags: ['files', 'processing'],
+    lifecycle: 'production',
   },
   {
     name: 'search-analyzer',
@@ -896,6 +971,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for analyzing search queries and results.',
     tags: ['search', 'analysis'],
+    lifecycle: 'experimental',
   },
   {
     name: 'mobile-notifications',
@@ -907,6 +983,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for sending notifications to mobile devices.',
     tags: ['mobile', 'notifications'],
+    lifecycle: 'experimental',
   },
   {
     name: 'system-alerts',
@@ -918,6 +995,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for managing and dispatching system alerts.',
     tags: ['alerts', 'system', 'monitoring'],
+    lifecycle: 'production',
   },
   {
     name: 'media-encoder',
@@ -929,6 +1007,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for encoding and processing media files.',
     tags: ['media', 'encoding'],
+    lifecycle: 'production',
   },
   {
     name: 'user-authorization',
@@ -940,6 +1019,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for managing user permissions and access control.',
     tags: ['authorization', 'security', 'user'],
+    lifecycle: 'production',
   },
   {
     name: 'data-aggregator',
@@ -951,6 +1031,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for aggregating data from multiple sources.',
     tags: ['data', 'aggregation'],
+    lifecycle: 'production',
   },
   {
     name: 'admin-authentication',
@@ -962,6 +1043,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Authentication service for administrative access.',
     tags: ['admin', 'authentication', 'security'],
+    lifecycle: 'production',
   },
   {
     name: 'test-coverage',
@@ -973,6 +1055,7 @@ export const data: DataProps[] = [
     type: 'other',
     description: 'Tools for measuring and reporting test coverage.',
     tags: ['testing', 'coverage', 'qa'],
+    lifecycle: 'production',
   },
   {
     name: 'event-processor',
@@ -984,6 +1067,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for processing and handling events.',
     tags: ['events', 'processing'],
+    lifecycle: 'production',
   },
   {
     name: 'payment-validator',
@@ -995,6 +1079,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for validating payment transactions.',
     tags: ['payments', 'validation', 'finance'],
+    lifecycle: 'production',
   },
   {
     name: 'document-converter',
@@ -1006,6 +1091,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for converting documents between different formats.',
     tags: ['documents', 'conversion'],
+    lifecycle: 'experimental',
   },
   {
     name: 'service-health',
@@ -1017,6 +1103,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for monitoring and reporting service health status.',
     tags: ['health', 'monitoring', 'services'],
+    lifecycle: 'production',
   },
   {
     name: 'security-logger',
@@ -1028,6 +1115,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for logging security-related events and activities.',
     tags: ['security', 'logging'],
+    lifecycle: 'production',
   },
   {
     name: 'user-analytics',
@@ -1040,6 +1128,7 @@ export const data: DataProps[] = [
     description:
       'Analytics dashboard for user behavior and engagement metrics.',
     tags: ['analytics', 'user', 'metrics'],
+    lifecycle: 'experimental',
   },
   {
     name: 'data-cleaner',
@@ -1051,6 +1140,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for cleaning and standardizing data.',
     tags: ['data', 'cleaning'],
+    lifecycle: 'production',
   },
   {
     name: 'infrastructure-deployer',
@@ -1062,6 +1152,7 @@ export const data: DataProps[] = [
     type: 'other',
     description: 'Tools for deploying and managing infrastructure resources.',
     tags: ['infrastructure', 'deployment', 'devops'],
+    lifecycle: 'production',
   },
   {
     name: 'notification-queue',
@@ -1073,6 +1164,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Queue system for managing notification delivery.',
     tags: ['notifications', 'queue'],
+    lifecycle: 'production',
   },
   {
     name: 'analytics-exporter',
@@ -1084,6 +1176,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for exporting analytics data in various formats.',
     tags: ['analytics', 'export'],
+    lifecycle: 'production',
   },
   {
     name: 'file-validator',
@@ -1095,6 +1188,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for validating file integrity and format.',
     tags: ['files', 'validation'],
+    lifecycle: 'production',
   },
   {
     name: 'search-optimizer',
@@ -1106,6 +1200,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for optimizing search performance and relevance.',
     tags: ['search', 'optimization'],
+    lifecycle: 'experimental',
   },
   {
     name: 'mobile-analytics',
@@ -1117,6 +1212,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Analytics service specifically for mobile applications.',
     tags: ['mobile', 'analytics'],
+    lifecycle: 'experimental',
   },
   {
     name: 'system-logger',
@@ -1128,6 +1224,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for logging system events and activities.',
     tags: ['logging', 'system'],
+    lifecycle: 'production',
   },
   {
     name: 'media-validator',
@@ -1139,6 +1236,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for validating media files and formats.',
     tags: ['media', 'validation'],
+    lifecycle: 'production',
   },
   {
     name: 'user-audit',
@@ -1150,6 +1248,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for auditing user activities and access.',
     tags: ['audit', 'user', 'security'],
+    lifecycle: 'production',
   },
   {
     name: 'data-normalizer',
@@ -1161,6 +1260,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Service for normalizing data formats and structures.',
     tags: ['data', 'normalization'],
+    lifecycle: 'production',
   },
   {
     name: 'admin-authorization',
@@ -1172,6 +1272,7 @@ export const data: DataProps[] = [
     type: 'service',
     description: 'Authorization service for administrative functions.',
     tags: ['admin', 'authorization', 'security'],
+    lifecycle: 'production',
   },
   {
     name: 'test-reporting',
@@ -1183,60 +1284,6 @@ export const data: DataProps[] = [
     type: 'other',
     description: 'Tools for generating and managing test reports.',
     tags: ['testing', 'reporting', 'qa'],
-  },
-  {
-    name: 'event-aggregator',
-    owner: {
-      name: 'platform-team',
-      profilePicture: 'https://github.com/platform-team.png',
-      link: 'https://github.com/orgs/company/teams/platform-team',
-    },
-    type: 'service',
-    description: 'Service for aggregating and processing events.',
-    tags: ['events', 'aggregation'],
-  },
-  {
-    name: 'payment-reconciler',
-    owner: {
-      name: 'finance-team',
-      profilePicture: 'https://github.com/finance-team.png',
-      link: 'https://github.com/orgs/company/teams/finance-team',
-    },
-    type: 'service',
-    description: 'Service for reconciling payment transactions.',
-    tags: ['payments', 'reconciliation', 'finance'],
-  },
-  {
-    name: 'document-validator',
-    owner: {
-      name: 'frontend-team',
-      profilePicture: 'https://github.com/frontend-team.png',
-      link: 'https://github.com/orgs/company/teams/frontend-team',
-    },
-    type: 'service',
-    description: 'Service for validating document formats and content.',
-    tags: ['documents', 'validation'],
-  },
-  {
-    name: 'service-monitor',
-    owner: {
-      name: 'devops-team',
-      profilePicture: 'https://github.com/devops-team.png',
-      link: 'https://github.com/orgs/company/teams/devops-team',
-    },
-    type: 'service',
-    description: 'Service for monitoring service health and performance.',
-    tags: ['monitoring', 'services', 'health'],
-  },
-  {
-    name: 'security-validator',
-    owner: {
-      name: 'security-team',
-      profilePicture: 'https://github.com/security-team.png',
-      link: 'https://github.com/orgs/company/teams/security-team',
-    },
-    type: 'service',
-    description: 'Service for validating security configurations and policies.',
-    tags: ['security', 'validation'],
+    lifecycle: 'production',
   },
 ];
