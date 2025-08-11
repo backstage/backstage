@@ -38,4 +38,9 @@ export interface SearchFieldProps
    * The placeholder text for the input
    */
   placeholder?: string;
+
+  /**
+   * Controls whether the SearchField starts in a collapsed state.
+   */
+  startCollapsed?: boolean;
 }

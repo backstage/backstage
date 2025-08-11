@@ -482,6 +482,9 @@ export const componentDefinitions: {
       readonly root: 'bui-SearchField';
       readonly clear: 'bui-InputClear';
     };
+    readonly dataAttributes: {
+      readonly startCollapsed: readonly [true, false];
+    };
   };
   readonly Select: {
     readonly classNames: {
@@ -1453,6 +1456,7 @@ export interface SearchFieldProps
   icon?: ReactNode | false;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  startCollapsed?: boolean;
 }
 
 // @public (undocumented)
