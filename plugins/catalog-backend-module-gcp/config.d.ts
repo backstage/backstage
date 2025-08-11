@@ -44,6 +44,16 @@ export interface Config {
            * @visibility secret
            */
           googleServiceAccountCredentials?: string;
+          /**
+           * (Optional) Authentication provider to use for Kubernetes clusters
+           * Defaults to 'google' for backward compatibility
+           */
+          authProvider?: string;
+          /**
+           * (Optional) Owner of the discovered clusters
+           * Defaults to 'unknown' if not specified
+           */
+          owner?: string;
         };
       };
     };

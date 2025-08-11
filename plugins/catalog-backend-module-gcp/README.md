@@ -62,4 +62,11 @@ catalog:
             "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
             "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/..."
           }
+        # Optional: Authentication provider for Kubernetes clusters
+        # Defaults to 'google' if not specified
+        # Common values: 'google', 'googleServiceAccount'
+        authProvider: googleServiceAccount
+        # Optional: Owner of the discovered GKE clusters
+        # Defaults to 'unknown' if not specified
+        owner: platform-team
 ```
