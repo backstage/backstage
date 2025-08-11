@@ -17,6 +17,7 @@
 import {
   ApiBlueprint,
   createExtensionInput,
+  createFrontendModule,
   createSwappableComponent,
   SwappableComponentBlueprint,
   swappableComponentsApiRef,
@@ -202,7 +203,13 @@ describe('DefaultSwappableComponentsApi', () => {
         });
 
         renderInTestApp(<MockComponent />, {
-          extensions: [api, override],
+          extensions: [api],
+          features: [
+            createFrontendModule({
+              pluginId: 'app',
+              extensions: [override],
+            }),
+          ],
         });
 
         await expect(
@@ -225,7 +232,13 @@ describe('DefaultSwappableComponentsApi', () => {
         });
 
         renderInTestApp(<MockComponent />, {
-          extensions: [api, override],
+          extensions: [api],
+          features: [
+            createFrontendModule({
+              pluginId: 'app',
+              extensions: [override],
+            }),
+          ],
         });
 
         await expect(
@@ -252,7 +265,13 @@ describe('DefaultSwappableComponentsApi', () => {
         });
 
         renderInTestApp(<MockComponent external="test" />, {
-          extensions: [api, override],
+          extensions: [api],
+          features: [
+            createFrontendModule({
+              pluginId: 'app',
+              extensions: [override],
+            }),
+          ],
         });
 
         await expect(
