@@ -37,7 +37,7 @@ export interface AppNodeSpec {
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;
-  readonly plugin?: FrontendPlugin;
+  readonly plugin: FrontendPlugin;
 }
 
 /**
