@@ -36,6 +36,7 @@ import {
   Progress,
   NotFoundErrorPage,
   ErrorBoundary,
+  LegacyComponentsApi,
 } from './extensions';
 import { apis } from './defaultApis';
 
@@ -65,5 +66,6 @@ export const appPlugin = createFrontendPlugin({
     Progress,
     NotFoundErrorPage,
     ErrorBoundary,
+    LegacyComponentsApi,
   ],
 });

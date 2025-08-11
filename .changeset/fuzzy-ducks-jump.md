@@ -1,5 +1,5 @@
 ---
-'@backstage/core-compat-api': minor
+'@backstage/core-compat-api': patch
 ---
 
-**BREAKING**: The `componentsApi` implementation has been removed from the plugin and replaced with the new `SwappableComponentsApi` instead. Which means that the `componentsApi` is not longer backwards compatible with legacy plugins.
+The `compatWrapper` has been switched to use the new `SwappableComponentsApi` instead of the old `ComponentsApi` in its bridging to the old frontend system.
