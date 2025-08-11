@@ -197,9 +197,9 @@ type: 'thing' # Too generic
 t: 'Component' # Too abbreviated
 ```
 
-## Plugin-Specific Examples
+## Examples
 
-### Catalog Plugin
+### Plugins
 
 ```md
 # Entity operations
@@ -233,11 +233,7 @@ backstage.plugin.catalog.entities.count
 "provider": "github",
 "status": "success"
 }
-```
 
-### Scaffolder Plugin
-
-```md
 # Task lifecycle
 
 backstage.plugin.scaffolder.tasks.total
@@ -282,9 +278,7 @@ backstage.plugin.scaffolder.tasks.queued
 }
 ```
 
-## Framework Service Examples
-
-### Scheduler Service
+### Services
 
 ```md
 # Task management (consolidated)
