@@ -39,8 +39,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "kafkajs": "^2.2.4",
-    "luxon": "^3.0.0"
+    "kafkajs": "^2.2.4"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

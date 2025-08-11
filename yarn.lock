@@ -6308,7 +6308,6 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/types": "workspace:^"
     kafkajs: "npm:^2.2.4"
-    luxon: "npm:^3.0.0"
   languageName: unknown
   linkType: soft
 
