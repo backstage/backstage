@@ -292,8 +292,7 @@ export async function createRouter(
     logger: options.logger,
   };
 
-  const baseUrl = await options.discovery.getBaseUrl('proxy');
-  const { pathname: pathPrefix } = new URL(baseUrl);
+  const pathPrefix = '/api/proxy';
 
   const proxyConfig: ProxyConfig = {
     ...(options.additionalEndpoints ?? {}),
