@@ -19,7 +19,6 @@ import {
   useState,
   useMemo,
   useCallback,
-  useId,
   ChangeEvent,
   KeyboardEvent,
   useRef,
@@ -28,6 +27,7 @@ import {
 import clsx from 'clsx';
 import { MenuComboboxOption, MenuComboboxProps } from './types';
 import { Icon } from '../..';
+import { useId } from 'react-aria';
 
 const getListboxItemId = (listboxId: string, optionValue: string): string =>
   `${listboxId}-option-${optionValue}`;

@@ -58,6 +58,14 @@ export const WithLabel: Story = {
   },
 };
 
+export const WithFullWidth: Story = {
+  args: {
+    ...Default.args,
+    label: 'Font Family',
+    style: { width: '100%' },
+  },
+};
+
 export const WithLabelAndDescription: Story = {
   args: {
     ...WithLabel.args,

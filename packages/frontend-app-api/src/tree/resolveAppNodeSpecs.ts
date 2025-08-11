@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Extension } from '@backstage/frontend-plugin-api';
+import {
+  createFrontendPlugin,
+  Extension,
+  FrontendFeature,
+} from '@backstage/frontend-plugin-api';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
@@ -25,7 +29,6 @@ import {
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
-import { FrontendFeature } from '../wiring/types';
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {
@@ -88,6 +91,12 @@ export function resolveAppNodeSpecs(options: {
     );
   }
 
+  const appPlugin =
+    plugins.find(plugin => plugin.id === 'app') ??
+    createFrontendPlugin({
+      pluginId: 'app',
+    });
+
   const configuredExtensions = [
     ...pluginExtensions.map(({ plugin, ...extension }) => {
       const internalExtension = toInternalExtension(extension);
@@ -107,8 +116,8 @@ export function resolveAppNodeSpecs(options: {
       return {
         extension: internalExtension,
         params: {
-          source: undefined,
-          plugin: undefined,
+          source: appPlugin,
+          plugin: appPlugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
           config: undefined as unknown,

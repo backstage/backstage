@@ -40,7 +40,7 @@ These labels indicate which part of Backstage an issue or pull request relates t
 - `area:auditor` - Auditor service and it's use in plugins.
 - `area:auth` - Authentication and 3rd party authorization.
 - `area:catalog` - The Catalog plugin and the Software Catalog model and integrations.
-- `area:design-system` - The Canon design system and library.
+- `area:design-system` - The Backstage UI design system and library.
 - `area:documentation` - Documentation for adopters, users, and developers.
 - `area:events` - The Events system and integrations for other plugins.
 - `area:framework` - The core Backstage framework.

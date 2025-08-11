@@ -27,7 +27,7 @@ describe('AppRootWrapperBlueprint', () => {
   it('should return an extension with sensible defaults', () => {
     const extension = AppRootWrapperBlueprint.make({
       params: {
-        Component: () => <div>Hello</div>,
+        component: () => <div>Hello</div>,
       },
     });
 
@@ -59,7 +59,7 @@ describe('AppRootWrapperBlueprint', () => {
     const extension = AppRootWrapperBlueprint.make({
       name: 'test',
       params: {
-        Component: () => <div>Hello</div>,
+        component: () => <div>Hello</div>,
       },
     });
 
@@ -80,7 +80,7 @@ describe('AppRootWrapperBlueprint', () => {
       },
       *factory(originalFactory, { inputs, config }) {
         yield* originalFactory({
-          Component: ({ children }) => (
+          component: ({ children }) => (
             <div data-testid={`${config.name}-${inputs.children.length}`}>
               {children}
               {inputs.children.flatMap(c =>

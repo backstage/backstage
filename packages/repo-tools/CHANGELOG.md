@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 225d7c2: Added `stringEnums` to `mustache` templates
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
 ## 0.15.0
 
 ### Minor Changes

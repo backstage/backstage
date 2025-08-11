@@ -42,10 +42,7 @@ import {
   LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import {
-  createLegacyAuthAdapters,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -153,8 +150,13 @@ export class KubernetesProxy {
     if (!middleware) {
       const logger = this.logger.child({ cluster: originalCluster.name });
       middleware = createProxyMiddleware({
-        // TODO: Add 'log' to LoggerService
-        logProvider: () => loggerToWinstonLogger(logger),
+        logProvider: () => ({
+          log: logger.info.bind(logger),
+          debug: logger.debug.bind(logger),
+          info: logger.info.bind(logger),
+          warn: logger.warn.bind(logger),
+          error: logger.error.bind(logger),
+        }),
         ws: true,
         secure: !originalCluster.skipTLSVerify,
         changeOrigin: true,

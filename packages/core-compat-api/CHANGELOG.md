@@ -1,5 +1,32 @@
 # @backstage/core-compat-api
 
+## 0.5.0-next.2
+
+### Minor Changes
+
+- e4ddf22: **BREAKING**: The `defaultPath` override of `convertLegacyPageExtension` has been renamed to `path`, in order to align with the same update that was made to the `PageBlueprint`.
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.5-next.1
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.5-next.0
 
 ### Patch Changes

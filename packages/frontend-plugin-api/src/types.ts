@@ -18,17 +18,17 @@ import { PropsWithChildren } from 'react';
 import { FrontendPlugin } from './wiring';
 
 /** @public */
-export type CoreProgressProps = {};
+export type ProgressProps = {};
 
 /** @public */
-export type CoreNotFoundErrorPageProps = PropsWithChildren<{
+export type NotFoundErrorPageProps = PropsWithChildren<{
   status?: string;
   statusMessage?: string;
   additionalInfo?: string;
 }>;
 
 /** @public */
-export type CoreErrorBoundaryFallbackProps = {
+export type ErrorDisplayProps = {
   plugin?: FrontendPlugin;
   error: Error;
   resetError: () => void;

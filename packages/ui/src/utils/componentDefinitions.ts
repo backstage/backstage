@@ -42,7 +42,7 @@ export const componentDefinitions = {
     },
     dataAttributes: {
       size: ['small', 'medium', 'large'] as const,
-      variant: ['primary', 'secondary', 'ghost'] as const,
+      variant: ['primary', 'secondary', 'tertiary'] as const,
     },
   },
   ButtonIcon: {
@@ -125,6 +125,13 @@ export const componentDefinitions = {
       content: 'bui-HeaderPageContent',
       tabsWrapper: 'bui-HeaderPageTabsWrapper',
       controls: 'bui-HeaderPageControls',
+      sticky: 'bui-HeaderPageSticky',
+      stickyWrapper: 'bui-HeaderPageStickyWrapper',
+      stickyContent: 'bui-HeaderPageStickyContent',
+      breadcrumbs: 'bui-HeaderPageBreadcrumbs',
+      breadcrumb: 'bui-HeaderPageBreadcrumb',
+      breadcrumbLink: 'bui-HeaderPageBreadcrumbLink',
+      breadcrumbSeparator: 'bui-HeaderPageBreadcrumbSeparator',
     },
   },
   Heading: {
@@ -202,6 +209,9 @@ export const componentDefinitions = {
       root: 'bui-SearchField',
       clear: 'bui-InputClear',
     },
+    dataAttributes: {
+      startCollapsed: [true, false] as const,
+    },
   },
   Select: {
     classNames: {
@@ -231,16 +241,17 @@ export const componentDefinitions = {
   },
   Table: {
     classNames: {
-      root: 'bui-TableRoot',
+      table: 'bui-Table',
       header: 'bui-TableHeader',
       body: 'bui-TableBody',
       row: 'bui-TableRow',
       head: 'bui-TableHead',
+      headSortButton: 'bui-TableHeadSortButton',
       caption: 'bui-TableCaption',
       cell: 'bui-TableCell',
-      cellText: 'bui-TableCellText',
-      cellLink: 'bui-TableCellLink',
-      cellProfile: 'bui-TableCellProfile',
+      cellContentWrapper: 'bui-TableCellContentWrapper',
+      cellContent: 'bui-TableCellContent',
+      cellIcon: 'bui-TableCellIcon',
       cellProfileAvatar: 'bui-TableCellProfileAvatar',
       cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage',
       cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback',

@@ -1,5 +1,19 @@
 # @backstage/ui
 
+## 0.7.0-next.2
+
+### Patch Changes
+
+- d4e603e: Updated Menu component in Backstage UI to use useId() from React Aria instead of React to support React 17.
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- de89a3d: Fixes some styles on the Select component in BUI.
+- 75fead9: Fixes a couple of small bugs in BUI including setting H1 and H2 correctly on the Header and HeaderPage.
+- 2f9a084: We are motion away from `motion` to use `gsap` instead to make Backstage UI backward compatible with React 17.
+
 ## 0.7.0-next.0
 
 ### Minor Changes

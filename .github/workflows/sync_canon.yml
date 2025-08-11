@@ -1,4 +1,4 @@
-name: Sync Canon Docs
+name: Sync BUI Docs
 on:
   push:
     branches: [master]
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
         with:
           egress-policy: audit
 
@@ -36,7 +36,7 @@ jobs:
       - name: Configure Git
         run: |
           git config --global user.email noreply@backstage.io
-          git config --global user.name 'Github Canon Docs workflow'
+          git config --global user.name 'Github BUI Docs workflow'
 
       - name: Install dependencies
         working-directory: docs-ui
@@ -53,9 +53,9 @@ jobs:
           git rm -rf .
           cp -R ../docs-ui/dist/. .
 
-      - name: Commit to canon-storybook repo
+      - name: Commit to bui-storybook repo
         working-directory: bui-external-docs
         run: |
           git add .
-          git commit -am "Canon Docs build for backstage/backstage@${{ github.sha }}"
+          git commit -am "BUI Docs build for backstage/backstage@${{ github.sha }}"
           git push

@@ -438,6 +438,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           isDryRun: task.isDryRun,
           signal: task.cancelSignal,
           getInitiatorCredentials: () => task.getInitiatorCredentials(),
+          step: {
+            id: step.id,
+            name: step.name,
+          },
         });
       }
 

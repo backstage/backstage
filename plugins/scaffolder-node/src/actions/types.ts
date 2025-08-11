@@ -93,6 +93,20 @@ export type ActionContext<
    * Optional value of each invocation
    */
   each?: JsonObject;
+
+  /**
+   * Step information
+   */
+  step?: {
+    /**
+     * The id of step which triggered the action
+     */
+    id?: string;
+    /**
+     * The name of the step which triggered the action
+     */
+    name?: string;
+  };
 };
 
 /** @public */

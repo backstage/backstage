@@ -361,6 +361,24 @@ describe('NunjucksWorkflowRunner', () => {
         expect.objectContaining({ backstageToken: token }),
       );
     });
+
+    it('should pass step info through', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].step.id).toEqual('test');
+      expect(fakeActionHandler.mock.calls[0][0].step.name).toEqual('name');
+    });
   });
 
   describe('conditionals', () => {
@@ -1446,6 +1464,35 @@ describe('NunjucksWorkflowRunner', () => {
       expect(
         fakeActionHandler.mock.calls[0][0].templateInfo.entity.metadata.name,
       ).toEqual('test-template');
+    });
+
+    it('should have step info in action context during dry run', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          templateInfo: {
+            entityRef: 'dryRun-Entity',
+            entity: { metadata: { name: 'test-template' } },
+          },
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              input: { foo: 1 },
+            },
+          ],
+        },
+        {
+          backstageToken: token,
+        },
+        true,
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
+      expect(fakeActionHandler.mock.calls[0][0].step.id).toEqual('test');
+      expect(fakeActionHandler.mock.calls[0][0].step.name).toEqual('name');
     });
   });
 

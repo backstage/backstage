@@ -75,7 +75,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         includeClaimKeys?: string[];
       }
     | undefined,
-  customProperties: { [key: string]: string } | undefined,
+  customProperties: { [key: string]: string | string[] } | undefined,
   subscribe: boolean | undefined,
   logger: LoggerService,
 ) {
