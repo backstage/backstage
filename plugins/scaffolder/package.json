@@ -96,6 +96,7 @@
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
     "react-resizable": "^3.0.5",
+    "react-resizable-panels": "^3.0.4",
     "react-use": "^17.2.4",
     "react-window": "^1.8.10",
     "yaml": "^2.0.0",
