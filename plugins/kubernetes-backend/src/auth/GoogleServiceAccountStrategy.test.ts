@@ -19,17 +19,25 @@ import { GoogleServiceAccountStrategy } from './GoogleServiceAccountStrategy';
 
 // Mock the @google-cloud/container module
 const mockGetAccessToken = jest.fn();
-const mockClusterManagerClient = jest.fn().mockImplementation(() => ({
-  auth: {
-    getAccessToken: mockGetAccessToken,
-  },
-}));
 
-jest.mock('@google-cloud/container', () => ({
-  v1: {
-    ClusterManagerClient: mockClusterManagerClient,
-  },
-}));
+jest.mock('@google-cloud/container', () => {
+  const mockClusterManagerClient = jest.fn().mockImplementation(() => ({
+    auth: {
+      getAccessToken: mockGetAccessToken,
+    },
+  }));
+
+  return {
+    v1: {
+      ClusterManagerClient: mockClusterManagerClient,
+    },
+  };
+});
+
+// Get reference to the mocked constructor for use in tests
+const {
+  v1: { ClusterManagerClient: MockedClusterManagerClient },
+} = jest.mocked(require('@google-cloud/container'));
 
 describe('GoogleServiceAccountStrategy', () => {
   beforeEach(() => {
@@ -90,7 +98,7 @@ describe('GoogleServiceAccountStrategy', () => {
       const strategy = new GoogleServiceAccountStrategy(config);
       const credential = await strategy.getCredential();
 
-      expect(mockClusterManagerClient).toHaveBeenCalledWith({
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith({
         credentials: serviceAccountKey,
         scopes: ['https://www.googleapis.com/auth/cloud-platform'],
       });
@@ -111,7 +119,7 @@ describe('GoogleServiceAccountStrategy', () => {
       const strategy = new GoogleServiceAccountStrategy(config);
       const credential = await strategy.getCredential();
 
-      expect(mockClusterManagerClient).toHaveBeenCalledWith();
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith();
       expect(mockGetAccessToken).toHaveBeenCalled();
       expect(credential).toEqual({
         type: 'bearer token',
@@ -132,7 +140,7 @@ describe('GoogleServiceAccountStrategy', () => {
         'Failed to parse Google Service Account credentials from config',
       );
 
-      expect(mockClusterManagerClient).not.toHaveBeenCalled();
+      expect(MockedClusterManagerClient).not.toHaveBeenCalled();
       expect(mockGetAccessToken).not.toHaveBeenCalled();
     });
 
@@ -149,7 +157,7 @@ describe('GoogleServiceAccountStrategy', () => {
         'Unable to obtain access token for Google Cloud authentication',
       );
 
-      expect(mockClusterManagerClient).toHaveBeenCalledWith();
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith();
       expect(mockGetAccessToken).toHaveBeenCalled();
     });
 
@@ -166,7 +174,7 @@ describe('GoogleServiceAccountStrategy', () => {
         'Unable to obtain access token for Google Cloud authentication',
       );
 
-      expect(mockClusterManagerClient).toHaveBeenCalledWith();
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith();
       expect(mockGetAccessToken).toHaveBeenCalled();
     });
 
@@ -183,7 +191,7 @@ describe('GoogleServiceAccountStrategy', () => {
         'Unable to obtain access token for Google Cloud authentication',
       );
 
-      expect(mockClusterManagerClient).toHaveBeenCalledWith();
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith();
       expect(mockGetAccessToken).toHaveBeenCalled();
     });
 
@@ -213,7 +221,7 @@ describe('GoogleServiceAccountStrategy', () => {
         },
       });
 
-      mockClusterManagerClient.mockImplementationOnce(() => {
+      MockedClusterManagerClient.mockImplementationOnce(() => {
         throw new Error('Client creation failed');
       });
 
@@ -237,7 +245,7 @@ describe('GoogleServiceAccountStrategy', () => {
         'Token fetch failed',
       );
 
-      expect(mockClusterManagerClient).toHaveBeenCalledWith();
+      expect(MockedClusterManagerClient).toHaveBeenCalledWith();
       expect(mockGetAccessToken).toHaveBeenCalled();
     });
   });
