@@ -45,9 +45,7 @@ export const SwappableComponentsApi = ApiBlueprint.makeWithOverrides({
           if (nonAppExtensions.length > 0) {
             // eslint-disable-next-line no-console
             console.warn(
-              `SwappableComponents should only be installed as an extension in the app plugin. 
-              You can either use appPlugin.override(), or provide a module for the app-plugin with the extension there instead.
-              Invalid extensions: ${nonAppExtensions
+              `SwappableComponents should only be installed as an extension in the app plugin. You can either use appPlugin.override(), or provide a module for the app-plugin with the extension there instead. Invalid extensions: ${nonAppExtensions
                 .map(i => i.node.spec.id)
                 .join(', ')}`,
             );
