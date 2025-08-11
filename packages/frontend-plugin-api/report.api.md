@@ -8,6 +8,7 @@ import { alertApiRef } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
@@ -383,7 +384,7 @@ export const coreExtensionData: {
   >;
   routePath: ConfigurableExtensionDataRef<string, 'core.routing.path', {}>;
   routeRef: ConfigurableExtensionDataRef<
-    RouteRef<AnyRouteRefParams>,
+    RouteRef<AnyRouteRefParams_2>,
     'core.routing.ref',
     {}
   >;
