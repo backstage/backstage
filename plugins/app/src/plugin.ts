@@ -35,7 +35,7 @@ import {
   dialogDisplayAppRootElement,
   Progress,
   NotFoundErrorPage,
-  ErrorBoundary,
+  ErrorDisplay,
   LegacyComponentsApi,
 } from './extensions';
 import { apis } from './defaultApis';
@@ -65,7 +65,7 @@ export const appPlugin = createFrontendPlugin({
     dialogDisplayAppRootElement,
     Progress,
     NotFoundErrorPage,
-    ErrorBoundary,
+    ErrorDisplay,
     LegacyComponentsApi,
   ],
 });

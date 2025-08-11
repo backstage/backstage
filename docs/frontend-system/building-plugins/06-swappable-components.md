@@ -49,7 +49,7 @@ import { ExampleSwappableComponent } from '@internal/plugin-example-react';
 ## Overriding a Swappable Component
 
 In order to override a Swappable Component, you need to create a `SwappableComponentBlueprint` and install it with the `app` plugin.
-There's two different ways to add extensions to the `app` plugin, both are documented below in an example of overriding the `Progress` Swappable Component.
+There are two different ways to add extensions to the `app` plugin, both are documented below in an example of overriding the `Progress` Swappable Component.
 
 ```tsx title="in packages/app/src/App.tsx"
 import {
@@ -63,25 +63,12 @@ import appPlugin from '@backstage/plugin-app';
 
 const app = createApp({
   features: [
-    // Override an existing extension by ID provided by the app plugin:
-    appPlugin.withOverrides({
-      extensions: [
-        appPlugin
-          .getExtension('component:app/core.components.progress')
-          .override({
-            params: defineParams =>
-              defineParams({
-                component: Progress,
-                loader: () => MyCustomProgress,
-              }),
-          }),
-      ],
-    }),
-    // OR: Add another extension but with the same component ID:
-    appPlugin.withOverrides({
+    // Using a module to provide the extenion to the app
+    createFrontendModule({
+      pluginId: 'app',
       extensions: [
         SwappableComponentBlueprint.make({
-          name: 'core.components.progress',
+          name: 'core-progress',
           params: defineParams =>
             defineParams({
               component: Progress,
@@ -90,12 +77,10 @@ const app = createApp({
         }),
       ],
     }),
-    // OR: Use a module for the app plugin:
-    createFrontendModule({
-      pluginId: 'app',
+    // Core components that already ship with the app plugin can be overriden using getExtension()
+    appPlugin.withOverrides({
       extensions: [
-        SwappableComponentBlueprint.make({
-          name: 'core.components.progress',
+        appPlugin.getExtension('component:app/core-progress').override({
           params: defineParams =>
             defineParams({
               component: Progress,
@@ -110,7 +95,7 @@ const app = createApp({
 
 ## Default Swappable Components
 
-Currently there is only three different built-in Swappable Components that you can replace the implementations of, and these live in `@backstage/frontend-plugin-api`. They are as follows:
+Currently there are only three different built-in Swappable Components that you can replace the implementations of, and these live in `@backstage/frontend-plugin-api`. They are as follows:
 
 - `<Progress />
 - `<ErrorDisplay />
