@@ -427,7 +427,7 @@ describe('createApp', () => {
     `);
   });
 
-  it('should use "Loading..." as the default suspense fallback', async () => {
+  it('should use <Progress /> as the default suspense fallback', async () => {
     const app = createApp({
       advanced: {
         configLoader: () => new Promise(() => {}),
@@ -436,33 +436,33 @@ describe('createApp', () => {
 
     await renderWithEffects(app.createRoot());
 
-    await expect(screen.findByText('Loading...')).resolves.toBeInTheDocument();
+    await expect(screen.findByTestId('progress')).resolves.toBeInTheDocument();
   });
 
-  it('should use no suspense fallback if the "loadingComponent" is null', async () => {
+  it('should use no suspense fallback if the loadingElement is null', async () => {
     const app = createApp({
       advanced: {
         configLoader: () => new Promise(() => {}),
-        loadingComponent: null,
+        loadingElement: null,
       },
     });
 
     await renderWithEffects(app.createRoot());
 
-    expect(screen.queryByText('Loading...')).toBeNull();
+    expect(screen.queryByTestId('progress')).toBeNull();
   });
 
-  it('should use a custom "loadingComponent"', async () => {
+  it('should use a custom loadingElement', async () => {
     const app = createApp({
       advanced: {
         configLoader: () => new Promise(() => {}),
-        loadingComponent: <span>"Custom loading message"</span>,
+        loadingElement: <span>Custom loading message</span>,
       },
     });
 
     await renderWithEffects(app.createRoot());
 
-    expect(screen.queryByText('Custom loading message')).toBeNull();
+    expect(screen.queryByText('Custom loading message')).toBeInTheDocument();
   });
 
   it('should allow overriding the app plugin', async () => {
