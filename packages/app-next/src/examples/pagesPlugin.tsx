@@ -44,7 +44,7 @@ function PluginInfo() {
   const [info, setInfo] = useState<FrontendPluginInfo | undefined>(undefined);
 
   useEffect(() => {
-    node?.spec.source?.info().then(setInfo);
+    node?.spec.plugin?.info().then(setInfo);
   }, [node]);
 
   return (
@@ -58,7 +58,7 @@ function PluginInfo() {
 const IndexPage = PageBlueprint.make({
   name: 'index',
   params: {
-    defaultPath: '/',
+    path: '/',
     routeRef: indexRouteRef,
     loader: async () => {
       const Component = () => {
@@ -95,7 +95,7 @@ const IndexPage = PageBlueprint.make({
 const Page1 = PageBlueprint.make({
   name: 'page1',
   params: {
-    defaultPath: '/page1',
+    path: '/page1',
     routeRef: page1RouteRef,
     loader: async () => {
       const Component = () => {
@@ -131,7 +131,7 @@ const Page1 = PageBlueprint.make({
 const ExternalPage = PageBlueprint.make({
   name: 'pageX',
   params: {
-    defaultPath: '/pageX',
+    path: '/pageX',
     routeRef: pageXRouteRef,
     loader: async () => {
       const Component = () => {

@@ -64,38 +64,45 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     },
   },
   *factory(
-    {
-      loader,
-      defaultPath,
-      defaultTitle,
-      defaultGroup,
-      filter,
-      routeRef,
-    }: {
+    params: {
+      /**
+       * @deprecated Use the `path` param instead.
+       */
+      defaultPath?: [Error: `Use the 'path' param instead`];
+      path: string;
+      /**
+       * @deprecated Use the `path` param instead.
+       */
+      defaultTitle?: [Error: `Use the 'title' param instead`];
+      title: string;
+      /**
+       * @deprecated Use the `path` param instead.
+       */
+      defaultGroup?: [Error: `Use the 'group' param instead`];
+      group?: keyof typeof defaultEntityContentGroups | (string & {});
       loader: () => Promise<JSX.Element>;
-      defaultPath: string;
-      defaultTitle: string;
-      defaultGroup?: keyof typeof defaultEntityContentGroups | (string & {});
       routeRef?: RouteRef;
       filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     },
     { node, config },
   ) {
-    const path = config.path ?? defaultPath;
-    const title = config.title ?? defaultTitle;
-    const group = config.group ?? defaultGroup;
+    const path = config.path ?? params.path;
+    const title = config.title ?? params.title;
+    const group = config.group ?? params.group;
 
-    yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
+    yield coreExtensionData.reactElement(
+      ExtensionBoundary.lazy(node, params.loader),
+    );
 
     yield coreExtensionData.routePath(path);
 
     yield entityContentTitleDataRef(title);
 
-    if (routeRef) {
-      yield coreExtensionData.routeRef(routeRef);
+    if (params.routeRef) {
+      yield coreExtensionData.routeRef(params.routeRef);
     }
 
-    yield* resolveEntityFilterData(filter, config, node);
+    yield* resolveEntityFilterData(params.filter, config, node);
 
     if (group) {
       yield entityContentGroupDataRef(group);

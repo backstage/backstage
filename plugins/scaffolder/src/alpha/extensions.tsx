@@ -46,7 +46,7 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
     );
     return originalFactory({
       routeRef: convertLegacyRouteRef(rootRouteRef),
-      defaultPath: '/create',
+      path: '/create',
       loader: () =>
         import('../components/Router/Router').then(m =>
           compatWrapper(
@@ -73,8 +73,8 @@ export const repoUrlPickerFormField = FormFieldBlueprint.make({
 });
 
 export const scaffolderApi = ApiBlueprint.make({
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: scaffolderApiRef,
       deps: {
         discoveryApi: discoveryApiRef,

@@ -125,6 +125,13 @@ export const componentDefinitions = {
       content: 'bui-HeaderPageContent',
       tabsWrapper: 'bui-HeaderPageTabsWrapper',
       controls: 'bui-HeaderPageControls',
+      sticky: 'bui-HeaderPageSticky',
+      stickyWrapper: 'bui-HeaderPageStickyWrapper',
+      stickyContent: 'bui-HeaderPageStickyContent',
+      breadcrumbs: 'bui-HeaderPageBreadcrumbs',
+      breadcrumb: 'bui-HeaderPageBreadcrumb',
+      breadcrumbLink: 'bui-HeaderPageBreadcrumbLink',
+      breadcrumbSeparator: 'bui-HeaderPageBreadcrumbSeparator',
     },
   },
   Heading: {
@@ -201,6 +208,9 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-SearchField',
       clear: 'bui-InputClear',
+    },
+    dataAttributes: {
+      startCollapsed: [true, false] as const,
     },
   },
   Select: {

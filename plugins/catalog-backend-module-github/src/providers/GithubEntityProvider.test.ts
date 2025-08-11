@@ -961,6 +961,33 @@ describe('GithubEntityProvider', () => {
 
         expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
       });
+
+      it('should fail with incorrect branch matching', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            catalogPath: '**/catalog-info.yaml',
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          catalogFile: {
+            action: 'added',
+            path: 'folder1/folder2/folder3/catalog-info.yaml',
+          },
+          ref: 'refs/heads/my-main-branch',
+        });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
     });
 
     describe('on repository event', () => {

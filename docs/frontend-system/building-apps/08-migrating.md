@@ -199,8 +199,8 @@ import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 
 const scmIntegrationsApi = ApiBlueprint.make({
   name: 'scm-integrations',
-  params: define =>
-    define({
+  params: defineParams =>
+    defineParams({
       api: scmIntegrationsApiRef,
       deps: { configApi: configApiRef },
       factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
@@ -244,8 +244,7 @@ Plugins don't even have to be imported manually after installing their package i
 ```yaml title="in app-config.yaml"
 app:
   # Enabling plugin and override features discovery
-  experimental:
-    packages: all # ✨
+  packages: all # ✨
 ```
 
 ### `featureFlags`

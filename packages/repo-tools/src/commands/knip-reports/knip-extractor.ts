@@ -21,11 +21,6 @@ import fs from 'fs-extra';
 import type { KnipConfig } from 'knip';
 import { createBinRunner } from '../util';
 
-// Ignore these
-const ignoredPackages = [
-  'packages/canon', // storybook config is different from the rest
-];
-
 interface KnipExtractionOptions {
   packageDirs: string[];
   isLocalBuild: boolean;
@@ -104,10 +99,7 @@ async function handlePackage({
   isLocalBuild,
 }: KnipPackageOptions) {
   console.log(`## Processing ${packageDir}`);
-  if (ignoredPackages.includes(packageDir)) {
-    console.log(`Skipping ${packageDir}`);
-    return;
-  }
+
   const fullDir = cliPaths.resolveTargetRoot(packageDir);
   const reportPath = resolvePath(fullDir, 'knip-report.md');
   const run = createBinRunner(cliPaths.targetRoot, '');

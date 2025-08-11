@@ -65,6 +65,24 @@ export const propDefs: Record<string, PropDef> = {
       },
     },
   },
+  breadcrumbs: {
+    type: 'complex',
+    complexType: {
+      name: 'Breadcrumb[]',
+      properties: {
+        label: {
+          type: 'string',
+          required: true,
+          description: 'Display text for the breadcrumb',
+        },
+        href: {
+          type: 'string',
+          required: true,
+          description: 'URL for the breadcrumb link',
+        },
+      },
+    },
+  },
   ...childrenPropDefs,
   ...classNamePropDefs,
   ...stylePropDefs,

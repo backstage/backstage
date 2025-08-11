@@ -40,8 +40,8 @@ export const AppThemeApi = ApiBlueprint.makeWithOverrides({
     }),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory(define =>
-      define({
+    return originalFactory(defineParams =>
+      defineParams({
         api: appThemeApiRef,
         deps: {},
         factory: () =>

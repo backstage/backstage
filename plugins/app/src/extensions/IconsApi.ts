@@ -36,8 +36,8 @@ export const IconsApi = ApiBlueprint.makeWithOverrides({
     }),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory(define =>
-      define({
+    return originalFactory(defineParams =>
+      defineParams({
         api: iconsApiRef,
         deps: {},
         factory: () =>

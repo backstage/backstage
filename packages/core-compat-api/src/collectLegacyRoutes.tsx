@@ -235,7 +235,7 @@ export function collectLegacyRoutes(
         factory(originalFactory, { inputs: _inputs }) {
           // todo(blam): why do we not use the inputs here?
           return originalFactory({
-            defaultPath: normalizeRoutePath(path),
+            path: normalizeRoutePath(path),
             routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
             loader: async () =>
               compatWrapper(
@@ -310,7 +310,7 @@ export function collectLegacyRoutes(
           ...Array.from(plugin.getApis()).map(factory =>
             ApiBlueprint.make({
               name: factory.api.id,
-              params: define => define(factory),
+              params: defineParams => defineParams(factory),
             }),
           ),
         ],

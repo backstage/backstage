@@ -38,7 +38,6 @@ export const Header = (props: HeaderProps) => {
     title,
     titleLink,
     menuItems,
-    breadcrumbs,
     customActions,
     onTabSelectionChange,
   } = props;
@@ -54,7 +53,6 @@ export const Header = (props: HeaderProps) => {
         title={title}
         titleLink={titleLink}
         menuItems={menuItems}
-        breadcrumbs={breadcrumbs}
         customActions={customActions}
         hasTabs={hasTabs}
       />

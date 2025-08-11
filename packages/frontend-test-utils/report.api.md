@@ -5,7 +5,6 @@
 ```ts
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
-import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ApiMock } from '@backstage/test-utils';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
@@ -13,7 +12,7 @@ import { ErrorWithContext } from '@backstage/test-utils';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
-import { FrontendFeature } from '@backstage/frontend-app-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { mockApis } from '@backstage/test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
@@ -45,7 +44,7 @@ export function createExtensionTester<T extends ExtensionDefinitionParameters>(
 export { ErrorWithContext };
 
 // @public (undocumented)
-export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
+export class ExtensionQuery<UOutput extends ExtensionDataRef> {
   constructor(node: AppNode);
   // (undocumented)
   get<TId extends UOutput['id']>(
@@ -62,7 +61,7 @@ export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
 }
 
 // @public (undocumented)
-export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
+export class ExtensionTester<UOutput extends ExtensionDataRef> {
   // (undocumented)
   add<T extends ExtensionDefinitionParameters>(
     extension: ExtensionDefinition<T>,
