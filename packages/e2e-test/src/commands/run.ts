@@ -221,7 +221,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
  */
 async function pinYarnVersion(dir: string) {
   const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc.yml'), 'utf8');
-  const yarnRcLines = yarnRc.split('\n');
+  const yarnRcLines = yarnRc.split(/\r?\n/);
   const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarnPath:'));
   if (!yarnPathLine) {
     throw new Error(`Unable to find 'yarnPath' in ${yarnRc}`);
