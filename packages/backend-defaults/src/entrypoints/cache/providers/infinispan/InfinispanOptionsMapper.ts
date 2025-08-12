@@ -108,7 +108,8 @@ export class InfinispanOptionsMapper {
       );
     }
 
-    behaviorOptions.cacheName = infinispanConfig.getOptionalString('cacheName');
+    behaviorOptions.cacheName =
+      infinispanConfig.getOptionalString('cacheName') ?? 'cache';
 
     const mediaType = infinispanConfig.getOptionalString('mediaType');
     if (mediaType === 'text/plain' || mediaType === 'application/json') {
