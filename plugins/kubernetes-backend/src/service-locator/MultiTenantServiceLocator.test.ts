@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ServiceLocatorRequestContext } from '@backstage/plugin-kubernetes-node';
 import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
