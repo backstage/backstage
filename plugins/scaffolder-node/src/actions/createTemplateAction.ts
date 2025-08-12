@@ -150,15 +150,30 @@ export function createTemplateAction<
     TOutputSchema
   >,
 ): TemplateAction<TActionInput, TActionOutput, 'v2'> {
-  const { inputSchema, outputSchema, inputZodSchema, outputZodSchema } =
-    parseSchemas(action as TemplateActionOptions<any, any, any>);
+  const { inputSchema, outputSchema, inputZodSchema } = parseSchemas(
+    action as TemplateActionOptions<any, any, any>,
+  );
 
   const wrapperHandler = (ctx: ActionContext<TActionInput, TActionOutput>) => {
+    let parsedInput: TActionInput;
+    const rawInput = ctx.input;
+
+    if (inputZodSchema) {
+      try {
+        parsedInput = inputZodSchema.parse(rawInput) as unknown as TActionInput;
+      } catch (error) {
+        ctx.logger.error(
+          `Input validation failed (createTemplateAction): ${error}`,
+        );
+        throw error;
+      }
+    } else {
+      parsedInput = rawInput;
+    }
+
     return action.handler({
       ...ctx,
-      input: (inputZodSchema?.parse(ctx.input) as TActionInput) ?? ctx.input,
-      output:
-        (outputZodSchema?.parse(ctx.output) as TActionOutput) ?? ctx.output,
+      input: parsedInput,
     });
   };
 

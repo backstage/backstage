@@ -160,7 +160,7 @@ export const parseSchemas = (
 
   if (isKeyValueZodCallback(action.schema.input)) {
     const createZodObject = (
-      schema: Record<string, (z: typeof z) => z.ZodType>,
+      schema: Record<string, (zImpl: typeof z) => z.ZodType>,
     ) =>
       z.object(
         Object.fromEntries(
@@ -174,8 +174,8 @@ export const parseSchemas = (
     }
 
     return {
-      inputSchema: zodToJsonSchema<Schema>(input),
-      outputSchema: output && zodToJsonSchema<Schema>(output),
+      inputSchema: zodToJsonSchema(input) as Schema,
+      outputSchema: output && (zodToJsonSchema(output) as Schema),
       inputZodSchema: input,
       outputZodSchema: output,
     };
