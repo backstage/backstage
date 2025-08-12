@@ -16,10 +16,14 @@
 
 import os from 'os';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
-import { Config, ConfigReader } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
-import { TaskWorker, TaskWorkerOptions } from './TaskWorker';
+import {
+  createParameterTruncator,
+  TaskWorker,
+  TaskWorkerOptions,
+} from './TaskWorker';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
@@ -139,6 +143,66 @@ describe('TaskWorker', () => {
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
     expect(event?.body.output).toEqual({ testOutput: 'testmockoutput' });
+  });
+
+  it('should log an audit event with task parameters when running a task', async () => {
+    (workflowRunner.execute as jest.Mock).mockResolvedValue({
+      output: {},
+    });
+
+    const auditor = mockServices.auditor.mock();
+    const auditEvent = {
+      success: jest.fn(),
+      fail: jest.fn(),
+    };
+    auditor.createEvent.mockResolvedValue(auditEvent);
+
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: broker,
+      actionRegistry,
+      auditor,
+      config: mockServices.rootConfig({
+        data: {
+          scaffolder: {
+            auditor: {
+              taskParameterMaxLength: 5,
+            },
+          },
+        },
+      }),
+    });
+
+    await taskWorker.runOneTask({
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {
+          test: 'thisisaverylongstring',
+        },
+        steps: [],
+        output: {},
+      },
+      complete: jest.fn(),
+      createdBy: 'test-creator',
+      taskId: 'test-id',
+    } as unknown as TaskContext);
+
+    expect(auditor.createEvent).toHaveBeenCalledWith({
+      eventId: 'task',
+      severityLevel: 'medium',
+      meta: {
+        actionType: 'execution',
+        createdBy: 'test-creator',
+        taskId: 'test-id',
+        taskParameters: {
+          test: 'thisi...<truncated>',
+        },
+      },
+    });
+    expect(auditEvent.success).toHaveBeenCalled();
   });
 });
 
@@ -344,33 +408,11 @@ describe('TaskWorker internals', () => {
   });
 });
 
-describe('TaskWorker.truncateParameters', () => {
-  let worker: TaskWorker;
-
-  beforeEach(async () => {
-    jest.resetAllMocks();
-
-    const logger = { debug: jest.fn() } as any;
-
-    const config = {
-      getOptionalNumber: jest.fn().mockReturnValue(5),
-    } as unknown as Config;
-
-    worker = await TaskWorker.create({
-      logger,
-      workingDirectory: '/tmp',
-      integrations: {} as ScmIntegrations,
-      taskBroker: {} as TaskBroker,
-      actionRegistry: {} as TemplateActionRegistry,
-      config,
-    });
-  });
-
+describe('createParameterTruncator', () => {
   it('successfully does nothing', async () => {
     const testParams = {};
 
-    // @ts-expect-error (truncateParameters is private, but for test we can access)
-    const result = worker.truncateParameters(testParams);
+    const result = createParameterTruncator()(testParams);
 
     expect(result).toEqual({});
   });
@@ -381,19 +423,28 @@ describe('TaskWorker.truncateParameters', () => {
       test2: 'thisisaverylongstring',
       nested: {
         test3: 'anotherlongstringhere',
-        test4: ['ok', 'toolongstring'],
+        test4: ['ok', 'toolongstring', { prop: 'thisisaverylongstring' }],
       },
     };
 
-    // @ts-expect-error (truncateParameters is private, but for test we can access)
-    const result = worker.truncateParameters(params);
+    const result = createParameterTruncator(
+      mockServices.rootConfig({
+        data: {
+          scaffolder: {
+            auditor: {
+              taskParameterMaxLength: 5,
+            },
+          },
+        },
+      }),
+    )(params);
 
     expect(result).toEqual({
       test: 'short',
       test2: 'thisi...<truncated>',
       nested: {
         test3: 'anoth...<truncated>',
-        test4: ['ok', 'toolo...<truncated>'],
+        test4: ['ok', 'toolo...<truncated>', { prop: 'thisi...<truncated>' }],
       },
     });
   });

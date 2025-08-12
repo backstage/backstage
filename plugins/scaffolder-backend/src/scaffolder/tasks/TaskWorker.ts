@@ -15,7 +15,7 @@
  */
 
 import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
-import { assertError, stringifyError } from '@backstage/errors';
+import { assertError, InputError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -31,6 +31,8 @@ import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
+
+const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
 /**
  * TaskWorkerOptions
@@ -91,17 +93,21 @@ export class TaskWorker {
   private taskQueue: PQueue;
   private logger: LoggerService | undefined;
   private auditor: AuditorService | undefined;
-  private config: Config | undefined;
+  private parameterAuditTransform: ParameterAuditTransform;
   private stopWorkers: boolean;
 
-  private constructor(private readonly options: TaskWorkerOptions) {
+  private constructor(
+    private readonly options: TaskWorkerOptions & {
+      parameterAuditTransform: ParameterAuditTransform;
+    },
+  ) {
     this.stopWorkers = false;
     this.logger = options.logger;
     this.auditor = options.auditor;
-    this.config = options.config;
     this.taskQueue = new PQueue({
       concurrency: options.concurrentTasksLimit,
     });
+    this.parameterAuditTransform = options.parameterAuditTransform;
   }
 
   static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
@@ -139,6 +145,7 @@ export class TaskWorker {
       auditor,
       config,
       gracefulShutdown,
+      parameterAuditTransform: createParameterTruncator(config),
     });
   }
 
@@ -190,46 +197,6 @@ export class TaskWorker {
     });
   }
 
-  private truncateParameters(parameters: JsonObject) {
-    const taskParameterMaxLength =
-      this.config?.getOptionalNumber(
-        'scaffolder.auditor.taskParameterMaxLength',
-      ) ?? 256;
-
-    if (taskParameterMaxLength === -1) {
-      this.logger?.debug(
-        `scaffolder.auditor.taskParameterMaxLength manually disabled via configuration, no task parameter length limit set.`,
-      );
-      return parameters;
-    }
-
-    function truncate(value: unknown): unknown {
-      if (typeof value === 'string') {
-        if (value.length > taskParameterMaxLength) {
-          return value
-            .slice(0, taskParameterMaxLength)
-            .concat('...<truncated>');
-        }
-        return value;
-      }
-      if (Array.isArray(value)) {
-        return value.map(truncate);
-      }
-      if (value && typeof value === 'object') {
-        const result: Record<string, unknown> = {};
-        for (const k in value as object) {
-          if (Object.hasOwn(value, k)) {
-            result[k] = truncate((value as any)[k]);
-          }
-        }
-        return result;
-      }
-      return value;
-    }
-
-    return truncate(parameters) as JsonObject;
-  }
-
   async runOneTask(task: TaskContext) {
     const auditorEvent = await this.auditor?.createEvent({
       eventId: 'task',
@@ -238,7 +205,7 @@ export class TaskWorker {
         actionType: 'execution',
         createdBy: task.createdBy,
         taskId: task.taskId,
-        taskParameters: this.truncateParameters(task.spec.parameters),
+        taskParameters: this.parameterAuditTransform(task.spec.parameters),
         templateRef: task.spec.templateInfo?.entityRef,
       },
     });
@@ -266,4 +233,54 @@ export class TaskWorker {
       });
     }
   }
+}
+
+type ParameterAuditTransform = (parameters: JsonObject) => JsonObject;
+
+/**
+ * Truncates task parameters for audit logging using the configured max length.
+ * @internal
+ */
+export function createParameterTruncator(
+  config?: Config,
+): ParameterAuditTransform {
+  const maxLength =
+    config?.getOptionalNumber('scaffolder.auditor.taskParameterMaxLength') ??
+    DEFAULT_TASK_PARAMETER_MAX_LENGTH;
+
+  if (!Number.isSafeInteger(maxLength) || maxLength < -1) {
+    throw new InputError(
+      `Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got ${maxLength}. Must be a positive integer or -1 to disable truncation.`,
+    );
+  }
+
+  if (maxLength === -1) {
+    return (parameters: JsonObject) => parameters;
+  }
+
+  return (parameters: JsonObject) => {
+    function truncate(value: unknown): unknown {
+      if (typeof value === 'string') {
+        if (value.length > maxLength) {
+          return value.slice(0, maxLength).concat('...<truncated>');
+        }
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value.map(truncate);
+      }
+      if (value && typeof value === 'object') {
+        const result: Record<string, unknown> = {};
+        for (const k in value as object) {
+          if (Object.hasOwn(value, k)) {
+            result[k] = truncate((value as any)[k]);
+          }
+        }
+        return result;
+      }
+      return value;
+    }
+
+    return truncate(parameters) as JsonObject;
+  };
 }
