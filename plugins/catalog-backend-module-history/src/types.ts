@@ -28,10 +28,14 @@ export interface EventsTableEntry {
   entityRef?: string;
   /** The entity uid related to the event, where applicable */
   entityId?: string;
+  /** The JSON serialized body of the affected entity before the change, where applicable (for updates only) */
+  entityJsonBefore?: string;
   /** The JSON serialized body of the entity related to the event, where applicable */
   entityJson?: string;
   /** The location id related to the event, where applicable */
   locationId?: string;
+  /** The location ref before the change, where applicable (for updates only) */
+  locationRefBefore?: string;
   /** The location ref related to the event, where applicable */
   locationRef?: string;
 }

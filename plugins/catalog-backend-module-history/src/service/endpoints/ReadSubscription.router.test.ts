@@ -15,7 +15,7 @@
  */
 
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
 import waitFor from 'wait-for-expect';
@@ -91,6 +91,7 @@ describe('bindReadSubscriptionEndpoint', () => {
     `);
     expect(model.readSubscription).toHaveBeenCalledWith({
       readOptions: { subscriptionId: '123', limit: 100, block: false },
+      credentials: mockCredentials.user(),
       signal: expect.any(AbortSignal),
     });
 
@@ -118,6 +119,7 @@ describe('bindReadSubscriptionEndpoint', () => {
     `);
     expect(model.readSubscription).toHaveBeenCalledWith({
       readOptions: { subscriptionId: '123', limit: 100, block: false },
+      credentials: mockCredentials.user(),
       signal: expect.any(AbortSignal),
     });
 

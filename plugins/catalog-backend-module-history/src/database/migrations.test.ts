@@ -110,8 +110,10 @@ describe('migrations', () => {
             event_type: 'entity_created',
             entity_ref: entityRef,
             entity_id: expect.any(String),
+            entity_json_before: null,
             entity_json: expect.stringContaining('"owner":"me"'),
             location_id: null,
+            location_ref_before: null,
             location_ref: 'url:https://backstage.io',
           },
         ]);
@@ -129,8 +131,10 @@ describe('migrations', () => {
             event_type: 'entity_created',
             entity_ref: entityRef,
             entity_id: expect.any(String),
+            entity_json_before: null,
             entity_json: expect.stringContaining('"owner":"me"'),
             location_id: null,
+            location_ref_before: null,
             location_ref: 'url:https://backstage.io',
           },
           {
@@ -139,8 +143,10 @@ describe('migrations', () => {
             event_type: 'entity_updated',
             entity_ref: entityRef,
             entity_id: expect.any(String),
+            entity_json_before: expect.stringContaining('"owner":"me"'),
             entity_json: expect.stringContaining('"owner":"you"'),
             location_id: null,
+            location_ref_before: 'url:https://backstage.io',
             location_ref: 'url:https://backstage.io',
           },
         ]);
@@ -158,8 +164,10 @@ describe('migrations', () => {
           event_type: 'entity_created',
           entity_ref: entityRef,
           entity_id: expect.any(String),
+          entity_json_before: null,
           entity_json: expect.stringContaining('"owner":"me"'),
           location_id: null,
+          location_ref_before: null,
           location_ref: 'url:https://backstage.io',
         },
         {
@@ -168,8 +176,10 @@ describe('migrations', () => {
           event_type: 'entity_updated',
           entity_ref: entityRef,
           entity_id: expect.any(String),
+          entity_json_before: expect.stringContaining('"owner":"me"'),
           entity_json: expect.stringContaining('"owner":"you"'),
           location_id: null,
+          location_ref_before: 'url:https://backstage.io',
           location_ref: 'url:https://backstage.io',
         },
       ]);
@@ -185,8 +195,10 @@ describe('migrations', () => {
             event_type: 'entity_created',
             entity_ref: entityRef,
             entity_id: expect.any(String),
+            entity_json_before: null,
             entity_json: expect.stringContaining('"owner":"me"'),
             location_id: null,
+            location_ref_before: null,
             location_ref: 'url:https://backstage.io',
           },
           {
@@ -195,8 +207,10 @@ describe('migrations', () => {
             event_type: 'entity_updated',
             entity_ref: entityRef,
             entity_id: expect.any(String),
+            entity_json_before: expect.stringContaining('"owner":"me"'),
             entity_json: expect.stringContaining('"owner":"you"'),
             location_id: null,
+            location_ref_before: 'url:https://backstage.io',
             location_ref: 'url:https://backstage.io',
           },
           {
@@ -205,8 +219,10 @@ describe('migrations', () => {
             event_type: 'entity_deleted',
             entity_ref: entityRef,
             entity_id: expect.any(String),
+            entity_json_before: null,
             entity_json: expect.stringContaining('"owner":"you"'),
             location_id: null,
+            location_ref_before: null,
             location_ref: 'url:https://backstage.io',
           },
         ]);
@@ -229,8 +245,10 @@ describe('migrations', () => {
             event_type: 'location_created',
             entity_ref: null,
             entity_id: null,
+            entity_json_before: null,
             entity_json: null,
             location_id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            location_ref_before: null,
             location_ref: 'url:https://backstage.io',
           },
         ]);
@@ -239,7 +257,7 @@ describe('migrations', () => {
       await knex('locations')
         .update({
           type: 'url',
-          target: 'https://backstage.io(elsewhere',
+          target: 'https://backstage.io/elsewhere',
         })
         .where('id', '=', 'b07a8526-0025-47e9-bf3b-f47ac94692c2');
 
@@ -252,9 +270,11 @@ describe('migrations', () => {
             event_type: 'location_updated',
             entity_ref: null,
             entity_id: null,
+            entity_json_before: null,
             entity_json: null,
             location_id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
-            location_ref: 'url:https://backstage.io(elsewhere',
+            location_ref_before: 'url:https://backstage.io',
+            location_ref: 'url:https://backstage.io/elsewhere',
           },
         ]);
       });
@@ -273,9 +293,11 @@ describe('migrations', () => {
             event_type: 'location_deleted',
             entity_ref: null,
             entity_id: null,
+            entity_json_before: null,
             entity_json: null,
             location_id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
-            location_ref: 'url:https://backstage.io(elsewhere',
+            location_ref_before: null,
+            location_ref: 'url:https://backstage.io/elsewhere',
           },
         ]);
       });

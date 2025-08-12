@@ -45,6 +45,12 @@ exports.up = async function up(knex) {
       .nullable()
       .comment('Affected entity uid, where applicable');
     table
+      .text('entity_json_before', 'longtext')
+      .nullable()
+      .comment(
+        'The body of the affected entity before the change, where applicable (for updates only)',
+      );
+    table
       .text('entity_json', 'longtext')
       .nullable()
       .comment('The body of the affected entity, where applicable');
@@ -52,6 +58,12 @@ exports.up = async function up(knex) {
       .string('location_id')
       .nullable()
       .comment('The registered location ID affected, where applicable');
+    table
+      .string('location_ref_before')
+      .nullable()
+      .comment(
+        'The location affected before the change, where applicable (for updates only)',
+      );
     table
       .string('location_ref')
       .nullable()
@@ -70,7 +82,9 @@ exports.up = async function up(knex) {
         event_type TEXT;
         entity_ref TEXT;
         entity_id TEXT;
+        entity_json_before TEXT;
         entity_json TEXT;
+        location_ref_before TEXT;
         location_ref TEXT;
       BEGIN
 
@@ -97,7 +111,9 @@ exports.up = async function up(knex) {
           END IF;
           entity_ref = NEW.entity_ref;
           entity_id = NEW.entity_id;
+          entity_json_before = OLD.final_entity;
           entity_json = NEW.final_entity;
+          location_ref_before = OLD.final_entity::json->'metadata'->'annotations'->>'backstage.io/managed-by-location';
           location_ref = NEW.final_entity::json->'metadata'->'annotations'->>'backstage.io/managed-by-location';
 
         ELSIF (TG_OP = 'DELETE') THEN
@@ -115,11 +131,13 @@ exports.up = async function up(knex) {
           RETURN null;
         END IF;
 
-        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json_before, entity_json, location_ref_before, location_ref) VALUES (
           event_type,
           entity_ref,
           entity_id,
+          entity_json_before,
           entity_json,
+          location_ref_before,
           location_ref
         );
 
@@ -147,9 +165,10 @@ exports.up = async function up(knex) {
           );
 
         ELSIF (TG_OP = 'UPDATE') THEN
-          INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
+          INSERT INTO history_events (event_type, location_id, location_ref_before, location_ref) VALUES (
             'location_updated',
             NEW.id,
+            CONCAT(OLD.type, ':', OLD.target),
             CONCAT(NEW.type, ':', NEW.target)
           );
 
@@ -197,7 +216,7 @@ exports.up = async function up(knex) {
       AFTER UPDATE OF final_entity ON final_entities
       FOR EACH ROW
       BEGIN
-        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json_before, entity_json, location_ref_before, location_ref) VALUES (
           CASE
             WHEN (OLD.final_entity IS NULL) THEN 'entity_created'
             WHEN (NEW.final_entity IS NULL) THEN 'entity_deleted'
@@ -205,7 +224,9 @@ exports.up = async function up(knex) {
           END,
           NEW.entity_ref,
           NEW.entity_id,
+          OLD.final_entity,
           NEW.final_entity,
+          json_extract(OLD.final_entity, '$.metadata.annotations."backstage.io/managed-by-location"'),
           json_extract(NEW.final_entity, '$.metadata.annotations."backstage.io/managed-by-location"')
         );
       END;
@@ -242,9 +263,10 @@ exports.up = async function up(knex) {
       AFTER UPDATE ON locations
       FOR EACH ROW
       BEGIN
-        INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
+        INSERT INTO history_events (event_type, location_id, location_ref_before, location_ref) VALUES (
           'location_updated',
           NEW.id,
+          CONCAT(OLD.type, ':', OLD.target),
           CONCAT(NEW.type, ':', NEW.target)
         );
       END;
@@ -287,7 +309,7 @@ exports.up = async function up(knex) {
       AFTER UPDATE ON final_entities
       FOR EACH ROW
       IF IFNULL(NEW.final_entity,'') <> IFNULL(OLD.final_entity,'') THEN
-        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json_before, entity_json, location_ref_before, location_ref) VALUES (
           CASE
             WHEN (OLD.final_entity IS NULL) THEN 'entity_created'
             WHEN (NEW.final_entity IS NULL) THEN 'entity_deleted'
@@ -295,7 +317,9 @@ exports.up = async function up(knex) {
           END,
           NEW.entity_ref,
           NEW.entity_id,
+          OLD.final_entity,
           NEW.final_entity,
+          json_value(OLD.final_entity, '$.metadata.annotations."backstage.io/managed-by-location"'),
           json_value(NEW.final_entity, '$.metadata.annotations."backstage.io/managed-by-location"')
         );
       END IF;
@@ -337,9 +361,10 @@ exports.up = async function up(knex) {
       CREATE TRIGGER locations_history_location_updated
       AFTER UPDATE ON locations
       FOR EACH ROW
-      INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
+      INSERT INTO history_events (event_type, location_id, location_ref_before, location_ref) VALUES (
         'location_updated',
         NEW.id,
+        CONCAT(OLD.type, ':', OLD.target),
         CONCAT(NEW.type, ':', NEW.target)
       );
     `);

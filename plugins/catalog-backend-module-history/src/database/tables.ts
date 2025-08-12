@@ -25,8 +25,10 @@ export interface EventsTableRow {
   event_type: string;
   entity_ref: string | null;
   entity_id: string | null;
+  entity_json_before: string | null;
   entity_json: string | null;
   location_id: string | null;
+  location_ref_before: string | null;
   location_ref: string | null;
 }
 
@@ -40,8 +42,10 @@ export function toEventsTableEntry(row: EventsTableRow): EventsTableEntry {
     eventType: row.event_type,
     entityRef: row.entity_ref ?? undefined,
     entityId: row.entity_id ?? undefined,
+    entityJsonBefore: row.entity_json_before ?? undefined,
     entityJson: row.entity_json ?? undefined,
     locationId: row.location_id ?? undefined,
+    locationRefBefore: row.location_ref_before ?? undefined,
     locationRef: row.location_ref ?? undefined,
   };
 }
