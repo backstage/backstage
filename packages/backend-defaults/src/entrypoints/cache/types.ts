@@ -135,6 +135,11 @@ export type InfinispanClusterConfig = {
   servers: InfinispanServerConfig[];
 };
 
+export type DataFormatOptions = {
+  keyType: 'text/plain' | 'application/json';
+  valueType: 'text/plain' | 'application/json';
+};
+
 /**
  * Detailed client behavior options for the Infinispan client.
  * @public
@@ -150,4 +155,5 @@ export type InfinispanClientBehaviorOptions = {
   mediaType?: 'text/plain' | 'application/json';
   topologyUpdates?: boolean;
   clusters?: InfinispanClusterConfig[];
+  dataFormat: DataFormatOptions;
 };

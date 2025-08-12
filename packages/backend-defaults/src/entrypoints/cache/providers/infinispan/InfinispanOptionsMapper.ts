@@ -19,6 +19,7 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import {
+  DataFormatOptions,
   InfinispanAuthOptions,
   InfinispanCacheStoreOptions,
   InfinispanClientAuthOptions,
@@ -55,29 +56,23 @@ export class InfinispanOptionsMapper {
           serverConf =>
             ({
               host: serverConf.getString('host'),
-              port: serverConf.getNumber('port'),
+              port: serverConf.getOptionalNumber('port') ?? 11222,
             } as InfinispanServerConfig),
         );
       } else if (typeof serversConfig === 'object' && serversConfig !== null) {
         const serverConf = infinispanConfig.getConfig('servers');
         parsedOptions.servers = {
-          host: serverConf.getString('host'),
-          port: serverConf.getNumber('port'),
+          host: serverConf.getOptionalString('host') ?? '127.0.0.1',
+          port: serverConf.getOptionalString('port') ?? 11222,
         } as InfinispanServerConfig;
       } else {
-        logger?.error(
-          `Infinispan 'servers' configuration at ${storeConfigPath} must be an object or an array.`,
-        );
         throw new Error(
-          `Infinispan 'servers' configuration at ${storeConfigPath} is invalid.`,
+          `Infinispan 'servers' configuration at ${storeConfigPath} is invalid, must be an object or an array.`,
         );
       }
     } else {
-      logger?.error(
-        `Infinispan configuration at ${storeConfigPath} is missing the 'servers' definition.`,
-      );
-      throw new Error(
-        `Infinispan configuration at ${storeConfigPath} must define 'servers'.`,
+      logger?.warn(
+        `Infinispan configuration at ${storeConfigPath} is missing the 'servers' definition, will use client defaults.`,
       );
     }
 
@@ -85,42 +80,35 @@ export class InfinispanOptionsMapper {
     // This will be used to configure the Infinispan client behavior.
     const behaviorOptions: Partial<InfinispanClientBehaviorOptions> = {};
 
-    if (infinispanConfig.has('clusters')) {
-      const clustersConfig = infinispanConfig.getConfigArray('clusters');
-      const clusterOptions: InfinispanClusterConfig[] = [];
-      clustersConfig?.forEach(clusterConf => {
+    behaviorOptions.clusters = infinispanConfig
+      .getOptionalConfigArray('clusters')
+      ?.map(clusterConf => {
         const name = clusterConf.getOptionalString('name');
-        const cluster: InfinispanClusterConfig = {
+        return {
           ...(name && { name }),
           servers: clusterConf.getConfigArray('servers').map(serverConf => ({
             host: serverConf.getString('host'),
             port: serverConf.getNumber('port'),
           })),
-        };
-        clusterOptions.push(cluster);
-        behaviorOptions.clusters = clusterOptions;
+        } as InfinispanClusterConfig;
       });
-    }
 
     // Parse Default Options Start...
-    if (infinispanConfig.has('version')) {
-      const clientVersion = infinispanConfig.getString('version');
-      if (
-        clientVersion === '2.9' ||
-        clientVersion === '2.5' ||
-        clientVersion === '2.2'
-      ) {
-        behaviorOptions.version = clientVersion;
-      } else if (clientVersion !== null && clientVersion !== undefined) {
-        logger?.warn(
-          `Invalid Infinispan client version "${clientVersion}" in config at ${storeConfigPath}.version. Must be "2.9", "2.5", or "2.2". It will be ignored, and the client may use a default or fail.`,
-        );
-      }
+    const clientVersion =
+      infinispanConfig.getOptionalString('version') ?? '2.9';
+    if (
+      clientVersion === '2.9' ||
+      clientVersion === '2.5' ||
+      clientVersion === '2.2'
+    ) {
+      behaviorOptions.version = clientVersion;
+    } else if (clientVersion !== null && clientVersion !== undefined) {
+      logger?.warn(
+        `Invalid Infinispan client version "${clientVersion}" in config at ${storeConfigPath}.version. Must be "2.9", "2.5", or "2.2". It will be ignored, and the client may use a default or fail.`,
+      );
     }
 
-    if (infinispanConfig.has('cacheName')) {
-      behaviorOptions.cacheName = infinispanConfig.getString('cacheName');
-    }
+    behaviorOptions.cacheName = infinispanConfig.getOptionalString('cacheName');
 
     const mediaType = infinispanConfig.getOptionalString('mediaType');
     if (mediaType === 'text/plain' || mediaType === 'application/json') {
@@ -131,95 +119,84 @@ export class InfinispanOptionsMapper {
       );
     }
 
-    if (infinispanConfig.has('maxRetries')) {
-      behaviorOptions.maxRetries = infinispanConfig.getNumber('maxRetries');
-    }
+    behaviorOptions.maxRetries =
+      infinispanConfig.getOptionalNumber('maxRetries');
 
-    if (infinispanConfig.has('topologyUpdates')) {
-      behaviorOptions.topologyUpdates =
-        infinispanConfig.getBoolean('topologyUpdates');
-    }
+    behaviorOptions.topologyUpdates =
+      infinispanConfig.getOptionalBoolean('topologyUpdates') ?? true;
 
     // Default Options End...
 
     // Parse Authentication and SSL Options
-    if (infinispanConfig.has('authentication')) {
-      const authConfig = infinispanConfig.getConfig('authentication');
-      const auth: Partial<InfinispanAuthOptions> = {};
+    const authConfig = infinispanConfig.getOptionalConfig('authentication');
+    const auth: Partial<InfinispanAuthOptions> = {};
 
-      if (authConfig.has('enabled')) {
-        auth.enabled = authConfig.getBoolean('enabled');
-      }
-      if (authConfig.has('saslMechanism')) {
-        auth.saslMechanism = authConfig.getString('saslMechanism');
-      }
-      if (authConfig.has('userName')) {
-        auth.userName = authConfig.getString('userName');
-      }
-      if (authConfig.has('password')) {
-        auth.password = authConfig.getString('password');
-      }
-      if (authConfig.has('token')) {
-        auth.token = authConfig.getString('token');
-      }
-      if (authConfig.has('authzid')) {
-        auth.authzid = authConfig.getString('authzid');
-      }
+    auth.enabled = authConfig?.getOptionalBoolean('enabled');
+    auth.saslMechanism = authConfig?.getOptionalString('saslMechanism');
+    auth.userName = authConfig?.getOptionalString('userName');
+    auth.password = authConfig?.getOptionalString('password');
+    auth.token = authConfig?.getOptionalString('token');
+    auth.authzid = authConfig?.getOptionalString('authzid');
 
-      behaviorOptions.authentication = auth as InfinispanAuthOptions;
+    behaviorOptions.authentication = auth as InfinispanAuthOptions;
+
+    const sslConfig = infinispanConfig.getOptionalConfig('ssl');
+    const ssl: Partial<InfinispanSslOptions> = {};
+
+    ssl.enabled = sslConfig?.getOptionalBoolean('enabled');
+    ssl.secureProtocol = sslConfig?.getOptionalString('secureProtocol');
+    ssl.trustCerts = sslConfig?.getOptionalStringArray('trustCerts');
+    ssl.sniHostName = sslConfig?.getOptionalString('sniHostname');
+
+    const clientAuth = infinispanConfig.getOptionalConfig('clientAuth');
+    const clientAuthOpts: Partial<InfinispanClientAuthOptions> = {};
+
+    clientAuthOpts.key = clientAuth?.getOptionalString('key');
+    clientAuthOpts.passphrase = clientAuth?.getOptionalString('passphrase');
+    clientAuthOpts.cert = clientAuth?.getOptionalString('cert');
+
+    ssl.clientAuth = clientAuthOpts as InfinispanClientAuthOptions;
+
+    const cryptoStore = infinispanConfig.getOptionalConfig('cryptoStore');
+    const cryptoStoreOpts: Partial<InfinispanClientAuthOptions> = {};
+
+    cryptoStoreOpts.key = cryptoStore?.getOptionalString('path');
+    cryptoStoreOpts.passphrase = cryptoStore?.getOptionalString('passphrase');
+
+    ssl.cryptoStore = cryptoStoreOpts as InfinispanClientAuthOptions;
+
+    behaviorOptions.ssl = ssl as InfinispanSslOptions;
+
+    const dataFormat = infinispanConfig.getOptionalConfig('dataFormat');
+    const dataFormatOpts: Partial<DataFormatOptions> = {};
+
+    const keyType = dataFormat?.getOptionalString('keyType') ?? 'text/plain';
+    const valueType =
+      dataFormat?.getOptionalString('valueType') ?? 'text/plain';
+
+    if (keyType === 'text/plain' || keyType === 'application/json') {
+      dataFormatOpts.keyType = keyType;
+    } else if (keyType !== null && keyType !== undefined) {
+      logger?.warn(
+        `Invalid Infinispan dataFormat.keyType "${keyType}" in config at ${storeConfigPath}.dataFormat.keyType. Must be "text/plain" | "application/json". Not mapped, client will use default 'text/plain'.`,
+      );
     }
 
-    if (infinispanConfig.has('ssl')) {
-      const sslConfig = infinispanConfig.getConfig('ssl');
-      const ssl: Partial<InfinispanSslOptions> = {};
-
-      if (sslConfig.has('enabled')) {
-        ssl.enabled = sslConfig.getBoolean('enabled');
-      }
-      if (sslConfig.has('secureProtocol')) {
-        ssl.secureProtocol = sslConfig.getString('secureProtocol');
-      }
-      if (sslConfig.has('trustCerts')) {
-        ssl.trustCerts = sslConfig.getStringArray('trustCerts');
-      }
-      if (sslConfig.has('sniHostname')) {
-        ssl.sniHostName = sslConfig.getString('sniHostname');
-      }
-
-      if (sslConfig.has('clientAuth')) {
-        const clientAuth = infinispanConfig.getConfig('clientAuth');
-        const clientAuthOpts: Partial<InfinispanClientAuthOptions> = {};
-
-        if (clientAuth.has('key')) {
-          clientAuthOpts.key = clientAuth.getString('key');
-        }
-        if (clientAuth.has('passphrase')) {
-          clientAuthOpts.passphrase = clientAuth.getString('passphrase');
-        }
-        if (clientAuth.has('cert')) {
-          clientAuthOpts.cert = clientAuth.getString('cert');
-        }
-        ssl.clientAuth = clientAuthOpts as InfinispanClientAuthOptions;
-      }
-
-      if (sslConfig.has('cryptoStore')) {
-        const cryptoStore = infinispanConfig.getConfig('cryptoStore');
-        const cryptoStoreOpts: Partial<InfinispanClientAuthOptions> = {};
-
-        if (cryptoStore.has('path')) {
-          cryptoStoreOpts.key = cryptoStore.getString('path');
-        }
-        if (cryptoStore.has('passphrase')) {
-          cryptoStoreOpts.passphrase = cryptoStore.getString('passphrase');
-        }
-        ssl.cryptoStore = cryptoStoreOpts as InfinispanClientAuthOptions;
-      }
-
-      behaviorOptions.ssl = ssl as InfinispanSslOptions;
+    if (valueType === 'text/plain' || valueType === 'application/json') {
+      dataFormatOpts.valueType = valueType;
+    } else if (valueType !== null && valueType !== undefined) {
+      logger?.warn(
+        `Invalid Infinispan dataFormat.valueType "${valueType}" in config at ${storeConfigPath}.dataFormat.valueType. Must be "text/plain" | "application/json". Not mapped, client will use default 'text/plain'.`,
+      );
     }
-
+    behaviorOptions.dataFormat = dataFormatOpts as DataFormatOptions;
     parsedOptions.options = behaviorOptions as InfinispanClientBehaviorOptions;
 
+    logger?.debug(
+      `Parsed Infinispan options from config at ${storeConfigPath}: ${JSON.stringify(
+        parsedOptions,
+      )}`,
+    );
     return parsedOptions as InfinispanCacheStoreOptions;
   }
 }

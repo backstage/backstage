@@ -797,6 +797,22 @@ export interface Config {
             mediaType?: 'text/plain' | 'application/json';
 
             /**
+             * Optional data format configuration.
+             * If not provided, defaults to text/plain for both key and value.
+             */
+            dataFormat?: {
+              /**
+               * Type of the key in the cache.
+               * @default 'text/plain'
+               */
+              keyType?: 'text/plain' | 'application/json';
+              /**
+               * Type of the value in the cache.
+               * @default 'text/plain'
+               */
+              valueType?: 'text/plain' | 'application/json';
+            };
+            /**
              * Infinispan server host and port configuration.
              * If this is an array, the client will connect to all servers in the list based on TOPOLOGY_AWARE routing.
              * If this is a single object, it will be used as the default server.

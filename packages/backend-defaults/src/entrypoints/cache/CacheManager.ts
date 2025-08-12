@@ -261,26 +261,29 @@ export class CacheManager {
     const stores: Record<string, typeof KeyvRedis> = {};
 
     return (pluginId, defaultTtl) => {
+      if (this.storeOptions?.type !== 'redis') {
+        throw new Error(
+          `Internal error: Wrong config type passed to redis factory: ${this.storeOptions?.type}`,
+        );
+      }
       if (!stores[pluginId]) {
-        if (this.storeOptions?.type === 'redis') {
-          const redisOptions = this.storeOptions?.client || {
-            keyPrefixSeparator: ':',
-          };
-          if (this.storeOptions?.cluster) {
-            // Create a Redis cluster
-            const cluster = createCluster(this.storeOptions?.cluster);
-            stores[pluginId] = new KeyvRedis(cluster, redisOptions);
-          } else {
-            // Create a regular Redis connection
-            stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
-          }
-
-          // Always provide an error handler to avoid stopping the process
-          stores[pluginId].on('error', (err: Error) => {
-            this.logger?.error('Failed to create redis cache client', err);
-            this.errorHandler?.(err);
-          });
+        const redisOptions = this.storeOptions?.client || {
+          keyPrefixSeparator: ':',
+        };
+        if (this.storeOptions?.cluster) {
+          // Create a Redis cluster
+          const cluster = createCluster(this.storeOptions?.cluster);
+          stores[pluginId] = new KeyvRedis(cluster, redisOptions);
+        } else {
+          // Create a regular Redis connection
+          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
         }
+
+        // Always provide an error handler to avoid stopping the process
+        stores[pluginId].on('error', (err: Error) => {
+          this.logger?.error('Failed to create redis cache client', err);
+          this.errorHandler?.(err);
+        });
       }
       return new Keyv({
         namespace: pluginId,
@@ -298,26 +301,29 @@ export class CacheManager {
     const stores: Record<string, typeof KeyvValkey> = {};
 
     return (pluginId, defaultTtl) => {
+      if (this.storeOptions?.type !== 'valkey') {
+        throw new Error(
+          `Internal error: Wrong config type passed to valkey factory: ${this.storeOptions?.type}`,
+        );
+      }
       if (!stores[pluginId]) {
-        if (this.storeOptions?.type === 'valkey') {
-          const valkeyOptions = this.storeOptions?.client || {
-            keyPrefixSeparator: ':',
-          };
-          if (this.storeOptions?.cluster) {
-            // Create a Valkey cluster (Redis cluster under the hood)
-            const cluster = createCluster(this.storeOptions?.cluster);
-            stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
-          } else {
-            // Create a regular Valkey connection
-            stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
-          }
-
-          // Always provide an error handler to avoid stopping the process
-          stores[pluginId].on('error', (err: Error) => {
-            this.logger?.error('Failed to create valkey cache client', err);
-            this.errorHandler?.(err);
-          });
+        const valkeyOptions = this.storeOptions?.client || {
+          keyPrefixSeparator: ':',
+        };
+        if (this.storeOptions?.cluster) {
+          // Create a Valkey cluster (Redis cluster under the hood)
+          const cluster = createCluster(this.storeOptions?.cluster);
+          stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
+        } else {
+          // Create a regular Valkey connection
+          stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
         }
+
+        // Always provide an error handler to avoid stopping the process
+        stores[pluginId].on('error', (err: Error) => {
+          this.logger?.error('Failed to create valkey cache client', err);
+          this.errorHandler?.(err);
+        });
       }
       return new Keyv({
         namespace: pluginId,
@@ -366,33 +372,37 @@ export class CacheManager {
     const stores: Record<string, InfinispanKeyvStore> = {};
 
     return (pluginId, defaultTtl) => {
+      if (this.storeOptions?.type !== 'infinispan') {
+        throw new Error(
+          `Internal error: Wrong config type passed to infinispan factory: ${this.storeOptions?.type}`,
+        );
+      }
+
       if (!stores[pluginId]) {
-        if (this.storeOptions?.type === 'infinispan') {
-          // Use sync version for testing environments
-          const isTest =
-            process.env.NODE_ENV === 'test' || typeof jest !== 'undefined';
+        // Use sync version for testing environments
+        const isTest =
+          process.env.NODE_ENV === 'test' || typeof jest !== 'undefined';
 
-          // Create the client promise ONCE and reuse it
-          const clientPromise: Promise<InfinispanClientCacheInterface> = isTest
-            ? this.createInfinispanClientSync()
-            : this.createInfinispanClientAsync();
+        // Create the client promise ONCE and reuse it
+        const clientPromise: Promise<InfinispanClientCacheInterface> = isTest
+          ? this.createInfinispanClientSync()
+          : this.createInfinispanClientAsync();
 
-          this.logger?.info(
-            `Creating Infinispan cache client for plugin ${pluginId} isTest = ${isTest}`,
-          );
-          const storeInstance = new InfinispanKeyvStore({
-            clientPromise,
-            logger: this.logger!,
-          });
+        this.logger?.info(
+          `Creating Infinispan cache client for plugin ${pluginId} isTest = ${isTest}`,
+        );
+        const storeInstance = new InfinispanKeyvStore({
+          clientPromise,
+          logger: this.logger!,
+        });
 
-          stores[pluginId] = storeInstance;
+        stores[pluginId] = storeInstance;
 
-          // Always provide an error handler to avoid stopping the process
-          storeInstance.on('error', (err: Error) => {
-            this.logger?.error('Failed to create infinispan cache client', err);
-            this.errorHandler?.(err);
-          });
-        }
+        // Always provide an error handler to avoid stopping the process
+        storeInstance.on('error', (err: Error) => {
+          this.logger?.error('Failed to create infinispan cache client', err);
+          this.errorHandler?.(err);
+        });
       }
 
       return new Keyv({
