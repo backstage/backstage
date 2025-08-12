@@ -65,7 +65,6 @@ export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
 
         client = new container.v1.ClusterManagerClient({
           credentials: credentialsObject,
-          scopes: ['https://www.googleapis.com/auth/container.readonly'],
         });
       } catch (error) {
         throw new Error(

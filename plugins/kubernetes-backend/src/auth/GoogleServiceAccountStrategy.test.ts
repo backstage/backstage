@@ -100,7 +100,6 @@ describe('GoogleServiceAccountStrategy', () => {
 
       expect(MockedClusterManagerClient).toHaveBeenCalledWith({
         credentials: serviceAccountKey,
-        scopes: ['https://www.googleapis.com/auth/container.readonly'],
       });
       expect(mockGetAccessToken).toHaveBeenCalled();
       expect(credential).toEqual({
