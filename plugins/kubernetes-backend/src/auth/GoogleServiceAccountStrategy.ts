@@ -50,8 +50,8 @@ import { Config } from '@backstage/config';
 export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
   private readonly credentials?: string;
 
-  constructor(config: Config) {
-    this.credentials = config.getOptionalString(
+  constructor(opts: { config: Config }) {
+    this.credentials = opts.config.getOptionalString(
       'kubernetes.googleServiceAccountCredentials',
     );
   }

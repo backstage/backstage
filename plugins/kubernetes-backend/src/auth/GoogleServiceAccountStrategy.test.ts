@@ -52,7 +52,7 @@ describe('GoogleServiceAccountStrategy', () => {
         },
       });
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
       expect(strategy).toBeDefined();
     });
 
@@ -61,14 +61,14 @@ describe('GoogleServiceAccountStrategy', () => {
         kubernetes: {},
       });
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
       expect(strategy).toBeDefined();
     });
 
     it('should work with empty config', () => {
       const config = new ConfigReader({});
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
       expect(strategy).toBeDefined();
     });
   });
@@ -95,7 +95,7 @@ describe('GoogleServiceAccountStrategy', () => {
 
       mockGetAccessToken.mockResolvedValue('test-access-token');
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
       const credential = await strategy.getCredential();
 
       expect(MockedClusterManagerClient).toHaveBeenCalledWith({
@@ -115,7 +115,7 @@ describe('GoogleServiceAccountStrategy', () => {
 
       mockGetAccessToken.mockResolvedValue('default-access-token');
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
       const credential = await strategy.getCredential();
 
       expect(MockedClusterManagerClient).toHaveBeenCalledWith();
@@ -133,7 +133,7 @@ describe('GoogleServiceAccountStrategy', () => {
         },
       });
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       await expect(strategy.getCredential()).rejects.toThrow(
         'Failed to parse Google Service Account credentials from config',
@@ -150,7 +150,7 @@ describe('GoogleServiceAccountStrategy', () => {
 
       mockGetAccessToken.mockResolvedValue(null);
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       await expect(strategy.getCredential()).rejects.toThrow(
         'Unable to obtain access token for Google Cloud authentication',
@@ -167,7 +167,7 @@ describe('GoogleServiceAccountStrategy', () => {
 
       mockGetAccessToken.mockResolvedValue(undefined);
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       await expect(strategy.getCredential()).rejects.toThrow(
         'Unable to obtain access token for Google Cloud authentication',
@@ -184,7 +184,7 @@ describe('GoogleServiceAccountStrategy', () => {
 
       mockGetAccessToken.mockResolvedValue('');
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       await expect(strategy.getCredential()).rejects.toThrow(
         'Unable to obtain access token for Google Cloud authentication',
@@ -201,7 +201,7 @@ describe('GoogleServiceAccountStrategy', () => {
         },
       });
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       await expect(strategy.getCredential()).rejects.toThrow(
         /Failed to parse Google Service Account credentials from config: Unexpected token/,
@@ -224,7 +224,7 @@ describe('GoogleServiceAccountStrategy', () => {
         throw new Error('Client creation failed');
       });
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       await expect(strategy.getCredential()).rejects.toThrow(
         'Client creation failed',
@@ -238,7 +238,7 @@ describe('GoogleServiceAccountStrategy', () => {
 
       mockGetAccessToken.mockRejectedValue(new Error('Token fetch failed'));
 
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       await expect(strategy.getCredential()).rejects.toThrow(
         'Token fetch failed',
@@ -252,7 +252,7 @@ describe('GoogleServiceAccountStrategy', () => {
   describe('#validateCluster', () => {
     it('should return empty array', () => {
       const config = new ConfigReader({});
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       const result = strategy.validateCluster();
 
@@ -263,7 +263,7 @@ describe('GoogleServiceAccountStrategy', () => {
   describe('#presentAuthMetadata', () => {
     it('should return empty object', () => {
       const config = new ConfigReader({});
-      const strategy = new GoogleServiceAccountStrategy(config);
+      const strategy = new GoogleServiceAccountStrategy({ config });
 
       const result = strategy.presentAuthMetadata({ test: 'metadata' });
 
