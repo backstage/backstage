@@ -448,4 +448,70 @@ describe('createParameterTruncator', () => {
       },
     });
   });
+
+  it('should not truncate if max length is -1', async () => {
+    const params = {
+      test: 'short',
+      test2: 'thisisaverylongstring',
+      nested: {
+        test3: 'anotherlongstringhere',
+        test4: ['ok', 'toolongstring', { prop: 'thisisaverylongstring' }],
+      },
+    };
+
+    const result = createParameterTruncator(
+      mockServices.rootConfig({
+        data: {
+          scaffolder: {
+            auditor: {
+              taskParameterMaxLength: -1,
+            },
+          },
+        },
+      }),
+    )(params);
+
+    expect(result).toEqual({
+      test: 'short',
+      test2: 'thisisaverylongstring',
+      nested: {
+        test3: 'anotherlongstringhere',
+        test4: ['ok', 'toolongstring', { prop: 'thisisaverylongstring' }],
+      },
+    });
+  });
+
+  it('should throw on invalid max length', async () => {
+    expect(() =>
+      createParameterTruncator(
+        mockServices.rootConfig({
+          data: {
+            scaffolder: {
+              auditor: {
+                taskParameterMaxLength: -2,
+              },
+            },
+          },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got -2. Must be a positive integer or -1 to disable truncation."`,
+    );
+
+    expect(() =>
+      createParameterTruncator(
+        mockServices.rootConfig({
+          data: {
+            scaffolder: {
+              auditor: {
+                taskParameterMaxLength: 1.5,
+              },
+            },
+          },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got 1.5. Must be a positive integer or -1 to disable truncation."`,
+    );
+  });
 });
