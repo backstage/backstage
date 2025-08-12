@@ -1,5 +1,40 @@
 # @backstage/frontend-app-api
 
+## 0.12.0-next.3
+
+### Minor Changes
+
+- 8e21c4d: Use an app plugin for built-in extension app node specs.
+- 8e21c4d: The `AppNodeSpec.plugin` property is now required.
+- 5e12252: **BREAKING**: Restructured some of option fields of `createApp` and `createSpecializedApp`.
+
+  - For `createApp`, all option fields _except_ `features` and `bindRoutes` have been moved into a new `advanced` object field.
+  - For `createSpecializedApp`, all option fields _except_ `features`, `config`, and `bindRoutes` have been moved into a new `advanced` object field.
+
+  This helps highlight that some options are meant to rarely be needed or used, and simplifies the usage of those options that are almost always required.
+
+  As an example, if you used to supply a custom config loader, you would update your code as follows:
+
+  ```diff
+   createApp({
+     features: [...],
+  -  configLoader: new MyCustomLoader(),
+  +  advanced: {
+  +    configLoader: new MyCustomLoader(),
+  +  },
+   })
+  ```
+
+### Patch Changes
+
+- f3f9d57: Renaming the `getNodesByRoutePath` parameter from `sourcePath` to `routePath`
+- 8b1bf6e: Deprecated new frontend system config setting `app.experimental.packages` to just `app.packages`. The old config will continue working for the time being, but may be removed in a future release.
+- fda1bbc: Added a default implementation of the `SwappableComponentsApi` and removing the legacy `ComponentsApi` implementation
+- 1c2cc37: Improved runtime error message clarity when extension factories don't return an iterable object.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/frontend-defaults@0.3.0-next.3
+
 ## 0.12.0-next.2
 
 ### Minor Changes

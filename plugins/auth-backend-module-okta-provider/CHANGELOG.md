@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-backend-module-okta-provider
 
+## 0.2.6-next.1
+
+### Patch Changes
+
+- 94476d2: Updated dependency `@davidzemon/passport-okta-oauth` to `^0.0.7`.
+
 ## 0.2.6-next.0
 
 ### Patch Changes

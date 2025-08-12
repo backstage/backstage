@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.10-next.3
+
+### Patch Changes
+
+- 3025cf5: Removed the kubernetes content padding to avoid double padding on k8s entity page
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/core-compat-api@0.5.0-next.3
+  - @backstage/core-components@0.17.5-next.2
+
 ## 0.12.10-next.2
 
 ### Patch Changes
