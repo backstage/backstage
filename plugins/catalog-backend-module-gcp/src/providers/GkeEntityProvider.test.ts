@@ -244,6 +244,227 @@ describe('GkeEntityProvider', () => {
     expect(connectionMock.applyMutation).toMatchSnapshot();
   });
 
+  describe('authProvider and owner configuration', () => {
+    it('should use default values when authProvider and owner not configured', async () => {
+      const defaultGkeEntityProvider = GkeEntityProvider.fromConfigWithClient({
+        logger: logger as any,
+        config: new ConfigReader({
+          catalog: {
+            providers: {
+              gcp: {
+                gke: {
+                  parents: ['projects/parent1/locations/-'],
+                  schedule: {
+                    frequency: { minutes: 3 },
+                    timeout: { minutes: 3 },
+                  },
+                },
+              },
+            },
+          },
+        }),
+        scheduler: schedulerMock,
+        clusterManagerClient: clusterManagerClientMock as any,
+      });
+
+      clusterManagerClientMock.listClusters.mockImplementation(() => [
+        {
+          clusters: [
+            {
+              name: 'default-cluster',
+              endpoint: '127.0.0.1',
+              location: 'us-central1',
+              selfLink: 'https://127.0.0.1/default-link',
+              masterAuth: {
+                clusterCaCertificate: 'defaultcert',
+              },
+            },
+          ],
+        },
+      ]);
+
+      await defaultGkeEntityProvider.connect(connectionMock);
+      await defaultGkeEntityProvider.refresh();
+
+      expect(connectionMock.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: [
+          {
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({
+                name: 'default-cluster',
+                annotations: expect.objectContaining({
+                  'kubernetes.io/auth-provider': 'google', // Default value
+                }),
+              }),
+              spec: expect.objectContaining({
+                owner: 'unknown', // Default value
+                type: 'kubernetes-cluster',
+              }),
+            }),
+            locationKey: 'gcp-gke:us-central1',
+          },
+        ],
+      });
+    });
+
+    it('should use both custom authProvider and owner when configured', async () => {
+      const fullyCustomGkeEntityProvider =
+        GkeEntityProvider.fromConfigWithClient({
+          logger: logger as any,
+          config: new ConfigReader({
+            catalog: {
+              providers: {
+                gcp: {
+                  gke: {
+                    parents: ['projects/parent1/locations/-'],
+                    authProvider: 'aws',
+                    owner: 'devops-team',
+                    schedule: {
+                      frequency: { minutes: 3 },
+                      timeout: { minutes: 3 },
+                    },
+                  },
+                },
+              },
+            },
+          }),
+          scheduler: schedulerMock,
+          clusterManagerClient: clusterManagerClientMock as any,
+        });
+
+      clusterManagerClientMock.listClusters.mockImplementation(() => [
+        {
+          clusters: [
+            {
+              name: 'aws-auth-cluster',
+              endpoint: '127.0.0.1',
+              location: 'asia-southeast1',
+              selfLink: 'https://127.0.0.1/aws-link',
+              masterAuth: {
+                clusterCaCertificate: 'awscert',
+              },
+            },
+          ],
+        },
+      ]);
+
+      await fullyCustomGkeEntityProvider.connect(connectionMock);
+      await fullyCustomGkeEntityProvider.refresh();
+
+      expect(connectionMock.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: [
+          {
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({
+                name: 'aws-auth-cluster',
+                annotations: expect.objectContaining({
+                  'kubernetes.io/auth-provider': 'aws',
+                }),
+              }),
+              spec: expect.objectContaining({
+                owner: 'devops-team',
+                type: 'kubernetes-cluster',
+              }),
+            }),
+            locationKey: 'gcp-gke:asia-southeast1',
+          },
+        ],
+      });
+    });
+
+    it('should apply authProvider and owner to multiple clusters', async () => {
+      const multiClusterGkeEntityProvider =
+        GkeEntityProvider.fromConfigWithClient({
+          logger: logger as any,
+          config: new ConfigReader({
+            catalog: {
+              providers: {
+                gcp: {
+                  gke: {
+                    parents: ['projects/parent1/locations/-'],
+                    authProvider: 'oidc',
+                    owner: 'sre-team',
+                    schedule: {
+                      frequency: { minutes: 3 },
+                      timeout: { minutes: 3 },
+                    },
+                  },
+                },
+              },
+            },
+          }),
+          scheduler: schedulerMock,
+          clusterManagerClient: clusterManagerClientMock as any,
+        });
+
+      clusterManagerClientMock.listClusters.mockImplementation(() => [
+        {
+          clusters: [
+            {
+              name: 'cluster-1',
+              endpoint: '127.0.0.1',
+              location: 'us-central1',
+              selfLink: 'https://127.0.0.1/cluster1-link',
+              masterAuth: {
+                clusterCaCertificate: 'cert1',
+              },
+            },
+            {
+              name: 'cluster-2',
+              endpoint: '127.0.0.2',
+              location: 'us-east1',
+              selfLink: 'https://127.0.0.2/cluster2-link',
+              masterAuth: {
+                clusterCaCertificate: 'cert2',
+              },
+            },
+          ],
+        },
+      ]);
+
+      await multiClusterGkeEntityProvider.connect(connectionMock);
+      await multiClusterGkeEntityProvider.refresh();
+
+      expect(connectionMock.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: [
+          {
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({
+                name: 'cluster-1',
+                annotations: expect.objectContaining({
+                  'kubernetes.io/auth-provider': 'oidc',
+                }),
+              }),
+              spec: expect.objectContaining({
+                owner: 'sre-team',
+                type: 'kubernetes-cluster',
+              }),
+            }),
+            locationKey: 'gcp-gke:us-central1',
+          },
+          {
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({
+                name: 'cluster-2',
+                annotations: expect.objectContaining({
+                  'kubernetes.io/auth-provider': 'oidc',
+                }),
+              }),
+              spec: expect.objectContaining({
+                owner: 'sre-team',
+                type: 'kubernetes-cluster',
+              }),
+            }),
+            locationKey: 'gcp-gke:us-east1',
+          },
+        ],
+      });
+    });
+  });
+
   it('should log GKE API errors', async () => {
     clusterManagerClientMock.listClusters.mockRejectedValue(
       new Error('some-error'),
