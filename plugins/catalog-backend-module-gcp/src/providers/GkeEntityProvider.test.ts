@@ -306,7 +306,6 @@ describe('GkeEntityProvider', () => {
 
       expect(MockedClusterManagerClient).toHaveBeenCalledWith({
         credentials: mockCredentials,
-        scopes: ['https://www.googleapis.com/auth/container.readonly'],
       });
     });
 
