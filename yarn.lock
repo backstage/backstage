@@ -6633,6 +6633,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@isomorphic-git/pgp-plugin": "npm:^0.0.7"
     "@types/lodash": "npm:^4.14.151"
