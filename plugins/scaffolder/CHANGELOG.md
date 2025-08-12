@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder
 
+## 1.34.0-next.3
+
+### Minor Changes
+
+- b1c0696: Add resizable panels width for the editor and preview panels in the template editor and template form playground layouts. Users can now resize these panels by dragging the divider between the two areas.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/core-compat-api@0.5.0-next.3
+  - @backstage/core-components@0.17.5-next.2
+
 ## 1.34.0-next.2
 
 ### Patch Changes

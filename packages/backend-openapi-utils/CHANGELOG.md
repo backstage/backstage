@@ -1,5 +1,11 @@
 # @backstage/backend-openapi-utils
 
+## 0.6.0-next.1
+
+### Patch Changes
+
+- 3760352: Update `express-openapi-validator` to 5.5.8 to fix security vulnerability in transitive dependency `multer`
+
 ## 0.6.0-next.0
 
 ### Minor Changes

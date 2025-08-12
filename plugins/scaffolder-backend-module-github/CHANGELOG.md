@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.8.2-next.1
+
+### Patch Changes
+
+- a22cce0: Fixed bug in the `customProperties` type which was preventing it being used to set a list of values against a key (e.g. for multi-select fields)
+
 ## 0.8.2-next.0
 
 ### Patch Changes

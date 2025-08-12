@@ -1,5 +1,15 @@
 # @backstage/plugin-api-docs
 
+## 0.12.10-next.3
+
+### Patch Changes
+
+- 8b1bf6e: Updated README instructions for the new frontend system
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/core-compat-api@0.5.0-next.3
+  - @backstage/core-components@0.17.5-next.2
+
 ## 0.12.10-next.2
 
 ### Patch Changes

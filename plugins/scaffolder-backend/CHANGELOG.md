@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.2.0-next.1
+
+### Minor Changes
+
+- 2032660: Fixed fs:readdir action example
+- 11dc90f: Implement max length for scaffolder auditor audit logging with default of 256
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.2-next.1
+
 ## 2.2.0-next.0
 
 ### Minor Changes

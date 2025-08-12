@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.17.5-next.2
+
+### Patch Changes
+
+- 77467bb: Updated dependency `linkifyjs` to `4.3.2`.
+
 ## 0.17.5-next.1
 
 ### Patch Changes
