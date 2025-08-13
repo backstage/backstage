@@ -79,15 +79,24 @@ function applyInStrategy(
 
   if (isEntitiesSearchFilter(filter)) {
     const key = filter.key.toLowerCase();
+    const negatedFilter = key.endsWith('!');
     const values = filter.values?.map(v => v.toLowerCase());
     const matchQuery = knex<DbSearchRow>('search')
       .select('search.entity_id')
-      .where({ key })
+      .where({ key: negatedFilter ? key.slice(0, -1) : key })
       .andWhere(function keyFilter() {
-        if (values?.length === 1) {
-          this.where({ value: values.at(0) });
-        } else if (values) {
-          this.andWhere('value', 'in', values);
+        if (negatedFilter) {
+          if (values?.length === 1) {
+            this.whereNot({ value: values.at(0) });
+          } else if (values) {
+            this.whereNotIn('value', values);
+          }
+        } else {
+          if (values?.length === 1) {
+            this.where({ value: values.at(0) });
+          } else if (values) {
+            this.whereIn('value', values);
+          }
         }
       });
     return targetQuery.andWhere(

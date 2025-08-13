@@ -92,6 +92,7 @@ describe('CatalogClient', () => {
             'a=1,b=2,b=3,ö==',
             'a=2',
             'c',
+            'a!=4,b!=5,b!=6',
           ]);
           return res(ctx.json([]));
         }),
@@ -111,6 +112,10 @@ describe('CatalogClient', () => {
             {
               c: CATALOG_FILTER_EXISTS,
             },
+            {
+              'a!': '4',
+              'b!': ['5', '6'],
+            },
           ],
         },
         { token },
@@ -125,7 +130,9 @@ describe('CatalogClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           const queryParams = new URLSearchParams(req.url.search);
-          expect(queryParams.getAll('filter')).toEqual(['a=1,b=2,b=3,ö==,c']);
+          expect(queryParams.getAll('filter')).toEqual([
+            'a=1,b=2,b=3,ö==,c,d!=4',
+          ]);
           return res(ctx.json([]));
         }),
       );
@@ -137,6 +144,7 @@ describe('CatalogClient', () => {
             b: ['2', '3'],
             ö: '=',
             c: CATALOG_FILTER_EXISTS,
+            'd!': '4',
           },
         },
         { token },

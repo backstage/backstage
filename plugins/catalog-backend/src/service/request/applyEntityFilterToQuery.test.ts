@@ -148,6 +148,14 @@ describe.each(databases.eachSupportedId())(
         ).resolves.toEqual(['1', '2', '3']);
 
         await expect(
+          query({ key: 'spec.foo!', values: ['c'] }),
+        ).resolves.toEqual(['1', '2', '3']);
+
+        await expect(
+          query({ key: 'spec.foo!', values: ['b', 'c'] }),
+        ).resolves.toEqual(['1', '2']);
+
+        await expect(
           query({
             anyOf: [
               { key: 'spec.foo', values: ['a'] },

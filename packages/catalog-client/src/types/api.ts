@@ -73,6 +73,23 @@ export const CATALOG_FILTER_EXISTS = Symbol.for(
  * (metadata.name = 'a' AND metadata.namespace = 'b' )
  * ```
  *
+ * To make the filter a negation, simply add `!` in the end of the key, for example:
+ *
+ * ```
+ * [
+ *   { 'kind!': ['API', 'Component'] },
+ *   { 'metadata.name!': 'a' }
+ * ]
+ * ```
+ *
+ * This effectively means
+ *
+ * ```
+ * (kind != 'API' AND kind != 'Component')
+ * OR
+ * (metadata.name != 'a')
+ * ```
+ *
  * @public
  */
 export type EntityFilterQuery =
