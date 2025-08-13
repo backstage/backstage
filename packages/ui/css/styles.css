@@ -9659,64 +9659,11 @@
   margin-left: -8px;
 }
 
-.bui-HeaderPageControls {
+.bui-HeaderPageControls, .bui-HeaderPageBreadcrumbs {
   align-items: center;
   gap: var(--bui-space-2);
   flex-direction: row;
   display: flex;
-}
-
-.bui-HeaderPageSticky {
-  z-index: -1;
-  height: 0;
-  color: var(--bui-fg-primary);
-  position: sticky;
-  top: 0;
-}
-
-.bui-HeaderPageStickyWrapper {
-  background-color: var(--bui-bg-surface-1);
-  border-bottom: 1px solid var(--bui-border);
-  opacity: 0;
-}
-
-.bui-HeaderPageStickyContent {
-  justify-content: space-between;
-  align-items: center;
-  height: 48px;
-  display: flex;
-}
-
-.bui-HeaderPageBreadcrumbs {
-  align-items: center;
-  gap: var(--bui-space-2);
-  font-size: var(--bui-font-size-3);
-  font-weight: var(--bui-font-weight-regular);
-  flex-direction: row;
-  display: flex;
-}
-
-.bui-HeaderPageBreadcrumb {
-  align-items: center;
-  gap: var(--bui-space-2);
-  flex-direction: row;
-  display: flex;
-}
-
-.bui-HeaderPageBreadcrumbLink {
-  color: var(--bui-fg-secondary);
-  cursor: pointer;
-  text-decoration: none;
-
-  &[data-active="true"] {
-    color: var(--bui-fg-primary);
-  }
-}
-
-.bui-HeaderPageBreadcrumbSeparator {
-  width: 16px;
-  height: 16px;
-  color: var(--bui-fg-secondary);
 }
 
 .bui-Icon {
