@@ -23,6 +23,7 @@ import {
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { BackstagePackageJson } from '@backstage/cli-node';
+import { isError } from '@backstage/errors';
 
 const DETECTED_PACKAGE_ROLES = [
   'node-library',
@@ -133,10 +134,7 @@ export class PackageDiscoveryService {
         depPkg = require(packageJsonPath) as BackstagePackageJson;
       } catch (error) {
         // Handle packages with "exports" field that don't export ./package.json
-        if (
-          error instanceof Error &&
-          (error as any).code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
-        ) {
+        if (isError(error) && error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
           continue; // Skip packages that don't export package.json - they can't be Backstage packages
         }
         throw error;
