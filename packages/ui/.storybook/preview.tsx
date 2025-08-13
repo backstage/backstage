@@ -6,7 +6,7 @@ import { useGlobals } from '@storybook/preview-api';
 import '../src/css/styles.css';
 
 // Custom mocked styles
-import '../src/css/storybook.css';
+import './storybook.css';
 
 // Custom themes
 import './themes/spotify.css';

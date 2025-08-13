@@ -12,7 +12,7 @@
   --sb-content-padding-inline: 250px;
 }
 
-[data-theme='dark'] {
+[data-theme-mode='dark'] {
   --sb-sidebar-bg: var(--bui-bg-surface-1);
 }
 
@@ -30,7 +30,7 @@
   --sb-content-padding-inline: 258px;
 }
 
-[data-theme-name='spotify'][data-theme='light'] {
+[data-theme-name='spotify'][data-theme-mode='light'] {
   --sb-sidebar-border: 1px solid var(--bui-border);
   --sb-sidebar-border-right: 1px solid var(--bui-border);
   --sb-options-border: 1px solid var(--bui-border);

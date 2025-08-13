@@ -1,38 +1,19 @@
 import React, { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Content, AlertDisplay } from '@backstage/core-components';
-import { lightTheme, darkTheme } from '@backstage/theme';
-import { CssBaseline, ThemeProvider } from '@material-ui/core';
 import { apis } from './apis';
-import { withThemeFromJSXProvider } from '@storybook/addon-themes';
 import type { Decorator, Preview, ReactRenderer } from '@storybook/react';
 import { useGlobals } from '@storybook/preview-api';
+import { UnifiedThemeProvider, themes } from '@backstage/theme';
 
-export const withThemes: Decorator = StoryFn => {
-  const [globals] = useGlobals();
-  const selectedTheme = globals.themeMode || 'light';
-  const selectedThemeName = globals.themeName || 'default';
+// Default Backstage theme
+import '../../packages/ui/src/css/styles.css';
 
-  useEffect(() => {
-    const htmlElement = document.documentElement;
+// Custom mocked styles
+import './storybook.css';
 
-    // Remove any existing theme data attributes
-    htmlElement.removeAttribute('data-theme');
-    htmlElement.removeAttribute('data-theme-name');
-
-    // Add the selected theme data attribute
-    htmlElement.setAttribute('data-theme', selectedTheme);
-    htmlElement.setAttribute('data-theme-name', selectedThemeName);
-
-    // Cleanup on unmount
-    return () => {
-      htmlElement.removeAttribute('data-theme');
-      htmlElement.removeAttribute('data-theme-name');
-    };
-  }, [selectedTheme, selectedThemeName]);
-
-  return <StoryFn />;
-};
+// Custom themes
+import './themes/spotify.css';
 
 const preview: Preview = {
   globalTypes: {
@@ -53,11 +34,11 @@ const preview: Preview = {
     themeName: {
       name: 'Theme Name',
       description: 'Global theme name for components',
-      defaultValue: 'default',
+      defaultValue: 'backstage',
       toolbar: {
         icon: 'paintbrush',
         items: [
-          { value: 'default', title: 'Default (Backstage)' },
+          { value: 'backstage', title: 'Backstage' },
           { value: 'spotify', title: 'Spotify' },
         ],
         showName: true,
@@ -67,9 +48,10 @@ const preview: Preview = {
   },
   initialGlobals: {
     themeMode: 'light',
-    themeName: 'default',
+    themeName: 'backstage',
   },
   parameters: {
+    layout: 'fullscreen',
     backgrounds: {
       disable: true,
     },
@@ -77,6 +59,11 @@ const preview: Preview = {
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/i,
+      },
+    },
+    options: {
+      storySort: {
+        order: ['Backstage UI', 'Plugins', 'Layout', 'Navigation'],
       },
     },
     viewport: {
@@ -127,33 +114,50 @@ const preview: Preview = {
     },
   },
   decorators: [
-    withThemeFromJSXProvider<ReactRenderer>({
-      themes: {
-        Light: lightTheme,
-        Dark: darkTheme,
-      },
-      defaultTheme: 'Light',
-      Provider: ThemeProvider,
-      GlobalStyles: CssBaseline,
-    }),
-    Story => (
-      // @ts-ignore - TODO: Fix this
-      <TestApiProvider apis={apis}>
-        <AlertDisplay />
-        <Content>
-          <Story />
-        </Content>
-      </TestApiProvider>
-    ),
+    Story => {
+      const [globals] = useGlobals();
+      const selectedTheme =
+        globals.themeMode === 'light' ? themes.light : themes.dark;
+
+      const selectedThemeMode = globals.themeMode || 'light';
+      const selectedThemeName = globals.themeName || 'backstage';
+
+      useEffect(() => {
+        // Remove any existing theme data attributes
+        document.body.removeAttribute('data-theme-mode');
+        document.body.removeAttribute('data-theme-name');
+
+        // Add the selected theme data attribute
+        document.body.setAttribute('data-theme-mode', selectedThemeMode);
+        document.body.setAttribute('data-theme-name', selectedThemeName);
+
+        // Cleanup on unmount
+        return () => {
+          document.body.removeAttribute('data-theme-mode');
+          document.body.removeAttribute('data-theme-name');
+        };
+      }, [selectedTheme, selectedThemeName]);
+
+      document.body.style.backgroundColor = 'var(--bui-bg)';
+
+      const docsStoryElements = document.getElementsByClassName('docs-story');
+      Array.from(docsStoryElements).forEach(element => {
+        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg)';
+      });
+
+      return (
+        <UnifiedThemeProvider theme={selectedTheme}>
+          {/* @ts-ignore - TODO: Fix this */}
+          <TestApiProvider apis={apis}>
+            <AlertDisplay />
+            <Content>
+              <Story />
+            </Content>
+          </TestApiProvider>
+        </UnifiedThemeProvider>
+      );
+    },
   ],
 };
 
 export default preview;
-
-export const parameters = {
-  options: {
-    storySort: {
-      order: ['Plugins', 'Layout', 'Navigation'],
-    },
-  },
-};
