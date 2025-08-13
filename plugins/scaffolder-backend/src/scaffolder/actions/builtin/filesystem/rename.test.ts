@@ -19,8 +19,8 @@ import { createFilesystemRenameAction } from './rename';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import fs from 'fs-extra';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { JsonObject } from '@backstage/types';
-import { ZodError, ZodIssue } from 'zod';
+import { ZodError } from 'zod';
+import { ActionContext } from '@backstage/plugin-scaffolder-node';
 
 describe('fs:rename', () => {
   const action = createFilesystemRenameAction();
@@ -45,9 +45,9 @@ describe('fs:rename', () => {
   const mockContext = createMockActionContext({
     input: {
       files: mockInputFiles,
-    } as JsonObject,
+    },
     workspacePath,
-  });
+  } as ActionContext<any>);
 
   beforeEach(() => {
     jest.restoreAllMocks();

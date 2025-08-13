@@ -19,7 +19,6 @@ import { createFilesystemDeleteAction } from './delete';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import fs from 'fs-extra';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { JsonObject } from '@backstage/types';
 import { ZodError } from 'zod';
 
 describe('fs:delete', () => {
@@ -31,7 +30,7 @@ describe('fs:delete', () => {
   const mockContext = createMockActionContext({
     input: {
       files: ['unit-test-a.js', 'unit-test-b.js'],
-    } as JsonObject,
+    },
     workspacePath,
   });
 
