@@ -22,7 +22,7 @@ import { Text } from '../Text';
 import { Icon } from '../Icon';
 
 const meta = {
-  title: 'Components/Collapsible',
+  title: 'Backstage UI/Collapsible',
   component: Collapsible.Root,
 } satisfies Meta<typeof Collapsible.Root>;
 

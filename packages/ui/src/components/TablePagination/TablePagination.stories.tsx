@@ -19,7 +19,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TablePagination } from './TablePagination';
 
 const meta = {
-  title: 'Components/TablePagination',
+  title: 'Backstage UI/TablePagination',
   component: TablePagination,
   argTypes: {
     offset: { control: 'number' },

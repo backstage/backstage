@@ -23,7 +23,7 @@ import { Container } from '../Container';
 import { Text } from '../Text';
 
 const meta = {
-  title: 'Components/HeaderPage',
+  title: 'Backstage UI/HeaderPage',
   component: HeaderPage,
   parameters: {
     layout: 'fullscreen',

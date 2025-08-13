@@ -35,7 +35,7 @@ import { RiCactusLine } from '@remixicon/react';
 import { TablePagination } from '../TablePagination';
 
 const meta = {
-  title: 'Components/Table',
+  title: 'Backstage UI/Table',
   decorators: [
     (Story: StoryFn) => (
       <MemoryRouter>

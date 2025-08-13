@@ -6,6 +6,7 @@ import { join, dirname, posix } from 'path';
  * This set of stories are the ones that we publish to backstage.io.
  */
 const backstageCoreStories = [
+  'packages/ui',
   'packages/core-components',
   'packages/app',
   'plugins/org',
