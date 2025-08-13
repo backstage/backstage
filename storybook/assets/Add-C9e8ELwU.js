@@ -1,0 +1,1 @@
+import{i as r}from"./interopRequireDefault-Y9pwbXtE.js";import{r as a,i as t}from"./createSvgIcon-CgciPynk.js";import{b as i}from"./index-DSHF18-l.js";var e={},d=r,o=t;Object.defineProperty(e,"__esModule",{value:!0});var u=e.default=void 0,v=o(i()),l=d(a()),p=(0,l.default)(v.createElement("path",{d:"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"}),"Add");u=e.default=p;export{u as d};

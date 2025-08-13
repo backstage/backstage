@@ -1,1 +1,0 @@
-import{_ as o,d as r,s as n}from"./defaultTheme-DquFOgf8.js";import{s as i,a as d,c as p,b as l,d as m,f as u,g as c,p as f,e as x,h as y,i as g,t as h}from"./typography-1q_m8518.js";var v=function(s){var a=i(s);return function(e,t){return a(e,o({defaultTheme:r},t))}},b=d(p(l,m,u,c,f,x,y,g,n,h)),T=v("div")(b,{name:"MuiBox"});export{T as B,b as a,v as s};
