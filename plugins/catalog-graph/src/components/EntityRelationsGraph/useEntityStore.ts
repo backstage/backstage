@@ -64,7 +64,7 @@ export function useEntityStore(): {
       return;
     }
 
-    const { items } = await catalogClient.getEntitiesByRefs({ entityRefs });
+    const { items } = await catalogClient.getEntities();
     items.forEach(ent => {
       if (ent) {
         const entityRef = stringifyEntityRef(ent);

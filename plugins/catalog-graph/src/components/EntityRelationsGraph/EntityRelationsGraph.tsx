@@ -89,6 +89,7 @@ export type EntityRelationsGraphProps = {
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
+  renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
 };
@@ -114,6 +115,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     zoom = 'enabled',
     renderNode,
     renderLabel,
+    renderEdge,
     curve,
     showArrowHeads,
   } = props;
@@ -156,6 +158,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
           edges={edges}
           renderNode={renderNode || DefaultRenderNode}
           renderLabel={renderLabel || DefaultRenderLabel}
+          renderEdge={renderEdge}
           direction={direction}
           className={classes.graph}
           paddingX={theme.spacing(4)}
