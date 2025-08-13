@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { useArgs } from 'storybook/preview-api';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+// TODO: Bring useArgs() back when we update Storybook to 9
+// import { useArgs } from 'storybook/preview-api';
+import type { Meta, StoryObj } from '@storybook/react';
 import { TablePagination } from './TablePagination';
 
 const meta = {
@@ -41,17 +42,17 @@ export const Default: Story = {
     rowCount: 100,
   },
   render: args => {
-    const [{}, updateArgs] = useArgs();
+    // const [{}, updateArgs] = useArgs();
 
     return (
       <TablePagination
         {...args}
-        setOffset={value => {
-          updateArgs({ offset: value });
-        }}
-        setPageSize={value => {
-          updateArgs({ pageSize: value });
-        }}
+        // setOffset={value => {
+        //   updateArgs({ offset: value });
+        // }}
+        // setPageSize={value => {
+        //   updateArgs({ pageSize: value });
+        // }}
       />
     );
   },
