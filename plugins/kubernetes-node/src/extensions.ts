@@ -16,6 +16,8 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
   AuthenticationStrategy,
+  CustomResource,
+  ObjectToFetch,
   KubernetesClustersSupplier,
   KubernetesFetcher,
   KubernetesObjectsProvider,
@@ -28,7 +30,25 @@ import {
  * @public
  */
 export interface KubernetesObjectsProviderExtensionPoint {
-  addObjectsProvider(provider: KubernetesObjectsProvider): void;
+  addObjectsProvider(
+    provider:
+      | KubernetesObjectsProvider
+      | (({
+          getDefault,
+          clusterSupplier,
+          serviceLocator,
+          customResources,
+          objectTypesToFetch,
+          authStrategy,
+        }: {
+          getDefault: () => KubernetesObjectsProvider;
+          clusterSupplier: KubernetesClustersSupplier;
+          serviceLocator: KubernetesServiceLocator;
+          customResources: CustomResource[];
+          objectTypesToFetch?: ObjectToFetch[];
+          authStrategy: AuthenticationStrategy;
+        }) => KubernetesObjectsProvider),
+  ): void;
 }
 
 /**
@@ -47,7 +67,15 @@ export const kubernetesObjectsProviderExtensionPoint =
  * @public
  */
 export interface KubernetesClusterSupplierExtensionPoint {
-  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier): void;
+  addClusterSupplier(
+    clusterSupplier:
+      | KubernetesClustersSupplier
+      | (({
+          getDefault,
+        }: {
+          getDefault: () => KubernetesClustersSupplier;
+        }) => KubernetesClustersSupplier),
+  ): void;
 }
 
 /**
@@ -85,7 +113,15 @@ export const kubernetesAuthStrategyExtensionPoint =
  * @public
  */
 export interface KubernetesFetcherExtensionPoint {
-  addFetcher(fetcher: KubernetesFetcher): void;
+  addFetcher(
+    fetcher:
+      | KubernetesFetcher
+      | (({
+          getDefault,
+        }: {
+          getDefault: () => KubernetesFetcher;
+        }) => KubernetesFetcher),
+  ): void;
 }
 
 /**
@@ -104,7 +140,17 @@ export const kubernetesFetcherExtensionPoint =
  * @public
  */
 export interface KubernetesServiceLocatorExtensionPoint {
-  addServiceLocator(serviceLocator: KubernetesServiceLocator): void;
+  addServiceLocator(
+    serviceLocator:
+      | KubernetesServiceLocator
+      | (({
+          getDefault,
+          clusterSupplier,
+        }: {
+          getDefault: () => KubernetesServiceLocator;
+          clusterSupplier: KubernetesClustersSupplier;
+        }) => KubernetesServiceLocator),
+  ): void;
 }
 
 /**
