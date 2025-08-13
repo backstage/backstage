@@ -37,7 +37,6 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ALL_RELATION_PAIRS,
   Direction,
   EntityNode,
   EntityRelationsGraph,
@@ -133,11 +132,7 @@ export const CatalogGraphPage = (
     };
   } & Partial<EntityRelationsGraphProps>,
 ) => {
-  const {
-    relationPairs = ALL_RELATION_PAIRS,
-    initialState,
-    entityFilter,
-  } = props;
+  const { relationPairs, initialState, entityFilter } = props;
   const { t } = useTranslationRef(catalogGraphTranslationRef);
   const navigate = useNavigate();
   const classes = useStyles();
@@ -224,7 +219,6 @@ export const CatalogGraphPage = (
               <SelectedRelationsFilter
                 value={selectedRelations}
                 onChange={setSelectedRelations}
-                relationPairs={relationPairs}
               />
               <DirectionFilter value={direction} onChange={setDirection} />
               <CurveFilter value={curve} onChange={setCurve} />

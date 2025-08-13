@@ -15,10 +15,11 @@
  */
 import { MouseEvent, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
-import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
+import { RelationPairs } from '../../types';
 import { EntityEdge, EntityNode } from './types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { useRelations } from '../../hooks/useRelations';
 
 /**
  * Generate nodes and edges to render the entity graph.
@@ -32,7 +33,7 @@ export function useEntityRelationNodesAndEdges({
   relations,
   entityFilter,
   onNodeClick,
-  relationPairs = ALL_RELATION_PAIRS,
+  relationPairs: incomingRelationPairs,
 }: {
   rootEntityRefs: string[];
   maxDepth?: number;
@@ -61,6 +62,11 @@ export function useEntityRelationNodesAndEdges({
       relations,
       entityFilter,
     },
+  });
+
+  const { relationPairs, includeRelation } = useRelations({
+    relations,
+    relationPairs: incomingRelationPairs,
   });
 
   useDebounce(
@@ -124,7 +130,7 @@ export function useEntityRelationNodesAndEdges({
               return;
             }
 
-            if (relations && !relations.includes(rel.type)) {
+            if (!includeRelation(rel.type)) {
               return;
             }
 
@@ -230,7 +236,7 @@ export function useEntityRelationNodesAndEdges({
       entities,
       rootEntityRefs,
       kinds,
-      relations,
+      includeRelation,
       unidirectional,
       mergeRelations,
       onNodeClick,

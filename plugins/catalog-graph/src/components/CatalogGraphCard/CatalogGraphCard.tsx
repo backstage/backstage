@@ -32,7 +32,6 @@ import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
-  ALL_RELATION_PAIRS,
   Direction,
   EntityNode,
   EntityRelationsGraph,
@@ -71,7 +70,7 @@ export const CatalogGraphCard = (
   const { t } = useTranslationRef(catalogGraphTranslationRef);
   const {
     variant = 'gridItem',
-    relationPairs = ALL_RELATION_PAIRS,
+    relationPairs,
     maxDepth = 1,
     unidirectional = true,
     mergeRelations = true,

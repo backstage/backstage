@@ -23,5 +23,8 @@
 
 export * from './components';
 export { CatalogGraphPage, EntityCatalogGraphCard } from './extensions';
+export * from './api';
 export { catalogGraphPlugin } from './plugin';
 export { catalogGraphRouteRef } from './routes';
+export { ALL_RELATIONS, ALL_RELATION_PAIRS } from './types';
+export type { RelationPairs } from './types';

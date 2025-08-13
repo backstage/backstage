@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { EntityRelationsGraph } from './EntityRelationsGraph';
-export type {
-  EntityRelationsGraphProps,
-  EntityRelationsGraphClassKey,
-} from './EntityRelationsGraph';
-export { Direction } from './types';
-export type {
-  EntityEdgeData,
-  EntityEdge,
-  EntityNodeData,
-  EntityNode,
-} from './types';
-export type { CustomLabelClassKey } from './DefaultRenderLabel';
-export type { CustomNodeClassKey } from './DefaultRenderNode';
+
+export { ALL_RELATIONS, ALL_RELATION_PAIRS } from './relations';
+export type { RelationPairs } from './relations';

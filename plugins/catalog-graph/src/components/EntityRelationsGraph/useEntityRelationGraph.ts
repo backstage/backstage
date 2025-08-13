@@ -17,6 +17,7 @@ import { Entity } from '@backstage/catalog-model';
 import { useEffect, useMemo } from 'react';
 import { useEntityStore } from './useEntityStore';
 import { pickBy } from 'lodash';
+import { useRelations } from '../../hooks/useRelations';
 
 /**
  * Discover the graph of entities connected by relations, starting from a set of
@@ -45,6 +46,7 @@ export function useEntityRelationGraph({
   error?: Error;
 } {
   const { entities, loading, error, requestEntities } = useEntityStore();
+  const { includeRelation } = useRelations({ relations });
 
   useEffect(() => {
     const expectedEntities = new Set([...rootEntityRefs]);
@@ -74,7 +76,7 @@ export function useEntityRelationGraph({
           }
           for (const rel of entity.relations) {
             if (
-              (!relations || relations.includes(rel.type)) &&
+              includeRelation(rel.type) &&
               (!kinds ||
                 kinds.some(kind =>
                   rel.targetRef.startsWith(
@@ -98,7 +100,7 @@ export function useEntityRelationGraph({
     entities,
     rootEntityRefs,
     maxDepth,
-    relations,
+    includeRelation,
     kinds,
     entityFilter,
     requestEntities,

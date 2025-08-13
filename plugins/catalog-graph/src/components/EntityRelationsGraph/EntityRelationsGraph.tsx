@@ -30,7 +30,7 @@ import classNames from 'classnames';
 import { MouseEvent, useEffect, useMemo } from 'react';
 import { DefaultRenderLabel } from './DefaultRenderLabel';
 import { DefaultRenderNode } from './DefaultRenderNode';
-import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
+import { RelationPairs } from '../../types';
 import { Direction, EntityEdge, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
@@ -109,7 +109,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     entityFilter,
     direction = Direction.LEFT_RIGHT,
     onNodeClick,
-    relationPairs = ALL_RELATION_PAIRS,
+    relationPairs,
     className,
     zoom = 'enabled',
     renderNode,
