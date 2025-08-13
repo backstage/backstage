@@ -1,6 +1,6 @@
 ---
 title: Catalog History and Events
-status: provisional
+status: implementable
 authors:
   - '@freben'
 owners:
