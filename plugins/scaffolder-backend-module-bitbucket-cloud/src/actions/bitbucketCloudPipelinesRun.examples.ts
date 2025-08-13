@@ -152,10 +152,7 @@ export const examples: TemplateExample[] = [
               },
               variables: [
                 { key: 'var1key', value: 'var1value', secured: true },
-                {
-                  key: 'var2key',
-                  value: 'var2value',
-                },
+                { key: 'var2key', value: 'var2value', secured: false },
               ],
             },
           },
@@ -183,6 +180,7 @@ export const examples: TemplateExample[] = [
                   hash: '9f848b7',
                 },
                 commit: {
+                  type: 'commit',
                   hash: '1a372fc',
                 },
                 pull_request: {
@@ -193,6 +191,10 @@ export const examples: TemplateExample[] = [
                   pattern: '**',
                 },
               },
+              variables: [
+                { key: 'var1key', value: 'var1value', secured: true },
+                { key: 'var2key', value: 'var2value', secured: false },
+              ],
             },
           },
         },

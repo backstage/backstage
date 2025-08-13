@@ -540,7 +540,7 @@ describe('NunjucksWorkflowRunner', () => {
             name: 'name',
             action: 'jest-mock-action',
             input: {
-              number: parseInt('${{parameters.number}}', 10),
+              number: '${{parameters.number}}',
               string: '${{parameters.string}}',
             },
           },

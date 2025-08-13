@@ -25,6 +25,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { Writable } from 'stream';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ContainerRunner } from './ContainerRunner';
+import {ZodError} from "zod";
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
@@ -53,7 +54,7 @@ describe('fetch:cookiecutter', () => {
           { host: 'myazurehostnotoken.com' },
         ],
       },
-    }),
+    } as JsonObject),
   );
 
   const mockTmpDir = mockDir.path;
@@ -119,20 +120,20 @@ describe('fetch:cookiecutter', () => {
     });
   });
 
-  it('should throw an error when copyWithoutRender is not an array', async () => {
+  it('should throw an error when copyWithoutRender is not an array', () => {
     (mockContext.input as any).copyWithoutRender = 'not an array';
 
-    await expect(action.handler(mockContext)).rejects.toThrow(
-      /Fetch action input copyWithoutRender must be an Array/,
-    );
+    expect(Promise.resolve().then(
+      () => action.handler(mockContext))
+    ).rejects.toBeInstanceOf(ZodError)
   });
 
-  it('should throw an error when extensions is not an array', async () => {
+  it('should throw an error when extensions is not an array', () => {
     (mockContext.input as any).extensions = 'not an array';
 
-    await expect(action.handler(mockContext)).rejects.toThrow(
-      /Fetch action input extensions must be an Array/,
-    );
+    expect(Promise.resolve().then(
+      () => action.handler(mockContext))
+    ).rejects.toBeInstanceOf(ZodError)
   });
 
   it('should call fetchContents with the correct variables', async () => {

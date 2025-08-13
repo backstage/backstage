@@ -64,7 +64,8 @@ export function createWorkspaceTemplateAction(options: {
             .array(z.string())
             .describe(
               'An array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.',
-            ),
+            )
+            .optional(),
         cookiecutterCompat: z =>
           z
             .boolean()

@@ -19,6 +19,8 @@ import { createFilesystemDeleteAction } from './delete';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import fs from 'fs-extra';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { JsonObject } from '@backstage/types';
+import { ZodError } from 'zod';
 
 describe('fs:delete', () => {
   const action = createFilesystemDeleteAction();
@@ -29,7 +31,7 @@ describe('fs:delete', () => {
   const mockContext = createMockActionContext({
     input: {
       files: ['unit-test-a.js', 'unit-test-b.js'],
-    },
+    } as JsonObject,
     workspacePath,
   });
 
@@ -53,34 +55,26 @@ describe('fs:delete', () => {
     });
   });
 
-  it('should throw an error when files is not an array', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: undefined } as any,
-      }),
-    ).rejects.toThrow(/files must be an Array/);
+  it('should throw ZodError when files is not an array', async () => {
+    const testCases = [
+      { input: undefined },
+      { input: {} },
+      { input: '' },
+      { input: null },
+    ];
 
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: {} } as any,
-      }),
-    ).rejects.toThrow(/files must be an Array/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: '' } as any,
-      }),
-    ).rejects.toThrow(/files must be an Array/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: null } as any,
-      }),
-    ).rejects.toThrow(/files must be an Array/);
+    await Promise.all(
+      testCases.map(({ input }) =>
+        expect(
+          Promise.resolve().then(() =>
+            action.handler({
+              ...mockContext,
+              input: { files: input } as any,
+            }),
+          ),
+        ).rejects.toBeInstanceOf(ZodError),
+      ),
+    );
   });
 
   it('should throw when file name is not relative to the workspace', async () => {

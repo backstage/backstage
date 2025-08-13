@@ -21,6 +21,7 @@ import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun'
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { JsonObject } from '@backstage/types';
 
 describe('bitbucket:pipelines:run', () => {
   const config = new ConfigReader({
@@ -32,7 +33,7 @@ describe('bitbucket:pipelines:run', () => {
         },
       ],
     },
-  });
+  } as JsonObject);
 
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createBitbucketPipelinesRunAction({ integrations });
@@ -59,7 +60,7 @@ describe('bitbucket:pipelines:run', () => {
       integrations: {
         bitbucketCloud: [],
       },
-    });
+    } as JsonObject);
 
     const integrationsNoCreds = ScmIntegrations.fromConfig(configNoCreds);
     const actionNoCreds = createBitbucketPipelinesRunAction({

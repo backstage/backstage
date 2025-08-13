@@ -19,6 +19,8 @@ import { createFilesystemRenameAction } from './rename';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import fs from 'fs-extra';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { JsonObject } from '@backstage/types';
+import { ZodError, ZodIssue } from 'zod';
 
 describe('fs:rename', () => {
   const action = createFilesystemRenameAction();
@@ -43,7 +45,7 @@ describe('fs:rename', () => {
   const mockContext = createMockActionContext({
     input: {
       files: mockInputFiles,
-    },
+    } as JsonObject,
     workspacePath,
   });
 
@@ -62,57 +64,47 @@ describe('fs:rename', () => {
     });
   });
 
-  it('should throw an error when files is not an array', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: undefined } as any,
-      }),
-    ).rejects.toThrow(/files must be an Array/);
+  it('should throw ZodError when files is not an array', async () => {
+    const testCases = [
+      { input: undefined },
+      { input: {} },
+      { input: '' },
+      { input: null },
+    ];
 
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: {} } as any,
-      }),
-    ).rejects.toThrow(/files must be an Array/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: '' } as any,
-      }),
-    ).rejects.toThrow(/files must be an Array/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: null } as any,
-      }),
-    ).rejects.toThrow(/files must be an Array/);
+    await Promise.all(
+      testCases.map(({ input }) =>
+        expect(
+          Promise.resolve().then(() =>
+            action.handler({
+              ...mockContext,
+              input: { files: input } as any,
+            }),
+          ),
+        ).rejects.toBeInstanceOf(ZodError),
+      ),
+    );
   });
 
-  it('should throw an error when files have missing from/to', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: ['old.md'] } as any,
-      }),
-    ).rejects.toThrow(/each file must have a from and to property/);
+  it('should throw ZodError when files have missing from/to', async () => {
+    const testCases = [
+      { input: ['old.md'] },
+      { input: [{ from: 'old.md' }] },
+      { input: [{ to: 'new.md' }] },
+    ];
 
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: [{ from: 'old.md' }] } as any,
-      }),
-    ).rejects.toThrow(/each file must have a from and to property/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { files: [{ to: 'new.md' }] } as any,
-      }),
-    ).rejects.toThrow(/each file must have a from and to property/);
+    await Promise.all(
+      testCases.map(({ input }) =>
+        expect(
+          Promise.resolve().then(() =>
+            action.handler({
+              ...mockContext,
+              input: { files: input } as any,
+            }),
+          ),
+        ).rejects.toBeInstanceOf(ZodError),
+      ),
+    );
   });
 
   it('should throw when file name is not relative to the workspace', async () => {
