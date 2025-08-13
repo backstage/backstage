@@ -40,6 +40,7 @@
   "dependencies": {
     "@base-ui-components/react": "1.0.0-alpha.7",
     "@remixicon/react": "^4.6.0",
+    "@storybook/test": "^8.6.12",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
     "react-aria-components": "^1.10.1"

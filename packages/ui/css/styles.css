@@ -9182,7 +9182,7 @@
   --bui-animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;
 }
 
-[data-theme="dark"] {
+[data-theme-mode="dark"] {
   --bui-gray-1: #191919;
   --bui-gray-2: #242424;
   --bui-gray-3: #373737;
