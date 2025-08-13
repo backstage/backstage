@@ -32,27 +32,31 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          fetch-depth: 0 # Required to retrieve git history
+          fetch-depth: 1 # Required to retrieve git history
 
-      - name: use node.js ${{ matrix.node-version }}
+      - name: Use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: yarn install
+
+      - name: Install dependencies
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
-      - name: storybook yarn install
+
+      - name: Install Storybook dependencies
         run: yarn install --immutable
         working-directory: storybook
 
-        # Only for verification, the BUI one is what we upload to Chromatic
-      - run: yarn build-storybook
+      - name: Build Storybook
+        run: yarn build-storybook
 
-      - uses: chromaui/action@1cfa065cbdab28f6ca3afaeb3d761383076a35aa # v11
+      - name: Deploy Storybook to Chromatic
+        uses: chromaui/action@1cfa065cbdab28f6ca3afaeb3d761383076a35aa # v11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
