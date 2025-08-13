@@ -86,6 +86,7 @@ export const createBitbucketPipelinesRunAction = (options: {
           },
         );
       } catch (e) {
+        console.log(e);
         throw new Error(`Unable to run pipeline, ${e}`);
       }
 

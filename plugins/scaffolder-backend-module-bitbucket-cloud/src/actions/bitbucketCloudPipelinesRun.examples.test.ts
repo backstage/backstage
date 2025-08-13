@@ -203,10 +203,7 @@ describe('bitbucket:pipelines:run', () => {
             },
             variables: [
               { key: 'var1key', value: 'var1value', secured: true },
-              {
-                key: 'var2key',
-                value: 'var2value',
-              },
+              { key: 'var2key', value: 'var2value', secured: false },
             ],
           });
           return res(
@@ -239,6 +236,7 @@ describe('bitbucket:pipelines:run', () => {
                 hash: '9f848b7',
               },
               commit: {
+                type: 'commit',
                 hash: '1a372fc',
               },
               pull_request: {
@@ -249,6 +247,18 @@ describe('bitbucket:pipelines:run', () => {
                 pattern: '**',
               },
             },
+            variables: [
+              {
+                key: 'var1key',
+                secured: true,
+                value: 'var1value',
+              },
+              {
+                key: 'var2key',
+                secured: false,
+                value: 'var2value',
+              },
+            ],
           });
           return res(
             ctx.status(201),
