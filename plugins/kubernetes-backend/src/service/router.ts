@@ -15,10 +15,15 @@
  */
 
 import { Logger } from 'winston';
-import { KubernetesClustersSupplier } from '@backstage/plugin-kubernetes-node';
+import {
+  AuthenticationStrategy,
+  KubernetesClustersSupplier,
+  KubernetesFetcher,
+  KubernetesObjectsProvider,
+  KubernetesServiceLocator,
+} from '@backstage/plugin-kubernetes-node';
 import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
-import { CatalogApi } from '@backstage/catalog-client';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   DiscoveryService,
@@ -26,23 +31,26 @@ import {
   RootConfigService,
   AuthService,
 } from '@backstage/backend-plugin-api';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 interface RouterOptions {
   logger: Logger;
   config: RootConfigService;
-  catalogApi: CatalogApi;
-  clusterSupplier?: KubernetesClustersSupplier;
+  catalog: CatalogService;
+  clusterSupplier: KubernetesClustersSupplier;
   discovery: DiscoveryService;
   permissions: PermissionEvaluator;
   auth: AuthService;
   httpAuth: HttpAuthService;
+  authStrategyMap: { [key: string]: AuthenticationStrategy };
+  fetcher: KubernetesFetcher;
+  serviceLocator: KubernetesServiceLocator;
+  objectsProvider: KubernetesObjectsProvider;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { router } = await KubernetesBuilder.createBuilder(options)
-    .setClusterSupplier(options.clusterSupplier)
-    .build();
+  const { router } = await KubernetesBuilder.createBuilder(options).build();
   return router;
 }

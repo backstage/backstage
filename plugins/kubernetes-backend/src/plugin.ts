@@ -18,10 +18,11 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 import {
   type AuthenticationStrategy,
+  CustomResource,
   kubernetesAuthStrategyExtensionPoint,
   type KubernetesAuthStrategyExtensionPoint,
   type KubernetesClustersSupplier,
@@ -33,14 +34,43 @@ import {
   type KubernetesObjectsProvider,
   kubernetesObjectsProviderExtensionPoint,
   type KubernetesObjectsProviderExtensionPoint,
+  KubernetesObjectTypes,
   type KubernetesServiceLocator,
   kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
+  ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesBuilder } from './service/KubernetesBuilder';
+import { KubernetesClientBasedFetcher } from './service/KubernetesFetcher';
+import { DispatchStrategy } from './auth/DispatchStrategy';
+import { getCombinedClusterSupplier } from './cluster-locator';
+import { buildDefaultAuthStrategyMap } from './auth/buildDefaultAuthStrategyMap';
+import { buildDefaultServiceLocator } from './service-locator/buildDefaultServiceLocator';
+import { Duration } from 'luxon';
+import {
+  ALL_OBJECTS,
+  DEFAULT_OBJECTS,
+  KubernetesFanOutHandler,
+} from './service/KubernetesFanOutHandler';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
-  private objectsProvider: KubernetesObjectsProvider | undefined;
+  private objectsProvider:
+    | (({
+        getDefault,
+        clusterSupplier,
+        serviceLocator,
+        customResources,
+        objectTypesToFetch,
+        authStrategy,
+      }: {
+        getDefault: () => KubernetesObjectsProvider;
+        clusterSupplier: KubernetesClustersSupplier;
+        serviceLocator: KubernetesServiceLocator;
+        customResources: CustomResource[];
+        objectTypesToFetch?: ObjectToFetch[];
+        authStrategy: AuthenticationStrategy;
+      }) => KubernetesObjectsProvider)
+    | undefined;
 
   getObjectsProvider() {
     return this.objectsProvider;
@@ -52,12 +82,22 @@ class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
         'Multiple Kubernetes objects provider is not supported at this time',
       );
     }
-    this.objectsProvider = provider;
+    if (typeof provider !== 'function') {
+      this.objectsProvider = () => provider;
+    } else {
+      this.objectsProvider = provider;
+    }
   }
 }
 
 class ClusterSuplier implements KubernetesClusterSupplierExtensionPoint {
-  private clusterSupplier: KubernetesClustersSupplier | undefined;
+  private clusterSupplier:
+    | (({
+        getDefault,
+      }: {
+        getDefault: () => KubernetesClustersSupplier;
+      }) => KubernetesClustersSupplier)
+    | undefined;
 
   getClusterSupplier() {
     return this.clusterSupplier;
@@ -69,29 +109,59 @@ class ClusterSuplier implements KubernetesClusterSupplierExtensionPoint {
         'Multiple Kubernetes Cluster Suppliers is not supported at this time',
       );
     }
-    this.clusterSupplier = clusterSupplier;
+    if (typeof clusterSupplier !== 'function') {
+      this.clusterSupplier = () => clusterSupplier;
+    } else {
+      this.clusterSupplier = clusterSupplier;
+    }
   }
 }
 
 class Fetcher implements KubernetesFetcherExtensionPoint {
-  private fetcher: KubernetesFetcher | undefined;
+  private fetcher:
+    | (({
+        getDefault,
+      }: {
+        getDefault: () => KubernetesFetcher;
+      }) => KubernetesFetcher)
+    | undefined;
 
   getFetcher() {
     return this.fetcher;
   }
 
-  addFetcher(fetcher: KubernetesFetcher) {
+  addFetcher(
+    fetcher:
+      | KubernetesFetcher
+      | (({
+          getDefault,
+        }: {
+          getDefault: () => KubernetesFetcher;
+        }) => KubernetesFetcher),
+  ) {
     if (this.fetcher) {
       throw new Error(
         'Multiple Kubernetes Fetchers is not supported at this time',
       );
     }
-    this.fetcher = fetcher;
+    if (typeof fetcher !== 'function') {
+      this.fetcher = () => fetcher;
+    } else {
+      this.fetcher = fetcher;
+    }
   }
 }
 
 class ServiceLocator implements KubernetesServiceLocatorExtensionPoint {
-  private serviceLocator: KubernetesServiceLocator | undefined;
+  private serviceLocator:
+    | (({
+        getDefault,
+        clusterSupplier,
+      }: {
+        getDefault: () => KubernetesServiceLocator;
+        clusterSupplier: KubernetesClustersSupplier;
+      }) => KubernetesServiceLocator)
+    | undefined;
 
   getServiceLocator() {
     return this.serviceLocator;
@@ -103,28 +173,20 @@ class ServiceLocator implements KubernetesServiceLocatorExtensionPoint {
         'Multiple Kubernetes Service Locators is not supported at this time',
       );
     }
-    this.serviceLocator = serviceLocator;
+
+    if (typeof serviceLocator !== 'function') {
+      this.serviceLocator = () => serviceLocator;
+    } else {
+      this.serviceLocator = serviceLocator;
+    }
   }
 }
 
 class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
-  private authStrategies: Array<{
-    key: string;
-    strategy: AuthenticationStrategy;
-  }>;
+  private authStrategies: Map<string, AuthenticationStrategy>;
 
   constructor() {
-    this.authStrategies = new Array<{
-      key: string;
-      strategy: AuthenticationStrategy;
-    }>();
-  }
-
-  static addAuthStrategiesFromArray(
-    authStrategies: Array<{ key: string; strategy: AuthenticationStrategy }>,
-    builder: KubernetesBuilder,
-  ) {
-    authStrategies.forEach(st => builder.addAuthStrategy(st.key, st.strategy));
+    this.authStrategies = new Map<string, AuthenticationStrategy>();
   }
 
   getAuthenticationStrategies() {
@@ -132,7 +194,10 @@ class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
   }
 
   addAuthStrategy(key: string, authStrategy: AuthenticationStrategy) {
-    this.authStrategies.push({ key, strategy: authStrategy });
+    if (key.includes('-')) {
+      throw new Error('Strategy name can not include dashes');
+    }
+    this.authStrategies.set(key, authStrategy);
   }
 }
 
@@ -176,7 +241,7 @@ export const kubernetesPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
-        catalogApi: catalogServiceRef,
+        catalog: catalogServiceRef,
         permissions: coreServices.permissions,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
@@ -186,31 +251,142 @@ export const kubernetesPlugin = createBackendPlugin({
         logger,
         config,
         discovery,
-        catalogApi,
+        catalog,
         permissions,
         auth,
         httpAuth,
       }) {
         if (config.has('kubernetes')) {
           // TODO: expose all of the customization & extension points of the builder here
+          const defaultFetcherFactory = () =>
+            new KubernetesClientBasedFetcher({
+              logger,
+            });
+
+          const fetcher =
+            extPointFetcher.getFetcher()?.({
+              getDefault: defaultFetcherFactory,
+            }) ?? defaultFetcherFactory();
+
+          const returnedAuthStrategyMap =
+            extPointAuthStrategy.getAuthenticationStrategies();
+
+          const authStrategyMap =
+            returnedAuthStrategyMap.size > 0
+              ? returnedAuthStrategyMap
+              : buildDefaultAuthStrategyMap({ logger, config });
+
+          const refreshInterval = Duration.fromObject({
+            minutes: 60,
+          });
+
+          const defaultClusterSupplierFactory = () =>
+            getCombinedClusterSupplier(
+              config,
+              catalog,
+              new DispatchStrategy({
+                authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
+              }),
+              logger,
+              refreshInterval,
+              auth,
+            );
+
+          const clusterSupplier =
+            extPointClusterSuplier.getClusterSupplier()?.({
+              getDefault: defaultClusterSupplierFactory,
+            }) ?? defaultClusterSupplierFactory();
+
+          const defaultServiceLocatorFactory = () =>
+            buildDefaultServiceLocator({
+              config,
+              clusterSupplier,
+            });
+
+          const serviceLocator =
+            extPointServiceLocator.getServiceLocator()?.({
+              getDefault: defaultServiceLocatorFactory,
+              clusterSupplier: clusterSupplier,
+            }) ?? defaultServiceLocatorFactory();
+
+          const objectTypesToFetchStrings = config.getOptionalStringArray(
+            'kubernetes.objectTypes',
+          ) as KubernetesObjectTypes[];
+
+          const apiVersionOverrides = config.getOptionalConfig(
+            'kubernetes.apiVersionOverrides',
+          );
+
+          let objectTypesToFetch: ObjectToFetch[] | undefined = undefined;
+
+          if (objectTypesToFetchStrings) {
+            objectTypesToFetch = ALL_OBJECTS.filter(obj =>
+              objectTypesToFetchStrings.includes(obj.objectType),
+            );
+          }
+
+          if (apiVersionOverrides) {
+            objectTypesToFetch ??= DEFAULT_OBJECTS;
+
+            for (const obj of objectTypesToFetch) {
+              if (apiVersionOverrides.has(obj.objectType)) {
+                obj.apiVersion = apiVersionOverrides.getString(obj.objectType);
+              }
+            }
+          }
+
+          const customResources: CustomResource[] = (
+            config.getOptionalConfigArray('kubernetes.customResources') ?? []
+          ).map(
+            c =>
+              ({
+                group: c.getString('group'),
+                apiVersion: c.getString('apiVersion'),
+                plural: c.getString('plural'),
+                objectType: 'customresources',
+              } as CustomResource),
+          );
+
+          const defaultObjectsProviderFactory = () =>
+            new KubernetesFanOutHandler({
+              logger,
+              config,
+              fetcher,
+              serviceLocator,
+              customResources,
+              objectTypesToFetch,
+              authStrategy: new DispatchStrategy({
+                authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
+              }),
+            });
+
+          const objectsProvider =
+            extPointObjectsProvider.getObjectsProvider()?.({
+              clusterSupplier,
+              getDefault: defaultObjectsProviderFactory,
+              serviceLocator,
+              customResources,
+              objectTypesToFetch,
+              authStrategy: new DispatchStrategy({
+                authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
+              }),
+            }) ?? defaultObjectsProviderFactory();
+
           const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
             logger,
             config,
-            catalogApi,
+            catalog,
             permissions,
             discovery,
             auth,
             httpAuth,
-          })
-            .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
-            .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
-            .setFetcher(extPointFetcher.getFetcher())
-            .setServiceLocator(extPointServiceLocator.getServiceLocator());
+            authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
+            fetcher,
+            clusterSupplier,
+            serviceLocator,
+            objectsProvider,
+          });
 
-          AuthStrategy.addAuthStrategiesFromArray(
-            extPointAuthStrategy.getAuthenticationStrategies(),
-            builder,
-          );
           const { router } = await builder.build();
           http.use(router);
         } else {
