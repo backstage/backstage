@@ -125,9 +125,22 @@ export class PackageDiscoveryService {
     const features: BackendFeature[] = [];
 
     for (const name of dependencyNames) {
-      const depPkg = require(require.resolve(`${name}/package.json`, {
-        paths: [packageDir],
-      })) as BackstagePackageJson;
+      let depPkg: BackstagePackageJson;
+      try {
+        const packageJsonPath = require.resolve(`${name}/package.json`, {
+          paths: [packageDir],
+        });
+        depPkg = require(packageJsonPath) as BackstagePackageJson;
+      } catch (error) {
+        // Handle packages with "exports" field that don't export ./package.json
+        if (
+          error instanceof Error &&
+          (error as any).code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
+        ) {
+          continue; // Skip packages that don't export package.json - they can't be Backstage packages
+        }
+        throw error;
+      }
       if (
         !depPkg?.backstage?.role ||
         !DETECTED_PACKAGE_ROLES.includes(depPkg.backstage.role)
