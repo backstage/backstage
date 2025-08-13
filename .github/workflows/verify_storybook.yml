@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/verify_storybook.yml'
       - 'storybook/**'
+      - 'packages/ui/src/**'
       - 'packages/config/src/**'
       - 'packages/theme/src/**'
       - 'packages/types/src/**'
@@ -63,4 +64,4 @@ jobs:
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: chpt_dab72dc0f97d55b
           workingDir: storybook
-          storybookBuildDir: storybook-static
+          storybookBuildDir: dist
