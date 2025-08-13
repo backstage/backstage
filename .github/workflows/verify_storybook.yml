@@ -52,7 +52,7 @@ jobs:
       - name: Clean up storybook conflicting files
         run: |
           rm -rf storybook/node_modules
-          rm -f storybook/yarn.lock
+          echo "" > storybook/yarn.lock
 
       - name: Install Storybook dependencies
         run: yarn install --immutable
