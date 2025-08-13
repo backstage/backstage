@@ -5,6 +5,7 @@
 ```ts
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { CustomResource as CustomResource_2 } from '@backstage/plugin-kubernetes-node';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -18,6 +19,7 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backstage/plugin-kubernetes-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
 
 // @public (undocumented)
 export interface AuthenticationStrategy {
@@ -95,7 +97,15 @@ export interface KubernetesClustersSupplier {
 // @public
 export interface KubernetesClusterSupplierExtensionPoint {
   // (undocumented)
-  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier_2): void;
+  addClusterSupplier(
+    clusterSupplier:
+      | KubernetesClustersSupplier_2
+      | (({
+          getDefault,
+        }: {
+          getDefault: () => KubernetesClustersSupplier_2;
+        }) => KubernetesClustersSupplier_2),
+  ): void;
 }
 
 // @public
@@ -134,7 +144,15 @@ export interface KubernetesFetcher {
 // @public
 export interface KubernetesFetcherExtensionPoint {
   // (undocumented)
-  addFetcher(fetcher: KubernetesFetcher_2): void;
+  addFetcher(
+    fetcher:
+      | KubernetesFetcher_2
+      | (({
+          getDefault,
+        }: {
+          getDefault: () => KubernetesFetcher_2;
+        }) => KubernetesFetcher_2),
+  ): void;
 }
 
 // @public
@@ -169,7 +187,25 @@ export interface KubernetesObjectsProvider {
 // @public
 export interface KubernetesObjectsProviderExtensionPoint {
   // (undocumented)
-  addObjectsProvider(provider: KubernetesObjectsProvider_2): void;
+  addObjectsProvider(
+    provider:
+      | KubernetesObjectsProvider_2
+      | (({
+          getDefault,
+          clusterSupplier,
+          serviceLocator,
+          customResources,
+          objectTypesToFetch,
+          authStrategy,
+        }: {
+          getDefault: () => KubernetesObjectsProvider_2;
+          clusterSupplier: KubernetesClustersSupplier_2;
+          serviceLocator: KubernetesServiceLocator_2;
+          customResources: CustomResource_2[];
+          objectTypesToFetch?: ObjectToFetch_2[];
+          authStrategy: AuthenticationStrategy_2;
+        }) => KubernetesObjectsProvider_2),
+  ): void;
 }
 
 // @public
@@ -207,7 +243,17 @@ export interface KubernetesServiceLocator {
 // @public
 export interface KubernetesServiceLocatorExtensionPoint {
   // (undocumented)
-  addServiceLocator(serviceLocator: KubernetesServiceLocator_2): void;
+  addServiceLocator(
+    serviceLocator:
+      | KubernetesServiceLocator_2
+      | (({
+          getDefault,
+          clusterSupplier,
+        }: {
+          getDefault: () => KubernetesServiceLocator_2;
+          clusterSupplier: KubernetesClustersSupplier_2;
+        }) => KubernetesServiceLocator_2),
+  ): void;
 }
 
 // @public
