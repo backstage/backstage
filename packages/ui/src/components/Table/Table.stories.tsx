@@ -27,7 +27,7 @@ import {
   useTable,
 } from '.';
 import { MemoryRouter } from 'react-router-dom';
-import { data as data1 } from './mocked-data1';
+import { data as data1Raw } from './mocked-data1';
 import { data as data2 } from './mocked-data2';
 import { data as data3 } from './mocked-data3';
 import { data as data4 } from './mocked-data4';
@@ -44,6 +44,10 @@ const meta = {
     ),
   ],
 } satisfies Meta;
+
+// Added this fix to fix Chromatic timeout error. This bug is due to rerendering the table with too many rows.
+// Work in progress to fix it here - https://github.com/backstage/backstage/pull/30687
+const data1 = data1Raw.slice(0, 25);
 
 export default meta;
 type Story = StoryObj<typeof meta>;

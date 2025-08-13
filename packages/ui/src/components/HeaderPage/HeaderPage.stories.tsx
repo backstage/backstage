@@ -111,7 +111,7 @@ const layoutDecorator = [
 
 export const Default: Story = {
   args: {
-    title: 'Header Page',
+    title: 'Page Title',
   },
 };
 
@@ -134,10 +134,28 @@ export const WithCustomActions: Story = {
   render: () => (
     <HeaderPage
       {...Default.args}
-      menuItems={menuItems}
       customActions={<Button>Custom action</Button>}
     />
   ),
+};
+
+export const WithBreadcrumbs: Story = {
+  decorators: [withRouter],
+  args: {
+    ...Default.args,
+    breadcrumbs: [{ label: 'Home', href: '/' }],
+  },
+};
+
+export const WithLongBreadcrumbs: Story = {
+  decorators: [withRouter],
+  args: {
+    ...Default.args,
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Long Breadcrumb Name', href: '/long-breadcrumb' },
+    ],
+  },
 };
 
 export const WithEverything: Story = {
@@ -148,6 +166,7 @@ export const WithEverything: Story = {
       menuItems={menuItems}
       tabs={tabs}
       customActions={<Button>Custom action</Button>}
+      breadcrumbs={[{ label: 'Home', href: '/' }]}
     />
   ),
 };

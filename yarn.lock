@@ -7473,7 +7473,6 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@base-ui-components/react": "npm:1.0.0-alpha.7"
-    "@gsap/react": "npm:^2.1.2"
     "@remixicon/react": "npm:^4.6.0"
     "@storybook/addon-essentials": "npm:^8.6.12"
     "@storybook/addon-interactions": "npm:^8.6.12"
@@ -7492,7 +7491,6 @@ __metadata:
     eslint-plugin-storybook: "npm:^0.12.0"
     glob: "npm:^11.0.1"
     globals: "npm:^15.11.0"
-    gsap: "npm:^3.13.0"
     lightningcss: "npm:^1.29.1"
     mini-css-extract-plugin: "npm:^2.9.2"
     react: "npm:^18.0.2"
@@ -9364,16 +9362,6 @@ __metadata:
   bin:
     proto-loader-gen-types: build/bin/proto-loader-gen-types.js
   checksum: 10/7e2d842c2061cbaf6450c71da0077263be3bab165454d5c8a3e1ae4d3c6d2915f02fd27da63ff01f05e127b1221acd40705273f5d29303901e60514e852992f4
-  languageName: node
-  linkType: hard
-
-"@gsap/react@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "@gsap/react@npm:2.1.2"
-  peerDependencies:
-    gsap: ^3.12.5
-    react: ">=17"
-  checksum: 10/48e78bbb31a4ec5a75aab6ea69ec3f4df0bb7cff0c8ebfcdc14553cb8e35f54b7fcf94f933e2aa65fd977135aaac87b855007d376504f1bb93a74328ba1dc0cb
   languageName: node
   linkType: hard
 
@@ -32333,13 +32321,6 @@ __metadata:
   peerDependencies:
     react: ^16.0.0
   checksum: 10/ec022adc0c81ae17e2d59e8d36ec6e2306788d56c33296349ff252a627933491f8fab567cba90cfd5c998a13b36dfc321b3aa14c7a016d8e9c408853d23399de
-  languageName: node
-  linkType: hard
-
-"gsap@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "gsap@npm:3.13.0"
-  checksum: 10/1908d51cbdf8f0bec8a69919af352d743a06529639a89f750f1c02e9a165d3ea816f867569df222ee7bfc14e23e268ebeb51dc5df0687fa7918ddd5d3b3efaec
   languageName: node
   linkType: hard
 
