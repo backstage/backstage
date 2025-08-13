@@ -437,10 +437,6 @@ export const componentDefinitions: {
       readonly toolbarControls: 'bui-HeaderToolbarControls';
       readonly toolbarIcon: 'bui-HeaderToolbarIcon';
       readonly toolbarName: 'bui-HeaderToolbarName';
-      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
-      readonly breadcrumb: 'bui-HeaderBreadcrumb';
-      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
-      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
       readonly tabsWrapper: 'bui-HeaderTabsWrapper';
     };
   };
@@ -448,15 +444,9 @@ export const componentDefinitions: {
     readonly classNames: {
       readonly root: 'bui-HeaderPage';
       readonly content: 'bui-HeaderPageContent';
+      readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
       readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
       readonly controls: 'bui-HeaderPageControls';
-      readonly sticky: 'bui-HeaderPageSticky';
-      readonly stickyWrapper: 'bui-HeaderPageStickyWrapper';
-      readonly stickyContent: 'bui-HeaderPageStickyContent';
-      readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
-      readonly breadcrumb: 'bui-HeaderPageBreadcrumb';
-      readonly breadcrumbLink: 'bui-HeaderPageBreadcrumbLink';
-      readonly breadcrumbSeparator: 'bui-HeaderPageBreadcrumbSeparator';
     };
   };
   readonly Heading: {

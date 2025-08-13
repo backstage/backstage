@@ -9,7 +9,8 @@ import {
   defaultSnippet,
   withTabs,
   withBreadcrumbs,
-  withHeaderPage,
+  withCustomActions,
+  withMenuItems,
 } from './header-page.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -35,6 +36,52 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PropsTable data={propDefs} />
 
-<Theming component="Header" />
+## Examples
+
+### With Breadcrumbs
+
+You can add breadcrumbs to the header page to help users navigate to the previous page. The `breadcrumbs`
+prop is an array of objects with a `label` and `href` property. By default we truncate the breadcrumb label to 240px.
+
+<Snippet
+  open
+  preview={<HeaderPageSnippet story="WithLongBreadcrumbs" />}
+  code={withBreadcrumbs}
+/>
+
+### With Tabs
+
+You can add tabs to the header page to help users navigate to the different sections of the page. The `tabs`
+prop is an array of objects with a `label` and `href` property.
+
+<Snippet
+  open
+  preview={<HeaderPageSnippet story="WithTabs" />}
+  code={withTabs}
+/>
+
+### With Custom Actions
+
+You can add custom actions to the header page to help users navigate to the different sections of the page. The `customActions`
+prop is a React node.
+
+<Snippet
+  open
+  preview={<HeaderPageSnippet story="WithCustomActions" />}
+  code={withCustomActions}
+/>
+
+### With Menu Items
+
+You can add menu items to the header page to help users navigate to the different sections of the page. The `menuItems`
+prop is an array of objects with a `label`, `value` and `onClick` property.
+
+<Snippet
+  open
+  preview={<HeaderPageSnippet story="WithMenuItems" />}
+  code={withMenuItems}
+/>
+
+<Theming component="HeaderPage" />
 
 <ChangelogComponent component="Header" />

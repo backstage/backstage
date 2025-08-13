@@ -42,11 +42,9 @@
   },
   "dependencies": {
     "@base-ui-components/react": "1.0.0-alpha.7",
-    "@gsap/react": "^2.1.2",
     "@remixicon/react": "^4.6.0",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
-    "gsap": "^3.13.0",
     "react-aria-components": "^1.10.1"
   },
   "devDependencies": {

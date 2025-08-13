@@ -23,10 +23,6 @@ import { ButtonIcon } from '../ButtonIcon';
 import { Menu } from '../Menu';
 import { Text } from '../Text';
 import { useNavigate, useHref } from 'react-router-dom';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 /**
  * A component that renders a toolbar.
