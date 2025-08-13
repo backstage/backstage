@@ -6,7 +6,7 @@ description: Documentation landing page.
 ## Understand, try, administer and use Backstage
 |Understand Backstage|Try Backstage|Administration|Using Backstage|
 |--------------------|-------------|---------------|---------------|
-|*Learn about Backstage*<br><br>|*Build a custonizable Backstage app*<br><br>|*Configure, Deploy & Upgrade*<br><br>|*Develop with Backstage*<br><br>|
+|*Learn about Backstage*<br><br>|*Build a Backstage app*<br><br>|*Configure, Deploy & Upgrade*<br><br>|*Develop with Backstage*<br><br>|
 |What is Backstage?|Create your Backstage app|Setup Authentication|Logging into Backstage|
 |Architecture overview||Configure a Backstage Database|Registering a Component|
 |Introduction to Plugins|                       |Add plugins to expand functionality|Creating a Component|
