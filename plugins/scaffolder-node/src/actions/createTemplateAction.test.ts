@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { createTemplateAction } from './createTemplateAction';
-import { createMockActionContext } from "@backstage/plugin-scaffolder-node-test-utils";
-import { mockServices } from '@backstage/backend-test-utils'
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { mockServices } from '@backstage/backend-test-utils';
+import { z } from 'zod';
 
 describe('createTemplateAction', () => {
   it('should allow creating with new first class zod support', () => {
@@ -54,18 +55,18 @@ describe('createTemplateAction', () => {
     const action = createTemplateAction({
       id: 'test',
       schema: {
-        input: z =>
-          z.union([
-            z.object({
-              repoUrl: z.string(),
+        input: (zImpl: typeof z) =>
+          zImpl.union([
+            zImpl.object({
+              repoUrl: zImpl.string(),
             }),
-            z.object({
+            zImpl.object({
               numberThing: z.number(),
             }),
           ]),
-        output: z =>
-          z.object({
-            test: z.string(),
+        output: (zImpl: typeof z) =>
+          zImpl.object({
+            test: zImpl.string(),
           }),
       },
       handler: async ctx => {
@@ -106,14 +107,25 @@ describe('createTemplateAction', () => {
     const mockContext = createMockActionContext({
       logger: mockServices.logger.mock(),
     });
-    const action = createTemplateAction({
+    const action = createTemplateAction<
+      {
+        x?: (z1: typeof z) => z.ZodType;
+        y?: (z1: typeof z) => z.ZodType;
+        t: (z1: typeof z) => z.ZodType;
+      },
+      {
+        x: (z1: typeof z) => z.ZodType;
+        y: (z1: typeof z) => z.ZodType;
+        t: (z1: typeof z) => z.ZodType;
+      }
+    >({
       id: 'something:random',
       description: 'Just for demo',
       schema: {
         input: {
-          x: z => z.number().default(0),
-          y: z => z.string().default('Hello'),
-          t: z => z.string().transform(val => val.length)
+          x: z1 => z1.number().default(0),
+          y: z1 => z1.string().default('Hello'),
+          t: z1 => z1.string().transform(val => val.length),
         },
       },
       async handler(ctx) {
@@ -125,11 +137,13 @@ describe('createTemplateAction', () => {
     await action.handler({
       ...mockContext,
       input: {
-        t: 'Backstage'
+        t: 'Backstage',
       },
     });
     expect(mockContext.logger.info).toHaveBeenCalledWith('The value of x is 0');
-    expect(mockContext.logger.info).toHaveBeenCalledWith('The value of y is Hello');
+    expect(mockContext.logger.info).toHaveBeenCalledWith(
+      'The value of y is Hello',
+    );
     expect(mockContext.logger.info).toHaveBeenCalledWith('The value of t is 9');
-  })
+  });
 });

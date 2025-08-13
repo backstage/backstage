@@ -27,7 +27,7 @@ export const examples: TemplateExample[] = [
           name: 'Add labels to pull request or issue',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
-            number: '1',
+            number: 1,
             labels: ['bug'],
           },
         },
@@ -43,7 +43,7 @@ export const examples: TemplateExample[] = [
           name: 'Add labels to pull request or issue with token',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
-            number: '1',
+            number: 1,
             labels: ['bug', 'documentation'],
             token: 'gph_YourGitHubToken',
           },

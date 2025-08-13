@@ -26,6 +26,7 @@ import { createGithubIssuesLabelAction } from './githubIssuesLabel';
 import yaml from 'yaml';
 import { examples } from './githubIssuesLabel.examples';
 import { getOctokitOptions } from '../util';
+import { JsonObject } from '@backstage/types';
 
 jest.mock('../util', () => {
   return {
@@ -56,7 +57,7 @@ describe('github:issues:label examples', () => {
         { host: 'ghe.github.com' },
       ],
     },
-  });
+  } as JsonObject);
 
   const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
   const integrations = ScmIntegrations.fromConfig(config);
@@ -86,7 +87,7 @@ describe('github:issues:label examples', () => {
     expect(mockOctokit.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
-      issue_number: '1',
+      issue_number: 1,
       labels: ['bug'],
     });
 
@@ -102,7 +103,7 @@ describe('github:issues:label examples', () => {
     expect(mockOctokit.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
-      issue_number: '1',
+      issue_number: 1,
       labels: ['bug', 'documentation'],
     });
 

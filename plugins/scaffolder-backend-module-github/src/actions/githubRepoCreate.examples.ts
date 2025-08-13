@@ -149,7 +149,7 @@ export const examples: TemplateExample[] = [
           name: 'Create a new GitHub repository with squash merge commit title set to pull request title',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
-            squashMergeCommitTitle: 'pull_request_title',
+            squashMergeCommitTitle: 'PR_TITLE',
           },
         },
       ],
@@ -164,7 +164,7 @@ export const examples: TemplateExample[] = [
           name: 'Create a new GitHub repository with squash merge commit message set to blank',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
-            squashMergeCommitMessage: 'blank',
+            squashMergeCommitMessage: 'BLANK',
           },
         },
       ],
@@ -195,8 +195,8 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
             collaborators: [
-              { username: 'user1', permission: 'push' },
-              { username: 'user2', permission: 'push' },
+              { user: 'user1', access: 'push' },
+              { user: 'user2', access: 'push' },
             ],
           },
         },
@@ -227,10 +227,10 @@ export const examples: TemplateExample[] = [
           name: 'Create a new GitHub repository with secret variables',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
-            secrets: [
-              { name: 'SECRET_KEY', value: 'supersecretkey' },
-              { name: 'API_TOKEN', value: 'tokenvalue' },
-            ],
+            secrets: {
+              SECRET_KEY: 'supersecretkey',
+              API_TOKEN: 'tokenvalue',
+            },
           },
         },
       ],
@@ -380,8 +380,8 @@ export const examples: TemplateExample[] = [
             repoUrl: 'github.com?repo=repo&owner=owner',
             repoVisibility: 'private',
             collaborators: [
-              { username: 'admin1', permission: 'admin' },
-              { username: 'admin2', permission: 'admin' },
+              { user: 'admin1', access: 'admin' },
+              { user: 'admin2', access: 'admin' },
             ],
           },
         },
@@ -517,8 +517,8 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
             collaborators: [
-              { username: 'contributor1', permission: 'write' },
-              { username: 'contributor2', permission: 'write' },
+              { user: 'contributor1', access: 'write' },
+              { user: 'contributor2', access: 'write' },
             ],
             requiredStatusCheckContexts: ['ci/travis: build'],
           },
@@ -535,10 +535,10 @@ export const examples: TemplateExample[] = [
           name: 'Create a new GitHub repository with multiple secret variables',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
-            secrets: [
-              { name: 'SECRET_KEY_1', value: 'value1' },
-              { name: 'SECRET_KEY_2', value: 'value2' },
-            ],
+            secrets: {
+              SECRET_KEY_1: 'value1',
+              SECRET_KEY_2: 'value2',
+            },
           },
         },
       ],
@@ -636,8 +636,8 @@ export const examples: TemplateExample[] = [
             repoUrl: 'github.com?repo=repo&owner=owner',
             repoVisibility: 'private',
             collaborators: [
-              { username: 'admin1', permission: 'admin' },
-              { username: 'writer1', permission: 'write' },
+              { user: 'admin1', access: 'admin' },
+              { user: 'writer1', access: 'write' },
             ],
           },
         },
@@ -710,7 +710,7 @@ export const examples: TemplateExample[] = [
             allowMergeCommit: false,
             allowSquashMerge: true,
             allowRebaseMerge: false,
-            squashMergeCommitMessage: 'pull_request_description',
+            squashMergeCommitMessage: 'PR_BODY',
           },
         },
       ],
@@ -784,10 +784,10 @@ export const examples: TemplateExample[] = [
             repoUrl: 'github.com?repo=repo&owner=owner',
             repoVisibility: 'public',
             topics: ['javascript', 'react', 'frontend'],
-            secrets: [
-              { name: 'API_KEY', value: 'apikeyvalue' },
-              { name: 'DB_PASSWORD', value: 'dbpasswordvalue' },
-            ],
+            secrets: {
+              API_KEY: 'apikeyvalue',
+              DB_PASSWORD: 'dbpasswordvalue',
+            },
           },
         },
       ],
@@ -889,8 +889,8 @@ export const examples: TemplateExample[] = [
             repoUrl: 'github.com?repo=repo&owner=owner',
             homepage: 'https://example.com',
             collaborators: [
-              { username: 'user1', permission: 'push' },
-              { username: 'user2', permission: 'admin' },
+              { user: 'user1', access: 'push' },
+              { user: 'user2', access: 'admin' },
             ],
             topics: ['opensource', 'contribution'],
           },
@@ -961,13 +961,13 @@ export const examples: TemplateExample[] = [
           name: 'Create a new GitHub repository with multiple secret variables and collaborators',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
-            secrets: [
-              { name: 'API_SECRET', value: 'secretvalue' },
-              { name: 'DB_USER', value: 'dbuser' },
-            ],
+            secrets: {
+              API_SECRET: 'secretvalue',
+              DB_USER: 'dbuser',
+            },
             collaborators: [
-              { username: 'dev1', permission: 'write' },
-              { username: 'dev2', permission: 'push' },
+              { user: 'dev1', access: 'write' },
+              { user: 'dev2', access: 'push' },
             ],
           },
         },

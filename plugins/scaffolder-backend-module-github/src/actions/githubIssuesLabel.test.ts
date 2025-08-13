@@ -24,6 +24,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getOctokitOptions } from '../util';
+import { JsonObject } from '@backstage/types';
 
 jest.mock('../util', () => {
   return {
@@ -53,7 +54,7 @@ describe('github:issues:label', () => {
         { host: 'ghe.github.com' },
       ],
     },
-  });
+  } as JsonObject);
 
   const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
   const integrations = ScmIntegrations.fromConfig(config);
@@ -63,9 +64,9 @@ describe('github:issues:label', () => {
   const mockContext = createMockActionContext({
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
-      number: '1',
+      number: 1,
       labels: ['label1', 'label2'],
-    },
+    } as JsonObject,
   });
 
   beforeEach(() => {
@@ -92,7 +93,7 @@ describe('github:issues:label', () => {
     expect(mockOctokit.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
-      issue_number: '1',
+      issue_number: 1,
       labels: ['label1', 'label2'],
     });
     expect(getOctokitOptionsMock.mock.calls[0][0].token).toBeUndefined();
@@ -106,7 +107,7 @@ describe('github:issues:label', () => {
     expect(mockOctokit.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
-      issue_number: '1',
+      issue_number: 1,
       labels: ['label1', 'label2'],
     });
     expect(getOctokitOptionsMock.mock.calls[0][0].token).toEqual(

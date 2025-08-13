@@ -190,7 +190,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'github.com?repo=repository&owner=owner',
             name: 'envname',
-            deploymentBranchPolicy: null,
+            deploymentBranchPolicy: undefined,
           },
         },
       ],

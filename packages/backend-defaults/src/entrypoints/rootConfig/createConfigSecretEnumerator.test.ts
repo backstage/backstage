@@ -17,6 +17,7 @@
 import { loadConfigSchema } from '@backstage/config-loader';
 import { createConfigSecretEnumerator } from './createConfigSecretEnumerator';
 import { mockServices } from '@backstage/backend-test-utils';
+import { JsonObject } from '@backstage/types';
 
 describe('createConfigSecretEnumerator', () => {
   it('should enumerate secrets', async () => {
@@ -29,7 +30,7 @@ describe('createConfigSecretEnumerator', () => {
       mockServices.rootConfig({
         data: {
           backend: { auth: { keys: [{ secret: 'my-secret-password' }] } },
-        },
+        } as JsonObject,
       }),
     );
     expect(Array.from(secrets)).toEqual(['my-secret-password']);
@@ -57,7 +58,7 @@ describe('createConfigSecretEnumerator', () => {
             },
           ],
           backstageConfigSchemaVersion: 1,
-        },
+        } as JsonObject,
       }),
     });
 

@@ -56,7 +56,7 @@ describe('NunjucksWorkflowRunner', () => {
       integrations: {
         github: [{ host: 'github.com', token: 'token' }],
       },
-    }),
+    } as JsonObject),
   );
 
   const credentials = mockCredentials.user();
@@ -540,7 +540,7 @@ describe('NunjucksWorkflowRunner', () => {
             name: 'name',
             action: 'jest-mock-action',
             input: {
-              number: '${{parameters.number}}',
+              number: parseInt('${{parameters.number}}', 10),
               string: '${{parameters.string}}',
             },
           },

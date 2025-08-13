@@ -47,6 +47,7 @@ import { createPublishGithubAction } from './github';
 import { examples } from './github.examples';
 import yaml from 'yaml';
 import { entityRefToName } from './gitHelpers';
+import { JsonObject } from '@backstage/types';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
@@ -92,7 +93,7 @@ describe('publish:github', () => {
         { host: 'ghe.github.com' },
       ],
     },
-  });
+  } as JsonObject);
 
   const { entityRefToName: realFamiliarizeEntityName } =
     jest.requireActual('./helpers');

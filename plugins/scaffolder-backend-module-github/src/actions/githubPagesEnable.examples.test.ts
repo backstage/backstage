@@ -25,6 +25,7 @@ import {
 import { createGithubPagesEnableAction } from './githubPagesEnable';
 import { examples } from './githubPagesEnable.examples';
 import yaml from 'yaml';
+import { JsonObject } from '@backstage/types';
 
 const mockOctokit = {
   request: jest.fn(),
@@ -46,7 +47,7 @@ describe('github:pages', () => {
         { host: 'ghe.github.com' },
       ],
     },
-  });
+  } as JsonObject);
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
@@ -280,7 +281,7 @@ describe('github:pages', () => {
         build_type: 'legacy',
         source: {
           branch: 'main',
-          path: '/custom-path',
+          path: '/docs',
         },
         headers: {
           'X-GitHub-Api-Version': '2022-11-28',
@@ -311,7 +312,7 @@ describe('github:pages', () => {
         build_type: 'workflow',
         source: {
           branch: 'feature-branch',
-          path: '/project-docs',
+          path: '/docs',
         },
         headers: {
           'X-GitHub-Api-Version': '2022-11-28',
@@ -373,7 +374,7 @@ describe('github:pages', () => {
         build_type: 'workflow',
         source: {
           branch: 'main',
-          path: '/site',
+          path: '/docs',
         },
         headers: {
           'X-GitHub-Api-Version': '2022-11-28',
@@ -435,7 +436,7 @@ describe('github:pages', () => {
         build_type: 'workflow',
         source: {
           branch: 'docs-branch',
-          path: '/docs-site',
+          path: '/docs',
         },
         headers: {
           'X-GitHub-Api-Version': '2022-11-28',

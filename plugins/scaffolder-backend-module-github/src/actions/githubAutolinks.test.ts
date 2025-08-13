@@ -24,6 +24,7 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createGithubAutolinksAction } from './githubAutolinks';
+import { JsonObject } from '@backstage/types';
 
 import { Octokit } from 'octokit';
 
@@ -47,7 +48,7 @@ describe('github:autolinks:create', () => {
         { host: 'ghe.github.com' },
       ],
     },
-  });
+  } as JsonObject);
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
@@ -67,6 +68,8 @@ describe('github:autolinks:create', () => {
     const mockContext = createMockActionContext({
       input: {
         repoUrl: 'github.com?repo=repo&owner=owner',
+        keyPrefix: 'TICKET-',
+        urlTemplate: 'https://example.com/TICKET?query=<num>',
       },
       workspacePath,
     });

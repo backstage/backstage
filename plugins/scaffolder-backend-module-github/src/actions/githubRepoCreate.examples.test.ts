@@ -34,6 +34,7 @@ import { createGithubRepoCreateAction } from './githubRepoCreate';
 import { entityRefToName } from './gitHelpers';
 import yaml from 'yaml';
 import { examples } from './githubRepoCreate.examples';
+import { JsonObject } from '@backstage/types';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
@@ -76,7 +77,7 @@ describe('github:repo:create examples', () => {
         { host: 'ghe.github.com' },
       ],
     },
-  });
+  } as JsonObject);
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
@@ -448,7 +449,7 @@ describe('github:repo:create examples', () => {
       private: true,
       delete_branch_on_merge: false,
       allow_squash_merge: true,
-      squash_merge_commit_title: 'pull_request_title',
+      squash_merge_commit_title: 'PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
       custom_properties: undefined,
@@ -492,7 +493,7 @@ describe('github:repo:create examples', () => {
       delete_branch_on_merge: false,
       allow_squash_merge: true,
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
-      squash_merge_commit_message: 'blank',
+      squash_merge_commit_message: 'BLANK',
       allow_update_branch: false,
       custom_properties: undefined,
       allow_merge_commit: true,
@@ -1868,7 +1869,7 @@ describe('github:repo:create examples', () => {
       delete_branch_on_merge: false,
       allow_squash_merge: true,
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
-      squash_merge_commit_message: 'pull_request_description',
+      squash_merge_commit_message: 'PR_BODY',
       allow_update_branch: false,
       custom_properties: undefined,
       allow_merge_commit: false,

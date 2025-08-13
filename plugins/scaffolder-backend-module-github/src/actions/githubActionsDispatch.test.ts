@@ -25,6 +25,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
 
 import { Octokit } from 'octokit';
+import { JsonObject } from '@backstage/types';
 
 const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
@@ -46,7 +47,7 @@ describe('github:actions:dispatch', () => {
         { host: 'ghe.github.com' },
       ],
     },
-  });
+  } as JsonObject);
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
@@ -114,7 +115,7 @@ describe('github:actions:dispatch', () => {
     const repoUrl = 'github.com?repo=repo&owner=owner';
     const workflowId = 'dispatch_workflow';
     const branchOrTagName = 'main';
-    const workflowInputs = '{ "foo": "bar" }';
+    const workflowInputs = { foo: 'bar' };
     const ctx = Object.assign({}, mockContext, {
       input: { repoUrl, workflowId, branchOrTagName, workflowInputs },
     });

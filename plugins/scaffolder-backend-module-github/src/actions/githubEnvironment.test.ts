@@ -23,6 +23,7 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 
 import { Octokit } from 'octokit';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { JsonObject } from '@backstage/types';
 
 const octokitMock = Octokit as unknown as jest.Mock;
 
@@ -61,7 +62,7 @@ describe('github:environment:create', () => {
         { host: 'ghe.github.com' },
       ],
     },
-  });
+  } as JsonObject);
 
   const integrations = ScmIntegrations.fromConfig(config);
   const mockCatalogService = catalogServiceMock.mock();

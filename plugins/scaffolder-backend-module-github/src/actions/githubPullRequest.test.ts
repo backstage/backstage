@@ -615,6 +615,10 @@ describe('createPublishGithubPullRequestAction', () => {
         title: 'Create my new app',
         head: 'new-app',
         body: 'This PR is really good',
+        createWhenEmpty: undefined,
+        draft: undefined,
+        forceFork: undefined,
+        update: undefined,
         changes: [
           {
             commit: 'Create my new app',
@@ -664,6 +668,10 @@ describe('createPublishGithubPullRequestAction', () => {
         title: 'Create my new app',
         head: 'new-app',
         body: 'This PR is really good',
+        createWhenEmpty: undefined,
+        draft: undefined,
+        forceFork: undefined,
+        update: undefined,
         changes: [
           {
             commit: 'Create my new app',
@@ -714,6 +722,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
       ctx = createMockActionContext({ input, workspacePath });
     });
+
     it('creates a pull request', async () => {
       await instance.handler(ctx);
 
@@ -723,6 +732,10 @@ describe('createPublishGithubPullRequestAction', () => {
         title: 'Create my new app',
         head: 'new-app',
         body: 'This PR is really good',
+        createWhenEmpty: undefined,
+        draft: undefined,
+        forceFork: undefined,
+        update: undefined,
         changes: [
           {
             commit: 'Create my new app',
