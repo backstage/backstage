@@ -25,7 +25,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { Writable } from 'stream';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ContainerRunner } from './ContainerRunner';
-import {ZodError} from "zod";
+import { ZodError } from 'zod';
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
@@ -120,20 +120,20 @@ describe('fetch:cookiecutter', () => {
     });
   });
 
-  it('should throw an error when copyWithoutRender is not an array', () => {
+  it('should throw an error when copyWithoutRender is not an array', async () => {
     (mockContext.input as any).copyWithoutRender = 'not an array';
 
-    expect(Promise.resolve().then(
-      () => action.handler(mockContext))
-    ).rejects.toBeInstanceOf(ZodError)
+    await expect(
+      Promise.resolve().then(() => action.handler(mockContext)),
+    ).rejects.toBeInstanceOf(ZodError);
   });
 
-  it('should throw an error when extensions is not an array', () => {
+  it('should throw an error when extensions is not an array', async () => {
     (mockContext.input as any).extensions = 'not an array';
 
-    expect(Promise.resolve().then(
-      () => action.handler(mockContext))
-    ).rejects.toBeInstanceOf(ZodError)
+    await expect(
+      Promise.resolve().then(() => action.handler(mockContext)),
+    ).rejects.toBeInstanceOf(ZodError);
   });
 
   it('should call fetchContents with the correct variables', async () => {
