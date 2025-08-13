@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/verify_storybook.yml'
-      - 'storybook/**'
+      - '.storybook/**'
       - 'packages/ui/src/**'
       - 'packages/config/src/**'
       - 'packages/theme/src/**'
@@ -49,15 +49,6 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
-      - name: Clean up storybook conflicting files
-        run: |
-          rm -rf storybook/node_modules
-          echo "" > storybook/yarn.lock
-
-      - name: Install Storybook dependencies
-        run: yarn install --immutable
-        working-directory: storybook
-
       - name: Build Storybook
         run: yarn build-storybook
 
@@ -68,5 +59,4 @@ jobs:
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: chpt_dab72dc0f97d55b
-          workingDir: storybook
-          storybookBuildDir: dist
+          storybookBuildDir: storybook-static
