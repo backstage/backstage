@@ -55,6 +55,13 @@ List the specific goals of the BEP. What is it trying to achieve? How will we
 know that this has succeeded?
 -->
 
+Primary high level goals:
+
+- External systems that want to react to changes to entities in the catalog can subscribe to history events and get near-realtime updates, so that they can avoid resorting to polling.
+- End users and administrators can see the historical changes to an entity and related items in the catalog, to understand the "why" of its contents.
+
+Lower level summary of goals:
+
 - The catalog should internally track important history events, at least including create/update/delete of entities (as seen on the public API side), and create/update/delete of locations. This tracking must be reliable including complex cases like cascading deletes, and persistent.
 - The catalog should be able to push those history events to the events backend, for easy consumption by other Backstage backend plugins or translation into notifications etc.
 - It should be an open possibility to later easily write integrations that push those history events to any other event system, such as PubSub or SQS.
@@ -64,6 +71,10 @@ know that this has succeeded?
 - History events should contain enough metadata to be usefully possible to correlate to things around the catalog. For example, events that are related to a given entity ID / entity ref / URL location should persist those to be able to easily request those events in a context.
 - History events should retain the actual historic shapes of the entity body itself, since this allows for more use cases of understanding what happened over time to an entity.
 - The events endpoints should be covered by permissions.
+
+Possibly desirable goals, still under discussion:
+
+- Make the history feature robust and complete enough to implement perfect application level replication of the catalog contents.
 
 ### Non-Goals
 
