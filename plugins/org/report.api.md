@@ -40,6 +40,7 @@ export const EntityOwnershipCard: (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
+  scrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -101,6 +102,7 @@ export const OwnershipCard: (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
+  scrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)

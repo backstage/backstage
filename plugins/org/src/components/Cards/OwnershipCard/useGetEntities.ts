@@ -184,7 +184,7 @@ export function useGetEntities(
   entity: Entity,
   relationAggregation: EntityRelationAggregation,
   entityFilterKind?: string[],
-  entityLimit = 6,
+  entityLimit?: number,
 ): {
   componentsWithCounters:
     | {

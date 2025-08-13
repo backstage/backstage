@@ -28,6 +28,7 @@ import { ComponentsGrid } from './ComponentsGrid';
 import { EntityRelationAggregation } from '../types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../translation';
+import Box from '@material-ui/core/Box';
 
 /** @public */
 export type OwnershipCardClassKey =
@@ -73,6 +74,11 @@ const useStyles = makeStyles(
         overflowY: 'auto',
         marginTop: 0,
       },
+      box: {
+        overflowY: 'auto',
+        padding: theme.spacing(0, 1, 1),
+        margin: theme.spacing(0, -1),
+      },
     }),
   {
     name: 'PluginOrgOwnershipCard',
@@ -88,16 +94,20 @@ export const OwnershipCard = (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
+  scrollHeight?: string;
 }) => {
   const {
     variant,
     entityFilterKind,
     hideRelationsToggle,
-    entityLimit = 6,
+    entityLimit,
+    scrollHeight: propScrollHeight = '292px',
   } = props;
   const relationAggregation = props.relationAggregation ?? props.relationsType;
   const relationsToggle =
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
+  const scrollHeight =
+    entityLimit || variant === 'fullHeight' ? 'none' : propScrollHeight;
   const classes = useStyles();
   const { entity } = useEntity();
   const { t } = useTranslationRef(orgTranslationRef);
@@ -165,13 +175,15 @@ export const OwnershipCard = (props: {
           </ListItem>
         </List>
       )}
-      <ComponentsGrid
-        className={classes.grid}
-        entity={entity}
-        entityLimit={entityLimit}
-        relationAggregation={getRelationAggregation}
-        entityFilterKind={entityFilterKind}
-      />
+      <Box maxHeight={scrollHeight} className={classes.box}>
+        <ComponentsGrid
+          className={classes.grid}
+          entity={entity}
+          entityLimit={entityLimit}
+          relationAggregation={getRelationAggregation}
+          entityFilterKind={entityFilterKind}
+        />
+      </Box>
     </InfoCard>
   );
 };
