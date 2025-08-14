@@ -66,9 +66,20 @@ describe('migrations', () => {
         },
       );
 
-      function rows(): Promise<EventsTableRow[]> {
+      function eventRows(): Promise<EventsTableRow[]> {
         return knex('history_events')
           .orderBy('event_id')
+          .then(r =>
+            r.map(row => ({
+              ...row,
+              event_id: String(row.event_id),
+            })),
+          );
+      }
+
+      function summaryRows(): Promise<EventsTableRow[]> {
+        return knex('history_entity_summary')
+          .orderBy('entity_ref')
           .then(r =>
             r.map(row => ({
               ...row,
@@ -103,7 +114,7 @@ describe('migrations', () => {
       provider.addEntity(entity);
 
       await waitFor(async () => {
-        await expect(rows()).resolves.toEqual([
+        await expect(eventRows()).resolves.toEqual([
           {
             event_id: '1',
             event_at: expect.anything(),
@@ -117,6 +128,12 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io',
           },
         ]);
+        await expect(summaryRows()).resolves.toEqual([
+          {
+            entity_ref: entityRef,
+            event_id: '1',
+          },
+        ]);
       });
 
       // Expect that an update of the entity leads to an event
@@ -124,7 +141,7 @@ describe('migrations', () => {
       provider.addEntity(entity);
 
       await waitFor(async () => {
-        await expect(rows()).resolves.toEqual([
+        await expect(eventRows()).resolves.toEqual([
           {
             event_id: '1',
             event_at: expect.anything(),
@@ -150,6 +167,12 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io',
           },
         ]);
+        await expect(summaryRows()).resolves.toEqual([
+          {
+            entity_ref: entityRef,
+            event_id: '2',
+          },
+        ]);
       });
 
       // Expect that changes of unrelated columns do NOT lead to events
@@ -157,7 +180,7 @@ describe('migrations', () => {
         .update({ stitch_ticket: 'NEW VALUE' })
         .where({ entity_id: 'my-id' });
 
-      await expect(rows()).resolves.toEqual([
+      await expect(eventRows()).resolves.toEqual([
         {
           event_id: '1',
           event_at: expect.anything(),
@@ -183,12 +206,18 @@ describe('migrations', () => {
           location_ref: 'url:https://backstage.io',
         },
       ]);
+      await expect(summaryRows()).resolves.toEqual([
+        {
+          entity_ref: entityRef,
+          event_id: '2',
+        },
+      ]);
 
       // Expect that a deletion of the final entity leads to an event
       provider.removeEntity(entityRef);
 
       await waitFor(async () => {
-        await expect(rows()).resolves.toEqual([
+        await expect(eventRows()).resolves.toEqual([
           {
             event_id: '1',
             event_at: expect.anything(),
@@ -226,9 +255,16 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io',
           },
         ]);
+        await expect(summaryRows()).resolves.toEqual([
+          {
+            entity_ref: entityRef,
+            event_id: '3',
+          },
+        ]);
       });
 
       // Make a clean slate for location testing
+      await knex('history_entity_summary').delete();
       await knex('history_events').delete();
 
       await knex('locations').insert({
@@ -238,7 +274,7 @@ describe('migrations', () => {
       });
 
       await waitFor(async () => {
-        await expect(rows()).resolves.toEqual([
+        await expect(eventRows()).resolves.toEqual([
           {
             event_id: '4',
             event_at: expect.anything(),
@@ -262,7 +298,7 @@ describe('migrations', () => {
         .where('id', '=', 'b07a8526-0025-47e9-bf3b-f47ac94692c2');
 
       await waitFor(async () => {
-        await expect(rows()).resolves.toEqual([
+        await expect(eventRows()).resolves.toEqual([
           expect.objectContaining({ event_id: '4' }),
           {
             event_id: '5',
@@ -284,7 +320,7 @@ describe('migrations', () => {
         .where('id', '=', 'b07a8526-0025-47e9-bf3b-f47ac94692c2');
 
       await waitFor(async () => {
-        await expect(rows()).resolves.toEqual([
+        await expect(eventRows()).resolves.toEqual([
           expect.objectContaining({ event_id: '4' }),
           expect.objectContaining({ event_id: '5' }),
           {

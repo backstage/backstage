@@ -155,6 +155,7 @@ describe('GetEventsModelImpl', () => {
               eventAt: expect.any(Date),
               entityRef: 'k:ns/foo',
               entityId: 'id-foo',
+              entityJsonBefore: '{"data":2}',
               entityJson: '{"data":3}',
             },
             {
@@ -163,6 +164,7 @@ describe('GetEventsModelImpl', () => {
               eventAt: expect.any(Date),
               entityRef: 'k:ns/foo',
               entityId: 'id-foo',
+              entityJsonBefore: '{"data":1}',
               entityJson: '{"data":2}',
             },
           ],

@@ -20,6 +20,14 @@ import lodash from 'lodash';
 
 export interface HistoryConfig {
   /**
+   * Whether to publish history events onto the Backstage events-backend bus, on
+   * the 'backstage.catalog.history.event' topic.
+   *
+   * @defaultValue false
+   */
+  publishEvents: boolean;
+
+  /**
    * The amount of time that a blocked call is held by default while waiting for
    * events.
    */
@@ -75,6 +83,7 @@ export interface HistoryConfig {
 }
 
 const defaults: HistoryConfig = {
+  publishEvents: false,
   blockDuration:
     process.env.NODE_ENV === 'test' ? { seconds: 3 } : { seconds: 10 },
   blockPollFrequency:
@@ -96,6 +105,9 @@ export function getHistoryConfig(options?: {
   }
 
   const configured: Partial<HistoryConfig> = {
+    publishEvents: options?.config?.getOptionalBoolean(
+      'catalog.history.publishEvents.enabled',
+    ),
     eventMaxRetentionTime: optionalDuration(
       'catalog.history.eventMaxRetentionTime',
     ),

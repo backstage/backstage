@@ -52,7 +52,11 @@ export class HistoryEventEmitter {
       options.historyConfig,
     );
 
-    emitter.start();
+    if (options.historyConfig.publishEvents) {
+      options.lifecycle.addStartupHook(() => {
+        emitter.start();
+      });
+    }
 
     return emitter;
   }

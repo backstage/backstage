@@ -71,6 +71,33 @@ exports.up = async function up(knex) {
   });
 
   /*
+   * Entity summary table, keeping track of the latest history state of each
+   * entity. This rolls up all types of event, such that e.g. a change event
+   * followed by a deletion followed by the creation of a new entity with the
+   * same ref but a different UID, will only be seen as a single creation if
+   * you are polling this table.
+   */
+
+  await knex.schema.createTable('history_entity_summary', table => {
+    // Note that this deliberately does not foreign key into final_entities,
+    // because we want to retain summary entries even after deletions. This
+    // allows consumers to detect deletion events later down the line.
+    table
+      .string('entity_ref')
+      .notNullable()
+      .primary()
+      .comment('The relevant entity ref');
+    table
+      .bigInteger('event_id')
+      .unsigned()
+      .notNullable()
+      .references('event_id')
+      .inTable('history_events')
+      .comment('ID of the latest history event for this entity');
+    table.index('event_id', 'history_entity_summary_event_id_idx');
+  });
+
+  /*
    * Postgres triggers
    */
 
@@ -151,6 +178,24 @@ exports.up = async function up(knex) {
       CREATE TRIGGER final_entities_history
       AFTER INSERT OR DELETE OR UPDATE OF final_entity ON final_entities
       FOR EACH ROW EXECUTE PROCEDURE final_entities_history();
+    `);
+    await knex.schema.raw(`
+      CREATE FUNCTION history_events_summary()
+      RETURNS trigger AS $$
+      BEGIN
+        IF (NEW.entity_ref IS NOT NULL) THEN
+          INSERT INTO history_entity_summary (entity_ref, event_id)
+          VALUES (NEW.entity_ref, NEW.event_id)
+          ON CONFLICT (entity_ref) DO UPDATE SET event_id = NEW.event_id;
+        END IF;
+        RETURN null;
+      END;
+      $$ LANGUAGE plpgsql;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary
+      AFTER INSERT ON history_events
+      FOR EACH ROW EXECUTE PROCEDURE history_events_summary();
     `);
     await knex.schema.raw(`
       CREATE FUNCTION locations_history()
@@ -244,6 +289,17 @@ exports.up = async function up(knex) {
           OLD.final_entity,
           json_extract(OLD.final_entity, '$.metadata.annotations."backstage.io/managed-by-location"')
         );
+      END;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      WHEN (NEW.entity_ref IS NOT NULL)
+      BEGIN
+        INSERT INTO history_entity_summary (entity_ref, event_id)
+        VALUES (NEW.entity_ref, NEW.event_id)
+        ON CONFLICT (entity_ref) DO UPDATE SET event_id = NEW.event_id;
       END;
     `);
     await knex.schema.raw(`
@@ -348,6 +404,16 @@ exports.up = async function up(knex) {
       END IF;
     `);
     await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      IF (NEW.entity_ref IS NOT NULL) THEN
+        INSERT INTO history_entity_summary (entity_ref, event_id)
+        VALUES (NEW.entity_ref, NEW.event_id)
+        ON DUPLICATE KEY UPDATE event_id = VALUES(event_id);
+      END IF;
+    `);
+    await knex.schema.raw(`
       CREATE TRIGGER locations_history_location_created
       AFTER INSERT ON locations
       FOR EACH ROW
@@ -394,6 +460,12 @@ exports.down = async function down(knex) {
       DROP FUNCTION final_entities_history;
     `);
     await knex.schema.raw(`
+      DROP TRIGGER history_events_summary ON history_events;
+    `);
+    await knex.schema.raw(`
+      DROP FUNCTION history_events_summary;
+    `);
+    await knex.schema.raw(`
       DROP TRIGGER locations_history ON locations;
     `);
     await knex.schema.raw(`
@@ -408,6 +480,9 @@ exports.down = async function down(knex) {
     `);
     await knex.schema.raw(`
       DROP TRIGGER final_entities_history_entity_deleted;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary;
     `);
     await knex.schema.raw(`
       DROP TRIGGER locations_history_location_created;
@@ -432,6 +507,9 @@ exports.down = async function down(knex) {
       DROP TRIGGER final_entities_history_entity_deleted;
     `);
     await knex.schema.raw(`
+      DROP TRIGGER history_events_summary;
+    `);
+    await knex.schema.raw(`
       DROP TRIGGER locations_history_location_created;
     `);
     await knex.schema.raw(`
@@ -441,5 +519,6 @@ exports.down = async function down(knex) {
       DROP TRIGGER locations_history_location_deleted;
     `);
   }
+  await knex.schema.dropTable('history_entity_summary');
   await knex.schema.dropTable('history_events');
 };

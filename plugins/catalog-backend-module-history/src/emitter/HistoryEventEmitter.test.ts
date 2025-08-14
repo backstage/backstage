@@ -38,7 +38,7 @@ describe('HistoryEventEmitter', () => {
       const lifecycle = mockServices.lifecycle.mock();
       const events = mockServices.events.mock();
 
-      HistoryEventEmitter.create({
+      const emitter = await HistoryEventEmitter.create({
         knexPromise: Promise.resolve(knex),
         lifecycle,
         logger,
@@ -50,6 +50,8 @@ describe('HistoryEventEmitter', () => {
           },
         }),
       });
+
+      emitter.start();
 
       await sleep({ seconds: 1 });
 

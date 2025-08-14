@@ -24,7 +24,12 @@ export async function runJanitorCleanup(
 ) {
   if (historyConfig.eventMaxRetentionTime) {
     const deadline = knexRawNowMinus(knex, historyConfig.eventMaxRetentionTime);
-    await knex('history_events').where('event_at', '<', deadline).delete();
+    await knex('history_events')
+      .where('event_at', '<', deadline)
+      .whereNotIn('event_id', inner =>
+        inner.select('event_id').from('history_entity_summary'),
+      )
+      .delete();
   }
 
   if (historyConfig.eventRetentionTimeAfterDeletion) {
@@ -58,6 +63,11 @@ export async function runJanitorCleanup(
           .select('deleted.entity_ref')
           .from('deleted')
           .where('deleted.newest_event_at', '<', deadline),
+      )
+      .whereNotIn('history_events.event_id', inner =>
+        inner
+          .select('history_entity_summary.event_id')
+          .from('history_entity_summary'),
       )
       .delete();
   }

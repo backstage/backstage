@@ -23,6 +23,19 @@ export interface Config {
      */
     history?: {
       /**
+       * Controls the settings for the history event publishing.
+       */
+      publishEvents?: {
+        /**
+         * Whether to publish history events onto the Backstage events-backend
+         * bus, on the 'backstage.catalog.history.event' topic.
+         *
+         * @defaultValue false
+         */
+        enabled?: boolean;
+      };
+
+      /**
        * The maximum amount of time that catalog history events are retained.
        *
        * @remarks

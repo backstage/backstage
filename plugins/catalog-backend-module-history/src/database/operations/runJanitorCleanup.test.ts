@@ -53,6 +53,7 @@ describe('runJanitorCleanup', () => {
         });
 
         // Start with a clean slate for the test
+        await knex('history_entity_summary').delete();
         await knex('history_events').delete();
 
         const recently = knex.fn.now();
@@ -143,6 +144,7 @@ describe('runJanitorCleanup', () => {
         });
 
         // Start with a clean slate for the test
+        await knex('history_entity_summary').delete();
         await knex('history_events').delete();
 
         const recently = knex.fn.now();
@@ -234,6 +236,7 @@ describe('runJanitorCleanup', () => {
         ).resolves.toEqual([
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
+          { entity_ref: 'k:ns/only-older-than-deadline' }, // this is retained only because the summary table refers to it as the latest one
           { entity_ref: 'k:ns/some-older-some-newer-than-deadline' },
           { entity_ref: 'k:ns/some-older-some-newer-than-deadline' },
           { entity_ref: 'k:ns/only-newer-than-deadline' },
