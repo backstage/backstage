@@ -186,4 +186,4 @@ docs.json
 tsconfig.typedoc.tmp.json
 
 # Storybook
-storybook-static/
+dist-storybook/
