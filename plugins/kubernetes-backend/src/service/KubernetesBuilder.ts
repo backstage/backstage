@@ -462,7 +462,9 @@ export class KubernetesBuilder {
       aws: new AwsIamStrategy({ config: this.env.config }),
       azure: new AzureIdentityStrategy(this.env.logger),
       google: new GoogleStrategy(),
-      googleServiceAccount: new GoogleServiceAccountStrategy(),
+      googleServiceAccount: new GoogleServiceAccountStrategy({
+        config: this.env.config,
+      }),
       localKubectlProxy: new AnonymousStrategy(),
       oidc: new OidcStrategy(),
       serviceAccount: new ServiceAccountStrategy(),
