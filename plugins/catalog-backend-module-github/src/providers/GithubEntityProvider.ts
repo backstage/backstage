@@ -348,7 +348,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onPush(event: PushEvent) {
-    const organizations = await this.getOrganizations(); // TODO: make sure they are lowercase
+    const organizations = (await this.getOrganizations()).map(org =>
+      org.toLocaleLowerCase('en-US'),
+    );
     const eventOrganization =
       event.organization?.login.toLocaleLowerCase('en-US');
 
@@ -435,7 +437,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onRepoChange(event: RepositoryEvent) {
-    const organizations = await this.getOrganizations(); // TODO: make sure they are lowercase
+    const organizations = (await this.getOrganizations()).map(org =>
+      org.toLocaleLowerCase('en-US'),
+    );
     const eventOrganization =
       event.organization?.login.toLocaleLowerCase('en-US');
 
