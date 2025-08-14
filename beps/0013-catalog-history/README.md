@@ -59,6 +59,7 @@ Primary high level goals:
 
 - External systems that want to react to changes to entities in the catalog can subscribe to history events and get near-realtime updates, so that they can avoid resorting to polling.
 - End users and administrators can see the historical changes to an entity and related items in the catalog, to understand the "why" of its contents.
+- Make the history feature robust and complete enough to implement perfect application level replication of the catalog contents.
 
 Lower level summary of goals:
 
@@ -71,10 +72,6 @@ Lower level summary of goals:
 - History events should contain enough metadata to be usefully possible to correlate to things around the catalog. For example, events that are related to a given entity ID / entity ref / URL location should persist those to be able to easily request those events in a context.
 - History events should retain the actual historic shapes of the entity body itself, since this allows for more use cases of understanding what happened over time to an entity.
 - The events endpoints should be covered by permissions.
-
-Possibly desirable goals, still under discussion:
-
-- Make the history feature robust and complete enough to implement perfect application level replication of the catalog contents.
 
 ### Non-Goals
 
@@ -105,9 +102,11 @@ Add a new history events table to the catalog database. The table has an auto-in
 
 Add triggers to the `locations` and `final_entities` tables, and specifically to changes to the `final_entity` column in the latter. These triggers add history events accordingly, and send `PG_NOTIFY` signals.
 
+Add a history summary table to the catalog database. Whenever a history entry is added, this table gets updated with the latest event state. This table can be used to quickly ask for a rollup summary of everything you need to update yourself with since any given previous point in the history.
+
 Add a history subscriptions table to the catalog database. This is essentially a place to globally track the progress and filter rules of individual subscribers. It also allows for acknowledgement-based locking, so that even distributed consumers are able to easily read from a subscription all together without synchronizing among themselves.
 
-Add an internal history exporter to the catalog, which leverages the history subscriptions feature to "pump" entries from the history events table as they happen to the events backend where other parts of the Backstage ecosystem can consume them.
+Add an internal history exporter to the catalog, which leverages the history subscriptions feature to "pump" entries from the history events table as they happen to the events backend where other parts of the Backstage ecosystem can consume them. This feature can be turned on and off with a config flag.
 
 Add a REST API to make direct filtered reads of the history table. This API can have an optional "blocking" feature like the events backend does, to let consumers both just quickly read events as well as long poll for new ones as they happen.
 
@@ -139,6 +138,13 @@ The following is the proposed shape of the history events table.
 Triggers `AFTER INSERT OR DELETE OR UPDATE OF final_entity ON final_entities` and `AFTER INSERT OR DELETE OR UPDATE ON locations` are added. These lead to the automatic `INSERT` of a corresponding new history event in the events table. At the same time, a `NOTIFY` signal is sent on the Postgres engine.
 
 Add a REST API to read from the history table directly, on `/history/v1/events`. This allows the consumption of events, optionally with filtering on the available columns above so that you could for example grab the complete history of a given entity, or events on a certain organization URL. This API optionally supports blocking long-poll reads so that you can reliably both read the currently existing history and then stream in whatever happens after that point on. The underlying database mechanisms use Postgres `LISTEN`/`NOTIFY` to efficiently know when to unblock pending blocked readers.
+
+The following is the proposed shape of the history entity summary table.
+
+| column       | type    | description                                                   |
+| ------------ | ------- | ------------------------------------------------------------- |
+| `entity_ref` | string  | The relevant entity ref                                       |
+| `event_id`   | big int | A foreign reference to the last encountered relevant event ID |
 
 The following is the proposed shape of the history subscriptions table.
 
