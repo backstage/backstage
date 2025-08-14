@@ -100,14 +100,13 @@ export const OwnershipCard = (props: {
     variant,
     entityFilterKind,
     hideRelationsToggle,
-    entityLimit,
-    scrollHeight: propScrollHeight = '292px',
+    entityLimit = 6,
+    scrollHeight: propScrollHeight,
   } = props;
   const relationAggregation = props.relationAggregation ?? props.relationsType;
   const relationsToggle =
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
-  const scrollHeight =
-    entityLimit || variant === 'fullHeight' ? 'none' : propScrollHeight;
+  const scrollHeight = variant !== 'fullHeight' ? propScrollHeight : undefined;
   const classes = useStyles();
   const { entity } = useEntity();
   const { t } = useTranslationRef(orgTranslationRef);

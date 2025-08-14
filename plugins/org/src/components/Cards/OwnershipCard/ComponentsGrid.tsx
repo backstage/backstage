@@ -124,7 +124,7 @@ export const ComponentsGrid = ({
   relationsType,
   relationAggregation,
   entityFilterKind,
-  entityLimit,
+  entityLimit = 6,
 }: {
   className?: string;
   entity: Entity;
