@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Content, AlertDisplay } from '@backstage/core-components';
 import { apis } from './support/apis';
-import type { Decorator, Preview } from '@storybook/react';
-import { useGlobals } from '@storybook/preview-api';
+import type { Decorator, Preview } from '@storybook/react-vite';
+import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
 
 // Default Backstage theme CSS (from packages/ui)
@@ -52,20 +52,24 @@ const preview: Preview = {
   },
   parameters: {
     layout: 'fullscreen',
+
     backgrounds: {
       disable: true,
     },
+
     controls: {
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/i,
       },
     },
+
     options: {
       storySort: {
         order: ['Backstage UI', 'Plugins', 'Layout', 'Navigation'],
       },
     },
+
     viewport: {
       viewports: {
         initial: {
@@ -81,6 +85,10 @@ const preview: Preview = {
           styles: { width: '1536px', height: '100%' },
         },
       },
+    },
+
+    docs: {
+      codePanel: true,
     },
   },
   decorators: [

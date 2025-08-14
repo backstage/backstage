@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj, StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
 import { HeaderMenuItem, HeaderTab } from './types';
 import { Button } from '../Button';
