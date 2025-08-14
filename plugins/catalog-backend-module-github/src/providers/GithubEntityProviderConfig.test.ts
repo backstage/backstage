@@ -111,13 +111,20 @@ describe('readProviderConfigs', () => {
                 },
               },
             },
+            providerAppOnly: {
+              app: '1234',
+            },
+            providerAppAndOrganization: {
+              app: '1234',
+              organization: 'test-org1',
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(10);
+    expect(providerConfigs).toHaveLength(12);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -313,6 +320,45 @@ describe('readProviderConfigs', () => {
       },
       validateLocationsExist: false,
     });
+    expect(providerConfigs[10]).toEqual({
+      id: 'providerAppOnly',
+      app: 1234,
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: undefined,
+        allowArchived: false,
+      },
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
+      validateLocationsExist: false,
+    });
+    expect(providerConfigs[11]).toEqual({
+      id: 'providerAppAndOrganization',
+      app: 1234,
+      organization: 'test-org1',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: undefined,
+        allowArchived: false,
+      },
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
+      validateLocationsExist: false,
+    });
   });
 
   it('defaults validateLocationsExist to false', () => {
@@ -358,6 +404,20 @@ describe('readProviderConfigs', () => {
                 branch: 'test/a',
               },
             },
+          },
+        },
+      },
+    });
+
+    expect(() => readProviderConfigs(config)).toThrow();
+  });
+
+  it('throws an error when no organization or app is configured', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            catalogPath: '/*/catalog-info.yaml',
           },
         },
       },
