@@ -15,13 +15,13 @@
  */
 
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { rest } from 'msw';
+import * as msw from 'msw';
 import { setupServer } from 'msw/node';
 import axios from 'axios';
 // eslint-disable-next-line no-restricted-imports
-import http from 'http';
+import nodeHttp from 'http';
 // eslint-disable-next-line no-restricted-imports
-import https from 'https';
+import nodeHttps from 'https';
 
 const errorMsg = 'Network requests are not allowed in tests';
 
@@ -32,8 +32,8 @@ describe('without msw', () => {
   it('should reject network requests', async () => {
     await expect(fetch('https://example.com')).rejects.toThrow(errorMsg);
     await expect(axios('https://example.com')).rejects.toThrow(errorMsg);
-    expect(() => http.get('http://example.com')).toThrow(errorMsg);
-    expect(() => https.get('https://example.com')).toThrow(errorMsg);
+    expect(() => nodeHttp.get('http://example.com')).toThrow(errorMsg);
+    expect(() => nodeHttps.get('https://example.com')).toThrow(errorMsg);
     await expect(
       new Promise(resolve => {
         const ws = new WebSocket('ws://example.com');
@@ -52,13 +52,11 @@ describe('with msw', () => {
   registerMswTestHooks(server);
 
   it('should mock network requests', async () => {
+    const mswHttp = (msw as any).http;
+    const HttpResponse = (msw as any).HttpResponse;
     server.use(
-      rest.get('http://example.com', (_, res, ctx) =>
-        res(ctx.json({ ok: true })),
-      ),
-      rest.get('https://example.com', (_, res, ctx) =>
-        res(ctx.json({ ok: true })),
-      ),
+      mswHttp.get('http://example.com', () => HttpResponse.json({ ok: true })),
+      mswHttp.get('https://example.com', () => HttpResponse.json({ ok: true })),
     );
 
     await expect(
@@ -71,9 +69,9 @@ describe('with msw', () => {
 
     await expect(
       new Promise(resolve => {
-        const req = http.get('http://example.com');
-        req.on('response', res => {
-          res.on('data', data => {
+        const req = nodeHttp.get('http://example.com');
+        req.on('response', (res: any) => {
+          res.on('data', (data: any) => {
             resolve(JSON.parse(data.toString()));
           });
         });
@@ -84,9 +82,9 @@ describe('with msw', () => {
 
     await expect(
       new Promise(resolve => {
-        const req = https.get('https://example.com');
-        req.on('response', res => {
-          res.on('data', data => {
+        const req = nodeHttps.get('https://example.com');
+        req.on('response', (res: any) => {
+          res.on('data', (data: any) => {
             resolve(JSON.parse(data.toString()));
           });
         });
