@@ -20,7 +20,7 @@ import { Flex } from '../Flex';
 import { Text } from '../Text';
 
 const meta = {
-  title: 'Components/Checkbox',
+  title: 'Backstage UI/Checkbox',
   component: Checkbox,
 } satisfies Meta<typeof Checkbox>;
 

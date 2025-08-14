@@ -18,7 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { FieldLabel } from './FieldLabel';
 
 const meta = {
-  title: 'Forms/FieldLabel',
+  title: 'Backstage UI/FieldLabel',
   component: FieldLabel,
   argTypes: {
     label: {

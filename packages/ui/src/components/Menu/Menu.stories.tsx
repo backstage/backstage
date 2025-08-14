@@ -20,7 +20,7 @@ import { Text, Icon, Button, Flex } from '../../index';
 import { useState } from 'react';
 
 const meta = {
-  title: 'Components/Menu',
+  title: 'Backstage UI/Menu',
   component: Menu.Root,
 } satisfies Meta<typeof Menu.Root>;
 

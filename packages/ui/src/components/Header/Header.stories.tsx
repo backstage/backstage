@@ -31,7 +31,7 @@ import {
 import { HeaderPageBreadcrumb } from '../HeaderPage/types';
 
 const meta = {
-  title: 'Components/Header',
+  title: 'Backstage UI/Header',
   component: Header,
   parameters: {
     layout: 'fullscreen',

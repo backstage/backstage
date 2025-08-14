@@ -35,7 +35,7 @@ import { RiCactusLine } from '@remixicon/react';
 import { TablePagination } from '../TablePagination';
 
 const meta = {
-  title: 'Components/Table',
+  title: 'Backstage UI/Table',
   decorators: [
     (Story: StoryFn) => (
       <MemoryRouter>
@@ -47,7 +47,7 @@ const meta = {
 
 // Added this fix to fix Chromatic timeout error. This bug is due to rerendering the table with too many rows.
 // Work in progress to fix it here - https://github.com/backstage/backstage/pull/30687
-const data1 = data1Raw.slice(0, 25);
+const data1 = data1Raw.slice(0, 10);
 
 export default meta;
 type Story = StoryObj<typeof meta>;

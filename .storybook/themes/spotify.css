@@ -211,7 +211,7 @@
   }
 }
 
-[data-theme='light'][data-theme-name='spotify'] {
+[data-theme-mode='light'][data-theme-name='spotify'] {
   --bui-bg: var(--bui-gray-1);
   --bui-bg-surface-1: var(--bui-white);
   --bui-bg-surface-2: var(--bui-gray-2);
@@ -243,7 +243,7 @@
   }
 }
 
-[data-theme='dark'][data-theme-name='spotify'] {
+[data-theme-mode='dark'][data-theme-name='spotify'] {
   --bui-bg: var(--bui-black);
   --bui-bg-surface-1: var(--bui-gray-1);
   --bui-bg-surface-2: var(--bui-gray-2);

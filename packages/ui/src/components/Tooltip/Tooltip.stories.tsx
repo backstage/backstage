@@ -20,7 +20,7 @@ import { TooltipTrigger, Tooltip } from './Tooltip';
 import { Button } from '../Button/Button';
 
 const meta = {
-  title: 'Components/Tooltip',
+  title: 'Backstage UI/Tooltip',
   component: TooltipTrigger,
   parameters: { layout: 'centered' },
   argTypes: {
