@@ -128,7 +128,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 /* highlight-add-end */
 ```
 
-Restart Backstage from the terminal, by stopping it with `Ctrl+C`, and starting it with `yarn dev`. You should be welcomed by a login prompt! If you try to login at this point you will get a "Failed to sign-in, unable to resolve user identity" message, read on as we'll fix that next.
+Restart Backstage from the terminal, by stopping it with `Ctrl+C`, and starting it with `yarn start`. You should be welcomed by a login prompt! If you try to login at this point you will get a "Failed to sign-in, unable to resolve user identity" message, read on as we'll fix that next.
 
 :::note Note
 
@@ -157,7 +157,7 @@ For the sake of this guide we'll simply step you though adding a User to the `or
 
 3. Now make sure to replace the text "YOUR GITHUB USERNAME" with your actual GitHub User name.
 
-Let's restart Backstage from the terminal once more, by stopping it with `Ctrl+C`, and starting it with `yarn dev`. You should now be able to log into Backstage and see items in your Catalog.
+Let's restart Backstage from the terminal once more, by stopping it with `Ctrl+C`, and starting it with `yarn start`. You should now be able to log into Backstage and see items in your Catalog.
 
 To learn more about Authentication in Backstage, here are some docs you
 could read:
@@ -199,7 +199,7 @@ integrations:
 
 :::note Note
 
-If you've updated the configuration for your integration, it's likely that the backend will need a restart to apply these changes. To do this, stop the running instance in your terminal with `Control-C`, then start it again with `yarn dev`. Once the backend has restarted, retry the operation.
+If you've updated the configuration for your integration, it's likely that the backend will need a restart to apply these changes. To do this, stop the running instance in your terminal with `Control-C`, then start it again with `yarn start`. Once the backend has restarted, retry the operation.
 
 :::
 

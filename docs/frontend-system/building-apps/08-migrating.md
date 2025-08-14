@@ -2,7 +2,6 @@
 id: migrating
 title: Migrating Apps
 sidebar_label: Migration Guide
-# prettier-ignore
 description: How to migrate existing apps to the new frontend system
 ---
 
@@ -12,7 +11,13 @@ This section describes how to migrate an existing Backstage app package to use t
 
 ## Switching out `createApp`
 
-The first step in migrating an app is to switch out the `createApp` function for the new one from `@backstage/frontend-api-app`:
+To start we'll need to add the new `@backstage/frontend-defaults` package:
+
+```bash
+yarn --cwd packages/app add @backstage/frontend-defaults
+```
+
+The next step in migrating an app is to switch out the `createApp` function for the new one from `@backstage/frontend-defaults`:
 
 ```tsx title="in packages/app/src/App.tsx"
 // highlight-remove-next-line
@@ -61,7 +66,7 @@ import {
 
 const legacyFeatures = convertLegacyApp(
   <>
-    <AlertDisplay transientTimeoutMs={2500} />
+    <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>
@@ -70,7 +75,7 @@ const legacyFeatures = convertLegacyApp(
 );
 
 const optionsModule = convertLegacyAppOptions({
-  /* other options */
+  /* other options such as apis, plugins, components, and themes */
 });
 
 const app = createApp({
@@ -98,6 +103,44 @@ ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
 ReactDOM.createRoot(document.getElementById('root')!).render(app);
 ```
 
+You'll also need to make similar changes to your `App.test.tsx` file as well:
+
+```tsx
+import { render, waitFor } from '@testing-library/react';
+// highlight-remove-next-line
+import App from './App';
+// highlight-add-next-line
+import app from './App';
+
+describe('App', () => {
+  it('should render', async () => {
+    process.env = {
+      NODE_ENV: 'test',
+      APP_CONFIG: [
+        {
+          data: {
+            app: { title: 'Test' },
+            backend: { baseUrl: 'http://localhost:7007' },
+          },
+          context: 'test',
+        },
+      ] as any,
+    };
+
+    // highlight-remove-next-line
+    const rendered = render(<App />);
+    // highlight-add-next-line
+    const rendered = render(app);
+
+    await waitFor(() => {
+      expect(rendered.baseElement).toBeInTheDocument();
+    });
+  });
+});
+```
+
+Then you'll want to follow the section on [migrating `bindRoutes`](#bindroutes).
+
 At this point the contents of your app should be past the initial migration stage, and we can move on to migrating any remaining options that you may have passed to `createApp`.
 
 ## Migrating `createApp` Options
@@ -106,7 +149,17 @@ Many of the `createApp` options have been migrated to use extensions instead. Ea
 
 For example, assuming you have a `lightTheme` extension that you want to add to your app, you can use the following:
 
+First we add the `@backstage/frontend-plugin-api` package
+
+```bash
+yarn --cwd packages/app add @backstage/frontend-plugin-api
+```
+
+Then we can use it like this:
+
 ```ts
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+
 const app = createApp({
   features: [
     // highlight-add-start
@@ -142,21 +195,20 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```ts
+import { ApiBlueprint } from '@backstage/frontend-plugin-api';
+
 const scmIntegrationsApi = ApiBlueprint.make({
   name: 'scm-integrations',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: scmIntegrationsApiRef,
       deps: { configApi: configApiRef },
       factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
     }),
-  },
 });
 ```
 
-### `icons`
-
-Icons are currently installed through the usual options to `createApp`, but will be switched to use extensions in the future.
+You would then add `scmIntegrationsApi` as an `extension` like you did with `lightTheme` in the [Migrating `createApp` Options](#migrating-createapp-options) section.
 
 ### `plugins`
 
@@ -192,7 +244,7 @@ Plugins don't even have to be imported manually after installing their package i
 ```yaml title="in app-config.yaml"
 app:
   # Enabling plugin and override features discovery
-  experimental: 'all'
+  packages: all # ✨
 ```
 
 ### `featureFlags`
@@ -218,6 +270,8 @@ createApp({
 Can be converted to the following plugin configuration:
 
 ```tsx
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+
 createFrontendPlugin({
   pluginId: 'tech-radar',
   // ...
@@ -225,6 +279,8 @@ createFrontendPlugin({
   // ...
 });
 ```
+
+This would get added to the `features` array as part of your `createApp` options.
 
 ### `components`
 
@@ -257,6 +313,8 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
+import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+
 const signInPage = SignInPageBlueprint.make({
   params: {
     loader: async () => props =>
@@ -275,6 +333,8 @@ const signInPage = SignInPageBlueprint.make({
 });
 ```
 
+You would then add `signInPage` as an `extension` like you did with `lightTheme` in the [Migrating `createApp` Options](#migrating-createapp-options) section.
+
 ### `themes`
 
 Themes are now installed as extensions, created using `ThemeBlueprint`.
@@ -285,7 +345,7 @@ For example, the following theme configuration:
 const app = createApp({
   themes: [
     {
-      id: 'light',
+      id: 'custom-light',
       title: 'Light',
       variant: 'light',
       Provider: ({ children }) => (
@@ -301,27 +361,33 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-const lightTheme = ThemeBlueprint.make({
-  name: 'light',
+import { ThemeBlueprint } from '@backstage/frontend-plugin-api';
+
+const customLightThemeExtension = ThemeBlueprint.make({
+  name: 'custom-light',
   params: {
     theme: {
-      id: 'light',
+      id: 'custom-light',
       title: 'Light Theme',
       variant: 'light',
       icon: <LightIcon />,
       Provider: ({ children }) => (
-        <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+        <UnifiedThemeProvider theme={customLightTheme} children={children} />
       ),
     },
   },
 });
 ```
 
+You would then add `customLightThemeExtension` as an `extension` like you did with `lightTheme` in the [Migrating `createApp` Options](#migrating-createapp-options) section.
+
 ### `configLoader`
 
 The config loader API has been slightly changed. Rather than returning a promise for an array of `AppConfig` objects, it should now return the `ConfigApi` directly.
 
 ```ts
+import { ConfigReader } from '@backstage/core-app-api';
+
 const app = createApp({
   async configLoader() {
     const appConfigs = await loadAppConfigs();
@@ -403,7 +469,13 @@ createApp({
 Can be converted to the following extension:
 
 ```tsx
-TranslationBlueprint.make({
+import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+import {
+  createTranslationMessages,
+  TranslationBlueprint,
+} from '@backstage/frontend-plugin-api';
+
+const catalogTranslations = TranslationBlueprint.make({
   name: 'catalog-overrides',
   params: {
     resource: createTranslationMessages({
@@ -413,6 +485,8 @@ TranslationBlueprint.make({
   },
 });
 ```
+
+You would then add `catalogTranslations` as an `extension` like you did with `lightTheme` in the [Migrating `createApp` Options](#migrating-createapp-options) section.
 
 ## Gradual Migration
 
@@ -425,7 +499,7 @@ First off we'll want to trim away any top-level elements in the app so that only
 ```tsx title="in packages/app/src/App.tsx"
 const legacyFeatures = convertLegacyApp(
   <>
-    <AlertDisplay transientTimeoutMs={2500} />
+    <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>

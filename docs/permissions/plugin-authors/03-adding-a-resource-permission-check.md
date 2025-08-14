@@ -125,7 +125,10 @@ $ yarn workspace @internal/plugin-todo-list-backend add zod
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
 
 ```typescript title="plugins/todo-list-backend/src/service/rules.ts"
-import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
+import {
+  createPermissionResourceRef,
+  createPermissionRule,
+} from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
 import { z } from 'zod';
 import { Todo, TodoFilter } from './todos';
@@ -135,13 +138,13 @@ export const todoListPermissionResourceRef = createPermissionResourceRef<
   TodoFilter
 >().with({
   pluginId: 'todolist',
-  type: TODO_LIST_RESOURCE_TYPE,
+  resourceType: TODO_LIST_RESOURCE_TYPE,
 });
 
 export const isOwner = createPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the todo belongs to the user',
-  resourceType: todoListPermissionResourceRef,
+  resourceRef: todoListPermissionResourceRef,
   paramsSchema: z.object({
     userId: z.string().describe('User ID to match on the resource'),
   }),

@@ -281,15 +281,16 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private matchesFilters(repositories: Repository[]): Repository[] {
-    const repositoryFilter = this.config.filters?.repository;
-    const topicFilters = this.config.filters?.topic;
-    const allowForks = this.config.filters?.allowForks ?? true;
-    const visibilities = this.config.filters?.visibility ?? [];
+    const repositoryFilter = this.config.filters.repository;
+    const topicFilters = this.config.filters.topic;
+    const allowForks = this.config.filters.allowForks;
+    const visibilities = this.config.filters.visibility ?? [];
+    const allowArchived = this.config.filters.allowArchived;
 
     return repositories.filter(r => {
       const repoTopics: string[] = r.repositoryTopics;
       return (
-        !r.isArchived &&
+        (allowArchived || !r.isArchived) &&
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
         satisfiesTopicFilter(repoTopics, topicFilters) &&
         satisfiesForkFilter(allowForks, r.isFork) &&
@@ -301,7 +302,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private createLocationUrl(repository: Repository): string {
     const branch =
-      this.config.filters?.branch || repository.defaultBranchRef || '-';
+      this.config.filters.branch || repository.defaultBranchRef || '-';
     const catalogFile = this.config.catalogPath.startsWith('/')
       ? this.config.catalogPath.substring(1)
       : this.config.catalogPath;
@@ -347,12 +348,11 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onPush(event: PushEvent) {
-    const organizations = await this.getOrganizations();
+    const organizations = await this.getOrganizations(); // TODO: make sure they are lowercase
+    const eventOrganization =
+      event.organization?.login.toLocaleLowerCase('en-US');
 
-    if (
-      !event.organization?.login ||
-      !organizations.includes(event.organization.login)
-    ) {
+    if (!eventOrganization || !organizations.includes(eventOrganization)) {
       this.logger.debug(
         `skipping push event from organization ${event.organization?.login}`,
       );
@@ -364,9 +364,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     this.logger.debug(`handle github:push event for ${repoName} - ${repoUrl}`);
 
     const branch =
-      this.config.filters?.branch || event.repository.default_branch;
+      this.config.filters.branch || event.repository.default_branch;
 
-    if (!event.ref.includes(branch)) {
+    if (event.ref !== `refs/heads/${branch}`) {
       this.logger.debug(`skipping push event from ref ${event.ref}`);
       return;
     }
@@ -435,12 +435,11 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onRepoChange(event: RepositoryEvent) {
-    const organizations = await this.getOrganizations();
+    const organizations = await this.getOrganizations(); // TODO: make sure they are lowercase
+    const eventOrganization =
+      event.organization?.login.toLocaleLowerCase('en-US');
 
-    if (
-      !event.organization?.login ||
-      !organizations.includes(event.organization.login)
-    ) {
+    if (!eventOrganization || !organizations.includes(eventOrganization)) {
       this.logger.debug(
         `skipping repository event from organization ${event.organization?.login}`,
       );
@@ -503,6 +502,8 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * @param event - The repository archived event.
    */
   private async onRepoArchived(event: RepositoryArchivedEvent) {
+    if (this.config.filters.allowArchived) return;
+
     const repository = this.createRepoFromEvent(event);
     await this.removeEntitiesForRepo(repository);
     this.logger.debug(
@@ -584,7 +585,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    *
    * Creates new entities for the repository if it matches the filters.
    *
-   * @param event - The repository unarchived event.
+   * @param event - The repository transferred event.
    */
   private async onRepoTransferred(event: RepositoryTransferredEvent) {
     const repository = this.createRepoFromEvent(event);

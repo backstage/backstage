@@ -19,6 +19,7 @@ import {
   FeatureFlagConfig,
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { OpaqueType } from '@internal/opaque';
 
 export const OpaqueFrontendPlugin = OpaqueType.create<{
@@ -27,6 +28,10 @@ export const OpaqueFrontendPlugin = OpaqueType.create<{
     readonly version: 'v1';
     readonly extensions: Extension<unknown>[];
     readonly featureFlags: FeatureFlagConfig[];
+    readonly infoOptions?: {
+      packageJson?: () => Promise<JsonObject>;
+      manifest?: () => Promise<JsonObject>;
+    };
   };
 }>({
   type: '@backstage/FrontendPlugin',

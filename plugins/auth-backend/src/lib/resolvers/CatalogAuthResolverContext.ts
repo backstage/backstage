@@ -32,6 +32,7 @@ import {
   TokenParams,
 } from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient } from '../catalog/CatalogIdentityClient';
+import { UserInfoDatabase } from '../../database/UserInfoDatabase';
 
 function getDefaultOwnershipEntityRefs(entity: Entity) {
   const membershipRefs =
@@ -51,6 +52,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     tokenIssuer: TokenIssuer;
     auth: AuthService;
     ownershipResolver?: AuthOwnershipResolver;
+    userInfo: UserInfoDatabase;
   }): CatalogAuthResolverContext {
     const catalogIdentityClient = new CatalogIdentityClient({
       catalog: options.catalog,
@@ -63,6 +65,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       catalogIdentityClient,
       options.catalog,
       options.auth,
+      options.userInfo,
       options.ownershipResolver,
     );
   }
@@ -73,11 +76,29 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     public readonly catalogIdentityClient: CatalogIdentityClient,
     private readonly catalog: CatalogService,
     private readonly auth: AuthService,
+    private readonly userInfo: UserInfoDatabase,
     private readonly ownershipResolver?: AuthOwnershipResolver,
   ) {}
 
   async issueToken(params: TokenParams) {
-    return await this.tokenIssuer.issueToken(params);
+    const { sub, ent = [sub], ...additionalClaims } = params.claims;
+    const claims = {
+      sub,
+      ent,
+      ...additionalClaims,
+    };
+
+    const issuedToken = await this.tokenIssuer.issueToken({
+      claims,
+    });
+
+    // Store the user info in the database upon successful token
+    // issuance so that it can be retrieved later by limited user tokens
+    await this.userInfo.addUserInfo({
+      claims,
+    });
+
+    return issuedToken;
   }
 
   async findCatalogUser(query: AuthResolverCatalogUserQuery) {
@@ -139,19 +160,54 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     return { entity: result };
   }
 
-  async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
-    const { entity } = await this.findCatalogUser(query);
+  async signInWithCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+    options?: {
+      dangerousEntityRefFallback?: {
+        entityRef:
+          | string
+          | {
+              kind?: string;
+              namespace?: string;
+              name: string;
+            };
+      };
+    },
+  ) {
+    try {
+      const { entity } = await this.findCatalogUser(query);
 
-    const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
-      entity,
-    );
+      const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
+        entity,
+      );
 
-    return await this.tokenIssuer.issueToken({
-      claims: {
-        sub: stringifyEntityRef(entity),
-        ent: ownershipEntityRefs,
-      },
-    });
+      return await this.issueToken({
+        claims: {
+          sub: stringifyEntityRef(entity),
+          ent: ownershipEntityRefs,
+        },
+      });
+    } catch (error) {
+      if (
+        error?.name !== 'NotFoundError' ||
+        !options?.dangerousEntityRefFallback
+      ) {
+        throw error;
+      }
+      const userEntityRef = stringifyEntityRef(
+        parseEntityRef(options.dangerousEntityRefFallback.entityRef, {
+          defaultKind: 'User',
+          defaultNamespace: DEFAULT_NAMESPACE,
+        }),
+      );
+
+      return await this.issueToken({
+        claims: {
+          sub: userEntityRef,
+          ent: [userEntityRef],
+        },
+      });
+    }
   }
 
   async resolveOwnershipEntityRefs(

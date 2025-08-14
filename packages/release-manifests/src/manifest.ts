@@ -37,6 +37,8 @@ export type GetManifestByVersionOptions = {
     url: string,
     options?: { signal?: AbortSignal },
   ) => Promise<Pick<Response, 'status' | 'json' | 'url'>>;
+  gitHubRawBaseUrl?: string;
+  versionsBaseUrl?: string;
 };
 
 // Wait for waitMs, or until signal is aborted.
@@ -88,19 +90,18 @@ export async function getManifestByVersion(
   const versionEnc = encodeURIComponent(options.version);
 
   const fetchFn = options.fetch ?? fetch;
+  const versionsHost = options.versionsBaseUrl ?? VERSIONS_BASE_URL;
+  const gitHubRawBaseUrl = options.gitHubRawBaseUrl ?? GITHUB_RAW_BASE_URL;
 
   const res = await withFallback(
     signal =>
-      fetchFn(`${VERSIONS_BASE_URL}/v1/releases/${versionEnc}/manifest.json`, {
+      fetchFn(`${versionsHost}/v1/releases/${versionEnc}/manifest.json`, {
         signal,
       }),
     signal =>
-      fetchFn(
-        `${GITHUB_RAW_BASE_URL}/v1/releases/${versionEnc}/manifest.json`,
-        {
-          signal,
-        },
-      ),
+      fetchFn(`${gitHubRawBaseUrl}/v1/releases/${versionEnc}/manifest.json`, {
+        signal,
+      }),
     500,
   );
   if (res.status === 404) {
@@ -120,6 +121,12 @@ export async function getManifestByVersion(
  */
 export type GetManifestByReleaseLineOptions = {
   releaseLine: string;
+  fetch?: (
+    url: string,
+    options?: { signal?: AbortSignal },
+  ) => Promise<Pick<Response, 'ok' | 'status' | 'text' | 'json' | 'url'>>;
+  gitHubRawBaseUrl?: string;
+  versionsBaseUrl?: string;
 };
 
 /**
@@ -130,20 +137,27 @@ export async function getManifestByReleaseLine(
   options: GetManifestByReleaseLineOptions,
 ): Promise<ReleaseManifest> {
   const releaseEnc = encodeURIComponent(options.releaseLine);
+
+  const fetchFn = options.fetch ?? fetch;
+  const versionsHost = options.versionsBaseUrl ?? VERSIONS_BASE_URL;
+  const gitHubRawBaseUrl = options.gitHubRawBaseUrl ?? GITHUB_RAW_BASE_URL;
+
   const res = await withFallback(
     signal =>
-      fetch(`${VERSIONS_BASE_URL}/v1/tags/${releaseEnc}/manifest.json`, {
+      fetchFn(`${versionsHost}/v1/tags/${releaseEnc}/manifest.json`, {
         signal,
       }),
     async signal => {
       // The release tags are symlinks, which we need to follow manually when fetching from GitHub.
-      const baseUrl = `${GITHUB_RAW_BASE_URL}/v1/tags/${releaseEnc}`;
-      const linkRes = await fetch(baseUrl, { signal });
+      const baseUrl = `${gitHubRawBaseUrl}/v1/tags/${releaseEnc}`;
+      const linkRes = await fetchFn(baseUrl, { signal });
       if (!linkRes.ok) {
         return linkRes;
       }
       const link = (await linkRes.text()).trim();
-      return fetch(new URL(`${link}/manifest.json`, baseUrl), { signal });
+      return fetchFn(new URL(`${link}/manifest.json`, baseUrl).toString(), {
+        signal,
+      });
     },
     1000,
   );

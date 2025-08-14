@@ -40,6 +40,10 @@ createBackendPlugin({
 });
 ```
 
+## Rate limiting
+
+Please refer to the [HTTP Router documentation](./http-router.md#rate-limiting).
+
 ## Configuring the service
 
 ### Via `app-config.yaml`
@@ -60,7 +64,7 @@ backend:
     # - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
     # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
     # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
-    serverShutdownTimeout: { seconds: 20 }
+    serverShutdownDelay: { seconds: 20 }
 ```
 
 ### Via Code
@@ -121,6 +125,11 @@ backend.add(
       app.use(middleware.cors());
       app.use(middleware.compression());
 
+      // Optional rate limiting middleware
+      app.use(middleware.rateLimit());
+      // If you are using rate limiting behind a proxy, you should set the `trust proxy` setting to true
+      app.set('trust proxy', true);
+
       app.use(healthRouter);
 
       // you can add you your own middleware in here
@@ -161,3 +170,52 @@ backend.add(
   }),
 );
 ```
+
+## Defining Content Security Policy (CSP) Configuration
+
+Content Security Policy (CSP) is a crucial security feature that helps protect your Backstage instance from various attacks, particularly Cross-Site Scripting (XSS). Backstage provides a flexible way to configure CSP directives through your `app-config.yaml` file.
+
+### Basic Configuration
+
+CSP directives can be defined under the `backend.csp` section in your configuration:
+
+```yaml
+backend:
+  csp:
+    default-src: ["'self'"]
+    script-src: ["'self'", "'unsafe-inline'", 'example.com']
+    connect-src: ["'self'", 'http:', 'https:']
+    img-src: ["'self'", 'data:', 'https://backstage.io']
+    style-src: ["'self'", "'unsafe-inline'"]
+    frame-src: ['https://some-analytics-provider.com']
+```
+
+### Available Directives
+
+You can configure any CSP directive supported by modern browsers. Common directives include:
+
+- `default-src`: The fallback for other CSP directives
+- `script-src`: Controls which scripts can be executed
+- `style-src`: Controls which styles can be applied
+- `img-src`: Controls which images can be loaded
+- `connect-src`: Controls which URLs can be loaded using fetch, WebSocket, etc.
+- `frame-src`: Controls which URLs can be embedded in iframes
+- `font-src`: Controls which fonts can be loaded
+- `object-src`: Controls which URLs can be loaded as plugins
+- `media-src`: Controls which media (audio, video) can be loaded
+- `upgrade-insecure-requests`: Instructs browsers to upgrade HTTP to HTTPS
+
+### Special Values
+
+- Common special values within directive arrays:
+  - `self`: Allows content from the same origin
+  - `unsafe-inline`: Allows inline scripts/styles
+  - `unsafe-eval`: Allows dynamic code evaluation
+  - `none`: Blocks all content for that directive
+  - `data:`: Allows data: URIs (commonly used for images)
+  - `https:`: Allows any content over HTTPS
+
+For more information on available CSP options, refer to:
+
+- [MDN Content Security Policy documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- [Helmet Content Security Policy](https://helmetjs.github.io/#content-security-policy)

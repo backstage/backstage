@@ -15,6 +15,21 @@ Team: @backstage/maintainers
 
 These are the separate project areas of Backstage, each with their own project area maintainers
 
+### Auth
+
+Team: @backstage/auth-maintainers
+
+Scope: The Backstage auth plugin and modules, as well as client-side implementations.
+
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
+
 ### Catalog
 
 Team: @backstage/catalog-maintainers
@@ -41,17 +56,44 @@ Scope: The Backstage design system, component library, as well as surrounding to
 | Charles de Dreuille | Spotify      |               | [cdedreuille](https://github.com/cdedreuille) | `cdedreuille` |
 | Patrik Oldsberg     | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)           | `Rugvip`      |
 
+### Documentation
+
+Team: @backstage/documentation-maintainers
+
+Scope: The Backstage Documentation and Microsite, excluding the plugins listing
+
+| Name            | Organization  | GitHub                                                | Discord       |
+| --------------- | ------------- | ----------------------------------------------------- | ------------- |
+| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
+
+### Framework
+
+Team: @backstage/framework-maintainers
+
+Scope: The Backstage core framework, including all revisions of the frontend and backend systems, as well as the App plugin.
+
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
+
 ### Helm Charts
 
 Team: @backstage/helm-chart-maintainers
 
 Scope: The Backstage [Helm Chart(s)](https://github.com/backstage/charts).
 
-| Name                 | Organization | Team | GitHub                                   | Discord        |
-| -------------------- | ------------ | ---- | ---------------------------------------- | -------------- |
-| Andrew Block         | Red Hat      |      | [sabre1041](http://github.com/sabre1041) | sabre1041#2622 |
-| Tom Coufal           | Red Hat      |      | [tumido](http://github.com/tumido)       | Tumi#4346      |
-| Vincenzo Scamporlino | Spotify      |      | [vinzscam](http://github.com/vinzscam)   | vinzscam#6944  |
+| Name                 | Organization | Team | GitHub                                   | Discord          |
+| -------------------- | ------------ | ---- | ---------------------------------------- | ---------------- |
+| Andrew Block         | Red Hat      |      | [sabre1041](http://github.com/sabre1041) | `sabre1041#2622` |
+| Tom Coufal           | Red Hat      |      | [tumido](http://github.com/tumido)       | `Tumi#4346`      |
+| Vincenzo Scamporlino | Spotify      |      | [vinzscam](http://github.com/vinzscam)   | `vinzscam#6944`  |
 
 ### Home
 
@@ -59,12 +101,14 @@ Team: @backstage/home-maintainers
 
 Scope: The Backstage home page and information architecture
 
-| Name                     | Organization | Team           | GitHub                                   | Discord           |
-| ------------------------ | ------------ | -------------- | ---------------------------------------- | ----------------- |
-| Avantika Iyer            | Spotify      | Infinite Buck$ | [tikabom](http://github.com/tikabom)     | -                 |
-| Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal) | emmaindal#7503    |
-| Djamaile Rahamat         | Spotify      | Infinite Buck$ | [djamaile](http://github.com/djamaile)   | dyoqi             |
-| Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)     | raghunandanb#1114 |
+| Name               | Organization | Team            | GitHub                                    | Discord |
+| ------------------ | ------------ | --------------- | ----------------------------------------- | ------- |
+| Ainhoa Larumbe     | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)      | -       |
+| Avantika Iyer      | Spotify      | Imaginary Goats | [tikabom](http://github.com/tikabom)      | -       |
+| Daniel Jelčić      | Spotify      | Imaginary Goats | [djelcic](http://github.com/danieljelcic) | -       |
+| Eric Peterson      | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)        | -       |
+| Musaab Elfaqih     | Spotify      | Imaginary Goats | [TheSabby](http://github.com/TheSabby)    | -       |
+| Landry Zinda-Snead | Spotify      | Imaginary Goats | [landryzs](http://github.com/landryzs)    | -       |
 
 ### Kubernetes
 
@@ -75,6 +119,21 @@ Scope: The Kubernetes plugin and the base it provides for other plugins to build
 | Name           | Organization | Team | GitHub                                   | Discord      |
 | -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
 | Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
+
+### Operations
+
+Team: @backstage/operations-maintainers
+
+Scope: The management and operation of the main Backstage repository and release process, along with the surrounding tooling.
+
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
 ### Permission Framework
 
@@ -117,6 +176,22 @@ Scope: The TechDocs plugin and related tooling
 | John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399` |
 | Sydney Achinger | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                  |
 
+### Tooling
+
+Team: @backstage/tooling-maintainers
+
+Scope: All published Backstage CLI tools in the main `backstage` repository that do not belong to other areas, including `@backstage/cli` and `@backstage/repo-tools`.
+
+| Name                 | Organization | Team          | GitHub                                                | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------------- | --------------- |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)                   | `Rugvip#0019`   |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert)       | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)              | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)                   | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)          | `mihait#3107`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)                | `vinzscam#6944` |
+| Aramis Sennyey       | DoorDash     |               | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`   |
+
 ## Incubating Project Areas
 
 These incubating project areas have shared ownership with @backstage/maintainers.
@@ -144,18 +219,6 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)         | `kashh._.`   |
 | Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
 | Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M) | `parsifal`   |
-
-### Documentation
-
-Team: @backstage/documentation-maintainers
-
-Scope: The Backstage Documentation and Microsite, excluding the plugins listing
-
-| Name            | Organization  | GitHub                                                | Discord       |
-| --------------- | ------------- | ----------------------------------------------------- | ------------- |
-| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
-| Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
-| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
 ### Events
 

@@ -21,12 +21,12 @@ import { PackageGraph, PackageRoles } from '@backstage/cli-node';
 import { paths } from '../../../../../lib/paths';
 import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
-import { isValidUrl } from '../../../../../lib/urls';
+import { isValidUrl } from '../../../lib/urls';
 import chalk from 'chalk';
 
 export async function command(opts: OptionValues): Promise<void> {
-  const rspack = process.env.EXPERIMENTAL_RSPACK
-    ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
+  const webpack = process.env.LEGACY_WEBPACK_BUILD
+    ? (require('webpack') as typeof import('webpack'))
     : undefined;
 
   const role = await findRoleFromCommand(opts);
@@ -44,7 +44,7 @@ export async function command(opts: OptionValues): Promise<void> {
         targetDir: paths.targetDir,
         configPaths,
         writeStats: Boolean(opts.stats),
-        rspack,
+        webpack,
       });
     }
     return buildBackend({
@@ -67,7 +67,7 @@ export async function command(opts: OptionValues): Promise<void> {
       configPaths: [],
       writeStats: Boolean(opts.stats),
       isModuleFederationRemote: true,
-      rspack,
+      webpack,
     });
   }
 

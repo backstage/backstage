@@ -47,7 +47,7 @@ import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
 import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../alpha/translation';
+import { catalogTranslationRef } from '../../alpha';
 import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
@@ -194,7 +194,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       .join(' ');
 
   const actions = props.actions || defaultActions;
-  const options = {
+  const options: TableProps['options'] = {
     actionsColumnIndex: -1,
     loadingType: 'linear' as const,
     showEmptyDataSourceMessage: !loading,

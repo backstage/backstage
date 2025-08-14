@@ -351,8 +351,12 @@ users to sign in, for example by checking email domains.
 While populating the catalog with organizational data unlocks more powerful ways
 to browse your software ecosystem, it might not always be a viable or prioritized
 option. However, even if you do not have user entities populated in your catalog, you
-can still sign in users. As there are currently no built-in sign-in resolvers for
-this scenario you will need to implement your own.
+can still sign in users.
+
+##### Custom Sign-in Resolver to bypass user in catalog requirement
+
+As there are currently no built-in sign-in resolvers for
+this scenario you may want to implement your own.
 
 Signing in a user that doesn't exist in the catalog is as simple as skipping the
 catalog lookup step from the above example. Rather than looking up the user, we
@@ -445,6 +449,36 @@ return ctx.issueToken({
   claims: { sub: entityRef, ent: [entityRef] },
 });
 ```
+
+##### Using the `dangerouslyAllowSignInWithoutUserInCatalog` Option
+
+Another way to bypass this requirement is to enable the `dangerouslyAllowSignInWithoutUserInCatalog` option for resolvers.
+Users will still be authenticated as usual but this config will bypass the check that ensures the user is present in the catalog.
+If the user entity is not found in the catalog, a Backstage user token will still be issued based on the identifying information available at the resolver level.
+
+For example:
+
+```yaml title="Within the provider configuration"
+auth:
+  providers:
+    github:
+      development:
+        ...
+        signIn:
+          resolvers:
+            - resolver: emailLocalPartMatchingUserEntityName
+              dangerouslyAllowSignInWithoutUserInCatalog: true
+```
+
+:::warning
+Enabling this option in production poses security risks.
+:::
+
+This option may grant access to unexpected users who haven’t been onboarded into
+Backstage. Since there is no user entity to associate with the signed-in user, permissions
+may not apply as expected and they will have the same permissions as a guest user.
+Careful consideration should be given to the permissions assigned to such users,
+particularly when using the permission system.
 
 ## Profile Transforms
 

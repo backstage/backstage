@@ -18,8 +18,10 @@ import { JSX } from 'react';
 import { Link } from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import { ContentModal } from './ContentModal';
+import { ContentModal } from '@backstage/plugin-home-react';
 import { useStyles } from './styles';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 /**
  * Props customizing the <QuickStartCard/> component.
@@ -30,11 +32,15 @@ export type QuickStartCardProps = {
   /** The modal link title */
   modalTitle?: string | JSX.Element;
   /** The link to docs title */
-  docsLinkTitle?: string;
+  docsLinkTitle?: string | JSX.Element;
   /** The link to docs */
   docsLink?: string;
-  /** The video to play on the card */
+  /** The video to play on the card
+   * @deprecated This will be removed in the future, please use `additionalContent` instead
+   */
   video?: JSX.Element;
+  /** Additional card content */
+  additionalContent?: JSX.Element;
   /** A quickstart image to display on the card */
   image: JSX.Element;
   /** The card description*/
@@ -50,14 +56,15 @@ export type QuickStartCardProps = {
  */
 export const Content = (props: QuickStartCardProps): JSX.Element => {
   const styles = useStyles();
+  const { t } = useTranslationRef(homeTranslationRef);
   return (
     <>
       <ContentModal
         modalContent={props.image}
-        linkContent={props.modalTitle || 'Onboarding'}
+        linkContent={props.modalTitle || t('quickStart.title')}
       />
       <Typography variant="body1" paragraph>
-        {props.cardDescription || 'Get started with Backstage'}
+        {props.cardDescription || t('quickStart.description')}
       </Typography>
       <ContentModal modalContent={props.image} linkContent={props.image} />
       <Grid
@@ -74,11 +81,12 @@ export const Content = (props: QuickStartCardProps): JSX.Element => {
             variant="h6"
             className={styles.link}
           >
-            {props.docsLinkTitle || 'Learn more'}
+            {props.docsLinkTitle || t('quickStart.learnMoreLinkTitle')}
           </Link>
         </Grid>
       </Grid>
-      {props.video && props.video}
+      {(props.additionalContent && props.additionalContent) ||
+        (props.video && props.video)}
     </>
   );
 };

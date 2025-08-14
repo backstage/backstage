@@ -25,12 +25,12 @@ import {
   SubRouteRef,
   AnyRouteRefParams,
   RouteFunc,
-  RouteResolutionApiResolveOptions,
   RouteResolutionApi,
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
   ExtensionFactoryMiddleware,
+  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -74,8 +74,13 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { FrontendFeature, RouteInfo } from './types';
+import { RouteInfo } from './types';
 import { matchRoutes } from 'react-router-dom';
+import {
+  createPluginInfoAttacher,
+  FrontendPluginInfoResolver,
+} from './createPluginInfoAttacher';
+import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -123,10 +128,10 @@ class AppTreeApiProxy implements AppTreeApi {
     return { tree: this.tree };
   }
 
-  getNodesByRoutePath(sourcePath: string): { nodes: AppNode[] } {
+  getNodesByRoutePath(routePath: string): { nodes: AppNode[] } {
     this.checkIfInitialized();
 
-    let path = sourcePath;
+    let path = routePath;
     if (path.startsWith(this.appBasePath)) {
       path = path.slice(this.appBasePath.length);
     }
@@ -164,7 +169,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions,
+    options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     if (!this.#delegate) {
       throw new Error(
@@ -182,6 +187,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
       routeInfo.routeObjects,
       this.routeBindings,
       this.appBasePath,
+      routeInfo.routeAliasResolver,
     );
     this.#routeObjects = routeInfo.routeObjects;
 
@@ -194,23 +200,89 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 }
 
 /**
+ * Options for {@link createSpecializedApp}.
+ *
+ * @public
+ */
+export type CreateSpecializedAppOptions = {
+  /**
+   * The list of features to load.
+   */
+  features?: FrontendFeature[];
+
+  /**
+   * The config API implementation to use. For most normal apps, this should be
+   * specified.
+   *
+   * If none is given, a new _empty_ config will be used during startup. In
+   * later stages of the app lifecycle, the config API in the API holder will be
+   * used.
+   */
+  config?: ConfigApi;
+
+  /**
+   * Allows for the binding of plugins' external route refs within the app.
+   */
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+
+  /**
+   * Advanced, more rarely used options.
+   */
+  advanced?: {
+    /**
+     * A replacement API holder implementation to use.
+     *
+     * By default, a new API holder will be constructed automatically based on
+     * the other inputs. If you pass in a custom one here, none of that
+     * automation will take place - so you will have to take care to supply all
+     * those APIs yourself.
+     */
+    apis?: ApiHolder;
+
+    /**
+     * If set to true, the system will silently accept and move on if
+     * encountering config for extensions that do not exist. The default is to
+     * reject such config to help catch simple mistakes.
+     *
+     * This flag can be useful in some scenarios where you have a dynamic set of
+     * extensions enabled at different times, but also increases the risk of
+     * accidentally missing e.g. simple typos in your config.
+     */
+    allowUnknownExtensionConfig?: boolean;
+
+    /**
+     * Applies one or more middleware on every extension, as they are added to
+     * the application.
+     *
+     * This is an advanced use case for modifying extension data on the fly as
+     * it gets emitted by extensions being instantiated.
+     */
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+
+    /**
+     * Allows for customizing how plugin info is retrieved.
+     */
+    pluginInfoResolver?: FrontendPluginInfoResolver;
+  };
+};
+
+/**
  * Creates an empty app without any default features. This is a low-level API is
  * intended for use in tests or specialized setups. Typically you want to use
  * `createApp` from `@backstage/frontend-defaults` instead.
  *
  * @public
  */
-export function createSpecializedApp(options?: {
-  features?: FrontendFeature[];
-  config?: ConfigApi;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  apis?: ApiHolder;
-  extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
-}): { apis: ApiHolder; tree: AppTree } {
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
+  apis: ApiHolder;
+  tree: AppTree;
+} {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
-  const features = deduplicateFeatures(options?.features ?? []);
+  const features = deduplicateFeatures(options?.features ?? []).map(
+    createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
+  );
 
   const tree = resolveAppTree(
     'root',
@@ -221,24 +293,24 @@ export function createSpecializedApp(options?: {
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
+      allowUnknownExtensionConfig:
+        options?.advanced?.allowUnknownExtensionConfig,
     }),
   );
 
   const factories = createApiFactories({ tree });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
+
+  const routeRefsById = collectRouteIds(features);
   const routeResolutionApi = new RouteResolutionApiProxy(
-    resolveRouteBindings(
-      options?.bindRoutes,
-      config,
-      collectRouteIds(features),
-    ),
+    resolveRouteBindings(options?.bindRoutes, config, routeRefsById),
     appBasePath,
   );
 
   const appIdentityProxy = new AppIdentityProxy();
   const apis =
-    options?.apis ??
+    options?.advanced?.apis ??
     createApiHolder({
       factories,
       staticFactories: [
@@ -275,10 +347,15 @@ export function createSpecializedApp(options?: {
   instantiateAppNodeTree(
     tree.root,
     apis,
-    mergeExtensionFactoryMiddleware(options?.extensionFactoryMiddleware),
+    mergeExtensionFactoryMiddleware(
+      options?.advanced?.extensionFactoryMiddleware,
+    ),
   );
 
-  const routeInfo = extractRouteInfoFromAppNode(tree.root);
+  const routeInfo = extractRouteInfoFromAppNode(
+    tree.root,
+    createRouteAliasResolver(routeRefsById),
+  );
 
   routeResolutionApi.initialize(routeInfo);
   appTreeApi.initialize(routeInfo);
@@ -351,6 +428,7 @@ function mergeExtensionFactoryMiddleware(
             apis: ctx.apis,
             config: ctxOverrides?.config ?? ctx.config,
           }),
+          'extension factory middleware',
         );
       }, ctx);
     };

@@ -28,25 +28,25 @@ describe('getUsersForEntityRef', () => {
     await expect(
       getUsersForEntityRef(null, [], {
         auth: mockServices.auth(),
-        catalogClient: catalogServiceMock(),
+        catalog: catalogServiceMock(),
       }),
     ).resolves.toEqual([]);
   });
 
   it('should resolve users without calling catalog', async () => {
-    const catalogClient = catalogServiceMock();
-    jest.spyOn(catalogClient, 'getEntitiesByRefs');
+    const catalog = catalogServiceMock();
+    jest.spyOn(catalog, 'getEntitiesByRefs');
     await expect(
       getUsersForEntityRef(['user:foo', 'user:ignored'], ['user:ignored'], {
         auth: mockServices.auth(),
-        catalogClient,
+        catalog,
       }),
     ).resolves.toEqual(['user:foo']);
-    expect(catalogClient.getEntitiesByRefs).not.toHaveBeenCalled();
+    expect(catalog.getEntitiesByRefs).not.toHaveBeenCalled();
   });
 
   it('should resolve group entities to users', async () => {
-    const catalogClient = catalogServiceMock({
+    const catalog = catalogServiceMock({
       entities: [
         {
           apiVersion: 'backstage.io/v1alpha1',
@@ -91,14 +91,14 @@ describe('getUsersForEntityRef', () => {
         ['user:default/ignored'],
         {
           auth: mockServices.auth(),
-          catalogClient,
+          catalog,
         },
       ),
     ).resolves.toEqual(['user:default/foo', 'user:default/bar']);
   });
 
   it('should resolve user owner of entity from entity ref', async () => {
-    const catalogClient = catalogServiceMock({
+    const catalog = catalogServiceMock({
       entities: [
         {
           apiVersion: 'backstage.io/v1alpha1',
@@ -119,13 +119,13 @@ describe('getUsersForEntityRef', () => {
     await expect(
       getUsersForEntityRef('component:default/test_component', [], {
         auth: mockServices.auth(),
-        catalogClient,
+        catalog,
       }),
     ).resolves.toEqual(['user:default/foo']);
   });
 
   it('should resolve group owner of entity from entity ref', async () => {
-    const catalogClient = catalogServiceMock({
+    const catalog = catalogServiceMock({
       entities: [
         {
           apiVersion: 'backstage.io/v1alpha1',
@@ -159,7 +159,7 @@ describe('getUsersForEntityRef', () => {
     await expect(
       getUsersForEntityRef('component:default/test_component', [], {
         auth: mockServices.auth(),
-        catalogClient,
+        catalog,
       }),
     ).resolves.toEqual(['user:default/foo']);
   });

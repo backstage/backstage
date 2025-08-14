@@ -407,7 +407,7 @@ describe('PermissionClient', () => {
                 },
                 {
                   id: req.body.items[1].id,
-                  result: [AuthorizeResult.DENY],
+                  result: AuthorizeResult.DENY,
                 },
                 {
                   id: req.body.items[2].id,

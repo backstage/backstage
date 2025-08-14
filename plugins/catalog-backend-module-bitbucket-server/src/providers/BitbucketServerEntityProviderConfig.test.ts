@@ -49,6 +49,8 @@ describe('readProviderConfigs', () => {
         repoSlug: undefined,
         skipArchivedRepos: undefined,
       },
+      schedule: undefined,
+      validateLocationsExist: false,
     });
   });
 
@@ -89,6 +91,8 @@ describe('readProviderConfigs', () => {
         repoSlug: undefined,
         skipArchivedRepos: undefined,
       },
+      schedule: undefined,
+      validateLocationsExist: false,
     });
     expect(providerConfigs[1]).toEqual({
       id: 'secondaryProvider',
@@ -99,6 +103,8 @@ describe('readProviderConfigs', () => {
         repoSlug: undefined,
         skipArchivedRepos: undefined,
       },
+      schedule: undefined,
+      validateLocationsExist: false,
     });
     expect(providerConfigs[2]).toEqual({
       id: 'thirdProvider',
@@ -109,6 +115,7 @@ describe('readProviderConfigs', () => {
         repoSlug: undefined,
         skipArchivedRepos: undefined,
       },
+      validateLocationsExist: false,
       schedule: {
         frequency: { minutes: 30 },
         timeout: {
@@ -147,6 +154,36 @@ describe('readProviderConfigs', () => {
         repoSlug: /.*/,
         skipArchivedRepos: true,
       },
+      schedule: undefined,
+      validateLocationsExist: false,
+    });
+  });
+
+  it('single simple provider config with validateLocationsExist', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            host: 'bitbucket.mycompany.com',
+            validateLocationsExist: true,
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(1);
+    expect(providerConfigs[0]).toEqual({
+      id: 'default',
+      catalogPath: '/catalog-info.yaml',
+      host: 'bitbucket.mycompany.com',
+      filters: {
+        projectKey: undefined,
+        repoSlug: undefined,
+        skipArchivedRepos: undefined,
+      },
+      schedule: undefined,
+      validateLocationsExist: true,
     });
   });
 });

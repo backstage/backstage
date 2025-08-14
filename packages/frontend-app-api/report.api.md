@@ -8,7 +8,9 @@ import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendFeature as FrontendFeature_2 } from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
@@ -26,19 +28,37 @@ export type CreateAppRouteBinder = <
 ) => void;
 
 // @public
-export function createSpecializedApp(options?: {
-  features?: FrontendFeature[];
-  config?: ConfigApi;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  apis?: ApiHolder;
-  extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
-}): {
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   apis: ApiHolder;
   tree: AppTree;
 };
 
-// @public @deprecated (undocumented)
-export type FrontendFeature = FrontendFeature_2;
+// @public
+export type CreateSpecializedAppOptions = {
+  features?: FrontendFeature[];
+  config?: ConfigApi;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  advanced?: {
+    apis?: ApiHolder;
+    allowUnknownExtensionConfig?: boolean;
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+    pluginInfoResolver?: FrontendPluginInfoResolver;
+  };
+};
+
+// @public
+export type FrontendPluginInfoResolver = (ctx: {
+  packageJson(): Promise<JsonObject | undefined>;
+  manifest(): Promise<JsonObject | undefined>;
+  defaultResolver(sources: {
+    packageJson: JsonObject | undefined;
+    manifest: JsonObject | undefined;
+  }): Promise<{
+    info: FrontendPluginInfo;
+  }>;
+}) => Promise<{
+  info: FrontendPluginInfo;
+}>;
 ```

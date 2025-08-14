@@ -92,6 +92,12 @@ describe('readProviderConfigs', () => {
                 visibility: ['public', 'internal'],
               },
             },
+            providerWithArchiveFilter: {
+              organization: 'test-org6',
+              filters: {
+                allowArchived: true,
+              },
+            },
             providerWithHost: {
               organization: 'test-org1',
               host: 'ghe.internal.com',
@@ -111,7 +117,7 @@ describe('readProviderConfigs', () => {
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(9);
+    expect(providerConfigs).toHaveLength(10);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -126,6 +132,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -144,6 +151,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -162,6 +170,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -180,6 +189,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -198,6 +208,7 @@ describe('readProviderConfigs', () => {
           exclude: ['backstage-exclude'],
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -216,6 +227,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -234,11 +246,31 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: ['public', 'internal'],
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[7]).toEqual({
+      id: 'providerWithArchiveFilter',
+      organization: 'test-org6',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: undefined,
+        allowArchived: true,
+      },
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
+      validateLocationsExist: false,
+    });
+    expect(providerConfigs[8]).toEqual({
       id: 'providerWithHost',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -252,11 +284,12 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       validateLocationsExist: false,
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
     });
-    expect(providerConfigs[8]).toEqual({
+    expect(providerConfigs[9]).toEqual({
       id: 'providerWithSchedule',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -270,6 +303,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: {
         frequency: { minutes: 30 },

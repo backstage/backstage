@@ -99,6 +99,10 @@ export class WinstonLogger implements RootLoggerService {
       add(newRedactions) {
         let added = 0;
         for (const redactionToTrim of newRedactions) {
+          // Skip null or undefined values
+          if (redactionToTrim === null || redactionToTrim === undefined) {
+            continue;
+          }
           // Trimming the string ensures that we don't accdentally get extra
           // newlines or other whitespace interfering with the redaction; this
           // can happen for example when using string literals in yaml

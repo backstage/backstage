@@ -9,8 +9,8 @@ policy:
             keys: ['Auth']
           - name: 'area:catalog'
             keys: ['Catalog']
-          - name: 'area:core'
-            keys: ['Core Framework', 'CLI Tooling']
+          - name: 'area:framework'
+            keys: ['Core Framework']
           - name: 'area:design-system'
             keys: ['Design System']
           - name: 'area:documentation'
@@ -25,6 +25,8 @@ policy:
             keys: ['Notifications']
           - name: 'area:openapi-tooling'
             keys: ['OpenAPI Tooling']
+          - name: 'area:operations'
+            keys: ['Management of this repository']
           - name: 'area:permission'
             keys: ['Permission Framework']
           - name: 'area:search'
@@ -33,6 +35,8 @@ policy:
             keys: ['Software Templates']
           - name: 'area:techdocs'
             keys: ['TechDocs']
+          - name: 'area:tooling'
+            keys: ['CLI Tooling']
       - id: ['integration']
         block-list: []
         label:

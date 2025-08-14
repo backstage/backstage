@@ -2,7 +2,6 @@
 id: discovery
 title: AWS S3 Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from an AWS S3 Bucket
 ---
 

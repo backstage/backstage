@@ -1,5 +1,189 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-auth-node@0.6.6-next.0
+  - @backstage/plugin-notifications-node@0.2.18-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-signals-node@0.1.23-next.0
+
+## 0.5.8
+
+### Patch Changes
+
+- 4401dfb: Allow defining default notification settings via configuration
+- 9a5a73f: Fix `addTopic` migration when `user_settings` present
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.5
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-notifications-node@0.2.17
+  - @backstage/plugin-signals-node@0.1.22
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+  - @backstage/plugin-notifications-common@0.0.10-next.0
+  - @backstage/plugin-signals-node@0.1.22-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-notifications-node@0.2.17-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- 9a5a73f: Fix `addTopic` migration when `user_settings` present
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-notifications-node@0.2.16
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.9
+  - @backstage/plugin-signals-node@0.1.21
+
+## 0.5.7
+
+### Patch Changes
+
+- 41d4d6e: Notifications are now automatically deleted after 1 year by default.
+
+  There is a new scheduled task that runs every 24 hours to delete notifications older than 1 year.
+  This can be configured by setting the `notifications.retention` in the `app-config.yaml` file.
+
+  ```yaml
+  notifications:
+    retention: 1y
+  ```
+
+  If the retention is set to false, notifications will not be automatically deleted.
+
+- 8a150bf: Internal changes to switch to the non-alpha `catalogServiceRef`
+- 1fb5f06: Adds ability for user to turn on/off notifications for specific topics within an origin.
+- ef9ab82: Notifications API will now return user as null always for broadcast notifications
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.0.9
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-notifications-node@0.2.16
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-signals-node@0.1.21
+
+## 0.5.7-next.2
+
+### Patch Changes
+
+- 8a150bf: Internal changes to switch to the non-alpha `catalogServiceRef`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-notifications-common@0.0.9-next.0
+  - @backstage/plugin-notifications-node@0.2.16-next.1
+  - @backstage/plugin-signals-node@0.1.21-next.1
+
+## 0.5.7-next.1
+
+### Patch Changes
+
+- 1fb5f06: Adds ability for user to turn on/off notifications for specific topics within an origin.
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-notifications-common@0.0.9-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-notifications-node@0.2.16-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-signals-node@0.1.21-next.1
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+  - @backstage/plugin-notifications-node@0.2.16-next.0
+  - @backstage/plugin-signals-node@0.1.21-next.0
+
+## 0.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-notifications-node@0.2.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.20
+
+## 0.5.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.15-next.2
+  - @backstage/plugin-signals-node@0.1.20-next.2
+
 ## 0.5.6-next.1
 
 ### Patch Changes

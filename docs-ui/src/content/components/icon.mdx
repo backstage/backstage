@@ -1,0 +1,36 @@
+import { PropsTable } from '@/components/PropsTable';
+import { IconSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  iconPropDefs,
+  iconUsageSnippet,
+  iconDefaultSnippet,
+} from './icon.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Icon"
+  description="Icons are used to represent an action or a state."
+/>
+
+<Snippet
+  py={4}
+  align="center"
+  preview={<IconSnippet story="Default" />}
+  code={iconDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={iconUsageSnippet} />
+
+## API reference
+
+<PropsTable data={iconPropDefs} />
+
+<Theming component="Icon" />
+
+<ChangelogComponent component="icon" />

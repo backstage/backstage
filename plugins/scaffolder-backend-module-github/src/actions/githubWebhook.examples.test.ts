@@ -53,7 +53,7 @@ describe('github:webhook examples', () => {
   const defaultWebhookSecret = 'aafdfdivierernfdk23f';
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext();
 

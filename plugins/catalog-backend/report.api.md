@@ -135,11 +135,7 @@ export function transformLegacyPolicyToProcessor(
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {
-  constructor(options: {
-    reader: UrlReaderService;
-    logger: LoggerService;
-    config?: Config;
-  });
+  constructor(options: { reader: UrlReaderService; logger: LoggerService });
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

@@ -6,4 +6,4 @@ metadata:
 spec:
   lifecycle: experimental
   type: backstage-common-library
-  owner: maintainers
+  owner: framework-maintainers

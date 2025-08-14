@@ -52,6 +52,11 @@ export interface Config {
               skipArchivedRepos?: boolean;
             };
             /**
+             * (Optional) Whether to validate locations that exist before emitting them.
+             * Default: `false`.
+             */
+            validateLocationsExist?: boolean;
+            /**
              * (Optional) TaskScheduleDefinition for the refresh.
              */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
@@ -83,6 +88,11 @@ export interface Config {
                  */
                 skipArchivedRepos?: boolean;
               };
+              /**
+               * (Optional) Whether to validate locations that exist before emitting them.
+               * Default: `false`.
+               */
+              validateLocationsExist?: boolean;
               /**
                * (Optional) TaskScheduleDefinition for the refresh.
                */

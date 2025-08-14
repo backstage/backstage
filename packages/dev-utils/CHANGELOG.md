@@ -1,5 +1,158 @@
 # @backstage/dev-utils
 
+## 1.1.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/app-defaults@1.6.5-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration-react@1.2.9
+
+## 1.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/integration-react@1.2.9
+
+## 1.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-app-api@1.18.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/app-defaults@1.6.4
+
+## 1.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-app-api@1.18.0-next.1
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/app-defaults@1.6.4-next.2
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+
+## 1.1.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/core-app-api@1.17.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/integration-react@1.2.9-next.1
+  - @backstage/app-defaults@1.6.4-next.1
+
+## 1.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.9-next.0
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/app-defaults@1.6.4-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-plugin-api@1.10.8
+
+## 1.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/app-defaults@1.6.3
+  - @backstage/integration-react@1.2.8
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.1
+  - @backstage/theme@0.6.6
+
+## 1.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/app-defaults@1.6.3-next.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/theme@0.6.6
+
+## 1.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/app-defaults@1.6.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/integration-react@1.2.7
+  - @backstage/theme@0.6.6
+
+## 1.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+  - @backstage/integration-react@1.2.7
+
+## 1.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.6
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/app-defaults@1.6.2
+  - @backstage/integration-react@1.2.7
+
+## 1.1.10-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.17.0-next.1
+  - @backstage/app-defaults@1.6.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/integration-react@1.2.7-next.3
+  - @backstage/theme@0.6.6-next.0
+
 ## 1.1.10-next.2
 
 ### Patch Changes

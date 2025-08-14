@@ -20,6 +20,8 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
 const useStyles = makeStyles((theme: Theme) => ({
   tabs: {
@@ -49,6 +51,7 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
   const classes = useStyles();
   const { setPageCursor, setTypes, types } = useSearch();
   const { defaultValue, types: givenTypes } = props;
+  const { t } = useTranslationRef(searchTranslationRef);
 
   const changeTab = (_: ChangeEvent<{}>, newType: string) => {
     setTypes(newType !== '' ? [newType] : []);
@@ -66,7 +69,7 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
   const definedTypes = [
     {
       value: '',
-      name: 'All',
+      name: t('searchType.tabs.allTitle'),
     },
     ...givenTypes,
   ];

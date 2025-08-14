@@ -7,9 +7,10 @@ import { ContentBlock } from '@site/src/components/contentBlock/contentBlock';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
 import React, { useState } from 'react';
-
+import ThemedImage from '@theme/ThemedImage';
 import homeStyles from './home.module.scss';
 import { HubSpotNewAdoptersForm } from './_hubSpotNewAdoptersForm';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 const hiddenNewsletterBannerKey = 'hiddenNewsletterBanner';
 
@@ -528,10 +529,13 @@ const HomePage = () => {
               incubation project
             </h2>
 
-            <img
-              src={`${siteConfig.baseUrl}img/cncf-white.svg`}
+            <ThemedImage
               alt="CNCF Logo"
               height="100px"
+              sources={{
+                light: useBaseUrl(`${siteConfig.baseUrl}img/cncf-color.svg`),
+                dark: useBaseUrl(`${siteConfig.baseUrl}img/cncf-white.svg`),
+              }}
             />
           </div>
         </BannerSection>

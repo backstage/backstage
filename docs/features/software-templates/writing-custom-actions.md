@@ -12,7 +12,7 @@ by writing custom actions which can be used alongside our
 
 When adding custom actions, the actions array will **replace the
 built-in actions too**. Meaning, you will no longer be able to use them.
-If you want to continue using the builtin actions, include them in the actions
+If you want to continue using the builtin actions, include them in the `actions`
 array when registering your custom actions, as seen below.
 
 :::
@@ -52,19 +52,20 @@ its generated unit test. We will replace the existing placeholder code with our 
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
-import { z } from 'zod';
+import { type z } from 'zod';
 
 export const createNewFileAction = () => {
   return createTemplateAction({
     id: 'acme:file:create',
     description: 'Create an Acme file.',
     schema: {
-      input: z.object({
-        contents: z.string().describe('The contents of the file'),
-        filename: z
-          .string()
-          .describe('The filename of the file that will be created'),
-      }),
+      input: {
+        contents: z => z.string({ description: 'The contents of the file' }),
+        filename: z =>
+          z.string({
+            description: 'The filename of the file that will be created',
+          }),
+      },
     },
 
     async handler(ctx) {
@@ -95,53 +96,11 @@ The `createTemplateAction` takes an object which specifies the following:
   function using `ctx.output`
 - `handler` - the actual code which is run as part of the action, with a context
 
-You can also choose to define your custom action using JSON schema instead of `zod`:
-
-```ts title="With JSON Schema"
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { writeFile } from 'fs';
-
-export const createNewFileAction = () => {
-  return createTemplateAction<{ contents: string; filename: string }>({
-    id: 'acme:file:create',
-    description: 'Create an Acme file.',
-    schema: {
-      input: {
-        required: ['contents', 'filename'],
-        type: 'object',
-        properties: {
-          contents: {
-            type: 'string',
-            title: 'Contents',
-            description: 'The contents of the file',
-          },
-          filename: {
-            type: 'string',
-            title: 'Filename',
-            description: 'The filename of the file that will be created',
-          },
-        },
-      },
-    },
-    async handler(ctx) {
-      const { signal } = ctx;
-      await writeFile(
-        resolveSafeChildPath(ctx.workspacePath, ctx.input.filename),
-        ctx.input.contents,
-        { signal },
-        _ => {},
-      );
-    },
-  });
-};
-```
-
 ### Naming Conventions
 
 Try to keep names consistent for both your own custom actions, and any actions contributed to open source. We've found
 that a separation of `:` and using a verb as the last part of the name works well.
-We follow `provider:entity:verb` or as close to this as possible for our built in actions. For example,
+We follow `provider:entity:verb` or as close to this as possible for our built-in actions. For example,
 `github:actions:create` or `github:repo:create`.
 
 Also feel free to use your company name to namespace them if you prefer too, for example `acme:file:create` like above.
@@ -151,11 +110,15 @@ and writing of template entity definitions.
 
 ### Adding a TemplateExample
 
-A TemplateExample is a predefined structure that can be used to create custom actions in your software templates. It
-serves as a blueprint for users to understand how to use a specific action and its fields as well as to ensure
-consistency and standardization across different custom actions.
+A TemplateExample is a way to document different ways that your custom action can be used. Once added, it will be visible
+in your Backstage instance under the [/create/actions](https://demo.backstage.io/create/actions) path. You can have multiple
+examples for one action that can demonstrate different combinations of inputs and how to use them.
 
-#### Define a TemplateExample and add to your Custom Action
+#### Define TemplateExamples
+
+Below is a sample TemplateExample that is used for `publish:github`. The source code is available
+on [GitHub](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-github/src/actions/github.examples.ts)
+and preview on [demo.backstage.io/create/actions](https://demo.backstage.io/create/actions#publish-github)
 
 ```ts title="With JSON Schema"
 import { TemplateExample } from '@backstage/plugin-scaffolder-node';
@@ -163,15 +126,33 @@ import yaml from 'yaml';
 
 export const examples: TemplateExample[] = [
   {
-    description: 'Template Example for Creating an Acme file',
+    description: 'Initializes a GitHub repository with a description.',
     example: yaml.stringify({
       steps: [
         {
-          action: 'acme:file:create',
-          name: 'Create an Acme file.',
+          id: 'publish',
+          action: 'publish:github',
+          name: 'Publish to GitHub',
           input: {
-            contents: 'file contents...',
-            filename: 'ACME.properties',
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            description: 'Initialize a git repository',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Initializes a GitHub repository with public repo visibility, if not set defaults to private',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:github',
+          name: 'Publish to GitHub',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            repoVisibility: 'public',
           },
         },
       ],
@@ -180,23 +161,27 @@ export const examples: TemplateExample[] = [
 ];
 ```
 
-Add the example to `createTemplateAction` by including the `examples` property:
+#### Register TemplateExample with your custom action
+
+It is also crucial
+to [register](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-github/src/actions/github.ts#L126)
+the `TemplateExample` when calling `createTemplateAction` by including the `examples`
+property.
 
 ```ts
 return createTemplateAction({
-  id: 'acme:file:create',
-  description: 'Create an Acme file',
-  schema: {
-    input: {
-      contents: d => d.string().describe('The contents of the file'),
-      filename: d =>
-        d.string().describe('The filename of the file that will be created'),
-    },
-  },
+  id: 'publish:github',
+  description:
+    'Initializes a git repository of contents in workspace and publishes it to GitHub.',
   examples,
   // ...rest of the action configuration
 });
 ```
+
+#### Test TemplateAction examples
+
+It is also possible to test your example TemplateActions. You can see a sample test
+on [GitHub](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-github/src/actions/github.examples.test.ts)
 
 ### The context object
 
@@ -208,13 +193,12 @@ argument. It looks like the following:
   implement [idempotency of the actions](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency)
   by not re-running the same function again if it was
   executed successfully on the previous run.
-- `ctx.logger` - a Winston logger for additional logging inside your action
-- `ctx.logStream` - a stream version of the logger if needed
+- `ctx.logger` - a [LoggerService](../../backend-system/core-services/logger.md) instance for additional logging inside your action
 - `ctx.workspacePath` - a string of the working directory of the template run
 - `ctx.input` - an object which should match the `zod` or JSON schema provided in the
   `schema.input` part of the action definition
 - `ctx.output` - a function which you can call to set outputs that match the
-  JSON schema or `zod` in `schema.output` for ex. `ctx.output('downloadUrl', myDownloadUrl)`
+  `zod` schema in `schema.output` for ex. `ctx.output('downloadUrl', myDownloadUrl)`
 - `createTemporaryDirectory` a function to call to give you a temporary
   directory somewhere on the runner, so you can store some files there rather
   than polluting the `workspacePath`
@@ -223,7 +207,7 @@ argument. It looks like the following:
 
 ## Registering Custom Actions
 
-To register your new custom action in the Backend System you will need to create a backend module. Here is a very
+To register your new custom action in the Backend System, you will need to create a backend module. Here is a very
 simplified example of how to do that:
 
 ```ts title="packages/backend/src/index.ts"
@@ -301,8 +285,8 @@ const res = await ctx.checkpoint?.({
 });
 ```
 
-You have to define the unique key in scope of the scaffolder task for your checkpoint. During the execution task engine
-will check if the checkpoint with such key was already executed or not, if yes, and the run was successful, the callback
+You have to define the unique key in the scope of the scaffolder task for your checkpoint. During the execution task engine
+will check if the checkpoint with such a key was already executed or not, if yes, and the run was successful, the callback
 will be skipped and instead the stored value will be returned.
 
 Whenever you change the return type of the checkpoint, we encourage you to change the ID.

@@ -15,14 +15,18 @@
  */
 
 import { configApiRef } from '@backstage/core-plugin-api';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   SearchContextProvider,
   searchApiRef,
 } from '@backstage/plugin-search-react';
 import { SearchType } from './SearchType';
-import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 
 describe('SearchType', () => {
   const initialState = {
@@ -53,7 +57,7 @@ describe('SearchType', () => {
 
   describe('Type Filter', () => {
     it('Renders field name and values when provided as props', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [configApiRef, configApiMock],
@@ -85,7 +89,7 @@ describe('SearchType', () => {
     });
 
     it('Renders correctly based on type filter state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [configApiRef, configApiMock],
@@ -123,7 +127,7 @@ describe('SearchType', () => {
     });
 
     it('Renders correctly based on type filter defaultValue', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [configApiRef, configApiMock],
@@ -156,7 +160,7 @@ describe('SearchType', () => {
     });
 
     it('Selecting a value sets type filter state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [configApiRef, configApiMock],
@@ -199,7 +203,7 @@ describe('SearchType', () => {
     });
 
     it('Selecting none defaults to empty state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [configApiRef, configApiMock],

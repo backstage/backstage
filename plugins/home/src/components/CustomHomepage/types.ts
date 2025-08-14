@@ -46,6 +46,10 @@ export type CustomHomepageGridProps = {
    */
   config?: LayoutConfiguration[];
   /**
+   * Title displayed in the header of the grid. If not provided, no title will be shown.
+   */
+  title?: string;
+  /**
    * Height of grid row in pixels.
    * @defaultValue 60
    */
@@ -95,7 +99,7 @@ export type CustomHomepageGridProps = {
   allowOverlap?: boolean;
   /**
    * Controls if widgets can collide with each other. If true, grid items won't change position when being dragged over.
-   * @defaultValue false
+   * @defaultValue true
    */
   preventCollision?: boolean;
 };

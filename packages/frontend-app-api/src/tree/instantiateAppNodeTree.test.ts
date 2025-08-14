@@ -15,15 +15,19 @@
  */
 
 import {
-  AnyExtensionDataRef,
   AppNode,
   Extension,
+  ExtensionDataRef,
+  ExtensionDefinition,
+  ExtensionFactoryMiddleware,
   ExtensionInput,
   PortableSchema,
   ResolvedExtensionInput,
   createExtension,
+  createExtensionBlueprint,
   createExtensionDataRef,
   createExtensionInput,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import {
   createAppNodeInstance,
@@ -56,7 +60,7 @@ function makeSpec<TConfig, TConfigInput>(
     attachTo: extension.attachTo,
     disabled: extension.disabled,
     extension: extension as Extension<unknown, unknown>,
-    source: undefined,
+    plugin: createFrontendPlugin({ pluginId: 'app' }),
     ...spec,
   };
 }
@@ -89,7 +93,7 @@ function makeInstanceWithId<TConfig, TConfigInput>(
 }
 
 function createV1ExtensionInput(
-  extensionData: Record<string, AnyExtensionDataRef>,
+  extensionData: Record<string, ExtensionDataRef>,
   options: { singleton?: boolean; optional?: boolean } = {},
 ) {
   return {
@@ -107,7 +111,7 @@ function createV1Extension(opts: {
   name?: string;
   attachTo?: { id: string; input: string };
   inputs?: Record<string, ReturnType<typeof createV1ExtensionInput>>;
-  output: Record<string, AnyExtensionDataRef>;
+  output: Record<string, ExtensionDataRef>;
   configSchema?: PortableSchema<any, any>;
   factory: (ctx: { inputs: any; config: any }) => any;
 }): Extension<any, any> {
@@ -954,6 +958,127 @@ describe('instantiateAppNodeTree', () => {
           }),
         ).toThrow(
           "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
+        );
+      });
+
+      it('should throw if extension factories do not provide an iterable object', () => {
+        function createInstance(
+          extension: ExtensionDefinition,
+          middleware?: ExtensionFactoryMiddleware,
+        ) {
+          return createAppNodeInstance({
+            extensionFactoryMiddleware: middleware,
+            apis: testApis,
+            node: makeNode(
+              resolveExtensionDefinition(extension, { namespace: 'test' }),
+            ),
+            attachments: new Map(),
+          });
+        }
+
+        const baseOpts = {
+          attachTo: { id: 'ignored', input: 'ignored' },
+          output: [testDataRef],
+        };
+
+        const badFactory = () => 'not-iterable' as any;
+        const goodFactory = () => [testDataRef('test')];
+
+        expect(() =>
+          createInstance(
+            createExtension({
+              attachTo: { id: 'ignored', input: 'ignored' },
+              output: [testDataRef],
+              factory: badFactory,
+            }),
+          ),
+        ).toThrow(
+          `Failed to instantiate extension 'test', extension factory did not provide an iterable object`,
+        );
+
+        expect(() =>
+          createInstance(
+            createExtension({
+              ...baseOpts,
+              factory: goodFactory,
+            }).override({
+              factory: badFactory,
+            }),
+          ),
+        ).toThrow(
+          `Failed to instantiate extension 'test', extension factory override did not provide an iterable object`,
+        );
+
+        // Bad middleware
+        expect(() =>
+          createInstance(
+            createExtension({
+              ...baseOpts,
+              factory: goodFactory,
+            }),
+            () => 'not-iterable' as any,
+          ),
+        ).toThrow(
+          `Failed to instantiate extension 'test', extension factory middleware did not provide an iterable object`,
+        );
+
+        expect(() =>
+          createInstance(
+            createExtensionBlueprint({
+              kind: 'test',
+              ...baseOpts,
+              factory: badFactory,
+            }).make({ params: {} }),
+          ),
+        ).toThrow(
+          `Failed to instantiate extension 'test:test', extension factory did not provide an iterable object`,
+        );
+
+        // Using makeWithOverrides
+        expect(() =>
+          createInstance(
+            createExtensionBlueprint({
+              kind: 'test',
+              ...baseOpts,
+              factory: goodFactory,
+            }).makeWithOverrides({
+              factory: badFactory,
+            }),
+          ),
+        ).toThrow(
+          `Failed to instantiate extension 'test:test', extension factory did not provide an iterable object`,
+        );
+
+        // Using makeWithOverrides and factory middleware
+        expect(() =>
+          createInstance(
+            createExtensionBlueprint({
+              kind: 'test',
+              ...baseOpts,
+              factory: goodFactory,
+            }).makeWithOverrides({
+              factory: badFactory,
+            }),
+            orig => orig(),
+          ),
+        ).toThrow(
+          `Failed to instantiate extension 'test:test', extension factory did not provide an iterable object`,
+        );
+
+        // Using makeWithOverrides and factory middleware
+        expect(() =>
+          createInstance(
+            createExtensionBlueprint({
+              kind: 'test',
+              ...baseOpts,
+              factory: badFactory,
+            }).makeWithOverrides({
+              factory: orig => orig({ params: {} }),
+            }),
+            orig => orig(),
+          ),
+        ).toThrow(
+          `Failed to instantiate extension 'test:test', original blueprint factory did not provide an iterable object`,
         );
       });
 

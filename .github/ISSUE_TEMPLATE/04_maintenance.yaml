@@ -48,6 +48,7 @@ body:
         - Events System
         - Home
         - Kubernetes Plugin
+        - Management of this repository
         - Microsite
         - Notifications
         - OpenAPI Tooling

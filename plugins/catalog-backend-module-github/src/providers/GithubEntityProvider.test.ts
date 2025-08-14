@@ -940,6 +940,54 @@ describe('GithubEntityProvider', () => {
         expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
         expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
       });
+
+      it('should process when orgs case-insensitive match', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            organization: 'test-org',
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({ org: 'Test-Org' });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+      });
+
+      it('should fail with incorrect branch matching', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            catalogPath: '**/catalog-info.yaml',
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          catalogFile: {
+            action: 'added',
+            path: 'folder1/folder2/folder3/catalog-info.yaml',
+          },
+          ref: 'refs/heads/my-main-branch',
+        });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
     });
 
     describe('on repository event', () => {
@@ -1187,6 +1235,36 @@ describe('GithubEntityProvider', () => {
 
           expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
             0,
+          );
+        });
+
+        it('applies update when orgs case-insensitive match', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              organization: 'test-org',
+              filters: {
+                topic: {
+                  include: ['backstage-include'],
+                },
+              },
+            },
+          });
+
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('edited');
+          event.eventPayload.organization!.login = 'Test-Org';
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            1,
           );
         });
       });

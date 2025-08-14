@@ -25,7 +25,7 @@ import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import { resolve as resolvePath, posix, relative as relativePath } from 'path';
 import { paths } from '../../../../lib/paths';
-import { publishPreflightCheck } from '../../../../lib/publishing';
+import { publishPreflightCheck } from '../../lib/publishing';
 
 /**
  * A mutable object representing a package.json file with potential fixes.

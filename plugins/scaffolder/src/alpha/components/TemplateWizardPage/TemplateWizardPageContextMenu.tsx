@@ -26,6 +26,7 @@ import MoreVert from '@material-ui/icons/MoreVert';
 import { SyntheticEvent, useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -82,7 +83,7 @@ export function TemplateWizardPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
-          <MenuItem onClick={() => window.open(editUrl, '_blank')}>
+          <MenuItem component={Link} to={editUrl}>
             <ListItemIcon>
               <Edit fontSize="small" />
             </ListItemIcon>

@@ -19,6 +19,9 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const scaffolderTranslationRef = createTranslationRef({
   id: 'scaffolder',
   messages: {
+    aboutCard: {
+      launchTemplate: 'Launch Template',
+    },
     actionsPage: {
       title: 'Installed actions',
       pageTitle: 'Create a New Component',
@@ -50,6 +53,10 @@ export const scaffolderTranslationRef = createTranslationRef({
         title: 'Tags',
         description:
           "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters",
+      },
+      multiEntityPicker: {
+        title: 'Entity',
+        description: 'An entity from the catalog',
       },
       myGroupsPicker: {
         title: 'Entity',
@@ -219,6 +226,7 @@ export const scaffolderTranslationRef = createTranslationRef({
         functions: {
           title: 'Functions',
           notAvailable: 'There are no global template functions defined.',
+          metadataAbsent: 'Function metadata unavailable',
           schema: {
             arguments: 'Arguments',
             output: 'Output',

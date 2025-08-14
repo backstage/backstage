@@ -4,6 +4,7 @@
 
 ```ts
 import { AuditorService } from '@backstage/backend-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -275,14 +276,17 @@ export namespace mockServices {
         partialImpl?: Partial<LoggerService> | undefined,
       ) => ServiceMock<LoggerService>;
   }
+  export function permissions(options?: {
+    result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+  }): PermissionsService;
   // (undocumented)
   export namespace permissions {
-    const // (undocumented)
-      factory: () => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<PermissionsService> | undefined,
-      ) => ServiceMock<PermissionsService>;
+    const factory: (options?: {
+      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    }) => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
+    const mock: (
+      partialImpl?: Partial<PermissionsService> | undefined,
+    ) => ServiceMock<PermissionsService>;
   }
   // (undocumented)
   export namespace permissionsRegistry {

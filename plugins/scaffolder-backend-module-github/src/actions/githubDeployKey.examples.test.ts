@@ -52,7 +52,7 @@ describe('Usage examples', () => {
     },
   });
   const integrations = ScmIntegrations.fromConfig(config);
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext();
 

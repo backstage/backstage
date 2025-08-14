@@ -35,11 +35,17 @@ export type GcpIapResult = {
 export namespace gcpIapSignInResolvers {
   const emailMatchingUserEntityAnnotation: SignInResolverFactory<
     GcpIapResult,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
   const idMatchingUserEntityAnnotation: SignInResolverFactory<
     GcpIapResult,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 

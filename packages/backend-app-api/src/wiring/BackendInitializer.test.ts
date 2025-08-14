@@ -1134,4 +1134,68 @@ describe('BackendInitializer', () => {
     backend.add(instanceMetadataPlugin);
     await backend.start();
   });
+
+  it('should properly wait for all modules that consume an extension point to really finish, before starting the module that provides that extension point', async () => {
+    expect.assertions(3);
+    const backend = new BackendInitializer(baseFactories);
+    const ext = createExtensionPoint<{ hello: (message: string) => void }>({
+      id: 'a',
+    });
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    const producerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'producer',
+      register(reg) {
+        const hello = jest.fn();
+        reg.registerExtensionPoint(ext, { hello });
+        reg.registerInit({
+          deps: {},
+          async init() {
+            // we must not have been initialized before both of the consuming modules have been initialized
+            expect(hello).toHaveBeenCalledTimes(2);
+            expect(hello).toHaveBeenNthCalledWith(1, 'fast');
+            expect(hello).toHaveBeenNthCalledWith(2, 'slow');
+          },
+        });
+      },
+    });
+    const fastConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'fast-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            x.hello('fast');
+          },
+        });
+      },
+    });
+    const slowConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'slow-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            x.hello('slow');
+          },
+        });
+      },
+    });
+    await backend.add(plugin);
+    await backend.add(producerModule);
+    await backend.add(fastConsumerModule);
+    await backend.add(slowConsumerModule);
+    await backend.start();
+  });
 });

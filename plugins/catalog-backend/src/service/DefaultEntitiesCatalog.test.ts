@@ -525,7 +525,7 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'should return both target and targetRef for entities',
+      'should return both target and targetRef for entities in compat mode',
       async databaseId => {
         await createDatabase(databaseId);
         await addEntity(
@@ -557,6 +557,7 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: mockServices.logger.mock(),
           stitcher,
+          enableRelationsCompatibility: true,
         });
 
         const res = await catalog.entities();

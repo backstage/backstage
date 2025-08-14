@@ -32,7 +32,10 @@ interface PackageDetectionConfig {
 function readPackageDetectionConfig(
   config: Config,
 ): PackageDetectionConfig | undefined {
-  const packages = config.getOptional('app.experimental.packages');
+  // The experimental key is deprecated, but supported still for backwards compatibility
+  const packages =
+    config.getOptional('app.packages') ??
+    config.getOptional('app.experimental.packages');
   if (packages === undefined || packages === null) {
     return undefined;
   }
@@ -40,21 +43,16 @@ function readPackageDetectionConfig(
   if (typeof packages === 'string') {
     if (packages !== 'all') {
       throw new Error(
-        `Invalid app.experimental.packages mode, got '${packages}', expected 'all'`,
+        `Invalid app.packages mode, got '${packages}', expected 'all'`,
       );
     }
     return {};
   }
 
   if (typeof packages !== 'object' || Array.isArray(packages)) {
-    throw new Error(
-      "Invalid config at 'app.experimental.packages', expected object",
-    );
+    throw new Error("Invalid config at 'app.packages', expected object");
   }
-  const packagesConfig = new ConfigReader(
-    packages,
-    'app.experimental.packages',
-  );
+  const packagesConfig = new ConfigReader(packages, 'app.packages');
 
   return {
     include: packagesConfig.getOptionalStringArray('include'),

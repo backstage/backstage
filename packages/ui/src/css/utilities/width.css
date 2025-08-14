@@ -1,0 +1,86 @@
+.bui-w {
+  width: var(--width);
+}
+
+.bui-min-w {
+  min-width: var(--min-width);
+}
+
+.bui-max-w {
+  max-width: var(--max-width);
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:bui-w {
+    width: var(--width);
+  }
+
+  .xs\:bui-min-w {
+    min-width: var(--min-width);
+  }
+
+  .xs\:bui-max-w {
+    max-width: var(--max-width);
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:bui-w {
+    width: var(--width);
+  }
+
+  .sm\:bui-min-w {
+    min-width: var(--min-width);
+  }
+
+  .sm\:bui-max-w {
+    max-width: var(--max-width);
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:bui-w {
+    width: var(--width);
+  }
+
+  .md\:bui-min-w {
+    min-width: var(--min-width);
+  }
+
+  .md\:bui-max-w {
+    max-width: var(--max-width);
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:bui-w {
+    width: var(--width);
+  }
+
+  .lg\:bui-min-w {
+    min-width: var(--min-width);
+  }
+
+  .lg\:bui-max-w {
+    max-width: var(--max-width);
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:bui-w {
+    width: var(--width);
+  }
+
+  .xl\:bui-min-w {
+    min-width: var(--min-width);
+  }
+
+  .xl\:bui-max-w {
+    max-width: var(--max-width);
+  }
+}

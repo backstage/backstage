@@ -923,6 +923,17 @@ describe('GithubUrlReader', () => {
       await expect(r5.files[0].content()).resolves.toEqual(
         Buffer.from('# Test\n'),
       );
+
+      const r6 = await reader.search(
+        `${baseUrl}/backstage/mock/tree/main/{M,m}kdocs.yml`,
+      );
+      expect(r6.files.length).toBe(1);
+      expect(r6.files[0].url).toBe(
+        `${baseUrl}/backstage/mock/tree/main/mkdocs.yml`,
+      );
+      await expect(r6.files[0].content()).resolves.toEqual(
+        Buffer.from('site_name: Test\n'),
+      );
     }
 
     // eslint-disable-next-line jest/expect-expect

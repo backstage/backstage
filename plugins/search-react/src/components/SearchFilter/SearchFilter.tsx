@@ -31,6 +31,8 @@ import {
 } from './SearchFilter.Autocomplete';
 import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 import { ensureFilterValueWithLabel, FilterValue } from './types';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 const useStyles = makeStyles({
   label: {
@@ -165,6 +167,7 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     values: givenValues,
     valuesDebounceMs,
   } = props;
+  const { t } = useTranslationRef(searchReactTranslationRef);
   useDefaultFilterValue(name, defaultValue);
   const asyncValues =
     typeof givenValues === 'function' ? givenValues : undefined;
@@ -179,7 +182,10 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     valuesDebounceMs,
   );
   const allOptionValue = useRef(uuid());
-  const allOption = { value: allOptionValue.current, label: 'All' };
+  const allOption = {
+    value: allOptionValue.current,
+    label: t('searchFilter.allOptionTitle'),
+  };
   const { filters, setFilters } = useSearch();
 
   const handleChange = (value: SelectedItems) => {

@@ -5,7 +5,6 @@
 ```ts
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -256,7 +255,7 @@ export class PinnipedHelper {
   constructor(logger: LoggerService);
   // (undocumented)
   tokenCredentialRequest(
-    clusterDetails: ClusterDetails_2,
+    clusterDetails: ClusterDetails,
     pinnipedParams: PinnipedParameters,
   ): Promise<PinnipedClientCerts>;
 }

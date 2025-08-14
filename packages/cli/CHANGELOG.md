@@ -1,5 +1,252 @@
 # @backstage/cli
 
+## 0.34.0-next.2
+
+### Minor Changes
+
+- 923ceb2: **BREAKING**: The new app build based on [Rspack](https://rspack.dev/) is now the default, and the `EXPERIMENTAL_RSPACK` flag has been removed. To revert to the old behavior, set the `LEGACY_WEBPACK_BUILD` environment flag and install the following optional dependencies:
+
+  ```json
+  {
+    "dependencies": {
+      "@module-federation/enhanced": "^0.9.0",
+      "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
+      "esbuild-loader": "^4.0.0",
+      "eslint-webpack-plugin": "^4.2.0",
+      "fork-ts-checker-webpack-plugin": "^9.0.0",
+      "mini-css-extract-plugin": "^2.4.2",
+      "terser-webpack-plugin": "^5.1.3",
+      "webpack": "^5.96.0",
+      "webpack-dev-server": "^5.0.0"
+    }
+  }
+  ```
+
+  If you do encounter a blocking issue that forces you to use the old WebPack build, please [open an issue](https://github.com/backstage/backstage/issues) explaining the problem. The WebPack build will be removed in a future release.
+
+- eda80c7: **BREAKING**: Removed support for `.icon.svg` imports, which have been deprecated since the 1.19 release.
+
+### Patch Changes
+
+- 8b1bf6e: Deprecated new frontend system config setting `app.experimental.packages` to just `app.packages`. The old config will continue working for the time being, but may be removed in a future release.
+- ead626f: The Node.js transform in `@backstage/cli/config/nodeTransformHooks.mjs` now supports the built-in type stripping in Node.js, which is enabled by default from v22.18.0.
+
+## 0.34.0-next.1
+
+### Minor Changes
+
+- 38b4243: Added plugin and module templates for the new frontend system. These templates are not included by default, but can be included by adding `@backstage/cli/templates/new-frontend-plugin` and `@backstage/cli/templates/new-frontend-plugin-module` as [custom templates](https://backstage.io/docs/tooling/cli/templates#installing-custom-templates).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/integration@1.17.1
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.33.2-next.0
+
+### Patch Changes
+
+- a6af768: Allow js files to be processed by the nodeTransform loader
+- Updated dependencies
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/integration@1.17.1
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.33.1
+
+### Patch Changes
+
+- 50f0ce6: Fixes a module not found error when running `backstage-cli info`.
+- Updated dependencies
+  - @backstage/config-loader@1.10.2
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/integration@1.17.1
+
+## 0.33.1-next.2
+
+### Patch Changes
+
+- 50f0ce6: Fixes a module not found error when running `backstage-cli info`.
+
+## 0.33.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2-next.0
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+
+## 0.33.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.33.0
+
+### Minor Changes
+
+- eef0e83: Internal update to promote the modular CLI entrypoint to stable.
+
+### Patch Changes
+
+- d07fe35: Added user feedback when opening config docs in browser. The command now clearly indicates what it's doing and provides fallback instructions if the browser fails to open.
+- ce70439: The `BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE` flag has been removed. Existing users are encouraged to switch to `EXPERIMENTAL_RSPACK` instead.
+- 1d8f00b: Switched to using the `ModuleFederationPlugin` from `@module-federation/enhanced/rspack` for Rspack, rather than the built-in one.
+- 2b9633f: The experimental `FORCE_REACT_DEVELOPMENT` flag has been removed.
+- d8c4a54: Only use the caching Jest module loader for frontend packages in order to avoid breaking real ESM module imports.
+- d6d63c7: Updating the scaffolder action boilerplate to use new `zod` schema
+- e36e855: Added `backstage.pluginId` field in `package.json` to all default plugin package templates for the `new` command.
+- 1bab255: Internal refactor to combine alpha `build` and `start` modules.
+- 713e957: fix: merge eslint reports when using json format
+- 8a0164c: Fix an issue where some commands were not usable because of missing dist files
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.33.0-next.2
+
+### Patch Changes
+
+- 8a0164c: Fix an issue where some commands were not usable because of missing dist files
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.11-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.33.0-next.1
+
+### Minor Changes
+
+- eef0e83: Internal update to promote the modular CLI entrypoint to stable.
+
+### Patch Changes
+
+- d07fe35: Added user feedback when opening config docs in browser. The command now clearly indicates what it's doing and provides fallback instructions if the browser fails to open.
+- d6d63c7: Updating the scaffolder action boilerplate to use new `zod` schema
+- e36e855: Added `backstage.pluginId` field in `package.json` to all default plugin package templates for the `new` command.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.17.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.32.2-next.0
+
+### Patch Changes
+
+- ce70439: The `BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE` flag has been removed. Existing users are encouraged to switch to `EXPERIMENTAL_RSPACK` instead.
+- 1d8f00b: Switched to using the `ModuleFederationPlugin` from `@module-federation/enhanced/rspack` for Rspack, rather than the built-in one.
+- 2b9633f: The experimental `FORCE_REACT_DEVELOPMENT` flag has been removed.
+- d8c4a54: Only use the caching Jest module loader for frontend packages in order to avoid breaking real ESM module imports.
+- 1bab255: Internal refactor to combine alpha `build` and `start` modules.
+- 713e957: fix: merge eslint reports when using json format
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.17.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.32.1
+
+### Patch Changes
+
+- 674def9: fix: enable `lazyCompilation` and `refreshOptions` for rspack
+- d649df0: Internal code cleanup
+- c2cae47: Add missing modules to the Backstage CLI alpha entrypoint.
+- 3f45861: Add a warning for React 17 deprecation that triggers when frontend packages and plugins start.
+- 9aaec54: Internal refactor of opaque type handling.
+- 9285385: Added `info` object to the context of the alpha CLI.
+- 6cc9507: Updated dependency `@octokit/request` to `^8.0.0`.
+- 5cd3c54: Updated dependency `react-refresh` to `^0.17.0`.
+- 72d019d: Removed various typos
+- 19a4e7c: Internal refactor to move things closer to home
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/release-manifests@0.0.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.1
+
+## 0.32.1-next.3
+
+### Patch Changes
+
+- 674def9: fix: enable `lazyCompilation` and `refreshOptions` for rspack
+- 19a4e7c: Internal refactor to move things closer to home
+- Updated dependencies
+  - @backstage/release-manifests@0.0.13-next.0
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.1
+
 ## 0.32.1-next.2
 
 ### Patch Changes

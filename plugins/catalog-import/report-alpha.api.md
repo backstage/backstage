@@ -5,7 +5,9 @@
 ```ts
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
-import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/core-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -26,6 +28,8 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'importInfoCard.fileLinkTitle': 'Link to an existing entity file';
     readonly 'importInfoCard.examplePrefix': 'Example: ';
     readonly 'importInfoCard.fileLinkDescription': 'The wizard analyzes the file, previews the entities, and adds them to the {{appTitle}} catalog.';
+    readonly 'importInfoCard.exampleDescription': 'The wizard discovers all {{catalogFilename}} files in the repository, previews the entities, and adds them to the {{appTitle}} catalog.';
+    readonly 'importInfoCard.preparePullRequestDescription': 'If no entities are found, the wizard will prepare a Pull Request that adds an example {{catalogFilename}} and prepares the {{appTitle}} catalog to load all entities as soon as the Pull Request is merged.';
     readonly 'importInfoCard.githubIntegration.label': 'GitHub only';
     readonly 'importInfoCard.githubIntegration.title': 'Link to a repository';
     readonly 'importStepper.finish.title': 'Finish';
@@ -65,6 +69,7 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'stepInitAnalyzeUrl.error.locations': 'There are no entities at this location';
     readonly 'stepInitAnalyzeUrl.urlHelperText': 'Enter the full path to your entity file to start tracking your component';
     readonly 'stepInitAnalyzeUrl.nextButtonText': 'Analyze';
+    readonly 'stepPrepareCreatePullRequest.description': 'You entered a link to a {{integrationType}} repository but a {{catalogFilename}} could not be found. Use this form to open a Pull Request that creates one.';
     readonly 'stepPrepareCreatePullRequest.nextButtonText': 'Create PR';
     readonly 'stepPrepareCreatePullRequest.previewPr.title': 'Preview Pull Request';
     readonly 'stepPrepareCreatePullRequest.previewPr.subheader': 'Create a new Pull Request';
@@ -94,15 +99,15 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'page:catalog-import': ExtensionDefinition<{
       kind: 'page';
@@ -114,9 +119,9 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -125,7 +130,8 @@ const _default: FrontendPlugin<
           >;
       inputs: {};
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };

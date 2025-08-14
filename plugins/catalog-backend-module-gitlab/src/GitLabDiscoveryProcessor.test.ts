@@ -72,7 +72,7 @@ function setupFakeServer(
         assertion(req);
       }
 
-      if (req.headers.get('private-token') !== 'test-token') {
+      if (req.headers.get('authorization') !== 'Bearer test-token') {
         return res(ctx.status(401), ctx.json({}));
       }
       const page = req.url.searchParams.get('page');
@@ -104,8 +104,11 @@ function setupFakeServer(
     rest.head(
       `${API_URL}/projects/:project_path/repository/files/:file_path`,
       (req, res, ctx) => {
-        if (req.headers.get('private-token') !== 'test-token') {
-          return res(ctx.status(401), ctx.json({}));
+        if (req.headers.get('authorization') !== 'Bearer test-token') {
+          return res(
+            ctx.status(401),
+            ctx.json({ message: '401 Unauthorized' }),
+          );
         }
         const ref = req.url.searchParams.get('ref');
 

@@ -130,7 +130,7 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
           }
         }
       } catch (e: any) {
-        setError(e?.data?.error?.message ?? e.message);
+        setError(e?.body?.error?.message ?? e.message);
         setSubmitted(false);
       }
     },

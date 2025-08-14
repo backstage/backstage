@@ -1,5 +1,41 @@
 # @backstage/plugin-permission-react
 
+## 0.4.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/core-plugin-api@1.10.9
+
+## 0.4.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.4.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.9.0
+
+## 0.4.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/config@1.3.2
+
 ## 0.4.34-next.1
 
 ### Patch Changes

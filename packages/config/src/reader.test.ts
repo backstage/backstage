@@ -171,6 +171,7 @@ describe('ConfigReader', () => {
     expect(config.getOptionalString('x_x')).toBeUndefined();
     expect(config.getOptionalString('x-X')).toBeUndefined();
     expect(config.getOptionalString('x0')).toBeUndefined();
+    expect(config.getOptionalString('x-2')).toBeUndefined();
     expect(config.getOptionalString('X-x2')).toBeUndefined();
     expect(config.getOptionalString('x0_x0')).toBeUndefined();
     expect(config.getOptionalString('x_x-x_x')).toBeUndefined();

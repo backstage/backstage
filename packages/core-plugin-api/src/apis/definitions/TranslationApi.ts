@@ -16,7 +16,7 @@
 
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { Expand, ExpandRecursive, Observable } from '@backstage/types';
-import { TranslationRef } from '../../translation';
+import { TranslationRef } from '../../translation/TranslationRef';
 import { JSX } from 'react';
 
 /**

@@ -109,7 +109,6 @@ const DEFAULT_ENTITIES_RESPONSE = {
 describe('SlackNotificationProcessor', () => {
   const logger = mockServices.logger.mock();
   const auth = mockServices.auth();
-  const discovery = mockServices.discovery();
   const config = mockServices.rootConfig({
     data: {
       app: {
@@ -136,7 +135,6 @@ describe('SlackNotificationProcessor', () => {
 
     const processor = SlackNotificationProcessor.fromConfig(config, {
       auth,
-      discovery,
       logger,
       catalog: catalogServiceMock({
         entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -199,7 +197,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -275,7 +272,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -310,7 +306,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -366,7 +361,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(broadcastConfig, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -405,7 +399,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -429,7 +422,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: [DEFAULT_ENTITIES_RESPONSE.items[2]],
@@ -469,7 +461,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -515,7 +506,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -600,7 +590,6 @@ describe('SlackNotificationProcessor', () => {
       const slack = new WebClient();
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -641,7 +630,6 @@ describe('SlackNotificationProcessor', () => {
       const slack = new WebClient();
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,

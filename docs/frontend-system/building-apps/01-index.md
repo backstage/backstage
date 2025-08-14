@@ -2,7 +2,6 @@
 id: index
 title: Building Frontend Apps
 sidebar_label: Overview
-# prettier-ignore
 description: Building frontend apps using the new frontend system
 ---
 

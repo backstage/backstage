@@ -42,6 +42,10 @@ import {
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
 
 /**
  * @public
@@ -132,6 +136,11 @@ export interface CatalogService {
     locationRef: string,
     options: CatalogServiceRequestOptions,
   ): Promise<ValidateEntityResponse>;
+
+  analyzeLocation(
+    location: AnalyzeLocationRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<AnalyzeLocationResponse>;
 }
 
 class DefaultCatalogService implements CatalogService {
@@ -297,6 +306,16 @@ class DefaultCatalogService implements CatalogService {
     return this.#catalogApi.validateEntity(
       entity,
       locationRef,
+      await this.#getOptions(options),
+    );
+  }
+
+  async analyzeLocation(
+    location: AnalyzeLocationRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<AnalyzeLocationResponse> {
+    return this.#catalogApi.analyzeLocation(
+      location,
       await this.#getOptions(options),
     );
   }

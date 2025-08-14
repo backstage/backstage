@@ -107,6 +107,9 @@ export const homePage = (
 );
 ```
 
+> [!NOTE]
+> You can provide a title to the grid by passing it as a prop: `<CustomHomepageGrid title="Your Dashboard" />`. This will be displayed as a header above the grid layout.
+
 ### Creating Customizable Components
 
 The custom home page can use the default components created by using the default `createCardExtension` method but if you

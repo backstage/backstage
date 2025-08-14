@@ -56,6 +56,7 @@ export function createSendNotificationAction(options: {
             .optional()
             .describe('Notification severity'),
         scope: z => z.string().optional().describe('Notification scope'),
+        topic: z => z.string().optional().describe('Notification topic'),
         optional: z =>
           z
             .boolean()
@@ -73,6 +74,7 @@ export function createSendNotificationAction(options: {
         info,
         link,
         severity,
+        topic,
         scope,
         optional,
       } = ctx.input;
@@ -94,6 +96,7 @@ export function createSendNotificationAction(options: {
         description: info,
         link,
         severity,
+        topic,
         scope,
       };
 

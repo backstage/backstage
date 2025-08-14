@@ -50,6 +50,8 @@ import {
   WidgetSchema,
 } from './types';
 import { CardConfig } from '@backstage/plugin-home-react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 // eslint-disable-next-line new-cap
 const ResponsiveGrid = WidthProvider(Responsive);
@@ -222,6 +224,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   const getWidgetNameFromKey = (key: string) => {
     return key.split('__')[0];
   };
+  const { t } = useTranslationRef(homeTranslationRef);
 
   const handleAdd = (widget: Widget) => {
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
@@ -321,7 +324,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
 
   return (
     <>
-      <ContentHeader title="">
+      <ContentHeader title={props.title}>
         <CustomHomepageButtons
           editMode={editMode}
           numWidgets={widgets.length}
@@ -340,7 +343,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       </Dialog>
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
-          No widgets added. Start by clicking the 'Add widget' button.
+          {t('customHomepage.noWidgets')}
         </Typography>
       )}
       <ResponsiveGrid

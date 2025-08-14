@@ -1,7 +1,6 @@
 ---
 id: adrs-adr005
 title: 'ADR005: Catalog Core Entities'
-# prettier-ignore
 description: Architecture Decision Record (ADR) log on Catalog Core Entities
 ---
 

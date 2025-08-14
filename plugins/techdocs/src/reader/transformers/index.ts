@@ -28,3 +28,4 @@ export * from './onCssReady';
 export * from './scrollIntoNavigation';
 export * from './transformer';
 export * from './handleMetaRedirects';
+export * from './addNavLinkKeyboardToggle';

@@ -137,6 +137,7 @@ export interface AzureCredentialsManager {
 // @public
 export type AzureDevOpsCredential =
   | AzureClientSecretCredential
+  | AzureManagedIdentityClientAssertionCredential
   | AzureManagedIdentityCredential
   | PersonalAccessTokenCredential;
 
@@ -144,11 +145,13 @@ export type AzureDevOpsCredential =
 export type AzureDevOpsCredentialKind =
   | 'PersonalAccessToken'
   | 'ClientSecret'
-  | 'ManagedIdentity';
+  | 'ManagedIdentity'
+  | 'ManagedIdentityClientAssertion';
 
 // @public
 export type AzureDevOpsCredentialLike = Omit<
   Partial<AzureClientSecretCredential> &
+    Partial<AzureManagedIdentityClientAssertionCredential> &
     Partial<AzureManagedIdentityCredential> &
     Partial<PersonalAccessTokenCredential>,
   'kind'
@@ -205,9 +208,18 @@ export type AzureIntegrationConfig = {
 };
 
 // @public
+export type AzureManagedIdentityClientAssertionCredential =
+  AzureCredentialBase & {
+    kind: 'ManagedIdentityClientAssertion';
+    tenantId: string;
+    clientId: string;
+    managedIdentityClientId: 'system-assigned' | string;
+  };
+
+// @public
 export type AzureManagedIdentityCredential = AzureCredentialBase & {
   kind: 'ManagedIdentity';
-  clientId: string;
+  clientId: 'system-assigned' | string;
 };
 
 // @public
@@ -576,6 +588,7 @@ export function getGitilesAuthenticationUrl(
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<string>;
 
 // @public

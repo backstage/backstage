@@ -10,6 +10,7 @@ Airbrakes
 ajv
 Alaria
 Alef
+allowedHosts
 allowlisted
 Anddddd
 Apdex
@@ -43,6 +44,7 @@ bugfixes
 builtins
 bundler
 bundlers
+bursty
 callout
 CDNs
 Chai
@@ -89,6 +91,7 @@ CVEs
 daemonsets
 Datadog
 dataflow
+dataloader
 dayjs
 debounce
 debounces
@@ -101,6 +104,8 @@ deliverables
 denormalized
 dependabot
 deps
+dequeue
+dequeueing
 deserialization
 destructured
 destructuring
@@ -110,8 +115,6 @@ devcontainer
 devcontainers
 devops
 devs
-dequeue
-dequeueing
 dialogs
 disambiguator
 discoverability
@@ -149,8 +152,8 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
-Flightcontrol
 flightcontrol
+Flightcontrol
 Francesco
 Frontside
 Gaurav
@@ -174,8 +177,8 @@ Hackathons
 haproxy
 hardcoded
 hardcoding
-Harness
 harness
+Harness
 Helidon
 Henneke
 Heroku
@@ -198,9 +201,10 @@ Indal
 indexable
 ingestors
 inlined
-inlining
 inlinehilite
+inlining
 integrator's
+intellij
 interop
 interoperate
 iterable
@@ -284,6 +288,7 @@ namespaced
 namespaces
 Namespaces
 namespacing
+navbar
 neuro
 newrelic
 nginx
@@ -303,6 +308,7 @@ oidc
 Okta
 Olausson
 Oldsberg
+onboarded
 onboarding
 Onboarding
 onelogin
@@ -310,14 +316,16 @@ OpenSearch
 OpenShift
 openssl
 orgs
-Overridable
 overridable
+Overridable
 padding
 paddings
 pagerduty
 pageview
 Pandey
 parallelization
+param
+params
 parseable
 Patrik
 pattison
@@ -362,6 +370,7 @@ readonly
 rebase
 rebasing
 Recharts
+redactions
 Redash
 redis
 reimplement
@@ -371,6 +380,7 @@ replicasets
 repo
 Repo
 repos
+requestors
 rerender
 rerenders
 resourcequotas
@@ -380,8 +390,11 @@ Reusability
 roadmaps
 rollbar
 rollout
+rollouts
 Roboto
+rollbar
 Rollbar
+rollout
 Rollup
 routable
 Routable
@@ -397,9 +410,10 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
-scrollbar
 SCM
 SCMs
+scrollable
+scrollbar
 sdks
 seb
 semlas
@@ -407,14 +421,15 @@ semver
 sendmail
 serializable
 Serverless
+severities
 shoutout
 SIG
 signoff
 SIGs
 siloed
 Sinon
-snackbars
 snackbar
+snackbars
 Snyk
 Sonarqube
 sourcemaps
@@ -431,6 +446,7 @@ statefulsets
 stdout
 storable
 storages
+Streamable
 stringified
 stringify
 subcommand
@@ -451,6 +467,7 @@ Superfences
 superset
 supertype
 SVGs
+swappable
 talkdesk
 Talkdesk
 Tanzu
@@ -484,6 +501,7 @@ transpiled
 transpiler
 transpilers
 truthy
+tsconfig
 TSDoc
 typeahead
 ui
@@ -534,7 +552,4 @@ zod
 Zolotusky
 zoomable
 zsh
-scrollable
-severities
-intellij
-tsconfig
+resizable

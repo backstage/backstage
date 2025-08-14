@@ -1,5 +1,32 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+
+## 0.9.5
+
+### Patch Changes
+
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/types@1.2.1
+
 ## 0.9.5-next.0
 
 ### Patch Changes

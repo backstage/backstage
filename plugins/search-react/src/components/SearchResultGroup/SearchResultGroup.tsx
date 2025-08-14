@@ -51,6 +51,8 @@ import { useSearchResultListItemExtensions } from '../../extensions';
 
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResultState, SearchResultStateProps } from '../SearchResult';
+import { searchReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 const useStyles = makeStyles((theme: Theme) => ({
   listSubheader: {
@@ -356,6 +358,7 @@ export function SearchResultGroupLayout<FilterOption>(
 ) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { t } = useTranslationRef(searchReactTranslationRef);
 
   const {
     error,
@@ -365,7 +368,7 @@ export function SearchResultGroupLayout<FilterOption>(
     titleProps = {},
     link = (
       <>
-        See all
+        {t('searchResultGroup.linkTitle')}
         <ArrowRightIcon className={classes.listSubheaderLinkIcon} />
       </>
     ),
@@ -387,7 +390,7 @@ export function SearchResultGroupLayout<FilterOption>(
     ),
     disableRenderingWithNoResults,
     noResultsComponent = disableRenderingWithNoResults ? null : (
-      <EmptyState missing="data" title="Sorry, no results were found" />
+      <EmptyState missing="data" title={t('noResultsDescription')} />
     ),
     ...rest
   } = props;
@@ -434,7 +437,7 @@ export function SearchResultGroupLayout<FilterOption>(
             component="button"
             icon={<AddIcon />}
             variant="outlined"
-            label="Add filter"
+            label={t('searchResultGroup.addFilterButtonTitle')}
             aria-controls="filters-menu"
             aria-haspopup="true"
             onClick={handleClick}

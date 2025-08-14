@@ -295,6 +295,28 @@ export type AuthApiCreateOptions = {
 };
 
 // @public
+export type AuthConnector<AuthSession> = {
+  createSession(
+    options: AuthConnectorCreateSessionOptions,
+  ): Promise<AuthSession>;
+  refreshSession(
+    options?: AuthConnectorRefreshSessionOptions,
+  ): Promise<AuthSession>;
+  removeSession(): Promise<void>;
+};
+
+// @public (undocumented)
+export type AuthConnectorCreateSessionOptions = {
+  scopes: Set<string>;
+  instantPopup?: boolean;
+};
+
+// @public (undocumented)
+export type AuthConnectorRefreshSessionOptions = {
+  scopes: Set<string>;
+};
+
+// @public
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
@@ -523,7 +545,9 @@ export class OAuth2
     SessionApi
 {
   // (undocumented)
-  static create(options: OAuth2CreateOptions): OAuth2;
+  static create(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ): OAuth2;
   // (undocumented)
   getAccessToken(
     scope?: string | string[],
@@ -538,6 +562,13 @@ export class OAuth2
   // (undocumented)
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
   // (undocumented)
+  static normalizeScopes(
+    scopes?: string | string[],
+    options?: {
+      scopeTransform: (scopes: string[]) => string[];
+    },
+  ): Set<string>;
+  // (undocumented)
   sessionState$(): Observable<SessionState>;
   // (undocumented)
   signIn(): Promise<void>;
@@ -549,6 +580,13 @@ export class OAuth2
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
+};
+
+// @public
+export type OAuth2CreateOptionsWithAuthConnector = {
+  scopeTransform?: (scopes: string[]) => string[];
+  defaultScopes?: string[];
+  authConnector: AuthConnector<OAuth2Session>;
 };
 
 // @public
@@ -598,6 +636,19 @@ export type OneLoginAuthCreateOptions = {
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
   provider?: AuthProviderInfo;
+};
+
+// @public
+export function openLoginPopup(
+  options: OpenLoginPopupOptions,
+): Promise<unknown>;
+
+// @public
+export type OpenLoginPopupOptions = {
+  url: string;
+  name: string;
+  width?: number;
+  height?: number;
 };
 
 // @public

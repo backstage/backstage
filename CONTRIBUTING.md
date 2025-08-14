@@ -388,7 +388,7 @@ Once you've submitted a Pull Request (PR) the various bots will come out and do 
 - adding labels to help make reviewing PRs easier
 - checking for missing changesets or confirming them
 - checking for commits for their DCO (Developer Certificate of Origin)
-- kick of the various CI builds
+- kick off the various CI builds
 
 Once these steps are completed, it's just a matter of being patient. As the reviewers have time, they will begin reviewing your PR. When the review process begins, there may be a few layers to this, but the general rule is that you need approval from one of the core maintainers and one from the specific area impacted by your PR. You may also have someone from the community review your changes. This can really help speed things up as they may catch some early items making the review for the maintainers simpler. Once you have the two (2) approvals, it's ready to be merged, a task that is also performed by the maintainers.
 

@@ -15,15 +15,15 @@
  */
 
 import {
-  RootConfigService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import {
-  Request,
-  Response,
   ErrorRequestHandler,
   NextFunction,
+  Request,
   RequestHandler,
+  Response,
 } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -37,12 +37,14 @@ import {
   InputError,
   NotAllowedError,
   NotFoundError,
+  NotImplementedError,
   NotModifiedError,
-  ServiceUnavailableError,
   serializeError,
+  ServiceUnavailableError,
 } from '@backstage/errors';
-import { NotImplementedError } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
+import { RateLimitStoreFactory } from '../../../lib/RateLimitStoreFactory.ts';
+import { rateLimitMiddleware } from '../../../lib/rateLimitMiddleware.ts';
 
 type LogMeta = {
   date: string;
@@ -225,6 +227,47 @@ export class MiddlewareFactory {
    */
   cors(): RequestHandler {
     return cors(readCorsOptions(this.#config.getOptionalConfig('backend')));
+  }
+
+  /**
+   * Returns a middleware that implements rate limiting.
+   *
+   * @remarks
+   *
+   * Rate limiting is a common technique to prevent abuse of APIs. This middleware is
+   * configured using the config key `backend.rateLimit`.
+   *
+   * @returns An Express request handler
+   */
+  rateLimit(): RequestHandler {
+    const enabled = this.#config.has('backend.rateLimit');
+    if (!enabled) {
+      return (_req: Request, _res: Response, next: NextFunction) => {
+        next();
+      };
+    }
+
+    const useDefaults = this.#config.getOptional('backend.rateLimit') === true;
+    const rateLimitOptions = useDefaults
+      ? undefined
+      : this.#config.getOptionalConfig('backend.rateLimit');
+
+    // Global rate limiting disabled
+    if (
+      rateLimitOptions &&
+      rateLimitOptions.getOptionalBoolean('global') === false
+    ) {
+      return (_req: Request, _res: Response, next: NextFunction) => {
+        next();
+      };
+    }
+
+    return rateLimitMiddleware({
+      store: useDefaults
+        ? undefined
+        : RateLimitStoreFactory.create({ config: this.#config }),
+      config: rateLimitOptions,
+    });
   }
 
   /**

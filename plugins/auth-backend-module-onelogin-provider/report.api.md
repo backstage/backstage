@@ -24,7 +24,10 @@ export const oneLoginAuthenticator: OAuthAuthenticator<
 export namespace oneLoginSignInResolvers {
   const usernameMatchingUserEntityName: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

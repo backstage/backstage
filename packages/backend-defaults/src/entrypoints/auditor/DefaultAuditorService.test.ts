@@ -83,7 +83,7 @@ describe('DefaultAuditorService', () => {
     expect(logFn).toHaveBeenLastCalledWith({
       eventId: 'test-event',
       status: 'failed',
-      error: error.toString(),
+      error,
       plugin: 'test',
       severityLevel: 'low',
       actor: {},
@@ -135,7 +135,7 @@ describe('DefaultAuditorService', () => {
         initiated: 'test',
         failed: 'test',
       },
-      error: error.toString(),
+      error,
       plugin: 'test',
       severityLevel: 'low',
       actor: {},

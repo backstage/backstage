@@ -1,0 +1,10 @@
+---
+title: Spacelift.io
+author: Spacelift.io
+authorUrl: https://spacelift.io/
+category: Infrastructure
+description: The Spacelift plugin allows you to manage your infrastructure directly from Backstage. Visualize your IaC stacks and trigger runs with ease.
+documentation: https://docs.spacelift.io/integrations/external-integrations/backstage
+iconUrl: https://avatars.githubusercontent.com/u/53318513?s=200&v=4
+npmPackageName: '@spacelift-io/backstage-integration-frontend'
+addedDate: '2025-06-10'

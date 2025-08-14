@@ -59,7 +59,7 @@ spec:
 
   # here's the steps that are executed in series in the scaffolder backend
   steps:
-    - id: fetch-base
+    - id: fetchBase
       name: Fetch Base
       action: fetch:template
       input:
@@ -68,7 +68,7 @@ spec:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
 
-    - id: fetch-docs
+    - id: fetchDocs
       name: Fetch Docs
       action: fetch:plain
       input:
@@ -79,7 +79,6 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: 'main'
@@ -88,7 +87,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   # some outputs which are saved along with the job for use in the frontend
@@ -274,6 +273,58 @@ spec:
         password: ${{ secrets.password }}
 ```
 
+You can also consume secrets within `each` step of the template.
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: v1beta3-demo
+  title: Test Action template
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Authentication
+      description: Provide authentication for the resource
+      required:
+        - service1
+        - token1
+        - service2
+        - token2
+      properties:
+        service1:
+          type: string
+        token1:
+          type: string
+          ui:field: Secret
+        service2:
+          type: string
+        token2:
+          type: string
+          ui:field: Secret
+
+  steps:
+    - id: setupAuthentication
+      action: auth:create
+      each:
+        [
+          {
+            name: '${{ parameters.service1 }}',
+            token: '${{ secrets.token1 }}',
+          },
+          {
+            name: '${{ parameters.service2 }}',
+            token: '${{ secrets.token2 }}',
+          },
+        ]
+      input:
+        name: ${{ each.value.name }}
+        token: ${{ each.value.token }}
+```
+
 ### Custom step layouts
 
 If you find that the default layout of the form used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).
@@ -315,7 +366,7 @@ your first set of parameter fields would be shown. The same goes for the nested 
 spec. Make sure to use the key `backstage:featureFlag` in your templates if
 you want to use this functionality.
 
-Feature Flags cannot be used in `spec.steps[].if`(the conditional on whether to execute an step/action). But you can use feature flags to display parameters that allow for skipping steps.
+Feature Flags cannot be used in `spec.steps[].if`(the conditional on whether to execute a step/action). But you can use feature flags to display parameters that allow for skipping steps.
 
 ```yaml
 spec:
@@ -453,7 +504,6 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
         # here's where the secret can be used
@@ -572,7 +622,7 @@ The `steps` is an array of the things that you want to happen part of this
 template. These follow the same standard format:
 
 ```yaml
-- id: fetch-base # A unique id for the step
+- id: fetchBase # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
   if: ${{ parameters.name }} # Optional condition, skip the step if not truthy
   each: ${{ parameters.iterable }} # Optional iterable, run the same step multiple times
@@ -582,6 +632,14 @@ template. These follow the same standard format:
     values:
       name: ${{ parameters.name }}
 ```
+
+:::warning Action ID Naming
+
+When using custom actions, **use camelCase for action IDs** to avoid issues with template expressions. Action IDs with dashes will cause expressions like `${{ steps.my-action.output.value }}` to return `NaN` instead of the expected value.
+
+Use `myAction` instead of `my-action`, or access outputs with bracket notation: `${{ steps['my-action'].output.value }}`.
+
+:::
 
 By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
@@ -674,7 +732,7 @@ spec:
           default: false
   ...
   steps:
-    - id: fetch-base
+    - id: fetchBase
       name: Fetch Base
       action: fetch:template
       input:
@@ -711,9 +769,9 @@ powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
 To learn more about basic Nunjucks templating please see
 [templating documentation](https://mozilla.github.io/nunjucks/templating.html).
 
-Information about Backstage's built-in Nunjucks extensions, as well as how to
+Information about Backstage's built-in templating extensions, as well as how to
 create your own customizations, may be found at
-[Template Extensions](./template-extensions.md).
+[Templating Extensions](./templating-extensions.md).
 
 ## Template Editor
 
@@ -749,7 +807,7 @@ Have in mind that changes in this form will not be saved on the template and is 
 
 ### Custom Field Explorer
 
-The custom filed explorer allows you to select any custom field loaded on the backstage instance and test different values and configurations.
+The custom field explorer allows you to select any custom field loaded on the backstage instance and test different values and configurations.
 
 ## Presentation
 

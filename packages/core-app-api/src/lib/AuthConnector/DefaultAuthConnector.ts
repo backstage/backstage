@@ -20,8 +20,13 @@ import {
   OAuthRequestApi,
   OAuthRequester,
 } from '@backstage/core-plugin-api';
-import { showLoginPopup } from '../loginPopup';
-import { AuthConnector, CreateSessionOptions, PopupOptions } from './types';
+import { openLoginPopup } from '../loginPopup';
+import {
+  AuthConnector,
+  AuthConnectorCreateSessionOptions,
+  PopupOptions,
+  AuthConnectorRefreshSessionOptions,
+} from './types';
 
 let warned = false;
 
@@ -123,7 +128,9 @@ export class DefaultAuthConnector<AuthSession>
     this.popupOptions = popupOptions;
   }
 
-  async createSession(options: CreateSessionOptions): Promise<AuthSession> {
+  async createSession(
+    options: AuthConnectorCreateSessionOptions,
+  ): Promise<AuthSession> {
     if (options.instantPopup) {
       if (this.enableExperimentalRedirectFlow) {
         return this.executeRedirect(options.scopes);
@@ -133,11 +140,13 @@ export class DefaultAuthConnector<AuthSession>
     return this.authRequester(options.scopes);
   }
 
-  async refreshSession(scopes?: Set<string>): Promise<any> {
+  async refreshSession(
+    options?: AuthConnectorRefreshSessionOptions,
+  ): Promise<any> {
     const res = await fetch(
       await this.buildUrl('/refresh', {
         optional: true,
-        ...(scopes && { scope: this.joinScopesFunc(scopes) }),
+        ...(options && { scope: this.joinScopesFunc(options.scopes) }),
       }),
       {
         headers: {
@@ -203,10 +212,9 @@ export class DefaultAuthConnector<AuthSession>
       ? window.screen.height
       : this.popupOptions?.size?.height || 730;
 
-    const payload = await showLoginPopup({
+    const payload = await openLoginPopup({
       url: popupUrl,
       name: `${this.provider.title} Login`,
-      origin: new URL(popupUrl).origin,
       width,
       height,
     });

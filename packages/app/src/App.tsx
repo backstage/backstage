@@ -27,7 +27,7 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -66,7 +66,6 @@ import AlarmIcon from '@material-ui/icons/Alarm';
 import { Navigate, Route } from 'react-router-dom';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
-import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
 import { DelayingComponentFieldExtension } from './components/scaffolder/customScaffolderExtensions';
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
@@ -84,6 +83,8 @@ import {
   NotificationsPage,
   UserNotificationSettingsCard,
 } from '@backstage/plugin-notifications';
+import { CustomizableHomePage } from './components/home/CustomizableHomePage';
+import { HomePage } from './components/home/HomePage';
 
 const app = createApp({
   apis,
@@ -115,10 +116,20 @@ const app = createApp({
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
+
     {/* TODO(rubenl): Move this to / once its more mature and components exist */}
-    <Route path="/home" element={<HomepageCompositionRoot />}>
-      {homePage}
-    </Route>
+
+    <FeatureFlagged with="customizable-home-page-preview">
+      <Route path="/home" element={<HomepageCompositionRoot />}>
+        <CustomizableHomePage />
+      </Route>
+    </FeatureFlagged>
+    <FeatureFlagged without="customizable-home-page-preview">
+      <Route path="/home" element={<HomepageCompositionRoot />}>
+        <HomePage />
+      </Route>
+    </FeatureFlagged>
+
     <Route
       path="/catalog"
       element={<CatalogIndexPage pagination={{ mode: 'offset', limit: 20 }} />}

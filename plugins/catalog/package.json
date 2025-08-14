@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
-  "version": "1.29.1-next.2",
+  "version": "1.31.2-next.2",
   "description": "The Backstage plugin for browsing the Backstage catalog",
   "backstage": {
     "role": "frontend-plugin",
@@ -72,6 +72,8 @@
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
+    "@backstage/plugin-techdocs-common": "workspace:^",
+    "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",

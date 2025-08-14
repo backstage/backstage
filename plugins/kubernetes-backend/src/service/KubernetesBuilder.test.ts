@@ -27,15 +27,14 @@ import {
   ClusterDetails,
   KubernetesFetcher,
   KubernetesServiceLocator,
-} from '../types/types';
-import { KubernetesCredential } from '../auth/types';
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 import {
   HEADER_KUBERNETES_CLUSTER,
   HEADER_KUBERNETES_AUTH,
 } from './KubernetesProxy';
 import { setupServer } from 'msw/node';
 import {
-  ServiceMock,
   mockCredentials,
   mockServices,
   registerMswTestHooks,
@@ -43,10 +42,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import {
-  PermissionsService,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   AuthMetadata,
   KubernetesObjectsProvider,
@@ -64,11 +60,6 @@ describe('API integration tests', () => {
   const happyK8SResult = {
     items: [{ clusterOne: { pods: [{ metadata: { name: 'pod1' } }] } }],
   };
-  const permissionsMock: ServiceMock<PermissionsService> =
-    mockServices.permissions.mock({
-      authorize: jest.fn(),
-      authorizeConditional: jest.fn(),
-    });
   const minimalValidConfigService = mockServices.rootConfig.factory({
     data: {
       kubernetes: {
@@ -93,13 +84,10 @@ describe('API integration tests', () => {
       },
     });
   const startPermissionDeniedTestServer = async () => {
-    permissionsMock.authorize.mockResolvedValue([
-      { result: AuthorizeResult.DENY },
-    ]);
     const { server } = await startTestBackend({
       features: [
         minimalValidConfigService,
-        permissionsMock.factory,
+        mockServices.permissions.factory({ result: AuthorizeResult.DENY }),
         import('@backstage/plugin-kubernetes-backend'),
       ],
     });

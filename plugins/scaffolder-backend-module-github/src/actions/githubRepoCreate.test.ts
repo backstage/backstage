@@ -80,7 +80,7 @@ describe('github:repo:create', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -279,7 +279,7 @@ describe('github:repo:create', () => {
         ...mockContext.input,
         customProperties: {
           foo: 'bar',
-          foo2: 'bar2',
+          foo2: ['bar2', 'bar3'],
         },
       },
     });
@@ -455,7 +455,7 @@ describe('github:repo:create', () => {
         ...mockContext.input,
         customProperties: {
           foo: 'bar',
-          foo2: 'bar2',
+          foo2: ['bar2', 'bar3'],
         },
       },
     });

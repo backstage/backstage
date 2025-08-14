@@ -15,14 +15,16 @@
  */
 
 import {
-  componentsApiRef,
-  coreComponentRefs,
+  swappableComponentsApiRef,
   coreExtensionData,
   createExtension,
   iconsApiRef,
   useRouteRef as useNewRouteRef,
   createRouteRef as createNewRouteRef,
   useApi,
+  NotFoundErrorPage,
+  ErrorDisplay,
+  Progress,
 } from '@backstage/frontend-plugin-api';
 import {
   createExtensionTester,
@@ -97,13 +99,19 @@ describe('BackwardsCompatProvider', () => {
 
 describe('ForwardsCompatProvider', () => {
   it('should convert the app context', async () => {
+    const defaultComponentRefs = {
+      progress: Progress.ref,
+      notFoundErrorPage: NotFoundErrorPage.ref,
+      errorDisplay: ErrorDisplay.ref,
+    };
+
     function Component() {
-      const components = useApi(componentsApiRef);
+      const components = useApi(swappableComponentsApiRef);
       const icons = useApi(iconsApiRef);
       return (
         <div data-testid="ctx">
           components:{' '}
-          {Object.entries(coreComponentRefs)
+          {Object.entries(defaultComponentRefs)
             .map(
               ([name, ref]) =>
                 `${name}=${Boolean(components.getComponent(ref))}`,
@@ -118,7 +126,7 @@ describe('ForwardsCompatProvider', () => {
     await renderInOldTestApp(compatWrapper(<Component />));
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "components: progress=true, notFoundErrorPage=true, errorBoundaryFallback=true
+      "components: progress=true, notFoundErrorPage=true, errorDisplay=true
       icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning, star, unstarred"
     `);
   });

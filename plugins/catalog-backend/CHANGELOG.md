@@ -1,5 +1,315 @@
 # @backstage/plugin-catalog-backend
 
+## 3.0.1-next.1
+
+### Patch Changes
+
+- 1752be6: Attempt to circumvent event listener memory leak in compression middleware
+- 9dd213c: Make the processing hash calculation not care about the order of the processors.
+
+  This change does not affect the behavior of the catalog, but it will make the processing
+  hash calculation more robust against changes in the order of processors. This should lead to
+  more stable processing hashes, which in turn should lead to fewer unnecessary reprocessing
+  of entities.
+
+  After deploying this fix, you may see a period of increased processing and stitching, but
+  this should stabilize over time as the processing hashes become more consistent.
+
+- fa6fa60: Fixed getLocationByEntity to use `original_value` instead of `value` when querying search table
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.1
+
+## 3.0.1-next.0
+
+### Patch Changes
+
+- 3a7dad9: Updated `better-sqlite3` to v12
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-permission-node@0.10.3-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+
+## 3.0.0
+
+### Major Changes
+
+- 5127ebe: **BREAKING**: The default `catalog.stitchingStrategy` has been switched to `{ mode: 'deferred' }`.
+- d675d96: **BREAKING**: The relations compatibility mode is no longer enabled by default, and the `disableRelationsCompatiblity` flag has been removed. To re-enable relations compatibility, the new `enableRelationsCompatibility` flag can be used instead.
+- 2339363: **BREAKING:** The experimental `catalog.useUrlReadersSearch` configuration flag (introduced in v1.36) has been removed.
+
+  The `UrlReaderProcessor` now always uses the `search` method of `UrlReaders`. Built-in `UrlReaderService` implementations have been updated accordingly.
+  If you use custom `UrlReaderService` implementations, you need to adapt their `search` method to correctly handle both specific URLs and potential
+  search patterns (see changes on built-in readers [in the original PR](https://github.com/backstage/backstage/pull/28379/files#diff-68b0452f173ee54bdd40f7b5e047a9cb8bb59200425622c212c217b76dac1d1b)).
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. Each `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+- 687bfc8: **BREAKING**: The default `catalog.orphanStrategy` has been switched to `'delete'`.
+- 5de7a9d: **BREAKING**: The default `catalog.orphanProviderStrategy` has been switched to `'delete'`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-node@0.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/integration@1.17.1
+  - @backstage/backend-openapi-utils@0.5.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+
+## 3.0.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/backend-openapi-utils@0.5.5-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
+## 3.0.0-next.0
+
+### Major Changes
+
+- 2339363: **BREAKING:** The experimental `catalog.useUrlReadersSearch` configuration flag (introduced in v1.36) has been removed.
+
+  The `UrlReaderProcessor` now always uses the `search` method of `UrlReaders`. Built-in `UrlReaderService` implementations have been updated accordingly.
+  If you use custom `UrlReaderService` implementations, you need to adapt their `search` method to correctly handle both specific URLs and potential
+  search patterns (see changes on built-in readers [in the original PR](https://github.com/backstage/backstage/pull/28379/files#diff-68b0452f173ee54bdd40f7b5e047a9cb8bb59200425622c212c217b76dac1d1b)).
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. Each `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/plugin-permission-node@0.10.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/backend-openapi-utils@0.5.4
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+
+## 2.1.0
+
+### Minor Changes
+
+- 2e7adf0: Implement the action `get-catalog-entity` with the `ActionsRegistry`
+
+### Patch Changes
+
+- 2cac8b0: You can now specify an optional value when applying the `HAS_LABEL` permission rule, similar to the `HAS_ANNOTATION` permission rule.
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- 4654a78: Update `refresh_state_references.id` to be a big int
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/backend-openapi-utils@0.5.4
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1
+
+## 2.0.1-next.2
+
+### Patch Changes
+
+- 2cac8b0: You can now specify an optional value when applying the `HAS_LABEL` permission rule, similar to the `HAS_ANNOTATION` permission rule.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.5.4-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+
+## 2.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/backend-openapi-utils@0.5.4-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- 4654a78: Update `refresh_state_references.id` to be a big int
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+  - @backstage/backend-openapi-utils@0.5.4-next.0
+
+## 2.0.0
+
+### Major Changes
+
+- 90ab044: **BREAKING**: Removed all deprecated exports, and removed support for the old backend system.
+
+  It also removes the `CodeOwnersProcessor` from the default set of processors, because it is expensive to run and has vague semantics. You need to update your backend to add it to the `catalogProcessingExtensionPoint` if you wish to continue using it.
+
+  The following removed exports are available from `@backstage/plugin-catalog-node`:
+
+  - `locationSpecToMetadataName`
+  - `locationSpecToLocationEntity`
+  - `processingResult`
+  - `EntitiesSearchFilter`
+  - `EntityFilter`
+  - `DeferredEntity`
+  - `EntityRelationSpec`
+  - `CatalogProcessor`
+  - `CatalogProcessorParser`
+  - `CatalogProcessorCache`
+  - `CatalogProcessorEmit`
+  - `CatalogProcessorLocationResult`
+  - `CatalogProcessorEntityResult`
+  - `CatalogProcessorRelationResult`
+  - `CatalogProcessorErrorResult`
+  - `CatalogProcessorRefreshKeysResult`
+  - `CatalogProcessorResult`
+  - `EntityProvider`
+  - `EntityProviderConnection`
+  - `EntityProviderMutation`
+  - `AnalyzeOptions`
+  - `LocationAnalyzer`
+  - `ScmLocationAnalyzer`
+  - `PlaceholderResolver`
+  - `PlaceholderResolverParams`
+  - `PlaceholderResolverRead`
+  - `PlaceholderResolverResolveUrl`
+  - `parseEntityYaml`
+
+  The following removed exports are available from `@backstage/plugin-catalog-common`:
+
+  - `LocationSpec`
+  - `AnalyzeLocationRequest`
+  - `AnalyzeLocationResponse`
+  - `AnalyzeLocationExistingEntity`
+  - `AnalyzeLocationGenerateEntity`
+  - `AnalyzeLocationEntityField`
+
+  The following removed exports are instead implemented in the new backend system by `@backstage/plugin-search-backend-module-catalog`:
+
+  - `defaultCatalogCollatorEntityTransformer`
+  - `CatalogCollatorEntityTransformer`
+  - `DefaultCatalogCollator`
+
+  The following exports are removed without a direct replacement:
+
+  - `DefaultCatalogCollatorFactory`
+  - `DefaultCatalogCollatorFactoryOptions`
+  - `LocationEntityProcessor`
+  - `LocationEntityProcessorOptions`
+  - `CatalogBuilder`
+  - `CatalogEnvironment`
+  - `CatalogPermissionRuleInput`
+  - `CatalogProcessingEngine`
+  - `createRandomProcessingInterval`
+  - `ProcessingIntervalFunction`
+
+### Minor Changes
+
+- 6c9b88e: **BREAKING ALPHA**: You can no longer import the catalog plugin from the `/alpha` export; please use the regular root default export instead.
+- d88b922: Adds the ability to disable the default entity processors using a new boolean app config item `catalog.disableDefaultProcessors`.
+
+### Patch Changes
+
+- 0e710fc: This patch addresses an issue identified in Backstage when configured with a MySQL database. If an entity of type location
+  (e..all.yaml) has more than 70 referenced entities, clicking "Refresh" does not update the referenced entities as expected. This occurs because the TEXT type in MySQL has a limit of 65,535 bytes, which is insufficient to store all the referenced entities, causing the refresh operation to fail.
+- 8e0f15f: "Added a note clarifying that `entity-fetch` audit events are not visible by default in the logs and are only displayed when the log severity level is adjusted."
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/catalog-client@1.10.0
+  - @backstage/backend-openapi-utils@0.5.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.11
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- 8e0f15f: "Added a note clarifying that `entity-fetch` audit events are not visible by default in the logs and are only displayed when the log severity level is adjusted."
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-openapi-utils@0.5.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.2
+
 ## 2.0.0-next.2
 
 ### Patch Changes

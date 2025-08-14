@@ -20,10 +20,26 @@ import { useSidebarPinState } from '@backstage/core-components';
 import { Transformer } from '../transformer';
 import { rules } from './rules';
 
+const SIDEBAR_WIDTH = 224;
 /**
- * Sidebar pinned state to be used in computing style injections.
+ * Enhanced sidebar state that detects presence through CSS environment.
  */
-const useSidebar = () => useSidebarPinState();
+const useSidebar = () => {
+  const pinState = useSidebarPinState();
+
+  const hasSidebar = useMemo(
+    () =>
+      typeof window !== 'undefined' &&
+      Boolean(document.querySelector('[class*="BackstageSidebar"]')),
+    [],
+  );
+
+  return {
+    isPinned: pinState.isPinned,
+    isPresent: hasSidebar,
+    width: SIDEBAR_WIDTH,
+  };
+};
 
 /**
  * Process all rules and concatenate their definitions into a single style.

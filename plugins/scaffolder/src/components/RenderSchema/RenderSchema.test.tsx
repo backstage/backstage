@@ -475,7 +475,7 @@ describe('JSON schema UI rendering', () => {
         const tr = getByTestId(`properties-row_test.${k}`);
         expect(tr).toBeInTheDocument();
 
-        const sub = getByTestId(`properties-row_test_sub${i}.${k}`);
+        const sub = getByTestId(`properties-row_test_oneOf${i}.${k}`);
         expect(sub).toBeInTheDocument();
 
         expect(
@@ -485,7 +485,7 @@ describe('JSON schema UI rendering', () => {
         ).toBe(true);
 
         expect(
-          getByTestId(`properties-row_test_sub${i}.${k}Flag`),
+          getByTestId(`properties-row_test_oneOf${i}.${k}Flag`),
         ).toBeInTheDocument();
       }
     });
@@ -528,10 +528,35 @@ describe('JSON schema UI rendering', () => {
       for (const i of subs.keys()) {
         for (const k of Object.keys(subs[i].properties!)) {
           expect(
-            rendered.getByTestId(`properties-row_test_sub${i}.${k}`),
+            rendered.getByTestId(`properties-row_test_oneOf${i}.${k}`),
           ).toBeInTheDocument();
         }
       }
+    });
+    it('property alternatives', async () => {
+      const schema: JSONSchema7 = {
+        properties: {
+          bs: {
+            anyOf: [
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
+          },
+        },
+      };
+      const rendered = await renderInTestApp(
+        <LocalRenderSchema strategy="properties" {...{ schema }} />,
+      );
+      expect(
+        rendered.getByTestId(`root-row_test.bs_anyOf0`),
+      ).toBeInTheDocument();
+      expect(
+        rendered.getByTestId(`root-row_test.bs_anyOf1`),
+      ).toBeInTheDocument();
     });
   });
 });

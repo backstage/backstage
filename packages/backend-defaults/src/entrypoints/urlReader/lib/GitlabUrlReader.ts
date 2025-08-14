@@ -340,10 +340,7 @@ export class GitlabUrlReader implements UrlReaderService {
       );
     }
     // Default to the old behavior of assuming the url is for a file
-    return getGitLabFileFetchUrl(target, {
-      ...this.integration.config,
-      ...(token && { token }),
-    });
+    return getGitLabFileFetchUrl(target, this.integration.config, token);
   }
 
   // convert urls of the form:
@@ -398,6 +395,12 @@ export class GitlabUrlReader implements UrlReaderService {
     );
     const data = await result.json();
     if (!result.ok) {
+      if (result.status === 401) {
+        throw new Error(
+          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
+        );
+      }
+
       throw new Error(`Gitlab error: ${data.error}, ${data.error_description}`);
     }
     return Number(data.id);

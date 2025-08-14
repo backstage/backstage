@@ -17,9 +17,9 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
 import { notificationsProcessingExtensionPoint } from '@backstage/plugin-notifications-node';
 import { SlackNotificationProcessor } from './lib/SlackNotificationProcessor';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 /**
  * The Slack notification processor for use with the notifications plugin.
@@ -35,21 +35,16 @@ export const notificationsModuleSlack = createBackendModule({
       deps: {
         auth: coreServices.auth,
         config: coreServices.rootConfig,
-        discovery: coreServices.discovery,
         logger: coreServices.logger,
+        catalog: catalogServiceRef,
         notifications: notificationsProcessingExtensionPoint,
       },
-      async init({ auth, config, discovery, logger, notifications }) {
-        const catalogClient = new CatalogClient({
-          discoveryApi: discovery,
-        });
-
+      async init({ auth, config, logger, catalog, notifications }) {
         notifications.addProcessor(
           SlackNotificationProcessor.fromConfig(config, {
             auth,
-            discovery,
             logger,
-            catalog: catalogClient,
+            catalog,
           }),
         );
       },

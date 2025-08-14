@@ -2,7 +2,6 @@
 id: creating
 title: Creating Utility APIs
 sidebar_label: Creating APIs
-# prettier-ignore
 description: Creating new utility APIs in your plugins and app
 ---
 
@@ -46,7 +45,6 @@ The plugin itself now wants to provide this API and its default implementation, 
 ```tsx title="in @internal/plugin-example"
 import {
   ApiBlueprint,
-  createApiFactory,
   createFrontendPlugin,
   storageApiRef,
   StorageApi,
@@ -64,15 +62,14 @@ class WorkImpl implements WorkApi {
 
 const workApi = ApiBlueprint.make({
   name: 'work',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: workApiRef,
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) => {
         return new WorkImpl({ storageApi });
       },
     }),
-  },
 });
 
 /**

@@ -1,5 +1,358 @@
 # @backstage/plugin-catalog-react
 
+## 1.20.0-next.2
+
+### Minor Changes
+
+- e4ddf22: **BREAKING ALPHA**: The `defaultPath`, `defaultTitle`, and `defaultGroup` params of `PageBlueprint` has been renamed to `path`, `title`, and `group`. The `convertLegacyEntityContentExtension` utility has also received the same change. This change does not affect the compatibility of extensions created with older versions of this blueprint.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/frontend-test-utils@0.3.5-next.2
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 3f4da39: Added the `analyzeLocation` method to `catalogApiMock`
+
+### Patch Changes
+
+- defc243: hide pagination `queryparams` if pagination mode is set to none
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/frontend-test-utils@0.3.5-next.1
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 77eebdc: Support `filter` parameter on the `EntityHeaderBlueprint`
+- a3a878d: Adding `type` as an override to the `convertLegacyEntityCardExtension`
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/frontend-test-utils@0.3.5-next.0
+
+## 1.19.1
+
+### Patch Changes
+
+- a07feb7: Fixed a but in the new alpha entity predicates where the `$in` operator mistakenly case sensitive.
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration-react@1.2.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/frontend-test-utils@0.3.4
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.19.1-next.1
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-test-utils@0.3.4-next.1
+  - @backstage/integration-react@1.2.9-next.1
+  - @backstage/plugin-permission-react@0.4.36-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 1.19.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.9-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/frontend-test-utils@0.3.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.35
+
+## 1.19.0
+
+### Minor Changes
+
+- 406acb6: Introduces a new `EntityIconLinkBlueprint` that customizes the `About` card icon links on the `Catalog` entity page.
+
+  The blueprint currently accepts a `useProps` hook as `param` and this function returns the following props that will be passed to the icon link component:
+
+  | Name       | Description                                         | Type          | Default Value |
+  | ---------- | --------------------------------------------------- | ------------- | ------------- |
+  | `icon`     | The icon to display.                                | `JSX.Element` | N/A           |
+  | `label`    | The label for the element.                          | `string`      | N/A           |
+  | `title`    | The title for the element.                          | `string`      | N/A           |
+  | `disabled` | Whether the element is disabled.                    | `boolean`     | `false`       |
+  | `href`     | The URL to navigate to when the element is clicked. | `string`      | N/A           |
+  | `onClick`  | A function to call when the element is clicked.     | `() => void`  | N/A           |
+
+  Here is an usage example:
+
+  ```tsx
+  import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  //...
+
+  EntityIconLinkBlueprint.make({
+    name: 'my-icon-link',
+    params: {
+      useProps() {
+        const { t } = useTranslationRef(myIconLinkTranslationRef);
+        return {
+          label: t('myIconLink.label'),
+          icon: <MyIconLinkIcon />,
+          href: '/my-plugin',
+        };
+      },
+    },
+  });
+  ```
+
+  Additionally, the `app-config.yaml` file allows you to override some of the default icon link parameters, including `label` and `title` values. Here's how to set them:
+
+  ```yaml
+  app:
+    extensions:
+      - entity-icon-link:my-plugin/my-icon-link:
+          config:
+            label: 'My Custom Icon Link label'
+  ```
+
+  Finally, you can disable all links if you want to hide the About card header completely (useful, for example, when links are displayed on separate cards). The header is hidden when no icon links extensions are enabled.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/integration-react@1.2.8
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.3.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.35
+
+## 1.19.0-next.2
+
+### Minor Changes
+
+- 406acb6: Introduces a new `EntityIconLinkBlueprint` that customizes the `About` card icon links on the `Catalog` entity page.
+
+  The blueprint currently accepts a `useProps` hook as `param` and this function returns the following props that will be passed to the icon link component:
+
+  | Name       | Description                                         | Type          | Default Value |
+  | ---------- | --------------------------------------------------- | ------------- | ------------- |
+  | `icon`     | The icon to display.                                | `JSX.Element` | N/A           |
+  | `label`    | The label for the element.                          | `string`      | N/A           |
+  | `title`    | The title for the element.                          | `string`      | N/A           |
+  | `disabled` | Whether the element is disabled.                    | `boolean`     | `false`       |
+  | `href`     | The URL to navigate to when the element is clicked. | `string`      | N/A           |
+  | `onClick`  | A function to call when the element is clicked.     | `() => void`  | N/A           |
+
+  Here is an usage example:
+
+  ```tsx
+  import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  //...
+
+  EntityIconLinkBlueprint.make({
+    name: 'my-icon-link',
+    params: {
+      useProps() {
+        const { t } = useTranslationRef(myIconLinkTranslationRef);
+        return {
+          label: t('myIconLink.label'),
+          icon: <MyIconLinkIcon />,
+          href: '/my-plugin',
+        };
+      },
+    },
+  });
+  ```
+
+  Additionally, the `app-config.yaml` file allows you to override some of the default icon link parameters, including `label` and `title` values. Here's how to set them:
+
+  ```yaml
+  app:
+    extensions:
+      - entity-icon-link:my-plugin/my-icon-link:
+          config:
+            label: 'My Custom Icon Link label'
+  ```
+
+  Finally, you can disable all links if you want to hide the About card header completely (useful, for example, when links are displayed on separate cards). The header is hidden when no icon links extensions are enabled.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/integration-react@1.2.7
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.3.3-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.34
+
+## 1.18.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/frontend-test-utils@0.3.3-next.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.34
+
+## 1.18.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/frontend-test-utils@0.3.3-next.0
+  - @backstage/integration-react@1.2.7
+
+## 1.18.0
+
+### Minor Changes
+
+- d47aaa3: Added EntityOrderFilter to sort entities by different fields/columns. This new filter allows users to specify the order in which entities are displayed in the catalog.
+
+  Example usage:
+
+  ```ts
+  import {
+    EntityOrderFilter,
+    useEntityList,
+  } from '@backstage/plugin-catalog-react';
+  // ...
+  const { updateFilters } = useEntityList();
+
+  // ...
+  updateFilters({
+    order: new EntityOrderFilter([
+      {
+        field: 'metadata.name',
+        order: 'desc',
+      },
+    ]),
+  });
+  ```
+
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- 2ddbc50: A new `filter` parameter has been added to `EntityContextMenuItemBlueprint` to make it easier to configure which entities a menu item should appear for. The `filter` parameter is a function which accepts an entity and returns a boolean.
+- 6d7f0d5: Fixed an issue causing entities of kind user and group to be empty when an owner was selected
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/frontend-test-utils@0.3.2
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+
+## 1.18.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.3
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/frontend-test-utils@0.3.2-next.3
+  - @backstage/integration-react@1.2.7-next.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.1
+
 ## 1.18.0-next.2
 
 ### Patch Changes

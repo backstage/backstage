@@ -22,6 +22,7 @@ import { ForwardedError } from '@backstage/errors';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
+  catalogServiceRef,
   EntityProvider,
   LocationAnalyzer,
   PlaceholderResolver,
@@ -43,6 +44,8 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { createGetCatalogEntityAction } from '../actions/createGetCatalogEntityAction';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -237,6 +240,8 @@ export const catalogPlugin = createBackendPlugin({
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
         events: eventsServiceRef,
+        catalog: catalogServiceRef,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         logger,
@@ -250,6 +255,8 @@ export const catalogPlugin = createBackendPlugin({
         scheduler,
         auth,
         httpAuth,
+        catalog,
+        actionsRegistry,
         auditor,
         events,
       }) {
@@ -313,6 +320,11 @@ export const catalogPlugin = createBackendPlugin({
         }
 
         httpRouter.use(router);
+
+        createGetCatalogEntityAction({
+          catalog,
+          actionsRegistry,
+        });
       },
     });
   },

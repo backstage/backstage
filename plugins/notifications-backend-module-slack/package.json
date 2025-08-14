@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend-module-slack",
-  "version": "0.1.1-next.2",
+  "version": "0.1.4-next.0",
   "description": "The slack backend module for the notifications plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -35,10 +35,10 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/types": "workspace:^",

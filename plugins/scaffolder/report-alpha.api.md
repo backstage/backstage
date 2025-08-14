@@ -5,19 +5,25 @@
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
+import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
-import { FormField } from '@internal/scaffolder';
+import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { PathParams } from '@backstage/core-plugin-api';
@@ -57,24 +63,20 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:scaffolder/form-decorators': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         formDecorators: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -90,18 +92,18 @@ const _default: FrontendPlugin<
       };
       kind: 'api';
       name: 'form-decorators';
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:scaffolder/form-fields': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         formFields: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -117,8 +119,51 @@ const _default: FrontendPlugin<
       };
       kind: 'api';
       name: 'form-fields';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'entity-icon-link:scaffolder/launch-template': ExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'launch-template';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            () => IconLinkVerticalProps,
+            'entity-icon-link-props',
+            {}
+          >;
+      inputs: {};
       params: {
-        factory: AnyApiFactory;
+        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+        filter?: EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:scaffolder': ExtensionDefinition<{
@@ -126,7 +171,7 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -150,9 +195,9 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -175,7 +220,8 @@ const _default: FrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -185,7 +231,7 @@ const _default: FrontendPlugin<
       name: 'repo-url-picker';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         () => Promise<FormField>,
         'scaffolder.form-field-loader',
         {}
@@ -215,7 +261,7 @@ export class DefaultScaffolderFormDecoratorsApi
 export const formDecoratorsApi: ExtensionDefinition<{
   config: {};
   configInput: {};
-  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
   inputs: {
     formDecorators: ExtensionInput<
       ConfigurableExtensionDataRef<
@@ -231,9 +277,13 @@ export const formDecoratorsApi: ExtensionDefinition<{
   };
   kind: 'api';
   name: 'form-decorators';
-  params: {
-    factory: AnyApiFactory;
-  };
+  params: <
+    TApi,
+    TImpl extends TApi,
+    TDeps extends { [name in string]: unknown },
+  >(
+    params: ApiFactory<TApi, TImpl, TDeps>,
+  ) => ExtensionBlueprintParams<AnyApiFactory>;
 }>;
 
 // @alpha (undocumented)
@@ -289,6 +339,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'fields.entityPicker.description': 'An entity from the catalog';
     readonly 'fields.entityTagsPicker.title': 'Tags';
     readonly 'fields.entityTagsPicker.description': "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters";
+    readonly 'fields.multiEntityPicker.title': 'Entity';
+    readonly 'fields.multiEntityPicker.description': 'An entity from the catalog';
     readonly 'fields.myGroupsPicker.title': 'Entity';
     readonly 'fields.myGroupsPicker.description': 'An entity from the catalog';
     readonly 'fields.ownedEntityPicker.title': 'Entity';
@@ -323,6 +375,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'fields.repoUrlPicker.repository.title': 'Repositories Available';
     readonly 'fields.repoUrlPicker.repository.description': 'The name of the repository';
     readonly 'fields.repoUrlPicker.repository.inputTitle': 'Repository';
+    readonly 'aboutCard.launchTemplate': 'Launch Template';
     readonly 'actionsPage.content.emptyState.title': 'No information to display';
     readonly 'actionsPage.content.emptyState.description': 'There are no actions installed or there was an issue communicating with backend.';
     readonly 'actionsPage.content.searchFieldPlaceholder': 'Search for an action';
@@ -385,6 +438,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';
     readonly 'templatingExtensions.content.functions.examples': 'Examples';
     readonly 'templatingExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
+    readonly 'templatingExtensions.content.functions.metadataAbsent': 'Function metadata unavailable';
     readonly 'templatingExtensions.title': 'Templating Extensions';
     readonly 'templatingExtensions.subtitle': 'This is the collection of available templating extensions';
     readonly 'templatingExtensions.pageTitle': 'Templating Extensions';

@@ -1,3 +1,5 @@
+import { CheckpointStateValue } from '../alpha';
+
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -14,3 +16,12 @@
  * limitations under the License.
  */
 export * from './serializer';
+
+/**
+ * Options for updating a checkpoint in a task.
+ *
+ * @alpha
+ */
+export type UpdateTaskCheckpointOptions = {
+  key: string;
+} & CheckpointStateValue;

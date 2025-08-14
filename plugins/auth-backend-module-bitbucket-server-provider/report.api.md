@@ -27,7 +27,10 @@ export const bitbucketServerAuthenticator: OAuthAuthenticator<
 export namespace bitbucketServerSignInResolvers {
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

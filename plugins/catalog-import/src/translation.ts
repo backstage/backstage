@@ -42,6 +42,10 @@ export const catalogImportTranslationRef = createTranslationRef({
         title: 'Link to a repository',
         label: 'GitHub only',
       },
+      exampleDescription:
+        'The wizard discovers all {{catalogFilename}} files in the repository, previews the entities, and adds them to the {{appTitle}} catalog.',
+      preparePullRequestDescription:
+        'If no entities are found, the wizard will prepare a Pull Request that adds an example {{catalogFilename}} and prepares the {{appTitle}} catalog to load all entities as soon as the Pull Request is merged.',
     },
     importStepper: {
       singleLocation: {
@@ -114,6 +118,8 @@ export const catalogImportTranslationRef = createTranslationRef({
       nextButtonText: 'Analyze',
     },
     stepPrepareCreatePullRequest: {
+      description:
+        'You entered a link to a {{integrationType}} repository but a {{catalogFilename}} could not be found. Use this form to open a Pull Request that creates one.',
       previewPr: {
         title: 'Preview Pull Request',
         subheader: 'Create a new Pull Request',

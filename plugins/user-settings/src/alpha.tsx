@@ -39,7 +39,7 @@ const userSettingsPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { inputs }) {
     return originalFactory({
-      defaultPath: '/settings',
+      path: '/settings',
       routeRef: convertLegacyRouteRef(settingsRouteRef),
       loader: () =>
         import('./components/SettingsPage').then(m =>
@@ -69,6 +69,7 @@ export const settingsNavItem = NavItemBlueprint.make({
  */
 export default createFrontendPlugin({
   pluginId: 'user-settings',
+  info: { packageJson: () => import('../package.json') },
   extensions: [userSettingsPage, settingsNavItem],
   routes: convertLegacyRouteRefs({
     root: settingsRouteRef,

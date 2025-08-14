@@ -17,8 +17,6 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
-import { AuthenticationStrategy } from '../auth/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
@@ -28,6 +26,11 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import {
+  AuthenticationStrategy,
+  ClusterDetails,
+  KubernetesClustersSupplier,
+} from '@backstage/plugin-kubernetes-node';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(

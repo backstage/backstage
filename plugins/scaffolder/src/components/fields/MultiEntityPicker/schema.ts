@@ -13,55 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z } from 'zod';
-import { makeFieldSchemaFromZod } from '../utils';
+import { z as zod } from 'zod';
+import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
-export const entityQueryFilterExpressionSchema = z.record(
-  z
+export const entityQueryFilterExpressionSchema = zod.record(
+  zod
     .string()
-    .or(z.object({ exists: z.boolean().optional() }))
-    .or(z.array(z.string())),
+    .or(zod.object({ exists: zod.boolean().optional() }))
+    .or(zod.array(zod.string())),
 );
 
-export const MultiEntityPickerFieldSchema = makeFieldSchemaFromZod(
-  z.array(z.string()),
-  z.object({
-    defaultKind: z
-      .string()
-      .optional()
-      .describe(
-        'The default entity kind. Options of this kind will not be prefixed.',
-      ),
-    allowArbitraryValues: z
-      .boolean()
-      .optional()
-      .describe('Whether to allow arbitrary user input. Defaults to true'),
-    defaultNamespace: z
-      .union([z.string(), z.literal(false)])
-      .optional()
-      .describe(
-        'The default namespace. Options with this namespace will not be prefixed.',
-      ),
-    catalogFilter: z
-      .array(entityQueryFilterExpressionSchema)
-      .or(entityQueryFilterExpressionSchema)
-      .optional()
-      .describe('List of key-value filter expression for entities'),
-  }),
-);
+export const MultiEntityPickerFieldSchema = makeFieldSchema({
+  output: z => z.array(z.string()),
+  uiOptions: z =>
+    z.object({
+      defaultKind: z
+        .string()
+        .optional()
+        .describe(
+          'The default entity kind. Options of this kind will not be prefixed.',
+        ),
+      allowArbitraryValues: z
+        .boolean()
+        .optional()
+        .describe('Whether to allow arbitrary user input. Defaults to true'),
+      defaultNamespace: z
+        .union([z.string(), z.literal(false)])
+        .optional()
+        .describe(
+          'The default namespace. Options with this namespace will not be prefixed.',
+        ),
+      catalogFilter: z
+        .array(entityQueryFilterExpressionSchema)
+        .or(entityQueryFilterExpressionSchema)
+        .optional()
+        .describe('List of key-value filter expression for entities'),
+    }),
+});
 
 /**
  * The input props that can be specified under `ui:options` for the
  * `EntityPicker` field extension.
  */
-export type MultiEntityPickerUiOptions =
-  typeof MultiEntityPickerFieldSchema.uiOptionsType;
+export type MultiEntityPickerUiOptions = NonNullable<
+  (typeof MultiEntityPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
-export type MultiEntityPickerProps = typeof MultiEntityPickerFieldSchema.type;
+export type MultiEntityPickerProps = typeof MultiEntityPickerFieldSchema.TProps;
 
 export const MultiEntityPickerSchema = MultiEntityPickerFieldSchema.schema;
 
-export type MultiEntityPickerFilterQuery = z.TypeOf<
+export type MultiEntityPickerFilterQuery = zod.TypeOf<
   typeof entityQueryFilterExpressionSchema
 >;
 

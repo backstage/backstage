@@ -28,6 +28,7 @@ export * from '../tasks/alpha';
 export * from './filters';
 export * from './globals';
 export * from './types';
+export * from './checkpoints';
 
 /**
  * Extension point for managing scaffolder actions.

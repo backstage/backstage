@@ -19,7 +19,7 @@ import userEvent from '@testing-library/user-event';
 
 import {
   mockApis,
-  renderWithEffects,
+  renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
 
@@ -53,7 +53,7 @@ describe('SearchPagination', () => {
   });
 
   it('Renders without exploding', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -74,7 +74,7 @@ describe('SearchPagination', () => {
   });
 
   it('Define default page limit options', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -99,7 +99,7 @@ describe('SearchPagination', () => {
 
   it('Accept custom page limit label', async () => {
     const label = 'Page limit:';
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -116,7 +116,7 @@ describe('SearchPagination', () => {
   });
 
   it('Show the total in text', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -133,7 +133,7 @@ describe('SearchPagination', () => {
   });
 
   it('Accept custom page limit text', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -152,7 +152,7 @@ describe('SearchPagination', () => {
   });
 
   it('Accept custom page limit options', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -176,7 +176,7 @@ describe('SearchPagination', () => {
   });
 
   it('Set page limit in the context', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -208,7 +208,7 @@ describe('SearchPagination', () => {
       pageCursor: 'MQ==', // page: 1
     };
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -250,7 +250,7 @@ describe('SearchPagination', () => {
       pageCursor: 'Mg==', // page: 2
     };
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
