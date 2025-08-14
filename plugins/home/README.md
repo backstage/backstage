@@ -132,7 +132,7 @@ export const RandomJokeHomePageComponent = homePlugin.provide(
 );
 ```
 
-These settings can also be defined for components that use `createReactExtension` instead `createCardExtension` by using
+These settings can also be defined for components that use `createReactExtension` instead of `createCardExtension` by using
 the data property:
 
 ```tsx
@@ -367,6 +367,41 @@ If you want more control over the recent and top visited lists, you can write yo
 />
 ```
 
+#### Transform Pathname Function
+
+You can provide a `transformPathname` function to transform the pathname before it's processed for visit tracking. This is useful for normalizing URLs or removing query parameters:
+
+```tsx
+import {
+  VisitListener,
+  VisitTransformPathnameFunction,
+} from '@backstage/plugin-home';
+
+const transformPathname: VisitTransformPathnameFunction = ({ pathname }) => {
+  // Remove query parameters and hash fragments
+  return pathname.split('?')[0].split('#')[0];
+};
+
+<VisitListener transformPathname={transformPathname} />;
+```
+
+#### Can Save Function
+
+You can provide a `canSave` function to determine which visits should be tracked and saved. This allows you to filter out certain pages or paths:
+
+```tsx
+import { VisitListener, VisitCanSaveFunction } from '@backstage/plugin-home';
+
+const canSave: VisitCanSaveFunction = ({ pathname }) => {
+  // Don't save visits to admin or settings pages
+  return !pathname.startsWith('/admin') && !pathname.startsWith('/settings');
+};
+
+<VisitListener canSave={canSave} />;
+```
+
+#### Visit Enrichment
+
 You can also add the `enrichVisit` function to put additional values on each `Visit`. The values could later be used to customize the chips in the `VisitList`. For example, you could add the entity `type` on the `Visit` so that `type` is used for labels instead of `kind`.
 
 ```tsx
@@ -451,9 +486,9 @@ export default function HomePage() {
 
 ### Homepage Components
 
-We believe that people have great ideas for what makes a useful Home Page, and we want to make it easy for every to benefit from the effort you put in to create something cool for the Home Page. Therefore, a great way of contributing is by simply creating more Home Page Components, than can then be used by everyone when composing their own Home Page. If they are tightly coupled to an existing plugin, it is recommended to allow them to live within that plugin, for convenience and to limit complex dependencies. On the other hand, if there's no clear plugin that the component is based on, it's also fine to contribute them into the [home plugin](/plugins/home/src/homePageComponents)
+We believe that people have great ideas for what makes a useful Home Page, and we want to make it easy for everyone to benefit from the effort you put in to create something cool for the Home Page. Therefore, a great way of contributing is by simply creating more Home Page Components that can then be used by everyone when composing their own Home Page. If they are tightly coupled to an existing plugin, it is recommended to allow them to live within that plugin, for convenience and to limit complex dependencies. On the other hand, if there's no clear plugin that the component is based on, it's also fine to contribute them into the [home plugin](/plugins/home/src/homePageComponents)
 
-Additionally, the API is at a very early state, so contributing with additional use cases may expose weaknesses in the current solution that we may iterate on, to provide more flexibility and ease of use for those who wish to develop components for the Home Page.
+Additionally, the API is at a very early state, so contributing additional use cases may expose weaknesses in the current solution that we may iterate on to provide more flexibility and ease of use for those who wish to develop components for the Home Page.
 
 ### Homepage Templates
 
