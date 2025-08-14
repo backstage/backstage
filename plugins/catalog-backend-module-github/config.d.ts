@@ -68,7 +68,7 @@ export interface Config {
             /**
              * (Required, unless `organization` is set) ID of your GitHub App.
              */
-            app?: string;
+            app?: number;
             /**
              * (Optional) Path where to look for `catalog-info.yaml` files.
              * You can use wildcards - `*` or `**` - to search the path and/or the filename
@@ -146,7 +146,7 @@ export interface Config {
               /**
                * (Required, unless `organization` is set) ID of your GitHub App.
                */
-              app?: string;
+              app?: number;
               /**
                * (Optional) Path where to look for `catalog-info.yaml` files.
                * You can use wildcards - `*` or `**` - to search the path and/or the filename

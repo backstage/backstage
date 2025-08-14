@@ -84,7 +84,7 @@ function readProviderConfig(
 
   if (!organization && !app) {
     throw new Error(
-      'Error while processing GitHub provider config. Either organization or app must be set.',
+      'Error while processing GitHub provider config. Either organization or app must be specified.',
     );
   }
 

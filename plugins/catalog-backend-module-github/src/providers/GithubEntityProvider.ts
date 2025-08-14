@@ -643,18 +643,17 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private async addEntitiesForRepo(repository: Repository) {
     if (this.config.validateLocationsExist) {
+      const organization = repository.organization;
       const catalogPath = this.config.catalogPath;
-      const client = await this.createGraphqlClient(repository.organization);
+      const client = await this.createGraphqlClient(organization);
 
       const repositoryFromGithub = await getOrganizationRepository(
         client,
-        repository.organization,
+        organization,
         repository.name,
         catalogPath,
       ).then(r =>
-        r
-          ? this.createRepoFromGithubResponse(r, repository.organization)
-          : null,
+        r ? this.createRepoFromGithubResponse(r, organization) : null,
       );
 
       if (!repositoryFromGithub?.isCatalogInfoFilePresent) {
