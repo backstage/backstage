@@ -356,6 +356,97 @@ home:
 
 In order to validate the config you can use `backstage/cli config:check`
 
+### Customizing the VisitList
+
+If you want more control over the recent and top visited lists, you can write your own functions to transform the path names and determine which visits to save. Pass them to the `VisitListener` with `transformPathname` and `canSave`.
+
+```tsx
+<VisitListener
+  transformPathname={getVisitTransformedPathname}
+  canSave={getVisitCanSave}
+/>
+```
+
+You can also add the `enrichVisit` function to put additional values on each `Visit`. The values could later be used to customize the chips in the `VisitList`. For example, you could add the entity `type` on the `Visit` so that `type` is used for labels instead of `kind`.
+
+```tsx
+import { VisitListener, VisitInput } from '@backstage/plugin-home';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+
+type EnrichedVisit = VisitInput & {
+  type?: string;
+};
+
+const createEnrichVisit =
+  (catalogApi: CatalogApi) =>
+  async (visit: VisitInput): Promise<EnrichedVisit> => {
+    if (!visit.entityRef) {
+      return visit;
+    }
+    try {
+      const entity = await catalogApi.getEntityByRef(visit.entityRef);
+      const type = entity?.spec?.type?.toString();
+      return { ...visit, type };
+    } catch (error) {
+      return visit;
+    }
+  };
+// This example requires its own component in order to use hook to look up entity in catalog
+const AppVisitListener = ({ children }: { children: React.ReactNode }) => {
+  const catalogApi = useApi(catalogApiRef);
+  const enrichVisit = createEnrichVisit(catalogApi);
+
+  return (
+    <>
+      <VisitListener enrichVisit={enrichVisit} />
+      {children}
+    </>
+  );
+};
+```
+
+To provide your own chip colors and/or labels for the recent and top visited lists, wrap the components in `VisitDisplayProvider` with `getChipColor` and `getChipLabel` functions. The colors provided will be used instead of the hard coded [colorVariants](https://github.com/backstage/backstage/blob/2da352043425bcab4c4422e4d2820c26c0a83382/packages/theme/src/base/pageTheme.ts#L46) provided via `@backstage/theme`.
+
+```tsx
+import {
+  CustomHomepageGrid,
+  HomePageTopVisited,
+  HomePageRecentlyVisited,
+  VisitDisplayProvider,
+} from '@backstage/plugin-home';
+
+const getChipColor = (visit: any) => {
+  const type = visit.type;
+  switch (type) {
+    case 'application':
+      return '#b39ddb';
+    case 'service':
+      return '#90caf9';
+    case 'account':
+      return '#a5d6a7';
+    case 'suite':
+      return '#fff59d';
+    default:
+      return '#ef9a9a';
+  }
+};
+
+const getChipLabel = (visit?: any) => {
+  return visit?.type ? visit.type : 'Other';
+};
+
+export default function HomePage() {
+  return (
+    <VisitDisplayProvider getChipColor={getChipColor} getLabel={getChipLabel}>
+      <CustomHomepageGrid title="Your Dashboard">
+        <HomePageRecentlyVisited />
+        <HomePageTopVisited />
+      </CustomHomepageGrid>
+    </VisitDisplayProvider>
+  );
+}
+```
+
 ## Contributing
 
 ### Homepage Components
