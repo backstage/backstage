@@ -94,19 +94,20 @@ export const OwnershipCard = (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
-  scrollHeight?: string;
+  maxScrollHeight?: string;
 }) => {
   const {
     variant,
     entityFilterKind,
     hideRelationsToggle,
     entityLimit = 6,
-    scrollHeight: propScrollHeight,
+    maxScrollHeight: propMaxScrollHeight,
   } = props;
   const relationAggregation = props.relationAggregation ?? props.relationsType;
   const relationsToggle =
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
-  const scrollHeight = variant !== 'fullHeight' ? propScrollHeight : undefined;
+  const maxScrollHeight =
+    variant !== 'fullHeight' ? propMaxScrollHeight : undefined;
   const classes = useStyles();
   const { entity } = useEntity();
   const { t } = useTranslationRef(orgTranslationRef);
@@ -174,7 +175,7 @@ export const OwnershipCard = (props: {
           </ListItem>
         </List>
       )}
-      <Box maxHeight={scrollHeight} className={classes.box}>
+      <Box maxHeight={maxScrollHeight} className={classes.box}>
         <ComponentsGrid
           className={classes.grid}
           entity={entity}
