@@ -80,7 +80,7 @@ export const catalogModuleGitlabOrgDiscoveryEntityProvider =
           },
           setGroupTransformer(transformer) {
             if (groupTransformer) {
-              throw new Error('Team transformer may only be set once');
+              throw new Error('Group transformer may only be set once');
             }
             groupTransformer = transformer;
           },

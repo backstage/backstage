@@ -4,8 +4,20 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { GroupTransformer } from '@backstage/plugin-catalog-backend-module-gitlab';
+import { UserTransformer } from '@backstage/plugin-catalog-backend-module-gitlab';
 
 // @public
 const catalogModuleGitlabOrgDiscoveryEntityProvider: BackendFeature;
 export default catalogModuleGitlabOrgDiscoveryEntityProvider;
+
+// @public
+export interface GitlabOrgEntityProviderTransformsExtensionPoint {
+  setGroupTransformer(transformer: GroupTransformer): void;
+  setUserTransformer(transformer: UserTransformer): void;
+}
+
+// @public
+export const gitlabOrgEntityProviderTransformsExtensionPoint: ExtensionPoint<GitlabOrgEntityProviderTransformsExtensionPoint>;
 ```
