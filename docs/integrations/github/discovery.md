@@ -2,7 +2,7 @@
 id: discovery
 title: GitHub Discovery
 sidebar_label: Discovery
-description: Automatically discovering catalog entities from repositories in a GitHub organization
+description: Automatically discovering catalog entities from repositories in a GitHub organization or App
 ---
 
 :::info
@@ -12,8 +12,8 @@ This documentation is written for [the new backend system](../../backend-system/
 ## GitHub Provider
 
 The GitHub integration has a discovery provider for discovering catalog
-entities within a GitHub organization. The provider will crawl the GitHub
-organization and register entities matching the configured path. This can be
+entities within a GitHub organization or App. The provider will crawl the GitHub
+organization or App and register entities matching the configured path. This can be
 useful as an alternative to static locations or manually adding things to the
 catalog. This is the preferred method for ingesting entities into the catalog.
 
@@ -252,7 +252,7 @@ catalog:
         catalogPath: '/catalog-info.yaml' # string
 ```
 
-This provider supports multiple organizations via unique provider IDs.
+This provider supports multiple organizations and apps via unique provider IDs.
 
 :::note Note
 
