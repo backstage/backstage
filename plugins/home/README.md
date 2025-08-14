@@ -358,18 +358,11 @@ In order to validate the config you can use `backstage/cli config:check`
 
 ### Customizing the VisitList
 
-If you want more control over the recent and top visited lists, you can write your own functions to transform the path names and determine which visits to save. Pass them to the `VisitListener` with `transformPathname` and `canSave`.
-
-```tsx
-<VisitListener
-  transformPathname={getVisitTransformedPathname}
-  canSave={getVisitCanSave}
-/>
-```
+If you want more control over the recent and top visited lists, you can write your own functions to transform the pathnames and determine which visits to save. Pass them to the `VisitListener` with `transformPathname` and `canSave`.
 
 #### Transform Pathname Function
 
-You can provide a `transformPathname` function to transform the pathname before it's processed for visit tracking. This is useful for normalizing URLs or removing query parameters:
+Provide a `transformPathname` function to transform the pathname before it's processed for visit tracking. This is useful for normalizing URLs or removing query parameters:
 
 ```tsx
 import {
@@ -387,7 +380,7 @@ const transformPathname: VisitTransformPathnameFunction = ({ pathname }) => {
 
 #### Can Save Function
 
-You can provide a `canSave` function to determine which visits should be tracked and saved. This allows you to filter out certain pages or paths:
+Provide a `canSave` function to determine which visits should be tracked and saved. This allows you to filter out certain pages or paths:
 
 ```tsx
 import { VisitListener, VisitCanSaveFunction } from '@backstage/plugin-home';
@@ -400,7 +393,7 @@ const canSave: VisitCanSaveFunction = ({ pathname }) => {
 <VisitListener canSave={canSave} />;
 ```
 
-#### Visit Enrichment
+#### Enrich Visit Function
 
 You can also add the `enrichVisit` function to put additional values on each `Visit`. The values could later be used to customize the chips in the `VisitList`. For example, you could add the entity `type` on the `Visit` so that `type` is used for labels instead of `kind`.
 
@@ -439,6 +432,8 @@ const AppVisitListener = ({ children }: { children: React.ReactNode }) => {
   );
 };
 ```
+
+#### Custom Chip Colors and Labels
 
 To provide your own chip colors and/or labels for the recent and top visited lists, wrap the components in `VisitDisplayProvider` with `getChipColor` and `getChipLabel` functions. The colors provided will be used instead of the hard coded [colorVariants](https://github.com/backstage/backstage/blob/2da352043425bcab4c4422e4d2820c26c0a83382/packages/theme/src/base/pageTheme.ts#L46) provided via `@backstage/theme`.
 
