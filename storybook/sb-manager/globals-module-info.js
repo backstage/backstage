@@ -272,6 +272,7 @@ var t = {
     "SubtractIcon",
     "SunIcon",
     "SupportIcon",
+    "SweepIcon",
     "SwitchAltIcon",
     "SyncIcon",
     "TabletIcon",

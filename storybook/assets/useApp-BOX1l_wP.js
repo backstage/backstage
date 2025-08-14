@@ -1,0 +1,1 @@
+import{a as e}from"./ApiRef-ByCJBjX1.js";const r=()=>{const t=e("app-context");if(!t)throw new Error("App context is not available");const o=t.atVersion(1);if(!o)throw new Error("AppContext v1 not available");return o};export{r as u};
