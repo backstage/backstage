@@ -288,9 +288,11 @@ If you do so, `default` will be used as provider ID.
     Whether to include archived repositories. Defaults to `false`.
 - **`host`** _(optional)_:
   The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
-- **`organization`**:
+- **`organization`** _(required, unless `app` is set)_:
   Name of your organization account/workspace.
-  If you want to add multiple organizations, you need to add one provider config each.
+  If you want to add multiple organizations, you need to add one provider config each or specify `app` instead.
+- **`app`** _(required, unless `organization` is set)_:
+  ID of your GitHub App.
 - **`validateLocationsExist`** _(optional)_:
   Whether to validate locations that exist before emitting them.
   This option avoids generating locations for catalog info files that do not exist in the source repository.

@@ -66,7 +66,7 @@ export interface Config {
              */
             organization?: string;
             /**
-             * (Required, unless `organization` is set) Name of your GitHub App.
+             * (Required, unless `organization` is set) ID of your GitHub App.
              */
             app?: string;
             /**
@@ -144,7 +144,7 @@ export interface Config {
                */
               organization?: string;
               /**
-               * (Required, unless `organization` is set) Name of your GitHub App.
+               * (Required, unless `organization` is set) ID of your GitHub App.
                */
               app?: string;
               /**
