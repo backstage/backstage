@@ -15,7 +15,7 @@
  */
 
 import { registerMswTestHooks } from '@backstage/test-utils';
-import * as msw from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import axios from 'axios';
 // eslint-disable-next-line no-restricted-imports
@@ -52,11 +52,9 @@ describe('with msw', () => {
   registerMswTestHooks(server);
 
   it('should mock network requests', async () => {
-    const mswHttp = (msw as any).http;
-    const HttpResponse = (msw as any).HttpResponse;
     server.use(
-      mswHttp.get('http://example.com', () => HttpResponse.json({ ok: true })),
-      mswHttp.get('https://example.com', () => HttpResponse.json({ ok: true })),
+      http.get('http://example.com', () => HttpResponse.json({ ok: true })),
+      http.get('https://example.com', () => HttpResponse.json({ ok: true })),
     );
 
     await expect(
