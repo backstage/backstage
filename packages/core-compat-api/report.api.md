@@ -32,17 +32,6 @@ import { SubRouteRef as SubRouteRef_2 } from '@backstage/frontend-plugin-api';
 export function compatWrapper(element: ReactNode): JSX_3.Element;
 
 // @public (undocumented)
-export function convertLegacyApp(
-  rootElement: JSX_2.Element,
-  options?: ConvertLegacyAppOptions,
-): (FrontendPlugin | FrontendModule)[];
-
-// @public (undocumented)
-export interface ConvertLegacyAppOptions {
-  entityPage?: JSX_2.Element;
-}
-
-// @public (undocumented)
 export function convertLegacyAppOptions(options?: {
   apis?: Iterable<AnyApiFactory>;
   icons?: {
@@ -53,6 +42,17 @@ export function convertLegacyAppOptions(options?: {
   themes?: AppTheme[];
   featureFlags?: (FeatureFlag & Omit<FeatureFlag, 'pluginId'>)[];
 }): FrontendModule;
+
+// @public (undocumented)
+export function convertLegacyAppRoot(
+  rootElement: JSX_2.Element,
+  options?: ConvertLegacyAppRootOptions,
+): (FrontendPlugin | FrontendModule)[];
+
+// @public (undocumented)
+export interface ConvertLegacyAppRootOptions {
+  entityPage?: JSX_2.Element;
+}
 
 // @public (undocumented)
 export function convertLegacyPageExtension(

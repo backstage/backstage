@@ -32,13 +32,13 @@ Let's start by addressing the change to `app.createRoot(...)`, which no longer a
 
 Given that the app element tree is most of what builds up the app, it's likely also going to be the majority of the migration effort. In order to make the migration as smooth as possible we have provided a helper that lets you convert an existing app element tree into plugins that you can install in a new app. This in turn allows for a gradual migration of individual plugins, rather than needing to migrate the entire app structure at once.
 
-The helper is called `convertLegacyApp` and is exported from the `@backstage/core-compat-api` package. We will also be using the `convertLegacyAppOptions` helper that lets us re-use the existing app options, also exported from the same package. You will need to add it as a dependency to your app package:
+The helper is called `convertLegacyAppRoot` and is exported from the `@backstage/core-compat-api` package. We will also be using the `convertLegacyAppOptions` helper that lets us re-use the existing app options, also exported from the same package. You will need to add it as a dependency to your app package:
 
 ```bash
 yarn --cwd packages/app add @backstage/core-compat-api
 ```
 
-Once installed, import `convertLegacyApp`. If your app currently looks like this:
+Once installed, import `convertLegacyAppRoot`. If your app currently looks like this:
 
 ```tsx title="in packages/app/src/App.tsx"
 const app = createApp({
@@ -60,11 +60,11 @@ Migrate it to the following:
 
 ```tsx title="in packages/app/src/App.tsx"
 import {
-  convertLegacyApp,
+  convertLegacyAppRoot,
   convertLegacyAppOptions,
 } from '@backstage/core-compat-api';
 
-const legacyFeatures = convertLegacyApp(
+const legacyFeatures = convertLegacyAppRoot(
   <>
     <AlertDisplay />
     <OAuthRequestDialog />
@@ -85,7 +85,7 @@ const app = createApp({
 export default app.createRoot();
 ```
 
-We've taken all the elements that were previously passed to `app.createRoot(...)`, and instead passed them to `convertLegacyApp(...)`. We then pass the features returned by `convertLegacyApp` and forward them to the `features` option of the new `createApp`.
+We've taken all the elements that were previously passed to `app.createRoot(...)`, and instead passed them to `convertLegacyAppRoot(...)`. We then pass the features returned by `convertLegacyAppRoot` and forward them to the `features` option of the new `createApp`.
 
 There is one more detail that we need to deal with before moving on. The `app.createRoot()` function now returns a React element rather than a component, so we need to update our app `index.tsx` as follows:
 
@@ -429,13 +429,13 @@ const app = createApp({
 
 Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/36-routes.md#binding-external-route-references) for more information.
 
-Note that if you are binding routes from a legacy plugin that was converted using `convertLegacyApp`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
+Note that if you are binding routes from a legacy plugin that was converted using `convertLegacyAppRoot`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
 
 For example, if both the `catalogPlugin` and `scaffolderPlugin` are legacy plugins, you can bind their routes like this:
 
 ```ts
 const app = createApp({
-  features: convertLegacyApp(...),
+  features: convertLegacyAppRoot(...),
   bindRoutes({ bind }) {
     bind(convertLegacyRouteRefs(catalogPlugin.externalRoutes), {
       createComponent: convertLegacyRouteRef(scaffolderPlugin.routes.root),
@@ -490,14 +490,14 @@ You would then add `catalogTranslations` as an `extension` like you did with `li
 
 ## Gradual Migration
 
-After updating all `createApp` options as well as using `convertLegacyApp` to use your existing app structure, you should be able to start up the app and see that it still works. If that is not the case, make sure you read any error messages that you may see in the app as they can provide hints on what you need to fix. If you are still stuck, you can check if anyone else ran into the same issue in our [GitHub issues](https://github.com/backstage/backstage/issues), or ask for help in our [community Discord](https://discord.gg/backstage-687207715902193673).
+After updating all `createApp` options as well as using `convertLegacyAppRoot` to use your existing app structure, you should be able to start up the app and see that it still works. If that is not the case, make sure you read any error messages that you may see in the app as they can provide hints on what you need to fix. If you are still stuck, you can check if anyone else ran into the same issue in our [GitHub issues](https://github.com/backstage/backstage/issues), or ask for help in our [community Discord](https://discord.gg/backstage-687207715902193673).
 
 Assuming your app is now working, let's continue by migrating the rest of the app element tree to use the new system.
 
 First off we'll want to trim away any top-level elements in the app so that only the `routes` are left. For example, continuing where we left off with the following elements:
 
 ```tsx title="in packages/app/src/App.tsx"
-const legacyFeatures = convertLegacyApp(
+const legacyFeatures = convertLegacyAppRoot(
   <>
     <AlertDisplay />
     <OAuthRequestDialog />
@@ -511,14 +511,14 @@ const legacyFeatures = convertLegacyApp(
 You can remove all surrounding elements and just keep the `routes`:
 
 ```tsx title="in packages/app/src/App.tsx"
-const legacyFeatures = convertLegacyApp(routes);
+const legacyFeatures = convertLegacyAppRoot(routes);
 ```
 
-This will remove many extension overrides that `convertLegacyApp` put in place, and switch over the shell of the app to the new system. This includes the root layout of the app along with the elements, router, and sidebar. The app will likely not look the same as before, and you'll need to refer to the [sidebar](#sidebar), [app root elements](#app-root-elements) and [app root wrappers](#app-root-wrappers) sections below for information on how to migrate those.
+This will remove many extension overrides that `convertLegacyAppRoot` put in place, and switch over the shell of the app to the new system. This includes the root layout of the app along with the elements, router, and sidebar. The app will likely not look the same as before, and you'll need to refer to the [sidebar](#sidebar), [app root elements](#app-root-elements) and [app root wrappers](#app-root-wrappers) sections below for information on how to migrate those.
 
 Once that step is complete the work that remains is to migrate all of the [routes](#top-level-routes) and [entity pages](#entity-pages) in the app, including any plugins that do not yet support the new system. For information on how to migrate your own internal plugins, refer to the [plugin migration guide](../building-plugins/05-migrating.md). For external plugins you will need to check the migration status of each plugin and potentially contribute to the effort.
 
-Once these migrations are complete you should be left with an empty `convertLegacyApp(...)` call that you can now remove, and your app should be fully migrated to the new system! 🎉
+Once these migrations are complete you should be left with an empty `convertLegacyAppRoot(...)` call that you can now remove, and your app should be fully migrated to the new system! 🎉
 
 ### Top-level Routes
 
@@ -573,15 +573,15 @@ Continue this process for each of your legacy routes until you have migrated all
 
 ### Entity Pages
 
-The entity pages are typically defined in `packages/app/src/components/catalog` and rendered as a child of the `/catalog/:namespace/:kind/:name` route. The entity pages are typically quite large and bringing in content from quite a lot of different plugins. To help gradually migrate entity pages we provide the `entityPage` option in the `convertLegacyApp` helper. This option lets you pass in an entity page app element tree that will be converted to extensions that are added to the features returned from `convertLegacyApp`.
+The entity pages are typically defined in `packages/app/src/components/catalog` and rendered as a child of the `/catalog/:namespace/:kind/:name` route. The entity pages are typically quite large and bringing in content from quite a lot of different plugins. To help gradually migrate entity pages we provide the `entityPage` option in the `convertLegacyAppRoot` helper. This option lets you pass in an entity page app element tree that will be converted to extensions that are added to the features returned from `convertLegacyAppRoot`.
 
-To start the gradual migration of entity pages, add your `entityPages` to the `convertLegacyApp` call:
+To start the gradual migration of entity pages, add your `entityPages` to the `convertLegacyAppRoot` call:
 
 ```tsx title="in packages/app/src/App.tsx"
 /* highlight-remove-next-line */
-const legacyFeatures = convertLegacyApp(routes);
+const legacyFeatures = convertLegacyAppRoot(routes);
 /* highlight-add-next-line */
-const legacyFeatures = convertLegacyApp(routes, { entityPage });
+const legacyFeatures = convertLegacyAppRoot(routes, { entityPage });
 ```
 
 Next, you will need to fully migrate the catalog plugin itself. This is because only a single version of a plugin can be installed in the app at a time, so in order to start using the new version of the catalog plugin you need to remove all usage of the old one. This includes both the routes and entity pages. You will need to keep the structural helpers for the entity pages, such as `EntityLayout` and `EntitySwitch`, but remove any extensions like the `<CatalogIndexPage/>` and entity cards and content like `<EntityAboutCard/>` and `<EntityOrphanWarning/>`.

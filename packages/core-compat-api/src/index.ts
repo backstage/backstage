@@ -18,8 +18,8 @@ export * from './compatWrapper';
 export * from './apis';
 
 export {
-  convertLegacyApp,
-  type ConvertLegacyAppOptions,
+  convertLegacyAppRoot,
+  type ConvertLegacyAppRootOptions,
 } from './convertLegacyApp';
 export { convertLegacyAppOptions } from './convertLegacyAppOptions';
 export { convertLegacyPlugin } from './convertLegacyPlugin';
