@@ -1,1 +1,0 @@
-export { UptimeRobotComponent } from './UptimeRobotComponent';
