@@ -56,7 +56,7 @@ describe('migrations', () => {
   const databases = TestDatabases.create();
 
   it.each(databases.eachSupportedId())(
-    '20250607000000_history_events.js, %p',
+    '20250607000001_history_summary.js, %p',
     async databaseId => {
       const { knex, provider, shutdown } = await initEmptyDatabase(
         databases,
@@ -107,7 +107,7 @@ describe('migrations', () => {
       const entityRef = stringifyEntityRef(entity);
 
       // Upgrading works
-      await migrateUntilBefore(knex, '20250607000000_history_events.js');
+      await migrateUntilBefore(knex, '20250607000001_history_summary.js');
       await migrateUpOnce(knex);
 
       // Expect that an insertion leads to an event

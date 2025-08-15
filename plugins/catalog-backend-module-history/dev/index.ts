@@ -18,7 +18,9 @@ import { createBackend } from '@backstage/backend-defaults';
 import {
   coreServices,
   createBackendPlugin,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { ConfigSources, StaticConfigSource } from '@backstage/config-loader';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import {
   CATALOG_HISTORY_EVENT_TOPIC,
@@ -52,9 +54,31 @@ const eventLogger = createBackendPlugin({
   },
 });
 
+const config = createServiceFactory({
+  service: coreServices.rootConfig,
+  deps: {},
+  factory: () => {
+    return ConfigSources.toConfig(
+      ConfigSources.merge([
+        ConfigSources.default(process),
+        StaticConfigSource.create({
+          data: {
+            catalog: {
+              history: {
+                publishEvents: { enabled: true },
+              },
+            },
+          },
+        }),
+      ]),
+    );
+  },
+});
+
 const backend = createBackend();
 backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('../src'));
 backend.add(eventLogger);
+backend.add(config);
 backend.start();
