@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.1.1
+
+### Patch Changes
+
+- 39cb30f: Stop logging of `SPLAT` twice in logs
+
 ## 2.1.0
 
 ### Minor Changes
