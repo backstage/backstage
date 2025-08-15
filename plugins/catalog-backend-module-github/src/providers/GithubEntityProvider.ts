@@ -343,7 +343,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const branch =
       this.config.filters.branch || event.repository.default_branch;
 
-    if (!event.ref.includes(branch)) {
+    if (event.ref !== `refs/heads/${branch}`) {
       this.logger.debug(`skipping push event from ref ${event.ref}`);
       return;
     }

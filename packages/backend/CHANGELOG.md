@@ -1,5 +1,16 @@
 # example-backend
 
+## 0.0.41-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.1-next.1
+  - @backstage/plugin-kubernetes-backend@0.20.0-next.1
+  - @backstage/plugin-scaffolder-backend@2.2.0-next.1
+  - @backstage/plugin-proxy-backend@0.6.5-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.2-next.1
+
 ## 0.0.41-next.0
 
 ### Patch Changes

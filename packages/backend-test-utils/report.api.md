@@ -152,7 +152,10 @@ export interface MockDirectoryContentOptions {
 }
 
 // @public
-export function mockErrorHandler(): ErrorRequestHandler<
+export function mockErrorHandler(
+  _options?: {},
+  ..._args: never[]
+): ErrorRequestHandler<
   ParamsDictionary,
   any,
   any,

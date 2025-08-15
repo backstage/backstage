@@ -467,6 +467,7 @@ Superfences
 superset
 supertype
 SVGs
+swappable
 talkdesk
 Talkdesk
 Tanzu
@@ -551,3 +552,4 @@ zod
 Zolotusky
 zoomable
 zsh
+resizable

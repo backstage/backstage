@@ -37,11 +37,11 @@ import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
 import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
   AuthenticationStrategy,
-  AnonymousStrategy,
   KubernetesCredential,
-} from '../auth';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+} from '@backstage/plugin-kubernetes-node';
 import {
   APPLICATION_JSON,
   HEADER_KUBERNETES_AUTH,
@@ -52,6 +52,7 @@ import {
 import type { Request } from 'express';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { AnonymousStrategy } from '../auth';
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -78,7 +79,7 @@ describe('KubernetesProxy', () => {
   };
 
   const permissionApi = mockServices.permissions();
-  const mockDisocveryApi = mockServices.discovery.mock();
+  const mockDiscoveryApi = mockServices.discovery.mock();
 
   registerMswTestHooks(worker);
 
@@ -153,7 +154,8 @@ describe('KubernetesProxy', () => {
       logger,
       clusterSupplier,
       authStrategy,
-      discovery: mockDisocveryApi,
+      discovery: mockDiscoveryApi,
+      httpAuth: mockServices.httpAuth.mock(),
     });
   });
 
@@ -540,7 +542,8 @@ describe('KubernetesProxy', () => {
       logger: mockServices.logger.mock(),
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
-      discovery: mockDisocveryApi,
+      discovery: mockDiscoveryApi,
+      httpAuth: mockServices.httpAuth.mock(),
     });
 
     worker.use(
@@ -662,7 +665,8 @@ describe('KubernetesProxy', () => {
       logger: mockServices.logger.mock(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
-      discovery: mockDisocveryApi,
+      discovery: mockDiscoveryApi,
+      httpAuth: mockServices.httpAuth.mock(),
     });
 
     worker.use(

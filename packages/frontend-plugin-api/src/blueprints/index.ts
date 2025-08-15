@@ -33,3 +33,4 @@ export { RouterBlueprint } from './RouterBlueprint';
 export { SignInPageBlueprint } from './SignInPageBlueprint';
 export { ThemeBlueprint } from './ThemeBlueprint';
 export { TranslationBlueprint } from './TranslationBlueprint';
+export { SwappableComponentBlueprint } from './SwappableComponentBlueprint';

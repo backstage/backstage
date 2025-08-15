@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.4-next.1
+
+### Patch Changes
+
+- 5bb870b: Show additional information about the cause in error messages from GitLab
+
 ## 0.9.4-next.0
 
 ### Patch Changes

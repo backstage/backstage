@@ -255,6 +255,18 @@ export async function load(url, context, nextLoad) {
     return nextLoad(url, { ...context, format });
   }
 
+  // If the Node.js version we're running supports TypeScript, i.e. type
+  // stripping, we hand over to the default loader. This is done for all cases
+  // except if we're loading a .ts file that's been resolved to CommonJS format.
+  // This is because these files aren't actually CommonJS in the Backstage build
+  // system, and need to be transformed to CommonJS.
+  if (
+    format === 'module-typescript' ||
+    (format === 'module-commonjs' && ext !== '.ts')
+  ) {
+    return nextLoad(url, { ...context, format });
+  }
+
   const transformed = await transformFile(fileURLToPath(url), {
     sourceMaps: 'inline',
     module: {

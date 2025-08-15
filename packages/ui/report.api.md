@@ -5,13 +5,14 @@
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
+import { CellProps as CellProps_2 } from 'react-aria-components';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
+import { ColumnProps } from 'react-aria-components';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
-import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
@@ -21,21 +22,21 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
+import { RowProps } from 'react-aria-components';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
-import { Table as Table_2 } from '@tanstack/react-table';
+import { TableBodyProps } from 'react-aria-components';
+import { TableHeaderProps } from 'react-aria-components';
+import { TableProps } from 'react-aria-components';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
 import type { TabProps as TabProps_2 } from 'react-aria-components';
 import { TabsProps as TabsProps_2 } from 'react-aria-components';
-import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
-import { ThHTMLAttributes } from 'react';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
-import type { useRender } from '@base-ui-components/react/use-render';
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -207,16 +208,31 @@ export const Card: ForwardRefExoticComponent<
 >;
 
 // @public
+export const CardBody: ForwardRefExoticComponent<
+  CardBodyProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
 export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   children?: React.ReactNode;
 }
 
 // @public
+export const CardFooter: ForwardRefExoticComponent<
+  CardFooterProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
 export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   children?: React.ReactNode;
 }
+
+// @public
+export const CardHeader: ForwardRefExoticComponent<
+  CardHeaderProps & RefAttributes<HTMLDivElement>
+>;
 
 // @public
 export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -228,6 +244,43 @@ export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   children?: React.ReactNode;
+}
+
+// @public (undocumented)
+export const Cell: {
+  (props: CellProps): JSX_2.Element;
+  displayName: string;
+};
+
+// @public (undocumented)
+export const CellProfile: (props: CellProfileProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface CellProfileProps extends CellProps_2 {
+  // (undocumented)
+  color?: 'primary' | 'secondary';
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  src?: string;
+}
+
+// @public (undocumented)
+export interface CellProps extends CellProps_2 {
+  // (undocumented)
+  color?: 'primary' | 'secondary';
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  leadingIcon?: React.ReactNode | null;
+  // (undocumented)
+  title: string;
 }
 
 // @public (undocumented)
@@ -280,6 +333,13 @@ export const Collapsible: {
       RefAttributes<HTMLButtonElement>
   >;
 };
+
+// @public (undocumented)
+export const Column: (
+  props: Omit<ColumnProps, 'children'> & {
+    children?: React.ReactNode;
+  },
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
@@ -392,10 +452,6 @@ export const componentDefinitions: {
       readonly toolbarControls: 'bui-HeaderToolbarControls';
       readonly toolbarIcon: 'bui-HeaderToolbarIcon';
       readonly toolbarName: 'bui-HeaderToolbarName';
-      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
-      readonly breadcrumb: 'bui-HeaderBreadcrumb';
-      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
-      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
       readonly tabsWrapper: 'bui-HeaderTabsWrapper';
     };
   };
@@ -403,6 +459,7 @@ export const componentDefinitions: {
     readonly classNames: {
       readonly root: 'bui-HeaderPage';
       readonly content: 'bui-HeaderPageContent';
+      readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
       readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
       readonly controls: 'bui-HeaderPageControls';
     };
@@ -482,6 +539,9 @@ export const componentDefinitions: {
       readonly root: 'bui-SearchField';
       readonly clear: 'bui-InputClear';
     };
+    readonly dataAttributes: {
+      readonly startCollapsed: readonly [true, false];
+    };
   };
   readonly Select: {
     readonly classNames: {
@@ -511,16 +571,17 @@ export const componentDefinitions: {
   };
   readonly Table: {
     readonly classNames: {
-      readonly root: 'bui-TableRoot';
+      readonly table: 'bui-Table';
       readonly header: 'bui-TableHeader';
       readonly body: 'bui-TableBody';
       readonly row: 'bui-TableRow';
       readonly head: 'bui-TableHead';
+      readonly headSortButton: 'bui-TableHeadSortButton';
       readonly caption: 'bui-TableCaption';
       readonly cell: 'bui-TableCell';
-      readonly cellText: 'bui-TableCellText';
-      readonly cellLink: 'bui-TableCellLink';
-      readonly cellProfile: 'bui-TableCellProfile';
+      readonly cellContentWrapper: 'bui-TableCellContentWrapper';
+      readonly cellContent: 'bui-TableCellContent';
+      readonly cellIcon: 'bui-TableCellIcon';
       readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
       readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
       readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
@@ -608,68 +669,6 @@ export type DataAttributesMap = Record<string, DataAttributeValues>;
 
 // @public
 export type DataAttributeValues = readonly (string | number | boolean)[];
-
-// @public
-export const DataTable: {
-  Root: <TData>(
-    props: {
-      table: Table_2<TData>;
-    } & React.HTMLAttributes<HTMLDivElement>,
-  ) => JSX.Element;
-  Pagination: ForwardRefExoticComponent<
-    DataTablePaginationProps & RefAttributes<HTMLDivElement>
-  >;
-  Table: ForwardRefExoticComponent<
-    DataTableTableProps & RefAttributes<HTMLTableElement>
-  >;
-  TableRoot: ForwardRefExoticComponent<
-    Omit<
-      HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>,
-      'ref'
-    > &
-      RefAttributes<HTMLTableElement>
-  >;
-  TableHeader: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableSectionElement> &
-      RefAttributes<HTMLTableSectionElement>
-  >;
-  TableBody: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableSectionElement> &
-      RefAttributes<HTMLTableSectionElement>
-  >;
-  TableRow: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
-  >;
-  TableCell: ForwardRefExoticComponent<
-    TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
-  >;
-  TableCellText: ForwardRefExoticComponent<
-    TableCellTextProps & RefAttributes<HTMLDivElement>
-  >;
-  TableCellLink: ForwardRefExoticComponent<
-    TableCellLinkProps & RefAttributes<HTMLDivElement>
-  >;
-  TableCellProfile: ForwardRefExoticComponent<
-    TableCellProfileProps & RefAttributes<HTMLDivElement>
-  >;
-  TableHead: ForwardRefExoticComponent<
-    ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
-  >;
-};
-
-// @public (undocumented)
-export interface DataTablePaginationProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
-
-// @public (undocumented)
-export interface DataTableRootProps<TData>
-  extends React.HTMLAttributes<HTMLDivElement> {
-  table: Table_2<TData>;
-}
-
-// @public (undocumented)
-export interface DataTableTableProps
-  extends React.HTMLAttributes<HTMLTableElement> {}
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
@@ -978,14 +977,6 @@ export interface GridProps extends SpaceProps {
 export const Header: (props: HeaderProps) => JSX_2.Element;
 
 // @public
-export interface HeaderBreadcrumb {
-  // (undocumented)
-  href: string;
-  // (undocumented)
-  label: string;
-}
-
-// @public
 export interface HeaderMenuItem {
   // (undocumented)
   label: string;
@@ -999,7 +990,17 @@ export interface HeaderMenuItem {
 export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
 
 // @public
+export interface HeaderPageBreadcrumb {
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
 export interface HeaderPageProps {
+  // (undocumented)
+  breadcrumbs?: HeaderPageBreadcrumb[];
   // (undocumented)
   customActions?: React.ReactNode;
   // (undocumented)
@@ -1012,8 +1013,6 @@ export interface HeaderPageProps {
 
 // @public
 export interface HeaderProps {
-  // (undocumented)
-  breadcrumbs?: HeaderBreadcrumb[];
   // (undocumented)
   customActions?: React.ReactNode;
   // (undocumented)
@@ -1422,6 +1421,15 @@ export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
 };
 
 // @public (undocumented)
+export function Row<T extends object>({
+  id,
+  columns,
+  children,
+  href,
+  ...otherProps
+}: RowProps<T>): JSX_2.Element;
+
+// @public (undocumented)
 export const ScrollArea: {
   Root: ForwardRefExoticComponent<
     Omit<ScrollArea_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
@@ -1453,6 +1461,7 @@ export interface SearchFieldProps
   icon?: ReactNode | false;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  startCollapsed?: boolean;
 }
 
 // @public (undocumented)
@@ -1567,76 +1576,44 @@ export interface SwitchProps extends SwitchProps_2 {
 // @public
 export const Tab: (props: TabProps) => JSX_2.Element;
 
+// @public (undocumented)
+export const Table: (props: TableProps) => JSX_2.Element;
+
+// @public (undocumented)
+export const TableBody: <T extends object>(
+  props: TableBodyProps<T>,
+) => JSX_2.Element;
+
+// @public (undocumented)
+export const TableHeader: <T extends object>({
+  columns,
+  children,
+}: TableHeaderProps<T>) => JSX_2.Element;
+
 // @public
-export const Table: {
-  Root: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
-  >;
-  Header: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableSectionElement> &
-      RefAttributes<HTMLTableSectionElement>
-  >;
-  Body: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableSectionElement> &
-      RefAttributes<HTMLTableSectionElement>
-  >;
-  Head: ForwardRefExoticComponent<
-    ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
-  >;
-  Row: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
-  >;
-  Cell: ForwardRefExoticComponent<
-    TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
-  >;
-  CellText: ForwardRefExoticComponent<
-    TableCellTextProps & RefAttributes<HTMLDivElement>
-  >;
-  CellLink: ForwardRefExoticComponent<
-    TableCellLinkProps & RefAttributes<HTMLDivElement>
-  >;
-  CellProfile: ForwardRefExoticComponent<
-    TableCellProfileProps & RefAttributes<HTMLDivElement>
-  >;
-  Caption: ForwardRefExoticComponent<
-    HTMLAttributes<HTMLTableCaptionElement> &
-      RefAttributes<HTMLTableCaptionElement>
-  >;
-};
+export function TablePagination(props: TablePaginationProps): JSX_2.Element;
 
 // @public (undocumented)
-export interface TableCellLinkProps
+export interface TablePaginationProps
   extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
-  description?: string;
+  offset?: number;
   // (undocumented)
-  href: string;
+  onNextPage?: () => void;
   // (undocumented)
-  render?: useRender.ComponentProps<'a'>['render'];
+  onPageSizeChange?: (pageSize: number) => void;
   // (undocumented)
-  title: string;
-}
-
-// @public (undocumented)
-export interface TableCellProfileProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+  onPreviousPage?: () => void;
   // (undocumented)
-  name?: string;
+  pageSize?: number;
   // (undocumented)
-  src?: string;
+  rowCount?: number;
   // (undocumented)
-  to?: string;
+  setOffset?: (offset: number) => void;
   // (undocumented)
-  withImage?: boolean;
-}
-
-// @public (undocumented)
-export interface TableCellTextProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+  setPageSize?: (pageSize: number) => void;
   // (undocumented)
-  description?: string;
-  // (undocumented)
-  title: string;
+  showPageSizeOptions?: boolean;
 }
 
 // @public
@@ -1765,6 +1742,50 @@ export const useBreakpoint: () => {
 
 // @public (undocumented)
 export const useIcons: () => IconContextProps;
+
+// @public
+export function useTable<T = any>(
+  config?: UseTableConfig<T>,
+): UseTableResult<T>;
+
+// @public (undocumented)
+export interface UseTableConfig<T = any> {
+  data?: T[];
+  pagination?: UseTablePaginationConfig;
+}
+
+// @public (undocumented)
+export interface UseTablePagination<T = any> {
+  data?: T[];
+  nextPage: () => void;
+  offset: number;
+  pageSize: number;
+  paginationProps: TablePaginationProps;
+  previousPage: () => void;
+  setOffset: (offset: number) => void;
+  setPageSize: (pageSize: number) => void;
+}
+
+// @public (undocumented)
+export interface UseTablePaginationConfig {
+  defaultOffset?: number;
+  defaultPageSize?: number;
+  offset?: number;
+  onNextPage?: () => void;
+  onOffsetChange?: (offset: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  onPreviousPage?: () => void;
+  pageSize?: number;
+  rowCount?: number;
+  showPageSizeOptions?: boolean;
+}
+
+// @public (undocumented)
+export interface UseTableResult<T = any> {
+  data?: T[];
+  pagination: UseTablePagination<T>;
+  paginationProps: TablePaginationProps;
+}
 
 // @public (undocumented)
 export interface UtilityProps extends SpaceProps {

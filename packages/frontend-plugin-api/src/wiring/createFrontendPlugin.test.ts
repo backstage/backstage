@@ -128,7 +128,9 @@ function createTestAppRoot({
 }) {
   return createApp({
     features: [...features],
-    configLoader: async () => ({ config: mockApis.config({ data: config }) }),
+    advanced: {
+      configLoader: async () => ({ config: mockApis.config({ data: config }) }),
+    },
   }).createRoot();
 }
 

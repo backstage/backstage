@@ -46,6 +46,11 @@ const tracer = trace.getTracer(TRACER_ID);
 
 export type ProgressTracker = ReturnType<typeof progressTracker>;
 
+const stableStringifyArray = (arr: any[]) => {
+  const sorted = arr.map(stableStringify).sort();
+  return `[${sorted.join(',')}]`;
+};
+
 // NOTE(freben): Perhaps surprisingly, this class does not implement the
 // CatalogProcessingEngine type. That type is externally visible and its name is
 // the way it is for historic reasons. This class has no particular reason to
@@ -226,10 +231,10 @@ export class DefaultCatalogProcessingEngine {
 
               hashBuilder = hashBuilder
                 .update(stableStringify({ ...result.completedEntity }))
-                .update(stableStringify([...result.deferredEntities]))
-                .update(stableStringify([...result.relations]))
-                .update(stableStringify([...result.refreshKeys]))
-                .update(stableStringify([...parents]));
+                .update(stableStringifyArray([...result.deferredEntities]))
+                .update(stableStringifyArray([...result.relations]))
+                .update(stableStringifyArray([...result.refreshKeys]))
+                .update(stableStringifyArray([...parents]));
             }
 
             const resultHash = hashBuilder.digest('hex');

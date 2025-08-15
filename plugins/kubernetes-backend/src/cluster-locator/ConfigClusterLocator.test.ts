@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
@@ -23,7 +22,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
-import { AuthenticationStrategy } from '../auth';
+import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
 
 describe('ConfigClusterLocator', () => {
   let authStrategy: jest.Mocked<AuthenticationStrategy>;

@@ -14,8 +14,55 @@
  * limitations under the License.
  */
 
-.bui-SearchField[data-empty] .bui-InputClear {
-  display: none;
+.bui-SearchField {
+  &[data-empty] {
+    .bui-InputClear {
+      display: none;
+    }
+  }
+
+  &[data-start-collapsed='true'] {
+    transition: width 0.3s ease-in-out;
+    padding: 0;
+
+    &[data-collapsed='false'] {
+      cursor: pointer;
+
+      &[data-size='medium'] {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      &[data-size='small'] {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      &[data-size='medium'] .bui-Input {
+        padding-left: 0;
+
+        &::placeholder {
+          opacity: 0;
+        }
+      }
+
+      &[data-size='small'] .bui-Input {
+        padding-left: 0;
+
+        &::placeholder {
+          opacity: 0;
+        }
+      }
+
+      &[data-size='small'] .bui-InputIcon {
+        left: var(--bui-space-2);
+      }
+
+      &[data-size='medium'] .bui-InputIcon {
+        left: 10px;
+      }
+    }
+  }
 }
 
 .bui-InputClear {

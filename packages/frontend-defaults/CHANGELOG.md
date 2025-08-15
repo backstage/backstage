@@ -1,5 +1,38 @@
 # @backstage/frontend-defaults
 
+## 0.3.0-next.3
+
+### Minor Changes
+
+- 5e12252: **BREAKING**: Restructured some of option fields of `createApp` and `createSpecializedApp`.
+
+  - For `createApp`, all option fields _except_ `features` and `bindRoutes` have been moved into a new `advanced` object field.
+  - For `createSpecializedApp`, all option fields _except_ `features`, `config`, and `bindRoutes` have been moved into a new `advanced` object field.
+
+  This helps highlight that some options are meant to rarely be needed or used, and simplifies the usage of those options that are almost always required.
+
+  As an example, if you used to supply a custom config loader, you would update your code as follows:
+
+  ```diff
+   createApp({
+     features: [...],
+  -  configLoader: new MyCustomLoader(),
+  +  advanced: {
+  +    configLoader: new MyCustomLoader(),
+  +  },
+   })
+  ```
+
+### Patch Changes
+
+- 8b1bf6e: Deprecated new frontend system config setting `app.experimental.packages` to just `app.packages`. The old config will continue working for the time being, but may be removed in a future release.
+- e5a0a99: **BREAKING**: The `loadingComponent` option has been renamed to `loadingElement`, which is now found under `advanced.loadingElement`. The default loading element has also been switched to `<Progress />` from `@backstage/core-components`. This is of course an improvement over the previous `"Loading..."` text, but also helps prevent flicker when the app loading is fast.
+- Updated dependencies
+  - @backstage/plugin-app@0.2.0-next.2
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/frontend-app-api@0.12.0-next.3
+  - @backstage/core-components@0.17.5-next.2
+
 ## 0.3.0-next.2
 
 ### Minor Changes

@@ -17,7 +17,7 @@
 import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '@backstage/types';
 import {
-  ResolveInputValueOverrides,
+  ResolvedInputValueOverrides,
   resolveInputOverrides,
 } from './resolveInputOverrides';
 import { createExtensionDataContainer } from '@internal/frontend';
@@ -27,7 +27,12 @@ import { z } from 'zod';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 import { ExtensionDataContainer } from './types';
-import { ExtensionBlueprintDefineParams } from './createExtensionBlueprint';
+import {
+  ExtensionBlueprint,
+  ExtensionBlueprintDefineParams,
+} from './createExtensionBlueprint';
+import { FrontendPlugin } from './createFrontendPlugin';
+import { FrontendModule } from './createFrontendModule';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -221,7 +226,7 @@ export type ExtensionDefinition<
             context?: Expand<
               {
                 config?: T['config'];
-                inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+                inputs?: ResolvedInputValueOverrides<NonNullable<T['inputs']>>;
               } & ([T['params']] extends [never]
                 ? {}
                 : {
@@ -281,7 +286,41 @@ export type ExtensionDefinition<
   }>;
 };
 
-/** @public */
+/**
+ * Creates a new extension definition for installation in a Backstage app.
+ *
+ * @remarks
+ *
+ * This is a low-level function for creation of extensions with arbitrary inputs
+ * and outputs and is typically only intended to be used for advanced overrides
+ * or framework-level extensions. For most extension creation needs, it is
+ * recommended to use existing {@link ExtensionBlueprint}s instead. You can find
+ * blueprints both in the `@backstage/frontend-plugin-api` package as well as
+ * other plugin libraries. There is also a list of
+ * {@link https://backstage.io/docs/frontend-system/building-plugins/common-extension-blueprints | commonly used blueprints}
+ * in the frontend system documentation.
+ *
+ * Extension definitions that are created with this function can be installed in
+ * a Backstage app via a {@link FrontendPlugin} or {@link FrontendModule}.
+ *
+ * For more details on how extensions work, see the
+ * {@link https://backstage.io/docs/frontend-system/architecture/extensions | documentation for extensions}.
+ *
+ * @example
+ *
+ * ```ts
+ * const myExtension = createExtension({
+ *   name: 'example',
+ *   attachTo: { id: 'app', input: 'root' },
+ *   output: [coreExtensionData.reactElement],
+ *   factory() {
+ *     return [coreExtensionData.reactElement(<h1>Hello, world!</h1>)];
+ *   },
+ * });
+ * ```
+ *
+ * @public
+ */
 export function createExtension<
   UOutput extends ExtensionDataRef,
   TInputs extends {

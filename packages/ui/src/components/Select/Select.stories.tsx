@@ -20,7 +20,7 @@ import { Form } from 'react-aria-components';
 import { RiCloudLine } from '@remixicon/react';
 
 const meta = {
-  title: 'Forms/Select',
+  title: 'Backstage UI/Select',
   component: Select,
 } satisfies Meta<typeof Select>;
 

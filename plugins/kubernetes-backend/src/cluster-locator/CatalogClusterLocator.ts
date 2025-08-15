@@ -18,7 +18,10 @@ import {
   AuthService,
   BackstageCredentials,
 } from '@backstage/backend-plugin-api';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
+} from '@backstage/plugin-kubernetes-node';
 import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,

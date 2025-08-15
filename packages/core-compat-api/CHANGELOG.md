@@ -1,5 +1,13 @@
 # @backstage/core-compat-api
 
+## 0.5.0-next.3
+
+### Patch Changes
+
+- fda1bbc: The `compatWrapper` has been switched to use the new `SwappableComponentsApi` instead of the old `ComponentsApi` in its bridging to the old frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+
 ## 0.5.0-next.2
 
 ### Minor Changes

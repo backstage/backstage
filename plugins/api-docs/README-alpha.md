@@ -68,9 +68,8 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
    ```yaml
    # app-config.yaml
    app:
-     experimental:
-       # Auto discovering all plugins extensions
-       packages: all
+     # Auto discovering all plugins extensions
+     packages: all
      extensions:
        # Enabling some entity cards
        # The cards will be displayed in the same order it appears in this setting list

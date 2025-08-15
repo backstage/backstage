@@ -8,7 +8,6 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { AppTheme } from '@backstage/frontend-plugin-api';
-import { ComponentRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
@@ -23,6 +22,7 @@ import { NavContentComponent } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
 
@@ -316,27 +316,12 @@ const appPlugin: FrontendPlugin<
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/components': ExtensionDefinition<{
+      kind: 'api';
+      name: 'components';
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {
-        components: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            {
-              ref: ComponentRef;
-              impl: ComponentType;
-            },
-            'core.component.component',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-      };
-      kind: 'api';
-      name: 'components';
+      inputs: {};
       params: <
         TApi,
         TImpl extends TApi,
@@ -614,6 +599,38 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'api:app/swappable-components': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        components: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              ref: SwappableComponentRef;
+              loader:
+                | (() => (props: {}) => JSX.Element | null)
+                | (() => Promise<(props: {}) => JSX.Element | null>);
+            },
+            'core.swappableComponent',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'swappable-components';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
     'api:app/translations': ExtensionDefinition<{
       config: {};
       configInput: {};
@@ -725,6 +742,174 @@ const appPlugin: FrontendPlugin<
       params: {
         element: JSX.Element;
       };
+    }>;
+    'component:app/core-error-display': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core-error-display';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
+    'component:app/core-not-found-error-page': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core-not-found-error-page';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
+    'component:app/core-progress': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core-progress';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
     }>;
     'sign-in-page:app': ExtensionDefinition<{
       kind: 'sign-in-page';
