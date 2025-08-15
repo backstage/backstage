@@ -12,6 +12,8 @@ This page answers frequently asked questions about [TechDocs](README.md).
 - [What static site generator is TechDocs using?](#what-static-site-generator-is-techdocs-using)
 - [What is the mkdocs-techdocs-core plugin?](#what-is-the-mkdocs-techdocs-core-plugin)
 - [Does TechDocs support file formats other than Markdown (e.g. RST, AsciiDoc)?](#does-techdocs-support-file-formats-other-than-markdown-eg-rst-asciidoc-)
+- [What should be the value of `backstage.io/techdocs-ref` when using external build and storage?](#what-should-be-the-value-of-backstageiotechdocs-ref-when-using-external-build-and-storage)
+- [Is it possible for users to suggest changes or provide feedback on a TechDocs page?](#is-it-possible-for-users-to-suggest-changes-or-provide-feedback-on-a-techdocs-page)
 
 #### What static site generator is TechDocs using?
 
