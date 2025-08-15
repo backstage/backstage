@@ -358,11 +358,11 @@ In order to validate the config you can use `backstage/cli config:check`
 
 ### Customizing the VisitList
 
-If you want more control over the recent and top visited lists, you can write your own functions to transform the pathnames and determine which visits to save. Pass them to the `VisitListener` with `transformPathname` and `canSave`.
+If you want more control over the recent and top visited lists, you can write your own functions to transform the pathnames and determine which visits to save. You can also enrich each visit with other fields and customize the chip colors/labels in the visit lists.
 
 #### Transform Pathname Function
 
-Provide a `transformPathname` function to transform the pathname before it's processed for visit tracking. This is useful for normalizing URLs or removing query parameters:
+Provide a `transformPathname` function to transform the pathname before it's processed for visit tracking. This can be used for transforming the pathname for the visit (before any other consideration). As an example, you can treat multiple sub-path visits to be counted as a singular path, e.g. `/entity-path/sub1` , `/entity-path/sub-2`, `/entity-path/sub-2/sub-sub-2` can all be mapped to `/entity-path` so visits to any of those routes are all counted as the same.
 
 ```tsx
 import {
@@ -371,8 +371,12 @@ import {
 } from '@backstage/plugin-home';
 
 const transformPathname: VisitTransformPathnameFunction = ({ pathname }) => {
-  // Remove query parameters and hash fragments
-  return pathname.split('?')[0].split('#')[0];
+  const pathnameParts = pathname.split('/').filter(part => part !== '');
+  const rootPathFromPathname = pathnameParts[0] ?? '';
+  if (rootPathFromPathname === 'catalog' && pathnameParts.length >= 4) {
+    return `/${pathnameParts.slice(0, 4).join('/')}`;
+  }
+  return pathname;
 };
 
 <VisitListener transformPathname={transformPathname} />;
@@ -380,7 +384,7 @@ const transformPathname: VisitTransformPathnameFunction = ({ pathname }) => {
 
 #### Can Save Function
 
-Provide a `canSave` function to determine which visits should be tracked and saved. This allows you to filter out certain pages or paths:
+Provide a `canSave` function to determine which visits should be tracked and saved. This allows you to conditionally save visits to the list:
 
 ```tsx
 import { VisitListener, VisitCanSaveFunction } from '@backstage/plugin-home';
