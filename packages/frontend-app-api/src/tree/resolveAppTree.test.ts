@@ -18,6 +18,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
+  createFrontendPlugin,
   Extension,
 } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
@@ -37,6 +38,7 @@ const baseSpec = {
   extension,
   attachTo: { id: 'nonexistent', input: 'nonexistent' },
   disabled: false,
+  plugin: createFrontendPlugin({ pluginId: 'app' }),
 };
 
 describe('buildAppTree', () => {
@@ -284,8 +286,20 @@ describe('buildAppTree', () => {
       ) as Extension<unknown, unknown>;
 
       const tree = resolveAppTree('a', [
-        { attachTo: e1.attachTo, id: 'a', extension: e1, disabled: false },
-        { attachTo: e2.attachTo, id: 'b', extension: e2, disabled: false },
+        {
+          attachTo: e1.attachTo,
+          id: 'a',
+          extension: e1,
+          disabled: false,
+          plugin: baseSpec.plugin,
+        },
+        {
+          attachTo: e2.attachTo,
+          id: 'b',
+          extension: e2,
+          disabled: false,
+          plugin: baseSpec.plugin,
+        },
       ]);
 
       expect(tree.root).toMatchInlineSnapshot(`
@@ -352,9 +366,27 @@ describe('buildAppTree', () => {
       ) as Extension<unknown, unknown>;
 
       const tree = resolveAppTree('test-2', [
-        { attachTo: e1.attachTo, id: e1.id, extension: e1, disabled: false },
-        { attachTo: e2.attachTo, id: e2.id, extension: e2, disabled: false },
-        { attachTo: e3.attachTo, id: e3.id, extension: e3, disabled: false },
+        {
+          attachTo: e1.attachTo,
+          id: e1.id,
+          extension: e1,
+          disabled: false,
+          plugin: baseSpec.plugin,
+        },
+        {
+          attachTo: e2.attachTo,
+          id: e2.id,
+          extension: e2,
+          disabled: false,
+          plugin: baseSpec.plugin,
+        },
+        {
+          attachTo: e3.attachTo,
+          id: e3.id,
+          extension: e3,
+          disabled: false,
+          plugin: baseSpec.plugin,
+        },
       ]);
 
       expect(tree.nodes.get('test-3')?.edges.attachedTo?.node).toBe(

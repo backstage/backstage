@@ -1,5 +1,17 @@
 # @backstage/ui
 
+## 0.7.0-next.3
+
+### Minor Changes
+
+- 0615e54: We are moving our DataTable component to React Aria. We removed our DataTable to only use Table as a single and opinionated option for tables. This new structure is made possible by using React Aria under the hood.
+
+### Patch Changes
+
+- 230b410: **Breaking change** Move breadcrumb to fit in the `HeaderPage` instead of the `Header` in Backstage UI.
+- 8bdc491: Remove stylesheet import from Select component.
+- 404b426: Add `startCollapsed` prop on the `SearchField` component in BUI.
+
 ## 0.7.0-next.2
 
 ### Patch Changes

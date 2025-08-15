@@ -384,14 +384,15 @@ describe('createApp', () => {
           </api:app/app-theme>
           <api:app/swappable-components out=[core.api.factory]>
             components [
-              <component:app/core.components.progress out=[core.swappableComponent] />
-              <component:app/core.components.notFoundErrorPage out=[core.swappableComponent] />
-              <component:app/core.components.errorBoundary out=[core.swappableComponent] />
+              <component:app/core-progress out=[core.swappableComponent] />
+              <component:app/core-not-found-error-page out=[core.swappableComponent] />
+              <component:app/core-error-display out=[core.swappableComponent] />
             ]
           </api:app/swappable-components>
           <api:app/icons out=[core.api.factory] />
           <api:app/feature-flags out=[core.api.factory] />
           <api:app/translations out=[core.api.factory] />
+          <api:app/components out=[core.api.factory] />
         ]
         app [
           <app out=[core.reactElement]>
@@ -427,7 +428,7 @@ describe('createApp', () => {
     `);
   });
 
-  it('should use "Loading..." as the default suspense fallback', async () => {
+  it('should use <Progress /> as the default suspense fallback', async () => {
     const app = createApp({
       advanced: {
         configLoader: () => new Promise(() => {}),
@@ -436,33 +437,33 @@ describe('createApp', () => {
 
     await renderWithEffects(app.createRoot());
 
-    await expect(screen.findByText('Loading...')).resolves.toBeInTheDocument();
+    await expect(screen.findByTestId('progress')).resolves.toBeInTheDocument();
   });
 
-  it('should use no suspense fallback if the "loadingComponent" is null', async () => {
+  it('should use no suspense fallback if the loadingElement is null', async () => {
     const app = createApp({
       advanced: {
         configLoader: () => new Promise(() => {}),
-        loadingComponent: null,
+        loadingElement: null,
       },
     });
 
     await renderWithEffects(app.createRoot());
 
-    expect(screen.queryByText('Loading...')).toBeNull();
+    expect(screen.queryByTestId('progress')).toBeNull();
   });
 
-  it('should use a custom "loadingComponent"', async () => {
+  it('should use a custom loadingElement', async () => {
     const app = createApp({
       advanced: {
         configLoader: () => new Promise(() => {}),
-        loadingComponent: <span>"Custom loading message"</span>,
+        loadingElement: <span>Custom loading message</span>,
       },
     });
 
     await renderWithEffects(app.createRoot());
 
-    expect(screen.queryByText('Custom loading message')).toBeNull();
+    expect(screen.queryByText('Custom loading message')).toBeInTheDocument();
   });
 
   it('should allow overriding the app plugin', async () => {

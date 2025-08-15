@@ -112,10 +112,6 @@ export const componentDefinitions = {
       toolbarControls: 'bui-HeaderToolbarControls',
       toolbarIcon: 'bui-HeaderToolbarIcon',
       toolbarName: 'bui-HeaderToolbarName',
-      breadcrumbs: 'bui-HeaderBreadcrumbs',
-      breadcrumb: 'bui-HeaderBreadcrumb',
-      breadcrumbLink: 'bui-HeaderBreadcrumbLink',
-      breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator',
       tabsWrapper: 'bui-HeaderTabsWrapper',
     },
   },
@@ -123,6 +119,7 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-HeaderPage',
       content: 'bui-HeaderPageContent',
+      breadcrumbs: 'bui-HeaderPageBreadcrumbs',
       tabsWrapper: 'bui-HeaderPageTabsWrapper',
       controls: 'bui-HeaderPageControls',
     },
@@ -202,6 +199,9 @@ export const componentDefinitions = {
       root: 'bui-SearchField',
       clear: 'bui-InputClear',
     },
+    dataAttributes: {
+      startCollapsed: [true, false] as const,
+    },
   },
   Select: {
     classNames: {
@@ -231,16 +231,17 @@ export const componentDefinitions = {
   },
   Table: {
     classNames: {
-      root: 'bui-TableRoot',
+      table: 'bui-Table',
       header: 'bui-TableHeader',
       body: 'bui-TableBody',
       row: 'bui-TableRow',
       head: 'bui-TableHead',
+      headSortButton: 'bui-TableHeadSortButton',
       caption: 'bui-TableCaption',
       cell: 'bui-TableCell',
-      cellText: 'bui-TableCellText',
-      cellLink: 'bui-TableCellLink',
-      cellProfile: 'bui-TableCellProfile',
+      cellContentWrapper: 'bui-TableCellContentWrapper',
+      cellContent: 'bui-TableCellContent',
+      cellIcon: 'bui-TableCellIcon',
       cellProfileAvatar: 'bui-TableCellProfileAvatar',
       cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage',
       cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback',

@@ -21,6 +21,7 @@ export { AppRoot } from './AppRoot';
 export { AppRoutes } from './AppRoutes';
 export { AppThemeApi, DarkTheme, LightTheme } from './AppThemeApi';
 export { SwappableComponentsApi } from './SwappableComponentsApi';
+export { LegacyComponentsApi } from './LegacyComponentsApi';
 export { IconsApi } from './IconsApi';
 export { FeatureFlagsApi } from './FeatureFlagsApi';
 export { TranslationsApi } from './TranslationsApi';
@@ -30,4 +31,4 @@ export {
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
 } from './elements';
-export { Progress, NotFoundErrorPage, ErrorBoundary } from './components';
+export { Progress, NotFoundErrorPage, ErrorDisplay } from './components';

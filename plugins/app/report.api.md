@@ -315,6 +315,21 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'api:app/components': ExtensionDefinition<{
+      kind: 'api';
+      name: 'components';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
     'api:app/dialog': ExtensionDefinition<{
       kind: 'api';
       name: 'dialog';
@@ -728,9 +743,9 @@ const appPlugin: FrontendPlugin<
         element: JSX.Element;
       };
     }>;
-    'component:app/core.components.errorBoundary': ExtensionDefinition<{
+    'component:app/core-error-display': ExtensionDefinition<{
       kind: 'component';
-      name: 'core.components.errorBoundary';
+      name: 'core-error-display';
       config: {};
       configInput: {};
       output: ExtensionDataRef<
@@ -784,9 +799,9 @@ const appPlugin: FrontendPlugin<
           : never;
       }>;
     }>;
-    'component:app/core.components.notFoundErrorPage': ExtensionDefinition<{
+    'component:app/core-not-found-error-page': ExtensionDefinition<{
       kind: 'component';
-      name: 'core.components.notFoundErrorPage';
+      name: 'core-not-found-error-page';
       config: {};
       configInput: {};
       output: ExtensionDataRef<
@@ -840,9 +855,9 @@ const appPlugin: FrontendPlugin<
           : never;
       }>;
     }>;
-    'component:app/core.components.progress': ExtensionDefinition<{
+    'component:app/core-progress': ExtensionDefinition<{
       kind: 'component';
-      name: 'core.components.progress';
+      name: 'core-progress';
       config: {};
       configInput: {};
       output: ExtensionDataRef<

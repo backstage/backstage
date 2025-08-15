@@ -39,6 +39,7 @@ import {
   TemplateEditorLayoutToolbar,
   TemplateEditorLayoutFiles,
   TemplateEditorLayoutPreview,
+  TemplateEditorPanels,
 } from './TemplateEditorLayout';
 import { TemplateEditorToolbar } from './TemplateEditorToolbar';
 import { TemplateEditorToolbarFileMenu } from './TemplateEditorToolbarFileMenu';
@@ -113,7 +114,7 @@ const useStyles = makeStyles(
       "textArea preview"
     `,
         gridTemplateRows: 'auto 1fr',
-        gridTemplateColumns: '1fr 1fr',
+        gridTemplateColumns: '1fr',
       },
     },
     files: {
@@ -207,23 +208,30 @@ export const TemplateFormPreviewer = ({
           />
         </TemplateEditorToolbar>
       </TemplateEditorLayoutToolbar>
-      <TemplateEditorLayoutFiles classes={{ root: classes.files }}>
-        <TemplateEditorTextArea
-          content={templateYaml}
-          onUpdate={setTemplateYaml}
-          errorText={errorText}
-        />
-      </TemplateEditorLayoutFiles>
-      <TemplateEditorLayoutPreview>
-        <TemplateEditorForm
-          content={templateYaml}
-          contentIsSpec
-          fieldExtensions={customFieldExtensions}
-          setErrorText={setErrorText}
-          layouts={layouts}
-          formProps={formProps}
-        />
-      </TemplateEditorLayoutPreview>
+      <TemplateEditorPanels
+        autoSaveId="template-form-previewer"
+        files={
+          <TemplateEditorLayoutFiles classes={{ root: classes.files }}>
+            <TemplateEditorTextArea
+              content={templateYaml}
+              onUpdate={setTemplateYaml}
+              errorText={errorText}
+            />
+          </TemplateEditorLayoutFiles>
+        }
+        preview={
+          <TemplateEditorLayoutPreview>
+            <TemplateEditorForm
+              content={templateYaml}
+              contentIsSpec
+              fieldExtensions={customFieldExtensions}
+              setErrorText={setErrorText}
+              layouts={layouts}
+              formProps={formProps}
+            />
+          </TemplateEditorLayoutPreview>
+        }
+      />
     </TemplateEditorLayout>
   );
 };

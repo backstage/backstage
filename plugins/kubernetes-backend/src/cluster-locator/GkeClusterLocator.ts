@@ -20,7 +20,10 @@ import { ForwardedError } from '@backstage/errors';
 import * as container from '@google-cloud/container';
 import { Duration } from 'luxon';
 import { runPeriodically } from '../service/runPeriodically';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
+} from '@backstage/plugin-kubernetes-node';
 import packageinfo from '../../package.json';
 
 interface MatchResourceLabelEntry {

@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.10.2-next.1
+
+### Patch Changes
+
+- f6c64d1: Fix GitHub catalog entity provider branch matching on event processing.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.1-next.1
+
 ## 0.10.2-next.0
 
 ### Patch Changes

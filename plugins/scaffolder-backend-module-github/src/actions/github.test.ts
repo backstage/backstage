@@ -330,7 +330,7 @@ describe('publish:github', () => {
         ...mockContext.input,
         customProperties: {
           foo: 'bar',
-          foo2: 'bar2',
+          foo2: ['bar2', 'bar3'],
         },
       },
     });
@@ -505,7 +505,7 @@ describe('publish:github', () => {
         ...mockContext.input,
         customProperties: {
           foo: 'bar',
-          foo2: 'bar2',
+          foo2: ['bar2', 'bar3'],
         },
       },
     });

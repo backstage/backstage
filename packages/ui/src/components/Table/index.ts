@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
-export * from './TableCellProfile/types';
+export { Table } from './components/Table';
+export { TableHeader } from './components/TableHeader';
+export { TableBody } from './components/TableBody';
+export { Column } from './components/Column';
+export { Row } from './components/Row';
+export { Cell } from './components/Cell';
+export { CellProfile } from './components/CellProfile';
+export { useTable } from './hooks/useTable';
+
+export type { CellProps, CellProfileProps } from './types';
+export type {
+  UseTableConfig,
+  UseTableResult,
+  UseTablePagination,
+  UseTablePaginationConfig,
+} from './hooks/types';

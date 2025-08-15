@@ -1,5 +1,11 @@
 # @backstage/repo-tools
 
+## 0.15.1-next.1
+
+### Patch Changes
+
+- 33060b5: Removed build-in ignore of the `packages/canon` package for knip reports.
+
 ## 0.15.1-next.0
 
 ### Patch Changes

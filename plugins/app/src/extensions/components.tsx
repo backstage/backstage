@@ -28,7 +28,7 @@ import {
 import Button from '@material-ui/core/Button';
 
 export const Progress = SwappableComponentBlueprint.make({
-  name: 'core.components.progress',
+  name: 'core-progress',
   params: define =>
     define({
       component: SwappableProgress,
@@ -37,7 +37,7 @@ export const Progress = SwappableComponentBlueprint.make({
 });
 
 export const NotFoundErrorPage = SwappableComponentBlueprint.make({
-  name: 'core.components.notFoundErrorPage',
+  name: 'core-not-found-error-page',
   params: define =>
     define({
       component: SwappableNotFoundErrorPage,
@@ -46,8 +46,8 @@ export const NotFoundErrorPage = SwappableComponentBlueprint.make({
     }),
 });
 
-export const ErrorBoundary = SwappableComponentBlueprint.make({
-  name: 'core.components.errorBoundary',
+export const ErrorDisplay = SwappableComponentBlueprint.make({
+  name: 'core-error-display',
   params: define =>
     define({
       component: SwappableErrorDisplay,

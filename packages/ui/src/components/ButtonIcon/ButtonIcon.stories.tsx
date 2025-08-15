@@ -21,7 +21,7 @@ import { Text } from '../Text';
 import { Icon } from '../Icon';
 
 const meta = {
-  title: 'Components/ButtonIcon',
+  title: 'Backstage UI/ButtonIcon',
   component: ButtonIcon,
   argTypes: {
     size: {

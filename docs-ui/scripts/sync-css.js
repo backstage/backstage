@@ -14,7 +14,7 @@ const config = {
       name: 'Main Styles',
     },
     {
-      source: '.storybook/themes/spotify.css',
+      source: '../../.storybook/themes/spotify.css',
       destination: 'theme-spotify.css',
       name: 'Spotify Theme',
     },

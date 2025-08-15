@@ -9182,7 +9182,7 @@
   --bui-animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;
 }
 
-[data-theme="dark"] {
+[data-theme-mode="dark"] {
   --bui-gray-1: #191919;
   --bui-gray-2: #242424;
   --bui-gray-3: #373737;
@@ -9517,36 +9517,6 @@
   }
 }
 
-.bui-DataTableRoot {
-  gap: var(--bui-space-3);
-  flex-direction: column;
-  display: flex;
-}
-
-.bui-DataTablePagination {
-  padding-top: var(--bui-space-5);
-  justify-content: space-between;
-  align-items: center;
-  display: flex;
-}
-
-.bui-DataTablePagination--left {
-  justify-content: space-between;
-  align-items: center;
-  display: flex;
-}
-
-.bui-DataTablePagination--right {
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--bui-space-2);
-  display: flex;
-}
-
-.bui-DataTablePagination--select {
-  min-width: 10.5rem;
-}
-
 .bui-FieldError {
   color: var(--bui-fg-danger);
   font-size: var(--bui-font-size-2);
@@ -9593,10 +9563,7 @@
 }
 
 .bui-HeaderToolbar {
-  z-index: 10;
   margin-bottom: var(--bui-space-6);
-  position: sticky;
-  top: 0;
 
   &:before {
     content: "";
@@ -9667,38 +9634,6 @@
   transform: translateY(-50%);
 }
 
-.bui-HeaderBreadcrumbs {
-  align-items: center;
-  gap: var(--bui-space-2);
-  font-size: var(--bui-font-size-3);
-  font-weight: var(--bui-font-weight-regular);
-  flex-direction: row;
-  display: flex;
-}
-
-.bui-HeaderBreadcrumb {
-  align-items: center;
-  gap: var(--bui-space-2);
-  flex-direction: row;
-  display: flex;
-}
-
-.bui-HeaderBreadcrumbLink {
-  color: var(--bui-fg-secondary);
-  cursor: pointer;
-  text-decoration: none;
-
-  &[data-active="true"] {
-    color: var(--bui-fg-primary);
-  }
-}
-
-.bui-HeaderBreadcrumbSeparator {
-  width: 16px;
-  height: 16px;
-  color: var(--bui-fg-secondary);
-}
-
 .bui-HeaderTabsWrapper {
   margin-bottom: var(--bui-space-4);
   padding-inline: var(--bui-space-3);
@@ -9708,7 +9643,6 @@
 
 .bui-HeaderPage {
   gap: var(--bui-space-1);
-  padding-inline: var(--bui-space-5);
   margin-top: var(--bui-space-6);
   margin-bottom: var(--bui-space-6);
   flex-direction: column;
@@ -9725,7 +9659,7 @@
   margin-left: -8px;
 }
 
-.bui-HeaderPageControls {
+.bui-HeaderPageControls, .bui-HeaderPageBreadcrumbs {
   align-items: center;
   gap: var(--bui-space-2);
   flex-direction: row;
@@ -10034,10 +9968,15 @@
   }
 }
 
-.bui-TableRoot {
+.bui-Table {
   caption-side: bottom;
   border-collapse: collapse;
   width: 100%;
+}
+
+.bui-TableHeader {
+  border-bottom: 1px solid var(--bui-border);
+  transition: color .2s ease-in-out;
 }
 
 .bui-TableHead {
@@ -10047,6 +9986,33 @@
   color: var(--bui-fg-primary);
 }
 
+.bui-TableHeadSortButton {
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+  gap: var(--bui-space-1);
+  display: inline-flex;
+
+  &:hover svg {
+    opacity: .5;
+  }
+
+  & svg {
+    opacity: 0;
+    transition: opacity .1s ease-in-out, transform .1s ease-in-out;
+  }
+
+  &[data-sort-order="asc"] svg {
+    opacity: 1;
+    transform: rotate(0);
+  }
+
+  &[data-sort-order="desc"] svg {
+    opacity: 1;
+    transform: rotate(180deg);
+  }
+}
+
 .bui-TableBody {
   color: var(--bui-fg-primary);
 }
@@ -10054,6 +10020,10 @@
 .bui-TableRow {
   border-bottom: 1px solid var(--bui-border);
   transition: color .2s ease-in-out;
+
+  &[data-react-aria-pressable="true"] {
+    cursor: pointer;
+  }
 }
 
 .bui-TableBody .bui-TableRow:hover {
@@ -10063,9 +10033,24 @@
 .bui-TableCell {
   padding: var(--bui-space-3);
   font-size: var(--bui-font-size-3);
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
 }
 
-.bui-TableCellText, .bui-TableCellLink {
+.bui-TableCellContentWrapper {
+  align-items: center;
+  gap: var(--bui-space-2);
+  flex-direction: row;
+  display: inline-flex;
+}
+
+.bui-TableCellIcon, .bui-TableCellIcon svg {
+  color: var(--bui-fg-primary);
+  align-items: center;
+  display: inline-flex;
+}
+
+.bui-TableCellContent {
   gap: var(--bui-space-0_5);
   flex-direction: column;
   display: flex;
@@ -10111,6 +10096,30 @@
   justify-content: center;
   align-items: center;
   display: flex;
+}
+
+.bui-DataTablePagination {
+  padding-top: var(--bui-space-5);
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.bui-DataTablePagination--left {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.bui-DataTablePagination--right {
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--bui-space-2);
+  display: flex;
+}
+
+.bui-DataTablePagination--select {
+  min-width: 10.5rem;
 }
 
 .bui-Tabs {
@@ -10277,6 +10286,7 @@
 .bui-TextField {
   font-family: var(--bui-font-regular);
   flex-direction: column;
+  flex-shrink: 0;
   width: 100%;
   display: flex;
 }
@@ -10305,7 +10315,9 @@
   left: var(--bui-space-3);
   margin-right: var(--bui-space-1);
   color: var(--bui-fg-primary);
+  pointer-events: none;
   flex-shrink: 0;
+  transition: left .2s ease-in-out;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -10323,7 +10335,7 @@
 
 .bui-Input {
   padding: 0 var(--bui-space-3);
-  border-radius: var(--bui-radius-3);
+  border-radius: var(--bui-radius-2);
   border: 1px solid var(--bui-border);
   background-color: var(--bui-bg-surface-1);
   font-size: var(--bui-font-size-3);
@@ -10370,8 +10382,55 @@
   }
 }
 
-.bui-SearchField[data-empty] .bui-InputClear {
-  display: none;
+.bui-SearchField {
+  &[data-empty] {
+    & .bui-InputClear {
+      display: none;
+    }
+  }
+
+  &[data-start-collapsed="true"] {
+    padding: 0;
+    transition: width .3s ease-in-out;
+
+    &[data-collapsed="false"] {
+      cursor: pointer;
+
+      &[data-size="medium"] {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      &[data-size="small"] {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      &[data-size="medium"] .bui-Input {
+        padding-left: 0;
+
+        &::placeholder {
+          opacity: 0;
+        }
+      }
+
+      &[data-size="small"] .bui-Input {
+        padding-left: 0;
+
+        &::placeholder {
+          opacity: 0;
+        }
+      }
+
+      &[data-size="small"] .bui-InputIcon {
+        left: var(--bui-space-2);
+      }
+
+      &[data-size="medium"] .bui-InputIcon {
+        left: 10px;
+      }
+    }
+  }
 }
 
 .bui-InputClear {
