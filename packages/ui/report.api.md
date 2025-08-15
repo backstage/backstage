@@ -208,16 +208,31 @@ export const Card: ForwardRefExoticComponent<
 >;
 
 // @public
+export const CardBody: ForwardRefExoticComponent<
+  CardBodyProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
 export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   children?: React.ReactNode;
 }
 
 // @public
+export const CardFooter: ForwardRefExoticComponent<
+  CardFooterProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
 export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   children?: React.ReactNode;
 }
+
+// @public
+export const CardHeader: ForwardRefExoticComponent<
+  CardHeaderProps & RefAttributes<HTMLDivElement>
+>;
 
 // @public
 export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
