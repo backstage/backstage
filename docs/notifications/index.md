@@ -33,6 +33,12 @@ Example of use-cases:
 
 ## Installation
 
+:::note
+
+As of the `1.42.0` release of Backstage, Notifications and Signals are installed as part of the default `@backstage/create-app` instance which means you won't need to follow the installations steps outlined here. The only exception to this is adding the [Notifications tab to User Settings](#user-specific-notification-settings) to allow managing these settings.
+
+:::
+
 The following sections will walk you through the installation of the various parts of the Backstage Notification System.
 
 ### Add Notifications Backend
@@ -172,6 +178,52 @@ notifications:
 ```
 
 If the retention is set to false, notifications will not be automatically deleted.
+
+## Scaffolder Action
+
+:::note
+
+As of the `1.42.0` release of Backstage, the Notifications Scaffolder action is installed as part of the default `@backstage/create-app` instance which means you won't need to follow the installations steps outlined here. Feel free to skip to the [Basic Example](#basic-example).
+
+:::
+
+There is also a Scaffolder action that you can use to send a notification as part of your Software Template.
+
+First we need to add the backend package:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-notifications
+```
+
+Then we need to add it to our backend:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+// ...
+backend.add(
+  import('@backstage/plugin-scaffolder-backend-module-notifications'),
+);
+```
+
+### Basic Example
+
+Here's an example of how you can use it in your Software Template, more details and examples can be found in the "Installed actions" screen in your Backstage instances:
+
+```yaml title="template.yaml"
+steps:
+  - id: notify
+    name: Notify
+    action: notification:send
+    input:
+      recipients: entity
+      entityRefs:
+        - user:default/guest
+      title: 'Template executed'
+      info: 'Your template has been executed'
+      severity: 'normal'
+```
+
+The example above would send a notification to the Guest user (`user:default/guest`)
 
 ## Additional info
 

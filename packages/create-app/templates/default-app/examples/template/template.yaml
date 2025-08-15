@@ -66,6 +66,18 @@ spec:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
+    # Let's notify the user that the template has completed using the Notification action
+    - id: notify
+      name: Notify
+      action: notification:send
+      input:
+        recipients: entity
+        entityRefs:
+          - user:default/guest
+        title: 'Template executed'
+        info: 'Your template has been executed'
+        severity: 'normal'
+
   # Outputs are displayed to the user after a successful execution of the template.
   output:
     links:
