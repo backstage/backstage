@@ -366,9 +366,15 @@ export namespace mockServices {
       ) => ServiceMock<RootLoggerService>;
   }
   // (undocumented)
+  export function scheduler(): SchedulerService;
+  // (undocumented)
   export namespace scheduler {
     const // (undocumented)
-      factory: () => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
+      factory: (options?: {
+        skipTaskRunOnStartup?: boolean;
+        includeManualTasksOnStartup?: boolean;
+        includeInitialDelayedTasksOnStartup?: boolean;
+      }) => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,
