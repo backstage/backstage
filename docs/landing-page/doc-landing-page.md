@@ -1,9 +1,9 @@
 ---
-id: doclandingpage
+id: doc-landing-page
 title: Documentation
 description: Documentation landing page.
 ---
-## Understand, try, adminster, and use Backstage
+## Understand, try, administer, and use Backstage
 <table>
     <tr>
         <th>Understand Backstage</th>
@@ -78,7 +78,7 @@ description: Documentation landing page.
                    <li>Integrating Search into a Plugin</li>
                    <li>Defining Configuration for your Plugin</li>
                    <li>Tutorial: using Permissions in your Plugin</li>
-                   <li>Plugin Aanlytics</li>                  
+                   <li>Plugin Analytics</li>                  
               </ul>
         </td>
         <td valign=top><i>Additional Backstage Features</i><br><br>
