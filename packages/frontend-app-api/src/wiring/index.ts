@@ -19,4 +19,3 @@ export {
   type CreateSpecializedAppOptions,
 } from './createSpecializedApp';
 export { type FrontendPluginInfoResolver } from './createPluginInfoAttacher';
-export * from './types';

@@ -23,6 +23,14 @@ import {
   RouteAliasResolver,
 } from './RouteAliasResolver';
 
+/** @internal */
+export type RouteInfo = {
+  routePaths: Map<RouteRef, string>;
+  routeParents: Map<RouteRef, RouteRef | undefined>;
+  routeObjects: BackstageRouteObject[];
+  routeAliasResolver: RouteAliasResolver;
+};
+
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
 // The route resolver then takes care of selecting the most specific match in order to find
@@ -47,12 +55,7 @@ export function joinPaths(...paths: string[]): string {
 export function extractRouteInfoFromAppNode(
   node: AppNode,
   routeAliasResolver: RouteAliasResolver,
-): {
-  routePaths: Map<RouteRef, string>;
-  routeParents: Map<RouteRef, RouteRef | undefined>;
-  routeObjects: BackstageRouteObject[];
-  routeAliasResolver: RouteAliasResolver;
-} {
+): RouteInfo {
   // This tracks the route path for each route ref, the value is the route path relative to the parent ref
   const routePaths = new Map<RouteRef, string>();
   // This tracks the parents of each route ref. To find the full path of any route ref you traverse
