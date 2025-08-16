@@ -17,7 +17,6 @@
 import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 import { AppNode } from '@backstage/frontend-plugin-api';
-import { toLegacyPlugin } from './toLegacyPlugin';
 import {
   createExactRouteAliasResolver,
   RouteAliasResolver,
@@ -32,7 +31,6 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   path: '*',
   element: 'match-all', // These elements aren't used, so we add in a bit of debug information
   routeRefs: new Set(),
-  plugins: new Set(),
 };
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
@@ -100,7 +98,6 @@ export function extractRouteInfoFromAppNode(
         routeRefs: new Set<RouteRef>(),
         caseSensitive: false,
         children: [MATCH_ALL_ROUTE],
-        plugins: new Set(),
         appNode: current,
       };
       parentChildren.push(currentObj);
@@ -141,9 +138,6 @@ export function extractRouteInfoFromAppNode(
 
       routeParents.set(routeRef, newParentRef);
       currentObj?.routeRefs.add(routeRef);
-      if (current.spec.plugin) {
-        currentObj?.plugins.add(toLegacyPlugin(current.spec.plugin));
-      }
     }
 
     for (const children of current.edges.attachments.values()) {
