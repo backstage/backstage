@@ -79,7 +79,7 @@ describe('migrations', () => {
 
       function summaryRows(): Promise<EventsTableRow[]> {
         return knex('history_summary')
-          .orderBy('ref_type', 'ref_value')
+          .orderBy(['ref_type', 'ref_value'])
           .then(r =>
             r.map(row => ({
               ...row,
