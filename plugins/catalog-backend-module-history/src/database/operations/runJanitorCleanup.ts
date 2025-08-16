@@ -27,7 +27,7 @@ export async function runJanitorCleanup(
     await knex('history_events')
       .where('event_at', '<', deadline)
       .whereNotIn('event_id', inner =>
-        inner.select('event_id').from('history_entity_summary'),
+        inner.select('event_id').from('history_summary'),
       )
       .delete();
   }
@@ -65,9 +65,7 @@ export async function runJanitorCleanup(
           .where('deleted.newest_event_at', '<', deadline),
       )
       .whereNotIn('history_events.event_id', inner =>
-        inner
-          .select('history_entity_summary.event_id')
-          .from('history_entity_summary'),
+        inner.select('history_summary.event_id').from('history_summary'),
       )
       .delete();
   }

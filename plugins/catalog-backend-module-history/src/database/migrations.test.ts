@@ -78,8 +78,8 @@ describe('migrations', () => {
       }
 
       function summaryRows(): Promise<EventsTableRow[]> {
-        return knex('history_entity_summary')
-          .orderBy('entity_ref')
+        return knex('history_summary')
+          .orderBy('ref_type', 'ref_value')
           .then(r =>
             r.map(row => ({
               ...row,
@@ -130,7 +130,18 @@ describe('migrations', () => {
         ]);
         await expect(summaryRows()).resolves.toEqual([
           {
-            entity_ref: entityRef,
+            ref_type: 'entity_id',
+            ref_value: expect.any(String),
+            event_id: '1',
+          },
+          {
+            ref_type: 'entity_ref',
+            ref_value: entityRef,
+            event_id: '1',
+          },
+          {
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io',
             event_id: '1',
           },
         ]);
@@ -169,7 +180,18 @@ describe('migrations', () => {
         ]);
         await expect(summaryRows()).resolves.toEqual([
           {
-            entity_ref: entityRef,
+            ref_type: 'entity_id',
+            ref_value: expect.any(String),
+            event_id: '2',
+          },
+          {
+            ref_type: 'entity_ref',
+            ref_value: entityRef,
+            event_id: '2',
+          },
+          {
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io',
             event_id: '2',
           },
         ]);
@@ -208,7 +230,18 @@ describe('migrations', () => {
       ]);
       await expect(summaryRows()).resolves.toEqual([
         {
-          entity_ref: entityRef,
+          ref_type: 'entity_id',
+          ref_value: expect.any(String),
+          event_id: '2',
+        },
+        {
+          ref_type: 'entity_ref',
+          ref_value: entityRef,
+          event_id: '2',
+        },
+        {
+          ref_type: 'location_ref',
+          ref_value: 'url:https://backstage.io',
           event_id: '2',
         },
       ]);
@@ -257,14 +290,25 @@ describe('migrations', () => {
         ]);
         await expect(summaryRows()).resolves.toEqual([
           {
-            entity_ref: entityRef,
+            ref_type: 'entity_id',
+            ref_value: expect.any(String),
+            event_id: '3',
+          },
+          {
+            ref_type: 'entity_ref',
+            ref_value: entityRef,
+            event_id: '3',
+          },
+          {
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io',
             event_id: '3',
           },
         ]);
       });
 
       // Make a clean slate for location testing
-      await knex('history_entity_summary').delete();
+      await knex('history_summary').delete();
       await knex('history_events').delete();
 
       await knex('locations').insert({
@@ -286,6 +330,18 @@ describe('migrations', () => {
             location_id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
             location_ref_before: null,
             location_ref: 'url:https://backstage.io',
+          },
+        ]);
+        await expect(summaryRows()).resolves.toEqual([
+          {
+            ref_type: 'location_id',
+            ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            event_id: '4',
+          },
+          {
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io',
+            event_id: '4',
           },
         ]);
       });
@@ -313,6 +369,23 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io/elsewhere',
           },
         ]);
+        await expect(summaryRows()).resolves.toEqual([
+          {
+            ref_type: 'location_id',
+            ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            event_id: '5',
+          },
+          {
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io',
+            event_id: '5',
+          },
+          {
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io/elsewhere',
+            event_id: '5',
+          },
+        ]);
       });
 
       await knex('locations')
@@ -334,6 +407,23 @@ describe('migrations', () => {
             location_id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
             location_ref_before: null,
             location_ref: 'url:https://backstage.io/elsewhere',
+          },
+        ]);
+        await expect(summaryRows()).resolves.toEqual([
+          {
+            ref_type: 'location_id',
+            ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            event_id: '6',
+          },
+          {
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io',
+            event_id: '5',
+          },
+          {
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io/elsewhere',
+            event_id: '6',
           },
         ]);
       });

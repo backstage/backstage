@@ -53,7 +53,7 @@ describe('runJanitorCleanup', () => {
         });
 
         // Start with a clean slate for the test
-        await knex('history_entity_summary').delete();
+        await knex('history_summary').delete();
         await knex('history_events').delete();
 
         const recently = knex.fn.now();
@@ -144,7 +144,7 @@ describe('runJanitorCleanup', () => {
         });
 
         // Start with a clean slate for the test
-        await knex('history_entity_summary').delete();
+        await knex('history_summary').delete();
         await knex('history_events').delete();
 
         const recently = knex.fn.now();

@@ -22,30 +22,31 @@
  */
 exports.up = async function up(knex) {
   /*
-   * Entity summary table, keeping track of the latest history state of each
-   * entity. This rolls up all types of event, such that e.g. a change event
-   * followed by a deletion followed by the creation of a new entity with the
-   * same ref but a different UID, will only be seen as a single creation if
-   * you are polling this table.
+   * Summary table, keeping track of the latest history state of each different
+   * type of history thing. This rolls up all types of event, such that e.g. a
+   * change event followed by a deletion followed by the creation of a new
+   * entity with the same ref but a different UID, will only be seen as a single
+   * creation if you are polling this table for the entity ref type.
    */
 
-  await knex.schema.createTable('history_entity_summary', table => {
-    // Note that this deliberately does not foreign key into final_entities,
-    // because we want to retain summary entries even after deletions. This
-    // allows consumers to detect deletion events later down the line.
+  await knex.schema.createTable('history_summary', table => {
     table
-      .string('entity_ref')
-      .notNullable()
-      .primary()
-      .comment('The relevant entity ref');
+      .string('ref_type')
+      .comment('The type of the reference, e.g. "entity_ref" or "entity_id"');
+    table
+      .string('ref_value')
+      .comment('The value of the reference, e.g. an entity ref');
+
     table
       .bigInteger('event_id')
       .unsigned()
       .notNullable()
       .references('event_id')
       .inTable('history_events')
-      .comment('ID of the latest history event for this entity');
-    table.index('event_id', 'history_entity_summary_event_id_idx');
+      .comment('ID of the latest history event for this summary row');
+
+    table.primary(['ref_type', 'ref_value']);
+    table.index('event_id', 'history_summary_event_id_idx');
   });
 
   /*
@@ -58,9 +59,29 @@ exports.up = async function up(knex) {
       RETURNS trigger AS $$
       BEGIN
         IF (NEW.entity_ref IS NOT NULL) THEN
-          INSERT INTO history_entity_summary (entity_ref, event_id)
-          VALUES (NEW.entity_ref, NEW.event_id)
-          ON CONFLICT (entity_ref) DO UPDATE SET event_id = GREATEST(history_entity_summary.event_id, EXCLUDED.event_id);
+          INSERT INTO history_summary (ref_type, ref_value, event_id)
+          VALUES ('entity_ref', NEW.entity_ref, NEW.event_id)
+          ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = GREATEST(history_summary.event_id, EXCLUDED.event_id);
+        END IF;
+        IF (NEW.entity_id IS NOT NULL) THEN
+          INSERT INTO history_summary (ref_type, ref_value, event_id)
+          VALUES ('entity_id', NEW.entity_id, NEW.event_id)
+          ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = GREATEST(history_summary.event_id, EXCLUDED.event_id);
+        END IF;
+        IF (NEW.location_id IS NOT NULL) THEN
+          INSERT INTO history_summary (ref_type, ref_value, event_id)
+          VALUES ('location_id', NEW.location_id, NEW.event_id)
+          ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = GREATEST(history_summary.event_id, EXCLUDED.event_id);
+        END IF;
+        IF (NEW.location_ref_before IS NOT NULL) THEN
+          INSERT INTO history_summary (ref_type, ref_value, event_id)
+          VALUES ('location_ref', NEW.location_ref_before, NEW.event_id)
+          ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = GREATEST(history_summary.event_id, EXCLUDED.event_id);
+        END IF;
+        IF (NEW.location_ref IS NOT NULL) THEN
+          INSERT INTO history_summary (ref_type, ref_value, event_id)
+          VALUES ('location_ref', NEW.location_ref, NEW.event_id)
+          ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = GREATEST(history_summary.event_id, EXCLUDED.event_id);
         END IF;
         RETURN null;
       END;
@@ -79,14 +100,58 @@ exports.up = async function up(knex) {
 
   if (knex.client.config.client.includes('sqlite')) {
     await knex.schema.raw(`
-      CREATE TRIGGER history_events_summary
+      CREATE TRIGGER history_events_summary_entity_ref
       AFTER INSERT ON history_events
       FOR EACH ROW
       WHEN (NEW.entity_ref IS NOT NULL)
       BEGIN
-        INSERT INTO history_entity_summary (entity_ref, event_id)
-        VALUES (NEW.entity_ref, NEW.event_id)
-        ON CONFLICT (entity_ref) DO UPDATE SET event_id = MAX(history_entity_summary.event_id, NEW.event_id);
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('entity_ref', NEW.entity_ref, NEW.event_id)
+        ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = MAX(history_summary.event_id, NEW.event_id);
+      END;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary_entity_id
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      WHEN (NEW.entity_id IS NOT NULL)
+      BEGIN
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('entity_id', NEW.entity_id, NEW.event_id)
+        ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = MAX(history_summary.event_id, NEW.event_id);
+      END;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary_location_id
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      WHEN (NEW.location_id IS NOT NULL)
+      BEGIN
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('location_id', NEW.location_id, NEW.event_id)
+        ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = MAX(history_summary.event_id, NEW.event_id);
+      END;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary_location_ref_before
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      WHEN (NEW.location_ref_before IS NOT NULL)
+      BEGIN
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('location_ref', NEW.location_ref_before, NEW.event_id)
+        ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = MAX(history_summary.event_id, NEW.event_id);
+      END;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary_location_ref
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      WHEN (NEW.location_ref IS NOT NULL)
+      BEGIN
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('location_ref', NEW.location_ref, NEW.event_id)
+        ON CONFLICT (ref_type, ref_value) DO UPDATE SET event_id = MAX(history_summary.event_id, NEW.event_id);
       END;
     `);
   }
@@ -97,13 +162,53 @@ exports.up = async function up(knex) {
 
   if (knex.client.config.client.includes('mysql')) {
     await knex.schema.raw(`
-      CREATE TRIGGER history_events_summary
+      CREATE TRIGGER history_events_summary_entity_ref
       AFTER INSERT ON history_events
       FOR EACH ROW
       IF (NEW.entity_ref IS NOT NULL) THEN
-        INSERT INTO history_entity_summary (entity_ref, event_id)
-        VALUES (NEW.entity_ref, NEW.event_id)
-        ON DUPLICATE KEY UPDATE event_id = GREATEST(history_entity_summary.event_id, VALUES(event_id));
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('entity_ref', NEW.entity_ref, NEW.event_id)
+        ON DUPLICATE KEY UPDATE event_id = GREATEST(history_summary.event_id, VALUES(event_id));
+      END IF;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary_entity_id
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      IF (NEW.entity_id IS NOT NULL) THEN
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('entity_id', NEW.entity_id, NEW.event_id)
+        ON DUPLICATE KEY UPDATE event_id = GREATEST(history_summary.event_id, VALUES(event_id));
+      END IF;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary_location_id
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      IF (NEW.location_id IS NOT NULL) THEN
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('location_id', NEW.location_id, NEW.event_id)
+        ON DUPLICATE KEY UPDATE event_id = GREATEST(history_summary.event_id, VALUES(event_id));
+      END IF;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary_location_ref_before
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      IF (NEW.location_ref_before IS NOT NULL) THEN
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('location_ref', NEW.location_ref_before, NEW.event_id)
+        ON DUPLICATE KEY UPDATE event_id = GREATEST(history_summary.event_id, VALUES(event_id));
+      END IF;
+    `);
+    await knex.schema.raw(`
+      CREATE TRIGGER history_events_summary_location_ref
+      AFTER INSERT ON history_events
+      FOR EACH ROW
+      IF (NEW.location_ref IS NOT NULL) THEN
+        INSERT INTO history_summary (ref_type, ref_value, event_id)
+        VALUES ('location_ref', NEW.location_ref, NEW.event_id)
+        ON DUPLICATE KEY UPDATE event_id = GREATEST(history_summary.event_id, VALUES(event_id));
       END IF;
     `);
   }
@@ -123,16 +228,36 @@ exports.down = async function down(knex) {
     `);
   } else if (knex.client.config.client.includes('sqlite')) {
     await knex.schema.raw(`
-      DROP TRIGGER history_events_summary;
+      DROP TRIGGER history_events_summary_entity_ref;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary_entity_id;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary_location_id;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary_location_ref_before;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary_location_ref;
     `);
   } else if (knex.client.config.client.includes('mysql')) {
     await knex.schema.raw(`
-      DROP TRIGGER history_events_summary;
+      DROP TRIGGER history_events_summary_entity_ref;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary_entity_id;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary_location_id;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary_location_ref_before;
+    `);
+    await knex.schema.raw(`
+      DROP TRIGGER history_events_summary_location_ref;
     `);
   }
-  await knex.schema.alterTable('history_entity_summary', table => {
-    table.dropForeign('event_id');
-    table.dropIndex([], 'history_entity_summary_event_id_idx');
-  });
-  await knex.schema.dropTable('history_entity_summary');
+  await knex.schema.dropTable('history_summary');
 };
