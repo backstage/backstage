@@ -32,15 +32,8 @@ declare module 'react-aria-components' {
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const {
-    tabs,
-    icon,
-    title,
-    titleLink,
-    menuItems,
-    customActions,
-    onTabSelectionChange,
-  } = props;
+  const { tabs, icon, title, titleLink, customActions, onTabSelectionChange } =
+    props;
 
   const { classNames } = useStyles('Header');
 
@@ -52,7 +45,6 @@ export const Header = (props: HeaderProps) => {
         icon={icon}
         title={title}
         titleLink={titleLink}
-        menuItems={menuItems}
         customActions={customActions}
         hasTabs={hasTabs}
       />

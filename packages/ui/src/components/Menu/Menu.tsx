@@ -14,281 +14,267 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import { Menu as MenuPrimitive } from '@base-ui-components/react/menu';
-import clsx from 'clsx';
-import { MenuComponent } from './types';
-import { Combobox } from './Combobox';
-import { Icon } from '../Icon';
+import {
+  MenuTrigger as RAMenuTrigger,
+  Popover as RAPopover,
+  MenuItem as RAMenuItem,
+  Menu as RAMenu,
+  MenuSection as RAMenuSection,
+  Header as RAMenuHeader,
+  Separator as RAMenuSeparator,
+  SubmenuTrigger as RAMenuSubmenuTrigger,
+  Autocomplete as RAAutocomplete,
+  SearchField as RASearchField,
+  Input as RAInput,
+  Button as RAButton,
+  ListBox as RAListBox,
+  ListBoxItem as RAListBoxItem,
+  useFilter,
+  RouterProvider,
+} from 'react-aria-components';
+import { ScrollArea } from '../ScrollArea';
 import { useStyles } from '../../hooks/useStyles';
+import type {
+  MenuTriggerProps,
+  SubmenuTriggerProps,
+  MenuProps,
+  MenuAutocompleteProps,
+  MenuItemProps,
+  MenuSectionProps,
+  MenuSeparatorProps,
+  MenuListBoxProps,
+  MenuListBoxItemProps,
+  MenuAutocompleteListBoxProps,
+} from './types';
+import {
+  RiArrowRightSLine,
+  RiCheckLine,
+  RiCloseCircleLine,
+} from '@remixicon/react';
+import { isExternalLink } from '../../utils/isExternalLink';
+import { useNavigate, useHref } from 'react-router-dom';
 
-const MenuTrigger = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Trigger>
->(({ className, ...props }, ref) => {
+const MenuEmptyState = () => {
   const { classNames } = useStyles('Menu');
 
-  return (
-    <MenuPrimitive.Trigger
-      ref={ref}
-      className={clsx(classNames.trigger, className)}
-      {...props}
-    />
-  );
-});
-MenuTrigger.displayName = MenuPrimitive.Trigger.displayName;
-
-const MenuBackdrop = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.Backdrop>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Backdrop>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.Backdrop
-      ref={ref}
-      className={clsx(classNames.backdrop, className)}
-      {...props}
-    />
-  );
-});
-MenuBackdrop.displayName = MenuPrimitive.Backdrop.displayName;
-
-const MenuPositioner = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.Positioner>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Positioner>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.Positioner
-      ref={ref}
-      className={clsx(classNames.positioner, className)}
-      {...props}
-    />
-  );
-});
-MenuPositioner.displayName = MenuPrimitive.Positioner.displayName;
-
-const MenuPopup = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.Popup>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Popup>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.Popup
-      ref={ref}
-      className={clsx(classNames.popup, className)}
-      {...props}
-    />
-  );
-});
-MenuPopup.displayName = MenuPrimitive.Popup.displayName;
-
-const MenuArrow = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.Arrow>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.Arrow
-      ref={ref}
-      className={clsx(classNames.arrow, className)}
-      {...props}
-    />
-  );
-});
-MenuArrow.displayName = MenuPrimitive.Arrow.displayName;
-
-const MenuItem = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.Item
-      ref={ref}
-      className={clsx(classNames.item, className)}
-      {...props}
-    />
-  );
-});
-MenuItem.displayName = MenuPrimitive.Item.displayName;
-
-const MenuGroup = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.Group>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.Group
-      ref={ref}
-      className={clsx(classNames.group, className)}
-      {...props}
-    />
-  );
-});
-MenuGroup.displayName = MenuPrimitive.Group.displayName;
-
-const MenuGroupLabel = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.GroupLabel>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.GroupLabel>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.GroupLabel
-      ref={ref}
-      className={clsx(classNames.groupLabel, className)}
-      {...props}
-    />
-  );
-});
-MenuGroupLabel.displayName = MenuPrimitive.GroupLabel.displayName;
-
-const MenuRadioGroup = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.RadioGroup>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.RadioGroup
-      ref={ref}
-      className={clsx(classNames.radioGroup, className)}
-      {...props}
-    />
-  );
-});
-MenuRadioGroup.displayName = MenuPrimitive.RadioGroup.displayName;
-
-const MenuRadioItem = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.RadioItem
-      ref={ref}
-      className={clsx(classNames.radioItem, className)}
-      {...props}
-    />
-  );
-});
-MenuRadioItem.displayName = MenuPrimitive.RadioItem.displayName;
-
-const MenuRadioItemIndicator = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.RadioItemIndicator>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItemIndicator>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.RadioItemIndicator
-      ref={ref}
-      className={clsx(classNames.radioItemIndicator, className)}
-      {...props}
-    />
-  );
-});
-MenuRadioItemIndicator.displayName =
-  MenuPrimitive.RadioItemIndicator.displayName;
-
-const MenuCheckboxItem = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.CheckboxItem
-      ref={ref}
-      className={clsx(classNames.checkboxItem, className)}
-      {...props}
-    />
-  );
-});
-MenuCheckboxItem.displayName = MenuPrimitive.CheckboxItem.displayName;
-
-const MenuCheckboxItemIndicator = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.CheckboxItemIndicator>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItemIndicator>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.CheckboxItemIndicator
-      ref={ref}
-      className={clsx(classNames.checkboxItemIndicator, className)}
-      {...props}
-    />
-  );
-});
-MenuCheckboxItemIndicator.displayName =
-  MenuPrimitive.CheckboxItemIndicator.displayName;
-
-const MenuSubmenuTrigger = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.SubmenuTrigger>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubmenuTrigger>
->(({ className, children, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.SubmenuTrigger
-      ref={ref}
-      className={clsx(classNames.submenuTrigger, className)}
-      {...props}
-    >
-      <div>{children}</div>
-      <Icon
-        aria-label="Submenu indicator icon"
-        name="chevron-right"
-        size={20}
-      />
-    </MenuPrimitive.SubmenuTrigger>
-  );
-});
-MenuSubmenuTrigger.displayName = MenuPrimitive.SubmenuTrigger.displayName;
-
-const MenuSeparator = forwardRef<
-  React.ElementRef<typeof MenuPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Menu');
-
-  return (
-    <MenuPrimitive.Separator
-      ref={ref}
-      className={clsx(classNames.separator, className)}
-      {...props}
-    />
-  );
-});
-MenuSeparator.displayName = MenuPrimitive.Separator.displayName;
+  return <div className={classNames.emptyState}>No results found.</div>;
+};
 
 /** @public */
-export const Menu: MenuComponent = {
-  Root: MenuPrimitive.Root,
-  Trigger: MenuTrigger,
-  Portal: MenuPrimitive.Portal,
-  Backdrop: MenuBackdrop,
-  Positioner: MenuPositioner,
-  Popup: MenuPopup,
-  Arrow: MenuArrow,
-  Item: MenuItem,
-  Group: MenuGroup,
-  GroupLabel: MenuGroupLabel,
-  RadioGroup: MenuRadioGroup,
-  RadioItem: MenuRadioItem,
-  RadioItemIndicator: MenuRadioItemIndicator,
-  CheckboxItem: MenuCheckboxItem,
-  CheckboxItemIndicator: MenuCheckboxItemIndicator,
-  SubmenuTrigger: MenuSubmenuTrigger,
-  Separator: MenuSeparator,
-  Combobox,
+export const MenuTrigger = (props: MenuTriggerProps) => {
+  return <RAMenuTrigger {...props} />;
+};
+
+/** @public */
+export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
+  return <RAMenuSubmenuTrigger {...props} />;
+};
+
+/** @public */
+export const Menu = (props: MenuProps<object>) => {
+  const { placement = 'bottom start', ...rest } = props;
+  const { classNames } = useStyles('Menu');
+
+  return (
+    <RAPopover className={classNames.popover} placement={placement}>
+      <ScrollArea.Root>
+        <ScrollArea.Viewport>
+          <RAMenu className={classNames.content} {...rest}>
+            {props.children}
+          </RAMenu>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar orientation="vertical" style={{}}>
+          <ScrollArea.Thumb />
+        </ScrollArea.Scrollbar>
+      </ScrollArea.Root>
+    </RAPopover>
+  );
+};
+
+/** @public */
+export const MenuListBox = (props: MenuListBoxProps<object>) => {
+  const {
+    selectionMode = 'single',
+    placement = 'bottom start',
+    ...rest
+  } = props;
+  const { classNames } = useStyles('Menu');
+
+  return (
+    <RAPopover className={classNames.popover} placement={placement}>
+      <ScrollArea.Root>
+        <ScrollArea.Viewport>
+          <RAListBox
+            className={classNames.content}
+            selectionMode={selectionMode}
+            {...rest}
+          />
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar orientation="vertical" style={{}}>
+          <ScrollArea.Thumb />
+        </ScrollArea.Scrollbar>
+      </ScrollArea.Root>
+    </RAPopover>
+  );
+};
+
+/** @public */
+export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
+  const { placement = 'bottom start', ...rest } = props;
+  const { classNames } = useStyles('Menu');
+  const { contains } = useFilter({ sensitivity: 'base' });
+
+  return (
+    <RAPopover className={classNames.popover} placement={placement}>
+      <RAAutocomplete filter={contains}>
+        <RASearchField className={classNames.searchField}>
+          <RAInput
+            className={classNames.searchFieldInput}
+            aria-label="Search"
+            placeholder={props.placeholder || 'Search...'}
+          />
+          <RAButton className={classNames.searchFieldClear}>
+            <RiCloseCircleLine />
+          </RAButton>
+        </RASearchField>
+        <ScrollArea.Root>
+          <ScrollArea.Viewport>
+            <RAMenu
+              className={classNames.content}
+              renderEmptyState={() => <MenuEmptyState />}
+              {...rest}
+            />
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar orientation="vertical" style={{}}>
+            <ScrollArea.Thumb />
+          </ScrollArea.Scrollbar>
+        </ScrollArea.Root>
+      </RAAutocomplete>
+    </RAPopover>
+  );
+};
+
+/** @public */
+export const MenuAutocompleteListbox = (
+  props: MenuAutocompleteListBoxProps<object>,
+) => {
+  const {
+    selectionMode = 'single',
+    placement = 'bottom start',
+    ...rest
+  } = props;
+  const { classNames } = useStyles('Menu');
+  const { contains } = useFilter({ sensitivity: 'base' });
+
+  return (
+    <RAPopover className={classNames.popover} placement={placement}>
+      <RAAutocomplete filter={contains}>
+        <RASearchField className={classNames.searchField}>
+          <RAInput
+            className={classNames.searchFieldInput}
+            aria-label="Search"
+            placeholder={props.placeholder || 'Search...'}
+          />
+          <RAButton className={classNames.searchFieldClear}>
+            <RiCloseCircleLine />
+          </RAButton>
+        </RASearchField>
+        <ScrollArea.Root>
+          <ScrollArea.Viewport>
+            <RAListBox
+              className={classNames.content}
+              renderEmptyState={() => <MenuEmptyState />}
+              selectionMode={selectionMode}
+              {...rest}
+            />
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar orientation="vertical" style={{}}>
+            <ScrollArea.Thumb />
+          </ScrollArea.Scrollbar>
+        </ScrollArea.Root>
+      </RAAutocomplete>
+    </RAPopover>
+  );
+};
+
+/** @public */
+export const MenuItem = (props: MenuItemProps) => {
+  const { iconStart, color = 'primary', children, href, ...rest } = props;
+  const { classNames } = useStyles('Menu');
+  const navigate = useNavigate();
+
+  const isLink = href !== undefined;
+  const isExternal = isExternalLink(href);
+
+  const content = (
+    <RAMenuItem
+      className={classNames.item}
+      data-color={color}
+      href={href}
+      textValue={typeof children === 'string' ? children : undefined}
+      {...rest}
+    >
+      <div className={classNames.itemContent}>
+        {iconStart}
+        {children}
+      </div>
+      <div className={classNames.itemArrow}>
+        <RiArrowRightSLine />
+      </div>
+    </RAMenuItem>
+  );
+
+  if (isLink && !isExternal) {
+    return (
+      <RouterProvider navigate={navigate} useHref={useHref}>
+        {content}
+      </RouterProvider>
+    );
+  }
+
+  return content;
+};
+
+/** @public */
+export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
+  const { children, ...rest } = props;
+  const { classNames } = useStyles('Menu');
+
+  return (
+    <RAListBoxItem
+      textValue={
+        typeof props.children === 'string' ? props.children : undefined
+      }
+      className={classNames.itemListBox}
+      {...rest}
+    >
+      <div className={classNames.itemContent}>
+        <div className={classNames.itemListBoxCheck}>
+          <RiCheckLine />
+        </div>
+        {children}
+      </div>
+    </RAListBoxItem>
+  );
+};
+
+/** @public */
+export const MenuSection = (props: MenuSectionProps<object>) => {
+  const { classNames } = useStyles('Menu');
+
+  return (
+    <RAMenuSection className={classNames.section} {...props}>
+      <RAMenuHeader className={classNames.sectionHeader}>
+        {props.title}
+      </RAMenuHeader>
+      {props.children}
+    </RAMenuSection>
+  );
+};
+
+/** @public */
+export const MenuSeparator = (props: MenuSeparatorProps) => {
+  const { classNames } = useStyles('Menu');
+
+  return <RAMenuSeparator className={classNames.separator} {...props} />;
 };

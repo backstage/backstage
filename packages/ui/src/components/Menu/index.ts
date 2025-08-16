@@ -14,5 +14,27 @@
  * limitations under the License.
  */
 
-export * from './Menu';
-export * from './types';
+export {
+  MenuTrigger,
+  SubmenuTrigger,
+  Menu,
+  MenuListBox,
+  MenuAutocomplete,
+  MenuAutocompleteListbox,
+  MenuItem,
+  MenuListBoxItem,
+  MenuSection,
+  MenuSeparator,
+} from './Menu';
+export type {
+  MenuTriggerProps,
+  SubmenuTriggerProps,
+  MenuProps,
+  MenuListBoxProps,
+  MenuAutocompleteProps,
+  MenuAutocompleteListBoxProps,
+  MenuItemProps,
+  MenuListBoxItemProps,
+  MenuSectionProps,
+  MenuSeparatorProps,
+} from './types';

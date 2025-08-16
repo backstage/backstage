@@ -27,7 +27,6 @@ export interface HeaderProps {
   title?: string;
   titleLink?: string;
   customActions?: React.ReactNode;
-  menuItems?: HeaderMenuItem[];
   tabs?: HeaderTab[];
   onTabSelectionChange?: TabsProps['onSelectionChange'];
 }
@@ -50,17 +49,6 @@ export interface HeaderTab {
 }
 
 /**
- * Represents an option item in the header dropdown menu.
- *
- * @public
- */
-export interface HeaderMenuItem {
-  label: string;
-  value: string;
-  onClick?: () => void;
-}
-
-/**
  * Props for the HeaderToolbar component.
  *
  * @internal
@@ -70,6 +58,5 @@ export interface HeaderToolbarProps {
   title?: HeaderProps['title'];
   titleLink?: HeaderProps['titleLink'];
   customActions?: HeaderProps['customActions'];
-  menuItems?: HeaderProps['menuItems'];
   hasTabs?: boolean;
 }

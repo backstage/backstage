@@ -17,10 +17,8 @@
 import { Link, RouterProvider } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useRef } from 'react';
-import { RiMore2Line, RiShapesLine } from '@remixicon/react';
+import { RiShapesLine } from '@remixicon/react';
 import type { HeaderToolbarProps } from './types';
-import { ButtonIcon } from '../ButtonIcon';
-import { Menu } from '../Menu';
 import { Text } from '../Text';
 import { useNavigate, useHref } from 'react-router-dom';
 
@@ -30,7 +28,7 @@ import { useNavigate, useHref } from 'react-router-dom';
  * @internal
  */
 export const HeaderToolbar = (props: HeaderToolbarProps) => {
-  const { icon, title, titleLink, menuItems, customActions, hasTabs } = props;
+  const { icon, title, titleLink, customActions, hasTabs } = props;
   const { classNames } = useStyles('Header');
   let navigate = useNavigate();
 
@@ -63,34 +61,6 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
           </div>
           <div className={classNames.toolbarControls} ref={toolbarControlsRef}>
             {customActions}
-            {menuItems && (
-              <Menu.Root>
-                <Menu.Trigger
-                  render={props => (
-                    <ButtonIcon
-                      size="small"
-                      icon={<RiMore2Line />}
-                      variant="tertiary"
-                      {...props}
-                    />
-                  )}
-                />
-                <Menu.Portal>
-                  <Menu.Positioner sideOffset={4} align="end">
-                    <Menu.Popup>
-                      {menuItems.map(option => (
-                        <Menu.Item
-                          key={option.value}
-                          onClick={() => option.onClick?.()}
-                        >
-                          {option.label}
-                        </Menu.Item>
-                      ))}
-                    </Menu.Popup>
-                  </Menu.Positioner>
-                </Menu.Portal>
-              </Menu.Root>
-            )}
           </div>
         </div>
       </div>

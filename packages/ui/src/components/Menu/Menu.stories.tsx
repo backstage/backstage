@@ -15,14 +15,45 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { Menu } from './Menu';
-import { Text, Icon, Button, Flex } from '../../index';
+import {
+  MenuTrigger,
+  SubmenuTrigger,
+  Menu,
+  MenuListBox,
+  MenuAutocomplete,
+  MenuAutocompleteListbox,
+  MenuItem,
+  MenuListBoxItem,
+  MenuSection,
+  MenuSeparator,
+} from './index';
+import { Button, Flex, Text } from '../..';
+import {
+  RiChat1Line,
+  RiEdit2Line,
+  RiFileCopyLine,
+  RiCustomerService2Line,
+  RiQuestionLine,
+  RiSettingsLine,
+  RiUserLine,
+  RiDeleteBinLine,
+} from '@remixicon/react';
 import { useState } from 'react';
+import { Selection } from 'react-aria-components';
+import { MemoryRouter } from 'react-router-dom';
+import { MenuItem as AriaMenuItem } from 'react-aria-components';
 
 const meta = {
   title: 'Backstage UI/Menu',
-  component: Menu.Root,
-} satisfies Meta<typeof Menu.Root>;
+  component: MenuTrigger,
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+} satisfies Meta<typeof MenuTrigger>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -40,192 +71,357 @@ const options = [
 ];
 
 export const Default: Story = {
-  args: { children: undefined },
-  render: args => (
-    <Menu.Root {...args}>
-      <Menu.Trigger
-        render={props => (
-          <Button
-            {...props}
-            size="small"
-            variant="secondary"
-            iconEnd={<Icon name="chevron-down" />}
-          >
-            Menu
-          </Button>
-        )}
-      />
-      <Menu.Portal>
-        <Menu.Positioner sideOffset={8} align="start">
-          <Menu.Popup>
-            <Menu.Item>Settings</Menu.Item>
-            <Menu.Item>Invite new members</Menu.Item>
-            <Menu.Item>Download app</Menu.Item>
-            <Menu.Item>Log out</Menu.Item>
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
-    </Menu.Root>
+  args: {
+    children: null,
+  },
+  render: () => (
+    <MenuTrigger>
+      <Button>Menu</Button>
+      <Menu>
+        {options.map(option => (
+          <MenuItem key={option.value}>{option.label}</MenuItem>
+        ))}
+      </Menu>
+    </MenuTrigger>
   ),
 };
 
-export const Open: Story = {
+export const Opened: Story = {
   args: {
     ...Default.args,
-    open: true,
   },
-  render: Default.render,
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        {options.map(option => (
+          <MenuItem key={option.value}>{option.label}</MenuItem>
+        ))}
+      </Menu>
+    </MenuTrigger>
+  ),
 };
 
-export const OpenOnHover: Story = {
+export const WithIcons: Story = {
   args: {
     ...Default.args,
-    openOnHover: true,
   },
-  render: Default.render,
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem iconStart={<RiFileCopyLine />}>Copy</MenuItem>
+        <MenuItem iconStart={<RiEdit2Line />}>Rename</MenuItem>
+        <MenuItem iconStart={<RiChat1Line />}>Send feedback</MenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const WithScrolling: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu with Scrolling</Button>
+      <Menu>
+        {Array.from({ length: 50 }, (_, i) => (
+          <MenuItem key={i}>
+            Item {i + 1} - This is a long menu item to demonstrate scrolling
+          </MenuItem>
+        ))}
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const WithSections: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuSection title="My Account">
+          <MenuItem iconStart={<RiUserLine />}>Profile</MenuItem>
+          <MenuItem iconStart={<RiSettingsLine />}>Settings</MenuItem>
+        </MenuSection>
+        <MenuSection title="Support">
+          <MenuItem iconStart={<RiQuestionLine />}>Help Center</MenuItem>
+          <MenuItem iconStart={<RiCustomerService2Line />}>
+            Contact Support
+          </MenuItem>
+          <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+        </MenuSection>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const WithSeparators: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuSeparator />
+        <MenuItem>Share</MenuItem>
+        <MenuItem>Move</MenuItem>
+        <MenuSeparator />
+        <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const WithColors: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuSeparator />
+        <MenuItem iconStart={<RiDeleteBinLine />} color="danger">
+          Delete
+        </MenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const WithLinks: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem href="/home">Internal link</MenuItem>
+        <MenuItem href="https://www.google.com" target="_blank">
+          External link
+        </MenuItem>
+        <MenuItem href="mailto:test@test.com">Email link</MenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const WithLinksTest: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <AriaMenuItem href="/home">Internal link</AriaMenuItem>
+        <AriaMenuItem href="https://www.google.com">External link</AriaMenuItem>
+        <AriaMenuItem href="mailto:test@test.com">Email link</AriaMenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const WithListBox: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <MenuListBox>
+        <MenuListBoxItem>Item 1</MenuListBoxItem>
+        <MenuListBoxItem>Item 2</MenuListBoxItem>
+        <MenuListBoxItem>Item 3</MenuListBoxItem>
+      </MenuListBox>
+    </MenuTrigger>
+  ),
+};
+
+export const WithListBoxControlled: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => {
+    const [selected, setSelected] = useState<Selection>(new Set(['paul']));
+
+    return (
+      <Flex direction="column" gap="2" align="start">
+        <Text>Selected: {Array.from(selected).join(', ')}</Text>
+        <MenuTrigger isOpen>
+          <Button aria-label="Menu">Menu</Button>
+          <MenuListBox
+            selectionMode="multiple"
+            selectedKeys={selected}
+            onSelectionChange={setSelected}
+          >
+            <MenuListBoxItem key="item1" id="john">
+              John Lennon
+            </MenuListBoxItem>
+            <MenuListBoxItem key="item2" id="paul">
+              Paul McCartney
+            </MenuListBoxItem>
+            <MenuListBoxItem key="item3" id="george">
+              George Harrison
+            </MenuListBoxItem>
+            <MenuListBoxItem key="item4" id="ringo">
+              Ringo Starr
+            </MenuListBoxItem>
+          </MenuListBox>
+        </MenuTrigger>
+      </Flex>
+    );
+  },
+};
+
+export const WithAutocompleteMenu: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <MenuAutocomplete placeholder="Filter">
+        <MenuItem>Create new file...</MenuItem>
+        <MenuItem>Create new folder...</MenuItem>
+        <MenuItem>Assign to...</MenuItem>
+        <MenuItem>Assign to me</MenuItem>
+        <MenuItem>Change status...</MenuItem>
+        <MenuItem>Change priority...</MenuItem>
+        <MenuItem>Add label...</MenuItem>
+        <MenuItem>Remove label...</MenuItem>
+      </MenuAutocomplete>
+    </MenuTrigger>
+  ),
+};
+
+export const WithAutocompleteListbox: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => {
+    const [selected, setSelected] = useState<Selection>(
+      new Set([options[2].value]),
+    );
+
+    return (
+      <Flex direction="column" gap="2" align="start">
+        <Text>Selected: {Array.from(selected).join(', ')}</Text>
+        <MenuTrigger isOpen>
+          <Button aria-label="Menu">Menu</Button>
+          <MenuAutocompleteListbox
+            selectedKeys={selected}
+            onSelectionChange={setSelected}
+          >
+            {options.map(option => (
+              <MenuListBoxItem key={option.value} id={option.value}>
+                {option.label}
+              </MenuListBoxItem>
+            ))}
+          </MenuAutocompleteListbox>
+        </MenuTrigger>
+      </Flex>
+    );
+  },
 };
 
 export const Submenu: Story = {
-  args: { children: undefined },
-  render: args => (
-    <Menu.Root {...args}>
-      <Menu.Trigger
-        render={props => (
-          <Button
-            {...props}
-            size="small"
-            variant="secondary"
-            iconEnd={<Icon name="chevron-down" />}
-          >
-            Menu
-          </Button>
-        )}
-      />
-      <Menu.Portal>
-        <Menu.Positioner sideOffset={8} align="start">
-          <Menu.Popup>
-            <Menu.Item>Settings</Menu.Item>
-            <Menu.Item>Invite new members</Menu.Item>
-            <Menu.Item>Download app</Menu.Item>
-            <Menu.Item>Log out</Menu.Item>
-            <Menu.Root>
-              <Menu.SubmenuTrigger>Submenu</Menu.SubmenuTrigger>
-              <Menu.Portal>
-                <Menu.Positioner>
-                  <Menu.Popup>
-                    <Menu.Item>Submenu Item 1</Menu.Item>
-                    <Menu.Item>Submenu Item 2</Menu.Item>
-                    <Menu.Item>Submenu Item 3</Menu.Item>
-                  </Menu.Popup>
-                </Menu.Positioner>
-              </Menu.Portal>
-            </Menu.Root>
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
-    </Menu.Root>
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <SubmenuTrigger>
+          <MenuItem>Submenu</MenuItem>
+          <Menu>
+            <MenuItem>Edit</MenuItem>
+            <MenuItem>Duplicate</MenuItem>
+            <MenuItem>Rename</MenuItem>
+            <MenuSeparator />
+            <MenuItem>Share</MenuItem>
+            <MenuItem>Move</MenuItem>
+            <MenuSeparator />
+            <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+          </Menu>
+        </SubmenuTrigger>
+      </Menu>
+    </MenuTrigger>
   ),
 };
 
-export const SubmenuCombobox = () => {
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
-
-  return (
-    <Flex direction="column" gap="1" align="start">
-      <Text style={{ marginBottom: 16 }}>
-        {selectedValues.length === 0
-          ? 'Which is your favorite fruit?'
-          : `Yum, ${selectedValues[0]} is delicious!`}
-      </Text>
-      <Menu.Root>
-        <Menu.Trigger
-          render={props => (
-            <Button
-              {...props}
-              size="small"
-              variant="secondary"
-              iconEnd={<Icon name="chevron-down" />}
-            >
-              Select Fruits
-            </Button>
-          )}
-        />
-        <Menu.Portal>
-          <Menu.Positioner sideOffset={4} align="start">
-            <Menu.Popup>
-              <Menu.Item>Regular Item</Menu.Item>
-              <Menu.Root>
-                <Menu.SubmenuTrigger>Fruits</Menu.SubmenuTrigger>
-                <Menu.Portal>
-                  <Menu.Positioner sideOffset={8} align="start">
-                    <Menu.Popup>
-                      <Menu.Combobox
-                        options={options}
-                        value={selectedValues}
-                        onValueChange={setSelectedValues}
-                      />
-                    </Menu.Popup>
-                  </Menu.Positioner>
-                </Menu.Portal>
-              </Menu.Root>
-              <Menu.Item>Another Item</Menu.Item>
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </Menu.Root>
-    </Flex>
-  );
+export const SubmenuAutocompleteMenu: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <MenuTrigger isOpen>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem>Edit</MenuItem>
+        <SubmenuTrigger>
+          <MenuItem>Submenu</MenuItem>
+          <MenuAutocomplete>
+            {options.map(option => (
+              <MenuItem key={option.value} id={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </MenuAutocomplete>
+        </SubmenuTrigger>
+      </Menu>
+    </MenuTrigger>
+  ),
 };
 
-export const SubmenuComboboxMultiselect = () => {
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+export const SubmenuAutocompleteListbox: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => {
+    const [selected, setSelected] = useState<Selection>(
+      new Set([options[2].value]),
+    );
 
-  return (
-    <Flex direction="column" gap="1" align="start">
-      <Text style={{ marginBottom: 16 }}>
-        {selectedValues.length === 0
-          ? 'Tell us what fruits you like.'
-          : `${selectedValues.join(
-              ', ',
-            )} would make for a great, healthy smoothy!`}
-      </Text>
-      <Menu.Root>
-        <Menu.Trigger
-          render={props => (
-            <Button
-              {...props}
-              size="small"
-              variant="secondary"
-              iconEnd={<Icon name="chevron-down" />}
-            >
-              Select Fruits
-            </Button>
-          )}
-        />
-        <Menu.Portal>
-          <Menu.Positioner>
-            <Menu.Popup>
-              <Menu.Item>Regular Item</Menu.Item>
-              <Menu.Root>
-                <Menu.SubmenuTrigger>Fruits</Menu.SubmenuTrigger>
-                <Menu.Portal>
-                  <Menu.Positioner>
-                    <Menu.Popup>
-                      <Menu.Combobox
-                        multiselect
-                        options={options}
-                        value={selectedValues}
-                        onValueChange={setSelectedValues}
-                      />
-                    </Menu.Popup>
-                  </Menu.Positioner>
-                </Menu.Portal>
-              </Menu.Root>
-              <Menu.Item>Another Item</Menu.Item>
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </Menu.Root>
-    </Flex>
-  );
+    return (
+      <Flex direction="column" gap="2" align="start">
+        <Text>Selected: {Array.from(selected).join(', ')}</Text>
+        <MenuTrigger isOpen>
+          <Button aria-label="Menu">Menu</Button>
+          <Menu>
+            <MenuItem>Edit</MenuItem>
+            <SubmenuTrigger>
+              <MenuItem>Submenu</MenuItem>
+              <MenuAutocompleteListbox
+                selectedKeys={selected}
+                onSelectionChange={setSelected}
+              >
+                {options.map(option => (
+                  <MenuListBoxItem key={option.value} id={option.value}>
+                    {option.label}
+                  </MenuListBoxItem>
+                ))}
+              </MenuAutocompleteListbox>
+            </SubmenuTrigger>
+          </Menu>
+        </MenuTrigger>
+      </Flex>
+    );
+  },
 };
