@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,8 @@ declare module 'react-aria-components' {
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const {
-    tabs,
-    icon,
-    title,
-    titleLink,
-    menuItems,
-    customActions,
-    onTabSelectionChange,
-  } = props;
+  const { tabs, icon, title, titleLink, customActions, onTabSelectionChange } =
+    props;
 
   const { classNames } = useStyles('Header');
 
@@ -52,7 +45,6 @@ export const Header = (props: HeaderProps) => {
         icon={icon}
         title={title}
         titleLink={titleLink}
-        menuItems={menuItems}
         customActions={customActions}
         hasTabs={hasTabs}
       />
