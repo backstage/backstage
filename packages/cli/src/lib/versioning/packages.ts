@@ -16,9 +16,9 @@
 
 import { minimatch } from 'minimatch';
 import { getPackages } from '@manypkg/get-packages';
-import { NotFoundError } from '../errors';
 import { detectYarnVersion } from './yarn';
 import { execFile } from '../run';
+import { NotFoundError } from '@backstage/errors';
 
 const DEP_TYPES = [
   'dependencies',
