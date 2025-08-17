@@ -65,3 +65,14 @@ export interface SubscriptionsTableEntry {
   /** The entity uid filter for the subscription */
   filterEntityId?: string;
 }
+
+export interface SummaryTableEntry {
+  /** The ID of the summary entry */
+  summaryId: string;
+  /** The type of the reference, e.g. "entity_ref" or "entity_id" */
+  refType: string;
+  /** The value of the reference, e.g. an entity ref */
+  refValue: string;
+  /** The ID of the latest history event for this summary row */
+  eventId: string;
+}

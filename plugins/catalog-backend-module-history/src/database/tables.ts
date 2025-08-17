@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { EventsTableEntry, SubscriptionsTableEntry } from '../types';
+import {
+  EventsTableEntry,
+  SubscriptionsTableEntry,
+  SummaryTableEntry,
+} from '../types';
 
 /**
  * The raw form of a single history event table row as seen through knex.
@@ -47,6 +51,28 @@ export function toEventsTableEntry(row: EventsTableRow): EventsTableEntry {
     locationId: row.location_id ?? undefined,
     locationRefBefore: row.location_ref_before ?? undefined,
     locationRef: row.location_ref ?? undefined,
+  };
+}
+
+/**
+ * The raw form of a single history summary table row as seen through knex.
+ */
+export interface SummaryTableRow {
+  summary_id: string;
+  ref_type: string;
+  ref_value: string;
+  event_id: string;
+}
+
+/**
+ * Create the normalized form of a single history event table row.
+ */
+export function toSummaryTableEntry(row: SummaryTableRow): SummaryTableEntry {
+  return {
+    summaryId: String(row.summary_id),
+    refType: row.ref_type,
+    refValue: row.ref_value,
+    eventId: String(row.event_id),
   };
 }
 

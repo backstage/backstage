@@ -22,7 +22,16 @@
  */
 exports.up = async function up(knex) {
   /*
-   * Events table
+   * Events table.
+   *
+   * When significant changes happen in key tables (such as entities changing,
+   * locations being deleted, etc), database triggers track them here.
+   *
+   * Note that events in this table are to be seen as ephemeral. A janitor
+   * process may or may not prune entries out of this table based on a
+   * configurable retention policy to save space. If you need to poll for
+   * changes reliaby across arbitrary timeframes, see the `history_summary`
+   * table instead which summarizes the history and is never cleared.
    */
 
   await knex.schema.createTable('history_events', table => {

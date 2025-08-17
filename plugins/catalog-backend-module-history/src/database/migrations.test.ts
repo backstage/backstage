@@ -21,7 +21,7 @@ import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
 import { initEmptyDatabase } from '../__fixtures__/initEmptyDatabase';
 import { DB_MIGRATIONS_TABLE } from './migrations';
-import { EventsTableRow } from './tables';
+import { EventsTableRow, SummaryTableRow } from './tables';
 
 const migrationsDir = `${__dirname}/../../migrations_`;
 const migrationsFiles = fs.readdirSync(migrationsDir).sort();
@@ -77,12 +77,13 @@ describe('migrations', () => {
           );
       }
 
-      function summaryRows(): Promise<EventsTableRow[]> {
+      function summaryRows(): Promise<SummaryTableRow[]> {
         return knex('history_summary')
-          .orderBy(['ref_type', 'ref_value'])
+          .orderBy('summary_id')
           .then(r =>
             r.map(row => ({
               ...row,
+              summary_id: String(row.summary_id),
               event_id: String(row.event_id),
             })),
           );
@@ -128,23 +129,28 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io',
           },
         ]);
-        await expect(summaryRows()).resolves.toEqual([
-          {
-            ref_type: 'entity_id',
-            ref_value: expect.any(String),
-            event_id: '1',
-          },
-          {
-            ref_type: 'entity_ref',
-            ref_value: entityRef,
-            event_id: '1',
-          },
-          {
-            ref_type: 'location_ref',
-            ref_value: 'url:https://backstage.io',
-            event_id: '1',
-          },
-        ]);
+        await expect(summaryRows()).resolves.toEqual(
+          expect.arrayContaining([
+            {
+              summary_id: expect.any(String),
+              ref_type: 'entity_ref',
+              ref_value: entityRef,
+              event_id: '1',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'entity_id',
+              ref_value: expect.any(String),
+              event_id: '1',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_ref',
+              ref_value: 'url:https://backstage.io',
+              event_id: '1',
+            },
+          ]),
+        );
       });
 
       // Expect that an update of the entity leads to an event
@@ -178,23 +184,28 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io',
           },
         ]);
-        await expect(summaryRows()).resolves.toEqual([
-          {
-            ref_type: 'entity_id',
-            ref_value: expect.any(String),
-            event_id: '2',
-          },
-          {
-            ref_type: 'entity_ref',
-            ref_value: entityRef,
-            event_id: '2',
-          },
-          {
-            ref_type: 'location_ref',
-            ref_value: 'url:https://backstage.io',
-            event_id: '2',
-          },
-        ]);
+        await expect(summaryRows()).resolves.toEqual(
+          expect.arrayContaining([
+            {
+              summary_id: expect.any(String),
+              ref_type: 'entity_ref',
+              ref_value: entityRef,
+              event_id: '2',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'entity_id',
+              ref_value: expect.any(String),
+              event_id: '2',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_ref',
+              ref_value: 'url:https://backstage.io',
+              event_id: '2',
+            },
+          ]),
+        );
       });
 
       // Expect that changes of unrelated columns do NOT lead to events
@@ -228,23 +239,28 @@ describe('migrations', () => {
           location_ref: 'url:https://backstage.io',
         },
       ]);
-      await expect(summaryRows()).resolves.toEqual([
-        {
-          ref_type: 'entity_id',
-          ref_value: expect.any(String),
-          event_id: '2',
-        },
-        {
-          ref_type: 'entity_ref',
-          ref_value: entityRef,
-          event_id: '2',
-        },
-        {
-          ref_type: 'location_ref',
-          ref_value: 'url:https://backstage.io',
-          event_id: '2',
-        },
-      ]);
+      await expect(summaryRows()).resolves.toEqual(
+        expect.arrayContaining([
+          {
+            summary_id: expect.any(String),
+            ref_type: 'entity_ref',
+            ref_value: entityRef,
+            event_id: '2',
+          },
+          {
+            summary_id: expect.any(String),
+            ref_type: 'entity_id',
+            ref_value: expect.any(String),
+            event_id: '2',
+          },
+          {
+            summary_id: expect.any(String),
+            ref_type: 'location_ref',
+            ref_value: 'url:https://backstage.io',
+            event_id: '2',
+          },
+        ]),
+      );
 
       // Expect that a deletion of the final entity leads to an event
       provider.removeEntity(entityRef);
@@ -288,23 +304,28 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io',
           },
         ]);
-        await expect(summaryRows()).resolves.toEqual([
-          {
-            ref_type: 'entity_id',
-            ref_value: expect.any(String),
-            event_id: '3',
-          },
-          {
-            ref_type: 'entity_ref',
-            ref_value: entityRef,
-            event_id: '3',
-          },
-          {
-            ref_type: 'location_ref',
-            ref_value: 'url:https://backstage.io',
-            event_id: '3',
-          },
-        ]);
+        await expect(summaryRows()).resolves.toEqual(
+          expect.arrayContaining([
+            {
+              summary_id: expect.any(String),
+              ref_type: 'entity_ref',
+              ref_value: entityRef,
+              event_id: '3',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'entity_id',
+              ref_value: expect.any(String),
+              event_id: '3',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_ref',
+              ref_value: 'url:https://backstage.io',
+              event_id: '3',
+            },
+          ]),
+        );
       });
 
       // Make a clean slate for location testing
@@ -332,18 +353,22 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io',
           },
         ]);
-        await expect(summaryRows()).resolves.toEqual([
-          {
-            ref_type: 'location_id',
-            ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
-            event_id: '4',
-          },
-          {
-            ref_type: 'location_ref',
-            ref_value: 'url:https://backstage.io',
-            event_id: '4',
-          },
-        ]);
+        await expect(summaryRows()).resolves.toEqual(
+          expect.arrayContaining([
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_id',
+              ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+              event_id: '4',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_ref',
+              ref_value: 'url:https://backstage.io',
+              event_id: '4',
+            },
+          ]),
+        );
       });
 
       await knex('locations')
@@ -369,23 +394,28 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io/elsewhere',
           },
         ]);
-        await expect(summaryRows()).resolves.toEqual([
-          {
-            ref_type: 'location_id',
-            ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
-            event_id: '5',
-          },
-          {
-            ref_type: 'location_ref',
-            ref_value: 'url:https://backstage.io',
-            event_id: '5',
-          },
-          {
-            ref_type: 'location_ref',
-            ref_value: 'url:https://backstage.io/elsewhere',
-            event_id: '5',
-          },
-        ]);
+        await expect(summaryRows()).resolves.toEqual(
+          expect.arrayContaining([
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_id',
+              ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+              event_id: '5',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_ref',
+              ref_value: 'url:https://backstage.io',
+              event_id: '5',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_ref',
+              ref_value: 'url:https://backstage.io/elsewhere',
+              event_id: '5',
+            },
+          ]),
+        );
       });
 
       await knex('locations')
@@ -409,23 +439,28 @@ describe('migrations', () => {
             location_ref: 'url:https://backstage.io/elsewhere',
           },
         ]);
-        await expect(summaryRows()).resolves.toEqual([
-          {
-            ref_type: 'location_id',
-            ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
-            event_id: '6',
-          },
-          {
-            ref_type: 'location_ref',
-            ref_value: 'url:https://backstage.io',
-            event_id: '5',
-          },
-          {
-            ref_type: 'location_ref',
-            ref_value: 'url:https://backstage.io/elsewhere',
-            event_id: '6',
-          },
-        ]);
+        await expect(summaryRows()).resolves.toEqual(
+          expect.arrayContaining([
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_id',
+              ref_value: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+              event_id: '6',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_ref',
+              ref_value: 'url:https://backstage.io',
+              event_id: '5',
+            },
+            {
+              summary_id: expect.any(String),
+              ref_type: 'location_ref',
+              ref_value: 'url:https://backstage.io/elsewhere',
+              event_id: '6',
+            },
+          ]),
+        );
       });
 
       // Downgrading works

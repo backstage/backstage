@@ -22,7 +22,12 @@
  */
 exports.up = async function up(knex) {
   /*
-   * Subscriptions table
+   * Subscriptions table.
+   *
+   * Subscriptions are used to track a stream of events over time, and
+   * potentially across several concurrent consumers. This allows for easy
+   * collaborative consumption in scaled deployments without the consumers
+   * having to share state with each other.
    */
 
   await knex.schema.createTable('history_subscriptions', table => {
@@ -30,6 +35,8 @@ exports.up = async function up(knex) {
       .string('subscription_id')
       .primary()
       .comment('Unique ID of the subscription');
+
+    // Various runtime state columns
     table
       .dateTime('created_at')
       .notNullable()
@@ -60,6 +67,8 @@ exports.up = async function up(knex) {
       .bigInteger('last_acknowledged_event_id')
       .notNullable()
       .comment('The most recent acknowledged event ID');
+
+    // Settings of the subscription
     table
       .string('filter_entity_ref')
       .nullable()
