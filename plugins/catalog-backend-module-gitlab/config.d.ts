@@ -72,7 +72,7 @@ export interface Config {
           /**
            * (Optional) RegExp for the Group Name Pattern
            */
-          groupPattern?: string;
+          groupPattern?: string | string[];
           /**
            * Specifies the types of group membership relations that should be included when ingesting data.
            *

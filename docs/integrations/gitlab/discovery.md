@@ -151,7 +151,7 @@ catalog:
         skipForkedRepos: false # Optional. If the project is a fork, skip repository
         includeArchivedRepos: false # Optional. If project is archived, include repository
         group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
-        groupPatterns: # Optional. Filters for groups based on a list of RegEx. Default, no filters.
+        groupPattern: # Optional. Filters for groups based on a list of RegEx. Default, no filters.
           - '^somegroup$'
           - 'anothergroup'
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`

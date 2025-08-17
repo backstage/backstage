@@ -81,6 +81,13 @@ const httpHandlers = [
     );
   }),
 
+  rest.get(`${apiBaseUrl}/groups/group1`, (_, res, ctx) => {
+    return res(
+      ctx.set('x-next-page', ''),
+      ctx.json(all_groups_response.find(g => g.full_path === 'group1')),
+    );
+  }),
+
   rest.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
   }),

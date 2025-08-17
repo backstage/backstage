@@ -557,14 +557,6 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     });
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
-  // EventSupportChange: stop add tests >>>
-
-  // add the following test:
-  // setup: 3 projects, 2 groups
-  // 1 test where none match --> OK
-  // 1 test where match only 1 group --> OK
-  // 1 test where match 2 groups
-  // 1 test where match 1 group with 2 identical regex
 
   it('should ignore projects when none of the groups regex patterns match', async () => {
     const config = new ConfigReader(mock.config_groupPatterns_only_noMatch);
@@ -590,93 +582,96 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1); // No entities should be applied
   });
-});
-it('should include only the project that matches one of the group regex patterns', async () => {
-  const config = new ConfigReader(mock.config_groupPatterns_only_Match1Group);
 
-  const schedule = new PersistingTaskRunner();
-  const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
-  };
-  const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
-    logger,
-    schedule,
-  })[0];
+  it('should include only the project that matches one of the group regex patterns', async () => {
+    const config = new ConfigReader(mock.config_groupPatterns_only_Match1Group);
 
-  await provider.connect(entityProviderConnection);
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
 
-  await provider.refresh(logger);
+    await provider.connect(entityProviderConnection);
 
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-    type: 'full',
-    entities: mock.expected_location_entities_default_branch.filter(
-      entity =>
-        entity.entity.metadata.annotations[
-          'backstage.io/managed-by-location'
-        ].includes('/group1/'), // Only projects in 'group2' should match
-    ),
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_default_branch.filter(
+        entity =>
+          entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('/group1/'), // Only projects in 'group2' should match
+      ),
+    });
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1); // Only one matching project should be applied
   });
 
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1); // Only one matching project should be applied
-});
-it('should include projects that match multiple group regex patterns', async () => {
-  const config = new ConfigReader(mock.config_groupPatterns_multiple_matches);
+  it('should include projects that match multiple group regex patterns', async () => {
+    const config = new ConfigReader(mock.config_groupPatterns_multiple_matches);
 
-  const schedule = new PersistingTaskRunner();
-  const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
-  };
-  const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
-    logger,
-    schedule,
-  })[0];
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
 
-  await provider.connect(entityProviderConnection);
+    await provider.connect(entityProviderConnection);
 
-  await provider.refresh(logger);
+    await provider.refresh(logger);
 
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-    type: 'full',
-    entities: mock.expected_location_entities_default_branch.filter(
-      entity =>
-        entity.entity.metadata.annotations[
-          'backstage.io/managed-by-location'
-        ].includes('/group1/') ||
-        entity.entity.metadata.annotations[
-          'backstage.io/managed-by-location'
-        ].includes('/group2/'),
-    ),
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_default_branch.filter(
+        entity =>
+          entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('/group1/') ||
+          entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('/group2/'),
+      ),
+    });
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1); // Projects from both groups should be applied
   });
 
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1); // Projects from both groups should be applied
-});
-it('should not create duplicate locations when multiple groupPatterns match the same group', async () => {
-  const config = new ConfigReader(mock.config_groupPatterns_duplicate_match);
+  it('should not create duplicate locations when multiple groupPatterns match the same group', async () => {
+    const config = new ConfigReader(mock.config_groupPatterns_duplicate_match);
 
-  const schedule = new PersistingTaskRunner();
-  const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
-  };
-  const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
-    logger,
-    schedule,
-  })[0];
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
 
-  await provider.connect(entityProviderConnection);
+    await provider.connect(entityProviderConnection);
 
-  await provider.refresh(logger);
+    await provider.refresh(logger);
 
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-    type: 'full',
-    entities: mock.expected_location_entities_default_branch.filter(entity =>
-      entity.entity.metadata.annotations[
-        'backstage.io/managed-by-location'
-      ].includes('/group1/'),
-    ),
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_default_branch.filter(entity =>
+        entity.entity.metadata.annotations[
+          'backstage.io/managed-by-location'
+        ].includes('/group1/'),
+      ),
+    });
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
   });
-
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
 });

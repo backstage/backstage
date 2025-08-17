@@ -111,8 +111,7 @@ export type GitlabProviderConfig = {
   catalogFile: string;
   projectPattern: RegExp;
   userPattern: RegExp;
-  groupPattern: RegExp;
-  groupPatterns: RegExp[];
+  groupPattern: RegExp | RegExp[];
   allowInherited?: boolean;
   relations?: string[];
   orgEnabled?: boolean;

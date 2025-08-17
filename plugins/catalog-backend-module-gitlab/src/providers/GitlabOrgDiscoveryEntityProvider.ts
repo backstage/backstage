@@ -111,6 +111,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private groupEntitiesTransformer: GroupEntitiesTransformer;
   private groupNameTransformer: GroupNameTransformer;
   private readonly gitLabClient: GitLabClient;
+  private readonly groupPatterns: RegExp[];
 
   static fromConfig(
     config: Config,
@@ -197,6 +198,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       options.groupEntitiesTransformer ?? defaultGroupEntitiesTransformer;
     this.groupNameTransformer =
       options.groupNameTransformer ?? defaultGroupNameTransformer;
+
+    this.groupPatterns = Array.isArray(this.config.groupPattern)
+      ? this.config.groupPattern
+      : [this.config.groupPattern];
 
     this.gitLabClient = new GitLabClient({
       config: this.integration.config,
@@ -464,7 +469,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
     for await (const group of groups) {
       groupRes.scanned++;
-
       if (!this.shouldProcessGroup(group)) {
         logger.debug(`Skipped group: ${group.full_path}`);
         continue;
@@ -798,7 +802,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
   private shouldProcessGroup(group: GitLabGroup): boolean {
     return (
-      this.config.groupPattern.test(group.full_path) &&
+      this.groupPatterns.some(pattern => pattern.test(group.full_path)) &&
       (!this.config.group ||
         group.full_path.startsWith(`${this.config.group}/`) ||
         group.full_path === this.config.group)

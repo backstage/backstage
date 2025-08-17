@@ -836,7 +836,7 @@ export const config_groupPatterns_only_noMatch = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          groupPatterns: ['^group8$', '^group9$', '^group10$'],
+          groupPattern: ['^group8$', '^group9$', '^group10$'],
         },
       },
     },
@@ -858,7 +858,7 @@ export const config_groupPatterns_only_Match1Group = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          groupPatterns: ['^group1$', '^group9$', '^group10$'],
+          groupPattern: ['^group1$', '^group9$', '^group10$'],
         },
       },
     },
@@ -880,7 +880,7 @@ export const config_groupPatterns_multiple_matches = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          groupPatterns: ['^group1$', '^group2$', '^group10$'],
+          groupPattern: ['^group1$', '^group2$', '^group10$'],
         },
       },
     },
@@ -902,7 +902,7 @@ export const config_groupPatterns_duplicate_match = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          groupPatterns: ['^group1$', 'subgroup1'], // Both patterns match the same group
+          groupPattern: ['^group1$', 'subgroup1'], // Both patterns match the same group
         },
       },
     },
@@ -1311,6 +1311,12 @@ export const all_groups_response: GitLabGroup[] = [
     name: 'subgroup2',
     description: '',
     full_path: 'group1/subgroup2',
+  },
+  {
+    id: 8,
+    name: 'awsome-group',
+    description: '',
+    full_path: 'awsome-group',
   },
 ];
 
