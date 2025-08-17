@@ -37,6 +37,7 @@ import {
   RiSettingsLine,
   RiUserLine,
   RiDeleteBinLine,
+  RiShareBoxLine,
 } from '@remixicon/react';
 import { useState } from 'react';
 import { Selection } from 'react-aria-components';
@@ -70,25 +71,226 @@ const options = [
   { label: 'Honeydew', value: 'honeydew' },
 ];
 
-export const Default: Story = {
+export const Preview: Story = {
   args: {
     children: null,
   },
   render: () => (
     <MenuTrigger>
-      <Button>Menu</Button>
+      <Button aria-label="Menu">Menu</Button>
       <Menu>
-        {options.map(option => (
-          <MenuItem key={option.value}>{option.label}</MenuItem>
-        ))}
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuSeparator />
+        <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
+        <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+        <MenuSeparator />
+        <SubmenuTrigger>
+          <MenuItem iconStart={<RiSettingsLine />}>Settings</MenuItem>
+          <Menu placement="right top">
+            <MenuItem>Edit</MenuItem>
+            <MenuItem>Duplicate</MenuItem>
+            <MenuItem>Rename</MenuItem>
+          </Menu>
+        </SubmenuTrigger>
       </Menu>
     </MenuTrigger>
   ),
 };
 
+export const PreviewSubmenu: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => (
+    <MenuTrigger>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <SubmenuTrigger>
+          <MenuItem>Submenu</MenuItem>
+          <Menu placement="right top">
+            <MenuItem>Edit</MenuItem>
+            <MenuItem>Duplicate</MenuItem>
+            <MenuItem>Rename</MenuItem>
+            <MenuSeparator />
+            <MenuItem>Share</MenuItem>
+            <MenuItem>Move</MenuItem>
+            <MenuSeparator />
+            <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+          </Menu>
+        </SubmenuTrigger>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const PreviewIcons: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => (
+    <MenuTrigger>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem iconStart={<RiFileCopyLine />}>Copy</MenuItem>
+        <MenuItem iconStart={<RiEdit2Line />}>Rename</MenuItem>
+        <MenuItem iconStart={<RiChat1Line />}>Send feedback</MenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const PreviewSections: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => (
+    <MenuTrigger>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuSection title="My Account">
+          <MenuItem iconStart={<RiUserLine />}>Profile</MenuItem>
+          <MenuItem iconStart={<RiSettingsLine />}>Settings</MenuItem>
+        </MenuSection>
+        <MenuSection title="Support">
+          <MenuItem iconStart={<RiQuestionLine />}>Help Center</MenuItem>
+          <MenuItem iconStart={<RiCustomerService2Line />}>
+            Contact Support
+          </MenuItem>
+          <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+        </MenuSection>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const PreviewSeparators: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => (
+    <MenuTrigger>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuSeparator />
+        <MenuItem>Share</MenuItem>
+        <MenuItem>Move</MenuItem>
+        <MenuSeparator />
+        <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const PreviewLinks: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => (
+    <MenuTrigger>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem href="/home">Internal link</MenuItem>
+        <MenuItem href="https://www.google.com" target="_blank">
+          External link
+        </MenuItem>
+        <MenuItem href="mailto:test@test.com">Email link</MenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
+
+export const PreviewAutocompleteMenu: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => (
+    <MenuTrigger>
+      <Button aria-label="Menu">Menu</Button>
+      <MenuAutocomplete placeholder="Filter">
+        <MenuItem>Create new file...</MenuItem>
+        <MenuItem>Create new folder...</MenuItem>
+        <MenuItem>Assign to...</MenuItem>
+        <MenuItem>Assign to me</MenuItem>
+        <MenuItem>Change status...</MenuItem>
+        <MenuItem>Change priority...</MenuItem>
+        <MenuItem>Add label...</MenuItem>
+        <MenuItem>Remove label...</MenuItem>
+      </MenuAutocomplete>
+    </MenuTrigger>
+  ),
+};
+
+export const PreviewAutocompleteListbox: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => {
+    const [selected, setSelected] = useState<Selection>(
+      new Set([options[2].value]),
+    );
+
+    return (
+      <Flex direction="column" gap="2" align="center">
+        <Text>Selected: {Array.from(selected).join(', ')}</Text>
+        <MenuTrigger>
+          <Button aria-label="Menu">Menu</Button>
+          <MenuAutocompleteListbox
+            selectedKeys={selected}
+            onSelectionChange={setSelected}
+          >
+            {options.map(option => (
+              <MenuListBoxItem key={option.value} id={option.value}>
+                {option.label}
+              </MenuListBoxItem>
+            ))}
+          </MenuAutocompleteListbox>
+        </MenuTrigger>
+      </Flex>
+    );
+  },
+};
+
+export const PreviewAutocompleteListboxMultiple: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => {
+    const [selected, setSelected] = useState<Selection>(
+      new Set([options[2].value, options[3].value]),
+    );
+
+    return (
+      <Flex direction="column" gap="2" align="center">
+        <Text>Selected: {Array.from(selected).join(', ')}</Text>
+        <MenuTrigger>
+          <Button aria-label="Menu">Menu</Button>
+          <MenuAutocompleteListbox
+            selectionMode="multiple"
+            selectedKeys={selected}
+            onSelectionChange={setSelected}
+          >
+            {options.map(option => (
+              <MenuListBoxItem key={option.value} id={option.value}>
+                {option.label}
+              </MenuListBoxItem>
+            ))}
+          </MenuAutocompleteListbox>
+        </MenuTrigger>
+      </Flex>
+    );
+  },
+};
+
 export const Opened: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -104,7 +306,7 @@ export const Opened: Story = {
 
 export const WithIcons: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -120,7 +322,7 @@ export const WithIcons: Story = {
 
 export const WithScrolling: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -138,7 +340,7 @@ export const WithScrolling: Story = {
 
 export const WithSections: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -162,7 +364,7 @@ export const WithSections: Story = {
 
 export const WithSeparators: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -183,7 +385,7 @@ export const WithSeparators: Story = {
 
 export const WithColors: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -203,7 +405,7 @@ export const WithColors: Story = {
 
 export const WithLinks: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -221,7 +423,7 @@ export const WithLinks: Story = {
 
 export const WithLinksTest: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -237,7 +439,7 @@ export const WithLinksTest: Story = {
 
 export const WithListBox: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -253,7 +455,7 @@ export const WithListBox: Story = {
 
 export const WithListBoxControlled: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(new Set(['paul']));
@@ -289,7 +491,7 @@ export const WithListBoxControlled: Story = {
 
 export const WithAutocompleteMenu: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -310,7 +512,7 @@ export const WithAutocompleteMenu: Story = {
 
 export const WithAutocompleteListbox: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
@@ -340,7 +542,7 @@ export const WithAutocompleteListbox: Story = {
 
 export const Submenu: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -368,7 +570,7 @@ export const Submenu: Story = {
 
 export const SubmenuAutocompleteMenu: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -392,7 +594,7 @@ export const SubmenuAutocompleteMenu: Story = {
 
 export const SubmenuAutocompleteListbox: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
