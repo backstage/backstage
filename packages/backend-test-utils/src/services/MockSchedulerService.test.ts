@@ -205,4 +205,39 @@ describe('MockSchedulerService', () => {
     expect(taskFn).toHaveBeenCalled();
     await expect(isDone()).resolves.toBe(true);
   });
+
+  it('should abort tasks when shutting down', async () => {
+    let taskSignal: AbortSignal | undefined;
+
+    const backend = await startTestBackend({
+      features: [
+        mockServices.scheduler.factory({
+          includeManualTasksOnStartup: true,
+          includeInitialDelayedTasksOnStartup: true,
+        }),
+        createBackendPlugin({
+          pluginId: 'tester',
+          register(reg) {
+            reg.registerInit({
+              deps: { scheduler: coreServices.scheduler },
+              async init({ scheduler }) {
+                scheduler.scheduleTask({
+                  ...baseOpts,
+                  id: 'test-plain',
+                  fn: async signal => {
+                    taskSignal = signal;
+                  },
+                });
+              },
+            });
+          },
+        }),
+      ],
+    });
+
+    expect(taskSignal).toBeDefined();
+    expect(taskSignal?.aborted).toBe(false);
+    await backend.stop();
+    expect(taskSignal?.aborted).toBe(true);
+  });
 });
