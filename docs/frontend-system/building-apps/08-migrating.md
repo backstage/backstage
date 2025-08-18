@@ -28,8 +28,11 @@ We recommend a **two-phase migration process** to ensure a smooth and manageable
 - **Phase 2: Complete Transition to the New Frontend System**  
   After your app is running in hybrid mode, you can gradually refactor your codebase to remove legacy code and compatibility helpers. This phase focuses on fully adopting the new frontend architecture, ensuring your codebase is clean, maintainable, and takes full advantage of the new features.
 
-> **Note:**  
-> Staying in hybrid mode for too long is not recommended. Support for the legacy version and compatibility helpers will be dropped in the future, so you should plan to fully migrate your codebase as soon as possible.
+:::warning
+
+Staying in hybrid mode for too long is not recommended. Support for the legacy version and compatibility helpers will be dropped in the future, so we recommend planning to fully migrate your codebase as soon as possible.
+
+:::
 
 ## Checklist
 
@@ -39,6 +42,12 @@ Before you begin, review this checklist to track your progress:
 - [ ] App starts and works in hybrid mode
 - [ ] Gradually migrate and remove legacy code and helpers (Phase 2)
 - [ ] App runs fully on the new frontend system
+
+:::info
+
+If you encounter issues, check [GitHub issues](https://github.com/backstage/backstage/issues) or ask in [Discord](https://discord.gg/backstage-687207715902193673).
+
+:::
 
 ## Phase 1: Minimal Changes for Hybrid Configuration
 
@@ -54,7 +63,7 @@ To start we'll need to add the new `@backstage/frontend-defaults` package:
 yarn --cwd packages/app add @backstage/frontend-defaults
 ```
 
-The next step in migrating an app is to switch out the `createApp` function for the new one from `@backstage/frontend-defaults`:
+The next step is to switch out the `createApp` function for the new one from `@backstage/frontend-defaults`:
 
 ```tsx title="in packages/app/src/App.tsx"
 // highlight-remove-next-line
@@ -67,7 +76,7 @@ This immediate switch will lead to a lot of breakages that will be fixed in the 
 
 ### 2) Converting the `createApp` options
 
-Most of the legacy options `createApp` options — with the exception of `bindRoutes` — can be converted into features that are compatible with the new frontend system. This is accomplished using the `convertLegacyAppOptions` helper, which allows you to continue using your existing configuration while gradually migrating to the new architecture.
+Most of the legacy `createApp` options — with the exception of `bindRoutes` — can be converted into features that are compatible with the new frontend system. This is accomplished using the `convertLegacyAppOptions` helper, which allows you to continue using your existing configuration while gradually migrating to the new architecture.
 
 To do so, start by adding this dependency to your app package:
 
@@ -250,7 +259,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
 ReactDOM.createRoot(document.getElementById('root')!).render(app);
 ```
 
-### 5) Updating the app test files
+### 5) Updating the app test file
 
 You'll also need to make similar changes to your `App.test.tsx` file as well:
 
@@ -288,8 +297,6 @@ describe('App', () => {
 });
 ```
 
-Then you'll want to follow the section on [migrating `bindRoutes`](#bindroutes).
-
 ## Phase 2: Complete Transition to the New Frontend System
 
 If your app starts and works in hybrid mode, you’re ready to begin Phase 2. If not, review the error messages, check the [GitHub issues](https://github.com/backstage/backstage/issues), or ask for help in our [community Discord](https://discord.gg/backstage-687207715902193673).
@@ -315,6 +322,7 @@ import { createFrontendModule } from '@backstage/frontend-plugin-api';
 
 const app = createApp({
   features: [
+    // ...
     // highlight-add-start
     createFrontendModule({
       pluginId: 'app',
@@ -669,7 +677,7 @@ const convertedRootFeatures = convertLegacyAppRoot(
 );
 ```
 
-The `AlertDisplay` and `OAuthRequestDialog` are already provided as built-in extensions, and so will `VisitListener`, so ou can remove all surrounding elements and just keep the `routes`:
+The `AlertDisplay` and `OAuthRequestDialog` are already provided as built-in extensions, and so will `VisitListener`, so you can remove all surrounding elements and just keep the `routes`:
 
 ```tsx title="in packages/app/src/App.tsx"
 const convertedRootFeatures = convertLegacyAppRoot(routes);
@@ -849,9 +857,9 @@ Continue this process for each of your legacy routes until you have migrated all
 
 ### Migrating core, internal and third-party plugins
 
-For certain core plugins—such as the Catalog plugin's entity page—we provide a dedicated step-by-step migration guide, since these plugins often require a more gradual approach due to their complexity.
+For certain core plugins — such as the Catalog plugin's entity page — we provide a dedicated step-by-step migration guide, since these plugins often require a more gradual approach due to their complexity.
 
-For your custom internal plugins, refer to the [plugin migration guide](../building-plugins/05-migrating.md) for instructions on migrating internal plugins. For external plugins, check their migration status and contribute if needed.
+Refer to the [plugin migration guide](../building-plugins/05-migrating.md) for instructions on migrating internal plugins. For external plugins, check their migration status and contribute if needed.
 
 #### Catalog Entity Page
 
