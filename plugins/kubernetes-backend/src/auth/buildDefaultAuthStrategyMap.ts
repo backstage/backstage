@@ -39,7 +39,7 @@ export const buildDefaultAuthStrategyMap = ({
     ['aws', new AwsIamStrategy({ config })],
     ['azure', new AzureIdentityStrategy(logger)],
     ['google', new GoogleStrategy()],
-    ['googleServiceAccount', new GoogleServiceAccountStrategy()],
+    ['googleServiceAccount', new GoogleServiceAccountStrategy({ config })],
     ['localKubectlProxy', new AnonymousStrategy()],
     ['oidc', new OidcStrategy()],
     ['serviceAccount', new ServiceAccountStrategy()],

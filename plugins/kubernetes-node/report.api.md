@@ -100,16 +100,17 @@ export interface KubernetesClusterSupplierExtensionPoint {
   addClusterSupplier(
     clusterSupplier:
       | KubernetesClustersSupplier_2
-      | (({
-          getDefault,
-        }: {
-          getDefault: () => KubernetesClustersSupplier_2;
-        }) => KubernetesClustersSupplier_2),
+      | KubernetesClusterSupplierFactory,
   ): void;
 }
 
 // @public
 export const kubernetesClusterSupplierExtensionPoint: ExtensionPoint<KubernetesClusterSupplierExtensionPoint>;
+
+// @public
+export type KubernetesClusterSupplierFactory = (opts: {
+  getDefault: () => Promise<KubernetesClustersSupplier_2>;
+}) => Promise<KubernetesClustersSupplier_2>;
 
 // @public
 export type KubernetesCredential =
@@ -144,19 +145,16 @@ export interface KubernetesFetcher {
 // @public
 export interface KubernetesFetcherExtensionPoint {
   // (undocumented)
-  addFetcher(
-    fetcher:
-      | KubernetesFetcher_2
-      | (({
-          getDefault,
-        }: {
-          getDefault: () => KubernetesFetcher_2;
-        }) => KubernetesFetcher_2),
-  ): void;
+  addFetcher(fetcher: KubernetesFetcher_2 | KubernetesFetcherFactory): void;
 }
 
 // @public
 export const kubernetesFetcherExtensionPoint: ExtensionPoint<KubernetesFetcherExtensionPoint>;
+
+// @public
+export type KubernetesFetcherFactory = (opts: {
+  getDefault: () => Promise<KubernetesFetcher_2>;
+}) => Promise<KubernetesFetcher_2>;
 
 // @public (undocumented)
 export interface KubernetesObjectsByEntity {
@@ -188,28 +186,22 @@ export interface KubernetesObjectsProvider {
 export interface KubernetesObjectsProviderExtensionPoint {
   // (undocumented)
   addObjectsProvider(
-    provider:
-      | KubernetesObjectsProvider_2
-      | (({
-          getDefault,
-          clusterSupplier,
-          serviceLocator,
-          customResources,
-          objectTypesToFetch,
-          authStrategy,
-        }: {
-          getDefault: () => KubernetesObjectsProvider_2;
-          clusterSupplier: KubernetesClustersSupplier_2;
-          serviceLocator: KubernetesServiceLocator_2;
-          customResources: CustomResource_2[];
-          objectTypesToFetch?: ObjectToFetch_2[];
-          authStrategy: AuthenticationStrategy_2;
-        }) => KubernetesObjectsProvider_2),
+    provider: KubernetesObjectsProvider_2 | KubernetesObjectsProviderFactory,
   ): void;
 }
 
 // @public
 export const kubernetesObjectsProviderExtensionPoint: ExtensionPoint<KubernetesObjectsProviderExtensionPoint>;
+
+// @public
+export type KubernetesObjectsProviderFactory = (opts: {
+  getDefault: () => Promise<KubernetesObjectsProvider_2>;
+  clusterSupplier: KubernetesClustersSupplier_2;
+  serviceLocator: KubernetesServiceLocator_2;
+  customResources: CustomResource_2[];
+  objectTypesToFetch?: ObjectToFetch_2[];
+  authStrategy: AuthenticationStrategy_2;
+}) => Promise<KubernetesObjectsProvider_2>;
 
 // @public (undocumented)
 export type KubernetesObjectTypes =
@@ -246,18 +238,18 @@ export interface KubernetesServiceLocatorExtensionPoint {
   addServiceLocator(
     serviceLocator:
       | KubernetesServiceLocator_2
-      | (({
-          getDefault,
-          clusterSupplier,
-        }: {
-          getDefault: () => KubernetesServiceLocator_2;
-          clusterSupplier: KubernetesClustersSupplier_2;
-        }) => KubernetesServiceLocator_2),
+      | KubernetesServiceLocatorFactory,
   ): void;
 }
 
 // @public
 export const kubernetesServiceLocatorExtensionPoint: ExtensionPoint<KubernetesServiceLocatorExtensionPoint>;
+
+// @public
+export type KubernetesServiceLocatorFactory = (opts: {
+  getDefault: () => Promise<KubernetesServiceLocator_2>;
+  clusterSupplier: KubernetesClustersSupplier_2;
+}) => Promise<KubernetesServiceLocator_2>;
 
 // @public (undocumented)
 export interface ObjectFetchParams {

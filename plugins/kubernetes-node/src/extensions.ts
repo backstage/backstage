@@ -25,29 +25,27 @@ import {
 } from '@backstage/plugin-kubernetes-node';
 
 /**
+ * A factory function for creating a KubernetesObjectsProvider.
+ *
+ * @public
+ */
+export type KubernetesObjectsProviderFactory = (opts: {
+  getDefault: () => Promise<KubernetesObjectsProvider>;
+  clusterSupplier: KubernetesClustersSupplier;
+  serviceLocator: KubernetesServiceLocator;
+  customResources: CustomResource[];
+  objectTypesToFetch?: ObjectToFetch[];
+  authStrategy: AuthenticationStrategy;
+}) => Promise<KubernetesObjectsProvider>;
+
+/**
  * The interface for {@link kubernetesObjectsProviderExtensionPoint}.
  *
  * @public
  */
 export interface KubernetesObjectsProviderExtensionPoint {
   addObjectsProvider(
-    provider:
-      | KubernetesObjectsProvider
-      | (({
-          getDefault,
-          clusterSupplier,
-          serviceLocator,
-          customResources,
-          objectTypesToFetch,
-          authStrategy,
-        }: {
-          getDefault: () => KubernetesObjectsProvider;
-          clusterSupplier: KubernetesClustersSupplier;
-          serviceLocator: KubernetesServiceLocator;
-          customResources: CustomResource[];
-          objectTypesToFetch?: ObjectToFetch[];
-          authStrategy: AuthenticationStrategy;
-        }) => KubernetesObjectsProvider),
+    provider: KubernetesObjectsProvider | KubernetesObjectsProviderFactory,
   ): void;
 }
 
@@ -62,6 +60,15 @@ export const kubernetesObjectsProviderExtensionPoint =
   });
 
 /**
+ * A factory function for creating a KubernetesClustersSupplier.
+ *
+ * @public
+ */
+export type KubernetesClusterSupplierFactory = (opts: {
+  getDefault: () => Promise<KubernetesClustersSupplier>;
+}) => Promise<KubernetesClustersSupplier>;
+
+/**
  * The interface for {@link kubernetesClusterSupplierExtensionPoint}.
  *
  * @public
@@ -70,11 +77,7 @@ export interface KubernetesClusterSupplierExtensionPoint {
   addClusterSupplier(
     clusterSupplier:
       | KubernetesClustersSupplier
-      | (({
-          getDefault,
-        }: {
-          getDefault: () => KubernetesClustersSupplier;
-        }) => KubernetesClustersSupplier),
+      | KubernetesClusterSupplierFactory,
   ): void;
 }
 
@@ -108,20 +111,21 @@ export const kubernetesAuthStrategyExtensionPoint =
   });
 
 /**
+ * A factory function for creating a KubernetesFetcher.
+ *
+ * @public
+ */
+export type KubernetesFetcherFactory = (opts: {
+  getDefault: () => Promise<KubernetesFetcher>;
+}) => Promise<KubernetesFetcher>;
+
+/**
  * The interface for {@link kubernetesFetcherExtensionPoint}.
  *
  * @public
  */
 export interface KubernetesFetcherExtensionPoint {
-  addFetcher(
-    fetcher:
-      | KubernetesFetcher
-      | (({
-          getDefault,
-        }: {
-          getDefault: () => KubernetesFetcher;
-        }) => KubernetesFetcher),
-  ): void;
+  addFetcher(fetcher: KubernetesFetcher | KubernetesFetcherFactory): void;
 }
 
 /**
@@ -135,21 +139,23 @@ export const kubernetesFetcherExtensionPoint =
   });
 
 /**
+ * A factory function for creating a KubernetesServiceLocator.
+ *
+ * @public
+ */
+export type KubernetesServiceLocatorFactory = (opts: {
+  getDefault: () => Promise<KubernetesServiceLocator>;
+  clusterSupplier: KubernetesClustersSupplier;
+}) => Promise<KubernetesServiceLocator>;
+
+/**
  * The interface for {@link kubernetesServiceLocatorExtensionPoint}.
  *
  * @public
  */
 export interface KubernetesServiceLocatorExtensionPoint {
   addServiceLocator(
-    serviceLocator:
-      | KubernetesServiceLocator
-      | (({
-          getDefault,
-          clusterSupplier,
-        }: {
-          getDefault: () => KubernetesServiceLocator;
-          clusterSupplier: KubernetesClustersSupplier;
-        }) => KubernetesServiceLocator),
+    serviceLocator: KubernetesServiceLocator | KubernetesServiceLocatorFactory,
   ): void;
 }
 
