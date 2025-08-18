@@ -15,6 +15,7 @@
  */
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
 import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
@@ -38,7 +39,8 @@ export type TaskStatus =
   | 'completed'
   | 'failed'
   | 'open'
-  | 'processing';
+  | 'processing'
+  | 'skipped';
 
 /**
  * The state of a completed task.
@@ -79,7 +81,11 @@ export type SerializedTaskEvent = {
   id: number;
   isTaskRecoverable?: boolean;
   taskId: string;
-  body: JsonObject;
+  body: {
+    message: string;
+    stepId?: string;
+    status?: TaskStatus;
+  } & JsonObject;
   type: TaskEventType;
   createdAt: string;
 };
@@ -104,6 +110,25 @@ export type TaskBrokerDispatchOptions = {
   secrets?: TaskSecrets;
   createdBy?: string;
 };
+
+/**
+ * TaskFilter
+ * @public
+ */
+export type TaskFilter = {
+  key: string;
+  values?: string[];
+};
+
+/**
+ * TaskFilters
+ * @public
+ */
+export type TaskFilters =
+  | { anyOf: TaskFilter[] }
+  | { allOf: TaskFilter[] }
+  | { not: TaskFilter }
+  | TaskFilter;
 
 /**
  * Task
@@ -183,6 +208,7 @@ export interface TaskBroker {
       offset?: number;
     };
     order?: { order: 'asc' | 'desc'; field: string }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 
   /**

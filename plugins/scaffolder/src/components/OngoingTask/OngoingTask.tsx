@@ -139,13 +139,14 @@ function OngoingTaskContent(props: {
   const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
-  // Used dummy string value for `resourceRef` since `allowed` field will always return `false` if `resourceRef` is `undefined`
   const { allowed: canCancelTask } = usePermission({
     permission: taskCancelPermission,
+    resourceRef: taskId,
   });
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
+    resourceRef: taskId,
   });
 
   const { allowed: canCreateTask } = usePermission({
@@ -269,6 +270,7 @@ function OngoingTaskContent(props: {
           onRetry={triggerRetry}
           onToggleLogs={setLogVisibleState}
           onToggleButtonBar={setButtonBarVisibleState}
+          taskId={taskId}
           onCancel={triggerCancel}
           isCancelButtonDisabled={isCancelButtonDisabled}
         />

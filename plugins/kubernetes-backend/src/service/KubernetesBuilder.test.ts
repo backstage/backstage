@@ -27,8 +27,8 @@ import {
   ClusterDetails,
   KubernetesFetcher,
   KubernetesServiceLocator,
-} from '../types/types';
-import { KubernetesCredential } from '../auth/types';
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 import {
   HEADER_KUBERNETES_CLUSTER,
   HEADER_KUBERNETES_AUTH,

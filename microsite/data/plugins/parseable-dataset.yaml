@@ -1,0 +1,11 @@
+title: Parseable Dataset Plugin
+author: Parseable
+authorUrl: https://parseable.com
+category: Monitoring
+description: View and explore telemetry datasets from Parseable directly inside Backstage. This plugin enables teams to query, visualize, and troubleshoot logs and metrics from Parseable without leaving your internal developer portal.
+documentation: https://github.com/parseablehq/backstage-plugin/blob/main/parseable-backstage-plugin/plugins/parseable-logstream/README.md
+iconUrl: https://raw.githubusercontent.com/parseablehq/.github/main/images/logo.svg
+npmPackageName: '@parseable/backstage-plugin-logstream'
+tags:
+  - monitoring
+addedDate: '2025-07-14'

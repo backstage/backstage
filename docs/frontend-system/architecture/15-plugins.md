@@ -21,7 +21,7 @@ Frontend plugin instances are created with the `createFrontendPlugin` function, 
 // This creates a new extension, see "Extension Blueprints" documentation for more details
 const myPage = PageBlueprint.make({
   params: {
-    defaultPath: '/my-page',
+    path: '/my-page',
     loader: () => import('./MyPage').then(m => <m.MyPage />),
   },
 });
@@ -107,7 +107,7 @@ export default plugin.withOverrides({
     // Override the catalog index page with a completely custom implementation
     PageBlueprint.make({
       params: {
-        defaultPath: '/catalog',
+        path: '/catalog',
         routeRef: plugin.routes.catalogIndex,
         loader: () => import('./CustomCatalogIndexPage').then(m => <m.Page />),
       },

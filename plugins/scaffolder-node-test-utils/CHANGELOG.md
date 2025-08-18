@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.2-next.0
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/backend-test-utils@1.7.1-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/types@1.2.1
+
+## 0.3.1
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/backend-test-utils@1.7.0
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.3.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
 ## 0.3.1-next.1
 
 ### Patch Changes

@@ -20,8 +20,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
-import { KubernetesBuilder } from './service';
-
 import {
   type AuthenticationStrategy,
   kubernetesAuthStrategyExtensionPoint,
@@ -39,6 +37,7 @@ import {
   kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
+import { KubernetesBuilder } from './service/KubernetesBuilder';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   private objectsProvider: KubernetesObjectsProvider | undefined;

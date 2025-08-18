@@ -1,0 +1,28 @@
+.container {
+  position: relative;
+  z-index: 20;
+  width: calc(100% - 64px);
+  margin-inline: 0 16px;
+  margin-left: 32px;
+  margin-right: 32px;
+  margin-top: 112px;
+  margin-bottom: 48px;
+  padding-inline: 40px;
+  padding-block: 48px;
+  background-color: var(--panel);
+  border-radius: 0.5rem;
+}
+
+.content {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: calc(100% - 332px - 40px);
+    margin-left: 332px;
+    margin-right: 40px;
+  }
+}

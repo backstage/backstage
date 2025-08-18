@@ -15,7 +15,6 @@
  */
 
 import { createElement } from 'react';
-import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { extractRouteInfoFromAppNode } from './extractRouteInfoFromAppNode';
 import {
   AnyRouteRefParams,
@@ -38,6 +37,7 @@ import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
 import { Root } from '../extensions/Root';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { createRouteAliasResolver } from './RouteAliasResolver';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -45,6 +45,11 @@ const ref3 = createRouteRef();
 const ref4 = createRouteRef();
 const ref5 = createRouteRef();
 const refOrder: RouteRef<AnyRouteRefParams>[] = [ref1, ref2, ref3, ref4, ref5];
+
+const emptyRouteRefsById = {
+  routes: new Map(),
+  externalRoutes: new Map(),
+};
 
 function createTestExtension(options: {
   name: string;
@@ -79,7 +84,10 @@ function createTestExtension(options: {
   });
 }
 
-function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
+function routeInfoFromExtensions(
+  extensions: ExtensionDefinition[],
+  routeRefsById?: Record<string, RouteRef>,
+) {
   const plugin = createFrontendPlugin({
     pluginId: 'test',
     extensions,
@@ -99,7 +107,13 @@ function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
 
   instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
-  return extractRouteInfoFromAppNode(tree.root);
+  return extractRouteInfoFromAppNode(
+    tree.root,
+    createRouteAliasResolver({
+      ...emptyRouteRefsById,
+      ...(routeRefsById && { routes: new Map(Object.entries(routeRefsById)) }),
+    }),
+  );
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
@@ -113,7 +127,6 @@ function routeObj(
   refs: RouteRef[],
   children: any[] = [],
   type: 'mounted' | 'gathered' = 'mounted',
-  backstagePlugin?: BackstagePlugin,
   appNode?: AppNode,
 ) {
   return {
@@ -128,11 +141,9 @@ function routeObj(
         caseSensitive: false,
         element: 'match-all',
         routeRefs: new Set(),
-        plugins: new Set(),
       },
       ...children,
     ],
-    plugins: backstagePlugin ? new Set([backstagePlugin]) : new Set(),
   };
 }
 
@@ -188,14 +199,7 @@ describe('discovery', () => {
       [ref5, ref1],
     ]);
     expect(info.routeObjects).toEqual([
-      routeObj(
-        'nothing',
-        [],
-        undefined,
-        undefined,
-        undefined,
-        expect.any(Object),
-      ),
+      routeObj('nothing', [], undefined, undefined, expect.any(Object)),
       routeObj(
         'foo',
         [ref1],
@@ -203,41 +207,16 @@ describe('discovery', () => {
           routeObj(
             'bar/:id',
             [ref2],
-            [
-              routeObj(
-                'baz',
-                [ref3],
-                undefined,
-                undefined,
-                expect.any(Object),
-                expect.any(Object),
-              ),
-            ],
+            [routeObj('baz', [ref3], undefined, undefined, expect.any(Object))],
             undefined,
-            expect.any(Object),
             expect.any(Object),
           ),
-          routeObj(
-            'blop',
-            [ref5],
-            undefined,
-            undefined,
-            expect.any(Object),
-            expect.any(Object),
-          ),
+          routeObj('blop', [ref5], undefined, undefined, expect.any(Object)),
         ],
         undefined,
         expect.any(Object),
-        expect.any(Object),
       ),
-      routeObj(
-        'divsoup',
-        [ref4],
-        undefined,
-        undefined,
-        expect.any(Object),
-        expect.any(Object),
-      ),
+      routeObj('divsoup', [ref4], undefined, undefined, expect.any(Object)),
     ]);
   });
 
@@ -398,29 +377,12 @@ describe('discovery', () => {
       [ref5, ref3],
     ]);
     expect(info.routeObjects).toEqual([
-      routeObj(
-        'foo',
-        [ref1, ref2],
-        [],
-        'mounted',
-        expect.any(Object),
-        expect.any(Object),
-      ),
+      routeObj('foo', [ref1, ref2], [], 'mounted', expect.any(Object)),
       routeObj(
         'bar',
         [ref3],
-        [
-          routeObj(
-            '',
-            [ref4, ref5],
-            [],
-            'mounted',
-            expect.any(Object),
-            expect.any(Object),
-          ),
-        ],
+        [routeObj('', [ref4, ref5], [], 'mounted', expect.any(Object))],
         'mounted',
-        expect.any(Object),
         expect.any(Object),
       ),
     ]);
@@ -495,21 +457,17 @@ describe('discovery', () => {
                     undefined,
                     undefined,
                     expect.any(Object),
-                    expect.any(Object),
                   ),
                 ],
                 undefined,
-                expect.any(Object),
                 expect.any(Object),
               ),
             ],
             'mounted',
             expect.any(Object),
-            expect.any(Object),
           ),
         ],
         undefined,
-        expect.any(Object),
         expect.any(Object),
       ),
     ]);
@@ -569,14 +527,7 @@ describe('discovery', () => {
         'r',
         [],
         [
-          routeObj(
-            'x',
-            [ref1],
-            [],
-            'mounted',
-            expect.any(Object),
-            expect.any(Object),
-          ),
+          routeObj('x', [ref1], [], 'mounted', expect.any(Object)),
           routeObj(
             'y',
             [],
@@ -591,7 +542,6 @@ describe('discovery', () => {
                     undefined,
                     'mounted',
                     expect.any(Object),
-                    expect.any(Object),
                   ),
                   routeObj(
                     'b',
@@ -599,23 +549,107 @@ describe('discovery', () => {
                     undefined,
                     'mounted',
                     expect.any(Object),
-                    expect.any(Object),
                   ),
                 ],
                 'mounted',
                 expect.any(Object),
-                expect.any(Object),
               ),
             ],
             'mounted',
-            undefined,
             expect.any(Object),
           ),
         ],
         undefined,
-        undefined,
         expect.any(Object),
       ),
     ]);
+  });
+
+  describe('route aliases', () => {
+    it('should resolve route aliases', () => {
+      const r1 = createRouteRef();
+      const r2 = createRouteRef({ aliasFor: 'test.r3' });
+      const r3 = createRouteRef();
+
+      const info = routeInfoFromExtensions(
+        [
+          createTestExtension({
+            name: 'page1',
+            path: 'foo',
+            routeRef: createRouteRef({ aliasFor: 'test.r1' }),
+          }),
+          createTestExtension({
+            name: 'page3',
+            path: 'bar',
+            routeRef: createRouteRef({ aliasFor: 'test.r2' }),
+          }),
+        ],
+        {
+          'test.r1': r1,
+          'test.r2': r2,
+          'test.r3': r3,
+        },
+      );
+
+      expect(sortedEntries(info.routePaths)).toEqual([
+        [r1, 'foo'],
+        [r3, 'bar'],
+      ]);
+      expect(sortedEntries(info.routeParents)).toEqual([
+        [r1, undefined],
+        [r3, undefined],
+      ]);
+      expect(info.routeObjects).toEqual([
+        routeObj('foo', [r1], undefined, undefined, expect.any(Object)),
+        routeObj('bar', [r3], undefined, undefined, expect.any(Object)),
+      ]);
+    });
+
+    it('should refuse to resolve aliases pointing to other plugins', () => {
+      expect(() =>
+        routeInfoFromExtensions(
+          [
+            // Source for this is the 'test' plugin
+            createTestExtension({
+              name: 'page1',
+              path: 'page1',
+              routeRef: createRouteRef({ aliasFor: 'other.root' }),
+            }),
+          ],
+
+          {
+            'other.root': createRouteRef(),
+          },
+        ),
+      ).toThrow(
+        /Refused to resolve alias 'other.root' for RouteRef{created at 'at .*extractRouteInfoFromAppNode\.test\.ts:\d+:\d+'} as it points to a different plugin, the expected plugin is 'test' but the alias points to 'other'/,
+      );
+    });
+
+    it('should bail on infinite route alias loops', () => {
+      const loop1 = createRouteRef({ aliasFor: 'test.loop2' });
+      const loop2 = createRouteRef({ aliasFor: 'test.loop3' });
+      const loop3 = createRouteRef({ aliasFor: 'test.loop1' });
+
+      expect(() =>
+        routeInfoFromExtensions(
+          [
+            createTestExtension({
+              name: 'page1',
+              path: 'page1',
+              routeRef: createRouteRef({ aliasFor: 'test.loop1' }),
+            }),
+          ],
+
+          {
+            'test.loop1': loop1,
+            'test.loop2': loop2,
+            'test.loop3': loop3,
+          },
+        ),
+      ).toThrow(
+        /Alias loop detected for RouteRef{created at 'at .*extractRouteInfoFromAppNode\.test\.ts:\d+:\d+'}/,
+      );
+    });
   });
 });

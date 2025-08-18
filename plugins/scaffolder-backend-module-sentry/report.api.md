@@ -16,6 +16,7 @@ export function createSentryCreateProjectAction(options: {
     teamSlug: string;
     name: string;
     slug?: string | undefined;
+    platform?: string | undefined;
     authToken?: string | undefined;
   },
   {

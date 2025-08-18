@@ -267,7 +267,7 @@ Fuzziness allows you to define the maximum Levenshtein distance, AUTO is the def
 ```yaml
 search:
   elasticsearch:
-    queryConfig:
+    queryOptions:
       fuzziness: AUTO
       prefixLength: 3;
 ```

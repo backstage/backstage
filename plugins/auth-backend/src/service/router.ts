@@ -27,10 +27,9 @@ import {
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { NotFoundError } from '@backstage/errors';
-import { bindOidcRouter } from '../identity/router';
 import { KeyStores } from '../identity/KeyStores';
 import { TokenFactory } from '../identity/TokenFactory';
-import { UserInfoDatabaseHandler } from '../identity/UserInfoDatabaseHandler';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
@@ -40,6 +39,7 @@ import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
+import { OidcRouter } from './OidcRouter';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -60,7 +60,7 @@ export async function createRouter(
     logger,
     config,
     discovery,
-    database,
+    database: db,
     tokenFactoryAlgorithm,
     providerFactories = {},
   } = options;
@@ -70,16 +70,16 @@ export async function createRouter(
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
   const backstageTokenExpiration = readBackstageTokenExpiration(config);
-  const authDb = AuthDatabase.create(database);
+  const database = AuthDatabase.create(db);
 
   const keyStore = await KeyStores.fromConfig(config, {
     logger,
-    database: authDb,
+    database,
   });
 
-  const userInfoDatabaseHandler = new UserInfoDatabaseHandler(
-    await authDb.get(),
-  );
+  const userInfo = await UserInfoDatabase.create({
+    database,
+  });
 
   const omitClaimsFromToken = config.getOptionalBoolean(
     'auth.omitIdentityTokenOwnershipClaim',
@@ -94,7 +94,6 @@ export async function createRouter(
         logger: logger.child({ component: 'token-factory' }),
         issuer: authUrl,
         sessionExpirationSeconds: backstageTokenExpiration,
-        userInfoDatabaseHandler,
         omitClaimsFromToken,
       },
       keyStore as StaticKeyStore,
@@ -108,7 +107,6 @@ export async function createRouter(
       algorithm:
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
-      userInfoDatabaseHandler,
       omitClaimsFromToken,
     });
   }
@@ -126,7 +124,7 @@ export async function createRouter(
         cookie: { secure: enforceCookieSSL ? 'auto' : false },
         store: new KnexSessionStore({
           createtable: false,
-          knex: await authDb.get(),
+          knex: await database.get(),
         }),
       }),
     );
@@ -146,14 +144,17 @@ export async function createRouter(
     tokenIssuer,
     ...options,
     auth: options.auth,
+    userInfo,
   });
 
-  bindOidcRouter(router, {
+  const oidcRouter = OidcRouter.create({
     auth: options.auth,
     tokenIssuer,
     baseUrl: authUrl,
-    userInfoDatabaseHandler,
+    userInfo,
   });
+
+  router.use(oidcRouter.getRouter());
 
   // Gives a more helpful error message than a plain 404
   router.use('/:provider/', req => {

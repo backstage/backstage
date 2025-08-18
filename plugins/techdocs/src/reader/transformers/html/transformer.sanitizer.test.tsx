@@ -28,6 +28,7 @@ const configApiMock: ConfigApi = new ConfigReader({
     sanitizer: {
       allowedCustomElementTagNameRegExp: '^backstage-',
       allowedCustomElementAttributeNameRegExp: 'attribute1|attribute2',
+      additionalAllowedURIProtocols: ['permitted'],
     },
   },
 });
@@ -39,6 +40,28 @@ const wrapper: FC<PropsWithChildren<{}>> = ({ children }) => (
 );
 
 describe('Transformers > Html > Sanitizer Custom Elements', () => {
+  it('allows additional protocols in URIs when provided via config', async () => {
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+    const dirtyDom = document.createElement('html');
+
+    const dirtyHTML = ` 
+      <body>
+        <a href="permitted:mcp/install">Yep</a>
+        <a href="nope://not-allowed">Nope</a>
+        <a href="https://example.com">Example</a>
+      </body>`;
+    dirtyDom.innerHTML = dirtyHTML;
+
+    const clearDom = await result.current(dirtyDom); // calling html transformer
+    const elements = Array.from(
+      clearDom.querySelectorAll<HTMLAnchorElement>('body > a'),
+    );
+    expect(elements).toHaveLength(3);
+    expect(elements[0].getAttribute('href')).toEqual('permitted:mcp/install');
+    expect(elements[1].getAttribute('href')).toBeNull();
+    expect(elements[2].getAttribute('href')).toEqual('https://example.com');
+  });
+
   it('should return a function that allows custom elements matching the pattern in the given dom element', async () => {
     const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
 

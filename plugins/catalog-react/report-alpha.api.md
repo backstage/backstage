@@ -8,6 +8,7 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JsonValue } from '@backstage/types';
@@ -46,11 +47,10 @@ export const CatalogContentHeaderBlueprint: ExtensionBlueprint<{
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
   kind: 'catalog-filter';
-  name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
   };
-  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -121,6 +121,7 @@ export function convertLegacyEntityCardExtension(
   overrides?: {
     name?: string;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+    type?: EntityCardType;
   },
 ): ExtensionDefinition;
 
@@ -130,8 +131,10 @@ export function convertLegacyEntityContentExtension(
   overrides?: {
     name?: string;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-    defaultPath?: string;
-    defaultTitle?: string;
+    path?: string;
+    title?: string;
+    defaultPath?: [Error: `Use the 'path' override instead`];
+    defaultTitle?: [Error: `Use the 'title' override instead`];
   },
 ): ExtensionDefinition;
 
@@ -148,29 +151,28 @@ export const defaultEntityContentGroups: {
 // @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<{
   kind: 'entity-card';
-  name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     type?: EntityCardType;
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         EntityCardType,
         'catalog.entity-card-type',
         {
@@ -211,41 +213,43 @@ export type EntityCardType = 'summary' | 'info' | 'content';
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
-  name: undefined;
   params: {
+    defaultPath?: [Error: `Use the 'path' param instead`];
+    path: string;
+    defaultTitle?: [Error: `Use the 'title' param instead`];
+    title: string;
+    defaultGroup?: [Error: `Use the 'group' param instead`];
+    group?: keyof typeof defaultEntityContentGroups | (string & {});
     loader: () => Promise<JSX.Element>;
-    defaultPath: string;
-    defaultTitle: string;
-    defaultGroup?: keyof typeof defaultEntityContentGroups | (string & {});
     routeRef?: RouteRef;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<string, 'core.routing.path', {}>
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
         'core.routing.ref',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
+    | ExtensionDataRef<
         string,
         'catalog.entity-content-group',
         {
@@ -292,27 +296,26 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
 // @alpha (undocumented)
 export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-content-layout';
-  name: undefined;
   params: {
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     loader: () => Promise<(props: EntityContentLayoutProps) => JSX_2.Element>;
   };
   output:
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (props: EntityContentLayoutProps) => React.JSX.Element,
         'catalog.entity-content-layout.component',
         {}
@@ -357,11 +360,10 @@ export interface EntityContentLayoutProps {
 // @alpha (undocumented)
 export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   kind: 'entity-context-menu-item';
-  name: undefined;
   params: EntityContextMenuItemParams;
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
@@ -394,21 +396,45 @@ export type EntityContextMenuItemParams = {
 // @alpha (undocumented)
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
   kind: 'entity-header';
-  name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
   };
-  output: ConfigurableExtensionDataRef<
-    JSX_2.Element,
-    'core.reactElement',
-    {
-      optional: true;
-    }
-  >;
+  output:
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {
+          optional: true;
+        }
+      >;
   inputs: {};
-  config: {};
-  configInput: {};
+  config: {
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+  };
   dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',
@@ -420,27 +446,26 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
 // @alpha (undocumented)
 export const EntityIconLinkBlueprint: ExtensionBlueprint<{
   kind: 'entity-icon-link';
-  name: undefined;
   params: {
     useProps: () => Omit<IconLinkVerticalProps, 'color'>;
     filter?: EntityPredicate | ((entity: Entity) => boolean);
   };
   output:
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         () => IconLinkVerticalProps,
         'entity-icon-link-props',
         {}

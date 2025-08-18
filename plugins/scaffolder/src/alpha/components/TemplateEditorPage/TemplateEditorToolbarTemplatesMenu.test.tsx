@@ -99,7 +99,6 @@ describe('TemplateEditorToolbarTemplatesMenu', () => {
               name: 'Publish',
               action: 'publish:github',
               input: {
-                allowedHosts: ['github.com'],
                 description: 'This is ${{ parameters.component_id }}',
                 repoUrl: '${{ parameters.repoUrl }}',
               },
@@ -205,7 +204,6 @@ describe('TemplateEditorToolbarTemplatesMenu', () => {
               name: 'Publish',
               action: 'publish:github',
               input: {
-                allowedHosts: ['github.com'],
                 description: 'This is ${{ parameters.component_id }}',
                 repoUrl: '${{ parameters.repoUrl }}',
               },

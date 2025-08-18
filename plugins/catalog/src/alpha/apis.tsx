@@ -15,7 +15,6 @@
  */
 
 import {
-  createApiFactory,
   discoveryApiRef,
   fetchApiRef,
   storageApiRef,
@@ -33,8 +32,8 @@ import {
 } from '../apis';
 
 export const catalogApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: catalogApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -43,31 +42,28 @@ export const catalogApi = ApiBlueprint.make({
       factory: ({ discoveryApi, fetchApi }) =>
         new CatalogClient({ discoveryApi, fetchApi }),
     }),
-  },
 });
 
 export const catalogStarredEntitiesApi = ApiBlueprint.make({
   name: 'starred-entities',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: starredEntitiesApiRef,
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) =>
         new DefaultStarredEntitiesApi({ storageApi }),
     }),
-  },
 });
 
 export const entityPresentationApi = ApiBlueprint.make({
   name: 'entity-presentation',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: entityPresentationApiRef,
       deps: { catalogApiImp: catalogApiRef },
       factory: ({ catalogApiImp }) =>
         DefaultEntityPresentationApi.create({ catalogApi: catalogApiImp }),
     }),
-  },
 });
 
 export default [catalogApi, catalogStarredEntitiesApi, entityPresentationApi];

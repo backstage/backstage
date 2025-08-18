@@ -16,7 +16,6 @@
 
 import {
   ApiBlueprint,
-  createApiFactory,
   featureFlagsApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -27,12 +26,11 @@ import { LocalStorageFeatureFlags } from '../../../../packages/core-app-api/src/
  */
 export const FeatureFlagsApi = ApiBlueprint.make({
   name: 'feature-flags',
-  params: {
-    // TODO: properly discovery feature flags, maybe rework the whole thing
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
+      // TODO: properly discovery feature flags, maybe rework the whole thing
       api: featureFlagsApiRef,
       deps: {},
       factory: () => new LocalStorageFeatureFlags(),
     }),
-  },
 });

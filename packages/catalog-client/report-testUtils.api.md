@@ -5,6 +5,8 @@
 ```ts
 import { AddLocationRequest } from '@backstage/catalog-client';
 import { AddLocationResponse } from '@backstage/catalog-client';
+import type { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
+import type { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
@@ -27,6 +29,10 @@ export class InMemoryCatalogClient implements CatalogApi {
   constructor(options?: { entities?: Entity[] });
   // (undocumented)
   addLocation(_location: AddLocationRequest): Promise<AddLocationResponse>;
+  // (undocumented)
+  analyzeLocation(
+    _location: AnalyzeLocationRequest,
+  ): Promise<AnalyzeLocationResponse>;
   // (undocumented)
   getEntities(request?: GetEntitiesRequest): Promise<GetEntitiesResponse>;
   // (undocumented)

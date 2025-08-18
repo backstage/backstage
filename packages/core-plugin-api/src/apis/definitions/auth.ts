@@ -54,6 +54,11 @@ export type AuthProviderInfo = {
    * Icon for the auth provider.
    */
   icon: IconComponent;
+
+  /**
+   * Optional user friendly messaage to display for the auth provider.
+   */
+  message?: string;
 };
 
 /**

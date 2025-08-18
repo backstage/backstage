@@ -10,6 +10,7 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -52,6 +53,10 @@ export type ActionContext<
   };
   signal?: AbortSignal;
   each?: JsonObject;
+  step?: {
+    id?: string;
+    name?: string;
+  };
 };
 
 // @public (undocumented)
@@ -339,7 +344,11 @@ export type SerializedTaskEvent = {
   id: number;
   isTaskRecoverable?: boolean;
   taskId: string;
-  body: JsonObject;
+  body: {
+    message: string;
+    stepId?: string;
+    status?: TaskStatus;
+  } & JsonObject;
   type: TaskEventType;
   createdAt: string;
 };
@@ -374,6 +383,7 @@ export interface TaskBroker {
       order: 'asc' | 'desc';
       field: string;
     }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{
     tasks: SerializedTask[];
     totalTasks?: number;
@@ -454,6 +464,25 @@ export interface TaskContext {
 export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
 // @public
+export type TaskFilter = {
+  key: string;
+  values?: string[];
+};
+
+// @public
+export type TaskFilters =
+  | {
+      anyOf: TaskFilter[];
+    }
+  | {
+      allOf: TaskFilter[];
+    }
+  | {
+      not: TaskFilter;
+    }
+  | TaskFilter;
+
+// @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
@@ -464,7 +493,8 @@ export type TaskStatus =
   | 'completed'
   | 'failed'
   | 'open'
-  | 'processing';
+  | 'processing'
+  | 'skipped';
 
 // @public (undocumented)
 export type TemplateAction<

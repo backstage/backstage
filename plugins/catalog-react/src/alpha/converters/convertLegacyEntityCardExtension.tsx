@@ -22,6 +22,7 @@ import { EntityCardBlueprint } from '../blueprints/EntityCardBlueprint';
 import kebabCase from 'lodash/kebabCase';
 import { EntityPredicate } from '../predicates/types';
 import { Entity } from '@backstage/catalog-model';
+import { EntityCardType } from '../blueprints/extensionData';
 
 /** @alpha */
 export function convertLegacyEntityCardExtension(
@@ -29,6 +30,7 @@ export function convertLegacyEntityCardExtension(
   overrides?: {
     name?: string;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+    type?: EntityCardType;
   },
 ): ExtensionDefinition {
   const element = <LegacyExtension />;
@@ -63,6 +65,7 @@ export function convertLegacyEntityCardExtension(
     params: {
       filter: overrides?.filter,
       loader: async () => compatWrapper(element),
+      type: overrides?.type,
     },
   });
 }

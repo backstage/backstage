@@ -46,9 +46,24 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
       { singleton: true, optional: true },
     ),
   },
-  factory(originalFactory, { inputs }) {
+  config: {
+    schema: {
+      pagination: z =>
+        z
+          .union([
+            z.boolean(),
+            z.object({
+              mode: z.enum(['cursor', 'offset']),
+              limit: z.number().optional(),
+              offset: z.number().optional(),
+            }),
+          ])
+          .default(true),
+    },
+  },
+  factory(originalFactory, { inputs, config }) {
     return originalFactory({
-      defaultPath: '/catalog',
+      path: '/catalog',
       routeRef: convertLegacyRouteRef(rootRouteRef),
       loader: async () => {
         const { BaseCatalogPage } = await import('../components/CatalogPage');
@@ -61,6 +76,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         return compatWrapper(
           <BaseCatalogPage
             filters={<>{filters}</>}
+            pagination={config.pagination}
             contentHeader={contentHeader}
           />,
         );
@@ -72,10 +88,10 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
 export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   name: 'entity',
   inputs: {
-    header: createExtensionInput(
-      [EntityHeaderBlueprint.dataRefs.element.optional()],
-      { singleton: true, optional: true },
-    ),
+    headers: createExtensionInput([
+      EntityHeaderBlueprint.dataRefs.element.optional(),
+      EntityHeaderBlueprint.dataRefs.filterFunction.optional(),
+    ]),
     contents: createExtensionInput([
       coreExtensionData.reactElement,
       coreExtensionData.routePath,
@@ -100,7 +116,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
-      defaultPath: '/catalog/:namespace/:kind/:name',
+      path: '/catalog/:namespace/:kind/:name',
       routeRef: convertLegacyRouteRef(entityRouteRef),
       loader: async () => {
         const { EntityLayout } = await import('./components/EntityLayout');
@@ -117,9 +133,19 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           { title: string; items: Array<(typeof inputs.contents)[0]> }
         >;
 
-        const header = inputs.header?.get(
-          EntityHeaderBlueprint.dataRefs.element,
-        );
+        // Get available headers, sorted by if they have a filter function or not.
+        // TODO(blam): we should really have priority or some specificity here which can be used to sort the headers.
+        // That can be done with embedding the priority in the dataRef alongside the filter function.
+        const headers = inputs.headers
+          .map(header => ({
+            element: header.get(EntityHeaderBlueprint.dataRefs.element),
+            filter: header.get(EntityHeaderBlueprint.dataRefs.filterFunction),
+          }))
+          .sort((a, b) => {
+            if (a.filter && !b.filter) return -1;
+            if (!a.filter && b.filter) return 1;
+            return 0;
+          });
 
         let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
           (rest, group) => {
@@ -161,6 +187,10 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           const filteredMenuItems = entity
             ? menuItems.filter(i => i.filter(entity)).map(i => i.element)
             : [];
+
+          const header = headers.find(
+            h => !h.filter || h.filter(entity!),
+          )?.element;
 
           return (
             <AsyncEntityProvider {...entityFromUrl}>

@@ -1,5 +1,127 @@
 # @backstage/plugin-scaffolder
 
+## 1.34.0-next.3
+
+### Minor Changes
+
+- b1c0696: Add resizable panels width for the editor and preview panels in the template editor and template form playground layouts. Users can now resize these panels by dragging the divider between the two areas.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/core-compat-api@0.5.0-next.3
+  - @backstage/core-components@0.17.5-next.2
+
+## 1.34.0-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/plugin-scaffolder-react@1.19.0-next.1
+
+## 1.34.0-next.1
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- b0dc9b8: differentiate between entirely and partially composite schemas in schema rendering
+- c4b7c50: Export `FormField` type from `/alpha` in `-react` package, and internal refactor.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.19.0-next.1
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.33.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/plugin-scaffolder-react@1.18.1-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 1.33.0
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- 289e4a1: Filter MultiEntityPicker options based on rendered option value
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/plugin-scaffolder-react@1.18.0
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/plugin-scaffolder-common@1.6.0
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.33.0-next.2
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.18.0-next.2
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/plugin-scaffolder-common@1.6.0-next.1
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+
 ## 1.32.1-next.1
 
 ### Patch Changes

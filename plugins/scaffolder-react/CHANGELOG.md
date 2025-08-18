@@ -1,5 +1,86 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.0-next.1
+
+### Minor Changes
+
+- 4f99e10: **DEPRECATION**: The following types have been deprecated from this package and moved into `@backstage/plugin-scaffolder-common` and should be imported from there instead.
+
+  `Action`, `ListActionsResponse`, `LogEvent`, `ScaffolderApi`, `ScaffolderDryRunOptions`, `ScaffolderDryRunResponse`, `ScaffolderGetIntegrationsListOptions`, `ScaffolderGetIntegrationsListResponse`,
+  `ScaffolderOutputLink`, `ScaffolderOutputText`, `ScaffolderScaffoldOptions`, `ScaffolderScaffoldResponse`, `ScaffolderStreamLogsOptions`, `ScaffolderTask`, `ScaffolderTaskOutput`, `ScaffolderTaskStatus`,
+  `ScaffolderUsageExample`, `TemplateFilter`, `TemplateGlobalFunction`, `TemplateGlobalValue`, `TemplateParameterSchema`.
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- c4b7c50: Export `FormField` type from `/alpha` in `-react` package, and internal refactor.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.18.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 1.18.0
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- 94c11a5: Scroll to the top of the page when navigating between steps in template forms.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/plugin-scaffolder-common@1.6.0
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.18.0-next.2
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- 94c11a5: Scroll to the top of the page when navigating between steps in template forms.
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/plugin-scaffolder-common@1.6.0-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+
 ## 1.17.1-next.1
 
 ### Patch Changes

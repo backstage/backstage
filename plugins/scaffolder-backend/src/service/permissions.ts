@@ -21,9 +21,20 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { SerializedTask } from '@backstage/plugin-scaffolder-node';
+
+/**
+ *
+ * @public
+ */
+export type ScaffolderPermissionRuleInput =
+  | TemplatePermissionRuleInput
+  | ActionPermissionRuleInput
+  | TaskPermissionRuleInput;
 
 /**
  * @public
@@ -37,7 +48,7 @@ export type TemplatePermissionRuleInput<
   TParams
 >;
 export function isTemplatePermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+  permissionRule: ScaffolderPermissionRuleInput,
 ): permissionRule is TemplatePermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
 }
@@ -55,7 +66,27 @@ export type ActionPermissionRuleInput<
   TParams
 >;
 export function isActionPermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+  permissionRule: ScaffolderPermissionRuleInput,
 ): permissionRule is ActionPermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
+}
+
+/**
+ * @public
+ */
+export type TaskPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  SerializedTask,
+  {
+    key: string;
+    values?: string[];
+  },
+  typeof RESOURCE_TYPE_SCAFFOLDER_TASK,
+  TParams
+>;
+export function isTaskPermissionRuleInput(
+  permissionRule: ScaffolderPermissionRuleInput,
+): permissionRule is TaskPermissionRuleInput {
+  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TASK;
 }

@@ -4,7 +4,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/verify_storybook.yml'
-      - 'storybook/**'
+      - '.storybook/**'
+      - 'packages/ui/src/**'
       - 'packages/config/src/**'
       - 'packages/theme/src/**'
       - 'packages/types/src/**'
@@ -28,37 +29,34 @@ jobs:
     name: Storybook
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0 # Required to retrieve git history
 
-      - name: use node.js ${{ matrix.node-version }}
+      - name: Use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: yarn install
+
+      - name: Install dependencies
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
-      - name: storybook yarn install
-        run: yarn install --immutable
-        working-directory: storybook
 
-        # Only for verification, the canon one is what we upload to Chromatic
-      - run: yarn build-storybook
+      - name: Build Storybook
+        run: yarn build-storybook
 
-      - run: yarn --cwd packages/canon build-storybook
-
-      - uses: chromaui/action@1cfa065cbdab28f6ca3afaeb3d761383076a35aa # v11
+      - name: Deploy Storybook to Chromatic
+        uses: chromaui/action@1cfa065cbdab28f6ca3afaeb3d761383076a35aa # v11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: chpt_dab72dc0f97d55b
-          workingDir: packages/canon
-          storybookBuildDir: storybook-static
+          storybookBuildDir: dist-storybook

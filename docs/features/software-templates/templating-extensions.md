@@ -6,16 +6,16 @@ description: Templating extensions system
 
 Backstage templating is powered by [Nunjucks][]. The basics:
 
-# Template Filters
+# Templating Filters
 
 The [filter][] is a critical mechanism for the rendering of Nunjucks templates,
 providing a means of transforming values in a familiar [piped][] fashion.
-Template filters are functions that help you transform data, extract specific
-information, and perform various operations in Scaffolder Templates.
+Templating filters are functions that help you transform data, extract specific
+information, and perform various operations in Scaffolder templates.
 
 ## Built-in
 
-Backstage provides out of the box the following set of "built-in" template
+Backstage provides out of the box the following set of "built-in" templating
 filters (to create your own custom filters, look to the section [Custom Filter](#custom-filter) hereafter):
 
 ### parseRepoUrl
@@ -103,7 +103,7 @@ The `projectSlug` filter generates a project slug from a repository URL.
 - **Input**: `github.com?repo=backstage&owner=backstage`
 - **Output**: `backstage/backstage`
 
-# Template Globals
+# Templating Globals
 
 In addition to its powerful filtering functionality, the Nunjucks engine allows
 access from the template expression context to specified globally-accessible
@@ -112,7 +112,7 @@ plugin, which we shall soon see in action.
 
 # Customizing the templating environment
 
-Custom plugins make it possible to install your own template extensions, which
+Custom plugins make it possible to install your own templating extensions, which
 may be any combination of filters, global functions and global values. With the
 new backend you would use a scaffolder plugin module for this; later we will
 demonstrate the analogous approach with the old backend.
@@ -145,7 +145,7 @@ and the CLI will generate the required files and directory structure.
 ## Writing your Module
 
 Once the CLI has generated the essential structure for your new scaffolder
-module, it's time to implement our template extensions. Here we'll demonstrate
+module, it's time to implement our templating extensions. Here we'll demonstrate
 how to create each of the supported extension types.
 
 `src/module.ts` is where the magic happens. First we prepare to utilize the
@@ -213,7 +213,7 @@ async init({
 },
 ```
 
-This demonstrates the bare minimum: a TypeScript `Record` of named template
+This demonstrates the bare minimum: a TypeScript `Record` of named templating
 filter implementations to register. However, by adopting an alternate structure
 we can document our filter with additional metadata; to utilize this capability
 we begin by adding a new import:
@@ -405,7 +405,7 @@ Then modify:
 #### Schema
 
 Declaring a global function schema is quite like the schema declaration for a
-template filter:
+templating filter:
 
 ```ts
     createTemplateGlobal({
@@ -415,7 +415,7 @@ template filter:
     }),
 ```
 
-#### Template Global Function Example Documentation
+#### Global Function Example Documentation
 
 Again, this works in the same way as filter examples:
 
@@ -441,7 +441,7 @@ Again, this works in the same way as filter examples:
 
 ### Custom Global Value
 
-Alternatively, your template may need access to a simple JSON value, which can
+Alternatively, you may need to provide templates access to a simple JSON value, which can
 be registered in this manner:
 
 ```ts
@@ -468,7 +468,7 @@ async init({
   templating.addTemplateGlobals([
     ...,
     createTemplateGlobalValue({
-      id: 'preferredMetasyntacticVariable',
+      id: 'preferredMetasyntacticIdentifier',
       value: 'foo',
       description:
         'This description is as contrived as the global value it documents',
@@ -477,15 +477,15 @@ async init({
 },
 ```
 
-## Register Template Extensions with the Legacy Backend System
+## Register Templating Extensions with the Legacy Backend System
 
-Users of the original Backstage backend can register template extensions by
+Users of the original Backstage backend can register templating extensions by
 specifying options to the scaffolder backend plugin's `createRouter` function
 (customarily called in `packages/backend/src/plugins/scaffolder.ts`):
 
 - `additionalTemplateFilters` - either of:
   - object mapping filter name to implementation function, or
-  - array of documented template filters as returned by the
+  - array of documented templating filters as returned by the
     utility function `createTemplateFilter`
 - `additionalTemplateGlobals` - either of:
   - object mapping global name to value or function, or

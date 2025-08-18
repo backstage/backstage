@@ -5,6 +5,8 @@
 ```ts
 import { AddLocationRequest } from '@backstage/catalog-client';
 import { AddLocationResponse } from '@backstage/catalog-client';
+import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -34,6 +36,11 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     location: AddLocationRequest,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
+  // (undocumented)
+  analyzeLocation(
+    location: AnalyzeLocationRequest,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<AnalyzeLocationResponse>;
   // (undocumented)
   getEntities(
     request?: GetEntitiesRequest,

@@ -78,7 +78,7 @@ allow most templates built for `fetch:cookiecutter` to work without any changes.
 
 ```yaml title="template.yaml"
 steps:
-   - id: fetch-base
+   - id: fetchBase
      name: Fetch Base
      # highlight-remove-next-line
      action: fetch:cookiecutter
