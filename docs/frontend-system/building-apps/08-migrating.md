@@ -805,6 +805,6 @@ This can be really useful output when raising any issue to the main repository t
 
 ### I'm seeing duplicate cards for Entity Pages
 
-This is due to using the `entityPage` option with `convertLegacyAppRoot`. Our helper will try to parse out the different cards that are available in your existing page, and add them to the new Entity Pages for you automatically, but the new Entity Pages will automatically include also any of ones that are provided by plugins that are installed into your `packages/app` package.
+When using the `entityPage` option with `convertLegacyAppRoot`, you may notice duplicate cards appearing on your Entity Pages. This happens because the migration helper automatically extracts cards from your existing Entity Page component and adds them to the new system, while the new Entity Page system also automatically includes cards from any plugins installed in your `packages/app` package. This results in the same card appearing twice - once from your legacy component and once from the plugin.
 
-This means you'll get two copies of the same card. You can remove the card definition from your old Entity Page component safely, as this is now going to be provided by the new system for you.
+To fix this, simply remove the card definitions from your old Entity Page component. The new system will automatically provide these cards through the installed plugins, so your manual definitions are no longer needed.
