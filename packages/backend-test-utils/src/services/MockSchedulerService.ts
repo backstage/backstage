@@ -31,7 +31,7 @@ export class MockSchedulerService implements SchedulerService {
     SchedulerServiceTaskInvocationDefinition &
       SchedulerServiceTaskScheduleDefinition & {
         descriptor: SchedulerServiceTaskDescriptor;
-        abortControllers: AbortController[];
+        abortControllers: AbortController;
       }
   >();
   readonly #runningTasks = new Set<string>();
@@ -91,7 +91,7 @@ export class MockSchedulerService implements SchedulerService {
         scope: task.scope ?? 'global',
         settings: { version: 1 },
       },
-      abortControllers: [],
+      abortControllers: new AbortController(),
     });
   }
 
@@ -105,9 +105,7 @@ export class MockSchedulerService implements SchedulerService {
     }
     this.#runningTasks.add(id);
     try {
-      const abortController = new AbortController();
-      task.abortControllers.push(abortController);
-      await task.fn(abortController.signal);
+      await task.fn(task.abortControllers.signal);
       this.#deferredTaskCompletions.get(id)?.resolve();
     } catch (error) {
       this.#deferredTaskCompletions.get(id)?.reject(error);
@@ -153,9 +151,7 @@ export class MockSchedulerService implements SchedulerService {
 
   async #shutdownAllTasks() {
     for (const task of this.#tasks.values()) {
-      for (const abortController of task.abortControllers) {
-        abortController.abort();
-      }
+      task.abortControllers.abort();
     }
   }
 
