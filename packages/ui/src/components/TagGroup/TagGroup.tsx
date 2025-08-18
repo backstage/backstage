@@ -20,11 +20,14 @@ import {
   TagList as ReactAriaTagList,
   Tag as ReactAriaTag,
   Button as ReactAriaButton,
+  RouterProvider,
 } from 'react-aria-components';
 import type { ReactNode } from 'react';
 import { RiCloseCircleLine } from '@remixicon/react';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { isExternalLink } from '../../utils/isExternalLink';
+import { useNavigate, useHref } from 'react-router-dom';
 
 /**
  * A component that renders a list of tags.
@@ -57,15 +60,19 @@ export const TagGroup = <T extends object>({
  * @public
  */
 export const Tag = (props: TagProps) => {
-  const { children, className, icon, size = 'small', ...rest } = props;
+  const { children, className, icon, size = 'small', href, ...rest } = props;
   const textValue = typeof children === 'string' ? children : undefined;
   const { classNames } = useStyles('TagGroup');
+  const navigate = useNavigate();
+  const isLink = href !== undefined;
+  const isExternal = isExternalLink(href);
 
-  return (
+  const content = (
     <ReactAriaTag
       textValue={textValue}
       className={clsx(classNames.tag, className)}
       data-size={size}
+      href={href}
       {...rest}
     >
       {({ allowsRemoving }) => (
@@ -84,4 +91,14 @@ export const Tag = (props: TagProps) => {
       )}
     </ReactAriaTag>
   );
+
+  if (isLink && !isExternal) {
+    return (
+      <RouterProvider navigate={navigate} useHref={useHref}>
+        {content}
+      </RouterProvider>
+    );
+  }
+
+  return content;
 };

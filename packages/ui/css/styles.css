@@ -10269,7 +10269,7 @@
 .bui-Tag {
   color: var(--bui-fg-primary);
   background-color: var(--bui-gray-2);
-  border-radius: var(--bui-radius-full);
+  border-radius: var(--bui-radius-2);
   font-weight: var(--bui-font-weight-regular);
   justify-content: center;
   align-items: center;
@@ -10305,6 +10305,11 @@
 
 .bui-Tag[data-selected] {
   box-shadow: inset 0 0 0 1px var(--bui-gray-8);
+}
+
+.bui-Tag[data-disabled] {
+  color: var(--bui-fg-disabled);
+  cursor: not-allowed;
 }
 
 .bui-TagRemoveButton {

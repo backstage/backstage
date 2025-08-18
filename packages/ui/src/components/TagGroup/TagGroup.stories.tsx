@@ -18,13 +18,15 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { TagGroup, Tag } from '.';
 import type { Selection } from 'react-aria-components';
-import { Icon, IconNames } from '@backstage/ui';
+import { Flex, Icon, IconNames } from '../../';
 import { useListData } from 'react-stately';
+import { MemoryRouter } from 'react-router-dom';
 
 export interface ListItem {
   id: string;
   name: string;
   icon: IconNames;
+  isDisabled?: boolean;
 }
 
 const meta = {
@@ -39,6 +41,13 @@ const meta = {
       control: { type: 'text' },
     },
   },
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta<typeof TagGroup<ListItem>>;
 
 export default meta;
@@ -46,8 +55,8 @@ type Story = StoryObj<typeof meta>;
 
 const initialList: ListItem[] = [
   { id: 'banana', name: 'Banana', icon: 'bug' },
-  { id: 'apple', name: 'Apple', icon: 'account-circle' },
-  { id: 'orange', name: 'Orange', icon: 'eye' },
+  { id: 'apple', name: 'Apple', icon: 'account-circle', isDisabled: true },
+  { id: 'orange', name: 'Orange', icon: 'eye', isDisabled: true },
   { id: 'pear', name: 'Pear', icon: 'heart' },
   { id: 'grape', name: 'Grape', icon: 'bug' },
   { id: 'pineapple', name: 'Pineapple', icon: 'eye' },
@@ -64,6 +73,30 @@ export const Default: Story = {
         <Tag key={item.id}>{item.name}</Tag>
       ))}
     </TagGroup>
+  ),
+};
+
+export const Sizes: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex direction="column">
+      <TagGroup {...args}>
+        {initialList.map(item => (
+          <Tag key={item.id} size="small" icon={<Icon name={item.icon} />}>
+            {item.name}
+          </Tag>
+        ))}
+      </TagGroup>
+      <TagGroup {...args}>
+        {initialList.map(item => (
+          <Tag key={item.id} size="medium" icon={<Icon name={item.icon} />}>
+            {item.name}
+          </Tag>
+        ))}
+      </TagGroup>
+    </Flex>
   ),
 };
 
@@ -129,7 +162,31 @@ export const WithIcon: Story = {
   ),
 };
 
-export const WithRemoveButton: Story = {
+export const WithLink: Story = {
+  render: args => (
+    <TagGroup {...args}>
+      {initialList.map(item => (
+        <Tag key={item.id} href={`/items/${item.id}`}>
+          {item.name}
+        </Tag>
+      ))}
+    </TagGroup>
+  ),
+};
+
+export const Disabled: Story = {
+  render: args => (
+    <TagGroup {...args}>
+      {initialList.map(item => (
+        <Tag key={item.id} isDisabled={item.isDisabled}>
+          {item.name}
+        </Tag>
+      ))}
+    </TagGroup>
+  ),
+};
+
+export const RemovingTags: Story = {
   args: {
     ...Default.args,
   },
