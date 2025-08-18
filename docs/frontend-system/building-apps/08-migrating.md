@@ -654,7 +654,7 @@ Once the cleanup is complete you should be left with clean entity pages that are
 
 ### Sidebar
 
-New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some icon explicitly in different groups, and then render the rest of the `items` which are the other `NavItem` extensions provided by the system.
+New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items which are the other `NavItem` extensions provided by the system.
 
 In order to migrate your existing sidebar, you will want to create an override for the `app/nav` extension. You can do this by copying the standard of having a `src/modules/nav/` folder, which can contain an extension which you can install into the `app` in the form of a `module`.
 
@@ -668,11 +668,11 @@ export const navModule = createFrontendModule({
 });
 ```
 
-Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where the component that is passed to the `compatWrapper` is everything and including the `Sidebar` component from your `Root` component.
+Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where the component that is passed to the `compatWrapper` is the entire `Sidebar` component from your `Root` component.
 
-The `compatWrapper` is there to ensure that any legacy plugins using things like `useRouteRef` work well in the new system, so if you run into some errors which look like compatibility issues, make sure that this component is used in the relevant places.
+The `compatWrapper` is there to ensure that any legacy plugins using things like `useRouteRef` work well in the new system, so if you run into some errors which look like compatibility issues, make sure that this wrapper is used in the relevant places.
 
-```tsx title="in packages/app/src/modules/nav/Sidebar.ts"
+```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
 import { compatWrapper } from '@backstage/core-compat-api';
 import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
 
