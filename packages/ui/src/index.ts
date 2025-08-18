@@ -45,6 +45,7 @@ export * from './components/RadioGroup';
 export * from './components/Table';
 export * from './components/TablePagination';
 export * from './components/Tabs';
+export * from './components/TagGroup';
 export * from './components/Text';
 export * from './components/TextField';
 export * from './components/Tooltip';
