@@ -654,26 +654,73 @@ Once the cleanup is complete you should be left with clean entity pages that are
 
 ### Sidebar
 
-New apps feature a built-in sidebar extension (`app/nav`) that will render all nav item extensions provided by plugins. This is a placeholder implementation and not intended as a long-term solution. In the future we will aim to provide a more flexible sidebar extension that allows for more customization out of the box.
+New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items which are the other `NavItem` extensions provided by the system.
 
-Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/plugins/app/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an [extension override](../architecture/25-extension-overrides.md):
+In order to migrate your existing sidebar, you will want to create an override for the `app/nav` extension. You can do this by copying the standard of having a `src/modules/nav/` folder, which can contain an extension which you can install into the `app` in the form of a `module`.
 
-```tsx
-const nav = createExtension({
-  namespace: 'app',
-  name: 'nav',
-  attachTo: { id: 'app/layout', input: 'nav' },
-  output: [coreExtensionData.reactElement],
-  factory({ inputs }) {
-    return [
-      coreExtensionData.reactElement(
+```tsx title="in packages/app/src/modules/nav/index.ts"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SidebarContent } from './Sidebar';
+
+export const navModule = createFrontendModule({
+  pluginId: 'app',
+  extensions: [SidebarContent],
+});
+```
+
+Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where the component that is passed to the `compatWrapper` is the entire `Sidebar` component from your `Root` component.
+
+The `compatWrapper` is there to ensure that any legacy plugins using things like `useRouteRef` work well in the new system, so if you run into some errors which look like compatibility issues, make sure that this wrapper is used in the relevant places.
+
+```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
+import { compatWrapper } from '@backstage/core-compat-api';
+import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
+
+export const SidebarContent = NavContentBlueprint.make({
+  params: {
+    component: ({ items }) =>
+      compatWrapper(
         <Sidebar>
-          {/* Sidebar contents from packages/app/src/components/Root.tsx go here */}
+          <SidebarLogo />
+          <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+            <SidebarSearchModal />
+          </SidebarGroup>
+          <SidebarDivider />
+          <SidebarGroup label="Menu" icon={<MenuIcon />}>
+            ...
+          </SidebarGroup>
+          <SidebarGroup label="Plugins">
+            <SidebarScrollWrapper>
+              {/* Items in this group will be scrollable if they run out of space */}
+              {items.map((item, index) => (
+                <SidebarItem {...item} key={index} />
+              ))}
+            </SidebarScrollWrapper>
+          </SidebarGroup>
         </Sidebar>,
       ),
-    ];
   },
 });
+```
+
+The `items` property is a list of all extensions provided by the `NavItemBlueprint` that are currently installed in the App. If you don't want to auto populate this list you can simply remove the rendering of that `SidebarGroup`, but otherwise you can see from the above example how a `SidebarItem` element is rendered for each of the items in the list.
+
+You might also notice that when you're rendering additional fixed icons for plugins that these might become duplicated as the plugin provides a `NavItem` extension and you're also rendering one in the `Sidebar` manually. In order to remove the item from the list of `items` which is passed through, we recommend that you disable that extension using config:
+
+```yaml title="in app-config.yaml"
+app:
+  extensions:
+    - nav-item:search: false
+    - nav-item:catalog: false
+```
+
+You can also determine the order of the provided auto installed `NavItems` that you get from the system in config. The below example ensures that the `catalog` navigation item will proceed the `search` navigation item when being passed through as the `item` prop.
+
+```yaml title="in app-config.yaml"
+app:
+  extensions:
+    - nav-item:catalog
+    - nav-item:search
 ```
 
 ### App Root Elements
