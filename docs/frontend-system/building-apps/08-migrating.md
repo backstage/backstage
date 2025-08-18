@@ -652,6 +652,8 @@ At this point you should be able to run the app and see that you're not using th
 
 Once the cleanup is complete you should be left with clean entity pages that are built using a mix of the old and new frontend system. From this point you can continue to gradually migrate plugins that provide content for the entity pages, until all plugins have been fully moved to the new system and the `entityPage` option can be removed.
 
+Migrating across the tabs for the Entity Pages should be as simple as removing the `EntityLayout.Route` for each of the plugins that provide tab content, and then this tab should be sourced from the `EntityContent` extensions created by the plugins themselves which will be automatically detected and added to the App.
+
 ### Sidebar
 
 New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items which are the other `NavItem` extensions provided by the system.
@@ -792,3 +794,17 @@ createApp({
   // ...
 });
 ```
+
+## Troubleshooting
+
+We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting. If you run `yarn add @backstage/plugin-app-visualizer` in `packages/app` it should be automatically added to the sidebar, and available on `/visualizer`.
+
+There is a `tree` mode that can be very helpful in understanding which plugins are being automatically detected and the extensions that they are providing to the system. You should also be able to see any legacy extensions which are being converted and added to the app.
+
+This can be really useful output when raising any issue to the main repository too, so we can dig in to see what's happening with the system.
+
+### I'm seeing duplicate cards for Entity Pages
+
+When using the `entityPage` option with `convertLegacyAppRoot`, you may notice duplicate cards appearing on your Entity Pages. This happens because the migration helper automatically extracts cards from your existing Entity Page component and adds them to the new system, while the new Entity Page system also automatically includes cards from any plugins installed in your `packages/app` package. This results in the same card appearing twice - once from your legacy component and once from the plugin.
+
+To fix this, simply remove the card definitions from your old Entity Page component. The new system will automatically provide these cards through the installed plugins, so your manual definitions are no longer needed.
