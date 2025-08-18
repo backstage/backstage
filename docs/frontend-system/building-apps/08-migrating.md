@@ -294,7 +294,7 @@ Then you'll want to follow the section on [migrating `bindRoutes`](#bindroutes).
 
 If your app starts and works in hybrid mode, you’re ready to begin Phase 2. If not, review the error messages, check the [GitHub issues](https://github.com/backstage/backstage/issues), or ask for help in our [community Discord](https://discord.gg/backstage-687207715902193673).
 
-At this point the contents of your app should be past the initial migration stage, let's continue by gradully get rid of the legacy code and helpers to fully use the new system.
+At this point, the contents of your app should have moved past the initial migration stage. Let's continue by gradually removing legacy code and helpers to fully adopt the new system.
 
 ### Migrating `createApp` options
 
@@ -898,7 +898,11 @@ const app = createApp({
   /* highlight-remove-next-line */
   features: [...convertedOptionsFeatures, ...convertedRootFeatures],
   /* highlight-add-next-line */
-  features: [catalogPlugin, ...convertedOptionsFeatures, ...convertedRootFeatures],
+  features: [
+    catalogPlugin,
+    ...convertedOptionsFeatures,
+    ...convertedRootFeatures,
+  ],
 });
 ```
 
@@ -924,9 +928,17 @@ const catalogPluginOverride = catalogPlugin.withOverrides({
 
 const app = createApp({
   /* highlight-remove-next-line */
-  features: [catalogPlugin, ...convertedOptionsFeatures, ...convertedRootFeatures],
+  features: [
+    catalogPlugin,
+    ...convertedOptionsFeatures,
+    ...convertedRootFeatures,
+  ],
   /* highlight-add-next-line */
-  features: [catalogPluginOverride, ...convertedOptionsFeatures, ...convertedRootFeatures],
+  features: [
+    catalogPluginOverride,
+    ...convertedOptionsFeatures,
+    ...convertedRootFeatures,
+  ],
 });
 ```
 
@@ -960,4 +972,3 @@ If you have a use case where these are required, please reach out to us either t
 
 - See [architecture docs](../architecture/00-index.md) for more on the new system.
 - If you encounter issues, check [GitHub issues](https://github.com/backstage/backstage/issues) or ask in [Discord](https://discord.gg/backstage-687207715902193673).
-
