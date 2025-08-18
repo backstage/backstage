@@ -35,6 +35,12 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
         parent.spec.children.push(selfName);
       }
     }
+
+    if (group.spec.children) {
+      group.spec.children = group.spec.children.sort((a, b) =>
+        a.localeCompare(b),
+      );
+    }
   }
 
   //
@@ -82,6 +88,8 @@ export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {
       }
     }
 
-    user.spec.memberOf = [...transitiveMemberOf];
+    user.spec.memberOf = [...transitiveMemberOf].sort((a, b) =>
+      a.localeCompare(b),
+    );
   });
 }
