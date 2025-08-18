@@ -374,7 +374,7 @@ export class PermissionClient implements PermissionEvaluator {
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
         cacheKeyFn: (req: AuthorizePermissionRequest) => {
-          return btoa(JSON.stringify(req));
+          return JSON.stringify(req);
         },
       },
     );
@@ -414,7 +414,7 @@ export class PermissionClient implements PermissionEvaluator {
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
         cacheKeyFn: (req: QueryPermissionRequest) => {
-          return btoa(JSON.stringify(req));
+          return JSON.stringify(req);
         },
       },
     );
