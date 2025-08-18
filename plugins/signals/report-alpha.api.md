@@ -8,11 +8,11 @@ import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {},
   {},
   {

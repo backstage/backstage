@@ -21,11 +21,11 @@ import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { PathParams } from '@backstage/core-plugin-api';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -37,7 +37,7 @@ import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
     selectedTemplate: SubRouteRef<

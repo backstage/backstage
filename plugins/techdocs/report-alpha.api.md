@@ -14,10 +14,10 @@ import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
@@ -25,7 +25,7 @@ import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-re
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
     docRoot: RouteRef<{
