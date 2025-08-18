@@ -110,6 +110,7 @@ export class MockSchedulerService implements SchedulerService {
     } catch (error) {
       this.#deferredTaskCompletions.get(id)?.reject(error);
     } finally {
+      this.#deferredTaskCompletions.delete(id);
       this.#runningTasks.delete(id);
     }
   }
@@ -135,10 +136,11 @@ export class MockSchedulerService implements SchedulerService {
       if (task.initialDelay && !includeInitialDelayedTasks) {
         continue;
       }
-      if ('trigger' in task.frequency && task.frequency.trigger === 'manual') {
-        if (includeManualTasks) {
-          selectedTaskIds.push(task.id);
-        }
+      if (
+        'trigger' in task.frequency &&
+        task.frequency.trigger === 'manual' &&
+        !includeManualTasks
+      ) {
         continue;
       }
       if (scope === 'all' || scope === task.scope) {
@@ -158,7 +160,7 @@ export class MockSchedulerService implements SchedulerService {
   /**
    * Wait for the task with the given ID to complete.
    *
-   * If the task has not yet been scheduler or started, this will wait for it to be scheduled, started, and completed
+   * If the task has not yet been scheduled or started, this will wait for it to be scheduled, started, and completed
    *
    * @param id - The task ID to wait for
    * @returns A promise that resolves when the task is completed
@@ -168,8 +170,8 @@ export class MockSchedulerService implements SchedulerService {
     if (existing) {
       return existing;
     }
-    const defferred = createDeferred<void>();
-    this.#deferredTaskCompletions.set(id, defferred);
-    return defferred;
+    const deferred = createDeferred<void>();
+    this.#deferredTaskCompletions.set(id, deferred);
+    return deferred;
   }
 }
