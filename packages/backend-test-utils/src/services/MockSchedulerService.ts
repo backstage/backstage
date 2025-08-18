@@ -51,7 +51,7 @@ export class MockSchedulerService implements SchedulerService {
       factory: async ({ lifecycle }) => {
         if (!options?.skipTaskRunOnStartup) {
           lifecycle.addStartupHook(async () => {
-            await this.triggerAllTasks({
+            await this.#triggerAllTasks({
               includeManualTasks: options?.includeManualTasksOnStartup,
               includeInitialDelayedTasks:
                 options?.includeInitialDelayedTasksOnStartup,
@@ -121,7 +121,7 @@ export class MockSchedulerService implements SchedulerService {
    *
    * @param options - The options to filter the tasks to trigger
    */
-  async triggerAllTasks(options?: {
+  async #triggerAllTasks(options?: {
     scope?: 'all' | 'global' | 'local';
     includeInitialDelayedTasks?: boolean;
     includeManualTasks?: boolean;

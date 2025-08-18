@@ -37,6 +37,7 @@ import {
   LoggerService,
   PermissionsService,
   RootConfigService,
+  SchedulerService,
   ServiceFactory,
   ServiceRef,
   UserInfoService,
@@ -496,7 +497,7 @@ export namespace mockServices {
     }));
   }
 
-  export function scheduler(): MockSchedulerService {
+  export function scheduler(): SchedulerService {
     return new MockSchedulerService();
   }
   export namespace scheduler {
