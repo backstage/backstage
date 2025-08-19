@@ -35,7 +35,7 @@ import {
 } from '@backstage/plugin-techdocs';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
 import { homePage } from './HomePage';
-import { convertLegacyApp } from '@backstage/core-compat-api';
+import { convertLegacyAppRoot } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
@@ -116,7 +116,7 @@ const notFoundErrorPageModule = createFrontendModule({
   extensions: [notFoundErrorPage],
 });
 
-const collectedLegacyPlugins = convertLegacyApp(
+const collectedLegacyPlugins = convertLegacyAppRoot(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
   </FlatRoutes>,
