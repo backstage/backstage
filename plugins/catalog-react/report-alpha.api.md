@@ -18,30 +18,17 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
-// @alpha (undocumented)
-export const CatalogContentHeaderBlueprint: ExtensionBlueprint<{
-  kind: 'catalog-content-header';
-  name: undefined;
+// @alpha
+export const CatalogContentHeaderItemBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-content-header-item';
   params: {
     loader: () => Promise<JSX.Element>;
   };
-  output: ConfigurableExtensionDataRef<
-    JSX_2.Element,
-    'core.reactElement',
-    {
-      optional: true;
-    }
-  >;
+  output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
-  dataRefs: {
-    element: ConfigurableExtensionDataRef<
-      JSX_2.Element,
-      'core.reactElement',
-      {}
-    >;
-  };
+  dataRefs: never;
 }>;
 
 // @alpha
