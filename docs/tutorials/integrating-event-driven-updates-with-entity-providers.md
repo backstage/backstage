@@ -1,5 +1,5 @@
 ---
-id: integrating-event-driven-updates-entity-providers
+id: integrating-event-driven-updates-with-entity-providers
 title: Integrating Event-Driven Updates with Entity Providers
 description: A guide on integrating the events system into an EntityProvider to enable immediate updates to the catalog.
 ---
@@ -16,7 +16,7 @@ Basic flow:
 
 - An `EntityProvider` subscribes to these specific sub-topic events and, upon receiving them, takes an action to add/update/delete entities in the catalog accordingly.
 
-1. **Receiving Events via HTTP Endpoints**
+## Receiving Events via HTTP Endpoints
 
 The `@backstage/plugin-events-backend` plugin provides out-of-the-box support for receiving events via HTTP endpoints. These events are then published to the `EventsService`.
 
@@ -37,7 +37,7 @@ The example above would create the following endpoints:
 
 You can use this URL as the payload URL when setting up your webhooks from external services. When an event is sent to this endpoint, the events-backend will publish it to the Events Service, making it available to any subscribed entity providers.
 
-2. **Routing General Topics to Specific Subtopics**
+## Routing General Topics to Specific Subtopics
 
 To effectively manage events, you can extend the event system to route general topics to more specific subtopics by creating a module for the `events-backend` plugin.
 
@@ -82,7 +82,7 @@ export class FrobsEventRouter extends SubTopicEventRouter {
 }
 ```
 
-3. **Integrating Events into an Entity Provider**
+## Integrating Events into an Entity Provider
 
 Your entity provider can subscribe to specific event topics and react to incoming events. This allows for immediate updates to your catalog based on external triggers.
 
@@ -114,7 +114,7 @@ export class FrobsProvider implements EntityProvider {
     env: string,
     reader: UrlReaderService,
     taskRunner: SchedulerServiceTaskRunner,
-    /** [a] */
+    /** [1] */
     events?: EventsService,
   ) {
     this.env = env;
@@ -130,11 +130,11 @@ export class FrobsProvider implements EntityProvider {
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
 
-    /** [b] */
+    /** [2] */
     await this.events?.subscribe({
       id: this.getProviderName(),
       topics: ['frobs-add', 'frobs-delete', 'frobs-modify'],
-      /** [c] */
+      /** [3] */
       onEvent: async (params: EventParams) => {
         const id = params.eventPayload.id;
         const baseUrl = `https://frobs-${id}.example.com/data`;
@@ -203,11 +203,11 @@ export class FrobsProvider implements EntityProvider {
 
 Let's break down the key parts of this integration:
 
-[a] **Add EventsService as a Dependency**: In the EntityProvider's constructor, include `EventsService` as an optional dependency. This allows your provider to interact with the event system.
+1. **Add EventsService as a Dependency**: In the EntityProvider's constructor, include `EventsService` as an optional dependency. This allows your provider to interact with the event system.
 
-[b] **Subscribe to Topics in connect**: Within the connect function, subscribe to the specific event topics that your plugin needs to react to (e.g., 'frobs-add', 'frobs-delete', 'frobs-modify').
+2. **Subscribe to Topics in connect**: Within the connect function, subscribe to the specific event topics that your plugin needs to react to (e.g., 'frobs-add', 'frobs-delete', 'frobs-modify').
 
-[c] **Implement the `onEvent` Method**: The `onEvent` method is crucial. It will be invoked whenever your provider receives an event for a subscribed topic. Inside this method:
+3. **Implement the `onEvent` Method**: The `onEvent` method is crucial. It will be invoked whenever your provider receives an event for a subscribed topic. Inside this method:
 
-- Based on the event payload information (accessible through `params.eventPayload`), implement the logic to decide which entities should be added, deleted, or modified.
-- **Apply a Delta Mutation**: Use a delta mutation to explicitly upsert or delete entities. This approach is more efficient than updating the entire catalog from scratch. For more details on mutations, refer to the ["Provider Mutations" section](https://backstage.io/docs/features/software-catalog/external-integrations#creating-an-entity-provider).
+   - Based on the event payload information (accessible through `params.eventPayload`), implement the logic to decide which entities should be added, deleted, or modified.
+   - Use a delta mutation to explicitly upsert or delete entities. This approach is more efficient than updating the entire catalog from scratch. For more details on mutations, refer to the ["Provider Mutations" section](https://backstage.io/docs/features/software-catalog/external-integrations#provider-mutations).
