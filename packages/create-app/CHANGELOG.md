@@ -1,5 +1,26 @@
 # @backstage/create-app
 
+## 0.7.2
+
+### Patch Changes
+
+- d7a3d04: Created a flag for scaffolding apps using the new frontend system.
+- 4704160: Bumped create-app version.
+- 1e8a013: Bumped create-app version.
+- e33fce1: Added Notifications and Signals to be installed by default
+- 8b1bf6e: Updated the `app.packages` config setting now that it no longer is experimental
+- 2a156e0: Updated the `better-sqlite` dependency from `v9.0.0` to `v13.0.0`. You can apply this change to your instance by applying the following change to your `packages/backend/package.json` and running `yarn install`.
+
+  ```diff
+    "dependencies": {
+      "app": "link:../app",
+  -    "better-sqlite3": "^9.0.0",
+  +    "better-sqlite3": "^12.0.0",
+      "node-gyp": "^10.0.0",
+      "pg": "^8.11.3"
+    }
+  ```
+
 ## 0.7.2-next.3
 
 ### Patch Changes

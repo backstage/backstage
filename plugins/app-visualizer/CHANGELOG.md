@@ -1,5 +1,14 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.22
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+
 ## 0.1.22-next.1
 
 ### Patch Changes

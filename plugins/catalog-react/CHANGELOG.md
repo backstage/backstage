@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-react
 
+## 1.20.0
+
+### Minor Changes
+
+- 3f4da39: Added the `analyzeLocation` method to `catalogApiMock`
+- e4ddf22: **BREAKING ALPHA**: The `defaultPath`, `defaultTitle`, and `defaultGroup` params of `PageBlueprint` has been renamed to `path`, `title`, and `group`. The `convertLegacyEntityContentExtension` utility has also received the same change. This change does not affect the compatibility of extensions created with older versions of this blueprint.
+
+### Patch Changes
+
+- 77eebdc: Support `filter` parameter on the `EntityHeaderBlueprint`
+- a3a878d: Adding `type` as an override to the `convertLegacyEntityCardExtension`
+- defc243: hide pagination `queryparams` if pagination mode is set to none
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/frontend-test-utils@0.3.5
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/catalog-client@1.11.0
+
 ## 1.20.0-next.2
 
 ### Minor Changes

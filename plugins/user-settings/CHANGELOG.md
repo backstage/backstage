@@ -1,5 +1,17 @@
 # @backstage/plugin-user-settings
 
+## 0.8.25
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/theme@0.6.8
+
 ## 0.8.25-next.2
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.0
+
+### Minor Changes
+
+- 759568d: **BREAKING CHANGE**: Removed support for the legacy backend system. This means that the deprecated `createRouter` and `KubernetesBuilder` and related types have been removed. Please refer to the [relevant documentation](https://backstage.io/docs/features/kubernetes/installation/#adding-kubernetes-backend-plugin) to configure the Kubernetes plugin.
+
+  **BREAKING CHANGE**: The deprecated types `AuthenticationStrategy`, `AuthMetadata`, `ClusterDetails`, `CustomResource`, `CustomResourcesByEntity`, `FetchResponseWrapper`, `KubernetesBuilder`, `KubernetesBuilderReturn`, `KubernetesClustersSupplier`, `KubernetesCredential`, `KubernetesEnvironment`, `KubernetesFetcher`, `KubernetesObjectsProvider`, `KubernetesObjectTypes`, `KubernetesServiceLocator`,`ObjectFetchParams`, `ObjectToFetch`,`RouterOptions` and `ServiceLocatorRequestContext` should all now be imported from `@backstage/plugin-kubernetes-node`.
+
+### Patch Changes
+
+- 00ebaeb: Remove usage of the deprecated `loggerToWinstonLogger` from `@backstage/backend-common`.
+- 79e342e: Added support for providing a factory to the extension points
+- 5f424c6: Added support for Google Service account credentials config to use in GoogleServiceAccountStrategy
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-kubernetes-node@0.3.3
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.20.0-next.1
 
 ### Minor Changes

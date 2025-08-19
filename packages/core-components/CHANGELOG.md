@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.17.5
+
+### Patch Changes
+
+- 1de1186: Added missing space for alert display component
+- 77467bb: Updated dependency `linkifyjs` to `4.3.2`.
+- 5563605: Added `FavoriteToggleProps`.
+- Updated dependencies
+  - @backstage/theme@0.6.8
+
 ## 0.17.5-next.2
 
 ### Patch Changes

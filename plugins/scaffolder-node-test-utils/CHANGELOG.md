@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.2
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/backend-test-utils@1.8.0
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.3.2-next.0
 
 ### Patch Changes

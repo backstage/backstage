@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs
 
+## 1.14.0
+
+### Minor Changes
+
+- cb0541f: Adds `additionalAllowedURIProtocols` to sanitizer config
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- f231c2b: Fixes CSS to adjust based on whether or not the global Backstage sidebar is on the page.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/theme@0.6.8
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-auth-react@0.1.18
+  - @backstage/plugin-techdocs-react@1.3.2
+
 ## 1.14.0-next.2
 
 ### Patch Changes
