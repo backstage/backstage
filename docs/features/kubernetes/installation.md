@@ -123,7 +123,8 @@ export const kubernetesModuleCustomClusterDiscovery = createBackendModule({
         clusterSupplier: kubernetesClusterSupplierExtensionPoint,
         serviceLocator: kubernetesServiceLocatorExtensionPoint,
       },
-      async init({ clusterSupplier }) {
+      async init({ clusterSupplier, serviceLocator }) {
+        // simple replace of the internal dependency
         clusterSupplier.addClusterSupplier(
           CustomClustersSupplier.create(Duration.fromObject({ minutes: 60 })),
         );
@@ -136,7 +137,7 @@ export const kubernetesModuleCustomClusterDiscovery = createBackendModule({
             const defaultImplementation = await getDefault();
 
             // build your own with the clusterSupplier dependency:
-            return MyNewServiceLocator({ clusterSupplier });
+            return new MyNewServiceLocator({ clusterSupplier });
           },
         );
       },
