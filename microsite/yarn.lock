@@ -5954,11 +5954,11 @@ __metadata:
   linkType: hard
 
 "docusaurus-pushfeedback@npm:^1.0.0":
-  version: 1.0.5
-  resolution: "docusaurus-pushfeedback@npm:1.0.5"
+  version: 1.0.9
+  resolution: "docusaurus-pushfeedback@npm:1.0.9"
   peerDependencies:
     "@docusaurus/core": 3.x
-  checksum: 10/5323af7f1c7b4590744ea9099cacb49087d98c48c11e2ed957ed744d6210a3d82fa0cc42ef0f011f25b0d08c2d0040065c8a2b641c7c9160532ceb51ad41475c
+  checksum: 10/cb6ee78f3918b6bdc7a351a4383531f1da019f2b576722c2a9a90a93dbfdea94abc61b9d559779cc00af750ef498e656c90d92aad20d1a4dbbce80b40dbc01ed
   languageName: node
   linkType: hard
 

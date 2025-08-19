@@ -5,8 +5,6 @@ sidebar_label: Routes
 description: Frontend routes
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 ## Introduction
 
 Each Backstage plugin is an isolated piece of functionality that doesn't typically communicate directly with other plugins. In order to achieve this, there are many parts of the frontend system that provide a layer of indirection for cross-plugin communication, and the routing system is one of them.
@@ -422,7 +420,7 @@ export default createFrontendPlugin({
 
 ## Route Aliases - Overriding Routed Extensions in Modules
 
-It is possible to [override extensions of a plugin using a module](./25-extension-overrides.md#creating-a-frontend-module). In some cases the extension you're overriding may require a route reference. You could import import the plugin instance and access the it via the `routes` property, but this creates a direct dependency on the plugin and risks leading to package duplication issues that would also break the route reference.
+It is possible to [override extensions of a plugin using a module](./25-extension-overrides.md#creating-a-frontend-module). In some cases the extension you're overriding may require a route reference. You could import the plugin instance and access the it via the `routes` property, but this creates a direct dependency on the plugin and risks leading to package duplication issues that would also break the route reference.
 
 Instead of accessing the route reference directly, you can create a new route reference that acts as an alias for the original one from the plugin. For example, you can override the catalog index page with a custom one like this:
 

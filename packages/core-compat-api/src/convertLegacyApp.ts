@@ -62,7 +62,7 @@ function selectChildren(
 }
 
 /** @public */
-export interface ConvertLegacyAppOptions {
+export interface ConvertLegacyAppRootOptions {
   /**
    * By providing an entity page element here it will be split up and converted
    * into individual extensions for the catalog plugin in the new frontend
@@ -84,9 +84,9 @@ export interface ConvertLegacyAppOptions {
 }
 
 /** @public */
-export function convertLegacyApp(
+export function convertLegacyAppRoot(
   rootElement: JSX.Element,
-  options: ConvertLegacyAppOptions = {},
+  options: ConvertLegacyAppRootOptions = {},
 ): (FrontendPlugin | FrontendModule)[] {
   if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
     return collectLegacyRoutes(rootElement, options?.entityPage);
@@ -171,3 +171,17 @@ export function convertLegacyApp(
     }),
   ];
 }
+
+/**
+ * @public
+ * @deprecated
+ * Use `convertLegacyAppRoot` instead.
+ */
+export const convertLegacyApp = convertLegacyAppRoot;
+
+/**
+ * @public
+ * @deprecated
+ * Use `ConvertLegacyAppRootOptions` instead.
+ */
+export type ConvertLegacyAppOptions = ConvertLegacyAppRootOptions;

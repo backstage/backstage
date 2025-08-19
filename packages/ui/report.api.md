@@ -42,6 +42,9 @@ import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
 import type { TabProps as TabProps_2 } from 'react-aria-components';
 import { TabsProps as TabsProps_2 } from 'react-aria-components';
+import type { TagGroupProps as TagGroupProps_2 } from 'react-aria-components';
+import type { TagListProps } from 'react-aria-components';
+import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
@@ -606,6 +609,15 @@ export const componentDefinitions: {
       readonly tabActive: 'bui-TabActive';
       readonly tabHovered: 'bui-TabHovered';
       readonly panel: 'bui-TabPanel';
+    };
+  };
+  readonly TagGroup: {
+    readonly classNames: {
+      readonly group: 'bui-TagGroup';
+      readonly list: 'bui-TagList';
+      readonly tag: 'bui-Tag';
+      readonly tagIcon: 'bui-TagIcon';
+      readonly tagRemoveButton: 'bui-TagRemoveButton';
     };
   };
   readonly Text: {
@@ -1696,6 +1708,28 @@ export const Tabs: (props: TabsProps) => JSX_2.Element | null;
 
 // @public
 export interface TabsProps extends TabsProps_2 {}
+
+// @public
+export const Tag: (props: TagProps) => JSX_2.Element;
+
+// @public
+export const TagGroup: <T extends object>({
+  items,
+  children,
+  renderEmptyState,
+  ...props
+}: TagGroupProps<T>) => JSX_2.Element;
+
+// @public
+export interface TagGroupProps<T>
+  extends Omit<TagGroupProps_2, 'children'>,
+    Pick<TagListProps<T>, 'items' | 'children' | 'renderEmptyState'> {}
+
+// @public
+export interface TagProps extends TagProps_2 {
+  icon?: React.ReactNode;
+  size?: 'small' | 'medium';
+}
 
 // @public (undocumented)
 const Text_2: {

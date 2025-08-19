@@ -260,6 +260,15 @@ export const componentDefinitions = {
       panel: 'bui-TabPanel',
     },
   },
+  TagGroup: {
+    classNames: {
+      group: 'bui-TagGroup',
+      list: 'bui-TagList',
+      tag: 'bui-Tag',
+      tagIcon: 'bui-TagIcon',
+      tagRemoveButton: 'bui-TagRemoveButton',
+    },
+  },
   Text: {
     classNames: {
       root: 'bui-Text',
