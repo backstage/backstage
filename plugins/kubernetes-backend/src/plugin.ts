@@ -42,7 +42,7 @@ import {
   KubernetesServiceLocatorFactory,
 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesRouter } from './service/KubernetesRouter';
-import { KubernetesInitializer } from './service/KubernetnesInitializer';
+import { KubernetesInitializer } from './service/KubernetesInitializer';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   private objectsProvider: KubernetesObjectsProviderFactory | undefined;
