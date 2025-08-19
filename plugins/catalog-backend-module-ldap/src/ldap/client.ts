@@ -72,7 +72,7 @@ export class LdapClient {
         await client.bind(bind.dn, bind.secret);
       } catch (error) {
         await client.unbind();
-        throw error(`LDAP bind failed for ${bind.dn}, ${error}`);
+        throw new ForwardedError(`LDAP bind failed for ${bind.dn}, ${error}`, error);
       }
     }
     return ldapClient;
