@@ -32,7 +32,6 @@ import {
   EntityContentBlueprint,
   defaultEntityContentGroups,
   EntityContextMenuItemBlueprint,
-  CatalogContentHeaderBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
@@ -41,10 +40,9 @@ import { buildFilterFn } from './filter/FilterWrapper';
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
-    contentHeader: createExtensionInput(
-      [CatalogContentHeaderBlueprint.dataRefs.element.optional()],
-      { singleton: true, optional: true },
-    ),
+    contentHeaderItems: createExtensionInput([coreExtensionData.reactElement], {
+      optional: true,
+    }),
   },
   config: {
     schema: {
@@ -70,14 +68,14 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
-        const contentHeader = inputs.contentHeader?.get(
-          CatalogContentHeaderBlueprint.dataRefs.element,
-        );
+        const contentHeaderItems = inputs.contentHeaderItems
+          .map(item => item.get(coreExtensionData.reactElement))
+          .reverse();
         return compatWrapper(
           <BaseCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
-            contentHeader={contentHeader}
+            contentHeaderItems={<>{contentHeaderItems}</>}
           />,
         );
       },

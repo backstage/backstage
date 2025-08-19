@@ -16,11 +16,14 @@
 
 import {
   Content,
+  ContentHeader,
+  CreateButton,
   PageWithHeader,
+  SupportButton,
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
   DefaultFilters,
@@ -30,18 +33,20 @@ import {
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 import { ReactNode } from 'react';
+import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
-import { DefaultCatalogContentHeader } from './DefaultCatalogContentHeader';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
-  contentHeader?: ReactNode;
+  contentHeaderItems?: ReactNode;
 };
 
 /** @internal */
@@ -50,7 +55,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
     filters,
     content = <CatalogTable />,
     pagination,
-    contentHeader = <DefaultCatalogContentHeader />,
+    contentHeaderItems,
   } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -59,7 +64,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   return (
     <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
       <Content>
-        {contentHeader}
+        <ContentHeader title="">{contentHeaderItems}</ContentHeader>
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>

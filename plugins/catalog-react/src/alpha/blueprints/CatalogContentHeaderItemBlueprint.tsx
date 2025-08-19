@@ -20,25 +20,18 @@ import {
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 
-/** @alpha */
-export const CatalogContentHeaderBlueprint = createExtensionBlueprint({
-  kind: 'catalog-content-header',
-  attachTo: { id: 'page:catalog', input: 'contentHeader' },
-  dataRefs: {
-    element: coreExtensionData.reactElement,
-  },
-  output: [coreExtensionData.reactElement.optional()],
-  *factory(
-    params: {
-      loader: () => Promise<JSX.Element>;
-    },
-    { node },
-  ) {
-    const { loader } = params;
-    if (loader) {
-      yield coreExtensionData.reactElement(
-        ExtensionBoundary.lazy(node, loader),
-      );
-    }
+/**
+ * Creates Catalog Content Header Item Extensions
+ * @alpha */
+export const CatalogContentHeaderItemBlueprint = createExtensionBlueprint({
+  kind: 'catalog-content-header-item',
+  attachTo: { id: 'page:catalog', input: 'contentHeaderItems' },
+  output: [coreExtensionData.reactElement],
+  factory(params: { loader: () => Promise<JSX.Element> }, { node }) {
+    return [
+      coreExtensionData.reactElement(
+        ExtensionBoundary.lazy(node, params.loader),
+      ),
+    ];
   },
 });
