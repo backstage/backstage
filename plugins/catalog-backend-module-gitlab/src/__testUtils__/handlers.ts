@@ -81,6 +81,13 @@ const httpHandlers = [
     );
   }),
 
+  rest.get(`${apiBaseUrl}/groups/group1`, (_, res, ctx) => {
+    return res(
+      ctx.set('x-next-page', ''),
+      ctx.json(all_groups_response.find(g => g.full_path === 'group1')),
+    );
+  }),
+
   rest.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
   }),
@@ -229,6 +236,26 @@ const httpGroupListDescendantProjectsByName = all_groups_response.map(group => {
     },
   );
 });
+
+const httpGroupListDescendantProjectsByFullPath = all_groups_response.map(
+  group => {
+    return rest.get(
+      `${apiBaseUrl}/groups/${encodeURIComponent(group.full_path)}/projects`,
+      (req, res, ctx) => {
+        const archived = req.url.searchParams.get('archived');
+
+        const projectsInGroup = all_projects_response.filter(
+          p =>
+            p.path_with_namespace?.includes(group.full_path) &&
+            (archived === 'false' ? !p.archived : true),
+        );
+
+        return res(ctx.json(projectsInGroup));
+      },
+    );
+  },
+);
+
 const httpGroupFindByNameDynamic = all_groups_response.map(group => {
   return rest.get(`${apiBaseUrl}/groups/${group.name}`, (_, res, ctx) => {
     return res(ctx.json(all_groups_response.find(g => g.name === group.name)));
@@ -711,6 +738,7 @@ export const handlers = [
   ...httpGroupFindByNameDynamic,
   ...httpGroupListDescendantProjectsById,
   ...httpGroupListDescendantProjectsByName,
+  ...httpGroupListDescendantProjectsByFullPath,
   ...graphqlHandlers,
   ...httpGroupFindByEncodedPathDynamic,
 ];
