@@ -17,13 +17,11 @@
 import {
   Content,
   ContentHeader,
-  CreateButton,
   PageWithHeader,
-  SupportButton,
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
   DefaultFilters,
@@ -33,20 +31,18 @@ import {
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 import { ReactNode } from 'react';
-import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
-import { usePermission } from '@backstage/plugin-permission-react';
+import { DefaultContentHeaderItems } from './DefaultContentHeaderItems';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
+  contentHeaderItems: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
-  contentHeaderItems?: ReactNode;
 };
 
 /** @internal */
@@ -90,6 +86,7 @@ export interface DefaultCatalogPageProps {
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   filters?: ReactNode;
+  contentHeaderItems?: ReactNode;
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
 }
@@ -105,6 +102,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     pagination,
     ownerPickerMode,
     filters,
+    contentHeaderItems,
     initiallySelectedNamespaces,
   } = props;
 
@@ -120,6 +118,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
           />
         )
       }
+      contentHeaderItems={contentHeaderItems ?? <DefaultContentHeaderItems />}
       content={
         <CatalogTable
           columns={columns}
