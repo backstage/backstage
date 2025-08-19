@@ -956,6 +956,45 @@ Once the cleanup is complete you should be left with clean entity pages that are
 
 Migrating across the tabs for the Entity Pages should be as simple as removing the `EntityLayout.Route` for each of the plugins that provide tab content, and then this tab should be sourced from the `EntityContent` extensions created by the plugins themselves which will be automatically detected and added to the App.
 
+## Enable the new templates for `yarn new`
+
+It's encouraged that once you switch over to using the new frontend system, that new plugins that you create are using the new frontend system. This means that you're not instantly creating legacy plugins that will eventually need migration.
+
+This practice is also pretty important early on, as it's going to help you get familiar with the practices of the new frontend system.
+
+When creating a new Backstage app with `create-app` and using the `--next` flag you'll automatically get these choices in the `yarn new` command, but if you want to bring these templates to an older app, you can add the following to your root `package.json`:
+
+```json
+{
+  ...
+  "scripts": {
+    ...
+    "new": "backstage-cli new"
+  },
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "license": "UNLICENSED"
+        },
+        "templates": [
+          "@backstage/cli/templates/new-frontend-plugin",
+          "@backstage/cli/templates/new-frontend-plugin-module",
+          "@backstage/cli/templates/backend-plugin",
+          "@backstage/cli/templates/backend-plugin-module",
+          "@backstage/cli/templates/plugin-web-library",
+          "@backstage/cli/templates/plugin-node-library",
+          "@backstage/cli/templates/plugin-common-library",
+          "@backstage/cli/templates/web-library",
+          "@backstage/cli/templates/node-library",
+          "@backstage/cli/templates/scaffolder-backend-module"
+        ]
+      }
+    }
+  }
+}
+```
+
 ## Troubleshooting
 
 We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting. If you run `yarn add @backstage/plugin-app-visualizer` in `packages/app` it should be automatically added to the sidebar, and available on `/visualizer`.
