@@ -64,18 +64,14 @@ export interface KubernetesEnvironment {
   objectsProvider: KubernetesObjectsProvider;
 }
 
-export type KubernetesBuilderReturn = Promise<{
-  router: express.Router;
-}>;
-
-export class KubernetesBuilder {
-  static createBuilder(env: KubernetesEnvironment) {
-    return new KubernetesBuilder(env);
+export class KubernetesRouter {
+  static create(env: KubernetesEnvironment) {
+    return new KubernetesRouter(env);
   }
 
   constructor(protected readonly env: KubernetesEnvironment) {}
 
-  public async build(): KubernetesBuilderReturn {
+  public async getRouter() {
     const {
       logger,
       config,
@@ -97,9 +93,7 @@ export class KubernetesBuilder {
       logger.warn(
         'Failed to initialize kubernetes backend: kubernetes config is missing',
       );
-      return {
-        router: Router(),
-      } as unknown as KubernetesBuilderReturn;
+      return Router();
     }
 
     const proxy = this.buildProxy(
@@ -110,7 +104,7 @@ export class KubernetesBuilder {
       authStrategyMap,
     );
 
-    const router = this.buildRouter(
+    return this.buildRouter(
       objectsProvider,
       clusterSupplier,
       catalog,
@@ -119,10 +113,6 @@ export class KubernetesBuilder {
       httpAuth,
       authStrategyMap,
     );
-
-    return {
-      router,
-    };
   }
 
   private buildProxy(

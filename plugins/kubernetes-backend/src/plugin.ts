@@ -22,7 +22,6 @@ import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 import {
   type AuthenticationStrategy,
-  CustomResource,
   kubernetesAuthStrategyExtensionPoint,
   type KubernetesAuthStrategyExtensionPoint,
   type KubernetesClustersSupplier,
@@ -37,25 +36,13 @@ import {
   kubernetesObjectsProviderExtensionPoint,
   type KubernetesObjectsProviderExtensionPoint,
   KubernetesObjectsProviderFactory,
-  KubernetesObjectTypes,
   type KubernetesServiceLocator,
   kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
   KubernetesServiceLocatorFactory,
-  ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
-import { KubernetesBuilder } from './service/KubernetesBuilder';
-import { KubernetesClientBasedFetcher } from './service/KubernetesFetcher';
-import { DispatchStrategy } from './auth/DispatchStrategy';
-import { getCombinedClusterSupplier } from './cluster-locator';
-import { buildDefaultAuthStrategyMap } from './auth/buildDefaultAuthStrategyMap';
-import { buildDefaultServiceLocator } from './service-locator/buildDefaultServiceLocator';
-import { Duration } from 'luxon';
-import {
-  ALL_OBJECTS,
-  DEFAULT_OBJECTS,
-  KubernetesFanOutHandler,
-} from './service/KubernetesFanOutHandler';
+import { KubernetesRouter } from './service/KubernetesRouter';
+import { KubernetesInitializer } from './service/KubernetnesInitializer';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   private objectsProvider: KubernetesObjectsProviderFactory | undefined;
@@ -151,20 +138,21 @@ class ServiceLocator implements KubernetesServiceLocatorExtensionPoint {
 }
 
 class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
-  private authStrategies: Map<string, AuthenticationStrategy>;
-
-  constructor() {
-    this.authStrategies = new Map<string, AuthenticationStrategy>();
-  }
+  private authStrategies: Map<string, AuthenticationStrategy> | undefined;
 
   getAuthenticationStrategies() {
     return this.authStrategies;
   }
 
   addAuthStrategy(key: string, authStrategy: AuthenticationStrategy) {
+    if (!this.authStrategies) {
+      this.authStrategies = new Map<string, AuthenticationStrategy>();
+    }
+
     if (key.includes('-')) {
       throw new Error('Strategy name can not include dashes');
     }
+
     this.authStrategies.set(key, authStrategy);
   }
 }
@@ -226,121 +214,27 @@ export const kubernetesPlugin = createBackendPlugin({
       }) {
         // TODO: this could do with a cleanup and push some of this initalization somewhere else
         if (config.has('kubernetes')) {
-          const defaultFetcherFactory = async () =>
-            new KubernetesClientBasedFetcher({
-              logger,
-            });
-
-          const fetcher =
-            extPointFetcher.getFetcher()?.({
-              getDefault: defaultFetcherFactory,
-            }) ?? defaultFetcherFactory();
-
-          const returnedAuthStrategyMap =
-            extPointAuthStrategy.getAuthenticationStrategies();
-
-          const authStrategyMap =
-            returnedAuthStrategyMap.size > 0
-              ? returnedAuthStrategyMap
-              : buildDefaultAuthStrategyMap({ logger, config });
-
-          const refreshInterval = Duration.fromObject({
-            minutes: 60,
+          const initializer = KubernetesInitializer.create({
+            logger,
+            config,
+            catalog,
+            auth,
+            fetcher: extPointFetcher.getFetcher(),
+            clusterSupplier: extPointClusterSuplier.getClusterSupplier(),
+            serviceLocator: extPointServiceLocator.getServiceLocator(),
+            objectsProvider: extPointObjectsProvider.getObjectsProvider(),
+            authStrategyMap: extPointAuthStrategy.getAuthenticationStrategies(),
           });
 
-          const defaultClusterSupplierFactory = async () =>
-            getCombinedClusterSupplier(
-              config,
-              catalog,
-              new DispatchStrategy({
-                authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
-              }),
-              logger,
-              refreshInterval,
-              auth,
-            );
+          const {
+            fetcher,
+            authStrategyMap,
+            clusterSupplier,
+            serviceLocator,
+            objectsProvider,
+          } = await initializer.init();
 
-          const clusterSupplier =
-            extPointClusterSuplier.getClusterSupplier()?.({
-              getDefault: defaultClusterSupplierFactory,
-            }) ?? defaultClusterSupplierFactory();
-
-          const defaultServiceLocatorFactory = async () =>
-            buildDefaultServiceLocator({
-              config,
-              clusterSupplier: await clusterSupplier,
-            });
-
-          const serviceLocator =
-            extPointServiceLocator.getServiceLocator()?.({
-              getDefault: defaultServiceLocatorFactory,
-              clusterSupplier: await clusterSupplier,
-            }) ?? defaultServiceLocatorFactory();
-
-          const objectTypesToFetchStrings = config.getOptionalStringArray(
-            'kubernetes.objectTypes',
-          ) as KubernetesObjectTypes[];
-
-          const apiVersionOverrides = config.getOptionalConfig(
-            'kubernetes.apiVersionOverrides',
-          );
-
-          let objectTypesToFetch: ObjectToFetch[] | undefined = undefined;
-
-          if (objectTypesToFetchStrings) {
-            objectTypesToFetch = ALL_OBJECTS.filter(obj =>
-              objectTypesToFetchStrings.includes(obj.objectType),
-            );
-          }
-
-          if (apiVersionOverrides) {
-            objectTypesToFetch ??= DEFAULT_OBJECTS;
-
-            for (const obj of objectTypesToFetch) {
-              if (apiVersionOverrides.has(obj.objectType)) {
-                obj.apiVersion = apiVersionOverrides.getString(obj.objectType);
-              }
-            }
-          }
-
-          const customResources: CustomResource[] = (
-            config.getOptionalConfigArray('kubernetes.customResources') ?? []
-          ).map(
-            c =>
-              ({
-                group: c.getString('group'),
-                apiVersion: c.getString('apiVersion'),
-                plural: c.getString('plural'),
-                objectType: 'customresources',
-              } as CustomResource),
-          );
-
-          const defaultObjectsProviderFactory = async () =>
-            new KubernetesFanOutHandler({
-              logger,
-              config,
-              fetcher: await fetcher,
-              serviceLocator: await serviceLocator,
-              customResources,
-              objectTypesToFetch,
-              authStrategy: new DispatchStrategy({
-                authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
-              }),
-            });
-
-          const objectsProvider =
-            extPointObjectsProvider.getObjectsProvider()?.({
-              clusterSupplier: await clusterSupplier,
-              getDefault: defaultObjectsProviderFactory,
-              serviceLocator: await serviceLocator,
-              customResources,
-              objectTypesToFetch,
-              authStrategy: new DispatchStrategy({
-                authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
-              }),
-            }) ?? defaultObjectsProviderFactory();
-
-          const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
+          const router = KubernetesRouter.create({
             logger,
             config,
             catalog,
@@ -349,14 +243,13 @@ export const kubernetesPlugin = createBackendPlugin({
             auth,
             httpAuth,
             authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
-            fetcher: await fetcher,
-            clusterSupplier: await clusterSupplier,
-            serviceLocator: await serviceLocator,
-            objectsProvider: await objectsProvider,
+            fetcher,
+            clusterSupplier,
+            serviceLocator,
+            objectsProvider,
           });
 
-          const { router } = await builder.build();
-          http.use(router);
+          http.use(await router.getRouter());
         } else {
           logger.warn(
             'Failed to initialize kubernetes backend: valid kubernetes config is missing',
