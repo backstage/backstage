@@ -1,7 +1,7 @@
 ---
 id: 002-poking-around
 sidebar_label: 002 - Poking around
-title:
+title: 002 - Poking around
 ---
 
 ## Default plugin functionality
