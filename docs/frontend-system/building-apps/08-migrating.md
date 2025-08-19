@@ -808,3 +808,9 @@ This can be really useful output when raising any issue to the main repository t
 When using the `entityPage` option with `convertLegacyAppRoot`, you may notice duplicate cards appearing on your Entity Pages. This happens because the migration helper automatically extracts cards from your existing Entity Page component and adds them to the new system, while the new Entity Page system also automatically includes cards from any plugins installed in your `packages/app` package. This results in the same card appearing twice - once from your legacy component and once from the plugin.
 
 To fix this, simply remove the card definitions from your old Entity Page component. The new system will automatically provide these cards through the installed plugins, so your manual definitions are no longer needed.
+
+### `Error: Invalid element inside FlatRoutes, expected Route but found element of type ...`
+
+This means that the `Routes` inside `FlatRoutes` contains something other than a `Route` element. This could be for example a `FeatureFlag` or `RequirePermissions` element. These are not currently supported by the new frontend system. Workarounds include pushing this logic down from the `App.tsx` routes into the plugins themselves as these elements no longer need to live in the `App.tsx` for the system to be able to walk and collect the plugins and routes that are available in the App.
+
+If you have a use case where these are required, please reach out to us either through a [bug report](https://github.com/backstage/backstage/issues/new/choose) or the [community Discord](https://discord.gg/backstage-687207715902193673).
