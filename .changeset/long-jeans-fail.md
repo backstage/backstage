@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Added support for customizing the content header of `CatalogIndexPage`
+Migrate content header items to use CatalogContentHeaderItemBlueprint in New Frontend System

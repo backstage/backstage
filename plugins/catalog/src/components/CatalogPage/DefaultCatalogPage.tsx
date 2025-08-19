@@ -49,9 +49,9 @@ export type BaseCatalogPageProps = {
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
   const {
     filters,
+    contentHeaderItems,
     content = <CatalogTable />,
     pagination,
-    contentHeaderItems,
   } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
