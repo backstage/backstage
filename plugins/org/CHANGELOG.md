@@ -1,5 +1,18 @@
 # @backstage/plugin-org
 
+## 0.6.42
+
+### Patch Changes
+
+- 43cbb10: Added OwnershipCard, ComponentsGrid and UserProfileCard components to the `overridableComponents`.
+- 8b1bf6e: Updated README instructions for the new frontend system
+- 4ee19ed: Added support for scrolling to OwnershipCard component
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-catalog-react@1.20.0
+
 ## 0.6.42-next.3
 
 ### Patch Changes

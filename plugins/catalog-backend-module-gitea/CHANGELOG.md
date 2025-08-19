@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-gitea
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.1.3-next.0
 
 ### Patch Changes

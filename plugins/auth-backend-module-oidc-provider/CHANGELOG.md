@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.3
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.4.6-next.0
 
 ### Patch Changes

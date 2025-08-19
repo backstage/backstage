@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.3.3
+
+### Patch Changes
+
+- 79e342e: Added support for providing a factory to the extension points
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.3.3-next.0
 
 ### Patch Changes

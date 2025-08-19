@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.0.5
+
+### Patch Changes
+
+- 484e500: Updated CachedEntityLoader to use BackstageCredentials instead of raw tokens for cache key generation. It now uses principal-based identification (user entity ref for users, subject for services) instead of token-based keys, providing more consistent caching behavior.
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-search-backend-module-techdocs@0.4.5
+  - @backstage/plugin-techdocs-node@1.13.6
+
 ## 2.0.5-next.1
 
 ### Patch Changes

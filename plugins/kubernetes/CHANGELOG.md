@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.10
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- 3025cf5: Removed the kubernetes content padding to avoid double padding on k8s entity page
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/plugin-kubernetes-react@0.5.10
+
 ## 0.12.10-next.3
 
 ### Patch Changes
