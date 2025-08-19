@@ -170,7 +170,7 @@ export class LdapClient {
       const schemaHasGoogleAttributes = this.checkGoogleSchema(rootDSE);
       return schemaHasGoogleAttributes;
     } catch (error) {
-      throw error('Schema check failed:', error);
+      throw new ForwardedError('Schema check failed', error);
     }
   }
 
