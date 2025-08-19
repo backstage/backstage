@@ -3,11 +3,14 @@ import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import { SwitchSnippet } from '@/snippets/stories-snippets';
 import { switchPropDefs, snippetUsage } from './switch.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Switch
-
-A control that indicates whether a setting is on or off.
+<PageTitle
+  title="Switch"
+  description="A control that indicates whether a setting is on or off."
+/>
 
 <Snippet
   align="center"
@@ -16,11 +19,9 @@ A control that indicates whether a setting is on or off.
   code={`<Switch />`}
 />
 
-<ComponentInfos
-  component="switch"
-  usageCode={snippetUsage}
-  classNames={['bui-Switch', 'bui-SwitchIndicator']}
-/>
+## Usage
+
+<CodeBlock code={snippetUsage} />
 
 ## API reference
 
@@ -39,3 +40,7 @@ A switch can be disabled using the `isDisabled` prop.
   preview={<SwitchSnippet story="Disabled" />}
   code={`<Switch isDisabled />`}
 />
+
+<Theming component="Switch" />
+
+<ChangelogComponent component="switch" />

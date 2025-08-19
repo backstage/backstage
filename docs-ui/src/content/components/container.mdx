@@ -9,12 +9,15 @@ import {
   containerSimpleSnippet,
   containerResponsiveSnippet,
 } from './container.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Container
-
-The container component let you use our default max-width and center the
-content on the page.
+<PageTitle
+  type="Layout"
+  title="Container"
+  description="The container component let you use our default max-width and center the content on the page."
+/>
 
 <Snippet
   py={4}
@@ -22,11 +25,9 @@ content on the page.
   code={containerDefaultSnippet}
 />
 
-<ComponentInfos
-  component="container"
-  classNames={['bui-Container']}
-  usageCode={containerUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={containerUsageSnippet} />
 
 ## API reference
 
@@ -46,3 +47,7 @@ The Container component also supports responsive values, making it easy to
 create responsive designs.
 
 <CodeBlock code={containerResponsiveSnippet} />
+
+<Theming component="Container" />
+
+<ChangelogComponent component="container" />

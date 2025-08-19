@@ -13,6 +13,7 @@ import { Notification as Notification_2 } from '@backstage/plugin-notifications-
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
+import * as React_2 from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableProps } from '@backstage/core-components';
 
@@ -101,6 +102,23 @@ export class NotificationsClient implements NotificationsApi {
 }
 
 // @public (undocumented)
+export type NotificationSnackbarProperties = {
+  enabled?: boolean;
+  autoHideDuration?: number | null;
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+  dense?: boolean;
+  maxSnack?: number;
+  snackStyle?: React_2.CSSProperties;
+  iconVariant?: Partial<Record<NotificationSeverity, React_2.ReactNode>>;
+  Components?: {
+    [key in NotificationSeverity]: React_2.JSXElementConstructor<any>;
+  };
+};
+
+// @public (undocumented)
 export const NotificationsPage: (
   props?: NotificationsPageProps,
 ) => JSX_2.Element;
@@ -125,17 +143,23 @@ export const notificationsPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const NotificationsSidebarItem: (props?: {
+export const NotificationsSidebarItem: (
+  props?: NotificationsSideBarItemProps,
+) => JSX_2.Element;
+
+// @public (undocumented)
+export type NotificationsSideBarItemProps = {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
   snackbarAutoHideDuration?: number | null;
+  snackbarProps?: NotificationSnackbarProperties;
   className?: string;
   icon?: IconComponent;
   text?: string;
   disableHighlight?: boolean;
   noTrack?: boolean;
-}) => JSX_2.Element;
+};
 
 // @public (undocumented)
 export const NotificationsTable: ({

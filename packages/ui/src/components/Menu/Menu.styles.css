@@ -1,182 +1,269 @@
-.bui-MenuPositioner {
-  outline: 0;
-  z-index: 100;
-}
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-.bui-MenuPopup {
+.bui-MenuPopover {
   display: flex;
   flex-direction: column;
-  border-radius: 0.375rem;
-  background-color: var(--bui-bg-surface-1);
   border: 1px solid var(--bui-border);
+  border-radius: var(--bui-radius-2);
+  background: var(--bui-bg-surface-1);
   color: var(--bui-fg-primary);
   outline: none;
-  overflow: auto;
-  transform-origin: var(--transform-origin);
-  max-width: min(var(--available-width), 340px);
-  max-height: min(var(--available-height), 500px);
-  transition: transform 150ms, opacity 150ms;
-  position: relative;
-  padding-bottom: var(--bui-space-1);
+  transition: transform 200ms, opacity 200ms;
+  /* Let React Aria handle height constraints naturally */
+  min-height: 0;
+  /* Remove overflow from popover since ScrollArea will handle it */
+  overflow: hidden;
 
-  &[data-starting-style],
-  &[data-ending-style] {
+  &[data-entering],
+  &[data-exiting] {
+    transform: var(--origin);
     opacity: 0;
-    transform: scale(0.9);
   }
+
+  &[data-placement='top'] {
+    --origin: translateY(8px);
+  }
+
+  &[data-placement='bottom'] {
+    --origin: translateY(-8px);
+  }
+
+  &[data-placement='right'] {
+    --origin: translateX(-8px);
+  }
+
+  &[data-placement='left'] {
+    --origin: translateX(8px);
+  }
+}
+
+.bui-MenuContent {
+  max-height: inherit;
+  box-sizing: border-box;
+  overflow: auto;
+  padding: var(--bui-space-1);
+  min-width: 150px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* Ensure ScrollArea works properly within MenuRA popover */
+.bui-MenuPopover .bui-ScrollAreaRoot {
+  /* Take full height of popover */
+  height: 100%;
+  min-height: 0;
+  flex: 1;
+  /* Ensure the root container has proper height constraints */
+  display: flex;
+  flex-direction: column;
+}
+
+.bui-MenuPopover .bui-ScrollAreaScrollbar {
+  margin-inline: var(--bui-space-1_5);
 }
 
 .bui-MenuItem {
-  outline: 0;
-  user-select: none;
   display: flex;
-  height: 32px;
   align-items: center;
-  gap: var(--bui-space-2);
-  color: var(--bui-fg-primary);
-  text-decoration: none;
-  border-radius: var(--bui-radius-2);
-  margin-inline: var(--bui-space-1);
+  justify-content: space-between;
+  height: 2rem;
   padding-inline: var(--bui-space-2);
+  border-radius: var(--bui-radius-2);
+  outline: none;
+  cursor: default;
+  color: var(--bui-fg-primary);
   font-size: var(--bui-font-size-3);
-  cursor: pointer;
-  flex-shrink: 0;
+  gap: var(--bui-space-6);
 
-  &:first-child {
-    margin-top: var(--bui-space-1);
+  &[data-focused] {
+    background: var(--bui-bg-surface-2);
+    color: var(--bui-fg-primary);
   }
 
-  &[data-highlighted] {
-    background-color: var(--bui-gray-3);
+  &[data-open] {
+    background: var(--bui-bg-surface-2);
+    color: var(--bui-fg-primary);
+  }
+
+  &[data-color='danger'] {
+    color: var(--bui-fg-danger);
+  }
+
+  &[data-color='danger'][data-focused] {
+    background: var(--bui-bg-danger);
+    color: var(--bui-fg-danger);
+  }
+
+  &[data-has-submenu] {
+    & > .bui-MenuItemArrow {
+      display: block;
+    }
   }
 }
 
-.bui-MenuSubmenuTrigger {
-  outline: 0;
-  user-select: none;
+.bui-MenuItemListBox {
   display: flex;
-  height: 32px;
   align-items: center;
   justify-content: space-between;
-  gap: var(--bui-space-2);
-  color: var(--bui-fg-primary);
-  text-decoration: none;
-  border-radius: var(--bui-radius-2);
-  margin-inline: var(--bui-space-1);
+  height: 2rem;
   padding-inline: var(--bui-space-2);
+  border-radius: var(--bui-radius-2);
+  outline: none;
+  cursor: default;
+  color: var(--bui-fg-primary);
   font-size: var(--bui-font-size-3);
-  cursor: pointer;
-  flex-shrink: 0;
+  gap: var(--bui-space-6);
 
-  & .bui-Icon {
-    color: var(--bui-fg-secondary);
+  &:hover {
+    background: var(--bui-bg-surface-2);
+    color: var(--bui-fg-primary);
   }
 
-  &:first-child {
-    margin-top: var(--bui-space-1);
-  }
-
-  &[data-popup-open],
-  &[data-highlighted] {
-    background-color: var(--bui-gray-3);
-
-    .bui-Icon {
+  &[data-selected] .bui-MenuItemListBoxCheck {
+    & > svg {
+      opacity: 1;
       color: var(--bui-fg-primary);
     }
   }
 }
 
-.bui-MenuSeparator {
-  margin: 0.375rem 1rem;
-  height: 1px;
-  background-color: var(--color-gray-200);
-}
-
-.bui-SubmenuComboboxSearch {
-  padding-inline: var(--bui-space-3);
-  width: 100%;
-  height: 32px;
-  border: none;
-  border-bottom: 1px solid var(--bui-border);
-  background-color: var(--bui-bg-surface-1);
-  color: var(--bui-fg-primary);
-  line-height: 140%;
-  outline: none;
-  font-size: var(--bui-font-size-3);
-  position: sticky;
-  top: 0;
-  z-index: 1;
-
-  &::placeholder {
-    color: var(--bui-fg-secondary);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-.bui-SubmenuComboboxItems {
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  padding-top: var(--bui-space-2);
-  outline: none;
-}
-
-.bui-SubmenuComboboxNoResults {
-  padding-inline: var(--bui-space-3);
-  padding-top: var(--bui-space-2);
-  padding-bottom: var(--bui-space-4);
-  color: var(--bui-fg-secondary);
-  font-size: var(--bui-font-size-3);
-}
-
-.bui-SubmenuComboboxItem {
-  outline: 0;
-  user-select: none;
-  display: flex;
-  height: 32px;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--bui-space-2);
-  color: var(--bui-fg-primary);
-  text-decoration: none;
-  border-radius: var(--bui-radius-2);
-  margin-inline: var(--bui-space-1);
-  padding-inline: var(--bui-space-2);
-  font-size: var(--bui-font-size-3);
-  cursor: pointer;
-  user-select: none;
-  flex-shrink: 0;
-
-  &[data-highlighted] {
-    background-color: var(--bui-gray-3);
-  }
-
-  &[data-disabled] {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.bui-SubmenuComboboxItemCheckbox {
+.bui-MenuItemListBoxCheck {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  color: var(--bui-fg-primary);
-  flex-shrink: 0;
-  border-radius: var(--bui-radius-2);
-  border: 1px solid var(--bui-border);
-  background: var(--bui-bg-surface-1);
+  width: 1rem;
+  height: 1rem;
+
+  & > svg {
+    opacity: 0;
+    width: 1rem;
+    height: 1rem;
+  }
 }
 
-.bui-SubmenuComboboxItemLabel {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.bui-MenuItemContent {
+  display: flex;
+  align-items: center;
+  gap: var(--bui-space-2);
+
+  & > svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.bui-MenuItemArrow {
+  display: none;
+  width: 1rem;
+  height: 1rem;
+
+  & > svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.bui-MenuSection {
+  &:first-child .bui-MenuSectionHeader {
+    padding-top: 0;
+  }
+}
+
+.bui-MenuSectionHeader {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  padding-top: var(--bui-space-3);
+  padding-left: var(--bui-space-2);
+  color: var(--bui-fg-primary);
+  font-size: var(--bui-font-size-1);
+  font-weight: bold;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+}
+
+.bui-MenuSeparator {
+  height: 1px;
+  background: var(--bui-border);
+  margin-inline: var(--bui-space-1_5);
+  margin-block: var(--bui-space-1);
+}
+
+.bui-MenuSearchField {
+  position: relative;
+  font-family: var(--bui-font-regular);
+  width: 100%;
+  flex-shrink: 0;
+
+  &[data-empty] {
+    .bui-MenuSearchFieldClear {
+      display: none;
+    }
+  }
+}
+
+.bui-MenuSearchFieldInput {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--bui-space-3);
+  border: none;
+  border-bottom: 1px solid var(--bui-border);
+  background-color: var(--bui-bg-surface-1);
+  font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  font-weight: var(--bui-font-weight-regular);
+  color: var(--bui-fg-primary);
+  width: 100%;
+  height: 2rem;
+  cursor: inherit;
+  outline: none;
+
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+}
+
+.bui-MenuSearchFieldClear {
+  position: absolute;
+  right: var(--bui-space-2);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: var(--bui-fg-secondary);
+  transition: color 0.2s ease-in-out;
+
+  & > svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.bui-MenuEmptyState {
+  padding: var(--bui-space-1);
+  color: var(--bui-fg-secondary);
+  font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  font-weight: var(--bui-font-weight-regular);
 }

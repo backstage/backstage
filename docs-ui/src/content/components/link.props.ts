@@ -5,13 +5,22 @@ import {
 } from '@/utils/propDefs';
 
 export const linkPropDefs: Record<string, PropDef> = {
-  to: {
+  href: {
     type: 'string',
   },
   variant: {
     type: 'enum',
-    values: ['subtitle', 'body', 'caption', 'label'],
-    default: 'body',
+    values: [
+      'title-large',
+      'title-medium',
+      'title-small',
+      'title-x-small',
+      'body-large',
+      'body-medium',
+      'body-small',
+      'body-x-small',
+    ],
+    default: 'body-medium',
     responsive: true,
   },
   weight: {
@@ -20,24 +29,53 @@ export const linkPropDefs: Record<string, PropDef> = {
     default: 'regular',
     responsive: true,
   },
+  color: {
+    type: 'enum',
+    values: ['primary', 'secondary', 'danger', 'warning', 'success'],
+    default: 'primary',
+    responsive: true,
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
 export const linkUsageSnippet = `import { Link } from '@backstage/ui';
 
-<Link href="https://backstage.io">Sign up for Backstage</Link>`;
+<Link href="/sign-up">Sign up for Backstage</Link>`;
 
-export const linkDefaultSnippet = `<Link href="https://backstage.io">Sign up for Backstage</Link>`;
+export const linkDefaultSnippet = `<Link href="/">Sign up for Backstage</Link>`;
 
 export const linkVariantsSnippet = `<Flex gap="4" direction="column">
-  <Link href="https://ui.backstage.io" variant="subtitle" />
-  <Link href="https://ui.backstage.io" variant="body" />
-  <Link href="https://ui.backstage.io" variant="caption" />
-  <Link href="https://ui.backstage.io" variant="label" />
+  <Link href="/" variant="title-large">...</Link>
+  <Link href="/" variant="title-medium">...</Link>
+  <Link href="/" variant="title-small">...</Link>
+  <Link href="/" variant="title-x-small">...</Link>
+  <Link href="/" variant="body-large">...</Link>
+  <Link href="/" variant="body-medium">...</Link>
+  <Link href="/" variant="body-small">...</Link>
+  <Link href="/" variant="body-x-small">...</Link>
 </Flex>`;
 
 export const linkWeightsSnippet = `<Flex gap="4" direction="column">
-  <Link href="https://ui.backstage.io" weight="regular" />
-  <Link href="https://ui.backstage.io" weight="bold" />
+  <Link href="/" weight="regular" />
+  <Link href="/" weight="bold" />
 </Flex>`;
+
+export const linkColorsSnippet = `<Flex gap="4" direction="column">
+  <Link href="/" color="primary">I am primary</Link>
+  <Link href="/" color="secondary">I am secondary</Link>
+  <Link href="/" color="danger">I am danger</Link>
+  <Link href="/" color="warning">I am warning</Link>
+  <Link href="/" color="success">I am success</Link>
+</Flex>`;
+
+export const linkRouterSnippet = `import { Link } from '@backstage/ui';
+
+// Internal route
+<Link href="/home">Home</Link>
+
+// External URL
+<Link href="https://backstage.io">Backstage</Link>
+`;
+
+export const linkTruncateSnippet = `<Link href="/" truncate>...</Link>`;

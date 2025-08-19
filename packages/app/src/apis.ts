@@ -25,6 +25,7 @@ import {
   createApiFactory,
   discoveryApiRef,
   fetchApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
 import { formDecoratorsApiRef } from '@backstage/plugin-scaffolder/alpha';
@@ -51,13 +52,15 @@ export const apis: AnyApiFactory[] = [
       discoveryApi: discoveryApiRef,
       fetchApi: fetchApiRef,
       scmIntegrationsApi: scmIntegrationsApiRef,
+      identityApi: identityApiRef,
     },
-    factory: ({ discoveryApi, fetchApi, scmIntegrationsApi }) =>
+    factory: ({ discoveryApi, fetchApi, scmIntegrationsApi, identityApi }) =>
       new ScaffolderClient({
         useLongPollingLogs: true,
         discoveryApi,
         fetchApi,
         scmIntegrationsApi,
+        identityApi,
       }),
   }),
 

@@ -19,7 +19,7 @@ import { Skeleton } from './Skeleton';
 import { Flex } from '../Flex';
 
 const meta = {
-  title: 'Components/Skeleton',
+  title: 'Backstage UI/Skeleton',
   component: Skeleton,
   argTypes: {
     rounded: {

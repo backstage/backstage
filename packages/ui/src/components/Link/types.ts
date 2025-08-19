@@ -14,36 +14,22 @@
  * limitations under the License.
  */
 
-import type { Breakpoint } from '../../types';
+import type {
+  Breakpoint,
+  TextColors,
+  TextColorStatus,
+  TextVariants,
+  TextWeights,
+} from '../../types';
 import type { LinkProps as AriaLinkProps } from 'react-aria-components';
 
 /** @public */
 export interface LinkProps extends AriaLinkProps {
-  variant?:
-    | 'title-large'
-    | 'title-medium'
-    | 'title-small'
-    | 'title-x-small'
-    | 'body-large'
-    | 'body-medium'
-    | 'body-small'
-    | 'body-x-small'
-    | Partial<
-        Record<
-          Breakpoint,
-          | 'title-large'
-          | 'title-medium'
-          | 'title-small'
-          | 'title-x-small'
-          | 'body-large'
-          | 'body-medium'
-          | 'body-small'
-          | 'body-x-small'
-        >
-      >;
-  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+  variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
+  weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+    | TextColors
+    | TextColorStatus
+    | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
+  truncate?: boolean;
 }

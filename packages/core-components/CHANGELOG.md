@@ -1,5 +1,34 @@
 # @backstage/core-components
 
+## 0.17.5-next.2
+
+### Patch Changes
+
+- 77467bb: Updated dependency `linkifyjs` to `4.3.2`.
+
+## 0.17.5-next.1
+
+### Patch Changes
+
+- 5563605: Added `FavoriteToggleProps`.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
 ## 0.17.4
 
 ### Patch Changes

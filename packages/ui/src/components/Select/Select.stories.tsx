@@ -20,7 +20,7 @@ import { Form } from 'react-aria-components';
 import { RiCloudLine } from '@remixicon/react';
 
 const meta = {
-  title: 'Forms/Select',
+  title: 'Backstage UI/Select',
   component: Select,
 } satisfies Meta<typeof Select>;
 
@@ -55,6 +55,14 @@ export const WithLabel: Story = {
   args: {
     ...Default.args,
     label: 'Font Family',
+  },
+};
+
+export const WithFullWidth: Story = {
+  args: {
+    ...Default.args,
+    label: 'Font Family',
+    style: { width: '100%' },
   },
 };
 

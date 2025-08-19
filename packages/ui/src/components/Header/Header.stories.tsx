@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,28 @@
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { Header } from './Header';
-import { HeaderBreadcrumb, HeaderMenuItem, HeaderTab } from './types';
-import { Button } from '../Button';
-import { HeaderPage } from '../HeaderPage';
+import type { HeaderTab } from './types';
+import {
+  Button,
+  HeaderPage,
+  Container,
+  Text,
+  ButtonIcon,
+  MenuTrigger,
+  Menu,
+  MenuItem,
+} from '../../';
 import { MemoryRouter } from 'react-router-dom';
-import { Container } from '../Container';
-import { Text } from '../Text';
-import { ButtonIcon } from '../ButtonIcon';
 import {
   RiHeartLine,
   RiEmotionHappyLine,
   RiCloudy2Line,
+  RiMore2Line,
 } from '@remixicon/react';
+import { HeaderPageBreadcrumb } from '../HeaderPage/types';
 
 const meta = {
-  title: 'Components/Header',
+  title: 'Backstage UI/Header',
   component: Header,
   parameters: {
     layout: 'fullscreen',
@@ -86,7 +93,27 @@ const tabs2: HeaderTab[] = [
   },
 ];
 
-const breadcrumbs: HeaderBreadcrumb[] = [
+const menuItems = [
+  {
+    label: 'Settings',
+    value: 'settings',
+    href: '/settings',
+  },
+  {
+    label: 'Invite new members',
+    value: 'invite-new-members',
+    href: '/invite-new-members',
+  },
+  {
+    label: 'Logout',
+    value: 'logout',
+    onClick: () => {
+      alert('logout');
+    },
+  },
+];
+
+const breadcrumbs: HeaderPageBreadcrumb[] = [
   {
     label: 'Home',
     href: '/',
@@ -101,17 +128,6 @@ const breadcrumbs: HeaderBreadcrumb[] = [
   },
 ];
 
-const menuItems: HeaderMenuItem[] = [
-  {
-    label: 'Settings',
-    value: 'settings',
-  },
-  {
-    label: 'Invite new members',
-    value: 'invite-new-members',
-  },
-];
-
 // Extract layout decorator as a reusable constant
 const layoutDecorator = [
   (Story: StoryFn) => (
@@ -123,7 +139,7 @@ const layoutDecorator = [
           left: 'var(--sb-panel-left)',
           top: 'var(--sb-panel-top)',
           bottom: 'var(--sb-panel-bottom)',
-          backgroundColor: 'var(--bui-bg-surface-1)',
+          backgroundColor: 'var(--sb-sidebar-bg)',
           borderRadius: 'var(--sb-panel-radius)',
           border: 'var(--sb-sidebar-border)',
           borderRight: 'var(--sb-sidebar-border-right)',
@@ -132,32 +148,46 @@ const layoutDecorator = [
       />
       <div
         style={{
-          paddingInline: 'var(--sb-content-padding-inline)',
+          paddingLeft: 'var(--sb-content-padding-inline)',
           minHeight: '200vh',
         }}
       >
         <Story />
         <Container>
-          <Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
             quos.
           </Text>
         </Container>
       </div>
-      <div
-        style={{
-          width: '250px',
-          position: 'fixed',
-          right: 'var(--sb-panel-right)',
-          top: 'var(--sb-panel-top)',
-          bottom: 'var(--sb-panel-bottom)',
-          backgroundColor: 'var(--bui-bg-surface-1)',
-          borderRadius: 'var(--sb-panel-radius)',
-          border: 'var(--sb-options-border)',
-          borderLeft: 'var(--sb-options-border-left)',
-          zIndex: 1,
-        }}
-      />
     </>
   ),
   withRouter,
@@ -175,75 +205,102 @@ export const WithTabs: Story = {
   decorators: [withRouter],
 };
 
-export const WithOptions: Story = {
-  args: {
-    menuItems,
-  },
-  decorators: [withRouter],
-};
-
 export const WithCustomActions: Story = {
-  args: {
-    customActions: <Button>Custom action</Button>,
-    menuItems,
-  },
+  args: {},
   decorators: [withRouter],
+  render: args => (
+    <Header
+      {...args}
+      customActions={
+        <>
+          <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+          <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+          <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+          <MenuTrigger>
+            <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+            <Menu placement="bottom end">
+              {menuItems.map(option => (
+                <MenuItem
+                  key={option.value}
+                  onAction={option.onClick}
+                  href={option.href}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </MenuTrigger>
+        </>
+      }
+    />
+  ),
 };
 
-export const WithBreadcrumbs: Story = {
+export const WithAllOptionsAndTabs: Story = {
   args: {
-    breadcrumbs,
-  },
-  decorators: [withRouter],
-};
-
-export const WithAllComponents: Story = {
-  args: {
-    menuItems,
+    ...WithCustomActions.args,
     tabs,
-    breadcrumbs,
   },
   decorators: [withRouter],
+  render: WithCustomActions.render,
+};
+
+export const WithHeaderPage: Story = {
+  args: {
+    ...WithAllOptionsAndTabs.args,
+  },
+  decorators: [withRouter],
+  render: args => (
+    <>
+      <Header
+        {...args}
+        customActions={
+          <>
+            <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+            <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+            <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+          </>
+        }
+      />
+      <HeaderPage
+        title="Page title"
+        tabs={tabs2}
+        customActions={<Button>Custom action</Button>}
+        breadcrumbs={breadcrumbs}
+      />
+    </>
+  ),
 };
 
 export const WithLayout: Story = {
-  args: {
-    menuItems,
-    breadcrumbs,
-  },
   decorators: layoutDecorator,
   render: args => (
     <>
       <Header {...args} tabs={tabs} />
       <HeaderPage
         title="Page title"
-        menuItems={args.menuItems}
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
+        breadcrumbs={breadcrumbs}
       />
     </>
   ),
 };
 
 export const WithLayoutNoTabs: Story = {
-  args: {
-    menuItems,
-    breadcrumbs,
-  },
   decorators: layoutDecorator,
   render: args => (
     <>
       <Header {...args} />
-      <HeaderPage title="Page title" menuItems={args.menuItems} tabs={tabs2} />
+      <HeaderPage title="Page title" tabs={tabs2} />
     </>
   ),
 };
 
 export const WithEverything: Story = {
   args: {
-    menuItems,
-    breadcrumbs,
     tabs,
+    titleLink: '/',
   },
   decorators: layoutDecorator,
   render: args => (
@@ -260,7 +317,6 @@ export const WithEverything: Story = {
       />
       <HeaderPage
         title="Page title"
-        menuItems={args.menuItems}
         tabs={tabs2}
         customActions={
           <>
@@ -281,10 +337,10 @@ export const WithMockedURLCampaigns: Story = {
     <MemoryRouter initialEntries={['/campaigns']}>
       <Header {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           Current URL is mocked to be: <strong>/campaigns</strong>
         </Text>
-        <Text>
+        <Text as="p">
           Notice how the "Campaigns" tab is selected (highlighted) because it
           matches the current path.
         </Text>
@@ -301,10 +357,10 @@ export const WithMockedURLIntegrations: Story = {
     <MemoryRouter initialEntries={['/integrations']}>
       <Header {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           Current URL is mocked to be: <strong>/integrations</strong>
         </Text>
-        <Text>
+        <Text as="p">
           Notice how the "Integrations" tab is selected (highlighted) because it
           matches the current path.
         </Text>
@@ -321,16 +377,167 @@ export const WithMockedURLNoMatch: Story = {
     <MemoryRouter initialEntries={['/some-other-page']}>
       <Header {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           Current URL is mocked to be: <strong>/some-other-page</strong>
         </Text>
-        <Text>
+        <Text as="p">
           No tab is selected because the current path doesn't match any tab's
           href.
         </Text>
-        <Text>
+        <Text as="p">
           Tabs without href (like "Overview", "Checks", "Tracks") fall back to
           React Aria's internal state.
+        </Text>
+      </Container>
+    </MemoryRouter>
+  ),
+};
+
+export const WithTabsMatchingStrategies: Story = {
+  args: {
+    title: 'Route Matching Demo',
+    tabs: [
+      {
+        id: 'home',
+        label: 'Home',
+        href: '/home',
+      },
+      {
+        id: 'mentorship',
+        label: 'Mentorship',
+        href: '/mentorship',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'catalog',
+        label: 'Catalog',
+        href: '/catalog',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'settings',
+        label: 'Settings',
+        href: '/settings',
+      },
+    ],
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/mentorship/events']}>
+      <Header {...args} />
+      <Container>
+        <Text>
+          <strong>Current URL:</strong> /mentorship/events
+        </Text>
+        <br />
+        <Text>
+          Notice how the "Mentorship" tab is active even though we're on a
+          nested route. This is because it uses{' '}
+          <code>matchStrategy="prefix"</code>.
+        </Text>
+        <br />
+        <Text>
+          • <strong>Home</strong>: exact matching (default) - not active
+        </Text>
+        <Text>
+          • <strong>Mentorship</strong>: prefix matching - IS active (URL starts
+          with /mentorship)
+        </Text>
+        <Text>
+          • <strong>Catalog</strong>: prefix matching - not active
+        </Text>
+        <Text>
+          • <strong>Settings</strong>: exact matching (default) - not active
+        </Text>
+      </Container>
+    </MemoryRouter>
+  ),
+};
+
+export const WithTabsExactMatching: Story = {
+  args: {
+    title: 'Exact Matching Demo',
+    tabs: [
+      {
+        id: 'mentorship',
+        label: 'Mentorship',
+        href: '/mentorship',
+      },
+      {
+        id: 'events',
+        label: 'Events',
+        href: '/mentorship/events',
+      },
+      {
+        id: 'mentors',
+        label: 'Mentors',
+        href: '/mentorship/mentors',
+      },
+    ],
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/mentorship/events']}>
+      <Header {...args} />
+      <Container>
+        <Text>
+          <strong>Current URL:</strong> /mentorship/events
+        </Text>
+        <br />
+        <Text>
+          With default exact matching, only the "Events" tab is active because
+          it exactly matches the current URL. The "Mentorship" tab is not active
+          even though the URL is under /mentorship.
+        </Text>
+      </Container>
+    </MemoryRouter>
+  ),
+};
+
+export const WithTabsPrefixMatchingDeep: Story = {
+  args: {
+    title: 'Deep Nesting Demo',
+    tabs: [
+      {
+        id: 'catalog',
+        label: 'Catalog',
+        href: '/catalog',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'users',
+        label: 'Users',
+        href: '/catalog/users',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'components',
+        label: 'Components',
+        href: '/catalog/components',
+        matchStrategy: 'prefix',
+      },
+    ],
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+      <Header {...args} />
+      <Container>
+        <Text>
+          <strong>Current URL:</strong> /catalog/users/john/details
+        </Text>
+        <br />
+        <Text>Both "Catalog" and "Users" tabs are active because:</Text>
+        <Text>
+          • <strong>Catalog</strong>: URL starts with /catalog
+        </Text>
+        <Text>
+          • <strong>Users</strong>: URL starts with /catalog/users
+        </Text>
+        <Text>
+          • <strong>Components</strong>: not active (URL doesn't start with
+          /catalog/components)
+        </Text>
+        <br />
+        <Text>
+          This demonstrates how prefix matching works with deeply nested routes.
         </Text>
       </Container>
     </MemoryRouter>

@@ -14,12 +14,15 @@ import {
   gridResponsiveSnippet,
   gridStartEndSnippet,
 } from './grid.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Grid
-
-A layout component that helps to create simple column-based layouts as well as
-more complex ones.
+<PageTitle
+  type="Layout"
+  title="Grid"
+  description="A layout component that helps to create simple column-based layouts as well as more complex ones."
+/>
 
 <Snippet
   py={4}
@@ -27,11 +30,9 @@ more complex ones.
   code={gridDefaultSnippet}
 />
 
-<ComponentInfos
-  component="grid"
-  classNames={['bui-Grid', 'bui-GridItem']}
-  usageCode={gridUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={gridUsageSnippet} />
 
 ## API reference
 
@@ -91,3 +92,7 @@ responsive designs.
 The start and end props can be used to position the item in the grid.
 
 <CodeBlock code={gridStartEndSnippet} />
+
+<Theming component="Grid" />
+
+<ChangelogComponent component="grid" />

@@ -8,11 +8,14 @@ import {
   tooltipTriggerPropDefs,
   tooltipPropDefs,
 } from './tooltip.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Tooltip
-
-A tooltip displays a description of an element on hover or focus.
+<PageTitle
+  title="Tooltip"
+  description="A tooltip displays a description of an element on hover or focus."
+/>
 
 <Snippet
   py={4}
@@ -21,11 +24,9 @@ A tooltip displays a description of an element on hover or focus.
   align="center"
 />
 
-<ComponentInfos
-  component="tooltip"
-  classNames={['bui-Tooltip', 'bui-ToltipArrow']}
-  usageCode={tooltipUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={tooltipUsageSnippet} />
 
 ## API reference
 
@@ -40,3 +41,7 @@ The trigger will wrap both the trigger and the tooltip.
 The tooltip will wrap the content of the tooltip.
 
 <PropsTable data={tooltipPropDefs} />
+
+<Theming component="Tooltip" />
+
+<ChangelogComponent component="tooltip" />

@@ -7,11 +7,14 @@ import {
   iconUsageSnippet,
   iconDefaultSnippet,
 } from './icon.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Icon
-
-Icons are used to represent an action or a state.
+<PageTitle
+  title="Icon"
+  description="Icons are used to represent an action or a state."
+/>
 
 <Snippet
   py={4}
@@ -20,12 +23,14 @@ Icons are used to represent an action or a state.
   code={iconDefaultSnippet}
 />
 
-<ComponentInfos
-  component="icon"
-  classNames={['bui-Icon']}
-  usageCode={iconUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={iconUsageSnippet} />
 
 ## API reference
 
 <PropsTable data={iconPropDefs} />
+
+<Theming component="Icon" />
+
+<ChangelogComponent component="icon" />

@@ -5,8 +5,6 @@ sidebar_label: Changelog
 description: Changelog documentation for different versions of the frontend system core APIs.
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 ## Introduction
 
 This section provides migration guides for different versions of the frontend system core APIs. Each guide will provide a summary of the changes that have been made for a particular Backstage release, and how to update your usage of the core APIs.

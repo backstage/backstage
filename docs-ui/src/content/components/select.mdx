@@ -12,11 +12,14 @@ import {
   selectResponsiveSnippet,
   selectIconSnippet,
 } from './select.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Select
-
-A common form component for choosing a predefined value in a dropdown menu.
+<PageTitle
+  title="Select"
+  description="A common form component for choosing a predefined value in a dropdown menu."
+/>
 
 <Snippet
   align="center"
@@ -25,20 +28,9 @@ A common form component for choosing a predefined value in a dropdown menu.
   code={selectDefaultSnippet}
 />
 
-<ComponentInfos
-  component="select"
-  classNames={[
-    'bui-Select',
-    'bui-SelectTrigger',
-    'bui-SelectValue',
-    'bui-SelectIcon',
-    'bui-SelectList',
-    'bui-SelectItem',
-    'bui-SelectItemIndicator',
-    'bui-SelectItemLabel',
-  ]}
-  usageCode={selectUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={selectUsageSnippet} />
 
 ## API reference
 
@@ -100,3 +92,7 @@ Here's a view when the select is disabled.
 Here's a view when the select is responsive.
 
 <CodeBlock code={selectResponsiveSnippet} />
+
+<Theming component="Select" />
+
+<ChangelogComponent component="select" />

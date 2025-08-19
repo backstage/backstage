@@ -1,5 +1,42 @@
 # @backstage/ui
 
+## 0.7.0-next.3
+
+### Minor Changes
+
+- 0615e54: We are moving our DataTable component to React Aria. We removed our DataTable to only use Table as a single and opinionated option for tables. This new structure is made possible by using React Aria under the hood.
+
+### Patch Changes
+
+- 230b410: **Breaking change** Move breadcrumb to fit in the `HeaderPage` instead of the `Header` in Backstage UI.
+- 8bdc491: Remove stylesheet import from Select component.
+- 404b426: Add `startCollapsed` prop on the `SearchField` component in BUI.
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- d4e603e: Updated Menu component in Backstage UI to use useId() from React Aria instead of React to support React 17.
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- de89a3d: Fixes some styles on the Select component in BUI.
+- 75fead9: Fixes a couple of small bugs in BUI including setting H1 and H2 correctly on the Header and HeaderPage.
+- 2f9a084: We are motion away from `motion` to use `gsap` instead to make Backstage UI backward compatible with React 17.
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- b0e47f3: **Breaking** We are upgrading our `Text` component to support all font sizes making the `Heading` component redundant. The new `Text` component introduces 4 sizes for title and 4 sizes for body text. All of these work in multiple colors and font weights. We improved the `as` prop to include all possible values. The `Link` component has also been updated to match the new `Text` component.
+
+### Patch Changes
+
+- e7ff178: Update styling of Tooltip element
+- e0e886f: Adds onTabSelectionChange to ui header component.
+
 ## 0.6.0
 
 ### Minor Changes

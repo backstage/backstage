@@ -35,6 +35,10 @@ import {
 } from '@backstage/catalog-client';
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
+import {
   CatalogService,
   CatalogServiceRequestOptions,
 } from '@backstage/plugin-catalog-node';
@@ -126,4 +130,9 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     locationRef: string,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<ValidateEntityResponse>;
+
+  analyzeLocation(
+    location: AnalyzeLocationRequest,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<AnalyzeLocationResponse>;
 }

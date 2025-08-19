@@ -41,7 +41,7 @@ export const alertDisplayAppRootElement =
     },
     factory: (originalFactory, { config }) => {
       return originalFactory({
-        element: () => <AlertDisplay {...config} />,
+        element: <AlertDisplay {...config} />,
       });
     },
   });

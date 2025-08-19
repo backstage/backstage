@@ -25,7 +25,6 @@ import {
   Text,
 } from 'react-aria-components';
 import clsx from 'clsx';
-import './Select.styles.css';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { FieldLabel } from '../FieldLabel';
@@ -58,7 +57,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
       console.warn(
-        'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        'Select requires either a visible label, aria-label, or aria-labelledby for accessibility',
       );
     }
   }, [label, ariaLabel, ariaLabelledBy]);

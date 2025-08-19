@@ -9,11 +9,14 @@ import {
   skeletonDemo1Snippet,
   skeletonDemo2Snippet,
 } from './skeleton.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Skeleton
-
-Use to show a placeholder while content is loading.
+<PageTitle
+  title="Skeleton"
+  description="Use to show a placeholder while content is loading."
+/>
 
 <Snippet
   align="center"
@@ -22,11 +25,9 @@ Use to show a placeholder while content is loading.
   code={skeletonDefaultSnippet}
 />
 
-<ComponentInfos
-  component="skeleton"
-  classNames={['bui-Skeleton']}
-  usageCode={skeletonUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={skeletonUsageSnippet} />
 
 ## API reference
 
@@ -57,3 +58,7 @@ You can use a mix of different sizes to create a more complex skeleton.
   code={skeletonDemo2Snippet}
   open
 />
+
+<Theming component="Skeleton" />
+
+<ChangelogComponent component="skeleton" />

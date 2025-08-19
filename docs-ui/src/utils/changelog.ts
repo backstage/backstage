@@ -114,8 +114,7 @@ export const changelog: ChangelogProps[] = [
   {
     components: [],
     version: '0.6.0',
-    description:
-      'We are consolidating all css files into a single styles.css in Canon.',
+    description: 'We are consolidating all css files into a single styles.css.',
     prs: ['30325'],
     type: 'fix',
   },
@@ -143,7 +142,7 @@ export const changelog: ChangelogProps[] = [
   {
     components: ['textfield'],
     version: '0.5.0',
-    description: '`TextField` in Canon now has multiple label sizes.',
+    description: '`TextField` now has multiple label sizes.',
     prs: ['30249'],
     type: 'breaking',
   },
@@ -494,7 +493,7 @@ export const changelog: ChangelogProps[] = [
   {
     components: [],
     version: '0.2.0',
-    description: 'Added Canon styles to Backstage',
+    description: 'Added global styles to Backstage',
     prs: ['29137'],
     type: 'new',
   },
@@ -531,7 +530,7 @@ export const changelog: ChangelogProps[] = [
   {
     components: [],
     version: '0.2.0',
-    description: 'Multiple updates on the Canon Docs site',
+    description: 'Multiple updates on the docs site',
     prs: ['28760'],
   },
 ];

@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.41.0",
+  "version": "1.42.0-next.3",
   "backstage": {
     "cli": {
       "new": {
@@ -23,7 +23,7 @@
     ]
   },
   "scripts": {
-    "build-storybook": "yarn ./storybook run build-storybook",
+    "build-storybook": "storybook build --output-dir dist-storybook",
     "build:all": "backstage-cli repo build --all",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs --exclude 'plugins/@(adr|adr-backend|adr-common|airbrake|airbrake-backend|allure|analytics-module-ga|analytics-module-ga4|analytics-module-newrelic-browser|apache-airflow|api-docs|api-docs-module-protoc-gen-doc|apollo-explorer|app-visualizer|azure-devops|azure-devops-backend|azure-devops-common|azure-sites|azure-sites-backend|azure-sites-common|badges|badges-backend|bazaar|bazaar-backend|bitbucket-cloud-common|bitrise|catalog-graph|catalog-graphql|catalog-import|catalog-unprocessed-entities|cicd-statistics|cicd-statistics-module-gitlab|circleci|cloudbuild|code-climate|code-coverage|code-coverage-backend|codescene|config-schema|cost-insights|cost-insights-common|dynatrace|entity-feedback|entity-feedback-backend|entity-feedback-common|entity-validation|example-todo-list|example-todo-list-backend|example-todo-list-common|firehydrant|fossa|gcalendar|gcp-projects|git-release-manager|github-actions|github-deployments|github-issues|github-pull-requests-board|gitops-profiles|gocd|graphiql|graphql-backend|graphql-voyager|ilert|jenkins|jenkins-backend|jenkins-common|kafka|kafka-backend|lighthouse|lighthouse-backend|lighthouse-common|linguist|linguist-backend|linguist-common|microsoft-calendar|newrelic|newrelic-dashboard|nomad|nomad-backend|octopus-deploy|opencost|pagerduty|periskop|periskop-backend|playlist|playlist-backend|playlist-common|proxy-backend|puppetdb|rollbar|rollbar-backend|sentry|shortcuts|splunk-on-call|stack-overflow|stack-overflow-backend|stackstorm|tech-radar|tech-radar-2|todo|todo-backend|xcmetrics)'",
     "build:api-reports": "yarn build:api-reports:only --tsc",
@@ -55,7 +55,7 @@
     "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn start example-app-next example-backend",
-    "storybook": "yarn ./storybook run storybook",
+    "storybook": "storybook dev -p 6006",
     "sync-issue-templates": "node ./.github/ISSUE_TEMPLATE/sync.js",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
@@ -109,8 +109,7 @@
     "csstype@npm:^3.0.2": "3.0.9",
     "csstype@npm:^3.1.2": "3.0.9",
     "csstype@npm:^3.1.3": "3.0.9",
-    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch",
-    "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0"
+    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
@@ -130,6 +129,13 @@
     "@octokit/rest": "^19.0.3",
     "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^15.0.0",
+    "@storybook/addon-essentials": "^8.6.12",
+    "@storybook/addon-interactions": "^8.6.12",
+    "@storybook/addon-links": "^8.6.12",
+    "@storybook/addon-storysource": "^8.6.12",
+    "@storybook/addon-themes": "^8.6.12",
+    "@storybook/react": "^8.6.12",
+    "@storybook/react-vite": "^8.6.12",
     "@techdocs/cli": "workspace:*",
     "@types/cacheable-request": "^8.3.6",
     "@types/memjs": "^1.3.3",
@@ -154,8 +160,10 @@
     "shx": "^0.4.0",
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
+    "storybook": "^8.6.12",
     "typedoc": "^0.28.0",
-    "typescript": "~5.6.0"
+    "typescript": "~5.7.0",
+    "vite": "^7.1.2"
   },
   "packageManager": "yarn@4.8.1",
   "engines": {

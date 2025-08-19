@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.11.1",
+  "version": "0.11.2-next.0",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -156,7 +156,7 @@
     "@types/express": "^4.17.6",
     "archiver": "^7.0.0",
     "base64-stream": "^1.0.0",
-    "better-sqlite3": "^11.0.0",
+    "better-sqlite3": "^12.0.0",
     "compression": "^1.7.4",
     "concat-stream": "^2.0.0",
     "cookie": "^0.7.0",
@@ -168,6 +168,7 @@
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",
+    "infinispan": "^0.12.0",
     "is-glob": "^4.0.3",
     "jose": "^5.0.0",
     "keyv": "^5.2.1",

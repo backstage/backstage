@@ -18,8 +18,16 @@ import type {
   TabsProps as AriaTabsProps,
   TabListProps as AriaTabListProps,
   TabPanelProps as AriaTabPanelProps,
+  TabProps as AriaTabProps,
 } from 'react-aria-components';
 import { MutableRefObject } from 'react';
+
+/**
+ * Strategies for matching the current route to determine which tab should be active.
+ *
+ * @public
+ */
+export type TabMatchStrategy = 'exact' | 'prefix';
 
 /**
  * Props for the Tabs component.
@@ -34,6 +42,20 @@ export interface TabsProps extends AriaTabsProps {}
  * @public
  */
 export interface TabListProps extends Omit<AriaTabListProps<object>, 'items'> {}
+
+/**
+ * Props for the Tab component.
+ *
+ * @public
+ */
+export interface TabProps extends AriaTabProps {
+  /**
+   * Strategy for matching the current route to determine if this tab should be active.
+   * - 'exact': Tab href must exactly match the current pathname (default)
+   * - 'prefix': Tab is active if current pathname starts with tab href
+   */
+  matchStrategy?: 'exact' | 'prefix';
+}
 
 /** Context for sharing refs between Tabs and TabList
  *
@@ -65,18 +87,4 @@ export interface TabsIndicatorsProps {
   tabsRef: MutableRefObject<HTMLDivElement | null>;
   hoveredKey: string | null;
   prevHoveredKey: MutableRefObject<string | null>;
-}
-
-/**
- * Context value for sharing refs and state between Tabs and TabList components.
- *
- * @internal
- */
-export interface TabsContextValue {
-  tabsRef: React.RefObject<HTMLDivElement>;
-  tabRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
-  hoveredKey: string | null;
-  prevHoveredKey: React.MutableRefObject<string | null>;
-  setHoveredKey: (key: string | null) => void;
-  setTabRef: (key: string, element: HTMLDivElement | null) => void;
 }

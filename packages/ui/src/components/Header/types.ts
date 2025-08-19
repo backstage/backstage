@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { TabsProps } from 'react-aria-components';
+import { TabMatchStrategy } from '../Tabs';
+
 /**
  * Props for the main Header component.
  *
@@ -22,10 +25,10 @@
 export interface HeaderProps {
   icon?: React.ReactNode;
   title?: string;
-  breadcrumbs?: HeaderBreadcrumb[];
+  titleLink?: string;
   customActions?: React.ReactNode;
-  menuItems?: HeaderMenuItem[];
   tabs?: HeaderTab[];
+  onTabSelectionChange?: TabsProps['onSelectionChange'];
 }
 
 /**
@@ -37,27 +40,12 @@ export interface HeaderTab {
   id: string;
   label: string;
   href?: string;
-}
-
-/**
- * Represents an option item in the header dropdown menu.
- *
- * @public
- */
-export interface HeaderMenuItem {
-  label: string;
-  value: string;
-  onClick?: () => void;
-}
-
-/**
- * Represents a breadcrumb item in the header.
- *
- * @public
- */
-export interface HeaderBreadcrumb {
-  label: string;
-  href: string;
+  /**
+   * Strategy for matching the current route to determine if this tab should be active.
+   * - 'exact': Tab href must exactly match the current pathname (default)
+   * - 'prefix': Tab is active if current pathname starts with tab href
+   */
+  matchStrategy?: TabMatchStrategy;
 }
 
 /**
@@ -68,8 +56,7 @@ export interface HeaderBreadcrumb {
 export interface HeaderToolbarProps {
   icon?: HeaderProps['icon'];
   title?: HeaderProps['title'];
-  breadcrumbs?: HeaderProps['breadcrumbs'];
+  titleLink?: HeaderProps['titleLink'];
   customActions?: HeaderProps['customActions'];
-  menuItems?: HeaderProps['menuItems'];
   hasTabs?: boolean;
 }

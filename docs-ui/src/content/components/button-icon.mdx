@@ -12,11 +12,14 @@ import {
   buttonIconResponsiveSnippet,
   buttonIconAsLinkSnippet,
 } from './button-icon.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# ButtonIcon
-
-A button component with a single icon that can be used to trigger actions.
+<PageTitle
+  title="ButtonIcon"
+  description="A button component with a single icon that can be used to trigger actions."
+/>
 
 <Snippet
   align="center"
@@ -25,11 +28,9 @@ A button component with a single icon that can be used to trigger actions.
   code={buttonIconDefaultSnippet}
 />
 
-<ComponentInfos
-  component="button-icon"
-  classNames={['bui-Button', 'bui-ButtonIcon']}
-  usageCode={buttonIconUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={buttonIconUsageSnippet} />
 
 ## API reference
 
@@ -78,3 +79,7 @@ Here's a view when buttons are disabled.
 Here's a view when buttons are responsive.
 
 <CodeBlock code={buttonIconResponsiveSnippet} />
+
+<Theming component="ButtonIcon" />
+
+<ChangelogComponent component="button-icon" />

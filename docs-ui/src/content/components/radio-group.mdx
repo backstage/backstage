@@ -12,11 +12,15 @@ import {
   radioGroupValidationSnippet,
   radioGroupReadOnlySnippet,
 } from './radio-group.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
 
-# RadioGroup
-
-A radio group allows a user to select a single item from a list of mutually exclusive options.
+<PageTitle
+  title="RadioGroup"
+  description="A radio group allows a user to select a single item from a list of mutually exclusive options."
+/>
 
 <Snippet
   align="center"
@@ -25,11 +29,9 @@ A radio group allows a user to select a single item from a list of mutually excl
   code={radioGroupDefaultSnippet}
 />
 
-<ComponentInfos
-  component="radio-group"
-  classNames={['bui-RadioGroup', 'bui-RadioGroupContent']}
-  usageCode={radioGroupUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={radioGroupUsageSnippet} />
 
 ## API reference
 
@@ -96,3 +98,7 @@ You can make the radio group read only by adding the `isReadOnly` prop to the `R
   preview={<RadioGroupSnippet story="ReadOnly" />}
   code={radioGroupReadOnlySnippet}
 />
+
+<Theming component="RadioGroup" />
+
+<ChangelogComponent component="radio-group" />

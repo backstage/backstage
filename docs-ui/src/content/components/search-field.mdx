@@ -7,12 +7,17 @@ import {
   searchFieldDefaultSnippet,
   searchFieldSizesSnippet,
   searchFieldDescriptionSnippet,
+  searchFieldCollapsibleSnippet,
 } from './search-field.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
 
-# SearchField
-
-A SearchField is a text field designed for searches.
+<PageTitle
+  title="SearchField"
+  description="A SearchField is a text field designed for searches."
+/>
 
 <Snippet
   align="center"
@@ -21,22 +26,9 @@ A SearchField is a text field designed for searches.
   code={searchFieldDefaultSnippet}
 />
 
-<ComponentInfos
-  component="searchfield"
-  classNames={[
-    'bui-SearchField',
-    'bui-TextField',
-    'bui-InputWrapper',
-    'bui-Input',
-    'bui-InputIcon',
-    'bui-FieldLabelWrapper',
-    'bui-FieldLabel',
-    'bui-FieldDescription',
-    'bui-FieldSecondaryLabel',
-    'bui-FieldError',
-  ]}
-  usageCode={searchFieldUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={searchFieldUsageSnippet} />
 
 ## API reference
 
@@ -67,3 +59,19 @@ Here's a simple SearchField with a description.
   preview={<SearchFieldSnippet story="WithDescription" />}
   code={searchFieldDescriptionSnippet}
 />
+
+### Collapsible
+
+You can make the SearchField collapsible by setting the `startCollapsed` prop to `true`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SearchFieldSnippet story="StartCollapsed" />}
+  code={searchFieldCollapsibleSnippet}
+/>
+
+<Theming component="SearchField" />
+
+<ChangelogComponent component="search-field" />

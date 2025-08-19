@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ declare module 'react-aria-components' {
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const { tabs, icon, title, menuItems, breadcrumbs, customActions } = props;
+  const { tabs, icon, title, titleLink, customActions, onTabSelectionChange } =
+    props;
 
   const { classNames } = useStyles('Header');
 
@@ -43,17 +44,21 @@ export const Header = (props: HeaderProps) => {
       <HeaderToolbar
         icon={icon}
         title={title}
-        menuItems={menuItems}
-        breadcrumbs={breadcrumbs}
+        titleLink={titleLink}
         customActions={customActions}
         hasTabs={hasTabs}
       />
       {tabs && (
         <div className={classNames.tabsWrapper}>
-          <Tabs>
+          <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (
-                <Tab key={tab.id} id={tab.id} href={tab.href}>
+                <Tab
+                  key={tab.id}
+                  id={tab.id}
+                  href={tab.href}
+                  matchStrategy={tab.matchStrategy}
+                >
                   {tab.label}
                 </Tab>
               ))}

@@ -5,8 +5,6 @@ sidebar_label: Plugins
 description: Frontend plugins
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 ## Introduction
 
 Frontend plugins are a foundational building block in Backstage and the frontend system. They are used to encapsulate and provide functionality for a Backstage app, such as new pages, navigational elements, and APIs; as well as extensions and features for other plugins, such as entity page cards and content for the Software Catalog, or result list items for the search plugin.
@@ -21,7 +19,7 @@ Frontend plugin instances are created with the `createFrontendPlugin` function, 
 // This creates a new extension, see "Extension Blueprints" documentation for more details
 const myPage = PageBlueprint.make({
   params: {
-    defaultPath: '/my-page',
+    path: '/my-page',
     loader: () => import('./MyPage').then(m => <m.MyPage />),
   },
 });
@@ -107,7 +105,7 @@ export default plugin.withOverrides({
     // Override the catalog index page with a completely custom implementation
     PageBlueprint.make({
       params: {
-        defaultPath: '/catalog',
+        path: '/catalog',
         routeRef: plugin.routes.catalogIndex,
         loader: () => import('./CustomCatalogIndexPage').then(m => <m.Page />),
       },

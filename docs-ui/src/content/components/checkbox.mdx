@@ -8,11 +8,14 @@ import {
   checkboxDefaultSnippet,
   checkboxVariantsSnippet,
 } from './checkbox.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# Checkbox
-
-A checkbox component that can be used to trigger actions.
+<PageTitle
+  title="Checkbox"
+  description="A checkbox component that can be used to trigger actions."
+/>
 
 <Snippet
   align="center"
@@ -21,11 +24,9 @@ A checkbox component that can be used to trigger actions.
   code={checkboxDefaultSnippet}
 />
 
-<ComponentInfos
-  component="checkbox"
-  classNames={['bui-Checkbox']}
-  usageCode={checkboxUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={checkboxUsageSnippet} />
 
 ## API reference
 
@@ -44,3 +45,7 @@ Here's a view when checkboxes have different variants.
   preview={<CheckboxSnippet story="AllVariants" />}
   code={checkboxVariantsSnippet}
 />
+
+<Theming component="Checkbox" />
+
+<ChangelogComponent component="checkbox" />

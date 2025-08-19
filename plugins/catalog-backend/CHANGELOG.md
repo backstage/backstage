@@ -1,5 +1,44 @@
 # @backstage/plugin-catalog-backend
 
+## 3.0.1-next.1
+
+### Patch Changes
+
+- 1752be6: Attempt to circumvent event listener memory leak in compression middleware
+- 9dd213c: Make the processing hash calculation not care about the order of the processors.
+
+  This change does not affect the behavior of the catalog, but it will make the processing
+  hash calculation more robust against changes in the order of processors. This should lead to
+  more stable processing hashes, which in turn should lead to fewer unnecessary reprocessing
+  of entities.
+
+  After deploying this fix, you may see a period of increased processing and stitching, but
+  this should stabilize over time as the processing hashes become more consistent.
+
+- fa6fa60: Fixed getLocationByEntity to use `original_value` instead of `value` when querying search table
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.1
+
+## 3.0.1-next.0
+
+### Patch Changes
+
+- 3a7dad9: Updated `better-sqlite3` to v12
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-permission-node@0.10.3-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 3.0.0
 
 ### Major Changes

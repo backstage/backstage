@@ -1,5 +1,26 @@
 # @backstage/backend-defaults
 
+## 0.11.2-next.0
+
+### Patch Changes
+
+- caee2eb: Fixed WinstonLogger throwing when redactions were null or undefined
+- 3a7dad9: Updated `better-sqlite3` to v12
+- Updated dependencies
+  - @backstage/backend-app-api@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.6.6-next.0
+  - @backstage/plugin-permission-node@0.10.3-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.2
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/integration-aws-node@0.1.17
+  - @backstage/types@1.2.1
+
 ## 0.11.1
 
 ### Patch Changes

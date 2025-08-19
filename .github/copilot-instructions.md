@@ -20,6 +20,8 @@ Before any of these commands can be run, you need to run `yarn install` in the p
 - Lint: Use `yarn lint --fix` in the project root to run the linter.
 - API reports: Before submitting a pull request with changes to any package in the workspace, run `yarn build:api-reports` in the project root to generate API reports for all packages.
 
+You MUST NOT create a release by running `yarn changesets version` or `yarn release` as part of any changes. Releases are created by separate workflows.
+
 All changes that affect the published version of packages in the `/packages` and `/plugins` directories must be accompanied by a changeset. See the guidelines in `/REVIEWING.md` for information on how to write good changesets. Changesets are stored in the `/.changeset` directory. Breaking changes must be accompanied by a `minor` version bump for packages that below version `1.0.0`, or a `major` version bump for packages that are at version `1.0.0` or higher.
 
 Never update ESLint, Prettier, or TypeScript configuration files unless specifically requested.

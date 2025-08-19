@@ -1,5 +1,20 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.5-next.1
+
+### Patch Changes
+
+- 0810cd8: correct rewrite rule to avoid extra subpath in proxy path
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-proxy-node@0.1.7-next.0
+  - @backstage/types@1.2.1
+
 ## 0.6.4
 
 ### Patch Changes

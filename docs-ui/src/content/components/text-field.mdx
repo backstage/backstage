@@ -8,11 +8,15 @@ import {
   textFieldSizesSnippet,
   textFieldDescriptionSnippet,
 } from './text-field.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
 
-# TextField
-
-A text field component for your forms.
+<PageTitle
+  title="TextField"
+  description="A text field component for your forms."
+/>
 
 <Snippet
   align="center"
@@ -21,21 +25,9 @@ A text field component for your forms.
   code={textFieldDefaultSnippet}
 />
 
-<ComponentInfos
-  component="textfield"
-  classNames={[
-    'bui-TextField',
-    'bui-InputWrapper',
-    'bui-Input',
-    'bui-InputIcon',
-    'bui-FieldLabelWrapper',
-    'bui-FieldLabel',
-    'bui-FieldDescription',
-    'bui-FieldSecondaryLabel',
-    'bui-FieldError',
-  ]}
-  usageCode={textFieldUsageSnippet}
-/>
+## Usage
+
+<CodeBlock code={textFieldUsageSnippet} />
 
 ## API reference
 
@@ -66,3 +58,7 @@ Here's a simple TextField with a description.
   preview={<TextFieldSnippet story="WithDescription" />}
   code={textFieldDescriptionSnippet}
 />
+
+<Theming component="TextField" />
+
+<ChangelogComponent component="text-field" />

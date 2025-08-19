@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.7.0-next.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 1.6.0
 
 ### Minor Changes

@@ -20,10 +20,10 @@ import type { ElementType } from 'react';
 import type { TextProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 
-function TextComponent<T extends ElementType = 'p'>(
+function TextComponent<T extends ElementType = 'span'>(
   {
     as,
-    variant = 'body',
+    variant = 'body-medium',
     weight = 'regular',
     color = 'primary',
     className,
@@ -33,7 +33,7 @@ function TextComponent<T extends ElementType = 'p'>(
   }: TextProps<T>,
   ref: React.Ref<any>,
 ) {
-  const Component = as || 'p';
+  const Component = as || 'span';
 
   const { classNames, dataAttributes } = useStyles('Text', {
     variant,
@@ -46,6 +46,7 @@ function TextComponent<T extends ElementType = 'p'>(
       ref={ref}
       className={clsx(classNames.root, className)}
       data-truncate={truncate}
+      data-as={as}
       {...dataAttributes}
       style={style}
       {...restProps}

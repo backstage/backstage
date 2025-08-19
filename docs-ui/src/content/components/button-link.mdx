@@ -11,11 +11,14 @@ import {
   buttonLinkDisabledSnippet,
   buttonLinkResponsiveSnippet,
 } from './button-link.props';
-import { ComponentInfos } from '@/components/ComponentInfos';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
 
-# ButtonLink
-
-A button component that can be used as a link.
+<PageTitle
+  title="ButtonLink"
+  description="A button component that can be used as a link."
+/>
 
 <Snippet
   align="center"
@@ -24,11 +27,9 @@ A button component that can be used as a link.
   code={buttonLinkVariantsSnippet}
 />
 
-<ComponentInfos
-  component="button-link"
-  classNames={['bui-Button', 'bui-ButtonLink']}
-  usageCode={buttonLinkSnippetUsage}
-/>
+## Usage
+
+<CodeBlock code={buttonLinkSnippetUsage} />
 
 ## API reference
 
@@ -89,3 +90,7 @@ Here's a view when buttons are disabled.
 Here's a view when buttons are responsive.
 
 <CodeBlock code={buttonLinkResponsiveSnippet} />
+
+<Theming component="ButtonLink" />
+
+<ChangelogComponent component="button-link" />

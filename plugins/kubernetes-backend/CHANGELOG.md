@@ -1,5 +1,38 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.0-next.1
+
+### Minor Changes
+
+- 759568d: **BREAKING CHANGE**: Removed support for the legacy backend system. This means that the deprecated `createRouter` and `KubernetesBuilder` and related types have been removed. Please refer to the [relevant documentation](https://backstage.io/docs/features/kubernetes/installation/#adding-kubernetes-backend-plugin) to configure the Kubernetes plugin.
+
+  **BREAKING CHANGE**: The deprecated types `AuthenticationStrategy`, `AuthMetadata`, `ClusterDetails`, `CustomResource`, `CustomResourcesByEntity`, `FetchResponseWrapper`, `KubernetesBuilder`, `KubernetesBuilderReturn`, `KubernetesClustersSupplier`, `KubernetesCredential`, `KubernetesEnvironment`, `KubernetesFetcher`, `KubernetesObjectsProvider`, `KubernetesObjectTypes`, `KubernetesServiceLocator`,`ObjectFetchParams`, `ObjectToFetch`,`RouterOptions` and `ServiceLocatorRequestContext` should all now be imported from `@backstage/plugin-kubernetes-node`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.3.3-next.0
+
+## 0.19.9-next.0
+
+### Patch Changes
+
+- 00ebaeb: Remove usage of the deprecated `loggerToWinstonLogger` from `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-kubernetes-node@0.3.3-next.0
+  - @backstage/plugin-auth-node@0.6.6-next.0
+  - @backstage/plugin-permission-node@0.10.3-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.17
+  - @backstage/types@1.2.1
+  - @backstage/plugin-kubernetes-common@0.9.6
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 0.19.8
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.11.0-next.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 0.10.0
 
 ### Minor Changes

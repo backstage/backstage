@@ -42,7 +42,7 @@ The conversion functions such as `convertLegacyPageExtension` will attempt to in
 ```ts
 const convertedIndexPage = convertLegacyPageExtension(TechDocsIndexPage, {
   name: 'index',
-  defaultPath: '/docs',
+  path: '/docs',
 });
 ```
 
@@ -72,10 +72,10 @@ const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
   extensions: [
     convertLegacyPageExtension(TechDocsIndexPage, {
       name: 'index',
-      defaultPath: '/docs',
+      path: '/docs',
     }),
     convertLegacyPageExtension(TechDocsReaderPage, {
-      defaultPath: '/docs/:namespace/:kind/:name/*',
+      path: '/docs/:namespace/:kind/:name/*',
     }),
     convertLegacyEntityContentExtension(EntityTechdocsContent),
   ],
