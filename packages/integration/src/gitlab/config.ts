@@ -22,6 +22,32 @@ const GITLAB_HOST = 'gitlab.com';
 const GITLAB_API_BASE_URL = 'https://gitlab.com/api/v4';
 
 /**
+ * Reads an optional number array from config
+ */
+function readOptionalNumberArray(
+  config: Config,
+  key: string,
+): number[] | undefined {
+  const value = config.getOptional(key);
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!Array.isArray(value)) {
+    throw new Error(
+      `Invalid ${key} config: expected an array, got ${typeof value}`,
+    );
+  }
+  return value.map((item, index) => {
+    if (typeof item !== 'number') {
+      throw new Error(
+        `Invalid ${key} config: all values must be numbers, got ${typeof item} at index ${index}`,
+      );
+    }
+    return item;
+  });
+}
+
+/**
  * The configuration parameters for a single GitLab integration.
  *
  * @public
@@ -59,6 +85,24 @@ export type GitLabIntegrationConfig = {
    * Signing key to sign commits
    */
   commitSigningKey?: string;
+
+  /**
+   * Maximum number of retries for failed requests
+   * @defaultValue 0
+   */
+  maxRetries: number;
+
+  /**
+   * HTTP status codes that should trigger a retry
+   * @defaultValue []
+   */
+  retryStatusCodes: number[];
+
+  /**
+   * Rate limit for requests per minute
+   * @defaultValue -1
+   */
+  limitPerMinute: number;
 };
 
 /**
@@ -100,12 +144,20 @@ export function readGitLabIntegrationConfig(
     );
   }
 
+  const maxRetries = config.getOptionalNumber('maxRetries') ?? 0;
+  const limitPerMinute = config.getOptionalNumber('limitPerMinute') ?? -1;
+  const retryStatusCodes =
+    readOptionalNumberArray(config, 'retryStatusCodes') ?? [];
+
   return {
     host,
     token,
     apiBaseUrl,
     baseUrl,
     commitSigningKey: config.getOptionalString('commitSigningKey'),
+    maxRetries,
+    retryStatusCodes,
+    limitPerMinute,
   };
 }
 
@@ -129,6 +181,9 @@ export function readGitLabIntegrationConfigs(
       host: GITLAB_HOST,
       apiBaseUrl: GITLAB_API_BASE_URL,
       baseUrl: `https://${GITLAB_HOST}`,
+      maxRetries: 0,
+      retryStatusCodes: [],
+      limitPerMinute: -1,
     });
   }
 

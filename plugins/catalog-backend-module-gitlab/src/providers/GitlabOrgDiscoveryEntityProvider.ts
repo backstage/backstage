@@ -199,7 +199,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       options.groupNameTransformer ?? defaultGroupNameTransformer;
 
     this.gitLabClient = new GitLabClient({
-      config: this.integration.config,
+      integration: this.integration,
       logger: this.logger,
     });
   }

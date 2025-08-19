@@ -17,7 +17,21 @@
 import { ConfigReader } from '@backstage/config';
 import { GitLabIntegration, replaceGitLabUrlType } from './GitLabIntegration';
 
+// Mock pThrottle to make testing easier
+jest.mock('p-throttle', () => {
+  return jest.fn(() => (fn: any) => fn);
+});
+
+// Mock global fetch
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
+
 describe('GitLabIntegration', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFetch.mockResolvedValue(new Response('{}', { status: 200 }));
+  });
+
   it('has a working factory', () => {
     const integrations = GitLabIntegration.factory({
       config: new ConfigReader({
@@ -45,13 +59,210 @@ describe('GitLabIntegration', () => {
   });
 
   it('resolve edit URL', () => {
-    const integration = new GitLabIntegration({ host: 'h.com' } as any);
+    const integration = new GitLabIntegration({
+      host: 'h.com',
+      apiBaseUrl: 'https://h.com/api/v4',
+      baseUrl: 'https://h.com',
+      maxRetries: 0,
+      retryStatusCodes: [],
+      limitPerMinute: -1,
+    });
 
     expect(
       integration.resolveEditUrl(
         'https://gitlab.com/my-org/my-project/-/blob/develop/README.md',
       ),
     ).toBe('https://gitlab.com/my-org/my-project/-/edit/develop/README.md');
+  });
+
+  describe('fetch strategy', () => {
+    it('uses plain fetch when no throttling or retries configured', async () => {
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        maxRetries: 0,
+        retryStatusCodes: [],
+        limitPerMinute: -1,
+      });
+
+      await integration.fetch('https://example.com');
+
+      expect(mockFetch).toHaveBeenCalledWith('https://example.com', {
+        mode: 'same-origin',
+      });
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('applies retry logic when maxRetries > 0', async () => {
+      mockFetch
+        .mockResolvedValueOnce(new Response('{}', { status: 429 }))
+        .mockResolvedValueOnce(new Response('{}', { status: 200 }));
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        maxRetries: 3,
+        retryStatusCodes: [429],
+        limitPerMinute: -1,
+      });
+
+      const response = await integration.fetch('https://example.com');
+
+      expect(response.status).toBe(200);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not retry when status code is not in retryStatusCodes', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('{}', { status: 404 }));
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        maxRetries: 3,
+        retryStatusCodes: [429, 500],
+        limitPerMinute: -1,
+      });
+
+      const response = await integration.fetch('https://example.com');
+
+      expect(response.status).toBe(404);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops retrying after maxRetries attempts', async () => {
+      mockFetch.mockResolvedValue(new Response('{}', { status: 429 }));
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        maxRetries: 2,
+        retryStatusCodes: [429],
+        limitPerMinute: -1,
+      });
+
+      const response = await integration.fetch('https://example.com');
+
+      expect(response.status).toBe(429);
+      expect(mockFetch).toHaveBeenCalledTimes(3); // initial + 2 retries
+    });
+
+    it('applies throttling when limitPerMinute > 0', async () => {
+      const pThrottle = require('p-throttle');
+      const throttleMock = jest.fn(() => (fn: any) => fn);
+      pThrottle.mockReturnValue(throttleMock);
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        maxRetries: 0,
+        retryStatusCodes: [],
+        limitPerMinute: 60,
+      });
+
+      await integration.fetch('https://example.com');
+
+      expect(pThrottle).toHaveBeenCalledWith({
+        limit: 60,
+        interval: 60_000,
+      });
+      expect(throttleMock).toHaveBeenCalled();
+    });
+
+    it('applies both throttling and retry when both are configured', async () => {
+      const pThrottle = require('p-throttle');
+      const throttleMock = jest.fn((fn: any) => fn);
+      pThrottle.mockReturnValue(throttleMock);
+
+      mockFetch
+        .mockResolvedValueOnce(new Response('{}', { status: 429 }))
+        .mockResolvedValueOnce(new Response('{}', { status: 200 }));
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        maxRetries: 3,
+        retryStatusCodes: [429],
+        limitPerMinute: 60,
+      });
+
+      const response = await integration.fetch('https://example.com');
+
+      expect(response.status).toBe(200);
+      expect(pThrottle).toHaveBeenCalledWith({
+        limit: 60,
+        interval: 60_000,
+      });
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('retries based on configured status codes', async () => {
+      // Use setTimeout mock that resolves immediately
+      jest.spyOn(global, 'setTimeout').mockImplementation((callback: any) => {
+        callback();
+        return 0 as any;
+      });
+
+      const retryAfterResponse = new Response('{}', {
+        status: 429,
+        headers: { 'Retry-After': '2' },
+      });
+      const successResponse = new Response('{}', { status: 200 });
+
+      mockFetch
+        .mockResolvedValueOnce(retryAfterResponse)
+        .mockResolvedValueOnce(successResponse);
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        maxRetries: 3,
+        retryStatusCodes: [429],
+        limitPerMinute: -1,
+      });
+
+      const response = await integration.fetch('https://example.com');
+
+      expect(response.status).toBe(200);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+
+      jest.restoreAllMocks();
+    });
+
+    it('retries multiple times for persistent failures', async () => {
+      // Use setTimeout mock that resolves immediately
+      jest.spyOn(global, 'setTimeout').mockImplementation((callback: any) => {
+        callback();
+        return 0 as any;
+      });
+
+      mockFetch
+        .mockResolvedValueOnce(new Response('{}', { status: 500 }))
+        .mockResolvedValueOnce(new Response('{}', { status: 500 }))
+        .mockResolvedValueOnce(new Response('{}', { status: 200 }));
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        maxRetries: 3,
+        retryStatusCodes: [500],
+        limitPerMinute: -1,
+      });
+
+      const response = await integration.fetch('https://example.com');
+
+      expect(response.status).toBe(200);
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+
+      jest.restoreAllMocks();
+    });
   });
 });
 

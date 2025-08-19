@@ -66,6 +66,10 @@ describe('readGitLabIntegrationConfig', () => {
       token: 't',
       apiBaseUrl: 'https://a.com',
       baseUrl: 'https://baseurl.for.me/gitlab',
+      commitSigningKey: undefined,
+      limitPerMinute: -1,
+      maxRetries: 0,
+      retryStatusCodes: [],
     });
   });
 
@@ -77,6 +81,10 @@ describe('readGitLabIntegrationConfig', () => {
       host: 'gitlab.com',
       apiBaseUrl: 'https://gitlab.com/api/v4',
       baseUrl: 'https://gitlab.com',
+      commitSigningKey: undefined,
+      limitPerMinute: -1,
+      maxRetries: 0,
+      retryStatusCodes: [],
     });
   });
 
@@ -89,6 +97,9 @@ describe('readGitLabIntegrationConfig', () => {
       host: 'gitlab.com',
       baseUrl: 'https://gitlab.com',
       apiBaseUrl: 'https://gitlab.com/api/v4',
+      limitPerMinute: -1,
+      maxRetries: 0,
+      retryStatusCodes: [],
     });
   });
 
@@ -119,6 +130,11 @@ describe('readGitLabIntegrationConfig', () => {
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
       baseUrl: 'https://a.com',
+      token: undefined, // token is filtered out on frontend
+      commitSigningKey: undefined,
+      limitPerMinute: -1,
+      maxRetries: 0,
+      retryStatusCodes: [],
     });
   });
 });
@@ -144,6 +160,9 @@ describe('readGitLabIntegrationConfigs', () => {
       token: 't',
       apiBaseUrl: 'https://a.com/api/v4',
       baseUrl: 'https://a.com',
+      limitPerMinute: -1,
+      maxRetries: 0,
+      retryStatusCodes: [],
     });
   });
 
@@ -154,6 +173,9 @@ describe('readGitLabIntegrationConfigs', () => {
         host: 'gitlab.com',
         apiBaseUrl: 'https://gitlab.com/api/v4',
         baseUrl: 'https://gitlab.com',
+        limitPerMinute: -1,
+        maxRetries: 0,
+        retryStatusCodes: [],
       },
     ]);
   });
