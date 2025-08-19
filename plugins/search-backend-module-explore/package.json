@@ -48,7 +48,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage-community/plugin-explore-common": "^0.0.7",
+    "@backstage-community/plugin-explore-common": "^0.5.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
