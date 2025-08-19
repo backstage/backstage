@@ -88,7 +88,7 @@ export class InfinispanOptionsMapper {
           ...(name && { name }),
           servers: clusterConf.getConfigArray('servers').map(serverConf => ({
             host: serverConf.getString('host'),
-            port: serverConf.getNumber('port'),
+            port: serverConf.getOptionalNumber('port') ?? 11222,
           })),
         } as InfinispanClusterConfig;
       });
