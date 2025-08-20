@@ -16,21 +16,9 @@
 
 import { RuleOptions } from './types';
 
-export default ({ theme, sidebar }: RuleOptions) => {
-  const sidebarWidth = sidebar.isPresent ? `${sidebar.width}px` : '0px';
-  const sidebarMargin = sidebar.isPresent ? '16rem' : '0';
+const SIDEBAR_WIDTH = '224px';
 
-  // Calculate the sidebar position for mobile layouts
-  let sidebarLeftPosition;
-  if (!sidebar.isPresent) {
-    sidebarLeftPosition = '-16rem';
-  } else if (sidebar.isPinned) {
-    sidebarLeftPosition = `calc(-16rem + ${sidebarWidth})`;
-  } else {
-    sidebarLeftPosition = 'calc(-16rem + 72px)';
-  }
-
-  return `
+export default ({ theme, sidebar }: RuleOptions) => `
 /*==================  Layout  ==================*/
 
 /* mkdocs material v9 compat */
@@ -134,12 +122,12 @@ export default ({ theme, sidebar }: RuleOptions) => {
 
 .md-content {
   max-width: calc(100% - 16rem * 2);
-  margin-left: ${sidebarMargin};
+  margin-left: 16rem;
   margin-bottom: 50px;
 }
 
 .md-content > .md-sidebar {
-  left: ${sidebarMargin};
+  left: 16rem;
 }
 
 .md-footer {
@@ -221,7 +209,11 @@ export default ({ theme, sidebar }: RuleOptions) => {
   .md-sidebar--primary {
     width: 16rem !important;
     z-index: 200;
-    left: ${sidebarLeftPosition} !important;
+    left: ${
+      sidebar.isPinned
+        ? `calc(-16rem + ${SIDEBAR_WIDTH})`
+        : 'calc(-16rem + 72px)'
+    } !important;
   }
   .md-sidebar--secondary:not([hidden]) {
     display: none;
@@ -277,4 +269,3 @@ export default ({ theme, sidebar }: RuleOptions) => {
   }
 }
 `;
-};
