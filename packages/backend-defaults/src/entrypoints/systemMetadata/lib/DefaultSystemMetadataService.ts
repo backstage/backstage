@@ -22,7 +22,9 @@ import {
   BackstageInstance,
   SystemMetadataService,
 } from '@backstage/backend-plugin-api';
+import { Observable } from '@backstage/types';
 import z from 'zod';
+import ObservableImpl from 'zen-observable';
 
 const targetObjectSchema = z.object({
   internal: z.string(),
@@ -30,10 +32,116 @@ const targetObjectSchema = z.object({
 });
 
 /**
+ * A basic implementation of ReactiveX behavior subjects.
+ *
+ * A subject is a convenient way to create an observable when you want
+ * to fan out a single value to all subscribers.
+ *
+ * The BehaviorSubject will emit the most recently emitted value or error
+ * whenever a new observer subscribes to the subject.
+ *
+ * See http://reactivex.io/documentation/subject.html
+ *
+ * FORKED FROM core-app-api - where should this live?
+ */
+
+export class BehaviorSubject<T>
+  implements Observable<T>, ZenObservable.SubscriptionObserver<T>
+{
+  private isClosed: boolean;
+  private currentValue: T;
+  private terminatingError: Error | undefined;
+  private readonly observable: Observable<T>;
+
+  constructor(value: T) {
+    this.isClosed = false;
+    this.currentValue = value;
+    this.terminatingError = undefined;
+    this.observable = new ObservableImpl<T>(subscriber => {
+      if (this.isClosed) {
+        if (this.terminatingError) {
+          subscriber.error(this.terminatingError);
+        } else {
+          subscriber.complete();
+        }
+        return () => {};
+      }
+
+      subscriber.next(this.currentValue);
+
+      this.subscribers.add(subscriber);
+      return () => {
+        this.subscribers.delete(subscriber);
+      };
+    });
+  }
+
+  private readonly subscribers = new Set<
+    ZenObservable.SubscriptionObserver<T>
+  >();
+
+  [Symbol.observable]() {
+    return this;
+  }
+
+  get closed() {
+    return this.isClosed;
+  }
+
+  next(value: T) {
+    if (this.isClosed) {
+      throw new Error('BehaviorSubject is closed');
+    }
+    this.currentValue = value;
+    this.subscribers.forEach(subscriber => subscriber.next(value));
+  }
+
+  error(error: Error) {
+    if (this.isClosed) {
+      throw new Error('BehaviorSubject is closed');
+    }
+    this.isClosed = true;
+    this.terminatingError = error;
+    this.subscribers.forEach(subscriber => subscriber.error(error));
+  }
+
+  complete() {
+    if (this.isClosed) {
+      throw new Error('BehaviorSubject is closed');
+    }
+    this.isClosed = true;
+    this.subscribers.forEach(subscriber => subscriber.complete());
+  }
+
+  subscribe(observer: ZenObservable.Observer<T>): ZenObservable.Subscription;
+  subscribe(
+    onNext: (value: T) => void,
+    onError?: (error: any) => void,
+    onComplete?: () => void,
+  ): ZenObservable.Subscription;
+  subscribe(
+    onNext: ZenObservable.Observer<T> | ((value: T) => void),
+    onError?: (error: any) => void,
+    onComplete?: () => void,
+  ): ZenObservable.Subscription {
+    const observer =
+      typeof onNext === 'function'
+        ? {
+            next: onNext,
+            error: onError,
+            complete: onComplete,
+          }
+        : onNext;
+
+    return this.observable.subscribe(observer);
+  }
+}
+
+/**
  * @alpha
  */
 export class DefaultSystemMetadataService implements SystemMetadataService {
-  private instances: BackstageInstance[];
+  private instance$: BehaviorSubject<BackstageInstance[]>;
   constructor(
     private options: { logger: LoggerService; config: RootConfigService },
   ) {
@@ -60,9 +168,9 @@ export class DefaultSystemMetadataService implements SystemMetadataService {
       }
       return instances;
     };
-    this.instances = getInstances();
+    this.instance$ = new BehaviorSubject(getInstances());
     this.options.config.subscribe?.(() => {
-      this.instances = getInstances();
+      this.instance$.next(getInstances());
     });
   }
 
@@ -73,9 +181,7 @@ export class DefaultSystemMetadataService implements SystemMetadataService {
     return new DefaultSystemMetadataService(pluginEnv);
   }
 
-  async introspect() {
-    return {
-      instances: this.instances,
-    };
+  instances(): Observable<BackstageInstance[]> {
+    return this.instance$;
   }
 }

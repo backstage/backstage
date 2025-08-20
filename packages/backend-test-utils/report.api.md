@@ -9,6 +9,7 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { BackstageInstance } from '@backstage/backend-plugin-api';
 import { BackstageNonePrincipal } from '@backstage/backend-plugin-api';
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import { BackstageServicePrincipal } from '@backstage/backend-plugin-api';
@@ -397,12 +398,17 @@ export namespace mockServices {
         partialImpl?: Partial<SchedulerService> | undefined,
       ) => ServiceMock<SchedulerService>;
   }
+  export function systemMetadata(options: {
+    instances: BackstageInstance[];
+  }): SystemMetadataService;
   // (undocumented)
   export namespace systemMetadata {
-    const factory: () => ServiceFactory<
+    const factory: (options: {
+      instances: BackstageInstance[];
+    }) => ServiceFactory<
       SystemMetadataService,
       'root',
-      'singleton'
+      'singleton' | 'multiton'
     >;
     const mock: (
       partialImpl?: Partial<SystemMetadataService> | undefined,

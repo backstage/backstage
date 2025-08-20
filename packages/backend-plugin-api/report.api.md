@@ -14,6 +14,7 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { Observable } from '@backstage/types';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -762,9 +763,7 @@ export interface ServiceRefOptions<
 // @public (undocumented)
 export interface SystemMetadataService {
   // (undocumented)
-  introspect(): Promise<{
-    instances: BackstageInstance[];
-  }>;
+  instances(): Observable<BackstageInstance[]>;
 }
 
 // @public

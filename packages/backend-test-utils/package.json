@@ -79,6 +79,7 @@
     "text-extensions": "^2.4.0",
     "uuid": "^11.0.0",
     "yn": "^4.0.0",
+    "zen-observable": "^0.10.0",
     "zod": "^3.22.4",
     "zod-to-json-schema": "^3.20.4"
   },

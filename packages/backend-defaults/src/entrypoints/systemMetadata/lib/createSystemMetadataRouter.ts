@@ -16,7 +16,10 @@
 
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { BackendFeatureMeta } from '@backstage/backend-plugin-api/alpha';
-import type { SystemMetadataService } from '@backstage/backend-plugin-api';
+import type {
+  BackstageInstance,
+  SystemMetadataService,
+} from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 
 export async function createSystemMetadataRouter(options: {
@@ -25,23 +28,22 @@ export async function createSystemMetadataRouter(options: {
 }) {
   const { logger, systemMetadata } = options;
 
-  async function getInstances() {
-    const instances = await systemMetadata.introspect();
-    return instances.instances;
-  }
+  let instances: BackstageInstance[] = [];
+  systemMetadata.instances().subscribe({
+    next: value => {
+      instances = value;
+    },
+  });
 
-  logger.info(
-    `Instances in this system: ${JSON.stringify(await getInstances())}`,
-  );
+  logger.info(`Instances in this system: ${JSON.stringify(instances)}`);
 
   const router = Router();
 
   router.get('/instances', async (_, res) => {
-    res.json(await getInstances());
+    res.json({ items: instances });
   });
 
   router.get('/features/installed', async (_, res) => {
-    const instances = await getInstances();
     const featurePromises = await Promise.allSettled(
       instances.map(async instance => {
         const response = await fetch(
