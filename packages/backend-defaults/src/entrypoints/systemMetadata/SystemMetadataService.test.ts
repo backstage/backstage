@@ -17,7 +17,11 @@ import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import { systemMetadataServiceFactory } from './systemMetadataServiceFactory';
 import { mockServices } from '@backstage/backend-test-utils';
 import getPort from 'get-port';
-import { createBackendPlugin } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendPlugin,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 
 const baseFactories = [
   mockServices.rootHealth.factory(),
@@ -150,50 +154,141 @@ describe('SystemMetadataService', () => {
       });
     });
 
+    afterEach(async () => {
+      await instance1.stop();
+      await instance2.stop();
+    });
+  });
+
+  describe('single backend test', () => {
+    let port: number;
+    let instance: Backend;
+    beforeEach(async () => {
+      port = await getPort();
+
+      instance = createSpecializedBackend({
+        defaultServiceFactories: [
+          ...baseFactories,
+          systemMetadataServiceFactory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                listen: {
+                  port,
+                },
+              },
+              discovery: {
+                instances: [
+                  {
+                    baseUrl: `http://localhost:${port}`,
+                  },
+                ],
+              },
+            },
+          }),
+        ],
+      });
+    });
+
     it('should list all known instances', async () => {
-      await instance1.start();
-      await instance2.start();
+      await instance.start();
+
+      const instanceResponse = await fetch(
+        `http://localhost:${port}/.backstage/systemMetadata/v1/instances`,
+      );
+
+      expect(instanceResponse.status).toBe(200);
+      await expect(instanceResponse.json()).resolves.toMatchObject({
+        items: [
+          {
+            externalUrl: `http://localhost:${port}`,
+            internalUrl: `http://localhost:${port}`,
+          },
+        ],
+      });
+    });
+
+    it('should react to config updates', async () => {
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            listen: {
+              port,
+            },
+          },
+          discovery: {
+            instances: [
+              {
+                baseUrl: `http://localhost:${port}`,
+              },
+              {
+                baseUrl: `not-a-real-host`,
+              },
+            ],
+          },
+        },
+      });
+      const configFactory = createServiceFactory({
+        service: coreServices.rootConfig,
+        deps: {},
+        factory: () => config,
+      });
+      instance = createSpecializedBackend({
+        defaultServiceFactories: [
+          ...baseFactories,
+          systemMetadataServiceFactory,
+          configFactory,
+        ],
+      });
+      await instance.start();
 
       const instance1Response = await fetch(
-        `http://localhost:${instance1HttpPort}/.backstage/systemMetadata/v1/instances`,
+        `http://localhost:${port}/.backstage/systemMetadata/v1/instances`,
       );
 
       expect(instance1Response.status).toBe(200);
       await expect(instance1Response.json()).resolves.toMatchObject({
         items: [
           {
-            externalUrl: `http://localhost:${instance1HttpPort}`,
-            internalUrl: `http://localhost:${instance1HttpPort}`,
+            externalUrl: `http://localhost:${port}`,
+            internalUrl: `http://localhost:${port}`,
           },
           {
-            externalUrl: `http://localhost:${instance2HttpPort}`,
-            internalUrl: `http://localhost:${instance2HttpPort}`,
+            externalUrl: `not-a-real-host`,
+            internalUrl: `not-a-real-host`,
           },
         ],
       });
 
-      const instance2Response = await fetch(
-        `http://localhost:${instance2HttpPort}/.backstage/systemMetadata/v1/instances`,
+      config.update({
+        data: {
+          discovery: {
+            instances: [
+              {
+                baseUrl: `http://localhost:${port}`,
+              },
+            ],
+          },
+        },
+      });
+
+      const responseAfterUpdate = await fetch(
+        `http://localhost:${port}/.backstage/systemMetadata/v1/instances`,
       );
 
-      expect(instance2Response.status).toBe(200);
-      await expect(instance2Response.json()).resolves.toMatchObject({
+      expect(responseAfterUpdate.status).toBe(200);
+      await expect(responseAfterUpdate.json()).resolves.toMatchObject({
         items: [
           {
-            externalUrl: `http://localhost:${instance1HttpPort}`,
-            internalUrl: `http://localhost:${instance1HttpPort}`,
-          },
-          {
-            externalUrl: `http://localhost:${instance2HttpPort}`,
-            internalUrl: `http://localhost:${instance2HttpPort}`,
+            externalUrl: `http://localhost:${port}`,
+            internalUrl: `http://localhost:${port}`,
           },
         ],
       });
     });
 
     afterEach(async () => {
-      await instance1.stop();
-      await instance2.stop();
+      await instance.stop();
     });
   });
 });
