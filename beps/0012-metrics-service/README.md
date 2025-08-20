@@ -72,16 +72,16 @@ All Backstage metrics follow this hierarchical pattern:
 **Where:**
 
 - `backstage` is the root namespace for all Backstage metrics
-- `{scope}` is the system scope (either **plugin** or **framework**)
-- `{scope_name}` is the name of the plugin or framework service (e.g., `catalog`, `scaffolder`, `database`, `scheduler`)
-- `{metric_name}` is the hierarchical metric name as provided by the plugin author (e.g., `entities.processed.total`, `tasks.completed.total`)
+- `{scope}` is the system scope (either **plugin** or **core**)
+- `{scope_name}` is the name of the plugin or core service (e.g., `catalog`, `scaffolder`, `database`, `scheduler`)
+- `{metric_name}` is the hierarchical metric name as provided by the plugin author (e.g., `entity.count`, `tasks.completed.total`)
 
 ### Scope
 
 The `scope` represents where it belongs in the Backstage ecosystem.
 
-- `plugin` - A plugin-specific metric (e.g. `backstage.plugin.catalog.entities.count`)
-- `framework` - A metric provided by the framework (e.g. `backstage.framework.database.connections.active`)
+- `plugin` - A plugin-specific metric (e.g. `backstage.plugin.catalog.entity.count`)
+- `core` - A metric provided by the core system (e.g. `backstage.core.database.connections.active`)
 
 ### Plugin-Scoped Metrics
 
@@ -95,15 +95,15 @@ backstage.plugin.techdocs.builds.active
 backstage.plugin.auth.sessions.active.total # todo: technically a core service and a backend plugin
 ```
 
-### Framework-Scoped Metrics
+### Core-Scoped Metrics
 
-Pattern: `backstage.framework.{service}.{metric_name}`
+Pattern: `backstage.core.{service}.{metric_name}`
 
 ```yaml
 # Examples
-backstage.framework.database.connections.active
-backstage.framework.scheduler.tasks.queued.total
-backstage.framework.httpRouter.requests.total
+backstage.core.database.connections.active
+backstage.core.scheduler.tasks.queued.total
+backstage.core.httpRouter.requests.total
 ```
 
 ## Design Details
@@ -164,14 +164,16 @@ interface MetricsService {
 
 #### Root Metrics Service
 
-The `RootMetricsService` is responsible for providing metrics to other root services and creating both plugin-scoped and framework-scoped `MetricsService` instances.
+The `RootMetricsService` is responsible for providing metrics to other root services and creating both plugin-scoped and core-scoped `MetricsService` instances.
 
 ```ts
 interface RootMetricsService {
   // note: no config is provided to the root service.
   static forRoot(): RootMetricsService;
   forPlugin(pluginId: string): MetricsService;
-  forService(serviceName: string, scope: 'plugin' | 'service'): MetricsService;
+
+  // final implementation will be similar to
+  forService(serviceName: string, scope: 'plugin' | 'core'): MetricsService;
 }
 
 export const rootMetricsServiceFactory = createServiceFactory({
