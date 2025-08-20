@@ -27,10 +27,10 @@ import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
-import { systemMetadataServiceFactory } from '@backstage/backend-defaults/systemMetadata';
 import {
   AuthService,
   BackstageCredentials,
+  BackstageInstance,
   BackstageUserInfo,
   DatabaseService,
   DiscoveryService,
@@ -41,6 +41,7 @@ import {
   SchedulerService,
   ServiceFactory,
   ServiceRef,
+  SystemMetadataService,
   UserInfoService,
   coreServices,
   createServiceFactory,
@@ -61,6 +62,8 @@ import { simpleMock } from './simpleMock';
 import { MockSchedulerService } from './MockSchedulerService';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';
+import { MockSystemMetadataService } from './MockSystemMetadataService';
+import { createMockObservable } from './MockObservable';
 
 /** @internal */
 function createLoggerMock() {
@@ -558,19 +561,33 @@ export namespace mockServices {
     }));
   }
 
+  /**
+   * Creates a functional mock implementation for the
+   * {@link @backstage/backend-plugin-api#coreServices.systemMetadata}.
+   */
+  export function systemMetadata(options: {
+    instances: BackstageInstance[];
+  }): SystemMetadataService {
+    return MockSystemMetadataService.create(options);
+  }
   export namespace systemMetadata {
     /**
      * Creates a functional mock factory for the
      * {@link @backstage/backend-plugin-api#coreServices.systemMetadata}.
      */
-    export const factory = () => systemMetadataServiceFactory;
+    export const factory = simpleFactoryWithOptions(
+      coreServices.systemMetadata,
+      systemMetadata,
+    );
     /**
      * Creates a mock of the
      * {@link @backstage/backend-events-node#systemMetadata}, optionally
      * with some given method implementations.
      */
     export const mock = simpleMock(coreServices.systemMetadata, () => ({
-      introspect: jest.fn(),
+      instances: jest
+        .fn()
+        .mockReturnValue(createMockObservable<BackstageInstance[]>([])),
     }));
   }
 }
