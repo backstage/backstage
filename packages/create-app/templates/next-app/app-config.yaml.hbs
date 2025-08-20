@@ -2,6 +2,7 @@ app:
   title: Scaffolded Backstage App
   baseUrl: http://localhost:3000
 
+  # Enable all packages by default, this will discover packages from packages/app/package.json
   packages: all
 
   extensions:
@@ -10,6 +11,11 @@ app:
     - nav-item:user-settings: false
     - nav-item:catalog: false
     - nav-item:scaffolder: false
+
+    # Configure the catalog index page to be the root page, this is normally mounted on /catalog
+    - page:catalog:
+        config:
+          path: /
 
 
 organization:
