@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.7.3
+
+### Patch Changes
+
+- 0f0dec3: Creates a plugin that redirects from the Home page to the Catalog index page to avoid seeing a not found page error when starting the app.
+
 ## 0.7.2
 
 ### Patch Changes

@@ -121,7 +121,7 @@ Migrate it to the following:
 import { createApp } from '@backstage/frontend-defaults';
 import { convertLegacyAppOptions } from '@backstage/core-compat-api';
 
-const convertedOptionsFeatures = convertLegacyAppOptions({
+const convertedOptionsModule = convertLegacyAppOptions({
   /* legacy options such as apis, icons, plugins, components, themes and featureFlags */
   apis,
   icons: {
@@ -152,7 +152,7 @@ const convertedOptionsFeatures = convertLegacyAppOptions({
 const app = createApp({
   features: [
     // ...
-    ...convertedOptionsFeatures,
+    convertedOptionsModule,
   ],
 });
 ```
@@ -175,7 +175,7 @@ import {
 const app = createApp({
   features: [
     // ...
-    ...convertedOptionsFeatures,
+    convertedOptionsModule,
   ],
   // highlight-add-start
   bindRoutes({ bind }) {
@@ -904,13 +904,9 @@ import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
 
 const app = createApp({
   /* highlight-remove-next-line */
-  features: [...convertedOptionsFeatures, ...convertedRootFeatures],
+  features: [convertedOptionsModule, ...convertedRootFeatures],
   /* highlight-add-next-line */
-  features: [
-    catalogPlugin,
-    ...convertedOptionsFeatures,
-    ...convertedRootFeatures,
-  ],
+  features: [catalogPlugin, convertedOptionsModule, ...convertedRootFeatures],
 });
 ```
 
@@ -936,15 +932,11 @@ const catalogPluginOverride = catalogPlugin.withOverrides({
 
 const app = createApp({
   /* highlight-remove-next-line */
-  features: [
-    catalogPlugin,
-    ...convertedOptionsFeatures,
-    ...convertedRootFeatures,
-  ],
+  features: [catalogPlugin, convertedOptionsModule, ...convertedRootFeatures],
   /* highlight-add-next-line */
   features: [
     catalogPluginOverride,
-    ...convertedOptionsFeatures,
+    convertedOptionsModule,
     ...convertedRootFeatures,
   ],
 });
