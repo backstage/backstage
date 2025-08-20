@@ -241,7 +241,7 @@ entitiesProcessed.add(100);
 
 ## Dependencies
 
-1. The otel sdk MUST BE initialized as EARLY as possible to prevent dependents from receiving no-op meters - we will not change the current guidance on this
+1. The `otel` SDK MUST BE initialized as EARLY as possible to prevent dependents from receiving no-op meters - we will not change the current guidance on this
 1. There are one-off implementations of metrics in the wild that may conflict with the proposed service. However, this is unlikely to be a problem as the SDK should continue to pick things up.
 
 ## Alternatives
