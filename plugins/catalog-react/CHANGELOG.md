@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-react
 
+## 1.20.1
+
+### Patch Changes
+
+- 65b6a7c: Support `default*` for older packages as this package is in range for breaking `/alpha` changes
+
 ## 1.20.0
 
 ### Minor Changes
