@@ -58,6 +58,8 @@ import { MockEventsService } from './MockEventsService';
 import { MockPermissionsService } from './MockPermissionsService';
 import { simpleMock } from './simpleMock';
 import { MockSchedulerService } from './MockSchedulerService';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';
 
 /** @internal */
 function createLoggerMock() {
@@ -137,8 +139,16 @@ function simpleFactoryWithOptions<
  * ```
  */
 export namespace mockServices {
-  export function rootConfig(options?: rootConfig.Options): RootConfigService {
-    return new ConfigReader(options?.data, 'mock-config');
+  export function rootConfig(
+    options?: rootConfig.Options,
+  ): RootConfigService & { update(options: { data: JsonObject }): void } {
+    const config = ObservableConfigProxy.create(new AbortController());
+    config.setConfig(new ConfigReader(options?.data ?? {}, 'mock-config'));
+    return Object.assign(config, {
+      update({ data }: { data: JsonObject }): void {
+        config.setConfig(new ConfigReader(data, 'mock-config'));
+      },
+    });
   }
   export namespace rootConfig {
     export type Options = { data?: JsonObject };
