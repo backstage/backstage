@@ -1,5 +1,11 @@
 # @backstage/plugin-org
 
+## 0.6.43
+
+### Patch Changes
+
+- df3b5ef: Fixing issue with extra slash in the routing
+
 ## 0.6.42
 
 ### Patch Changes
