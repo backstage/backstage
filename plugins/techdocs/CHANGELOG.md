@@ -1,5 +1,13 @@
 # @backstage/plugin-techdocs
 
+## 1.14.1
+
+### Patch Changes
+
+- e4d09a3: Reverts a change in CSS layout that shifted the content of the Techdocs too far to the left.
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.1
+
 ## 1.14.0
 
 ### Minor Changes

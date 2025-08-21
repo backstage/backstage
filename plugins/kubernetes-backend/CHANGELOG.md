@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.1
+
+### Patch Changes
+
+- cac22eb: Fix issue with default objects not being loaded properly
+
 ## 0.20.0
 
 ### Minor Changes
