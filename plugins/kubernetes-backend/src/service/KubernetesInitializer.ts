@@ -177,7 +177,7 @@ export class KubernetesInitializer {
 
     return {
       customResources,
-      objectTypesToFetch: objectTypesToFetch ?? [],
+      objectTypesToFetch: objectTypesToFetch ?? DEFAULT_OBJECTS,
     };
   }
 
