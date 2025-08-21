@@ -997,11 +997,11 @@ describe('dynamicFrontendFeaturesLoader', () => {
     });
 
     const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
-    expect(errorCalls).toEqual([
-      "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: [ Federation Runtime ]: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
-    ]);
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
     expect(warnCalls).toEqual([]);
+    expect(errorCalls).toEqual([
+      "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
+    ]);
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
@@ -1105,11 +1105,11 @@ describe('dynamicFrontendFeaturesLoader', () => {
     });
 
     const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
-    expect(errorCalls).toEqual([
-      "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: [ Federation Runtime ]: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
-    ]);
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
     expect(warnCalls).toEqual([]);
+    expect(errorCalls).toEqual([
+      "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
+    ]);
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
