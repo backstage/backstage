@@ -1,5 +1,11 @@
 # @backstage/core-compat-api
 
+## 0.5.1
+
+### Patch Changes
+
+- fdf9128: Fix for `compatWrapper` creating many wrapping `Providers` when they should not
+
 ## 0.5.0
 
 ### Minor Changes
