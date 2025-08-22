@@ -108,6 +108,7 @@ const writeQueue = new PQueue({ concurrency: 1 });
 
 async function writeDetectedPackagesModule(
   pkgs: { name: string; export?: string; import: string }[],
+  moduleName: string = DETECTED_MODULES_MODULE_NAME,
 ) {
   const requirePackageScript = pkgs
     ?.map(
@@ -120,11 +121,7 @@ async function writeDetectedPackagesModule(
 
   await writeQueue.add(() =>
     fs.writeFile(
-      joinPath(
-        cliPaths.targetRoot,
-        'node_modules',
-        `${DETECTED_MODULES_MODULE_NAME}.js`,
-      ),
+      joinPath(cliPaths.targetRoot, 'node_modules', `${moduleName}.js`),
       `window['__@backstage/discovered__'] = { modules: [${requirePackageScript}] };`,
     ),
   );
@@ -142,12 +139,16 @@ export async function createDetectedModulesEntryPoint(options: {
     return [];
   }
 
+  const suffix = targetPath.split('/').pop();
+  const moduleName = `${DETECTED_MODULES_MODULE_NAME}${suffix}.js`;
+
   if (watch) {
     const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
 
     watcher.on('change', async () => {
       await writeDetectedPackagesModule(
         await detectPackages(targetPath, detectionConfig),
+        moduleName,
       );
       watch();
     });
@@ -155,7 +156,8 @@ export async function createDetectedModulesEntryPoint(options: {
 
   await writeDetectedPackagesModule(
     await detectPackages(targetPath, detectionConfig),
+    moduleName,
   );
 
-  return [DETECTED_MODULES_MODULE_NAME];
+  return [moduleName];
 }
