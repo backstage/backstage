@@ -132,6 +132,10 @@ in the registration order, but this does not apply over multiple catalog modules
 the order of registration depends on the order in which the modules are loaded
 by the framework.
 
+It's possible to customize the order of the processors by modifying the
+`catalog.processors.<processorName>.priority` configuration option.
+The default priority is `20`, and lower value means that the processor runs earlier.
+
 :::
 
 Each step has the opportunity to optionally modify the entity, and to optionally
