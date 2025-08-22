@@ -140,7 +140,7 @@ export async function createDetectedModulesEntryPoint(options: {
   }
 
   const suffix = targetPath.split('/').pop();
-  const moduleName = `${DETECTED_MODULES_MODULE_NAME}${suffix}.js`;
+  const moduleName = `${DETECTED_MODULES_MODULE_NAME}${suffix}`;
 
   if (watch) {
     const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
