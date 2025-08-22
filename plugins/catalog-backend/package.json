@@ -88,6 +88,7 @@
     "minimatch": "^9.0.0",
     "p-limit": "^3.0.2",
     "prom-client": "^15.0.0",
+    "topological-sort": "^0.3.0",
     "uuid": "^11.0.0",
     "yaml": "^2.0.0",
     "yn": "^4.0.0",

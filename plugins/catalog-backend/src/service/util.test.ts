@@ -53,7 +53,7 @@ describe('buildProcessorGraph', () => {
 
     expect(() => {
       buildProcessorGraph(processors, mockServices.rootConfig.mock());
-    }).toThrow('Circular dependency detected between processors A and B');
+    }).toThrow('Node B forms circular dependency: B -> A -> B');
   });
 
   it('should throw an error for self-referencing dependencies', () => {
@@ -65,7 +65,7 @@ describe('buildProcessorGraph', () => {
 
     expect(() => {
       buildProcessorGraph(processors, mockServices.rootConfig.mock());
-    }).toThrow('Processor A cannot depend on itself');
+    }).toThrow('Node A forms circular dependency: A -> A');
   });
 
   it('should throw error on longer circular dependencies', () => {
@@ -84,7 +84,7 @@ describe('buildProcessorGraph', () => {
     const processors = [processorA, processorB, processorC];
     expect(() => {
       buildProcessorGraph(processors, mockServices.rootConfig.mock());
-    }).toThrow('Circular dependency detected between processors A and C');
+    }).toThrow('Node C forms circular dependency: C -> B -> A -> C');
   });
 
   it('should handle multiple dependencies correctly', () => {
@@ -101,6 +101,7 @@ describe('buildProcessorGraph', () => {
     };
     const processorD: CatalogProcessor = {
       getProcessorName: () => 'D',
+      getDependencies: () => ['B', 'C'],
     };
     const processorE: CatalogProcessor = {
       getProcessorName: () => 'E',
@@ -116,12 +117,13 @@ describe('buildProcessorGraph', () => {
       processors,
       mockServices.rootConfig.mock(),
     );
+
     expect(result).toEqual([
-      processorE,
       processorA,
       processorB,
       processorC,
       processorD,
+      processorE,
     ]);
   });
 
@@ -133,7 +135,7 @@ describe('buildProcessorGraph', () => {
     const processors = [processorA];
     expect(() => {
       buildProcessorGraph(processors, mockServices.rootConfig.mock());
-    }).toThrow('Processor A depends on unknown processor B');
+    }).toThrow('Target node with B key should exist');
   });
 
   it('config should override processor dependencies', () => {

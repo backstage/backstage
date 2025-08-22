@@ -721,6 +721,7 @@ export class CatalogBuilder {
     // Add the ones (if any) that the user added
     processors.push(...this.processors);
 
+    this.checkDuplicateProcessorNames(processors);
     this.checkMissingExternalProcessors(processors);
 
     return buildProcessorGraph(processors, config);
@@ -748,6 +749,21 @@ export class CatalogBuilder {
     if (pc?.has('azureApi')) {
       throw new Error(
         `Using deprecated configuration for catalog.processors.azureApi, move to using integrations.azure instead`,
+      );
+    }
+  }
+
+  private checkDuplicateProcessorNames(processors: CatalogProcessor[]) {
+    const processorNames = processors.map(p => p.getProcessorName());
+    const duplicates = processorNames.filter(
+      (name, index) => processorNames.indexOf(name) !== index,
+    );
+
+    if (duplicates.length > 0) {
+      throw new Error(
+        `Duplicate processor names found: ${duplicates.join(
+          ', ',
+        )}. Each processor must have a unique name.`,
       );
     }
   }

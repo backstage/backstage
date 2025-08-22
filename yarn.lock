@@ -4726,6 +4726,7 @@ __metadata:
     p-limit: "npm:^3.0.2"
     prom-client: "npm:^15.0.0"
     supertest: "npm:^7.0.0"
+    topological-sort: "npm:^0.3.0"
     uuid: "npm:^11.0.0"
     wait-for-expect: "npm:^3.0.2"
     winston: "npm:^3.13.0"
@@ -47232,6 +47233,13 @@ __metadata:
     "@tokenizer/token": "npm:^0.3.0"
     ieee754: "npm:^1.2.1"
   checksum: 10/b541b605d602e8e6495745badb35f90ee8f997e43dc29bc51aee7e9a0bc3c6bc7372a305bd45f3e80d75223c2b6a5c7e65cb5159d8c4e49fa25cdbaae531fad4
+  languageName: node
+  linkType: hard
+
+"topological-sort@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "topological-sort@npm:0.3.0"
+  checksum: 10/a5d247af44f4ac3d2e29a8b5f3f0384d3855e7576b471e4541a96ad49cdee93cb998bd3aab98d7466e8e76a067cd27cd508a625a712171af1cac0cc545f46602
   languageName: node
   linkType: hard
 

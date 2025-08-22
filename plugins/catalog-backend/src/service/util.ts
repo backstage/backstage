@@ -31,6 +31,7 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import TopologicalSort from 'topological-sort';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');
@@ -172,61 +173,29 @@ export function buildProcessorGraph(
   processors: CatalogProcessor[],
   config: Config,
 ): CatalogProcessor[] {
-  const graph: CatalogProcessor[] = [];
-  const visited = new Set<string>();
-  const visiting = new Set<string>();
-
-  const visit = (processor: CatalogProcessor) => {
-    const processorName = processor.getProcessorName();
-
-    if (visited.has(processorName)) {
-      return;
-    }
-
-    if (visiting.has(processorName)) {
-      const cycle = Array.from(visiting).concat(processorName);
-      const cycleStart = cycle.indexOf(processorName);
-      const cyclePart = cycle.slice(cycleStart);
-      throw new Error(
-        `Circular dependency detected between processors ${cyclePart.join(
-          ' and ',
-        )}`,
-      );
-    }
-
-    visiting.add(processorName);
-
-    const dependencies =
-      config.getOptionalStringArray(
-        `catalog.processors.${processorName}.dependencies`,
-      ) ?? processor.getDependencies?.();
-
-    if (dependencies) {
-      for (const dependency of dependencies) {
-        const depProcessor = processors.find(
-          p => p.getProcessorName() === dependency,
-        );
-        if (!depProcessor) {
-          throw new Error(
-            `Processor ${processorName} depends on unknown processor ${dependency}`,
-          );
-        }
-        if (processor.getProcessorName() === dependency) {
-          throw new Error(`Processor ${processorName} cannot depend on itself`);
-        }
-
-        visit(depProcessor);
-      }
-    }
-
-    visiting.delete(processorName);
-    visited.add(processorName);
-    graph.push(processor);
-  };
-
+  const nodes = new Map<string, CatalogProcessor>();
   for (const processor of processors) {
-    visit(processor);
+    nodes.set(processor.getProcessorName(), processor);
   }
 
-  return graph;
+  const sortOp = new TopologicalSort<string, CatalogProcessor>(nodes);
+  for (const processor of processors) {
+    const dependencies =
+      config.getOptionalStringArray(
+        `catalog.processors.${processor.getProcessorName()}.dependencies`,
+      ) ??
+      processor.getDependencies?.() ??
+      [];
+    for (const dependency of dependencies) {
+      sortOp.addEdge(processor.getProcessorName(), dependency);
+    }
+  }
+
+  const sorted = sortOp.sort();
+  const sortedKeys = [...sorted.keys()];
+  return processors.sort((a, b) => {
+    const aIndex = sortedKeys.indexOf(a.getProcessorName());
+    const bIndex = sortedKeys.indexOf(b.getProcessorName());
+    return bIndex - aIndex;
+  });
 }
