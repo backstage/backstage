@@ -64,6 +64,8 @@ import {
   CheckpointState,
   CheckpointContext,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { resolveDefaultEnvironment } from '../../lib/defaultEnvironment';
+import { Config } from '@backstage/config';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -74,10 +76,12 @@ type NunjucksWorkflowRunnerOptions = {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionsService;
+  config?: Config;
 };
 
 type TemplateContext = {
   parameters: JsonObject;
+  environment: JsonObject;
   EXPERIMENTAL_recovery?: TaskRecovery;
   steps: {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
@@ -495,8 +499,16 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       const taskTrack = await this.tracker.taskStart(task);
       await fs.ensureDir(workspacePath);
 
+      const defaultEnvironment = this.options.config
+        ? resolveDefaultEnvironment(this.options.config)
+        : { parameters: {}, secrets: {} };
+
+      // optional to avoid break changes
+      task.enrichSecrets?.(defaultEnvironment.secrets);
+
       const context: TemplateContext = {
         parameters: task.spec.parameters,
+        environment: defaultEnvironment.parameters,
         steps: {},
         user: task.spec.user,
         context: {

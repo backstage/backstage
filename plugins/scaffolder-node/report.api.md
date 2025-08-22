@@ -431,6 +431,8 @@ export interface TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  enrichSecrets?(secrets: TaskSecrets): void;
+  // (undocumented)
   getInitiatorCredentials(): Promise<BackstageCredentials>;
   // (undocumented)
   getTaskState?(): Promise<
