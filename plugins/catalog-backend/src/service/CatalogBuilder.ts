@@ -111,6 +111,7 @@ import {
   catalogEntityPermissionResourceRef,
   CatalogPermissionRuleInput,
 } from '@backstage/plugin-catalog-node/alpha';
+import { buildProcessorGraph } from './util.ts';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -722,7 +723,7 @@ export class CatalogBuilder {
 
     this.checkMissingExternalProcessors(processors);
 
-    return processors;
+    return buildProcessorGraph(processors, config);
   }
 
   // TODO(Rugvip): These old processors are removed, for a while we'll be throwing

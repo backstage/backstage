@@ -59,6 +59,7 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
+  getDependencies?(): string[];
 };
 
 // @public

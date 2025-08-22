@@ -100,6 +100,12 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
+
+  /**
+   * Returns names of other processors that this processor depends on.
+   * This is used to ensure that the dependencies are processed before this processor.
+   */
+  getDependencies?(): string[];
 };
 
 /**
