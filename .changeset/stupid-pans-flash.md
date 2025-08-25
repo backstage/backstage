@@ -2,7 +2,7 @@
 '@backstage/plugin-scaffolder-backend-module-github': minor
 ---
 
-Adding a new scaffolder action `github:issues:create` following the reference of `github:issues:label` with dryRun testing possibility
+Adding a new scaffolder action `github:issues:create` following the reference of `github:issues:label` with `dryRun` testing possibility
 
 It can be used like this
 
