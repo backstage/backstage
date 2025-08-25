@@ -25,7 +25,7 @@ This guide assumes a basic understanding of working on a Linux based operating s
 
 ## 1. Install and Configure PostgreSQL
 
-In this section, you will know some options to create you own Postgres instance. Those methods best fit the use case of local
+In this section, we will go over some options to create you own Postgres instance. These methods best fit the use case of local
 development, you may want to check your Cloud Provider a way to create a Postgres instance for production.
 
 :::tip Already configured your database?
