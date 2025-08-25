@@ -219,7 +219,7 @@ Backstage's databases.
 ### Configuration
 
 You should set the base database client and connection information in your
-`app-config.yaml` (or equivalent) file. The base client and configuration is
+`app-config.yaml` file. The base client and configuration is
 used as the default which is extended for each plugin with the same or unset
 client type. If a client type is specified for a specific plugin which does not
 match the base client, the configuration set for the plugin will be used as is
