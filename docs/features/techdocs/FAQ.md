@@ -57,3 +57,7 @@ your `mkdocs.yml` files per
 If the host name of your source code hosting URL does not include `github` or
 `gitlab`, an `integrations` entry in your `app-config.yaml` pointed at your
 source code provider is also needed (only the `host` key is necessary).
+
+#### What happens when you navigate to a TechDocs URL for an entity uses the `backstage.io/techdocs-entity` annotation?
+
+If you navigate to a TechDocs URL in the format `docs/{namespace}/{kind}/{name}` for an entity that has the `backstage.io/techdocs-entity` annotation (instead of the `backstage.io/techdocs-ref` annotation), then Backstage will redirect to the TechDocs page of the entity referenced in the value of that annotation.
