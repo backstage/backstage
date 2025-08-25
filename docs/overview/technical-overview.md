@@ -7,7 +7,7 @@ description: Documentation on Technical overview
 ## Purpose
 Backstage is a developer portal that was created at Spotify to simplify end-to-end software developement. As they grew, their infrastructure became more fragmented and teams couldn't find the APIs they were supposed to use, or who owned a service, or documentation on anything.
 
-Backstage is powered by a centralized software catalog and utilizes an abstraction layer that sits on top of all of your infrastructure and developer tooling, allowing you to manage all of your software, services, tooling, and testing in one place.
+Backstage is powered by a centralized [software catalog](#software-catalog-system-model) and utilizes an abstraction layer that sits on top of all of your infrastructure and developer tooling, allowing you to manage all of your software, services, tooling, and testing in one place.
 
 You can also customize Backstage using a wide variety of available plugins or you can write your own plugin. It also includes automated templates that your teams can use to create new microservices, helping to ensure consistency. Backstage also provides the ability to create, maintain, and find the documentation for all of your software.
 
@@ -27,7 +27,7 @@ Backstage includes the following set of core features:
 + Notifications – Provides a means for plugins and external services to send messages to either individual users or groups. 
 + Permissions – Ability to enforce rules concerning the type of access a user is given to specific data, APIs, or interface actions.
 + Search
-+ Software Catalog – A centralized system that contains metadata for all your software, such as services, websites, libraries, data pipelines, and so on. It can also contain metadata for the physical or virtual infrastructure needed to operate a piece of software. The software catalog can be viewed and searched through a UI. 
++ [Software Catalog](../features/software-catalog/index.md) – A centralized system that contains metadata for all your software, such as services, websites, libraries, data pipelines, and so on. It can also contain metadata for the physical or virtual infrastructure needed to operate a piece of software. The software catalog can be viewed and searched through a UI. 
 + Software Templates
 + TechDocs – A docs-like-code solution built into Backstage. Documentation is written in Markdown files which lives together with the code.
 
@@ -45,3 +45,21 @@ Core Entities include:
 + APIs – Implemented by components and form the boundaries between different components. The API can be either public, restricted, or private.
 + Resources – The physical or virtual infrastructure needed to operate a component.
 
+![](../assets/software-catalog/software-model-core-entities.drawio.svg)
+
+Organizational Entities include:
++ User - A person, such as an employee, contractor, or similar.
++ Group - An organizational entity, such as a team, business unit, and so on.
+
+When you have a large catalogue of components, APIs, and resources, it can be difficult to understand how they work together. Ecosystem modeling allows you to organize a large catalog of core entities into:
++ Systems – A collection of resources and components that cooperate to perform a function by exposing one or several public APIs.  It hides the resources and private APIs between the components from the consumer.
++ Domains – A collection of systems that share terminology, domain models, metrics, KPIs, business purpose, or documentation.
+
+There are three additional items that can be part of the system model:
++ Location – A marker that references other places to look for catalog data.
++ Type – It has no set meaning. You can assign your own types and use them as desired.
++ Template – Describes both the parameters that are rendered in the frontend part of the scaffolding wizard, and the steps that are executed when scaffolding that component.
+
+The following diagram illustrates an example of ecosystem modeling, and provides sample relationships between a domain, system, core entities, and organization entities.
+
+![](../assets/software-catalog/software-model-entities.drawio.svg)
