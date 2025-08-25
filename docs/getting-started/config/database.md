@@ -201,8 +201,7 @@ backend:
 
 ## 3. Configuring Database settings per plugin
 
-By default, Backstage uses automatically created databases for each plugin whose
-names follow the `backstage_plugin_<pluginId>` pattern, e.g.
+By default, Backstage automatically creates databases for each plugin with the following naming convention `backstage_plugin_<pluginId>`, e.g.
 `backstage_plugin_auth`. You can configure a different database name prefix for
 use cases where you have multiple deployments running on a shared database
 instance or cluster.
