@@ -236,7 +236,7 @@ configurations below.
 
 In the example below, we are using `better-sqlite3` in-memory databases for all
 plugins. You may want to use this configuration for testing or other non-durable
-use cases.
+use cases. It is not recommended to use this in a production deployment!
 
 ```yaml
 backend:
