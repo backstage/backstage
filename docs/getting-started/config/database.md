@@ -206,7 +206,7 @@ By default, Backstage automatically creates databases for each plugin with the f
 use cases where you have multiple deployments running on a shared database
 instance or cluster.
 
-With infrastructure defined as code or data (Terraform, AWS CloudFormation,
+With infrastructure defined as code (Terraform, AWS CloudFormation,
 etc.), you may have database credentials which lack permissions to create new
 databases or you do not have control over the database names. In these
 instances, you can set the database connection configuration on a
