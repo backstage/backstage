@@ -1,5 +1,24 @@
 # @backstage/backend-defaults
 
+## 0.12.0
+
+### Minor Changes
+
+- 133519b: feat: new cache manager `Infinispan Data Grid`
+
+### Patch Changes
+
+- caee2eb: Fixed WinstonLogger throwing when redactions were null or undefined
+- ed74af5: Fixed bug in PackageDiscoveryService where packages with "exports" field caused ERR_PACKAGE_PATH_NOT_EXPORTED error during backend startup.
+- 3a7dad9: Updated `better-sqlite3` to v12
+- Updated dependencies
+  - @backstage/cli-node@0.2.14
+  - @backstage/backend-app-api@1.2.6
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
 ## 0.11.2-next.0
 
 ### Patch Changes

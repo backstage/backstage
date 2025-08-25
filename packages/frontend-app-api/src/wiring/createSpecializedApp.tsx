@@ -52,7 +52,10 @@ import {
   toInternalExtension,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
-import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
+import {
+  extractRouteInfoFromAppNode,
+  RouteInfo,
+} from '../routing/extractRouteInfoFromAppNode';
 
 import { CreateAppRouteBinder } from '../routing';
 import { RouteResolver } from '../routing/RouteResolver';
@@ -74,7 +77,6 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { RouteInfo } from './types';
 import { matchRoutes } from 'react-router-dom';
 import {
   createPluginInfoAttacher,
@@ -180,7 +182,10 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
     return this.#delegate.resolve(anyRouteRef, options);
   }
 
-  initialize(routeInfo: RouteInfo) {
+  initialize(
+    routeInfo: RouteInfo,
+    routeRefsById: Map<string, RouteRef | SubRouteRef>,
+  ) {
     this.#delegate = new RouteResolver(
       routeInfo.routePaths,
       routeInfo.routeParents,
@@ -188,6 +193,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
       this.routeBindings,
       this.appBasePath,
       routeInfo.routeAliasResolver,
+      routeRefsById,
     );
     this.#routeObjects = routeInfo.routeObjects;
 
@@ -357,7 +363,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
     createRouteAliasResolver(routeRefsById),
   );
 
-  routeResolutionApi.initialize(routeInfo);
+  routeResolutionApi.initialize(routeInfo, routeRefsById.routes);
   appTreeApi.initialize(routeInfo);
 
   return { apis, tree };

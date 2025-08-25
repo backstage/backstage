@@ -27,6 +27,7 @@ import * as CardStories from '../../../packages/ui/src/components/Card/Card.stor
 import * as HeaderStories from '../../../packages/ui/src/components/Header/Header.stories';
 import * as HeaderPageStories from '../../../packages/ui/src/components/HeaderPage/HeaderPage.stories';
 import * as TableStories from '../../../packages/ui/src/components/Table/Table.stories';
+import * as TagGroupStories from '../../../packages/ui/src/components/TagGroup/TagGroup.stories';
 
 // Helper function to create snippet components
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,3 +70,4 @@ export const CardSnippet = createSnippetComponent(CardStories);
 export const HeaderSnippet = createSnippetComponent(HeaderStories);
 export const HeaderPageSnippet = createSnippetComponent(HeaderPageStories);
 export const TableSnippet = createSnippetComponent(TableStories);
+export const TagGroupSnippet = createSnippetComponent(TagGroupStories);

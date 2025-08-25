@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.2.12
+
+### Patch Changes
+
+- d8cb60e: feat: Add gitlabOrgEntityProviderTransformsExtensionPoint for overriding user and group transformers
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.2
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
 ## 0.2.12-next.0
 
 ### Patch Changes

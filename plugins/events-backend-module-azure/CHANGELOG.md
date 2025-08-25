@@ -1,5 +1,13 @@
 # @backstage/plugin-events-backend-module-azure
 
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
 ## 0.2.23-next.0
 
 ### Patch Changes

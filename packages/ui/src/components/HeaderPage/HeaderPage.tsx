@@ -15,10 +15,8 @@
  */
 
 import type { HeaderPageProps } from './types';
-import { Menu } from '../Menu';
 import { Text } from '../Text';
-import { ButtonIcon } from '../ButtonIcon';
-import { RiArrowRightSLine, RiMore2Line } from '@remixicon/react';
+import { RiArrowRightSLine } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
 import { Container } from '../Container';
@@ -31,7 +29,7 @@ import { Fragment } from 'react/jsx-runtime';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { title, menuItems, tabs, customActions, breadcrumbs } = props;
+  const { title, tabs, customActions, breadcrumbs } = props;
   const { classNames } = useStyles('HeaderPage');
 
   return (
@@ -58,37 +56,7 @@ export const HeaderPage = (props: HeaderPageProps) => {
             {title}
           </Text>
         </div>
-        <div className={classNames.controls}>
-          {customActions}
-          {menuItems && (
-            <Menu.Root>
-              <Menu.Trigger
-                render={props => (
-                  <ButtonIcon
-                    {...props}
-                    size="small"
-                    icon={<RiMore2Line />}
-                    variant="tertiary"
-                  />
-                )}
-              />
-              <Menu.Portal>
-                <Menu.Positioner sideOffset={4} align="end">
-                  <Menu.Popup>
-                    {menuItems.map(menuItem => (
-                      <Menu.Item
-                        key={menuItem.value}
-                        onClick={() => menuItem.onClick?.()}
-                      >
-                        {menuItem.label}
-                      </Menu.Item>
-                    ))}
-                  </Menu.Popup>
-                </Menu.Positioner>
-              </Menu.Portal>
-            </Menu.Root>
-          )}
-        </div>
+        <div className={classNames.controls}>{customActions}</div>
       </div>
       {tabs && (
         <div className={classNames.tabsWrapper}>

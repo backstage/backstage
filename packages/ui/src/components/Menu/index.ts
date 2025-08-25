@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,27 @@
  * limitations under the License.
  */
 
-export * from './Menu';
-export * from './types';
+export {
+  MenuTrigger,
+  SubmenuTrigger,
+  Menu,
+  MenuListBox,
+  MenuAutocomplete,
+  MenuAutocompleteListbox,
+  MenuItem,
+  MenuListBoxItem,
+  MenuSection,
+  MenuSeparator,
+} from './Menu';
+export type {
+  MenuTriggerProps,
+  SubmenuTriggerProps,
+  MenuProps,
+  MenuListBoxProps,
+  MenuAutocompleteProps,
+  MenuAutocompleteListBoxProps,
+  MenuItemProps,
+  MenuListBoxItemProps,
+  MenuSectionProps,
+  MenuSeparatorProps,
+} from './types';

@@ -1,5 +1,14 @@
 # @backstage/plugin-events-backend-module-kafka
 
+## 0.1.2
+
+### Patch Changes
+
+- 0d38009: Remove luxon dependency and minor internal improvements
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
 ## 0.1.2-next.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/catalog-client
 
+## 1.11.0
+
+### Minor Changes
+
+- 6b608e7: Added the analyze-location endpoint to the CatalogClient
+
 ## 1.11.0-next.0
 
 ### Minor Changes

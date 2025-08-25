@@ -1,242 +1,332 @@
 import {
   classNamePropDefs,
   stylePropDefs,
-  renderPropDefs,
   type PropDef,
 } from '@/utils/propDefs';
 
-export const menuRootPropDefs: Record<string, PropDef> = {
-  defaultOpen: {
+const placementValues = [
+  'bottom',
+  'bottom left',
+  'bottom right',
+  'bottom start',
+  'bottom end',
+  'top',
+  'top left',
+  'top right',
+  'top start',
+  'top end',
+  'left',
+  'left top',
+  'left bottom',
+  'start',
+  'start top',
+  'start bottom',
+  'right',
+  'right top',
+  'right bottom',
+  'end',
+  'end top',
+  'end bottom',
+];
+
+export const menuTriggerPropDefs: Record<string, PropDef> = {
+  isOpen: {
     type: 'boolean',
-    default: 'false',
   },
-  open: {
+  defaultOpen: {
     type: 'boolean',
   },
   onOpenChange: {
     type: 'enum',
-    values: ['(open, event) => void'],
+    values: ['(isOpen: boolean) => void'],
   },
-  closeParentOnEsc: {
-    type: 'boolean',
-    default: 'true',
-  },
-  modal: {
-    type: 'boolean',
-    default: 'true',
-  },
-  onOpenChangeComplete: {
-    type: 'enum',
-    values: ['(open) => void'],
-  },
-  disabled: {
-    type: 'boolean',
-    default: 'false',
-  },
-  openOnHover: {
-    type: 'boolean',
-  },
+};
+
+export const submenuTriggerPropDefs: Record<string, PropDef> = {
   delay: {
     type: 'number',
-    default: '100',
+    default: '200',
   },
-  loop: {
-    type: 'boolean',
-    default: 'true',
-  },
-  orientation: {
+};
+
+export const menuPropDefs: Record<string, PropDef> = {
+  disabledKeys: {
     type: 'enum',
-    values: ['horizontal', 'vertical'],
-    default: 'vertical',
+    values: ['Iterable<Key>'],
+  },
+  selectionMode: {
+    type: 'enum',
+    values: ['none', 'single', 'multiple'],
+  },
+  selectedKeys: {
+    type: 'enum',
+    values: ['all', 'Iterable<Key>'],
+  },
+  defaultSelectedKeys: {
+    type: 'enum',
+    values: ['all', 'Iterable<Key>'],
+  },
+  placement: {
+    type: 'enum',
+    values: placementValues,
   },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
-export const menuTriggerPropDefs: Record<string, PropDef> = {
-  ...renderPropDefs,
+export const menuListBoxPropDefs: Record<string, PropDef> = {
+  disabledKeys: {
+    type: 'enum',
+    values: ['Iterable<Key>'],
+  },
+  selectionMode: {
+    type: 'enum',
+    values: ['none', 'single', 'multiple'],
+  },
+  selectedKeys: {
+    type: 'enum',
+    values: ['all', 'Iterable<Key>'],
+  },
+  defaultSelectedKeys: {
+    type: 'enum',
+    values: ['all', 'Iterable<Key>'],
+  },
+  placement: {
+    type: 'enum',
+    values: placementValues,
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
-export const menuPositionerPropDefs: Record<string, PropDef> = {
-  align: {
+export const menuAutocompletePropDefs: Record<string, PropDef> = {
+  placement: {
     type: 'enum',
-    values: ['start', 'center', 'end'],
-    default: 'center',
+    values: placementValues,
   },
-  alignOffset: {
+  ...classNamePropDefs,
+  ...stylePropDefs,
+};
+
+export const menuAutocompleteListboxPropDefs: Record<string, PropDef> = {
+  placement: {
     type: 'enum',
-    values: ['number', '(data) => number'],
-    default: '0',
-  },
-  side: {
-    type: 'enum',
-    values: ['bottom', 'inline-end', 'inline-start', 'left', 'right', 'top'],
-    default: 'bottom',
-  },
-  sideOffset: {
-    type: 'enum',
-    values: ['number', '(data) => number'],
-    default: '0',
-  },
-  arrowPadding: {
-    type: 'number',
-    default: '5',
-  },
-  anchor: {
-    type: 'enum',
-    values: [
-      'React.Ref',
-      'Element',
-      'VirtualElement',
-      '(() => Element | VirtualElement | null)',
-      'null',
-    ],
-  },
-  collisionBoundary: {
-    type: 'enum',
-    values: ['clipping-ancestors', 'Element', 'Element[]', 'Rect'],
-    default: 'clipping-ancestors',
-  },
-  collisionPadding: {
-    type: 'enum',
-    values: ['number', 'Rect'],
-    default: '5',
-  },
-  sticky: {
-    type: 'boolean',
-    default: 'false',
-  },
-  positionMethod: {
-    type: 'enum',
-    values: ['absolute', 'fixed'],
-    default: 'absolute',
-  },
-  trackAnchor: {
-    type: 'boolean',
-    default: 'true',
+    values: placementValues,
   },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
 export const menuItemPropDefs: Record<string, PropDef> = {
-  label: {
+  id: {
+    type: 'enum',
+    values: ['Key'],
+  },
+  value: {
     type: 'string',
   },
-  onClick: {
+  textValue: {
+    type: 'string',
+  },
+  isDisabled: {
+    type: 'boolean',
+  },
+  href: {
+    type: 'string',
+  },
+  onAction: {
     type: 'enum',
     values: ['(event) => void'],
-  },
-  closeOnClick: {
-    type: 'boolean',
-    default: 'true',
-  },
-  disabled: {
-    type: 'boolean',
-    default: 'false',
   },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
-export const menuUsageSnippet = `import { Menu } from '@backstage/ui';
+export const menuListBoxItemPropDefs: Record<string, PropDef> = {
+  id: {
+    type: 'enum',
+    values: ['Key'],
+  },
+  value: {
+    type: 'string',
+  },
+  textValue: {
+    type: 'string',
+  },
+  isDisabled: {
+    type: 'boolean',
+  },
+  ...classNamePropDefs,
+  ...stylePropDefs,
+};
 
-<Menu.Root>
-  <Menu.Trigger />
-  <Menu.Portal>
-    <Menu.Positioner>
-      <Menu.Popup>
-        <Menu.Item />
-      </Menu.Popup>
-    </Menu.Positioner>
-  </Menu.Portal>
-</Menu.Root>`;
+export const menuSectionPropDefs: Record<string, PropDef> = {
+  title: {
+    type: 'string',
+  },
+  ...classNamePropDefs,
+  ...stylePropDefs,
+};
 
-export const menuDefaultSnippet = `<Menu.Root>
-  <Menu.Trigger
-    render={props => (
-      <Button
-        {...props}
-        size="medium"
-        variant="secondary"
-        iconEnd="chevron-down"
-      >
-        Menu
-      </Button>
-    )}
-  />
-  <Menu.Portal>
-    <Menu.Positioner sideOffset={8} align="start">
-      <Menu.Popup>
-        <Menu.Item>Settings</Menu.Item>
-        <Menu.Item>Invite new members</Menu.Item>
-        <Menu.Item>Download app</Menu.Item>
-        <Menu.Item>Log out</Menu.Item>
-      </Menu.Popup>
-    </Menu.Positioner>
-  </Menu.Portal>
-</Menu.Root>`;
+export const menuSeparatorPropDefs: Record<string, PropDef> = {
+  ...classNamePropDefs,
+  ...stylePropDefs,
+};
 
-export const menuTriggerSnippet = `<Menu.Trigger render={props => <Button {...props} />} />`;
+export const usage = `import { MenuTrigger, Menu, MenuItem } from '@backstage/ui';
 
-export const menuHoverSnippet = `<Menu.Root openOnHover delay={100}>
-  <Menu.Trigger
-    render={props => (
-      <Button
-        {...props}
-        size="medium"
-        variant="secondary"
-        iconEnd="chevron-down"
-      >
-        Menu
-      </Button>
-    )}
-  />
-  <Menu.Portal>
-    <Menu.Positioner sideOffset={8} align="start">
-      <Menu.Popup>
-        <Menu.Item>Settings</Menu.Item>
-        <Menu.Item>Invite new members</Menu.Item>
-        <Menu.Item>Download app</Menu.Item>
-        <Menu.Item>Log out</Menu.Item>
-      </Menu.Popup>
-    </Menu.Positioner>
-  </Menu.Portal>
-</Menu.Root>`;
+<MenuTrigger>
+  <Button>Menu</Button>
+  <Menu>
+    <MenuItem id="apple">Apple</MenuItem>
+    <MenuItem id="banana">Banana</MenuItem>
+    <MenuItem id="blueberry">Blueberry</MenuItem>
+    <MenuSeparator />
+    <SubmenuTrigger>
+      <MenuItem>Vegetables</MenuItem>
+      <Menu>
+        <MenuItem id="carrot">Carrot</MenuItem>
+        <MenuItem id="tomato">Tomato</MenuItem>
+        <MenuItem id="potato">Potato</MenuItem>
+      </Menu>
+    </SubmenuTrigger>
+  </Menu>
+</MenuTrigger>`;
 
-export const menuSubmenuSnippet = `<Menu.Trigger
-  render={props => (
-    <Button
-      {...props}
-      size="small"
-      variant="secondary"
-      iconEnd={<Icon name="chevron-down" />}
+export const preview = `<MenuTrigger>
+  <Button>Menu</Button>
+  <Menu>
+    {options.map(option => (
+      <MenuItem key={option.value}>{option.label}</MenuItem>
+    ))}
+  </Menu>
+</MenuTrigger>`;
+
+export const submenu = `<MenuTrigger>
+  <Button aria-label="Menu">Menu</Button>
+  <Menu>
+    <MenuItem>Edit</MenuItem>
+    <MenuItem>Duplicate</MenuItem>
+    <SubmenuTrigger>
+      <MenuItem>Submenu</MenuItem>
+      <Menu placement="right top">
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuSeparator />
+        <MenuItem>Share</MenuItem>
+        <MenuItem>Move</MenuItem>
+        <MenuSeparator />
+        <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+      </Menu>
+    </SubmenuTrigger>
+  </Menu>
+</MenuTrigger>`;
+
+export const icons = `<MenuTrigger>
+  <Button aria-label="Menu">Menu</Button>
+  <Menu>
+    <MenuItem iconStart={<RiFileCopyLine />}>Copy</MenuItem>
+    <MenuItem iconStart={<RiEdit2Line />}>Rename</MenuItem>
+    <MenuItem iconStart={<RiChat1Line />}>Send feedback</MenuItem>
+  </Menu>
+</MenuTrigger>`;
+
+export const sections = `<MenuTrigger>
+  <Button aria-label="Menu">Menu</Button>
+  <Menu>
+    <MenuSection title="My Account">
+      <MenuItem iconStart={<RiUserLine />}>Profile</MenuItem>
+      <MenuItem iconStart={<RiSettingsLine />}>Settings</MenuItem>
+    </MenuSection>
+    <MenuSection title="Support">
+      <MenuItem iconStart={<RiQuestionLine />}>Help Center</MenuItem>
+      <MenuItem iconStart={<RiCustomerService2Line />}>
+        Contact Support
+      </MenuItem>
+      <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+    </MenuSection>
+  </Menu>
+</MenuTrigger>`;
+
+export const separators = `<MenuTrigger>
+  <Button aria-label="Menu">Menu</Button>
+  <Menu>
+    <MenuItem>Edit</MenuItem>
+    <MenuItem>Duplicate</MenuItem>
+    <MenuItem>Rename</MenuItem>
+    <MenuSeparator />
+    <MenuItem>Share</MenuItem>
+    <MenuItem>Move</MenuItem>
+    <MenuSeparator />
+    <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+  </Menu>
+</MenuTrigger>`;
+
+export const links = `<MenuTrigger>
+  <Button aria-label="Menu">Menu</Button>
+  <Menu>
+    <MenuItem href="/home">Internal link</MenuItem>
+    <MenuItem href="https://www.google.com" target="_blank">
+      External link
+    </MenuItem>
+    <MenuItem href="mailto:test@test.com">Email link</MenuItem>
+  </Menu>
+</MenuTrigger>`;
+
+export const autocomplete = `<MenuTrigger isOpen>
+  <Button aria-label="Menu">Menu</Button>
+  <MenuAutocomplete placeholder="Filter">
+    <MenuItem>Create new file...</MenuItem>
+    <MenuItem>Create new folder...</MenuItem>
+    <MenuItem>Assign to...</MenuItem>
+    <MenuItem>Assign to me</MenuItem>
+    <MenuItem>Change status...</MenuItem>
+    <MenuItem>Change priority...</MenuItem>
+    <MenuItem>Add label...</MenuItem>
+    <MenuItem>Remove label...</MenuItem>
+  </MenuAutocomplete>
+</MenuTrigger>`;
+
+export const autocompleteListbox = `const [selected, setSelected] = useState<Selection>(
+  new Set(['blueberry']),
+);
+
+<Flex direction="column" gap="2" align="start">
+  <Text>Selected: {Array.from(selected).join(', ')}</Text>
+  <MenuTrigger>
+    <Button aria-label="Menu">Menu</Button>
+    <MenuAutocompleteListbox
+      selectedKeys={selected}
+      onSelectionChange={setSelected}
     >
-      Menu
-    </Button>
-  )}
-/>
-<Menu.Portal>
-  <Menu.Positioner sideOffset={8} align="start">
-    <Menu.Popup>
-      <Menu.Item>Settings</Menu.Item>
-      <Menu.Item>Invite new members</Menu.Item>
-      <Menu.Item>Download app</Menu.Item>
-      <Menu.Item>Log out</Menu.Item>
-      <Menu.Root>
-        <Menu.SubmenuTrigger>Submenu</Menu.SubmenuTrigger>
-        <Menu.Portal>
-          <Menu.Positioner>
-            <Menu.Popup>
-              <Menu.Item>Submenu Item 1</Menu.Item>
-              <Menu.Item>Submenu Item 2</Menu.Item>
-              <Menu.Item>Submenu Item 3</Menu.Item>
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </Menu.Root>
-    </Menu.Popup>
-  </Menu.Positioner>
-</Menu.Portal>`;
+      {options.map(option => (
+        <MenuListBoxItem key={option.value} id={option.value}>
+          {option.label}
+        </MenuListBoxItem>
+      ))}
+    </MenuAutocompleteListbox>
+  </MenuTrigger>
+</Flex>`;
+
+export const autocompleteListboxMultiple = `const [selected, setSelected] = useState<Selection>(
+  new Set(['blueberry', 'cherry']),
+);
+
+<Flex direction="column" gap="2" align="start">
+  <Text>Selected: {Array.from(selected).join(', ')}</Text>
+  <MenuTrigger>
+    <Button aria-label="Menu">Menu</Button>
+    <MenuAutocompleteListbox
+      selectionMode="multiple"
+      selectedKeys={selected}
+      onSelectionChange={setSelected}
+    >
+      {options.map(option => (
+        <MenuListBoxItem key={option.value} id={option.value}>
+          {option.label}
+        </MenuListBoxItem>
+      ))}
+    </MenuAutocompleteListbox>
+  </MenuTrigger>
+</Flex>`;

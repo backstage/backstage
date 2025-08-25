@@ -15,9 +15,9 @@ import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
@@ -55,7 +55,7 @@ export const apiDocsTranslationRef: TranslationRef<
 >;
 
 // @public (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
   },

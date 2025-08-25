@@ -5954,11 +5954,11 @@ __metadata:
   linkType: hard
 
 "docusaurus-pushfeedback@npm:^1.0.0":
-  version: 1.0.5
-  resolution: "docusaurus-pushfeedback@npm:1.0.5"
+  version: 1.0.9
+  resolution: "docusaurus-pushfeedback@npm:1.0.9"
   peerDependencies:
     "@docusaurus/core": 3.x
-  checksum: 10/5323af7f1c7b4590744ea9099cacb49087d98c48c11e2ed957ed744d6210a3d82fa0cc42ef0f011f25b0d08c2d0040065c8a2b641c7c9160532ceb51ad41475c
+  checksum: 10/cb6ee78f3918b6bdc7a351a4383531f1da019f2b576722c2a9a90a93dbfdea94abc61b9d559779cc00af750ef498e656c90d92aad20d1a4dbbce80b40dbc01ed
   languageName: node
   linkType: hard
 
@@ -13283,14 +13283,15 @@ __metadata:
   linkType: hard
 
 "sha.js@npm:^2.4.0, sha.js@npm:^2.4.11, sha.js@npm:^2.4.8":
-  version: 2.4.11
-  resolution: "sha.js@npm:2.4.11"
+  version: 2.4.12
+  resolution: "sha.js@npm:2.4.12"
   dependencies:
-    inherits: "npm:^2.0.1"
-    safe-buffer: "npm:^5.0.1"
+    inherits: "npm:^2.0.4"
+    safe-buffer: "npm:^5.2.1"
+    to-buffer: "npm:^1.2.0"
   bin:
-    sha.js: ./bin.js
-  checksum: 10/d833bfa3e0a67579a6ce6e1bc95571f05246e0a441dd8c76e3057972f2a3e098465687a4369b07e83a0375a88703577f71b5b2e966809e67ebc340dbedb478c7
+    sha.js: bin.js
+  checksum: 10/39c0993592c2ab34eb2daae2199a2a1d502713765aecb611fd97c0c4ab7cd53e902d628e1962aaf384bafd28f55951fef46dcc78799069ce41d74b03aa13b5a7
   languageName: node
   linkType: hard
 

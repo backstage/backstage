@@ -5,8 +5,6 @@ sidebar_label: Overview
 description: Building frontend plugins using the new frontend system
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 This section covers how to build your own frontend [plugins](../architecture/15-plugins.md) and
 [overrides](../architecture/25-extension-overrides.md). They are sometimes collectively referred to as
 frontend _features_, and what you install to build up a Backstage frontend [app](../architecture/10-app.md).

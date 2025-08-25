@@ -99,6 +99,13 @@ export interface Config {
     }>;
 
     /**
+     * (Optional) Google Service Account credentials for authentication
+     * JSON string containing the service account key
+     * @visibility secret
+     */
+    googleServiceAccountCredentials?: string;
+
+    /**
      * (Optional) API Version Overrides
      * If set, the specified api version will be used to make requests for the corresponding object.
      * If running a legacy Kubernetes version, you may use this to override the default api versions

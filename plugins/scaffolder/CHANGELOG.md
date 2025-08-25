@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder
 
+## 1.34.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+- b1c0696: Add resizable panels width for the editor and preview panels in the template editor and template form playground layouts. Users can now resize these panels by dragging the divider between the two areas.
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- b0dc9b8: differentiate between entirely and partially composite schemas in schema rendering
+- c4b7c50: Export `FormField` type from `/alpha` in `-react` package, and internal refactor.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-scaffolder-react@1.19.0
+  - @backstage/plugin-scaffolder-common@1.7.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/catalog-client@1.11.0
+
 ## 1.34.0-next.3
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-node
 
+## 1.18.0
+
+### Minor Changes
+
+- 3f4da39: Added the analyze-location endpoint to the CatalogService
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 1.18.0-next.0
 
 ### Minor Changes

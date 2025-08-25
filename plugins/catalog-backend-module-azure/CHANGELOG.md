@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.8
+
+### Patch Changes
+
+- b3aa80e: `host` should be optional in `config` schema
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.3.8-next.1
 
 ### Patch Changes
