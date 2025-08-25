@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-techdocs-backend': patch
+'@backstage/plugin-techdocs-react': patch
 ---
 
 Update to documentation regarding TechDocs redirects.
