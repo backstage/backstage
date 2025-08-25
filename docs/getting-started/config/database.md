@@ -323,7 +323,7 @@ backend:
 
 ## Manual Rollback
 
-In some cases you may want to downgrade a migration applied on the database due to some problem, under the hood Backstage uses [Knex](https://knexjs.org/) to handle [migrations](https://knexjs.org/guide/migrations.html) and you can interact direct with Knex interface to **rollback a migration** applied during an upgrade. You can use the `migrate:down` command to rollback a specific migration. You can also use the `migrate:rollback` command to rollback the last batch of migrations. This is necessary because Knex will mark migrations as corrupted if you try to downgrade your Backstage instance without the rollback. Be aware to run those commands in the new version of the Backstage instance, so you can avoid the corrupted migrations for lower versions.
+In some cases you may want to rollback a migration applied on the database, under the hood Backstage uses [Knex](https://knexjs.org/) to handle [migrations](https://knexjs.org/guide/migrations.html) and you can interact direct with Knex interface to **rollback a migration** applied during an upgrade. You can use the `migrate:down` command to rollback a specific migration. You can also use the `migrate:rollback` command to rollback the last batch of migrations. This is necessary because Knex will mark migrations as corrupted if you try to downgrade your Backstage instance without the rollback. Be aware to run those commands in the new version of the Backstage instance, so you can avoid the corrupted migrations for lower versions.
 
 You are likely to receive a message like this when you try a downgrade without the rollback:
 
