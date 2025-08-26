@@ -413,5 +413,30 @@ describe('<TechDocsReaderPage />', () => {
       expect(rendered.container.querySelector('article')).toBeInTheDocument();
       expect(mockNavigate).not.toHaveBeenCalled();
     });
+
+    it('should render normally when catalog API throws an error', async () => {
+      catalogApiMock.getEntityByRef.mockRejectedValue(
+        new Error('Catalog API error'),
+      );
+
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPage
+            entityRef={{
+              name: 'test-name',
+              namespace: 'test-namespace',
+              kind: 'test-kind',
+            }}
+          />
+        </Wrapper>,
+        {
+          mountedRoutes,
+        },
+      );
+
+      expect(rendered.container.querySelector('header')).toBeInTheDocument();
+      expect(rendered.container.querySelector('article')).toBeInTheDocument();
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
   });
 });

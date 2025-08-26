@@ -215,10 +215,16 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   );
 
   const externalEntityTechDocsUrl = useAsync(async () => {
-    const catalogEntity = await catalogApi.getEntityByRef(memoizedEntityRef);
+    try {
+      const catalogEntity = await catalogApi.getEntityByRef(memoizedEntityRef);
 
-    if (catalogEntity?.metadata?.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
-      return buildTechDocsURL(catalogEntity, viewTechdocLink);
+      if (
+        catalogEntity?.metadata?.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+      ) {
+        return buildTechDocsURL(catalogEntity, viewTechdocLink);
+      }
+    } catch (error) {
+      // Ignore error and allow an attempt at loading the current entity's TechDocs when unable to fetch an external entity from the catalog.
     }
 
     return undefined;
