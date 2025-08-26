@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.34.1
+
+### Patch Changes
+
+- f470192: Fixed the `new-frontend-plugin` template that was incorrectly passing `id` instead of `pluginId` to `createFrontendPlugin` and unnecessarily importing `React`.
+- d778acb: Fixed an issue that could cause conflicts of detected modules in workspaces with multiple apps.
+
 ## 0.34.0
 
 ### Minor Changes

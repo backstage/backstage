@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.3.6
+
+### Patch Changes
+
+- 17af594: Deprecate and mark explore collator as moved
+
 ## 0.3.5
 
 ### Patch Changes
