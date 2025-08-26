@@ -39,6 +39,7 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
 import {
+  catalogApiRef,
   EntityPresentationApi,
   entityPresentationApiRef,
   entityRouteRef,
@@ -235,8 +236,16 @@ export class TechDocsAddonTester {
       }),
     };
 
+    const catalogApi = {
+      getEntityByRef: jest.fn().mockResolvedValue({
+        kind: 'Component',
+        metadata: { namespace: 'default', name: 'docs' },
+      }),
+    };
+
     const apis: TechdocsAddonTesterApis<any[]> = [
       [fetchApiRef, fetchApi],
+      [catalogApiRef, catalogApi],
       [entityPresentationApiRef, entityPresentationApi],
       [discoveryApiRef, discoveryApi],
       [techdocsApiRef, techdocsApi],
