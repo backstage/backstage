@@ -98,6 +98,7 @@ export class UserSettingsStorage implements StorageApi {
           this.errorApi,
           this.identityApi,
           this.fallback,
+          this.signalApi,
         ),
       );
     }
