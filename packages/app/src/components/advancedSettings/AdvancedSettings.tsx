@@ -22,6 +22,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
 import useLocalStorage from 'react-use/esm/useLocalStorage';
 
 export function AdvancedSettings() {
@@ -39,18 +40,28 @@ export function AdvancedSettings() {
       <Grid item xs={12} md={6}>
         <InfoCard title="Advanced settings" variant="gridItem">
           <List>
-            <ListItem>
+            <ListItem
+              divider
+              button
+              onClick={() => setValue(value === 'on' ? 'off' : 'on')}
+            >
               <ListItemText
                 primary="Advanced user option"
                 secondary="An extra settings tab to further customize the experience"
               />
               <ListItemSecondaryAction>
-                <Switch
-                  color="primary"
-                  value={value}
-                  onChange={toggleValue}
-                  name="advanced"
-                />
+                <Tooltip
+                  placement="top"
+                  arrow
+                  title={value === 'on' ? 'Disable' : 'Enable'}
+                >
+                  <Switch
+                    color="primary"
+                    checked={value === 'on'}
+                    onChange={toggleValue}
+                    name="advanced"
+                  />
+                </Tooltip>
               </ListItemSecondaryAction>
             </ListItem>
           </List>
