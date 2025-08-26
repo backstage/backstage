@@ -32,9 +32,9 @@ Backstage includes the following set of core features:
 + TechDocs – A docs-like-code solution built into Backstage. Documentation is written in Markdown files which lives together with the code.
 
 ## Plugin Architecture Overview
-There are three types of plugins:
+Backstage isThere are three types of plugins:
 + Standalone - runs entirely in a browser.
-+ Service backed - makes API requests to a service within the organization running Backstage.
++ Service backed - makes API requests to a service within the organization running Backstage. The Software Catalog is one example.
 + Third-party backed - similar to service-backed, but the service backing the plugin is hosted outside of the company hosting Backstage.
 
 
