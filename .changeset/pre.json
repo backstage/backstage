@@ -203,5 +203,18 @@
     "@backstage/plugin-user-settings-backend": "0.3.5",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "brave-bugs-know",
+    "cool-games-rescue",
+    "easy-wings-turn",
+    "giant-zebras-peel",
+    "lemon-terms-cheer",
+    "lucky-glasses-slide",
+    "ripe-plants-pump",
+    "sixty-pans-prove",
+    "sixty-places-push",
+    "slick-lamps-clap",
+    "tricky-buses-lead",
+    "yellow-dragons-float"
+  ]
 }

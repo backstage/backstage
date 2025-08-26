@@ -1,5 +1,13 @@
 # @internal/scaffolder
 
+## 0.0.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-scaffolder-react@1.19.1-next.0
+
 ## 0.0.12
 
 ### Patch Changes

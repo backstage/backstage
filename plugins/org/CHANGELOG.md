@@ -1,5 +1,19 @@
 # @backstage/plugin-org
 
+## 0.6.44-next.0
+
+### Patch Changes
+
+- 22b69f2: Fixing issue with extra slash in the routing
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-catalog-common@1.1.5
+
 ## 0.6.42
 
 ### Patch Changes

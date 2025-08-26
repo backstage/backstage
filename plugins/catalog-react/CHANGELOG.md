@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-react
 
+## 1.20.2-next.0
+
+### Patch Changes
+
+- ad0f58d: Support `default*` for older packages as this package is in range for breaking `/alpha` changes
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/frontend-test-utils@0.3.5
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-react@0.4.36
+
 ## 1.20.0
 
 ### Minor Changes
