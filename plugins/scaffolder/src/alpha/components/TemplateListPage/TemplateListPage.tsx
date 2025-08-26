@@ -59,6 +59,11 @@ import {
   useTranslationRef,
 } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 
 /**
  * @alpha
@@ -144,18 +149,18 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
 
   const additionalLinksForEntity = useCallback(
     (template: TemplateEntityV1beta3) => {
-      const { kind, namespace, name } = parseEntityRef(
-        stringifyEntityRef(template),
-      );
-      return template.metadata.annotations?.['backstage.io/techdocs-ref'] &&
-        viewTechDocsLink
+      const hasTechDocs =
+        !!template.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+        !!template.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION];
+
+      return hasTechDocs && viewTechDocsLink
         ? [
             {
               icon: app.getSystemIcon('docs') ?? DocsIcon,
               text: t(
                 'templateListPage.additionalLinksForEntity.viewTechDocsTitle',
               ),
-              url: viewTechDocsLink({ kind, namespace, name }),
+              url: buildTechDocsURL(template, viewTechDocsLink),
             },
           ]
         : [];
