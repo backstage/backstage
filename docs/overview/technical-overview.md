@@ -9,7 +9,7 @@ Backstage is a developer portal that was created at Spotify to simplify end-to-e
 
 Backstage is powered by a centralized [software catalog](#software-catalog-system-model) and utilizes an abstraction layer that sits on top of all of your infrastructure and developer tooling, allowing you to manage all of your software, services, tooling, and testing in one place.
 
-You can also customize Backstage using a wide variety of available plugins or you can write your own plugin. It also includes automated templates that your teams can use to create new microservices, helping to ensure consistency. Backstage also provides the ability to create, maintain, and find the documentation for all of your software.
+Backstage uses a [plugin-architecture](#plugin-architecture-overview) which allows you customize the functionality of your Backstage application using a wide variety of available plugins or you can write your own. It also includes automated templates that your teams can use to create new microservices, helping to ensure consistency. Backstage also provides the ability to create, maintain, and find the documentation for all of your software.
 
 
 ## Benefits
@@ -27,16 +27,20 @@ Backstage includes the following set of core features:
 + Notifications – Provides a means for plugins and external services to send messages to either individual users or groups. 
 + Permissions – Ability to enforce rules concerning the type of access a user is given to specific data, APIs, or interface actions.
 + Search
-+ [Software Catalog](../features/software-catalog/index.md) – A centralized system that contains metadata for all your software, such as services, websites, libraries, data pipelines, and so on. It can also contain metadata for the physical or virtual infrastructure needed to operate a piece of software. The software catalog can be viewed and searched through a UI. 
++ [Software Catalog](../features/software-catalog/index.md) – A centralized system that contains metadata for all your software, such as services, websites, libraries, ML models, data pipelines, and so on. It can also contain metadata for the physical or virtual infrastructure needed to operate a piece of software. The software catalog can be viewed and searched through a UI. 
 + Software Templates
 + TechDocs – A docs-like-code solution built into Backstage. Documentation is written in Markdown files which lives together with the code.
 
+## Plugin Architecture Overview
+There are three types of plugins:
++ Standalone - runs entirely in a browser.
++ Service backed - makes API requests to a service within the organization running Backstage.
++ Third-party backed - similar to service-backed, but the service backing the plugin is hosted outside of the company hosting Backstage.
+
+
+
 ## Software Catalog System Model
-The Software Catalog enables two main use cases:
-1.	It provides a view of all the software, services, libraries, websites, ML models, resources, and so on, that a team manages and maintains.
-2.	It makes all the software in your company, and who owns it, discoverable.
-   
-The system model in the software catalog is based on entities and it models two main types:
+The system model behind the software catalog is based on entities and it models two main types:
 + Core Entities
 + Organizational Entities
 
