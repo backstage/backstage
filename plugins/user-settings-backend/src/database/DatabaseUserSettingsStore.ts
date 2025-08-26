@@ -20,8 +20,9 @@ import {
 } from '@backstage/backend-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
+import { UserSetting } from '@backstage/plugin-user-settings-node';
 import { Knex } from 'knex';
-import { UserSettingsStore, type UserSetting } from './UserSettingsStore';
+import { UserSettingsStore } from './UserSettingsStore';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-user-settings-backend',

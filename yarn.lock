@@ -7257,6 +7257,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
     "@backstage/plugin-user-settings-common": "workspace:^"
+    "@backstage/plugin-user-settings-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.8"
@@ -7272,6 +7273,17 @@ __metadata:
   resolution: "@backstage/plugin-user-settings-common@workspace:plugins/user-settings-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-user-settings-node@workspace:^, @backstage/plugin-user-settings-node@workspace:plugins/user-settings-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-user-settings-node@workspace:plugins/user-settings-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
