@@ -5,42 +5,45 @@ description: Documentation on Technical overview
 ---
 
 ## Purpose
-Backstage is a developer portal that was created at Spotify to simplify end-to-end software developement. As they grew, their infrastructure became more fragmented and teams couldn't find the APIs they were supposed to use, or who owned a service, or documentation on anything.
+Backstage is a developer portal that was created at Spotify to simplify end-to-end software development. As they grew, their infrastructure became more fragmented and teams couldn't find the APIs they were supposed to use, or who owned a service, or documentation on anything.
 
 Backstage is powered by a centralized [software catalog](#software-catalog-system-model) and utilizes an abstraction layer that sits on top of all of your infrastructure and developer tooling, allowing you to manage all of your software, services, tooling, and testing in one place.
 
-Backstage uses a [plugin-architecture](#plugin-architecture-overview) which allows you customize the functionality of your Backstage application using a wide variety of available plugins or you can write your own. It also includes automated templates that your teams can use to create new microservices, helping to ensure consistency. Backstage also provides the ability to create, maintain, and find the documentation for all of your software.
+Backstage uses a [plugin-architecture](#plugin-architecture-overview) which allows you customize the functionality of your Backstage application using a wide variety of available plugins or you can write your own. It also includes automated templates that your teams can use to create new microservices, helping to ensure consistency and adherence to your best practices. Backstage also provides the ability to create, maintain, and find the documentation for all of your software.
 
+Backstage is now a [CNCF incubation project](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
 
 ## Benefits
-+ For *engineering managers*, it allow you to maintain standards and best practices across the organization, and can help you manage your whole tech ecosystem, from migrations to test certification.
++ For *engineering managers*, it allows you to maintain standards and best practices across the organization, and can help you manage your whole tech ecosystem, from migrations to test certification.
 + For *end users* {developers), it makes it fast and simple to build software components in a standardized way, and it provides a central place to manage all projects and documentation.
-+ For *platform engineers*, it enables extensibility and scalability by letting you easily integrate new tools and services (via plugins), as well as extending the functinality of existing ones.
-+ For *everyone*, it is a single, consistent experience that ties all of your infrastructure tooling, resources, standards, owneers, contributors, and administrators together in one place. 
++ For *platform engineers*, it enables extensibility and scalability by letting you easily integrate new tools and services (via plugins), as well as extending the functionality of existing ones.
++ For *everyone*, it is a single, consistent experience that ties all of your infrastructure tooling, resources, standards, owners, contributors, and administrators together in one place. 
 
 If you have question or want support, please join our [Discord chatroom](https://discord.gg/backstage-687207715902193673).
 
 ## Core Features
 Backstage includes the following set of core features:
-+ Authentication and Identity – Sign-in and identification of users, and delegating access to third-party resources, using built-in authentication providers.
-+ Kubernetes – A tool that allows developers to check the health of their services whether it’s on a local host or in production.
-+ Notifications – Provides a means for plugins and external services to send messages to either individual users or groups. 
-+ Permissions – Ability to enforce rules concerning the type of access a user is given to specific data, APIs, or interface actions.
-+ Search
++ [Authentication and Identity](../auth/index.md) – Sign-in and identification of users, and delegating access to third-party resources, using built-in authentication providers.
++ [Kubernetes](../features/kubernetes/index.md) – A tool that allows developers to check the health of their services whether it’s on a local host or in production.
++ [Notifications](../notifications/index.md) – Provides a means for plugins and external services to send messages to either individual users or groups. 
++ [Permissions](../permissions/overview.md) – Ability to enforce rules concerning the type of access a user is given to specific data, APIs, or interface actions.
++ [Search](../features/search/index.md) - Search for information in the Backstage ecosystem. You can customize the look and feel of each search result and use your own search engine.
 + [Software Catalog](../features/software-catalog/index.md) – A centralized system that contains metadata for all your software, such as services, websites, libraries, ML models, data pipelines, and so on. It can also contain metadata for the physical or virtual infrastructure needed to operate a piece of software. The software catalog can be viewed and searched through a UI. 
-+ Software Templates
-+ TechDocs – A docs-like-code solution built into Backstage. Documentation is written in Markdown files which lives together with the code.
++ [Software Templates](../features/software-templates/index.md) - A tool to help you create components inside Backstage. A template can load skeletons of code, include some variables, and then publish the template to a location, such as GitHub.
++ [TechDocs](../featues/techdocs/README.md) – A docs-like-code solution built into Backstage. Documentation is written in Markdown files which lives together with the code.
 
 ## Plugin Architecture Overview
-Backstage isThere are three types of plugins:
-+ Standalone - runs entirely in a browser.
-+ Service backed - makes API requests to a service within the organization running Backstage. The Software Catalog is one example.
-+ Third-party backed - similar to service-backed, but the service backing the plugin is hosted outside of the company hosting Backstage.
+Plugins are client side applications which mount themselves on the Backstage UI. They allow you to incorporate a wide variety of infrastructure and software development tools into your Backstage application. Backstage uses a plugin-architecture to provide a consistent user experience, in a single UI, around all of your plugins. 
 
+The Backstage architecture supports three types of plugins:
++ Standalone - runs entirely in a browser and it does not make any API requests to other services.
++ Service backed - makes API requests to a service within the ecosystem of the organization running Backstage.
++ Third-party backed - similar to service-backed, but the service backing the plugin is hosted outside of the ecosystem of the company hosting Backstage.
 
+Many of the features available in Backstage are provided by plugins. For example, the Software Catalog is a service backed plugin. When you view the catalog, it retrieves a set of services ("[entities](../references/glossary.md#entity)") from the Backstage Backend service and renders them in a table in the UI for you.
 
 ## Software Catalog System Model
-The system model behind the software catalog is based on entities and it models two main types:
+The system model behind the software catalog is based on *entities* and it models two main types:
 + Core Entities
 + Organizational Entities
 
@@ -67,3 +70,8 @@ There are three additional items that can be part of the system model:
 The following diagram illustrates an example of ecosystem modeling, and provides sample relationships between a domain, system, core entities, and organization entities.
 
 ![](../assets/software-catalog/software-model-entities.drawio.svg)
+
+The following shows an example of viewing all of the components, APIs, and resources that are managed by your group after setting up the relationships to create a group organizational entity.
+
+
+
