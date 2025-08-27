@@ -178,7 +178,7 @@ export type CookieConfigurer = (ctx: {
   callbackUrl: string;
   appOrigin: string;
 }) => {
-  domain: string;
+  domain?: string;
   path: string;
   secure: boolean;
   sameSite?: 'none' | 'lax' | 'strict';
