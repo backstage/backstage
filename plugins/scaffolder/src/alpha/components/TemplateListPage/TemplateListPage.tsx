@@ -149,18 +149,25 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
 
   const additionalLinksForEntity = useCallback(
     (template: TemplateEntityV1beta3) => {
-      const hasTechDocs =
-        !!template.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
-        !!template.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION];
+      if (
+        !(
+          template.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+          template.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+        ) ||
+        !viewTechDocsLink
+      ) {
+        return [];
+      }
 
-      return hasTechDocs && viewTechDocsLink
+      const url = buildTechDocsURL(template, viewTechDocsLink);
+      return url
         ? [
             {
               icon: app.getSystemIcon('docs') ?? DocsIcon,
               text: t(
                 'templateListPage.additionalLinksForEntity.viewTechDocsTitle',
               ),
-              url: buildTechDocsURL(template, viewTechDocsLink),
+              url,
             },
           ]
         : [];
