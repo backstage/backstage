@@ -117,6 +117,15 @@
             }
           }
         }
+      },
+      "userSettings": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        }
       }
     }
   }

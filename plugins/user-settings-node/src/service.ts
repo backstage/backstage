@@ -33,49 +33,53 @@ import { UserSetting } from './types';
  */
 export interface UserSettingsService {
   /**
-   * Get a user setting given a user token, bucket and key.
-   *
-   * NOTE; To refer to buckets used in the frontend, the bucket name need to be
-   * prefixed with `'{namespace}.'`, where `namespace` need to be the same as in
-   * the frontend, which is 'default' by default. Example: `'default.my-bucket'`
-   *
-   * Will throw NotFoundError or ResponseError upon failures.
+   * Create a sub instance of UserSettingsService with a certain bucket.
    */
-  get(userToken: string, bucket: string, key: string): Promise<UserSetting>;
+  forBucket(bucketName: string): UserSettingsService;
 
   /**
-   * Set a user setting given a user token, bucket, key and the value.
-   *
-   * NOTE; To refer to buckets used in the frontend, the bucket name need to be
-   * prefixed with `'{namespace}.'`, where `namespace` need to be the same as in
-   * the frontend, which is 'default' by default. Example: `'default.my-bucket'`
+   * Get a user setting given a user token and key.
    *
    * Will throw NotFoundError or ResponseError upon failures.
    */
-  set(
-    userToken: string,
-    bucket: string,
-    key: string,
-    value: JsonValue,
-  ): Promise<UserSetting>;
+  get(userToken: string, key: string): Promise<UserSetting>;
 
   /**
-   * Delete a user setting given a user token, bucket and key.
-   *
-   * NOTE; To refer to buckets used in the frontend, the bucket name need to be
-   * prefixed with `'{namespace}.'`, where `namespace` need to be the same as in
-   * the frontend, which is 'default' by default. Example: `'default.my-bucket'`
+   * Set a user setting given a user token, key and the value.
    *
    * Will throw NotFoundError or ResponseError upon failures.
    */
-  delete(userToken: string, bucket: string, key: string): Promise<void>;
+  set(userToken: string, key: string, value: JsonValue): Promise<UserSetting>;
+
+  /**
+   * Removes a user setting given a user token and key.
+   *
+   * Will throw NotFoundError or ResponseError upon failures.
+   */
+  remove(userToken: string, key: string): Promise<void>;
 }
 
 class DefaultUserSettingsService implements UserSettingsService {
   readonly #discoveryApi: DiscoveryService;
+  readonly #namespace: string;
 
-  constructor({ discoveryApi }: { discoveryApi: DiscoveryService }) {
+  constructor({
+    namespace,
+    discoveryApi,
+  }: {
+    namespace: string;
+    discoveryApi: DiscoveryService;
+  }) {
+    this.#namespace = namespace;
     this.#discoveryApi = discoveryApi;
+  }
+
+  forBucket(bucketName: string): UserSettingsService {
+    const bucketPath = `${this.#namespace}.${bucketName}`;
+    return new DefaultUserSettingsService({
+      namespace: bucketPath,
+      discoveryApi: this.#discoveryApi,
+    });
   }
 
   private async api<T = void>(
@@ -111,33 +115,29 @@ class DefaultUserSettingsService implements UserSettingsService {
     return resp.json();
   }
 
-  private makePath(bucket: string, key: string) {
-    return `/buckets/${encodeURIComponent(bucket)}/keys/${encodeURIComponent(
-      key,
-    )}`;
+  private makePath(key: string) {
+    const bucketComponent = encodeURIComponent(this.#namespace);
+    const keyComponent = encodeURIComponent(key);
+
+    return `/buckets/${bucketComponent}/keys/${keyComponent}`;
   }
 
-  async get(
-    userToken: string,
-    bucket: string,
-    key: string,
-  ): Promise<UserSetting> {
-    return this.api<UserSetting>(userToken, 'GET', this.makePath(bucket, key));
+  async get(userToken: string, key: string): Promise<UserSetting> {
+    return this.api<UserSetting>(userToken, 'GET', this.makePath(key));
   }
 
   async set(
     userToken: string,
-    bucket: string,
     key: string,
     value: JsonValue,
   ): Promise<UserSetting> {
-    return this.api<UserSetting>(userToken, 'PUT', this.makePath(bucket, key), {
+    return this.api<UserSetting>(userToken, 'PUT', this.makePath(key), {
       value,
     });
   }
 
-  async delete(userToken: string, bucket: string, key: string): Promise<void> {
-    await this.api(userToken, 'DELETE', this.makePath(bucket, key));
+  async remove(userToken: string, key: string): Promise<void> {
+    await this.api(userToken, 'DELETE', this.makePath(key));
   }
 }
 
@@ -151,9 +151,14 @@ export const userSettingsServiceRef = createServiceRef<UserSettingsService>({
   defaultFactory: async service =>
     createServiceFactory({
       service,
-      deps: { discoveryApi: coreServices.discovery },
-      async factory({ discoveryApi }) {
-        return new DefaultUserSettingsService({ discoveryApi });
+      deps: {
+        config: coreServices.rootConfig,
+        discoveryApi: coreServices.discovery,
+      },
+      async factory({ config, discoveryApi }) {
+        const namespace =
+          config.getOptionalString('userSettings.namespace') ?? 'default';
+        return new DefaultUserSettingsService({ namespace, discoveryApi });
       },
     }),
 });

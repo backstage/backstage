@@ -32,6 +32,7 @@ To make use of the user settings backend, replace the `WebStorage` with the
  import {
    AnyApiFactory,
    createApiFactory,
++  configApiRef,
 +  discoveryApiRef,
 +  fetchApiRef,
    errorApiRef,
@@ -45,6 +46,7 @@ To make use of the user settings backend, replace the `WebStorage` with the
 +  createApiFactory({
 +    api: storageApiRef,
 +    deps: {
++      configApi: configApiRef,
 +      discoveryApi: discoveryApiRef,
 +      errorApi: errorApiRef,
 +      fetchApi: fetchApiRef,
@@ -54,6 +56,15 @@ To make use of the user settings backend, replace the `WebStorage` with the
 +    factory: deps => UserSettingsStorage.create(deps),
 +  }),
  ];
+```
+
+## Configuration
+
+Each key is stored in a bucket (a string), which defaults to `default`. This can be configured using:
+
+```yaml
+userSettings:
+  namespace: my-namespace
 ```
 
 ## Development

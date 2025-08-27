@@ -16,6 +16,7 @@
 
 import { WebStorage } from '@backstage/core-app-api';
 import {
+  ConfigApi,
   DiscoveryApi,
   ErrorApi,
   FetchApi,
@@ -63,6 +64,7 @@ export class UserSettingsStorage implements StorageApi {
   ) {}
 
   static create(options: {
+    configApi: ConfigApi;
     fetchApi: FetchApi;
     discoveryApi: DiscoveryApi;
     errorApi: ErrorApi;
@@ -70,8 +72,12 @@ export class UserSettingsStorage implements StorageApi {
     signalApi?: SignalApi;
     namespace?: string;
   }): UserSettingsStorage {
+    const namespace =
+      options.configApi.getOptionalString('userSettings.namespace') ??
+      'default';
+
     return new UserSettingsStorage(
-      options.namespace ?? 'default',
+      options.namespace ?? namespace,
       options.fetchApi,
       options.discoveryApi,
       options.errorApi,

@@ -49,7 +49,7 @@ const createRouter = ({
       targetPluginId: 'user-settings',
       onBehalfOf: credentials,
     });
-    const setting = await userSettingsService.get(token, 'default', 'the-key');
+    const setting = await userSettingsService.get(token, 'the-key');
 
     // `setting.value` is the value of the setting
     doSomethingWith(setting.value);
@@ -60,3 +60,18 @@ const createRouter = ({
   return router;
 };
 ```
+
+## API
+
+The API of the `UserSettingsService` is similar to the frontend `StorageApi`, except the functions in `UserSettingsService` need a `userToken` parameter for each call.
+
+## Configuration
+
+Each key is stored in a bucket (a string), which defaults to `default`. This can be configured using:
+
+```yaml
+userSettings:
+  namespace: my-namespace
+```
+
+The configuration applies to both the frontend (`storageApiRef`) and this backend service.

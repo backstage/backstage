@@ -50,6 +50,7 @@ describe('Persistent Storage API', () => {
     }>,
   ): StorageApi => {
     return UserSettingsStorage.create({
+      configApi: mockApis.config(),
       errorApi: mockErrorApi,
       fetchApi: new MockFetchApi(),
       discoveryApi: mockDiscoveryApi,
@@ -67,6 +68,7 @@ describe('Persistent Storage API', () => {
     }>,
   ): StorageApi => {
     return UserSettingsStorage.create({
+      configApi: mockApis.config(),
       errorApi: mockErrorApi,
       fetchApi: new MockFetchApi(),
       discoveryApi: mockDiscoveryApi,

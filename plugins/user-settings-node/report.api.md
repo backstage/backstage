@@ -15,14 +15,10 @@ export type UserSetting = {
 
 // @public
 export interface UserSettingsService {
-  delete(userToken: string, bucket: string, key: string): Promise<void>;
-  get(userToken: string, bucket: string, key: string): Promise<UserSetting>;
-  set(
-    userToken: string,
-    bucket: string,
-    key: string,
-    value: JsonValue,
-  ): Promise<UserSetting>;
+  forBucket(bucketName: string): UserSettingsService;
+  get(userToken: string, key: string): Promise<UserSetting>;
+  remove(userToken: string, key: string): Promise<void>;
+  set(userToken: string, key: string, value: JsonValue): Promise<UserSetting>;
 }
 
 // @public
