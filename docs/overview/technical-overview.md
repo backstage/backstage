@@ -73,5 +73,6 @@ The following diagram illustrates an example of ecosystem modeling, and provides
 
 The following shows an example of viewing all of the components, APIs, and resources that are managed by your group after setting up the relationships to create a group organizational entity.
 
+![](../assets/technical-overview/backstage-ui-group-ownership.png)
 
 
