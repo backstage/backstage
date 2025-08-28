@@ -1,0 +1,10 @@
+---
+title: MCP as Entity for Backstage 
+author: Naveen Alok
+authorUrl: https://github.com/automationpi
+category: Catalog
+description: Add full Model Context Protocol (MCP) entity support to your Backstage software catalog. Enable discovery and reuse of MCP servers across your organization. Pairs with the MCP catalog frontend module.
+documentation: https://github.com/automationpi/backstage-plugin-catalog-backend-module-mcp#readme
+iconUrl: https://firstpie.com/mcp-logo.png
+npmPackageName: '@mexl/backstage-plugin-catalog-backend-module-mcp'
+addedDate: '2025-08-28'
