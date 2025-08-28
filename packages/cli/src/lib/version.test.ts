@@ -19,6 +19,25 @@ import { Lockfile } from './versioning';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
+// Mock the getHasYarnPlugin function
+jest.mock('./paths', () => ({
+  paths: {
+    resolveTargetRoot: jest.fn(),
+  },
+}));
+
+import * as fs from 'fs-extra';
+
+jest.mock('fs-extra');
+const mockFs = fs as jest.Mocked<typeof fs>;
+
+jest.mock('yaml', () => ({
+  parse: jest.fn(),
+}));
+
+import * as yaml from 'yaml';
+const mockYaml = yaml as jest.Mocked<typeof yaml>;
+
 describe('createPackageVersionProvider', () => {
   const mockDir = createMockDirectory();
 
@@ -26,6 +45,10 @@ describe('createPackageVersionProvider', () => {
 # yarn lockfile v1
 
 `;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('should provide package versions', async () => {
     mockDir.setContent({
@@ -71,7 +94,21 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@types/t', '1.4.2')).toBe('^1.2.3');
   });
 
-  it('should return backstage:^ for @backstage/* packages', () => {
+  it('should return backstage:^ for @backstage/* packages when yarn plugin is available', () => {
+    const { paths } = require('./paths');
+    paths.resolveTargetRoot.mockReturnValue('/mock/path/.yarnrc.yml');
+    
+    mockFs.readFileSync.mockReturnValue(`
+plugins:
+  - path: .yarn/plugins/@yarnpkg/plugin-backstage.cjs
+    `);
+    
+    mockYaml.parse.mockReturnValue({
+      plugins: [
+        { path: '.yarn/plugins/@yarnpkg/plugin-backstage.cjs' }
+      ]
+    });
+
     const provider = createPackageVersionProvider();
 
     expect(provider('@backstage/cli')).toBe('backstage:^');
@@ -79,5 +116,45 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@backstage/backend-plugin-api')).toBe('backstage:^');
     expect(provider('@backstage/backend-test-utils')).toBe('backstage:^');
     expect(provider('@backstage/any-package')).toBe('backstage:^');
+  });
+
+  it('should use regular logic for @backstage/* packages when yarn plugin is not available', () => {
+    const { paths } = require('./paths');
+    paths.resolveTargetRoot.mockReturnValue('/mock/path/.yarnrc.yml');
+    
+    // Mock file not found
+    const error = new Error('File not found');
+    (error as any).code = 'ENOENT';
+    mockFs.readFileSync.mockImplementation(() => {
+      throw error;
+    });
+
+    const provider = createPackageVersionProvider();
+
+    // Should return the caret version from packageVersions
+    expect(provider('@backstage/cli')).toMatch(/^\^/);
+    expect(provider('@backstage/core-plugin-api')).toMatch(/^\^/);
+  });
+
+  it('should use regular logic for @backstage/* packages when yarn plugin config is different', () => {
+    const { paths } = require('./paths');
+    paths.resolveTargetRoot.mockReturnValue('/mock/path/.yarnrc.yml');
+    
+    mockFs.readFileSync.mockReturnValue(`
+plugins:
+  - path: .yarn/plugins/some-other-plugin.cjs
+    `);
+    
+    mockYaml.parse.mockReturnValue({
+      plugins: [
+        { path: '.yarn/plugins/some-other-plugin.cjs' }
+      ]
+    });
+
+    const provider = createPackageVersionProvider();
+
+    // Should return the caret version from packageVersions since backstage plugin is not found
+    expect(provider('@backstage/cli')).toMatch(/^\^/);
+    expect(provider('@backstage/core-plugin-api')).toMatch(/^\^/);
   });
 });

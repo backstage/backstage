@@ -16,6 +16,8 @@
 
 import fs from 'fs-extra';
 import semver from 'semver';
+import yaml from 'yaml';
+import z from 'zod';
 import { paths } from './paths';
 import { Lockfile } from './versioning';
 
@@ -87,11 +89,57 @@ export function findVersion() {
 export const version = findVersion();
 export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
 
+const yarnRcSchema = z.object({
+  plugins: z
+    .array(
+      z.object({
+        path: z.string(),
+      }),
+    )
+    .optional(),
+});
+
+function getHasYarnPlugin() {
+  const yarnRcPath = paths.resolveTargetRoot('.yarnrc.yml');
+  let yarnRcContent: string;
+  try {
+    yarnRcContent = fs.readFileSync(yarnRcPath, 'utf-8');
+  } catch (e: any) {
+    if (e.code === 'ENOENT') {
+      // gracefully continue in case the file doesn't exist
+      return false;
+    }
+    throw e;
+  }
+
+  if (!yarnRcContent) {
+    return false;
+  }
+
+  const parseResult = yarnRcSchema.safeParse(yaml.parse(yarnRcContent));
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Unexpected content in .yarnrc.yml: ${parseResult.error.toString()}`,
+    );
+  }
+
+  const yarnRc = parseResult.data;
+
+  return yarnRc.plugins?.some(
+    plugin => plugin.path === '.yarn/plugins/@yarnpkg/plugin-backstage.cjs',
+  );
+}
+
 export function createPackageVersionProvider(lockfile?: Lockfile) {
   return (name: string, versionHint?: string): string => {
-    // For @backstage/* packages, return "backstage:^" to use the yarn plugin
+    // For @backstage/* packages, return "backstage:^" only if the yarn plugin is available
     if (name.startsWith('@backstage/')) {
-      return 'backstage:^';
+      const hasYarnPlugin = getHasYarnPlugin();
+      if (hasYarnPlugin) {
+        return 'backstage:^';
+      }
+      // Fall through to the original logic if plugin is not available
     }
 
     const packageVersion = packageVersions[name];
