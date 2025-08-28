@@ -19,11 +19,15 @@ import { Lockfile } from './versioning';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-// Mock the getHasYarnPlugin function
+// Mock the hasBackstageProtocolPackageManagerPlugin function
 jest.mock('./paths', () => ({
   paths: {
     resolveTargetRoot: jest.fn(),
   },
+}));
+
+jest.mock('./packageManagerPlugin', () => ({
+  hasBackstageProtocolPackageManagerPlugin: jest.fn(),
 }));
 
 import * as fs from 'fs-extra';
@@ -37,6 +41,9 @@ jest.mock('yaml', () => ({
 
 import * as yaml from 'yaml';
 const mockYaml = yaml as jest.Mocked<typeof yaml>;
+
+import { hasBackstageProtocolPackageManagerPlugin } from './packageManagerPlugin';
+const mockHasBackstageProtocolPackageManagerPlugin = hasBackstageProtocolPackageManagerPlugin as jest.MockedFunction<typeof hasBackstageProtocolPackageManagerPlugin>;
 
 describe('createPackageVersionProvider', () => {
   const mockDir = createMockDirectory();
@@ -95,19 +102,7 @@ describe('createPackageVersionProvider', () => {
   });
 
   it('should return backstage:^ for @backstage/* packages when yarn plugin is available', () => {
-    const { paths } = require('./paths');
-    paths.resolveTargetRoot.mockReturnValue('/mock/path/.yarnrc.yml');
-    
-    mockFs.readFileSync.mockReturnValue(`
-plugins:
-  - path: .yarn/plugins/@yarnpkg/plugin-backstage.cjs
-    `);
-    
-    mockYaml.parse.mockReturnValue({
-      plugins: [
-        { path: '.yarn/plugins/@yarnpkg/plugin-backstage.cjs' }
-      ]
-    });
+    mockHasBackstageProtocolPackageManagerPlugin.mockReturnValue(true);
 
     const provider = createPackageVersionProvider();
 
@@ -119,15 +114,7 @@ plugins:
   });
 
   it('should use regular logic for @backstage/* packages when yarn plugin is not available', () => {
-    const { paths } = require('./paths');
-    paths.resolveTargetRoot.mockReturnValue('/mock/path/.yarnrc.yml');
-    
-    // Mock file not found
-    const error = new Error('File not found');
-    (error as any).code = 'ENOENT';
-    mockFs.readFileSync.mockImplementation(() => {
-      throw error;
-    });
+    mockHasBackstageProtocolPackageManagerPlugin.mockReturnValue(false);
 
     const provider = createPackageVersionProvider();
 
@@ -137,19 +124,7 @@ plugins:
   });
 
   it('should use regular logic for @backstage/* packages when yarn plugin config is different', () => {
-    const { paths } = require('./paths');
-    paths.resolveTargetRoot.mockReturnValue('/mock/path/.yarnrc.yml');
-    
-    mockFs.readFileSync.mockReturnValue(`
-plugins:
-  - path: .yarn/plugins/some-other-plugin.cjs
-    `);
-    
-    mockYaml.parse.mockReturnValue({
-      plugins: [
-        { path: '.yarn/plugins/some-other-plugin.cjs' }
-      ]
-    });
+    mockHasBackstageProtocolPackageManagerPlugin.mockReturnValue(false);
 
     const provider = createPackageVersionProvider();
 
