@@ -89,6 +89,11 @@ export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
 
 export function createPackageVersionProvider(lockfile?: Lockfile) {
   return (name: string, versionHint?: string): string => {
+    // For @backstage/* packages, return "backstage:^" to use the yarn plugin
+    if (name.startsWith('@backstage/')) {
+      return 'backstage:^';
+    }
+
     const packageVersion = packageVersions[name];
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {

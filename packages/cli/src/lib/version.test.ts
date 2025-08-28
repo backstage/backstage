@@ -69,14 +69,15 @@ describe('createPackageVersionProvider', () => {
 
     // No special handling for @types packages.
     expect(provider('@types/t', '1.4.2')).toBe('^1.2.3');
+  });
 
-    const cliVersion = packageVersions['@backstage/cli'];
-    expect(provider('@backstage/cli')).toBe(
-      // If we're currently in pre-release we expect that to be picked instead
-      cliVersion.includes('-') ? `^${cliVersion}` : '*',
-    );
-    expect(provider('@backstage/core-plugin-api')).toBe(
-      `^${corePluginApiPkg.version}`,
-    );
+  it('should return backstage:^ for @backstage/* packages', () => {
+    const provider = createPackageVersionProvider();
+
+    expect(provider('@backstage/cli')).toBe('backstage:^');
+    expect(provider('@backstage/core-plugin-api')).toBe('backstage:^');
+    expect(provider('@backstage/backend-plugin-api')).toBe('backstage:^');
+    expect(provider('@backstage/backend-test-utils')).toBe('backstage:^');
+    expect(provider('@backstage/any-package')).toBe('backstage:^');
   });
 });
