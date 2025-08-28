@@ -175,6 +175,6 @@ export class PackageDiscoveryService {
       }
     }
 
-    return { features };
+    return { features: Array.from(new Set(features)) };
   }
 }
