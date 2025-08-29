@@ -1,6 +1,11 @@
+.cache
+.lighthouseci
 .yarn
 dist
 microsite
+.git
+node_modules
+docs/reference
 docs-ui/.next
 docs-ui/public
 docs-ui/out
@@ -8,6 +13,7 @@ packages/ui/css
 coverage
 *.hbs
 templates
+type-docs
 # old reports
 api-report.md
 api-report-*.md
