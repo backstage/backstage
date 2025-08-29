@@ -15,8 +15,8 @@
  */
 
 import {
-  FederationRuntimePlugin,
-  init,
+  ModuleFederationRuntimePlugin,
+  createInstance,
   loadRemote,
 } from '@module-federation/enhanced/runtime';
 import { Module } from '@module-federation/sdk';
@@ -39,7 +39,7 @@ export type DynamicFrontendFeaturesLoaderOptions = {
   moduleFederation: {
     shared?: UserOptions['shared'];
     shareStrategy?: ShareStrategy;
-    plugins?: Array<FederationRuntimePlugin>;
+    plugins?: Array<ModuleFederationRuntimePlugin>;
   };
 };
 
@@ -99,7 +99,7 @@ export function dynamicFrontendFeaturesLoader(
       }
 
       try {
-        init({
+        createInstance({
           ...options?.moduleFederation,
           name: appPackageName
             .replaceAll('@', '')
