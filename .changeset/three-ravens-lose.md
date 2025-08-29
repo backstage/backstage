@@ -1,4 +1,5 @@
 ---
+'@backstage/backend-dynamic-feature-service': patch
 '@backstage/frontend-dynamic-feature-loader': patch
 '@backstage/cli': patch
 ---
