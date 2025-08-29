@@ -279,6 +279,10 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
     );
   }
 
+  if (process.env.JEST_PROFILE) {
+    options.setupFilesAfterEnv.unshift(require.resolve('./jestProfile.js'));
+  }
+
   if (options.testEnvironment === require.resolve('jest-environment-jsdom')) {
     // FIXME https://github.com/jsdom/jsdom/issues/1724
     options.setupFilesAfterEnv.unshift(require.resolve('cross-fetch/polyfill'));
