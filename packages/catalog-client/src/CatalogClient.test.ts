@@ -579,7 +579,7 @@ describe('CatalogClient', () => {
       );
     });
 
-    it('should stream entities one by one', async () => {
+    it('should stream entities', async () => {
       const stream = client.streamEntities({}, { token });
       const results: Entity[] = [];
       for await (const entity of stream) {
@@ -588,13 +588,13 @@ describe('CatalogClient', () => {
       expect(results).toEqual(defaultResponse.items);
     });
 
-    it('should stream entities in batches', async () => {
-      const stream = client.streamEntities({ mode: 'array' }, { token });
-      const results: Entity[] = [];
-      for await (const entityBatch of stream) {
-        results.push(...entityBatch);
+    it('should stream entity pages', async () => {
+      const stream = client.streamEntityPages({}, { token });
+      const results: Entity[][] = [];
+      for await (const entityPage of stream) {
+        results.push(entityPage);
       }
-      expect(results).toEqual(defaultResponse.items);
+      expect(results).toEqual([defaultResponse.items, []]);
     });
 
     it('should handle errors', async () => {

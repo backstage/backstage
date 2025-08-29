@@ -123,7 +123,7 @@ describe('InMemoryCatalogClient', () => {
     });
   });
 
-  it('streamEntities single', async () => {
+  it('streamEntities', async () => {
     const client = new InMemoryCatalogClient({ entities });
     const stream = client.streamEntities();
     const results: Entity[] = [];
@@ -133,14 +133,14 @@ describe('InMemoryCatalogClient', () => {
     expect(results).toEqual(entities);
   });
 
-  it('streamEntities batch', async () => {
+  it('streamEntityPages', async () => {
     const client = new InMemoryCatalogClient({ entities });
-    const stream = client.streamEntities({ mode: 'array' });
-    const results: Entity[] = [];
-    for await (const entity of stream) {
-      results.push(...entity);
+    const stream = client.streamEntityPages();
+    const results: Entity[][] = [];
+    for await (const page of stream) {
+      results.push(page);
     }
-    expect(results).toEqual(entities);
+    expect(results).toEqual([entities]);
   });
 
   it('getEntityAncestors', async () => {

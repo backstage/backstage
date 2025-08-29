@@ -199,7 +199,12 @@ export interface CatalogService {
   streamEntities(
     request: StreamEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,
-  ): AsyncIterable<Entity | Entity[]>;
+  ): AsyncIterable<Entity>;
+  // (undocumented)
+  streamEntityPages(
+    request: StreamEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Entity[]>;
   // (undocumented)
   validateEntity(
     entity: Entity,

@@ -478,10 +478,6 @@ export type StreamEntitiesRequest = Omit<
    * The number of entities to fetch in each batch. Defaults to 500.
    */
   batchSize?: number;
-  /**
-   * The mode in which entities should be yielded. Defaults to 'single'.
-   */
-  mode?: 'single' | 'array';
 };
 
 /**
@@ -724,5 +720,19 @@ export interface CatalogApi {
   streamEntities(
     request?: StreamEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): AsyncIterable<Entity | Entity[]>;
+  ): AsyncIterable<Entity>;
+
+  /**
+   * Asynchronously streams entity pages from the catalog. Uses `queryEntities`
+   * to fetch entities in batches, and yields them one page at a time.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  streamEntityPages(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity[]>;
 }

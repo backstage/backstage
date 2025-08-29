@@ -91,7 +91,11 @@ export interface CatalogApi {
   streamEntities(
     request?: StreamEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): AsyncIterable<Entity | Entity[]>;
+  ): AsyncIterable<Entity>;
+  streamEntityPages(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity[]>;
   validateEntity(
     entity: Entity,
     locationRef: string,
@@ -174,14 +178,14 @@ export class CatalogClient implements CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
-  streamEntities<
-    T extends StreamEntitiesRequest,
-    R = T extends {
-      mode: 'array';
-    } & StreamEntitiesRequest
-      ? Entity[]
-      : Entity,
-  >(request?: T, options?: CatalogRequestOptions): AsyncIterable<R>;
+  streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity>;
+  streamEntityPages(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity[]>;
   validateEntity(
     entity: Entity,
     locationRef: string,
@@ -335,7 +339,6 @@ export type StreamEntitiesRequest = Omit<
   'limit' | 'offset'
 > & {
   batchSize?: number;
-  mode?: 'single' | 'array';
 };
 
 // @public

@@ -104,5 +104,6 @@ export namespace catalogServiceMock {
     validateEntity: jest.fn(),
     analyzeLocation: jest.fn(),
     streamEntities: jest.fn(),
+    streamEntityPages: jest.fn(),
   }));
 }
