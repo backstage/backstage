@@ -3,4 +3,4 @@
 '@backstage/cli': patch
 ---
 
-Update @module-federation/enhanced to ^0.18.0.
+Update @module-federation/enhanced, @module-federation/runtime and @module-federation/sdk to ^0.18.0.

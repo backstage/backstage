@@ -2671,7 +2671,7 @@ __metadata:
     "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
     "@manypkg/get-packages": "npm:^1.1.3"
-    "@module-federation/sdk": "npm:^0.9.0"
+    "@module-federation/sdk": "npm:^0.18.0"
     "@types/express": "npm:^4.17.6"
     chokidar: "npm:^3.5.3"
     express: "npm:^4.17.1"
@@ -3439,8 +3439,8 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@module-federation/enhanced": "npm:^0.18.0"
-    "@module-federation/runtime": "npm:^0.9.0"
-    "@module-federation/sdk": "npm:^0.9.0"
+    "@module-federation/runtime": "npm:^0.18.0"
+    "@module-federation/sdk": "npm:^0.18.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -11041,13 +11041,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/error-codes@npm:0.9.1":
-  version: 0.9.1
-  resolution: "@module-federation/error-codes@npm:0.9.1"
-  checksum: 10/545aecc606a506ee47f061835e0eaa41b8d1b02f6bf71b36ec9ae85a1b0370af1f7b7cf92a8f52c3c4b35da858653244316de5ab06bea5dac5b92995467631cc
-  languageName: node
-  linkType: hard
-
 "@module-federation/inject-external-runtime-core-plugin@npm:0.18.3":
   version: 0.18.3
   resolution: "@module-federation/inject-external-runtime-core-plugin@npm:0.18.3"
@@ -11126,16 +11119,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/runtime-core@npm:0.9.1":
-  version: 0.9.1
-  resolution: "@module-federation/runtime-core@npm:0.9.1"
-  dependencies:
-    "@module-federation/error-codes": "npm:0.9.1"
-    "@module-federation/sdk": "npm:0.9.1"
-  checksum: 10/6f9edbe23013395d7896fc2a24cb4055bc78df5a335f090e079df951835c1cf91c567228f19879eee3fddb0b34128abd0b50feaca1cf3fb2828c7b9bacc22169
-  languageName: node
-  linkType: hard
-
 "@module-federation/runtime-tools@npm:0.17.1":
   version: 0.17.1
   resolution: "@module-federation/runtime-tools@npm:0.17.1"
@@ -11167,7 +11150,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/runtime@npm:0.18.3":
+"@module-federation/runtime@npm:0.18.3, @module-federation/runtime@npm:^0.18.0":
   version: 0.18.3
   resolution: "@module-federation/runtime@npm:0.18.3"
   dependencies:
@@ -11178,17 +11161,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/runtime@npm:^0.9.0":
-  version: 0.9.1
-  resolution: "@module-federation/runtime@npm:0.9.1"
-  dependencies:
-    "@module-federation/error-codes": "npm:0.9.1"
-    "@module-federation/runtime-core": "npm:0.9.1"
-    "@module-federation/sdk": "npm:0.9.1"
-  checksum: 10/71eb1c3e81b307ebfe06c43ce70bfa56b217e9dfbed27f0b4235d3d0d05cc0fe2eb1dc57fffb3260ed9e0239257ef117ae13924c642b5ff97d9c65bdf48206fe
-  languageName: node
-  linkType: hard
-
 "@module-federation/sdk@npm:0.17.1":
   version: 0.17.1
   resolution: "@module-federation/sdk@npm:0.17.1"
@@ -11196,17 +11168,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/sdk@npm:0.18.3":
+"@module-federation/sdk@npm:0.18.3, @module-federation/sdk@npm:^0.18.0":
   version: 0.18.3
   resolution: "@module-federation/sdk@npm:0.18.3"
   checksum: 10/5be8860a331220299ae72d2680b39bc0d1934e9f7eb79e23ace6f199371ae080f029ceb4e851c650cfd9d287c393467eab38b50b7fe09620946170f3973924e7
-  languageName: node
-  linkType: hard
-
-"@module-federation/sdk@npm:0.9.1, @module-federation/sdk@npm:^0.9.0":
-  version: 0.9.1
-  resolution: "@module-federation/sdk@npm:0.9.1"
-  checksum: 10/ea0320feff328a05405e65503d1df28e46a9ad17ef99b77f1428db5c89efbadd2a76ec82d99a54ac1d21286cee6d9ddbba881a9c46748dfe8abdb11e9afef7da
   languageName: node
   linkType: hard
 
