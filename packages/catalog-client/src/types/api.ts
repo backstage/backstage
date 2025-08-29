@@ -473,7 +473,16 @@ export type QueryEntitiesResponse = {
 export type StreamEntitiesRequest = Omit<
   QueryEntitiesRequest,
   'limit' | 'offset'
->;
+> & {
+  /**
+   * The number of entities to fetch in each batch. Defaults to 500.
+   */
+  batchSize?: number;
+  /**
+   * The mode in which entities should be yielded. Defaults to 'single'.
+   */
+  mode?: 'single' | 'array';
+};
 
 /**
  * A client for interacting with the Backstage software catalog through its API.
@@ -715,5 +724,5 @@ export interface CatalogApi {
   streamEntities(
     request?: StreamEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): AsyncIterable<Entity>;
+  ): AsyncIterable<Entity | Entity[]>;
 }

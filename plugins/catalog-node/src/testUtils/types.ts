@@ -140,5 +140,5 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
   streamEntities(
     request?: StreamEntitiesRequest,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
-  ): AsyncIterable<Entity>;
+  ): AsyncIterable<Entity | Entity[]>;
 }

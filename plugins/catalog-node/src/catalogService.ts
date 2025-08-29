@@ -146,7 +146,7 @@ export interface CatalogService {
   streamEntities(
     request: StreamEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,
-  ): AsyncIterable<Entity>;
+  ): AsyncIterable<Entity | Entity[]>;
 }
 
 class DefaultCatalogService implements CatalogService {
@@ -329,7 +329,7 @@ class DefaultCatalogService implements CatalogService {
   async *streamEntities(
     request: StreamEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,
-  ): AsyncIterable<Entity> {
+  ): AsyncIterable<Entity | Entity[]> {
     yield* this.#catalogApi.streamEntities(
       request,
       await this.#getOptions(options),

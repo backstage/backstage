@@ -51,7 +51,7 @@ import type {
 } from '@backstage/plugin-catalog-common';
 
 // Number of entities to return in a single streamEntities request
-const STREAM_ENTITIES_LIMIT = 500;
+const DEFAULT_STREAM_ENTITIES_LIMIT = 500;
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -463,20 +463,25 @@ export class CatalogClient implements CatalogApi {
   /**
    * {@inheritdoc CatalogApi.streamEntities}
    */
-  async *streamEntities(
-    request?: StreamEntitiesRequest,
-    options?: CatalogRequestOptions,
-  ): AsyncIterable<Entity> {
+  async *streamEntities<
+    T extends StreamEntitiesRequest,
+    R = T extends { mode: 'array' } & StreamEntitiesRequest ? Entity[] : Entity,
+  >(request?: T, options?: CatalogRequestOptions): AsyncIterable<R> {
     let cursor: string | undefined = undefined;
+    const limit = request?.batchSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
+    const mode = request?.mode ?? 'single';
     do {
       const res = await this.queryEntities(
-        cursor
-          ? { ...request, cursor, limit: STREAM_ENTITIES_LIMIT }
-          : { ...request, limit: STREAM_ENTITIES_LIMIT },
+        cursor ? { ...request, cursor, limit } : { ...request, limit },
         options,
       );
-      for (const entity of res.items) {
-        yield entity;
+
+      if (mode === 'single') {
+        for (const entity of res.items) {
+          yield entity as R;
+        }
+      } else {
+        yield res.items as R;
       }
 
       cursor = res.pageInfo.nextCursor;

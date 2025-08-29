@@ -280,16 +280,23 @@ export class InMemoryCatalogClient implements CatalogApi {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  async *streamEntities(
-    request?: StreamEntitiesRequest,
-  ): AsyncIterable<Entity> {
+  async *streamEntities<
+    T extends StreamEntitiesRequest,
+    R = T extends { mode: 'array' } & StreamEntitiesRequest ? Entity[] : Entity,
+  >(request?: T): AsyncIterable<R> {
     let cursor: string | undefined = undefined;
+    const mode = request?.mode ?? 'single';
     do {
       const res = await this.queryEntities(
         cursor ? { ...request, cursor } : request,
       );
-      for (const entity of res.items) {
-        yield entity;
+
+      if (mode === 'single') {
+        for (const entity of res.items) {
+          yield entity as R;
+        }
+      } else {
+        yield res.items as R;
       }
 
       cursor = res.pageInfo.nextCursor;

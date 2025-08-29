@@ -579,11 +579,20 @@ describe('CatalogClient', () => {
       );
     });
 
-    it('should stream entities', async () => {
+    it('should stream entities one by one', async () => {
       const stream = client.streamEntities({}, { token });
       const results: Entity[] = [];
       for await (const entity of stream) {
         results.push(entity);
+      }
+      expect(results).toEqual(defaultResponse.items);
+    });
+
+    it('should stream entities in batches', async () => {
+      const stream = client.streamEntities({ mode: 'array' }, { token });
+      const results: Entity[] = [];
+      for await (const entityBatch of stream) {
+        results.push(...entityBatch);
       }
       expect(results).toEqual(defaultResponse.items);
     });
@@ -597,7 +606,7 @@ describe('CatalogClient', () => {
 
       const stream = client.streamEntities({}, { token });
       await expect(async () => {
-        const results: Entity[] = [];
+        const results = [];
         for await (const entity of stream) {
           results.push(entity);
         }

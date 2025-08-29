@@ -123,12 +123,22 @@ describe('InMemoryCatalogClient', () => {
     });
   });
 
-  it('streamEntities', async () => {
+  it('streamEntities single', async () => {
     const client = new InMemoryCatalogClient({ entities });
     const stream = client.streamEntities();
     const results: Entity[] = [];
     for await (const entity of stream) {
       results.push(entity);
+    }
+    expect(results).toEqual(entities);
+  });
+
+  it('streamEntities batch', async () => {
+    const client = new InMemoryCatalogClient({ entities });
+    const stream = client.streamEntities({ mode: 'array' });
+    const results: Entity[] = [];
+    for await (const entity of stream) {
+      results.push(...entity);
     }
     expect(results).toEqual(entities);
   });
