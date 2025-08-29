@@ -917,8 +917,6 @@ export type SelectItem = {
 // @public
 export const Sidebar: (props: SidebarProps) => JSX_2.Element;
 
-// Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
@@ -926,8 +924,6 @@ export const SIDEBAR_INTRO_LOCAL_STORAGE =
 // @public (undocumented)
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
 
-// Warning: (ae-missing-release-tag) "sidebarConfig" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const sidebarConfig: {
   drawerWidthClosed: number;
@@ -1281,6 +1277,13 @@ export interface StructuredMetadataTableProps {
     nestedValuesAsYaml?: boolean;
   };
 }
+
+// @public (undocumented)
+export const submenuConfig: {
+  drawerWidthClosed: number;
+  drawerWidthOpen: number;
+  defaultOpenDelayMs: number;
+};
 
 // @public (undocumented)
 export type SubmenuOptions = {

@@ -48,7 +48,11 @@ export type {
   SidebarSpacerClassKey,
   SidebarDividerClassKey,
 } from './Items';
-export { SIDEBAR_INTRO_LOCAL_STORAGE, sidebarConfig } from './config';
+export {
+  SIDEBAR_INTRO_LOCAL_STORAGE,
+  sidebarConfig,
+  submenuConfig,
+} from './config';
 export type { SidebarOptions, SubmenuOptions } from './config';
 export {
   LegacySidebarContext as SidebarContext,

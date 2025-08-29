@@ -49,6 +49,7 @@ export type SidebarConfig = {
   mobileSidebarHeight: number;
 };
 
+/** @public */
 export const sidebarConfig = {
   drawerWidthClosed,
   drawerWidthOpen: 224,
@@ -85,6 +86,7 @@ export type SubmenuConfig = {
   defaultOpenDelayMs: number;
 };
 
+/** @public */
 export const submenuConfig = {
   drawerWidthClosed: 0,
   drawerWidthOpen: 202,
@@ -98,6 +100,7 @@ export const makeSidebarSubmenuConfig = (
   ...customSubmenuConfig,
 });
 
+/** @public */
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
 
