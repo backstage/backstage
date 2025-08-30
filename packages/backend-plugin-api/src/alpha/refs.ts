@@ -54,3 +54,25 @@ export const actionsRegistryServiceRef = createServiceRef<
 >({
   id: 'alpha.core.actionsRegistry',
 });
+
+/**
+ * Service for managing metrics.
+ *
+ * @alpha
+ */
+export const metricsServiceRef = createServiceRef<
+  import('./MetricsService').MetricsService
+>({
+  id: 'alpha.core.metrics',
+});
+
+/**
+ * Service for managing metrics for root scoped services.
+ *
+ * @alpha
+ */
+export const rootMetricsServiceRef = createServiceRef<
+  import('./MetricsService').RootMetricsService
+>({
+  id: 'alpha.core.rootMetrics',
+});
