@@ -691,7 +691,7 @@ export interface CreateFrontendFeatureLoaderOptions {
 // @public
 export function createFrontendModule<
   TId extends string,
-  TExtensions extends readonly ExtensionDefinition[] = [],
+  TExtensions extends readonly ExtensionDefinition[],
 >(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule;
 
 // @public (undocumented)
@@ -710,13 +710,13 @@ export interface CreateFrontendModuleOptions<
 // @public
 export function createFrontendPlugin<
   TId extends string,
+  TExtensions extends readonly ExtensionDefinition[],
   TRoutes extends {
     [name in string]: RouteRef | SubRouteRef;
   } = {},
   TExternalRoutes extends {
     [name in string]: ExternalRouteRef;
   } = {},
-  TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
 ): OverridableFrontendPlugin<
