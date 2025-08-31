@@ -43,12 +43,24 @@ import {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createSchemaFromZod } from '../../../frontend-plugin-api/src/schema/createSchemaFromZod';
 import { TestApiRegistry, withLogCollector } from '@backstage/test-utils';
+import { createErrorCollector } from '../wiring/createErrorCollector';
 
 const testApis = TestApiRegistry.from();
 const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
 const otherDataRef = createExtensionDataRef<number>().with({ id: 'other' });
 const inputMirrorDataRef = createExtensionDataRef<unknown>().with({
   id: 'mirror',
+});
+
+const collector = createErrorCollector();
+
+afterEach(() => {
+  const errors = collector.collectErrors();
+  if (errors) {
+    throw new Error(
+      `Unexpected errors: ${errors.map(e => e.message).join(', ')}`,
+    );
+  }
 });
 
 function makeSpec<TConfig, TConfigInput>(
@@ -88,6 +100,7 @@ function makeInstanceWithId<TConfig, TConfigInput>(
       node,
       attachments: new Map(),
       apis: testApis,
+      collector,
     }),
   };
 }
@@ -151,75 +164,37 @@ describe('instantiateAppNodeTree', () => {
     });
 
     it('should instantiate a single node', () => {
-      const tree = resolveAppTree('root-node', [
-        makeSpec(simpleExtension, { id: 'root-node' }),
-      ]);
+      const tree = resolveAppTree(
+        'root-node',
+        [makeSpec(simpleExtension, { id: 'root-node' })],
+        collector,
+      );
       expect(tree.root.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root, testApis);
+      instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).toBeDefined();
       expect(tree.root.instance?.getData(testDataRef)).toBe('test');
 
       // Multiple calls should have no effect
-      instantiateAppNodeTree(tree.root, testApis);
+      instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).toBeDefined();
     });
 
     it('should not instantiate disabled nodes', () => {
-      const tree = resolveAppTree('root-node', [
-        makeSpec(simpleExtension, { id: 'root-node', disabled: true }),
-      ]);
+      const tree = resolveAppTree(
+        'root-node',
+        [makeSpec(simpleExtension, { id: 'root-node', disabled: true })],
+        collector,
+      );
       expect(tree.root.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root, testApis);
+      instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).not.toBeDefined();
     });
 
     it('should instantiate a node with attachments', () => {
-      const tree = resolveAppTree('root-node', [
-        makeSpec(
-          createV1Extension({
-            namespace: 'root-node',
-            attachTo: { id: 'ignored', input: 'ignored' },
-            inputs: {
-              test: createV1ExtensionInput({ test: testDataRef }),
-            },
-            output: {
-              inputMirror: inputMirrorDataRef,
-            },
-            factory({ inputs }) {
-              return { inputMirror: inputs };
-            },
-          }),
-        ),
-        makeSpec(simpleExtension, {
-          id: 'child-node',
-          attachTo: { id: 'root-node', input: 'test' },
-        }),
-      ]);
-
-      const childNode = tree.nodes.get('child-node');
-      expect(childNode).toBeDefined();
-
-      expect(tree.root.instance).not.toBeDefined();
-      expect(childNode?.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root, testApis);
-      expect(tree.root.instance).toBeDefined();
-      expect(childNode?.instance).toBeDefined();
-      expect(tree.root.instance?.getData(inputMirrorDataRef)).toMatchObject({
-        test: [
-          { node: { spec: { id: 'child-node' } }, output: { test: 'test' } },
-        ],
-      });
-
-      // Multiple calls should have no effect
-      instantiateAppNodeTree(tree.root, testApis);
-      expect(tree.root.instance).toBeDefined();
-      expect(childNode?.instance).toBeDefined();
-    });
-
-    it('should not instantiate disabled attachments', () => {
-      const tree = resolveAppTree('root-node', [
-        {
-          ...makeSpec(
+      const tree = resolveAppTree(
+        'root-node',
+        [
+          makeSpec(
             createV1Extension({
               namespace: 'root-node',
               attachTo: { id: 'ignored', input: 'ignored' },
@@ -234,22 +209,72 @@ describe('instantiateAppNodeTree', () => {
               },
             }),
           ),
-        },
-        {
-          ...makeSpec(simpleExtension),
-          id: 'child-node',
-          // Using an invalid input should not be an error when disabled
-          attachTo: { id: 'root-node', input: 'invalid' },
-          disabled: true,
-        },
-      ]);
+          makeSpec(simpleExtension, {
+            id: 'child-node',
+            attachTo: { id: 'root-node', input: 'test' },
+          }),
+        ],
+        collector,
+      );
 
       const childNode = tree.nodes.get('child-node');
       expect(childNode).toBeDefined();
 
       expect(tree.root.instance).not.toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root, testApis);
+      instantiateAppNodeTree(tree.root, testApis, collector);
+      expect(tree.root.instance).toBeDefined();
+      expect(childNode?.instance).toBeDefined();
+      expect(tree.root.instance?.getData(inputMirrorDataRef)).toMatchObject({
+        test: [
+          { node: { spec: { id: 'child-node' } }, output: { test: 'test' } },
+        ],
+      });
+
+      // Multiple calls should have no effect
+      instantiateAppNodeTree(tree.root, testApis, collector);
+      expect(tree.root.instance).toBeDefined();
+      expect(childNode?.instance).toBeDefined();
+    });
+
+    it('should not instantiate disabled attachments', () => {
+      const tree = resolveAppTree(
+        'root-node',
+        [
+          {
+            ...makeSpec(
+              createV1Extension({
+                namespace: 'root-node',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  test: createV1ExtensionInput({ test: testDataRef }),
+                },
+                output: {
+                  inputMirror: inputMirrorDataRef,
+                },
+                factory({ inputs }) {
+                  return { inputMirror: inputs };
+                },
+              }),
+            ),
+          },
+          {
+            ...makeSpec(simpleExtension),
+            id: 'child-node',
+            // Using an invalid input should not be an error when disabled
+            attachTo: { id: 'root-node', input: 'invalid' },
+            disabled: true,
+          },
+        ],
+        collector,
+      );
+
+      const childNode = tree.nodes.get('child-node');
+      expect(childNode).toBeDefined();
+
+      expect(tree.root.instance).not.toBeDefined();
+      expect(childNode?.instance).not.toBeDefined();
+      instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
       expect(tree.root.instance?.getData(inputMirrorDataRef)).toEqual({
@@ -264,13 +289,14 @@ describe('instantiateAppNodeTree', () => {
           node: makeNode(simpleExtension),
           attachments,
           apis: testApis,
+          collector,
         });
 
-        expect(Array.from(instance.getDataRefs())).toEqual([
+        expect(Array.from(instance?.getDataRefs() ?? [])).toEqual([
           testDataRef,
           otherDataRef.optional(),
         ]);
-        expect(instance.getData(testDataRef)).toEqual('test');
+        expect(instance?.getData(testDataRef)).toEqual('test');
       });
 
       it('should create an extension with different kind of inputs', () => {
@@ -346,12 +372,13 @@ describe('instantiateAppNodeTree', () => {
               },
             }),
           ),
+          collector,
         });
 
-        expect(Array.from(instance.getDataRefs())).toEqual([
+        expect(Array.from(instance?.getDataRefs() ?? [])).toEqual([
           inputMirrorDataRef,
         ]);
-        expect(instance.getData(inputMirrorDataRef)).toMatchObject({
+        expect(instance?.getData(inputMirrorDataRef)).toMatchObject({
           optionalSingletonPresent: {
             node: { spec: { id: 'app/test' } },
             output: { test: 'optionalSingletonPresent' },
@@ -371,118 +398,158 @@ describe('instantiateAppNodeTree', () => {
       });
 
       it('should refuse to create an extension with invalid config', () => {
-        expect(() =>
+        const node = makeNode(simpleExtension, {
+          config: { other: 'not-a-number' },
+        });
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(simpleExtension, {
-              config: { other: 'not-a-number' },
-            }),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'INVALID_CONFIGURATION',
+            message:
+              "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
+            context: { node },
+          },
+        ]);
       });
 
       it('should forward extension factory errors', () => {
-        expect(() =>
+        const node = makeNode(
+          createV1Extension({
+            namespace: 'app',
+            name: 'test',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            output: {},
+            factory() {
+              const error = new Error('NOPE');
+              error.name = 'NopeError';
+              throw error;
+            },
+          }),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              createV1Extension({
-                namespace: 'app',
-                name: 'test',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                output: {},
-                factory() {
-                  const error = new Error('NOPE');
-                  error.name = 'NopeError';
-                  throw error;
-                },
-              }),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test'; caused by NopeError: NOPE",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'app/test'; caused by NopeError: NOPE",
+            context: { node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with duplicate output', () => {
-        expect(() =>
+        const node = makeNode(
+          createV1Extension({
+            namespace: 'app',
+            name: 'test',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            output: {
+              test1: testDataRef,
+              test2: testDataRef,
+            },
+            factory({}) {
+              return { test1: 'test', test2: 'test2' };
+            },
+          }),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              createV1Extension({
-                namespace: 'app',
-                name: 'test',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                output: {
-                  test1: testDataRef,
-                  test2: testDataRef,
-                },
-                factory({}) {
-                  return { test1: 'test', test2: 'test2' };
-                },
-              }),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', duplicate extension data 'test' received via output 'test2'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'app/test', duplicate extension data 'test' received via output 'test2'",
+            context: { node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with disconnected output data', () => {
-        expect(() =>
+        const node = makeNode(
+          createV1Extension({
+            namespace: 'app',
+            name: 'test',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            output: {
+              test: testDataRef,
+            },
+            factory({}) {
+              return { nonexistent: 'test' } as any;
+            },
+          }),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              createV1Extension({
-                namespace: 'app',
-                name: 'test',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                output: {
-                  test: testDataRef,
-                },
-                factory({}) {
-                  return { nonexistent: 'test' } as any;
-                },
-              }),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', unknown output provided via 'nonexistent'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'app/test', unknown output provided via 'nonexistent'",
+            context: { node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with missing required input', () => {
-        expect(() =>
+        const node = makeNode(
+          createV1Extension({
+            namespace: 'app',
+            name: 'test',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            inputs: {
+              singleton: createV1ExtensionInput(
+                {
+                  test: testDataRef,
+                },
+                { singleton: true },
+              ),
+            },
+            output: {},
+            factory: () => ({}),
+          }),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              createV1Extension({
-                namespace: 'app',
-                name: 'test',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                inputs: {
-                  singleton: createV1ExtensionInput(
-                    {
-                      test: testDataRef,
-                    },
-                    { singleton: true },
-                  ),
-                },
-                output: {},
-                factory: () => ({}),
-              }),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', input 'singleton' is required but was not received",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'app/test', input 'singleton' is required but was not received",
+            context: { node },
+          },
+        ]);
       });
 
       it('should warn when creating an instance with undeclared inputs', () => {
@@ -521,6 +588,7 @@ describe('instantiateAppNodeTree', () => {
                 factory: () => ({}),
               }),
             ),
+            collector,
           }),
         );
 
@@ -555,6 +623,7 @@ describe('instantiateAppNodeTree', () => {
                 factory: () => ({}),
               }),
             ),
+            collector,
           }),
         );
 
@@ -565,7 +634,24 @@ describe('instantiateAppNodeTree', () => {
       });
 
       it('should refuse to create an instance with multiple inputs for required singleton', () => {
-        expect(() =>
+        const node = makeNode(
+          createV1Extension({
+            namespace: 'app',
+            name: 'test',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            inputs: {
+              singleton: createV1ExtensionInput(
+                {
+                  test: testDataRef,
+                },
+                { singleton: true },
+              ),
+            },
+            output: {},
+            factory: () => ({}),
+          }),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
             attachments: new Map([
@@ -577,31 +663,39 @@ describe('instantiateAppNodeTree', () => {
                 ],
               ],
             ]),
-            node: makeNode(
-              createV1Extension({
-                namespace: 'app',
-                name: 'test',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                inputs: {
-                  singleton: createV1ExtensionInput(
-                    {
-                      test: testDataRef,
-                    },
-                    { singleton: true },
-                  ),
-                },
-                output: {},
-                factory: () => ({}),
-              }),
-            ),
+            node,
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', expected exactly one 'singleton' input but received multiple: 'app/test', 'app/test'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'app/test', expected exactly one 'singleton' input but received multiple: 'app/test', 'app/test'",
+            context: { node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with multiple inputs for optional singleton', () => {
-        expect(() =>
+        const node = makeNode(
+          createV1Extension({
+            namespace: 'app',
+            name: 'test',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            inputs: {
+              singleton: createV1ExtensionInput(
+                {
+                  test: testDataRef,
+                },
+                { singleton: true, optional: true },
+              ),
+            },
+            output: {},
+            factory: () => ({}),
+          }),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
             attachments: new Map([
@@ -613,57 +707,56 @@ describe('instantiateAppNodeTree', () => {
                 ],
               ],
             ]),
-            node: makeNode(
-              createV1Extension({
-                namespace: 'app',
-                name: 'test',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                inputs: {
-                  singleton: createV1ExtensionInput(
-                    {
-                      test: testDataRef,
-                    },
-                    { singleton: true, optional: true },
-                  ),
-                },
-                output: {},
-                factory: () => ({}),
-              }),
-            ),
+            node,
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', expected at most one 'singleton' input but received multiple: 'app/test', 'app/test'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'app/test', expected at most one 'singleton' input but received multiple: 'app/test', 'app/test'",
+            context: { node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with multiple inputs that did not provide required data', () => {
-        expect(() =>
+        const node = makeNode(
+          createV1Extension({
+            namespace: 'app',
+            name: 'test',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            inputs: {
+              singleton: createV1ExtensionInput(
+                {
+                  other: otherDataRef,
+                },
+                { singleton: true },
+              ),
+            },
+            output: {},
+            factory: () => ({}),
+          }),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
             attachments: new Map([
               ['singleton', [makeInstanceWithId(simpleExtension, undefined)]],
             ]),
-            node: makeNode(
-              createV1Extension({
-                namespace: 'app',
-                name: 'test',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                inputs: {
-                  singleton: createV1ExtensionInput(
-                    {
-                      other: otherDataRef,
-                    },
-                    { singleton: true },
-                  ),
-                },
-                output: {},
-                factory: () => ({}),
-              }),
-            ),
+            node,
+            collector,
           }),
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"Failed to instantiate extension 'app/test', extension 'app/test' could not be attached because its output data ('test', 'other') does not match what the input 'singleton' requires ('other')"`,
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'app/test', extension 'app/test' could not be attached because its output data ('test', 'other') does not match what the input 'singleton' requires ('other')",
+            context: { node },
+          },
+        ]);
       });
     });
   });
@@ -727,71 +820,37 @@ describe('instantiateAppNodeTree', () => {
     }
 
     it('should instantiate a single node', () => {
-      const tree = resolveAppTree('root-node', [
-        makeSpec(simpleExtension, { id: 'root-node' }),
-      ]);
+      const tree = resolveAppTree(
+        'root-node',
+        [makeSpec(simpleExtension, { id: 'root-node' })],
+        collector,
+      );
       expect(tree.root.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root, testApis);
+      instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).toBeDefined();
       expect(tree.root.instance?.getData(testDataRef)).toBe('test');
 
       // Multiple calls should have no effect
-      instantiateAppNodeTree(tree.root, testApis);
+      instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).toBeDefined();
     });
 
     it('should not instantiate disabled nodes', () => {
-      const tree = resolveAppTree('root-node', [
-        makeSpec(simpleExtension, { id: 'root-node', disabled: true }),
-      ]);
+      const tree = resolveAppTree(
+        'root-node',
+        [makeSpec(simpleExtension, { id: 'root-node', disabled: true })],
+        collector,
+      );
       expect(tree.root.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root, testApis);
+      instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).not.toBeDefined();
     });
 
     it('should instantiate a node with attachments', () => {
-      const tree = resolveAppTree('root-node', [
-        makeSpec(
-          resolveExtensionDefinition(
-            createExtension({
-              attachTo: { id: 'ignored', input: 'ignored' },
-              inputs: {
-                test: createExtensionInput([testDataRef]),
-              },
-              output: [inputMirrorDataRef],
-              factory: mirrorInputs,
-            }),
-            { namespace: 'root-node' },
-          ),
-        ),
-        makeSpec(simpleExtension, {
-          id: 'child-node',
-          attachTo: { id: 'root-node', input: 'test' },
-        }),
-      ]);
-
-      const childNode = tree.nodes.get('child-node');
-      expect(childNode).toBeDefined();
-
-      expect(tree.root.instance).not.toBeDefined();
-      expect(childNode?.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root, testApis);
-      expect(tree.root.instance).toBeDefined();
-      expect(childNode?.instance).toBeDefined();
-      expect(tree.root.instance?.getData(inputMirrorDataRef)).toMatchObject({
-        test: [{ node: { spec: { id: 'child-node' } }, test: 'test' }],
-      });
-
-      // Multiple calls should have no effect
-      instantiateAppNodeTree(tree.root, testApis);
-      expect(tree.root.instance).toBeDefined();
-      expect(childNode?.instance).toBeDefined();
-    });
-
-    it('should not instantiate disabled attachments', () => {
-      const tree = resolveAppTree('root-node', [
-        {
-          ...makeSpec(
+      const tree = resolveAppTree(
+        'root-node',
+        [
+          makeSpec(
             resolveExtensionDefinition(
               createExtension({
                 attachTo: { id: 'ignored', input: 'ignored' },
@@ -804,22 +863,68 @@ describe('instantiateAppNodeTree', () => {
               { namespace: 'root-node' },
             ),
           ),
-        },
-        {
-          ...makeSpec(simpleExtension),
-          id: 'child-node',
-          // Using an invalid input should not be an error when disabled
-          attachTo: { id: 'root-node', input: 'invalid' },
-          disabled: true,
-        },
-      ]);
+          makeSpec(simpleExtension, {
+            id: 'child-node',
+            attachTo: { id: 'root-node', input: 'test' },
+          }),
+        ],
+        collector,
+      );
 
       const childNode = tree.nodes.get('child-node');
       expect(childNode).toBeDefined();
 
       expect(tree.root.instance).not.toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root, testApis);
+      instantiateAppNodeTree(tree.root, testApis, collector);
+      expect(tree.root.instance).toBeDefined();
+      expect(childNode?.instance).toBeDefined();
+      expect(tree.root.instance?.getData(inputMirrorDataRef)).toMatchObject({
+        test: [{ node: { spec: { id: 'child-node' } }, test: 'test' }],
+      });
+
+      // Multiple calls should have no effect
+      instantiateAppNodeTree(tree.root, testApis, collector);
+      expect(tree.root.instance).toBeDefined();
+      expect(childNode?.instance).toBeDefined();
+    });
+
+    it('should not instantiate disabled attachments', () => {
+      const tree = resolveAppTree(
+        'root-node',
+        [
+          {
+            ...makeSpec(
+              resolveExtensionDefinition(
+                createExtension({
+                  attachTo: { id: 'ignored', input: 'ignored' },
+                  inputs: {
+                    test: createExtensionInput([testDataRef]),
+                  },
+                  output: [inputMirrorDataRef],
+                  factory: mirrorInputs,
+                }),
+                { namespace: 'root-node' },
+              ),
+            ),
+          },
+          {
+            ...makeSpec(simpleExtension),
+            id: 'child-node',
+            // Using an invalid input should not be an error when disabled
+            attachTo: { id: 'root-node', input: 'invalid' },
+            disabled: true,
+          },
+        ],
+        collector,
+      );
+
+      const childNode = tree.nodes.get('child-node');
+      expect(childNode).toBeDefined();
+
+      expect(tree.root.instance).not.toBeDefined();
+      expect(childNode?.instance).not.toBeDefined();
+      instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
       expect(tree.root.instance?.getData(inputMirrorDataRef)).toEqual({
@@ -834,10 +939,13 @@ describe('instantiateAppNodeTree', () => {
           node: makeNode(simpleExtension),
           attachments,
           apis: testApis,
+          collector,
         });
 
-        expect(Array.from(instance.getDataRefs())).toEqual([testDataRef]);
-        expect(instance.getData(testDataRef)).toEqual('test');
+        expect(Array.from(instance?.getDataRefs() ?? [])).toEqual([
+          testDataRef,
+        ]);
+        expect(instance?.getData(testDataRef)).toEqual('test');
       });
 
       it('should create an extension with different kind of inputs', () => {
@@ -903,12 +1011,13 @@ describe('instantiateAppNodeTree', () => {
               { namespace: 'app' },
             ),
           ),
+          collector,
         });
 
-        expect(Array.from(instance.getDataRefs())).toEqual([
+        expect(Array.from(instance?.getDataRefs() ?? [])).toEqual([
           inputMirrorDataRef,
         ]);
-        expect(instance.getData(inputMirrorDataRef)).toMatchObject({
+        expect(instance?.getData(inputMirrorDataRef)).toMatchObject({
           optionalSingletonPresent: {
             node: { spec: { id: 'app/test' } },
             test: 'optionalSingletonPresent',
@@ -941,24 +1050,35 @@ describe('instantiateAppNodeTree', () => {
             });
             yield* output;
           },
+          collector,
         });
 
-        expect(Array.from(instance.getDataRefs())).toEqual([testDataRef]);
-        expect(instance.getData(testDataRef)).toEqual('modified');
+        expect(Array.from(instance?.getDataRefs() ?? [])).toEqual([
+          testDataRef,
+        ]);
+        expect(instance?.getData(testDataRef)).toEqual('modified');
       });
 
       it('should refuse to create an extension with invalid config', () => {
-        expect(() =>
+        const node = makeNode(simpleExtension, {
+          config: { other: 'not-a-number' },
+        });
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(simpleExtension, {
-              config: { other: 'not-a-number' },
-            }),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'INVALID_CONFIGURATION',
+            message:
+              "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
+            context: { node },
+          },
+        ]);
       });
 
       it('should throw if extension factories do not provide an iterable object', () => {
@@ -966,14 +1086,21 @@ describe('instantiateAppNodeTree', () => {
           extension: ExtensionDefinition,
           middleware?: ExtensionFactoryMiddleware,
         ) {
-          return createAppNodeInstance({
+          const node = makeNode(
+            resolveExtensionDefinition(extension, { namespace: 'test' }),
+          );
+          createAppNodeInstance({
             extensionFactoryMiddleware: middleware,
             apis: testApis,
-            node: makeNode(
-              resolveExtensionDefinition(extension, { namespace: 'test' }),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           });
+          const errors = collector.collectErrors();
+          for (const error of errors ?? []) {
+            expect(error.context?.node).toBe(node);
+          }
+          return errors;
         }
 
         const baseOpts = {
@@ -984,7 +1111,7 @@ describe('instantiateAppNodeTree', () => {
         const badFactory = () => 'not-iterable' as any;
         const goodFactory = () => [testDataRef('test')];
 
-        expect(() =>
+        expect(
           createInstance(
             createExtension({
               attachTo: { id: 'ignored', input: 'ignored' },
@@ -992,11 +1119,15 @@ describe('instantiateAppNodeTree', () => {
               factory: badFactory,
             }),
           ),
-        ).toThrow(
-          `Failed to instantiate extension 'test', extension factory did not provide an iterable object`,
-        );
+        ).toEqual([
+          {
+            code: 'EXTENSION_FACTORY_INVALID_OUTPUT',
+            message: 'extension factory did not provide an iterable object',
+            context: { node: expect.anything() },
+          },
+        ]);
 
-        expect(() =>
+        expect(
           createInstance(
             createExtension({
               ...baseOpts,
@@ -1005,12 +1136,18 @@ describe('instantiateAppNodeTree', () => {
               factory: badFactory,
             }),
           ),
-        ).toThrow(
-          `Failed to instantiate extension 'test', extension factory override did not provide an iterable object`,
-        );
+        ).toEqual([
+          {
+            // TODO: This should probably be EXTENSION_FACTORY_INVALID_OUTPUT
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'test', extension factory override did not provide an iterable object",
+            context: { node: expect.anything() },
+          },
+        ]);
 
         // Bad middleware
-        expect(() =>
+        expect(
           createInstance(
             createExtension({
               ...baseOpts,
@@ -1018,11 +1155,17 @@ describe('instantiateAppNodeTree', () => {
             }),
             () => 'not-iterable' as any,
           ),
-        ).toThrow(
-          `Failed to instantiate extension 'test', extension factory middleware did not provide an iterable object`,
-        );
+        ).toEqual([
+          {
+            // TODO: This should probably be EXTENSION_FACTORY_INVALID_OUTPUT
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'test', extension factory middleware did not provide an iterable object",
+            context: { node: expect.anything() },
+          },
+        ]);
 
-        expect(() =>
+        expect(
           createInstance(
             createExtensionBlueprint({
               kind: 'test',
@@ -1030,12 +1173,16 @@ describe('instantiateAppNodeTree', () => {
               factory: badFactory,
             }).make({ params: {} }),
           ),
-        ).toThrow(
-          `Failed to instantiate extension 'test:test', extension factory did not provide an iterable object`,
-        );
+        ).toEqual([
+          {
+            code: 'EXTENSION_FACTORY_INVALID_OUTPUT',
+            message: 'extension factory did not provide an iterable object',
+            context: { node: expect.anything() },
+          },
+        ]);
 
         // Using makeWithOverrides
-        expect(() =>
+        expect(
           createInstance(
             createExtensionBlueprint({
               kind: 'test',
@@ -1045,12 +1192,16 @@ describe('instantiateAppNodeTree', () => {
               factory: badFactory,
             }),
           ),
-        ).toThrow(
-          `Failed to instantiate extension 'test:test', extension factory did not provide an iterable object`,
-        );
+        ).toEqual([
+          {
+            code: 'EXTENSION_FACTORY_INVALID_OUTPUT',
+            message: 'extension factory did not provide an iterable object',
+            context: { node: expect.anything() },
+          },
+        ]);
 
         // Using makeWithOverrides and factory middleware
-        expect(() =>
+        expect(
           createInstance(
             createExtensionBlueprint({
               kind: 'test',
@@ -1061,12 +1212,18 @@ describe('instantiateAppNodeTree', () => {
             }),
             orig => orig(),
           ),
-        ).toThrow(
-          `Failed to instantiate extension 'test:test', extension factory did not provide an iterable object`,
-        );
+        ).toEqual([
+          {
+            // TODO: This should probably be EXTENSION_FACTORY_INVALID_OUTPUT
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'test:test', extension factory did not provide an iterable object",
+            context: { node: expect.anything() },
+          },
+        ]);
 
         // Using makeWithOverrides and factory middleware
-        expect(() =>
+        expect(
           createInstance(
             createExtensionBlueprint({
               kind: 'test',
@@ -1077,135 +1234,181 @@ describe('instantiateAppNodeTree', () => {
             }),
             orig => orig(),
           ),
-        ).toThrow(
-          `Failed to instantiate extension 'test:test', original blueprint factory did not provide an iterable object`,
-        );
+        ).toEqual([
+          {
+            // TODO: This should probably be EXTENSION_FACTORY_INVALID_OUTPUT
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'test:test', original blueprint factory did not provide an iterable object",
+            context: { node: expect.anything() },
+          },
+        ]);
       });
 
       it('should forward extension factory errors', () => {
-        expect(() =>
+        const node = makeNode(
+          resolveExtensionDefinition(
+            createExtension({
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              output: [testDataRef],
+              factory() {
+                const error = new Error('NOPE');
+                error.name = 'NopeError';
+                throw error;
+              },
+            }),
+            { namespace: 'app' },
+          ),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  output: [testDataRef],
-                  factory() {
-                    const error = new Error('NOPE');
-                    error.name = 'NopeError';
-                    throw error;
-                  },
-                }),
-                { namespace: 'app' },
-              ),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test'; caused by NopeError: NOPE",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            message:
+              "Failed to instantiate extension 'app/test'; caused by NopeError: NOPE",
+            context: { node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with duplicate output', () => {
-        expect(() =>
+        const node = makeNode(
+          resolveExtensionDefinition(
+            createExtension({
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              output: [testDataRef, testDataRef],
+              factory({}) {
+                return [testDataRef('test'), testDataRef('test2')];
+              },
+            }),
+            { namespace: 'app' },
+          ),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  output: [testDataRef, testDataRef],
-                  factory({}) {
-                    return [testDataRef('test'), testDataRef('test2')];
-                  },
-                }),
-                { namespace: 'app' },
-              ),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', duplicate extension data output 'test'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'EXTENSION_FACTORY_DUPLICATE_OUTPUT',
+            message: "extension factory output duplicate data 'test'",
+            context: { dataRefId: 'test', node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance without required', () => {
-        expect(() =>
+        const node = makeNode(
+          resolveExtensionDefinition(
+            createExtension({
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              output: [testDataRef],
+              factory({}) {
+                return [] as any;
+              },
+            }),
+            { namespace: 'app' },
+          ),
+        );
+
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  output: [testDataRef],
-                  factory({}) {
-                    return [] as any;
-                  },
-                }),
-                { namespace: 'app' },
-              ),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', missing required extension data output 'test'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'EXTENSION_FACTORY_MISSING_REQUIRED_OUTPUT',
+            message: "missing required extension data output 'test'",
+            context: {
+              dataRefId: 'test',
+              node,
+            },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with unknown output data', () => {
-        expect(() =>
+        const node = makeNode(
+          resolveExtensionDefinition(
+            // @ts-expect-error
+            createExtension({
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              output: [], // Output not declared
+              factory({}) {
+                return [testDataRef('test')] as any;
+              },
+            }),
+            { namespace: 'app' },
+          ),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              resolveExtensionDefinition(
-                // @ts-expect-error
-                createExtension({
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  output: [], // Output not declared
-                  factory({}) {
-                    return [testDataRef('test')] as any;
-                  },
-                }),
-                { namespace: 'app' },
-              ),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', unexpected output 'test'",
-        );
+        ).toBeDefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'EXTENSION_FACTORY_UNEXPECTED_OUTPUT',
+            message: "unexpected output 'test'",
+            context: { dataRefId: 'test', node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with missing required input', () => {
-        expect(() =>
+        const node = makeNode(
+          resolveExtensionDefinition(
+            createExtension({
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              inputs: {
+                singleton: createExtensionInput([testDataRef], {
+                  singleton: true,
+                }),
+              },
+              output: [],
+              factory: () => [],
+            }),
+            { namespace: 'app' },
+          ),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
-            node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    singleton: createExtensionInput([testDataRef], {
-                      singleton: true,
-                    }),
-                  },
-                  output: [],
-                  factory: () => [],
-                }),
-                { namespace: 'app' },
-              ),
-            ),
+            node,
             attachments: new Map(),
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', input 'singleton' is required but was not received",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'EXTENSION_MISSING_REQUIRED_INPUT',
+            message: "input 'singleton' is required but was not received",
+            context: { inputName: 'singleton', node },
+          },
+        ]);
       });
 
       it('should warn when creating an instance with undeclared inputs', () => {
@@ -1244,6 +1447,7 @@ describe('instantiateAppNodeTree', () => {
                 { namespace: 'app' },
               ),
             ),
+            collector,
           }),
         );
 
@@ -1280,6 +1484,7 @@ describe('instantiateAppNodeTree', () => {
                 { namespace: 'app' },
               ),
             ),
+            collector,
           }),
         );
 
@@ -1290,7 +1495,23 @@ describe('instantiateAppNodeTree', () => {
       });
 
       it('should refuse to create an instance with multiple inputs for required singleton', () => {
-        expect(() =>
+        const node = makeNode(
+          resolveExtensionDefinition(
+            createExtension({
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              inputs: {
+                singleton: createExtensionInput([testDataRef], {
+                  singleton: true,
+                }),
+              },
+              output: [],
+              factory: () => [],
+            }),
+            { namespace: 'app' },
+          ),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
             attachments: new Map([
@@ -1302,30 +1523,39 @@ describe('instantiateAppNodeTree', () => {
                 ],
               ],
             ]),
-            node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    singleton: createExtensionInput([testDataRef], {
-                      singleton: true,
-                    }),
-                  },
-                  output: [],
-                  factory: () => [],
-                }),
-                { namespace: 'app' },
-              ),
-            ),
+            node,
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', expected exactly one 'singleton' input but received multiple: 'app/test', 'app/test'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'EXTENSION_TOO_MANY_ATTACHMENTS',
+            message:
+              "expected exactly one 'singleton' input but received multiple: 'app/test', 'app/test'",
+            context: { inputName: 'singleton', node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with multiple inputs for optional singleton', () => {
-        expect(() =>
+        const node = makeNode(
+          resolveExtensionDefinition(
+            createExtension({
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              inputs: {
+                singleton: createExtensionInput([testDataRef], {
+                  singleton: true,
+                  optional: true,
+                }),
+              },
+              output: [],
+              factory: () => [],
+            }),
+            { namespace: 'app' },
+          ),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
             attachments: new Map([
@@ -1337,56 +1567,55 @@ describe('instantiateAppNodeTree', () => {
                 ],
               ],
             ]),
-            node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    singleton: createExtensionInput([testDataRef], {
-                      singleton: true,
-                      optional: true,
-                    }),
-                  },
-                  output: [],
-                  factory: () => [],
-                }),
-                { namespace: 'app' },
-              ),
-            ),
+            node,
+            collector,
           }),
-        ).toThrow(
-          "Failed to instantiate extension 'app/test', expected at most one 'singleton' input but received multiple: 'app/test', 'app/test'",
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'EXTENSION_TOO_MANY_ATTACHMENTS',
+            message:
+              "expected at most one 'singleton' input but received multiple: 'app/test', 'app/test'",
+            context: { inputName: 'singleton', node },
+          },
+        ]);
       });
 
       it('should refuse to create an instance with multiple inputs that did not provide required data', () => {
-        expect(() =>
+        const node = makeNode(
+          resolveExtensionDefinition(
+            createExtension({
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              inputs: {
+                singleton: createExtensionInput([otherDataRef], {
+                  singleton: true,
+                }),
+              },
+              output: [],
+              factory: () => [],
+            }),
+            { namespace: 'app' },
+          ),
+        );
+        expect(
           createAppNodeInstance({
             apis: testApis,
             attachments: new Map([
               ['singleton', [makeInstanceWithId(simpleExtension, undefined)]],
             ]),
-            node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    singleton: createExtensionInput([otherDataRef], {
-                      singleton: true,
-                    }),
-                  },
-                  output: [],
-                  factory: () => [],
-                }),
-                { namespace: 'app' },
-              ),
-            ),
+            node,
+            collector,
           }),
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"Failed to instantiate extension 'app/test', extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')"`,
-        );
+        ).toBeUndefined();
+        expect(collector.collectErrors()).toEqual([
+          {
+            code: 'EXTENSION_MISSING_INPUT_DATA',
+            message:
+              "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
+            context: { node },
+          },
+        ]);
       });
     });
   });

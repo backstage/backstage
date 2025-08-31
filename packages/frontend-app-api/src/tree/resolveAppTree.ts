@@ -23,6 +23,7 @@ import {
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { ErrorCollector } from '../wiring/createErrorCollector';
 
 function indent(str: string) {
   return str.replace(/^/gm, '  ');
@@ -114,6 +115,7 @@ const isValidAttachmentPoint = (
 export function resolveAppTree(
   rootNodeId: string,
   specs: AppNodeSpec[],
+  errorCollector: ErrorCollector,
 ): AppTree {
   const nodes = new Map<string, SerializableAppNode>();
 
@@ -122,7 +124,14 @@ export function resolveAppTree(
   for (const spec of specs) {
     // The main check with a more helpful error message happens in resolveAppNodeSpecs
     if (nodes.has(spec.id)) {
-      throw new Error(`Unexpected duplicate extension id '${spec.id}'`);
+      errorCollector.report({
+        code: 'DUPLICATE_EXTENSION_ID',
+        message: `Unexpected duplicate extension id '${spec.id}'`,
+        context: {
+          spec,
+        },
+      });
+      continue;
     }
 
     const node = new SerializableAppNode(spec);
@@ -134,9 +143,15 @@ export function resolveAppTree(
         for (const replace of input.replaces) {
           const key = makeRedirectKey(replace);
           if (redirectTargetsByKey.has(key)) {
-            throw new Error(
-              `Duplicate redirect target for input '${inputName}' in extension '${spec.id}'`,
-            );
+            errorCollector.report({
+              code: 'DUPLICATE_REDIRECT_TARGET',
+              message: `Duplicate redirect target for input '${inputName}' in extension '${spec.id}'`,
+              context: {
+                spec,
+                inputName,
+              },
+            });
+            continue;
           }
           redirectTargetsByKey.set(key, { id: spec.id, input: inputName });
         }

@@ -4,15 +4,32 @@
 
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { AppNode } from '@backstage/frontend-plugin-api';
+import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
+
+// @public (undocumented)
+export type AppError = {
+  code: string;
+  message: string;
+  context?: {
+    node?: AppNode;
+    spec?: AppNodeSpec;
+    plugin?: FrontendPlugin;
+    extensionId?: string;
+    inputName?: string;
+    dataRefId?: string;
+  };
+};
 
 // @public
 export type CreateAppRouteBinder = <
@@ -31,6 +48,7 @@ export type CreateAppRouteBinder = <
 export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   apis: ApiHolder;
   tree: AppTree;
+  errors?: AppError[];
 };
 
 // @public
