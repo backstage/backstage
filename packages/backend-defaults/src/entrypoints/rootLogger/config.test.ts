@@ -69,7 +69,7 @@ describe('getRootLoggerConfig', () => {
     expect(() =>
       getRootLoggerConfig(mockServices.rootConfig({ data: config })),
     ).toThrow(
-      "Invalid config at backend.logger.overrides[0].level, 'invalid' is not a valid Winston npm logging level",
+      "Invalid config at backend.logger.overrides[0].level, 'invalid' is not a valid logging level, must be one of 'error', 'warn', 'info' or 'debug'.",
     );
   });
 });

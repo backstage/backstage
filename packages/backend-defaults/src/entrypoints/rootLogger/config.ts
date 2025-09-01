@@ -32,7 +32,7 @@ export const getRootLoggerConfig = (
     const overrideLevel = override.getString('level');
     if (winstonLevels[overrideLevel] === undefined) {
       throw new Error(
-        `Invalid config at backend.logger.overrides[${i}].level, '${overrideLevel}' is not a valid Winston npm logging level`,
+        `Invalid config at backend.logger.overrides[${i}].level, '${overrideLevel}' is not a valid logging level, must be one of 'error', 'warn', 'info' or 'debug'.`,
       );
     }
 
