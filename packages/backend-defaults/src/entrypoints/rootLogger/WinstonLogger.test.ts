@@ -170,4 +170,30 @@ describe('WinstonLogger', () => {
       expect.any(Function),
     );
   });
+
+  it('should filter logs above the default log level with an override', () => {
+    const mockTransport = new Transport({
+      log: jest.fn(),
+      logv: jest.fn(),
+    });
+
+    const logger = WinstonLogger.create({
+      level: 'debug',
+      format: format.json(),
+      transports: [mockTransport],
+    });
+
+    logger.setLevelOverrides([
+      {
+        matchers: {
+          plugin: 'catalog',
+        },
+        level: 'error',
+      },
+    ]);
+
+    logger.info('info log', { plugin: 'catalog' });
+
+    expect(mockTransport.log).not.toHaveBeenCalled();
+  });
 });
