@@ -40,7 +40,7 @@ import {
   EntityTypeFilter,
   EntityUserFilter,
 } from '../filters';
-import { MockPromise } from '../testUtils/MockPromise';
+import { createDeferred } from '@backstage/types';
 import { EntityListPagination } from '../types';
 import { EntityListProvider, useEntityList } from './useEntityListProvider';
 
@@ -349,8 +349,8 @@ describe('<EntityListProvider />', () => {
       wrapper: createWrapper({ pagination }),
     });
 
-    const firstResult = new MockPromise<GetEntitiesResponse>();
-    const secondResult = new MockPromise<GetEntitiesResponse>();
+    const firstResult = createDeferred<GetEntitiesResponse>();
+    const secondResult = createDeferred<GetEntitiesResponse>();
 
     await waitFor(() => {
       expect(result.current.backendEntities.length).toBeGreaterThan(0);
