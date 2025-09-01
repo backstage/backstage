@@ -56,13 +56,15 @@ export class LdapClient {
         key: key,
       });
     }
-
+    const tlsOptions: tlsLib.ConnectionOptions = {
+      secureContext,
+      rejectUnauthorized: tls?.rejectUnauthorized,
+    };
     const client = new Client({
       url: target,
-      tlsOptions: {
-        secureContext,
-        rejectUnauthorized: tls?.rejectUnauthorized,
-      },
+      ...(Object.values(tlsOptions).some(v => v !== undefined)
+        ? { tlsOptions }
+        : undefined),
     });
 
     const ldapClient = new LdapClient(client, logger);
@@ -72,7 +74,10 @@ export class LdapClient {
         await client.bind(bind.dn, bind.secret);
       } catch (error) {
         await client.unbind();
-        throw new ForwardedError(`LDAP bind failed for ${bind.dn}, ${error}`, error);
+        throw new ForwardedError(
+          `LDAP bind failed for ${bind.dn}, ${error}`,
+          error,
+        );
       }
     }
     return ldapClient;
