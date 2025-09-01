@@ -669,7 +669,7 @@ export type GithubAppConfig = {
 
 // @public
 export class GithubAppCredentialsMux {
-  constructor(config: GithubIntegrationConfig);
+  constructor(config: GithubIntegrationConfig, appIds?: number[]);
   // (undocumented)
   getAllInstallations(): Promise<
     RestEndpointMethodTypes['apps']['listInstallations']['response']['data']

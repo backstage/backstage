@@ -62,9 +62,13 @@ export interface Config {
              */
             host?: string;
             /**
-             * (Required) Name of your organization account/workspace.
+             * (Required, unless `app` is set) Name of your organization account/workspace.
              */
-            organization: string;
+            organization?: string;
+            /**
+             * (Required, unless `organization` is set) ID of your GitHub App.
+             */
+            app?: number;
             /**
              * (Optional) Path where to look for `catalog-info.yaml` files.
              * You can use wildcards - `*` or `**` - to search the path and/or the filename
@@ -136,9 +140,13 @@ export interface Config {
                */
               host?: string;
               /**
-               * (Required) Name of your organization account/workspace.
+               * (Required, unless `app` is set) Name of your organization account/workspace.
                */
-              organization: string;
+              organization?: string;
+              /**
+               * (Required, unless `organization` is set) ID of your GitHub App.
+               */
+              app?: number;
               /**
                * (Optional) Path where to look for `catalog-info.yaml` files.
                * You can use wildcards - `*` or `**` - to search the path and/or the filename

@@ -4485,6 +4485,7 @@ __metadata:
     luxon: "npm:^3.0.0"
     minimatch: "npm:^9.0.0"
     msw: "npm:^2.0.0"
+    type-fest: "npm:^4.41.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
   linkType: soft
@@ -47725,7 +47726,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.26.1, type-fest@npm:^4.3.1":
+"type-fest@npm:^4.26.1, type-fest@npm:^4.3.1, type-fest@npm:^4.41.0":
   version: 4.41.0
   resolution: "type-fest@npm:4.41.0"
   checksum: 10/617ace794ac0893c2986912d28b3065ad1afb484cad59297835a0807dc63286c39e8675d65f7de08fafa339afcb8fe06a36e9a188b9857756ae1e92ee8bda212
