@@ -13,5 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { actionsRegistryServiceFactory } from './actionsRegistryServiceFactory';
-export * from './permissions';
+import { createPermission } from '@backstage/plugin-permission-common';
+
+/**
+ * @public
+ */
+export const RESOURCE_TYPE_ACTION = 'action';
+
+/**
+ * Permission for reading actions. Action id is supplied as the resourceRef.
+ * @public
+ */
+export const actionReadPermission = createPermission({
+  name: 'actions.read',
+  attributes: { action: 'read' },
+  resourceType: RESOURCE_TYPE_ACTION,
+});
+
+/**
+ * @public
+ */
+export const actionsRegistryPermissions = [actionReadPermission];

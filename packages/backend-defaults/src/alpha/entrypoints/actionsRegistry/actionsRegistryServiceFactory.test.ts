@@ -32,6 +32,8 @@ describe('actionsRegistryServiceFactory', () => {
     mockServices.httpAuth.factory({
       defaultCredentials: mockCredentials.service('user:default/mock'),
     }),
+    mockServices.permissions.factory(),
+    mockServices.permissionsRegistry.factory(),
   ];
 
   describe('typescript tests', () => {

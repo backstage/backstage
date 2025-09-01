@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultActionsRegistryService } from './DefaultActionsRegistryService';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { actionsRegistryPermissions } from './permissions';
 
 /**
  * @public
@@ -32,13 +33,26 @@ export const actionsRegistryServiceFactory = createServiceFactory({
     httpAuth: coreServices.httpAuth,
     logger: coreServices.logger,
     auth: coreServices.auth,
+    permissions: coreServices.permissions,
+    permissionsRegistry: coreServices.permissionsRegistry,
   },
-  factory: ({ metadata, httpRouter, httpAuth, logger, auth }) => {
+  factory: ({
+    metadata,
+    httpRouter,
+    httpAuth,
+    logger,
+    auth,
+    permissions,
+    permissionsRegistry,
+  }) => {
+    permissionsRegistry.addPermissions(actionsRegistryPermissions);
+
     const actionsRegistryService = DefaultActionsRegistryService.create({
       httpAuth,
       logger,
       auth,
       metadata,
+      permissions,
     });
 
     httpRouter.use(actionsRegistryService.createRouter());
