@@ -24,6 +24,7 @@ import request from 'supertest';
 import { actionsRegistryServiceFactory } from './actionsRegistryServiceFactory';
 import { InputError } from '@backstage/errors';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('actionsRegistryServiceFactory', () => {
   const defaultServices = [
@@ -179,6 +180,52 @@ describe('actionsRegistryServiceFactory', () => {
           },
         ],
       });
+    });
+
+    it('should not list actions if permissions deny read access', async () => {
+      // Mock permissions to always deny
+      const denyPermissions = mockServices.permissions.factory({
+        result: AuthorizeResult.DENY,
+      });
+
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: { actionsRegistry: actionsRegistryServiceRef },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z => z.object({ name: z.string() }),
+                  output: z => z.object({ ok: z.boolean() }),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          denyPermissions,
+          mockServices.permissionsRegistry.factory(),
+        ],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+      expect(status).toBe(200);
+      expect(body).toMatchObject({ actions: [] });
     });
 
     it('should set default attributes', async () => {
@@ -386,6 +433,40 @@ describe('actionsRegistryServiceFactory', () => {
       expect(body).toMatchObject({
         error: {
           message: 'Action "test" not found',
+        },
+      });
+    });
+
+    it('should not allow invoking an action if permissions deny read access', async () => {
+      // Mock permissions to always deny
+      const denyPermissions = mockServices.permissions.factory({
+        result: AuthorizeResult.DENY,
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          denyPermissions,
+          mockServices.permissionsRegistry.factory(),
+        ],
+      });
+
+      const { body, status } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
+        .send({ name: 'test' });
+
+      expect(status).toBe(403);
+      expect(body).toMatchObject({
+        error: {
+          message: expect.stringContaining(
+            'You are not authorized to invoke action',
+          ),
         },
       });
     });
