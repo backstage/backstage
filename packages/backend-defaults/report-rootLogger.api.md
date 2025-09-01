@@ -6,7 +6,7 @@
 import { config } from 'winston';
 import { Format } from 'logform';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
+import { JsonPrimitive } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
@@ -55,7 +55,7 @@ export type WinstonLoggerLevelOverride = {
 
 // @public (undocumented)
 export type WinstonLoggerLevelOverrideMatchers = {
-  [key: string]: JsonValue | undefined;
+  [key: string]: JsonPrimitive | JsonPrimitive[] | undefined;
 };
 
 // @public (undocumented)

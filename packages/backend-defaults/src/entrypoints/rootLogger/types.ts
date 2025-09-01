@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject, JsonPrimitive } from '@backstage/types';
 import { config as winstonConfig } from 'winston';
 
 /**
  * @public
  */
 export type WinstonLoggerLevelOverrideMatchers = {
-  [key: string]: JsonValue | undefined;
+  [key: string]: JsonPrimitive | JsonPrimitive[] | undefined;
 };
 
 /**

@@ -15,7 +15,11 @@
  */
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { RootLoggerConfig, winstonLevels } from './types';
+import {
+  RootLoggerConfig,
+  winstonLevels,
+  WinstonLoggerLevelOverrideMatchers,
+} from './types';
 
 export const getRootLoggerConfig = (
   config: RootConfigService,
@@ -36,7 +40,9 @@ export const getRootLoggerConfig = (
       );
     }
 
-    const matchers = override.getConfig('matchers').get<JsonObject>();
+    const matchers = override
+      .getConfig('matchers')
+      .get<WinstonLoggerLevelOverrideMatchers>();
 
     return {
       matchers,
