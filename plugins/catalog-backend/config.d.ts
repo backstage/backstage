@@ -221,5 +221,37 @@ export interface Config {
      * housing catalog-info files.
      */
     processingInterval?: HumanDuration | false;
+
+    /**
+     * Catalog provide specific configuration.
+     * Additional configuration for providers are specified in the catalog
+     * modules.
+     */
+    providers?: {
+      /**
+       * Name is the provider ID, e.g. "bitbucketServer"
+       */
+      [name: string]: {
+        /**
+         * Whether the provider is enabled or not. Defaults to true.
+         */
+        enabled?: boolean;
+      };
+    };
+    /**
+     * Configuration for entity processors. Additional configuration for
+     * processors are specified in the catalog modules.
+     */
+    processors?: {
+      /**
+       * Name is the processor ID, e.g. "catalog-processor"
+       */
+      [name: string]: {
+        /**
+         * Whether the processor is enabled or not. Defaults to true.
+         */
+        enabled?: boolean;
+      };
+    };
   };
 }
