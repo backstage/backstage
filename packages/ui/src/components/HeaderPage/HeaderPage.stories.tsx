@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,21 @@
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { HeaderPage } from './HeaderPage';
-import type { HeaderTab, HeaderMenuItem } from '../Header/types';
+import type { HeaderTab } from '../Header/types';
 import { MemoryRouter } from 'react-router-dom';
-import { Button } from '../Button';
-import { Container } from '../Container';
-import { Text } from '../Text';
+import {
+  Button,
+  Container,
+  Text,
+  ButtonIcon,
+  MenuTrigger,
+  Menu,
+  MenuItem,
+} from '../../';
+import { RiMore2Line } from '@remixicon/react';
 
 const meta = {
-  title: 'Components/HeaderPage',
+  title: 'Backstage UI/HeaderPage',
   component: HeaderPage,
   parameters: {
     layout: 'fullscreen',
@@ -56,14 +63,23 @@ const tabs: HeaderTab[] = [
   },
 ];
 
-const menuItems: HeaderMenuItem[] = [
+const menuItems = [
   {
     label: 'Settings',
     value: 'settings',
+    href: '/settings',
   },
   {
     label: 'Invite new members',
     value: 'invite-new-members',
+    href: '/invite-new-members',
+  },
+  {
+    label: 'Logout',
+    value: 'logout',
+    onClick: () => {
+      alert('logout');
+    },
   },
 ];
 
@@ -111,7 +127,7 @@ const layoutDecorator = [
 
 export const Default: Story = {
   args: {
-    title: 'Header Page',
+    title: 'Page Title',
   },
 };
 
@@ -123,21 +139,51 @@ export const WithTabs: Story = {
   decorators: [withRouter],
 };
 
-export const WithMenuItems: Story = {
-  args: {
-    ...Default.args,
-    menuItems,
-  },
-};
-
 export const WithCustomActions: Story = {
+  decorators: [withRouter],
   render: () => (
     <HeaderPage
       {...Default.args}
-      menuItems={menuItems}
-      customActions={<Button>Custom action</Button>}
+      customActions={
+        <>
+          <Button>Custom action</Button>
+          <MenuTrigger>
+            <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+            <Menu placement="bottom end">
+              {menuItems.map(option => (
+                <MenuItem
+                  key={option.value}
+                  onAction={option.onClick}
+                  href={option.href}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </MenuTrigger>
+        </>
+      }
     />
   ),
+};
+
+export const WithBreadcrumbs: Story = {
+  decorators: [withRouter],
+  args: {
+    ...Default.args,
+    breadcrumbs: [{ label: 'Home', href: '/' }],
+  },
+};
+
+export const WithLongBreadcrumbs: Story = {
+  decorators: [withRouter],
+  args: {
+    ...Default.args,
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Long Breadcrumb Name', href: '/long-breadcrumb' },
+    ],
+  },
 };
 
 export const WithEverything: Story = {
@@ -145,9 +191,9 @@ export const WithEverything: Story = {
   render: () => (
     <HeaderPage
       {...Default.args}
-      menuItems={menuItems}
       tabs={tabs}
       customActions={<Button>Custom action</Button>}
+      breadcrumbs={[{ label: 'Home', href: '/' }]}
     />
   ),
 };

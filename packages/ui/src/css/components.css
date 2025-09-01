@@ -36,6 +36,7 @@
 @import '../components/Table/Table.styles.css';
 @import '../components/TablePagination/TablePagination.styles.css';
 @import '../components/Tabs/Tabs.styles.css';
+@import '../components/TagGroup/TagGroup.styles.css';
 @import '../components/Text/styles.css';
 @import '../components/TextField/TextField.styles.css';
 @import '../components/SearchField/SearchField.styles.css';

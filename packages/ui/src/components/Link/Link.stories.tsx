@@ -21,7 +21,7 @@ import { Text } from '../Text';
 import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
-  title: 'Components/Link',
+  title: 'Backstage UI/Link',
   component: Link,
   args: {
     children: 'Link',

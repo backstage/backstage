@@ -750,6 +750,201 @@ export interface Config {
           connection: string;
           /** An optional default TTL (in milliseconds). */
           defaultTtl?: number | HumanDuration | string;
+        }
+      | {
+          /**
+           * Infinispan cache store configuration.
+           * @see https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html
+           */
+          store: 'infinispan';
+
+          /**
+           * An optional default TTL (in milliseconds).
+           */
+          defaultTtl?: number | HumanDuration | string;
+
+          /**
+           * Configuration for the Infinispan cache store.
+           */
+          infinispan?: {
+            /**
+             * Version of client/server protocol.
+             * @default '2.9' is the latest version.
+             */
+            version?: '2.9' | '2.5' | '2.2';
+
+            /**
+             * Infinispan Cache Name if not provided default is `cache` recommended to set this.
+             */
+            cacheName?: string;
+
+            /**
+             * Optional number of retries for operation.
+             * Defaults to 3.
+             */
+            maxRetries?: number;
+
+            /**
+             * Optional flag to controls whether the client deals with topology updates or not.
+             * @default true
+             */
+            topologyUpdates?: boolean;
+
+            /**
+             * Media type of the cache contents.
+             * @default 'text/plain'
+             */
+            mediaType?: 'text/plain' | 'application/json';
+
+            /**
+             * Optional data format configuration.
+             * If not provided, defaults to text/plain for both key and value.
+             */
+            dataFormat?: {
+              /**
+               * Type of the key in the cache.
+               * @default 'text/plain'
+               */
+              keyType?: 'text/plain' | 'application/json';
+              /**
+               * Type of the value in the cache.
+               * @default 'text/plain'
+               */
+              valueType?: 'text/plain' | 'application/json';
+            };
+            /**
+             * Infinispan server host and port configuration.
+             * If this is an array, the client will connect to all servers in the list based on TOPOLOGY_AWARE routing.
+             * If this is a single object, it will be used as the default server.
+             */
+            servers?:
+              | Array<{
+                  /**
+                   * Infinispan server host.
+                   */
+                  host: string;
+                  /**
+                   * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                   */
+                  port?: number;
+                }>
+              | {
+                  /**
+                   * Infinispan server host. Defaults to `127.0.0.1`.
+                   */
+                  host?: string;
+                  /**
+                   * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                   */
+                  port?: number;
+                };
+            authentication?: {
+              /**
+               * Enable authentication. Defaults to `false`.
+               */
+              enabled?: boolean;
+              /**
+               * Select the SASL mechanism to use. Can be one of PLAIN, DIGEST-MD5, SCRAM-SHA-1, SCRAM-SHA-256, SCRAM-SHA-384, SCRAM-SHA-512, EXTERNAL, OAUTHBEARER
+               */
+              saslMechanism?: string;
+              /**
+               * userName for authentication.
+               */
+              userName?: string;
+              /**
+               * Password for authentication.
+               * @visibility secret
+               */
+              password?: string;
+              /**
+               * The OAuth token. Required by the OAUTHBEARER mechanism.
+               * @visibility secret
+               */
+              token?: string;
+              /**
+               * The SASL authorization ID.
+               */
+              authzid?: string;
+            };
+
+            /**
+             * TLS/SSL configuration.
+             */
+            ssl?: {
+              /**
+               * Enable ssl connection. Defaults to `false`.
+               * @default false
+               */
+              enabled?: boolean;
+
+              /**
+               * Optional field with secure protocol in use.
+               * @default TLSv1_2_method
+               */
+              secureProtocol?: string;
+
+              /**
+               * Optional paths of trusted SSL certificates.
+               */
+              trustCerts?: Array<string>;
+
+              clientAuth?: {
+                /**
+                 * Optional path to client authentication key
+                 */
+                key?: string;
+                /**
+                 * Optional password for client key
+                 */
+                passphrase?: string;
+                /**
+                 * Optional client certificate
+                 */
+                cert?: string;
+              };
+
+              /**
+               * Optional SNI host name.
+               */
+              sniHostName?: string;
+
+              /**
+               * Optional crypto store configuration.
+               */
+              cryptoStore?: {
+                /** Optional crypto store path. */
+                path?: string;
+                /** Optional password for crypto store. */
+                passphrase?: string;
+              };
+            };
+
+            /**
+             * Optional additional clusters for cross-site failovers.
+             * Array.<Cluster>
+             */
+            clusters?: Array<{
+              /**
+               * Optional Cluster name
+               */
+              name?: string;
+
+              /**
+               * Cluster servers details.
+               * Array.<ServerAddress>
+               */
+              servers: Array<{
+                /**
+                 * Infinispan cluster server host.
+                 */
+                host: string;
+                /**
+                 * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                 */
+                port?: number;
+              }>;
+            }>;
+          };
         };
 
     cors?: {

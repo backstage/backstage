@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.7.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
 ## 1.7.0-next.0
 
 ### Minor Changes

@@ -241,6 +241,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         },
         payload: {
           title: 'test notification',
+          metadata: {
+            attr: 1,
+          },
         },
       });
 
@@ -253,6 +256,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
           payload: {
             severity: 'normal',
             title: 'test notification',
+            metadata: {
+              attr: 1,
+            },
           },
           user: 'user:default/mock',
         },

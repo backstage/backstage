@@ -25,7 +25,7 @@ import { RiCactusLine } from '@remixicon/react';
 import { Button } from '../Button';
 
 const meta = {
-  title: 'Forms/SearchField',
+  title: 'Backstage UI/SearchField',
   component: SearchField,
   argTypes: {
     isRequired: {

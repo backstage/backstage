@@ -19,7 +19,7 @@ import { ScrollArea } from './ScrollArea';
 import { Text } from '../Text/Text';
 
 const meta = {
-  title: 'Components/ScrollArea',
+  title: 'Backstage UI/ScrollArea',
   component: ScrollArea.Root,
 } satisfies Meta<typeof ScrollArea.Root>;
 

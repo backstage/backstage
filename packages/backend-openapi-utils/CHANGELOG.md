@@ -1,5 +1,17 @@
 # @backstage/backend-openapi-utils
 
+## 0.6.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- 3760352: Update `express-openapi-validator` to 5.5.8 to fix security vulnerability in transitive dependency `multer`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.6.0-next.1
 
 ### Patch Changes

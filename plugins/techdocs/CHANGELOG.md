@@ -1,5 +1,51 @@
 # @backstage/plugin-techdocs
 
+## 1.14.2-next.0
+
+### Patch Changes
+
+- 1dfee19: Reverts a change in CSS layout that shifted the content of the Techdocs too far to the left.
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/theme@0.6.8
+  - @backstage/plugin-auth-react@0.1.18
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.2
+
+## 1.14.0
+
+### Minor Changes
+
+- cb0541f: Adds `additionalAllowedURIProtocols` to sanitizer config
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- f231c2b: Fixes CSS to adjust based on whether or not the global Backstage sidebar is on the page.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/theme@0.6.8
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-auth-react@0.1.18
+  - @backstage/plugin-techdocs-react@1.3.2
+
 ## 1.14.0-next.2
 
 ### Patch Changes

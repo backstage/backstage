@@ -52,7 +52,7 @@ describe('authModuleGithubProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('github-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/github/handler',
       script: false,
       secure: false,

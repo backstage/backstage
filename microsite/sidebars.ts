@@ -554,6 +554,7 @@ export default {
           'tutorials/using-backstage-proxy-within-plugin',
           'tutorials/enable-public-entry',
           'tutorials/setup-opentelemetry',
+          'tutorials/integrating-event-driven-updates-with-entity-providers',
           'accessibility/index',
         ],
       },

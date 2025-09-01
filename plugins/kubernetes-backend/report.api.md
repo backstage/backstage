@@ -90,8 +90,9 @@ export type DispatchStrategyOptions = {
   };
 };
 
-// @public (undocumented)
+// @public
 export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
+  constructor(opts: { config: Config });
   // (undocumented)
   getCredential(): Promise<KubernetesCredential>;
   // (undocumented)

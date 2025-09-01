@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
@@ -31,6 +30,7 @@ import {
   ClusterDetails,
   KubernetesClustersSupplier,
 } from '@backstage/plugin-kubernetes-node';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(
@@ -72,7 +72,7 @@ class CombinedClustersSupplier implements KubernetesClustersSupplier {
 
 export const getCombinedClusterSupplier = (
   rootConfig: Config,
-  catalogClient: CatalogApi,
+  catalogService: CatalogService,
   authStrategy: AuthenticationStrategy,
   logger: LoggerService,
   refreshInterval: Duration | undefined = undefined,
@@ -84,7 +84,7 @@ export const getCombinedClusterSupplier = (
       const type = clusterLocatorMethod.getString('type');
       switch (type) {
         case 'catalog':
-          return CatalogClusterLocator.fromConfig(catalogClient, auth);
+          return CatalogClusterLocator.fromConfig(catalogService, auth);
         case 'localKubectlProxy':
           return new LocalKubectlProxyClusterLocator();
         case 'config':

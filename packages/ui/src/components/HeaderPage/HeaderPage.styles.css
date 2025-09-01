@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,55 +39,9 @@
   gap: var(--bui-space-2);
 }
 
-.bui-HeaderPageSticky {
-  position: sticky;
-  top: 0;
-  z-index: -1;
-  height: 0;
-  color: var(--bui-fg-primary);
-}
-
-.bui-HeaderPageStickyWrapper {
-  background-color: var(--bui-bg-surface-1);
-  border-bottom: 1px solid var(--bui-border);
-  opacity: 0;
-}
-
-.bui-HeaderPageStickyContent {
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .bui-HeaderPageBreadcrumbs {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--bui-space-2);
-  font-size: var(--bui-font-size-3);
-  font-weight: var(--bui-font-weight-regular);
-}
-
-.bui-HeaderPageBreadcrumb {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--bui-space-2);
-}
-
-.bui-HeaderPageBreadcrumbLink {
-  color: var(--bui-fg-secondary);
-  text-decoration: none;
-  cursor: pointer;
-
-  &[data-active='true'] {
-    color: var(--bui-fg-primary);
-  }
-}
-
-.bui-HeaderPageBreadcrumbSeparator {
-  width: 16px;
-  height: 16px;
-  color: var(--bui-fg-secondary);
 }
