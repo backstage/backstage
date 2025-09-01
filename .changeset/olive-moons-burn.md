@@ -26,7 +26,7 @@ Example usage:
 
 ```ts
 const pageStream = catalogClient.streamEntityPages(
-  { batchSize: 100 },
+  { pageSize: 100 },
   { token },
 );
 for await (const page of pageStream) {
