@@ -49,9 +49,7 @@ import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
-
-// Number of entities to return in a single streamEntities request
-const DEFAULT_STREAM_ENTITIES_LIMIT = 500;
+import { DEFAULT_STREAM_ENTITIES_LIMIT } from './constants.ts';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -483,7 +481,7 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): AsyncIterable<Entity[]> {
     let cursor: string | undefined = undefined;
-    const limit = request?.batchSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
+    const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
     do {
       const res = await this.queryEntities(
         cursor ? { ...request, cursor, limit } : { ...request, limit },

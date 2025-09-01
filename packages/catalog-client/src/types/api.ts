@@ -471,13 +471,13 @@ export type QueryEntitiesResponse = {
  * @public
  */
 export type StreamEntitiesRequest = Omit<
-  QueryEntitiesRequest,
+  QueryEntitiesInitialRequest,
   'limit' | 'offset'
 > & {
   /**
-   * The number of entities to fetch in each batch. Defaults to 500.
+   * The number of entities to fetch in each page. Defaults to 500.
    */
-  batchSize?: number;
+  pageSize?: number;
 };
 
 /**

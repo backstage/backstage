@@ -335,10 +335,10 @@ export type QueryEntitiesResponse = {
 
 // @public
 export type StreamEntitiesRequest = Omit<
-  QueryEntitiesRequest,
+  QueryEntitiesInitialRequest,
   'limit' | 'offset'
 > & {
-  batchSize?: number;
+  pageSize?: number;
 };
 
 // @public

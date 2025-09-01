@@ -49,6 +49,7 @@ import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
+import { DEFAULT_STREAM_ENTITIES_LIMIT } from '../constants.ts';
 
 function buildEntitySearch(entity: Entity) {
   const rows = traverse(entity);
@@ -295,9 +296,10 @@ export class InMemoryCatalogClient implements CatalogApi {
     request?: StreamEntitiesRequest,
   ): AsyncIterable<Entity[]> {
     let cursor: string | undefined = undefined;
+    const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
     do {
       const res = await this.queryEntities(
-        cursor ? { ...request, cursor } : request,
+        cursor ? { ...request, limit, cursor } : { ...request, limit },
       );
 
       yield res.items;
