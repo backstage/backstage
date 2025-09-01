@@ -1,5 +1,11 @@
 # @techdocs/cli
 
+## 1.9.7
+
+### Patch Changes
+
+- 15da5af: Fixed an issue where `@techdocs/cli serve` command did not pick up the latest changes to TechDocs.
+
 ## 1.9.6
 
 ### Patch Changes
