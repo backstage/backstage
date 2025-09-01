@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { isLogMatching } from './utils';
+import { createLogMatcher } from './utils';
 
-describe('isLogMatching', () => {
+describe('createLogMatcher', () => {
   const log = {
     level: 'info',
     message: 'This is a simple log from the catalog plugin',
@@ -25,68 +25,56 @@ describe('isLogMatching', () => {
   };
 
   it('should match with a simple matcher', () => {
-    expect(
-      isLogMatching(log, {
-        plugin: 'catalog',
-      }),
-    ).toEqual(true);
+    const matcher = createLogMatcher({ plugin: 'catalog' });
+    expect(matcher(log)).toEqual(true);
   });
 
   it('should not match with a simple matcher', () => {
-    expect(
-      isLogMatching(log, {
-        plugin: 'search',
-      }),
-    ).toEqual(false);
+    const matcher = createLogMatcher({ plugin: 'search' });
+    expect(matcher(log)).toEqual(false);
   });
 
   it('should match with an AND matcher', () => {
-    expect(
-      isLogMatching(log, {
-        plugin: 'catalog',
-        action: 'read',
-      }),
-    ).toEqual(true);
+    const matcher = createLogMatcher({
+      plugin: 'catalog',
+      action: 'read',
+    });
+    expect(matcher(log)).toEqual(true);
   });
 
   it('should not match log with an AND matcher', () => {
-    expect(
-      isLogMatching(log, {
-        plugin: 'catalog',
-        action: 'write',
-      }),
-    ).toEqual(false);
+    const matcher = createLogMatcher({
+      plugin: 'catalog',
+      action: 'write',
+    });
+    expect(matcher(log)).toEqual(false);
   });
 
   it('should match with an OR matcher', () => {
-    expect(
-      isLogMatching(log, {
-        plugin: ['auth', 'catalog'],
-      }),
-    ).toEqual(true);
+    const matcher = createLogMatcher({
+      plugin: ['auth', 'catalog'],
+    });
+    expect(matcher(log)).toEqual(true);
   });
 
   it('should not match log with an OR matcher', () => {
-    expect(
-      isLogMatching(log, {
-        plugin: ['auth', 'search'],
-      }),
-    ).toEqual(false);
+    const matcher = createLogMatcher({
+      plugin: ['auth', 'search'],
+    });
+    expect(matcher(log)).toEqual(false);
   });
 
   it('should match log with a regex matcher', () => {
-    expect(
-      isLogMatching(log, {
-        message: '/This is a simple log/',
-      }),
-    ).toEqual(true);
+    const matcher = createLogMatcher({
+      message: '/This is a simple log/',
+    });
+    expect(matcher(log)).toEqual(true);
   });
 
   it('should not match log with a regex matcher', () => {
-    expect(
-      isLogMatching(log, {
-        message: '/^simple log/',
-      }),
-    ).toEqual(false);
+    const matcher = createLogMatcher({
+      message: '/^simple log/',
+    });
+    expect(matcher(log)).toEqual(false);
   });
 });

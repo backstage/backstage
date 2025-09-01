@@ -17,62 +17,78 @@
 import { TransformableInfo } from 'logform';
 import { WinstonLoggerLevelOverrideMatchers } from './types';
 
+/** Parse a slash-delimited regex like `/pattern/flags` into a RegExp, or null if not a regex-string */
+const parseRegex = (s: string): RegExp | null => {
+  if (!s.startsWith('/')) return null;
+  const lastSlash = s.lastIndexOf('/');
+  if (lastSlash <= 0) return null;
+
+  const pattern = s.slice(1, lastSlash);
+  const flags = s.slice(lastSlash + 1);
+
+  try {
+    return new RegExp(pattern, flags);
+  } catch {
+    return null; // fall back to treating it as a plain string
+  }
+};
+
 /**
- * Determines if a given log field matches a specified matcher.
+ * Create a predicate function that determines whether a log field matches a given matcher.
  *
  * The matcher can be:
  * - A string (exact match or regex pattern delimited by slashes, e.g. `/pattern/`)
  * - A non-string value (compared by strict equality)
  * - An array of matchers (returns true if any matcher matches)
  *
- * @param logField - The log field value to test for a match.
  * @param matcher - The matcher or array of matchers to compare against the log field.
- * @returns `true` if the log field matches the matcher, otherwise `false`.
+ * @returns A function that takes a log field and returns `true` if it matches the matcher, otherwise `false`.
  */
-const isLogFieldMatching = (
-  logField: unknown,
+const createLogFieldMatcher = (
   matcher: WinstonLoggerLevelOverrideMatchers[0],
-): boolean => {
+): ((logField: unknown) => boolean) => {
+  // Array of matchers: create predicates for each element and OR them together
   if (Array.isArray(matcher)) {
-    return matcher.some(m => isLogFieldMatching(logField, m));
+    const fns = matcher.map(m => createLogFieldMatcher(m));
+    return (logField: unknown) => fns.some(fn => fn(logField));
   }
 
+  // Non-string matcher: strict equality
   if (typeof matcher !== 'string') {
-    return logField === matcher;
+    return (logField: unknown) => logField === matcher;
   }
 
-  if (
-    matcher.startsWith('/') &&
-    matcher.endsWith('/') &&
-    typeof logField === 'string'
-  ) {
-    const regex = new RegExp(matcher.slice(1, -1));
-    return regex.test(logField);
+  // String matcher: maybe a slash-delimited regex (/pattern/flags)
+  const regex = parseRegex(matcher);
+  if (regex) {
+    return (logField: unknown) =>
+      typeof logField === 'string' && regex.test(logField);
   }
 
-  return logField === matcher;
+  // Plain string matcher: strict equality
+  return (logField: unknown) => logField === matcher;
 };
 
 /**
- * Determines whether a log entry matches all specified override matchers.
+ * Create a predicate function that determines whether a log entry matches
+ * all specified override matchers.
  *
  * Iterates over each key-matcher pair in the provided `matchers` object,
  * retrieves the corresponding field from the `log` object, and checks if
  * the field matches the matcher using `isLogFieldMatching`. Returns `true`
  * only if all matchers are satisfied.
  *
- * @param log - The log entry to be checked, typically containing various log fields.
  * @param matchers - An object where each key corresponds to a log field and each value is a matcher to test against that field.
- * @returns `true` if the log entry matches all provided matchers, otherwise `false`.
+ * @returns A function that takes a log entry and returns `true` if it matches all specified matchers, otherwise `false`.
  */
-export const isLogMatching = (
-  log: TransformableInfo,
+export const createLogMatcher = (
   matchers: WinstonLoggerLevelOverrideMatchers,
-): boolean => {
-  const matched = Object.entries(matchers).every(([key, matcher]) => {
-    const logField = log[key];
-    return isLogFieldMatching(logField, matcher);
+): ((log: TransformableInfo) => boolean) => {
+  const logFieldMatchers = Object.entries(matchers).map(([key, m]) => {
+    const fn = createLogFieldMatcher(m);
+    return [key, fn] as const;
   });
 
-  return matched;
+  return (log: TransformableInfo) =>
+    logFieldMatchers.every(([key, fn]) => fn(log[key]));
 };

@@ -31,7 +31,7 @@ import {
 import { MESSAGE } from 'triple-beam';
 import { escapeRegExp } from '../../lib/escapeRegExp';
 import { winstonLevels, WinstonLoggerLevelOverride } from './types';
-import { isLogMatching } from './utils';
+import { createLogMatcher } from './utils';
 
 /**
  * @public
@@ -188,12 +188,15 @@ export class WinstonLogger implements RootLoggerService {
     format: Format;
     setOverrides: (overrides: WinstonLoggerLevelOverride[]) => void;
   } {
-    const overrides: WinstonLoggerLevelOverride[] = [];
+    const overrides: {
+      predicate: (log: TransformableInfo) => boolean;
+      level: string;
+    }[] = [];
 
     return {
       format: format(log => {
         for (const override of overrides) {
-          if (isLogMatching(log, override.matchers)) {
+          if (override.predicate(log)) {
             // Discard the log if the log level is below the override
             // eg, if the override level is 'warn' (1) and the log is 'debug' (5)
             if (winstonLevels[log.level] > winstonLevels[override.level]) {
@@ -213,8 +216,12 @@ export class WinstonLogger implements RootLoggerService {
         return log;
       })(),
       setOverrides: newOverrides => {
-        // Replace the content while preserving the reference
-        overrides.splice(0, overrides.length, ...newOverrides);
+        const newOverridesPredicates = newOverrides.map(o => ({
+          predicate: createLogMatcher(o.matchers),
+          level: o.level,
+        }));
+        // Replace the content while preserving the reference to support live config updates
+        overrides.splice(0, overrides.length, ...newOverridesPredicates);
       },
     };
   }
