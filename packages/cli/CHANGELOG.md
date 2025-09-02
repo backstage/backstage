@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.34.2-next.1
+
+### Patch Changes
+
+- e1adce4: Updated the backend plugin template to use a new pattern for the `TodoListService` that reduces boilerplate.
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+
 ## 0.34.1-next.0
 
 ### Patch Changes

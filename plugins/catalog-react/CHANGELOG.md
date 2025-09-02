@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-react
 
+## 1.20.2-next.1
+
+### Patch Changes
+
+- 0174799: Fix a potential race condition in EntityListProvider when selecting filters
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+  - @backstage/frontend-test-utils@0.3.6-next.0
+  - @backstage/integration-react@1.2.10-next.0
+
 ## 1.20.2-next.0
 
 ### Patch Changes
