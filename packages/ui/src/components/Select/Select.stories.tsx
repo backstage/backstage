@@ -328,3 +328,34 @@ export const WithLongNamesAndPadding: Story = {
     ),
   ],
 };
+
+export const WithAccessibilityProps: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex direction="column" gap="4">
+      <div>
+        <h3 style={{ marginBottom: 8 }}>With aria-label</h3>
+        <Select
+          {...args}
+          aria-label="Choose font family"
+          placeholder="Select a font family"
+          name="font-aria"
+        />
+      </div>
+      <div>
+        <h3 style={{ marginBottom: 8 }}>With aria-labelledby</h3>
+        <div id="font-label" style={{ marginBottom: 8, fontWeight: 600 }}>
+          Font Family Selection
+        </div>
+        <Select
+          {...args}
+          aria-labelledby="font-label"
+          placeholder="Select a font family"
+          name="font-labelledby"
+        />
+      </div>
+    </Flex>
+  ),
+};
