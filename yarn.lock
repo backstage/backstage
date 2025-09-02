@@ -7048,6 +7048,7 @@ __metadata:
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-techdocs-common": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/express": "npm:^4.17.6"
     express: "npm:^4.17.1"
     express-promise-router: "npm:^4.1.0"
