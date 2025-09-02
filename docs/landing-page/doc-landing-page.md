@@ -3,7 +3,9 @@ id: doc-landing-page
 title: Documentation
 description: Documentation landing page.
 ---
+
 ## Understand, try, and administer Backstage
+
 <table>
   <tr>
     <th>Understand Backstage</th>
@@ -65,6 +67,7 @@ description: Documentation landing page.
 </table>
 
 ## Plugin Development, references, and how to contribute
+
 <table>
   <tr>
     <th>Plugin Development</th>
