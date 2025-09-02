@@ -31,10 +31,10 @@ Backstage includes the following set of core features:
 - [Kubernetes](../features/kubernetes/index.md) - A tool that allows developers to check the health of their services whether it is on a local host or in production.
 - [Notifications](../notifications/index.md) - Provides a means for plugins and external services to send messages to either individual users or groups.
 - [Permissions](../permissions/overview.md) - Ability to enforce rules concerning the type of access a user is given to specific data, APIs, or interface actions.
-- [Search](../features/search/index.md) - Search for information in the Backstage ecosystem. You can customize the look and feel of each search result and use your own search engine.
+- [Search](https://backstage.io/docs/features/search/) - Search for information in the Backstage ecosystem. You can customize the look and feel of each search result and use your own search engine.
 - [Software Catalog](../features/software-catalog/index.md) - A centralized system that contains metadata for all your software, such as services, websites, libraries, ML models, data pipelines, and so on. It can also contain metadata for the physical or virtual infrastructure needed to operate a piece of software. The software catalog can be viewed and searched through a UI.
 - [Software Templates](../features/software-templates/index.md) - A tool to help you create components inside Backstage. A template can load skeletons of code, include some variables, and then publish the template to a location, such as GitHub.
-- [TechDocs](../featues/techdocs/README.md) - A docs-like-code solution built into Backstage. Documentation is written in Markdown files which lives together with the code.
+- [TechDocs](https://backstage.io/docs/features/techdocs/) - A docs-like-code solution built into Backstage. Documentation is written in Markdown files which lives together with the code.
 
 ## Plugin Architecture Overview
 
