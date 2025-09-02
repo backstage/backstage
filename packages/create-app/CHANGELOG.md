@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.7.4-next.1
+
+### Patch Changes
+
+- 02dbe8e: Add missing dependency to `@backstage/cli`, `@backstage/core-plugin-api` and `@backstage/integration-react`
+
 ## 0.7.4-next.0
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-node
 
+## 0.6.7-next.0
+
+### Patch Changes
+
+- 3aff9e1: Changes OAuth cookies from domain-scoped to host-only by avoid setting the domain attribute in the default cookie configurer.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
 ## 0.6.6
 
 ### Patch Changes

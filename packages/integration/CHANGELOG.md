@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.18.0-next.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
 ## 1.17.1
 
 ### Patch Changes
