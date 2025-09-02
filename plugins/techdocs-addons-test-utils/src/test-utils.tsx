@@ -44,6 +44,7 @@ import {
   entityPresentationApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -236,12 +237,15 @@ export class TechDocsAddonTester {
       }),
     };
 
-    const catalogApi = {
-      getEntityByRef: jest.fn().mockResolvedValue({
-        kind: 'Component',
-        metadata: { namespace: 'default', name: 'docs' },
-      }),
-    };
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name: 'docs' },
+        },
+      ],
+    });
 
     const apis: TechdocsAddonTesterApis<any[]> = [
       [fetchApiRef, fetchApi],

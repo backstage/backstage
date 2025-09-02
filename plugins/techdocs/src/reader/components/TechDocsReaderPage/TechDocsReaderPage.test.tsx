@@ -27,6 +27,7 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
+import { catalogApiMock as catalogApiMockFactory } from '@backstage/plugin-catalog-react/testUtils';
 
 import { techdocsApiRef, techdocsStorageApiRef } from '../../../api';
 
@@ -96,9 +97,7 @@ const entityPresentationApiMock: jest.Mocked<
   }),
 };
 
-const catalogApiMock = {
-  getEntityByRef: jest.fn().mockResolvedValue(mockEntityMetadata),
-};
+const catalogApiMock = catalogApiMockFactory.mock();
 
 const fetchApiMock = {
   fetch: jest.fn().mockResolvedValue({
