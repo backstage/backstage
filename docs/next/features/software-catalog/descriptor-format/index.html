@@ -25,7 +25,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.4a5e1784.css">
-<script src="/assets/js/runtime~main.225df1ba.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.b8acf53b.js" defer="defer"></script>
 <script src="/assets/js/main.d3f39ee2.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -148,14 +148,27 @@ follows.</p>
 <p>Example: <code>visits-tracking-service</code>, <code>CircleciBuildsDumpV2_avro_gcs</code></p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="namespace-optional"><code>namespace</code> [optional]<a href="#namespace-optional" class="hash-link" aria-label="Direct link to namespace-optional" title="Direct link to namespace-optional">​</a></h3>
 <p>The ID of a namespace that the entity belongs to. This field is optional, and
-currently has no special semantics apart from bounding the name uniqueness
-constraint if specified. It is reserved for future use and may get broader
-semantic implication later.</p>
-<p>For now, it is recommended to not specify a namespace unless you have specific
-need to do so. This means the entity belongs to the <code>&quot;default&quot;</code> namespace.</p>
+has no special semantics apart from bounding the name uniqueness constraint if
+specified.</p>
+<p>This can be used for ingesting entities (of the same kind) from different
+contexts where their names might otherwise end up overlapping. An example of
+this is to import users and groups from your HR system into the default
+namespace, but also wanting to ingest users from your GitHub enterprise
+installation and those potentially having the same names as the HR system users.
+Then you could set up your GitHub enterprise ingestion to place those users in a
+<code>&quot;ghe&quot;</code> namespace to avoid collisions.</p>
+<p>If you do not specify a namespace, it assumes the value <code>&quot;default&quot;</code>.</p>
 <p>Namespaces must be sequences of <code>[a-zA-Z0-9]</code>, possibly separated by <code>-</code>, at
-most 63 characters in total. Namespace names are case insensitive and will be rendered as lower case in most places.</p>
+most 63 characters in total. Namespace names are case insensitive and will be
+rendered as lower case in most places.</p>
 <p>Example: <code>tracking-services</code>, <code>payment</code></p>
+<p>Note that using namespaces typically means that you need to explicitly specify
+the namespace when referring to the entity. In some contexts, notably in entity
+catalog-info definition YAML files, you often refer to other entities by name.
+When they are in a different namespace, you need to use the syntax
+<code>&lt;namespace&gt;/&lt;name&gt;</code>, while if they are in the default namespace you can omit
+that part as a shorthand. Therefore it&#x27;s practical to use the default namespace
+for simplicity until it&#x27;s necessary to use supplemental ones. See <a href="/docs/next/features/software-catalog/references">the references article</a> for more information.</p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="uid-output"><code>uid</code> [output]<a href="#uid-output" class="hash-link" aria-label="Direct link to uid-output" title="Direct link to uid-output">​</a></h3>
 <p>Each entity gets an automatically generated globally unique ID when it first
 enters the database. This field is not meant to be specified as input data, but
