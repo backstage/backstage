@@ -4,14 +4,14 @@
 
 | Name                 | Location     | Severity |
 | :------------------- | :----------- | :------- |
-| isomorphic-form-data | package.json | error    |
-| graphql-config       | package.json | error    |
-| graphql-ws           | package.json | error    |
+| isomorphic-form-data | plugins/api-docs/package.json | error    |
+| graphql-config       | plugins/api-docs/package.json | error    |
+| graphql-ws           | plugins/api-docs/package.json | error    |
 
 ## Unused devDependencies (2)
 
 | Name                    | Location     | Severity |
 | :---------------------- | :----------- | :------- |
-| @backstage/core-app-api | package.json | error    |
-| @types/highlightjs      | package.json | error    |
+| @backstage/core-app-api | plugins/api-docs/package.json | error    |
+| @types/highlightjs      | plugins/api-docs/package.json | error    |
 

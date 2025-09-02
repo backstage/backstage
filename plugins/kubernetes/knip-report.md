@@ -4,15 +4,15 @@
 
 | Name                            | Location     | Severity |
 | :------------------------------ | :----------- | :------- |
-| @kubernetes-models/apimachinery | package.json | error    |
-| @kubernetes-models/base         | package.json | error    |
-| @kubernetes/client-node         | package.json | error    |
-| @xterm/addon-attach             | package.json | error    |
-| kubernetes-models               | package.json | error    |
-| @xterm/addon-fit                | package.json | error    |
-| @xterm/xterm                    | package.json | error    |
-| cronstrue                       | package.json | error    |
-| js-yaml                         | package.json | error    |
-| lodash                          | package.json | error    |
-| luxon                           | package.json | error    |
+| @kubernetes-models/apimachinery | plugins/kubernetes/package.json | error    |
+| @kubernetes-models/base         | plugins/kubernetes/package.json | error    |
+| @kubernetes/client-node         | plugins/kubernetes/package.json | error    |
+| @xterm/addon-attach             | plugins/kubernetes/package.json | error    |
+| kubernetes-models               | plugins/kubernetes/package.json | error    |
+| @xterm/addon-fit                | plugins/kubernetes/package.json | error    |
+| @xterm/xterm                    | plugins/kubernetes/package.json | error    |
+| cronstrue                       | plugins/kubernetes/package.json | error    |
+| js-yaml                         | plugins/kubernetes/package.json | error    |
+| lodash                          | plugins/kubernetes/package.json | error    |
+| luxon                           | plugins/kubernetes/package.json | error    |
 

@@ -4,5 +4,5 @@
 
 | Name | Location     | Severity |
 | :-- | :----------- | :------- |
-| jss | package.json | error    |
+| jss | plugins/techdocs/package.json | error    |
 

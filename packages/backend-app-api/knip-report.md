@@ -4,5 +4,5 @@
 
 | Name                        | Location     | Severity |
 | :-------------------------- | :----------- | :------- |
-| @backstage/backend-defaults | package.json | error    |
+| @backstage/backend-defaults | packages/backend-app-api/package.json | error    |
 

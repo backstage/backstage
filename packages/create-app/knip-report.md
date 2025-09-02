@@ -4,5 +4,5 @@
 
 | Name                  | Location     | Severity |
 | :-------------------- | :----------- | :------- |
-| @types/command-exists | package.json | error    |
+| @types/command-exists | packages/create-app/package.json | error    |
 
