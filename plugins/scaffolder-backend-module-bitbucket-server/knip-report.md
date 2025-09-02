@@ -4,5 +4,5 @@
 
 | Name | Location     | Severity |
 | :-- | :----------- | :------- |
-| zod | package.json | error    |
+| zod | plugins/scaffolder-backend-module-bitbucket-server/package.json | error    |
 
