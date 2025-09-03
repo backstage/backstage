@@ -81,6 +81,7 @@ export function createGithubBranchProtectionAction(options: {
     requireLastPushApproval?: boolean | undefined;
     requiredCommitSigning?: boolean | undefined;
     requiredLinearHistory?: boolean | undefined;
+    blockCreations?: boolean | undefined;
     token?: string | undefined;
   },
   {
