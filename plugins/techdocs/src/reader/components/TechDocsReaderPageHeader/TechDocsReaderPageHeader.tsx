@@ -172,7 +172,7 @@ export const TechDocsReaderPageHeader = (
 
   const removeTrailingSlash = (str: string) => str.replace(/\/$/, '');
   const normalizeAndSpace = (str: string) =>
-    str.replace(/-/g, ' ').split(' ').map(capitalize).join(' ');
+    str.replace(/[-_]/g, ' ').split(' ').map(capitalize).join(' ');
 
   let techdocsTabTitleItems: string[] = [];
 
