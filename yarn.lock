@@ -2518,6 +2518,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    express-promise-router: "npm:^4.1.0"
   languageName: unknown
   linkType: soft
 

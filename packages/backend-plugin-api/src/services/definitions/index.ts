@@ -85,4 +85,8 @@ export type {
   UrlReaderServiceSearchResponseFile,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
+export type {
+  InstanceMetadataService,
+  BackendPlugin,
+} from './InstanceMetadataService';
 export { coreServices } from './coreServices';

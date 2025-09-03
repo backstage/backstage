@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
-import { InstanceMetadataService } from '@backstage/backend-plugin-api/alpha';
+import {
+  DiscoveryService,
+  InstanceMetadataService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Request, Response, NextFunction } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { context } from '@opentelemetry/api';
@@ -29,10 +32,7 @@ export function createRouter({
   logger: LoggerService;
 }) {
   const localPluginIds = new Set(
-    instanceMeta
-      .getInstalledFeatures()
-      .filter(f => f.type === 'plugin')
-      .map(f => f.pluginId),
+    instanceMeta.getInstalledPlugins().map(f => f.pluginId),
   );
 
   const proxy = createProxyMiddleware({
