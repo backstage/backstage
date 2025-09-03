@@ -18,6 +18,7 @@ import { ComponentType } from 'react';
 import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
+import dagre from '@dagrejs/dagre';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
 import IconButton from '@material-ui/core/IconButton';
@@ -273,6 +274,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   paddingY?: number;
   ranker?: DependencyGraphTypes.Ranker;
   rankMargin?: number;
+  renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EdgeData>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EdgeData>;
   renderNode?: DependencyGraphTypes.RenderNodeFunction<NodeData>;
   showArrowHeads?: boolean;
@@ -314,6 +316,33 @@ export namespace DependencyGraphTypes {
     NETWORK_SIMPLEX = 'network-simplex',
     TIGHT_TREE = 'tight-tree',
   }
+  export type RenderEdgeFunction<T = {}> = (props: {
+    edge: T & {
+      points: {
+        x: number;
+        y: number;
+      }[];
+      label?: string;
+      labeloffset?: number;
+      labelpos?: string;
+      width?: number;
+      height?: number;
+      weight?: number;
+      minlen?: number;
+      showArrowHeads?: boolean;
+      from?: string;
+      to?: string;
+      relations?: string[];
+    };
+    id: {
+      v: string;
+      w: string;
+    };
+  }) => ReactNode;
+  export type RenderEdgeProps<T = unknown> = {
+    edge: DependencyEdge<T>;
+    id: dagre.Edge;
+  };
   export type RenderLabelFunction<T = {}> = (
     props: RenderLabelProps<T>,
   ) => ReactNode;
@@ -1548,8 +1577,8 @@ export type WarningPanelClassKey =
 
 // Warnings were encountered during analysis:
 //
-// src/components/DependencyGraph/types.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
-// src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
+// src/components/DependencyGraph/types.d.ts:23:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
+// src/components/DependencyGraph/types.d.ts:27:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/TabbedLayout/RoutedTabs.d.ts:8:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
