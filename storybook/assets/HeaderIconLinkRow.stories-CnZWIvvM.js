@@ -1,0 +1,19 @@
+import{j as a}from"./jsx-runtime-hv06LKfz.js";import{I as s}from"./IconLinkVertical-DaxoEwpv.js";import{m}from"./makeStyles-CJp8qHqH.js";import"./index-D8-PC79C.js";import"./index-DlxYA1zJ.js";import"./typeof-ZI2KZN5z.js";import"./createSvgIcon-Bpme_iea.js";import"./capitalize-fS9uM6tv.js";import"./defaultTheme-NkpNA350.js";import"./withStyles-BsQ9H3bp.js";import"./hoist-non-react-statics.cjs-DtcWCWp5.js";import"./createChainedFunction-Da-WpsAN.js";import"./createSvgIcon-D-gz-Nq7.js";import"./debounce-DtXjJkxj.js";import"./isMuiElement-DKhW5xVU.js";import"./ownerWindow-CjzjL4wv.js";import"./useIsFocusVisible-BFy7UoKA.js";import"./index-DXvUqTe6.js";import"./index-BITTEREo.js";import"./useControlled-CliGfT3L.js";import"./unstable_useId-DQJte0g1.js";import"./Box-dSpCvcz2.js";import"./typography-Mwc_tj4E.js";import"./Typography-NhBf-tfS.js";import"./Link-m8k68nLc.js";import"./lodash-D1GzKnrP.js";import"./index-B7KODvs-.js";import"./useApp-BOX1l_wP.js";import"./ApiRef-ByCJBjX1.js";import"./useAnalytics-Q-nz63z2.js";import"./ConfigApi-ij0WO1-Y.js";const p=m(e=>({links:{margin:e.spacing(2,0),display:"grid",gridAutoFlow:"column",gridAutoColumns:"min-content",gridGap:e.spacing(3),wordBreak:"keep-all"}}),{name:"BackstageHeaderIconLinkRow"});function n(e){const{links:o}=e,i=p();return a.jsx("nav",{className:i.links,children:o.map((t,l)=>a.jsx(s,{...t},l+1))})}n.__docgenInfo={description:`HTML nav tag with links mapped inside
+
+@public`,methods:[],displayName:"HeaderIconLinkRow",props:{links:{required:!0,tsType:{name:"Array",elements:[{name:"signature",type:"object",raw:`{
+  color?: 'primary' | 'secondary';
+  disabled?: boolean;
+  href?: string;
+  icon?: ReactNode;
+  label: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  title?: string;
+}`,signature:{properties:[{key:"color",value:{name:"union",raw:"'primary' | 'secondary'",elements:[{name:"literal",value:"'primary'"},{name:"literal",value:"'secondary'"}],required:!1}},{key:"disabled",value:{name:"boolean",required:!1}},{key:"href",value:{name:"string",required:!1}},{key:"icon",value:{name:"ReactNode",required:!1}},{key:"label",value:{name:"string",required:!0}},{key:"onClick",value:{name:"MouseEventHandler",elements:[{name:"HTMLAnchorElement"}],raw:"MouseEventHandler<HTMLAnchorElement>",required:!1}},{key:"title",value:{name:"string",required:!1}}]}}],raw:"IconLinkVerticalProps[]"},description:""}}};const G={title:"Data Display/HeaderIconLinkRow",component:n},r=e=>a.jsx(n,{...e});r.args={links:[{color:"primary",disabled:!1,href:"https://google.com",label:"primary",title:"title"},{color:"secondary",disabled:!1,href:"https://google.com",label:"secondary",title:"title-2"}]};r.__docgenInfo={description:"",methods:[],displayName:"Default",props:{links:{required:!0,tsType:{name:"Array",elements:[{name:"signature",type:"object",raw:`{
+  color?: 'primary' | 'secondary';
+  disabled?: boolean;
+  href?: string;
+  icon?: ReactNode;
+  label: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  title?: string;
+}`,signature:{properties:[{key:"color",value:{name:"union",raw:"'primary' | 'secondary'",elements:[{name:"literal",value:"'primary'"},{name:"literal",value:"'secondary'"}],required:!1}},{key:"disabled",value:{name:"boolean",required:!1}},{key:"href",value:{name:"string",required:!1}},{key:"icon",value:{name:"ReactNode",required:!1}},{key:"label",value:{name:"string",required:!0}},{key:"onClick",value:{name:"MouseEventHandler",elements:[{name:"HTMLAnchorElement"}],raw:"MouseEventHandler<HTMLAnchorElement>",required:!1}},{key:"title",value:{name:"string",required:!1}}]}}],raw:"IconLinkVerticalProps[]"},description:""}}};r.parameters={...r.parameters,docs:{...r.parameters?.docs,source:{originalSource:"(args: Props) => <HeaderIconLinkRow {...args} />",...r.parameters?.docs?.source}}};const O=["Default"];export{r as Default,O as __namedExportsOrder,G as default};
