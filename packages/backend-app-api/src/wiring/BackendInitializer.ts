@@ -41,7 +41,7 @@ import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
 import { unwrapFeature } from './helpers';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { BackendPlugin } from '../../../backend-plugin-api/src/services/definitions/InstanceMetadataService';
+import type { InstanceMetadataServicePluginInfo } from '../../../backend-plugin-api/src/services/definitions/InstanceMetadataService';
 import Router from 'express-promise-router';
 
 export interface BackendRegisterInit {
@@ -103,7 +103,9 @@ const instanceRegistry = new (class InstanceRegistry {
 function createInstanceMetadataServiceFactory(
   registrations: InternalBackendRegistrations[],
 ) {
-  const installedPlugins: { [pluginId: string]: BackendPlugin } = {};
+  const installedPlugins: {
+    [pluginId: string]: InstanceMetadataServicePluginInfo;
+  } = {};
   for (const registration of registrations) {
     if (registration.featureType === 'registrations') {
       for (const feature of registration.getRegistrations()) {

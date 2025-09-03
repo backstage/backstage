@@ -87,6 +87,6 @@ export type {
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
 export type {
   InstanceMetadataService,
-  BackendPlugin,
+  InstanceMetadataServicePluginInfo,
 } from './InstanceMetadataService';
 export { coreServices } from './coreServices';

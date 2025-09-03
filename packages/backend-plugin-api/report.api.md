@@ -232,6 +232,11 @@ export namespace coreServices {
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
+  const instanceMetadata: ServiceRef<
+    InstanceMetadataService,
+    'plugin',
+    'singleton'
+  >;
 }
 
 // @public
@@ -414,6 +419,22 @@ export interface HttpRouterServiceAuthPolicy {
   allow: 'unauthenticated' | 'user-cookie';
   // (undocumented)
   path: string;
+}
+
+// @public (undocumented)
+export interface InstanceMetadataService {
+  // (undocumented)
+  getInstalledPlugins: () => readonly InstanceMetadataServicePluginInfo[];
+}
+
+// @public (undocumented)
+export interface InstanceMetadataServicePluginInfo {
+  // (undocumented)
+  modules: {
+    moduleId: string;
+  }[];
+  // (undocumented)
+  pluginId: string;
 }
 
 export { isChildPath };
