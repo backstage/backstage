@@ -203,7 +203,7 @@ describe('<TechDocsReaderPageHeader />', () => {
 
     await waitFor(() => {
       expect(document.title).toEqual(
-        'Backstage | Test Entity | Foo | Bar | Baz',
+        'Test Entity | Foo | Bar | Baz | Backstage',
       );
     });
   });

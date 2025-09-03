@@ -182,7 +182,7 @@ export const TechDocsReaderPageHeader = (
       .slice(0, 3)
       .map(normalizeAndSpace);
 
-  const tabTitleItems = [appTitle, entityDisplayName, ...techdocsTabTitleItems];
+  const tabTitleItems = [entityDisplayName, ...techdocsTabTitleItems, appTitle];
   const tabTitle = tabTitleItems.join(' | ');
 
   return (
