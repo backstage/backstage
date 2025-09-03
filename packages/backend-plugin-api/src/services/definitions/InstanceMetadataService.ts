@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-export interface BackendPlugin {
+/** @public */
+export interface InstanceMetadataServicePluginInfo {
   pluginId: string;
   modules: {
     moduleId: string;
   }[];
 }
 
-/** @alpha */
+/** @public */
 export interface InstanceMetadataService {
-  getInstalledPlugins: () => readonly BackendPlugin[];
+  getInstalledPlugins: () => readonly InstanceMetadataServicePluginInfo[];
 }
