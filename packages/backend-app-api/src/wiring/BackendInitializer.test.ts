@@ -22,9 +22,9 @@ import {
   createExtensionPoint,
   createBackendFeatureLoader,
   ServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const baseFactories = [
@@ -32,6 +32,9 @@ const baseFactories = [
   mockServices.lifecycle.factory(),
   mockServices.rootLogger.factory(),
   mockServices.logger.factory(),
+  mockServices.rootConfig.factory(),
+  mockServices.rootHttpRouter.mock().factory,
+  mockServices.rootHealth.factory(),
 ];
 
 function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {
@@ -1074,7 +1077,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should properly add plugins + modules to the instance metadata service', async () => {
-    expect.assertions(2);
+    expect.assertions(1);
     const backend = new BackendInitializer(baseFactories);
     const plugin = createBackendPlugin({
       pluginId: 'test',
@@ -1090,31 +1093,23 @@ describe('BackendInitializer', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            instanceMetadata: instanceMetadataServiceRef,
+            instanceMetadata: coreServices.instanceMetadata,
           },
           async init({ instanceMetadata }) {
-            expect(instanceMetadata.getInstalledFeatures()).toEqual([
+            expect(instanceMetadata.getInstalledPlugins()).toEqual([
               {
                 pluginId: 'test',
-                type: 'plugin',
-              },
-              {
-                pluginId: 'test',
-                moduleId: 'test',
-                type: 'module',
+                modules: [
+                  {
+                    moduleId: 'test',
+                  },
+                ],
               },
               {
                 pluginId: 'instance-metadata',
-                type: 'plugin',
+                modules: [],
               },
             ]);
-            expect(instanceMetadata.getInstalledFeatures().map(String)).toEqual(
-              [
-                'plugin{pluginId=test}',
-                'module{moduleId=test,pluginId=test}',
-                'plugin{pluginId=instance-metadata}',
-              ],
-            );
           },
         });
       },
