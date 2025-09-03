@@ -1,5 +1,44 @@
 # @backstage/plugin-catalog
 
+## 1.31.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+  - @backstage/plugin-search-react@1.9.4-next.0
+  - @backstage/plugin-techdocs-react@1.3.3-next.0
+  - @backstage/integration-react@1.2.10-next.0
+  - @backstage/plugin-scaffolder-common@1.7.1-next.0
+
+## 1.31.3-next.0
+
+### Patch Changes
+
+- ce1239e: Auto-focus the first menu item in `EntityContextMenu`, and do not render a divider if an empty array is passed to `UNSTABLE_extraContextMenuItems`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+  - @backstage/plugin-scaffolder-common@1.7.0
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.2
+
 ## 1.31.2
 
 ### Patch Changes

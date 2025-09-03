@@ -1,5 +1,31 @@
 # @backstage/cli
 
+## 0.34.2-next.1
+
+### Patch Changes
+
+- e1adce4: Updated the backend plugin template to use a new pattern for the `TodoListService` that reduces boilerplate.
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+
+## 0.34.1-next.0
+
+### Patch Changes
+
+- 080f252: Fixed the `new-frontend-plugin` template that was incorrectly passing `id` instead of `pluginId` to `createFrontendPlugin` and unnecessarily importing `React`.
+- 275bda8: Fixed an issue that could cause conflicts of detected modules in workspaces with multiple apps.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.14
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/integration@1.17.1
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
 ## 0.34.0
 
 ### Minor Changes

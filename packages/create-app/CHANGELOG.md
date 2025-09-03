@@ -1,5 +1,19 @@
 # @backstage/create-app
 
+## 0.7.4-next.1
+
+### Patch Changes
+
+- 02dbe8e: Add missing dependency to `@backstage/cli`, `@backstage/core-plugin-api` and `@backstage/integration-react`
+
+## 0.7.4-next.0
+
+### Patch Changes
+
+- b2d9fc1: Creates a plugin that redirects from the Home page to the Catalog index page to avoid seeing a not found page error when starting the app.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.7.2
 
 ### Patch Changes

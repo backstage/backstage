@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 3.0.2-next.0
+
+### Patch Changes
+
+- 37b4eaf: The 'get-catalog-entity' action now throws a ConflictError instead of generic Error if multiple entities are found, so MCP call doesn't fail with 500.
+- a4c82ad: Only run provider orphan cleanup if the engine is started in the first place
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-permission-node@0.10.4-next.0
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
 ## 3.0.1
 
 ### Patch Changes

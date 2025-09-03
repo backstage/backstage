@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /**
    * Configuration options for the techdocs-backend plugin
@@ -277,7 +279,7 @@ export interface Config {
      */
     cache?: {
       /**
-       * The cache time-to-live for TechDocs sites (in milliseconds). Set this
+       * The cache time-to-live for TechDocs sites, in milliseconds for a number or a human duration. Set this
        * to a non-zero value to cache TechDocs sites and assets as they are
        * read from storage.
        *
@@ -285,16 +287,16 @@ export interface Config {
        * and to pass a PluginCacheManager instance to TechDocs Backend's
        * createRouter method in your backend.
        */
-      ttl: number;
+      ttl: number | HumanDuration | string;
 
       /**
-       * The time (in milliseconds) that the TechDocs backend will wait for
+       * The time (in milliseconds for a number or a human duration) that the TechDocs backend will wait for
        * a cache service to respond before continuing on as though the cached
        * object was not found (e.g. when the cache sercice is unavailable).
        *
        * Defaults to 1000 milliseconds.
        */
-      readTimeout?: number;
+      readTimeout?: number | HumanDuration | string;
     };
 
     /**

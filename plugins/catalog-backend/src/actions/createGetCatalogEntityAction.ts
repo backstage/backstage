@@ -15,7 +15,7 @@
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { InputError } from '@backstage/errors';
+import { ConflictError, InputError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 
 export const createGetCatalogEntityAction = ({
@@ -76,7 +76,7 @@ Each entity is identified by a unique entity reference, which is a string of the
       }
 
       if (items.length > 1) {
-        throw new Error(
+        throw new ConflictError(
           `Multiple entities found with name "${
             input.name
           }", please provide more specific filters. Entities found: ${items

@@ -622,18 +622,21 @@ export class CatalogBuilder {
       enableRelationsCompatibility,
     });
 
-    if (config.getOptionalString('catalog.orphanProviderStrategy') !== 'keep') {
-      await evictEntitiesFromOrphanedProviders({
-        db: providerDatabase,
-        providers: entityProviders,
-        logger,
-      });
-    }
     await connectEntityProviders(providerDatabase, entityProviders);
 
     return {
       processingEngine: {
         async start() {
+          if (
+            config.getOptionalString('catalog.orphanProviderStrategy') !==
+            'keep'
+          ) {
+            await evictEntitiesFromOrphanedProviders({
+              db: providerDatabase,
+              providers: entityProviders,
+              logger,
+            });
+          }
           await processingEngine.start();
           await stitcher.start();
         },

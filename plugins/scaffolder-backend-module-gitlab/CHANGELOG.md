@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.5-next.0
+
+### Patch Changes
+
+- a84ddea: The log message now indicates that the pipeline trigger token was deleted and not pipeline itself.
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
 ## 0.9.4
 
 ### Patch Changes

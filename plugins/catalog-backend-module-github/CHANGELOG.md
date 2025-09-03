@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.11.0-next.0
+
+### Minor Changes
+
+- 03bdc68: Added support for discovery by app
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.2-next.0
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
 ## 0.10.2
 
 ### Patch Changes

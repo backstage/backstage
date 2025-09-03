@@ -203,5 +203,32 @@
     "@backstage/plugin-user-settings-backend": "0.3.5",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "brave-bugs-know",
+    "cold-donuts-train",
+    "cool-games-rescue",
+    "curvy-sites-rhyme",
+    "easy-wings-turn",
+    "fine-hands-think",
+    "flat-colts-know",
+    "giant-zebras-peel",
+    "icy-camels-throw",
+    "legal-lemons-attend",
+    "lemon-terms-cheer",
+    "lucky-glasses-slide",
+    "mean-sites-cheer",
+    "puny-books-fetch",
+    "ripe-plants-pump",
+    "sharp-carrots-spend",
+    "sixty-pans-prove",
+    "sixty-places-push",
+    "slick-lamps-clap",
+    "slick-worms-drum",
+    "social-beers-unite",
+    "sweet-lemons-wonder",
+    "tricky-buses-lead",
+    "wet-kiwis-strive",
+    "whole-dingos-lay",
+    "yellow-dragons-float"
+  ]
 }
