@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { createExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import {
+  createExtensionBlueprint,
+  ExtensionBoundary,
+} from '@backstage/frontend-plugin-api';
 import { devToolsRouteDataRef } from './devToolsRouteDataRef';
-import { lazy, Suspense, JSX } from 'react';
+import { JSX } from 'react';
 
 /**
  * Parameters for creating a DevTools route extension
@@ -25,7 +28,7 @@ import { lazy, Suspense, JSX } from 'react';
 export interface DevToolsRouteBlueprintParams {
   path: string;
   title: string;
-  loader: () => Promise<{ default: () => JSX.Element }>;
+  loader: () => Promise<JSX.Element>;
 }
 
 /**
@@ -48,15 +51,8 @@ export const DevToolsRouteBlueprint = createExtensionBlueprint({
   kind: 'devtools-route',
   attachTo: { id: 'page:devtools', input: 'routes' },
   output: [devToolsRouteDataRef],
-  factory(params: DevToolsRouteBlueprintParams) {
-    // Create a lazy component for async loading
-    const LazyComponent = lazy(params.loader);
-
-    const children = (
-      <Suspense fallback={<div>Loading...</div>}>
-        <LazyComponent />
-      </Suspense>
-    );
+  factory(params: DevToolsRouteBlueprintParams, { node }) {
+    const children = ExtensionBoundary.lazy(node, params.loader);
 
     return [
       devToolsRouteDataRef({

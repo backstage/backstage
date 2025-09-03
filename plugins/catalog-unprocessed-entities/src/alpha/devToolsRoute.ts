@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createElement } from 'react';
 import { DevToolsRouteBlueprint } from '@backstage/plugin-devtools/alpha';
 
 /**
@@ -25,8 +26,9 @@ export const unprocessedEntitiesDevToolsRoute = DevToolsRouteBlueprint.make({
     path: 'unprocessed-entities',
     title: 'Unprocessed Entities',
     loader: () =>
-      import('../components/UnprocessedEntities').then(m => ({
-        default: m.UnprocessedEntitiesContent,
-      })),
+      import('../components/UnprocessedEntities').then(
+        ({ UnprocessedEntitiesContent }) =>
+          createElement(UnprocessedEntitiesContent),
+      ),
   },
 });
