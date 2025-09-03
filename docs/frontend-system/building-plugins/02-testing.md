@@ -78,7 +78,7 @@ This pattern also works for many other context providers. An important example i
 
 ## Testing extensions
 
-To facilitate testing of frontend extensions, the `@backstage/frontend-test-utils` package provides a tester class which starts up an entire frontend harness, complete with a number of default features. You can then provide overrides for extensions whose behavior you need to adjust for the test run.
+To facilitate testing of frontend extensions, the `@backstage/frontend-test-utils` package provides a tester class that starts up an entire frontend harness, complete with a number of default features. You can then provide overrides for extensions whose behavior you need to adjust for the test run.
 
 A number of features (frontend extensions and overrides) are also accepted by the tester. Here are some examples of how these facilities can be useful:
 
@@ -92,7 +92,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should render a the index page', async () => {
+  it('should render the index page', async () => {
     await renderInTestApp(
       createExtensionTester(indexPageExtension).reactElement(),
     );
@@ -108,7 +108,7 @@ Note that the `.reactElement()` method will look for the `coreExtensionData.reac
 
 ### Multiple extensions
 
-In some cases you might need to test multiple extensions together, in particular when testing inputs. In this case, you can add more extensions to the tester instance using the `.add(...)` method. It also accepts an optional options object as the second argument, which you can use to provide configuration for the extension instance.
+In some cases, you might need to test multiple extensions together, particularly when testing inputs. In this case, you can add more extensions to the tester instance using the `.add(...)` method. It also accepts an optional options object as the second argument, which you can use to provide configuration for the extension instance.
 
 ```tsx
 import { screen } from '@testing-library/react';
@@ -134,7 +134,7 @@ describe('Index page', async () => {
 });
 ```
 
-When testing multiple extensions you may sometimes want to access the output of other extensions than the main test subject. You can use the `.query(ext)` method to query a different extension that has been added to the tester, by passing the extension used with the `createExtensionTester(...).add(ext)`
+When testing multiple extensions, you may sometimes want to access the output of other extensions than the main test subject. You can use the `.query(ext)` method to query a different extension that has been added to the tester, by passing the extension used with the `createExtensionTester(...).add(ext)`
 
 ### Setting configuration
 
@@ -147,7 +147,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension, detailsPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should accepts a custom title via config', async () => {
+  it('should accept a custom title via config', async () => {
     const tester = createExtensionTester(indexPageExtension, {
       // Extension configuration for the index page
       config: { title: 'Custom page' },
