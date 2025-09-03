@@ -30,7 +30,9 @@ export interface DefaultDevToolsPageProps {
 }
 
 /** @public */
-export const DefaultDevToolsPage = ({ extensionRoutes }: DefaultDevToolsPageProps) => (
+export const DefaultDevToolsPage = ({
+  extensionRoutes,
+}: DefaultDevToolsPageProps) => (
   <DevToolsLayout>
     <DevToolsLayout.Route path="info" title="Info">
       <RequirePermission permission={devToolsInfoReadPermission}>
@@ -43,9 +45,9 @@ export const DefaultDevToolsPage = ({ extensionRoutes }: DefaultDevToolsPageProp
       </RequirePermission>
     </DevToolsLayout.Route>
     {extensionRoutes?.map((route, index) => (
-      <DevToolsLayout.Route 
+      <DevToolsLayout.Route
         key={`extension-${route.path}-${index}`}
-        path={route.path} 
+        path={route.path}
         title={route.title}
       >
         {route.children}

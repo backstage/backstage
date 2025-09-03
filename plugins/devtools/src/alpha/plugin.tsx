@@ -60,7 +60,13 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
       routeRef: convertLegacyRouteRef(rootRouteRef),
       loader: () =>
         import('../components/DevToolsPage').then(m =>
-          compatWrapper(<m.DevToolsPage extensionRoutes={inputs.routes?.map(route => route.get(devToolsRouteDataRef))} />),
+          compatWrapper(
+            <m.DevToolsPage
+              extensionRoutes={inputs.routes?.map(route =>
+                route.get(devToolsRouteDataRef),
+              )}
+            />,
+          ),
         ),
     });
   },

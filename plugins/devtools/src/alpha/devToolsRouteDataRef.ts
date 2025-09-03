@@ -31,7 +31,7 @@ export interface DevToolsRouteData {
  * Extension data reference for DevTools routes
  * @alpha
  */
-export const devToolsRouteDataRef = createExtensionDataRef<DevToolsRouteData>()
-  .with({
+export const devToolsRouteDataRef =
+  createExtensionDataRef<DevToolsRouteData>().with({
     id: 'devtools.route',
   });

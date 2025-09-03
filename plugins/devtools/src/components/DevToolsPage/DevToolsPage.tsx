@@ -25,5 +25,7 @@ export interface DevToolsPageProps {
 export const DevToolsPage = ({ extensionRoutes }: DevToolsPageProps) => {
   const outlet = useOutlet();
 
-  return <>{outlet || <DefaultDevToolsPage extensionRoutes={extensionRoutes} />}</>;
+  return (
+    <>{outlet || <DefaultDevToolsPage extensionRoutes={extensionRoutes} />}</>
+  );
 };
