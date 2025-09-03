@@ -23,7 +23,7 @@ import { JSX } from 'react';
 
 /**
  * Parameters for creating a DevTools route extension
- * @alpha
+ * @public
  */
 export interface DevToolsRouteBlueprintParams {
   path: string;
@@ -44,8 +44,7 @@ export interface DevToolsRouteBlueprintParams {
  *   }
  * });
  * ```
- *
- * @alpha
+ * @public
  */
 export const DevToolsRouteBlueprint = createExtensionBlueprint({
   kind: 'devtools-route',

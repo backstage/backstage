@@ -8,7 +8,7 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 
-// @alpha
+// @public
 export const DevToolsRouteBlueprint: ExtensionBlueprint<{
   kind: 'devtools-route';
   params: DevToolsRouteBlueprintParams;
@@ -25,7 +25,7 @@ export const DevToolsRouteBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha
+// @public
 export interface DevToolsRouteBlueprintParams {
   // (undocumented)
   loader: () => Promise<JSX_2.Element>;
@@ -35,7 +35,7 @@ export interface DevToolsRouteBlueprintParams {
   title: string;
 }
 
-// @alpha
+// @public
 export interface DevToolsRouteData {
   // (undocumented)
   children: JSX_2.Element;
@@ -45,7 +45,7 @@ export interface DevToolsRouteData {
   title: string;
 }
 
-// @alpha
+// @public
 export const devToolsRouteDataRef: ConfigurableExtensionDataRef<
   DevToolsRouteData,
   'devtools.route',

@@ -18,6 +18,9 @@ import { useOutlet } from 'react-router-dom';
 import { DefaultDevToolsPage } from '../DefaultDevToolsPage';
 import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
 
+/**
+  @public
+ */
 export interface DevToolsPageProps {
   extensionRoutes?: DevToolsRouteData[];
 }

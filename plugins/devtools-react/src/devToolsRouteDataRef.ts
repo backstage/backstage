@@ -19,7 +19,7 @@ import { JSX } from 'react';
 
 /**
  * Represents a DevTools route that can be contributed by extensions
- * @alpha
+ * @public
  */
 export interface DevToolsRouteData {
   path: string;
@@ -29,7 +29,7 @@ export interface DevToolsRouteData {
 
 /**
  * Extension data reference for DevTools routes
- * @alpha
+ * @public
  */
 export const devToolsRouteDataRef =
   createExtensionDataRef<DevToolsRouteData>().with({

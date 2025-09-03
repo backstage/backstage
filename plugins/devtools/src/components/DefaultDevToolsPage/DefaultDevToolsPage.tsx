@@ -23,16 +23,10 @@ import { ConfigContent } from '../Content/ConfigContent';
 import { DevToolsLayout } from '../DevToolsLayout';
 import { InfoContent } from '../Content/InfoContent';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
-
-export interface DefaultDevToolsPageProps {
-  extensionRoutes?: DevToolsRouteData[];
-}
+import { DevToolsPageProps } from '../DevToolsPage';
 
 /** @public */
-export const DefaultDevToolsPage = ({
-  extensionRoutes,
-}: DefaultDevToolsPageProps) => (
+export const DefaultDevToolsPage = ({ extensionRoutes }: DevToolsPageProps) => (
   <DevToolsLayout>
     <DevToolsLayout.Route path="info" title="Info">
       <RequirePermission permission={devToolsInfoReadPermission}>
