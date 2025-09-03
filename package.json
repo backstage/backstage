@@ -185,5 +185,8 @@
       }
     },
     "tsConfig": "./tsconfig.json"
+  },
+  "volta": {
+    "node": "22.19.0"
   }
 }

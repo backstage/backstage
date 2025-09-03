@@ -71,5 +71,8 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
+  },
+  "volta": {
+    "node": "22.19.0"
   }
 }

@@ -15,3 +15,7 @@
  */
 
 export { default } from './plugin';
+export { DevToolsRouteBlueprint } from './devToolsRouteBlueprint';
+export { devToolsRouteDataRef } from './devToolsRouteDataRef';
+export type { DevToolsRouteData } from './devToolsRouteDataRef';
+export type { DevToolsRouteBlueprintParams } from './devToolsRouteBlueprint';
