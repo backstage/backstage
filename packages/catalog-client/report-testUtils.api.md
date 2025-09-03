@@ -71,9 +71,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   // (undocumented)
   removeLocationById(_id: string): Promise<void>;
   // (undocumented)
-  streamEntities(request?: StreamEntitiesRequest): AsyncIterable<Entity>;
-  // (undocumented)
-  streamEntityPages(request?: StreamEntitiesRequest): AsyncIterable<Entity[]>;
+  streamEntities(request?: StreamEntitiesRequest): AsyncIterable<Entity[]>;
   // (undocumented)
   validateEntity(
     _entity: Entity,

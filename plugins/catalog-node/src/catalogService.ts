@@ -146,11 +146,6 @@ export interface CatalogService {
   streamEntities(
     request: StreamEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,
-  ): AsyncIterable<Entity>;
-
-  streamEntityPages(
-    request: StreamEntitiesRequest | undefined,
-    options: CatalogServiceRequestOptions,
   ): AsyncIterable<Entity[]>;
 }
 
@@ -334,18 +329,8 @@ class DefaultCatalogService implements CatalogService {
   async *streamEntities(
     request: StreamEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,
-  ): AsyncIterable<Entity> {
-    yield* this.#catalogApi.streamEntities(
-      request,
-      await this.#getOptions(options),
-    );
-  }
-
-  async *streamEntityPages(
-    request: StreamEntitiesRequest | undefined,
-    options: CatalogServiceRequestOptions,
   ): AsyncIterable<Entity[]> {
-    yield* this.#catalogApi.streamEntityPages(
+    yield* this.#catalogApi.streamEntities(
       request,
       await this.#getOptions(options),
     );

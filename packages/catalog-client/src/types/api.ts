@@ -710,20 +710,6 @@ export interface CatalogApi {
 
   /**
    * Asynchronously streams entities from the catalog. Uses `queryEntities`
-   * to fetch entities in batches, and yields them one by one.
-   *
-   * @public
-   *
-   * @param request - Request parameters
-   * @param options - Additional options
-   */
-  streamEntities(
-    request?: StreamEntitiesRequest,
-    options?: CatalogRequestOptions,
-  ): AsyncIterable<Entity>;
-
-  /**
-   * Asynchronously streams entity pages from the catalog. Uses `queryEntities`
    * to fetch entities in batches, and yields them one page at a time.
    *
    * @public
@@ -731,7 +717,7 @@ export interface CatalogApi {
    * @param request - Request parameters
    * @param options - Additional options
    */
-  streamEntityPages(
+  streamEntities(
     request?: StreamEntitiesRequest,
     options?: CatalogRequestOptions,
   ): AsyncIterable<Entity[]>;

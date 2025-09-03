@@ -91,10 +91,6 @@ export interface CatalogApi {
   streamEntities(
     request?: StreamEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): AsyncIterable<Entity>;
-  streamEntityPages(
-    request?: StreamEntitiesRequest,
-    options?: CatalogRequestOptions,
   ): AsyncIterable<Entity[]>;
   validateEntity(
     entity: Entity,
@@ -179,10 +175,6 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<void>;
   streamEntities(
-    request?: StreamEntitiesRequest,
-    options?: CatalogRequestOptions,
-  ): AsyncIterable<Entity>;
-  streamEntityPages(
     request?: StreamEntitiesRequest,
     options?: CatalogRequestOptions,
   ): AsyncIterable<Entity[]>;

@@ -464,21 +464,6 @@ export class CatalogClient implements CatalogApi {
   async *streamEntities(
     request?: StreamEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): AsyncIterable<Entity> {
-    const pages = this.streamEntityPages(request, options);
-    for await (const page of pages) {
-      for (const entity of page) {
-        yield entity;
-      }
-    }
-  }
-
-  /**
-   * {@inheritdoc CatalogApi.streamEntityPages}
-   */
-  async *streamEntityPages(
-    request?: StreamEntitiesRequest,
-    options?: CatalogRequestOptions,
   ): AsyncIterable<Entity[]> {
     let cursor: string | undefined = undefined;
     const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;

@@ -581,15 +581,6 @@ describe('CatalogClient', () => {
 
     it('should stream entities', async () => {
       const stream = client.streamEntities({}, { token });
-      const results: Entity[] = [];
-      for await (const entity of stream) {
-        results.push(entity);
-      }
-      expect(results).toEqual(defaultResponse.items);
-    });
-
-    it('should stream entity pages', async () => {
-      const stream = client.streamEntityPages({}, { token });
       const results: Entity[][] = [];
       for await (const entityPage of stream) {
         results.push(entityPage);

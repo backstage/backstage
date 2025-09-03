@@ -283,17 +283,6 @@ export class InMemoryCatalogClient implements CatalogApi {
 
   async *streamEntities(
     request?: StreamEntitiesRequest,
-  ): AsyncIterable<Entity> {
-    const pages = this.streamEntityPages(request);
-    for await (const page of pages) {
-      for (const entity of page) {
-        yield entity;
-      }
-    }
-  }
-
-  async *streamEntityPages(
-    request?: StreamEntitiesRequest,
   ): AsyncIterable<Entity[]> {
     let cursor: string | undefined = undefined;
     const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
