@@ -176,11 +176,19 @@ export const TechDocsReaderPageHeader = (
 
   let techdocsTabTitleItems: string[] = [];
 
-  if (path !== '')
+  if (path !== '') {
     techdocsTabTitleItems = removeTrailingSlash(path)
       .split('/')
-      .slice(0, 3)
       .map(normalizeAndSpace);
+
+    if (techdocsTabTitleItems.length > 3) {
+      techdocsTabTitleItems = [
+        techdocsTabTitleItems[0],
+        '...',
+        ...techdocsTabTitleItems.slice(-2),
+      ];
+    }
+  }
 
   const tabTitleItems = [entityDisplayName, ...techdocsTabTitleItems, appTitle];
   const tabTitle = tabTitleItems.join(' | ');

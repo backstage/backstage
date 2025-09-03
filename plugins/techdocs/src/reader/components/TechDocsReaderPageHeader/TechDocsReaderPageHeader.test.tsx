@@ -52,13 +52,11 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
-const mockUseParams = jest.fn();
-mockUseParams.mockReturnValue({ '*': 'foo/bar/baz/' });
-
+let useParamsPath = '/';
 jest.mock('react-router-dom', () => {
   return {
     ...(jest.requireActual('react-router-dom') as any),
-    useParams: () => mockUseParams(),
+    useParams: () => ({ '*': useParamsPath }),
   };
 });
 
@@ -189,6 +187,7 @@ describe('<TechDocsReaderPageHeader />', () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
 
+    useParamsPath = 'foo/bar/baz/';
     await renderInTestApp(
       <Wrapper>
         <TechDocsReaderPageHeader />
@@ -204,6 +203,30 @@ describe('<TechDocsReaderPageHeader />', () => {
     await waitFor(() => {
       expect(document.title).toEqual(
         'Test Entity | Foo | Bar | Baz | Backstage',
+      );
+    });
+  });
+
+  it('The header title is abbreviated if path is too long', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+
+    useParamsPath = 'foo/bar/baz/qux/quux/';
+    await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageHeader />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          '/docs': rootRouteRef,
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(document.title).toEqual(
+        'Test Entity | Foo | ... | Qux | Quux | Backstage',
       );
     });
   });
