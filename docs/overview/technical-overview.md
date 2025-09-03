@@ -6,7 +6,7 @@ description: Technical overview of Backstage
 
 ## Purpose
 
-Backstage is a developer portal that was created at Spotify to simplify end-to-end software development. As they grew, their infrastructure became more fragmented and teams couldn't find the APIs they were supposed to use, or who owned a service, or documentation on anything.
+Backstage is an open source framwork for building developer portals that was created at Spotify to simplify end-to-end software development. As they grew, their infrastructure became more fragmented and teams couldn't find the APIs they were supposed to use, or who owned a service, or documentation on anything.
 
 Backstage is powered by a centralized [software catalog](#software-catalog-system-model) and utilizes an abstraction layer that sits on top of all of your infrastructure and developer tooling, allowing you to manage all of your software, services, tooling, and testing in one place.
 
@@ -61,7 +61,7 @@ The system model behind the software catalog is based on _entities_ and it model
 - `APIs` - Implemented by components and form the boundaries between different components. The API can be either public, restricted, or private.
 - `Resources` - The physical or virtual infrastructure needed to operate a component.
 
-![](../assets/software-catalog/software-model-core-entities.drawio.svg)
+![core entity relationships in the software model](../assets/software-catalog/software-model-core-entities.drawio.svg)
 
 `Organizational Entities` include:
 
@@ -81,8 +81,8 @@ There are three additional items that can be part of the system model:
 
 The following diagram illustrates an example of ecosystem modeling, and provides sample relationships between a domain, system, core entities, and organization entities.
 
-![](../assets/software-catalog/software-model-entities.drawio.svg)
+![ecosystem modeling example](../assets/software-catalog/software-model-entities.drawio.svg)
 
 The following shows an example of viewing all of the components, APIs, and resources that are managed by your group after setting up the relationships to create a group organizational entity.
 
-![](../assets/technical-overview/backstage-ui-group-ownership.png)
+![sample ui showing group ownership](../assets/technical-overview/backstage-ui-group-ownership.png)
