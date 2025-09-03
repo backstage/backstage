@@ -15,13 +15,53 @@
  */
 
 import { NotificationService } from './NotificationService';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  BackstageInstance,
+  DiscoveryService,
+} from '@backstage/backend-plugin-api';
+import { SystemMetadataService } from '@backstage/backend-plugin-api';
+import { BackendFeatureMeta } from '@backstage/backend-plugin-api/alpha';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
+
+function createSystemFeatureDetector(systemMetadata: SystemMetadataService) {
+  let instances: BackstageInstance[] = [];
+  const subscription = systemMetadata.instances().subscribe({
+    next(newInstances) {
+      instances = newInstances;
+    },
+  });
+  return {
+    async hasPlugin(pluginId: string) {
+      const instanceMetas: { items: BackendFeatureMeta[] }[] =
+        await Promise.all(
+          instances.map(async instance => {
+            const instanceMeta = await fetch(
+              `${instance.internalUrl}/.backstage/instanceMetadata/v1/features/installed`,
+            );
+            return instanceMeta.json();
+          }),
+        );
+
+      return instanceMetas.some(instanceMeta =>
+        instanceMeta.items.some(
+          feature => feature.type === 'plugin' && feature.pluginId === pluginId,
+        ),
+      );
+    },
+    close() {
+      subscription.unsubscribe();
+    },
+  };
+}
+
+type SystemFeatureDetector = ReturnType<typeof createSystemFeatureDetector>;
 
 /** @public */
 export type NotificationServiceOptions = {
   auth: AuthService;
   discovery: DiscoveryService;
+  systemMetadata: SystemMetadataService;
 };
 
 /** @public */
@@ -52,15 +92,24 @@ export class DefaultNotificationService implements NotificationService {
   private constructor(
     private readonly discovery: DiscoveryService,
     private readonly auth: AuthService,
+    private readonly featureDetector: SystemFeatureDetector,
   ) {}
 
   static create(
     options: NotificationServiceOptions,
   ): DefaultNotificationService {
-    return new DefaultNotificationService(options.discovery, options.auth);
+    return new DefaultNotificationService(
+      options.discovery,
+      options.auth,
+      createSystemFeatureDetector(options.systemMetadata),
+    );
   }
 
   async send(notification: NotificationSendOptions): Promise<void> {
+    if (!(await this.featureDetector.hasPlugin('notifications'))) {
+      return;
+    }
+
     try {
       const baseUrl = await this.discovery.getBaseUrl('notifications');
       const { token } = await this.auth.getPluginRequestToken({
