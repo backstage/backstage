@@ -25,12 +25,12 @@ import { lazy, Suspense, JSX } from 'react';
 export interface DevToolsRouteBlueprintParams {
   path: string;
   title: string;
-  loader: () => Promise<{ default: () => JSX.Element }> | (() => JSX.Element);
+  loader: () => Promise<{ default: () => JSX.Element }>;
 }
 
 /**
  * Extension blueprint for creating DevTools routes
- * 
+ *
  * @example
  * ```tsx
  * const myDevToolsRoute = DevToolsRouteBlueprint.make({
@@ -41,7 +41,7 @@ export interface DevToolsRouteBlueprintParams {
  *   }
  * });
  * ```
- * 
+ *
  * @alpha
  */
 export const DevToolsRouteBlueprint = createExtensionBlueprint({
@@ -49,23 +49,14 @@ export const DevToolsRouteBlueprint = createExtensionBlueprint({
   attachTo: { id: 'page:devtools', input: 'routes' },
   output: [devToolsRouteDataRef],
   factory(params: DevToolsRouteBlueprintParams) {
-    // Handle both sync and async component loading
-    const Component = typeof params.loader === 'function' 
-      ? (() => {
-          const result = params.loader();
-          if (result instanceof Promise) {
-            // Create a lazy component for async loading
-            return lazy(() => result);
-          } 
-            // Direct component function
-            return result;
-          
-        })()
-      : params.loader;
+    // Create a lazy component for async loading
+    const LazyComponent = lazy(params.loader);
 
-    const children = typeof Component === 'function' 
-      ? <Suspense fallback={<div>Loading...</div>}><Component /></Suspense>
-      : Component;
+    const children = (
+      <Suspense fallback={<div>Loading...</div>}>
+        <LazyComponent />
+      </Suspense>
+    );
 
     return [
       devToolsRouteDataRef({
