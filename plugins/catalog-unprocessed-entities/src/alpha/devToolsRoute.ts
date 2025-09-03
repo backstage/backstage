@@ -15,7 +15,7 @@
  */
 
 import { createElement } from 'react';
-import { DevToolsRouteBlueprint } from '@backstage/plugin-devtools/alpha';
+import { DevToolsRouteBlueprint } from '@backstage/plugin-devtools-react';
 
 /**
  * DevTools route extension for catalog unprocessed entities

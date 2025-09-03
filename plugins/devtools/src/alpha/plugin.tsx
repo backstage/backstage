@@ -31,7 +31,7 @@ import {
 } from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
-import { devToolsRouteDataRef } from './devToolsRouteDataRef';
+import { devToolsRouteDataRef } from '@backstage/plugin-devtools-react';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({

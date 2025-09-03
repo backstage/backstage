@@ -23,7 +23,7 @@ import { ConfigContent } from '../Content/ConfigContent';
 import { DevToolsLayout } from '../DevToolsLayout';
 import { InfoContent } from '../Content/InfoContent';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { DevToolsRouteData } from '../../alpha/devToolsRouteDataRef';
+import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
 
 export interface DefaultDevToolsPageProps {
   extensionRoutes?: DevToolsRouteData[];

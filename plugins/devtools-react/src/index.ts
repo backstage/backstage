@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { useOutlet } from 'react-router-dom';
-import { DefaultDevToolsPage } from '../DefaultDevToolsPage';
-import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
-
-export interface DevToolsPageProps {
-  extensionRoutes?: DevToolsRouteData[];
-}
-
-export const DevToolsPage = ({ extensionRoutes }: DevToolsPageProps) => {
-  const outlet = useOutlet();
-
-  return (
-    <>{outlet || <DefaultDevToolsPage extensionRoutes={extensionRoutes} />}</>
-  );
-};
+/**
+ * Web library for the devtools plugin.
+ *
+ * @packageDocumentation
+ */
+export {
+  type DevToolsRouteData,
+  devToolsRouteDataRef,
+} from './devToolsRouteDataRef';
+export {
+  type DevToolsRouteBlueprintParams,
+  DevToolsRouteBlueprint,
+} from './devToolsRouteBlueprint.tsx';
