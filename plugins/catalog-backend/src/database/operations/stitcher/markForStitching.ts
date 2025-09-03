@@ -20,6 +20,11 @@ import { v4 as uuid } from 'uuid';
 import { StitchingStrategy } from '../../../stitching/types';
 import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
 
+const UPDATE_CHUNK_SIZE = 100; // Smaller chunks reduce contention
+const DEADLOCK_SQLSTATE = '40P01';
+const DEADLOCK_RETRY_ATTEMPTS = 3;
+const DEADLOCK_BASE_DELAY_MS = 25;
+
 /**
  * Marks a number of entities for stitching some time in the near
  * future.
@@ -32,9 +37,9 @@ export async function markForStitching(options: {
   entityRefs?: Iterable<string>;
   entityIds?: Iterable<string>;
 }): Promise<void> {
-  // Splitting to chunks just to cover pathological cases that upset the db
-  const entityRefs = split(options.entityRefs);
-  const entityIds = split(options.entityIds);
+  // Sort inputs to ensure consistent lock order across concurrent writers
+  const entityRefs = split(options.entityRefs, true);
+  const entityIds = split(options.entityIds, true);
   const knex = options.knex;
   const mode = options.strategy.mode;
 
@@ -51,13 +56,15 @@ export async function markForStitching(options: {
             .select('entity_id')
             .whereIn('entity_ref', chunk),
         );
-      await knex
-        .table<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'force-stitching',
-          next_update_at: knex.fn.now(),
-        })
-        .whereIn('entity_ref', chunk);
+      await retryOnDeadlock(async () => {
+        await knex
+          .table<DbRefreshStateRow>('refresh_state')
+          .update({
+            result_hash: 'force-stitching',
+            next_update_at: knex.fn.now(),
+          })
+          .whereIn('entity_ref', chunk);
+      });
     }
 
     for (const chunk of entityIds) {
@@ -67,44 +74,81 @@ export async function markForStitching(options: {
           hash: 'force-stitching',
         })
         .whereIn('entity_id', chunk);
-      await knex
-        .table<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'force-stitching',
-          next_update_at: knex.fn.now(),
-        })
-        .whereIn('entity_id', chunk);
+      await retryOnDeadlock(async () => {
+        await knex
+          .table<DbRefreshStateRow>('refresh_state')
+          .update({
+            result_hash: 'force-stitching',
+            next_update_at: knex.fn.now(),
+          })
+          .whereIn('entity_id', chunk);
+      });
     }
   } else if (mode === 'deferred') {
     // It's OK that this is shared across refresh state rows; it just needs to
     // be uniquely generated for every new stitch request.
     const ticket = uuid();
 
+    // Update by primary key in deterministic order to avoid deadlocks
     for (const chunk of entityRefs) {
-      await knex<DbRefreshStateRow>('refresh_state')
-        .update({
-          next_stitch_at: knex.fn.now(),
-          next_stitch_ticket: ticket,
-        })
-        .whereIn('entity_ref', chunk);
+      await retryOnDeadlock(async () => {
+        await knex<DbRefreshStateRow>('refresh_state')
+          .update({
+            next_stitch_at: knex.fn.now(),
+            next_stitch_ticket: ticket,
+          })
+          .whereIn('entity_ref', chunk);
+      });
     }
 
     for (const chunk of entityIds) {
-      await knex<DbRefreshStateRow>('refresh_state')
-        .update({
-          next_stitch_at: knex.fn.now(),
-          next_stitch_ticket: ticket,
-        })
-        .whereIn('entity_id', chunk);
+      // Ensure ids are sorted for deterministic lock order
+
+      await retryOnDeadlock(async () => {
+        await knex<DbRefreshStateRow>('refresh_state')
+          .update({
+            next_stitch_at: knex.fn.now(),
+            next_stitch_ticket: ticket,
+          })
+          .whereIn('entity_id', chunk);
+      });
     }
   } else {
     throw new Error(`Unknown stitching strategy mode ${mode}`);
   }
 }
 
-function split(input: Iterable<string> | undefined): string[][] {
+function split(input: Iterable<string> | undefined, sort = false): string[][] {
   if (!input) {
     return [];
   }
-  return splitToChunks(Array.isArray(input) ? input : [...input], 200);
+  const array = Array.isArray(input) ? input.slice() : [...input];
+  if (sort) {
+    array.sort();
+  }
+  return splitToChunks(array, UPDATE_CHUNK_SIZE);
+}
+
+async function retryOnDeadlock<T>(
+  fn: () => Promise<T>,
+  retries = DEADLOCK_RETRY_ATTEMPTS,
+  baseMs = DEADLOCK_BASE_DELAY_MS,
+): Promise<T> {
+  let attempt = 0;
+  for (;;) {
+    try {
+      return await fn();
+    } catch (e: any) {
+      if (e?.code === DEADLOCK_SQLSTATE && attempt < retries) {
+        await sleep(baseMs * Math.pow(2, attempt));
+        attempt++;
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
