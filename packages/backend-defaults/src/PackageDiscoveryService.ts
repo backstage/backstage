@@ -137,6 +137,10 @@ export class PackageDiscoveryService {
         if (isError(error) && error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
           continue; // Skip packages that don't export package.json - they can't be Backstage packages
         }
+        // Handle packages that cannot be found (e.g., optional dependencies)
+        if (isError(error) && error.code === 'MODULE_NOT_FOUND') {
+          continue; // Skip packages that are not available
+        }
         throw error;
       }
       if (
