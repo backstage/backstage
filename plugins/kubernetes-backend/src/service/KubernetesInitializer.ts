@@ -183,8 +183,9 @@ export class KubernetesInitializer {
 
   async init() {
     const fetcher =
-      (await this.opts.fetcher?.({ getDefault: this.defaultFetcher })) ??
-      (await this.defaultFetcher());
+      (await this.opts.fetcher?.({
+        getDefault: () => this.defaultFetcher(),
+      })) ?? (await this.defaultFetcher());
 
     const authStrategyMap =
       this.opts.authStrategyMap ?? (await this.defaultAuthStrategy());
