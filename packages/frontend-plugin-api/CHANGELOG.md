@@ -1,5 +1,13 @@
 # @backstage/frontend-plugin-api
 
+## 0.11.1-next.0
+
+### Patch Changes
+
+- 2fb8b04: Improved the types of `createFrontendPlugin` and `createFrontendModule` so that errors due to incompatible options are indicated more clearly.
+- Updated dependencies
+  - @backstage/core-components@0.17.6-next.0
+
 ## 0.11.0
 
 ### Minor Changes

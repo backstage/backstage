@@ -1,5 +1,12 @@
 # @backstage/backend-openapi-utils
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
 ## 0.6.0
 
 ### Minor Changes

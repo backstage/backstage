@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.17.6-next.0
+
+### Patch Changes
+
+- e409bec: Fixes for rendering initials in the avatar component.
+
 ## 0.17.5
 
 ### Patch Changes
