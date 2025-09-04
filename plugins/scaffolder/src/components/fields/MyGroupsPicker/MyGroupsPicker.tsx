@@ -162,7 +162,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   );
 };
 
-function asArray(catalogFilter: any): any[] {
+function asArray(catalogFilter: MyGroupsPickerUiOptions['catalogFilter']) {
   if (catalogFilter) {
     return Array.isArray(catalogFilter) ? catalogFilter : [catalogFilter];
   }
