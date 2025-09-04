@@ -38,7 +38,7 @@ Backstage includes the following set of core features:
 
 ## Plugin Architecture Overview
 
-Plugins are client side applications which mount themselves on the Backstage UI. They allow you to incorporate a wide variety of infrastructure and software development tools into your Backstage application. Backstage uses a plugin-architecture to provide a consistent user experience, in a single UI, around all of your plugins.
+Plugins are client side applications which mount themselves on the Backstage UI. They allow you to incorporate a wide variety of infrastructure and software development tools into your Backstage application. Backstage uses a [plugin-architecture](../overview/architecture-overview.md#plugin-architecture) to provide a consistent user experience, in a single UI, around all of your plugins.
 
 The Backstage architecture supports three types of plugins:
 
@@ -46,11 +46,11 @@ The Backstage architecture supports three types of plugins:
 - Service backed - makes API requests to a service within the ecosystem of the organization running Backstage.
 - Third-party backed - similar to service-backed, but the service backing the plugin is hosted outside of the ecosystem of the company hosting Backstage.
 
-Many of the features available in Backstage are provided by plugins. For example, the Software Catalog is a service backed plugin. When you view the catalog, it retrieves a set of services ("[entities](../references/glossary.md#entity)") from the Backstage Backend service and renders them in a table in the UI for you.
+Many of the features available in Backstage are provided by plugins. For example, the Software Catalog is a service backed plugin. When you view the catalog, it retrieves a set of services ("[entities](#software-catalog-system-model)") from the Backstage Backend service and renders them in a table in the UI for you.
 
 ## Software Catalog System Model
 
-The system model behind the software catalog is based on _entities_ and it models two main types:
+The system model behind the software catalog is based on [_entities_](../references/glossary.md#entity) and it models two main types:
 
 - Core Entities
 - Organizational Entities
