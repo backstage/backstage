@@ -21,7 +21,11 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import TextField from '@material-ui/core/TextField';
-import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
+import {
+  MyGroupsPickerProps,
+  MyGroupsPickerSchema,
+  MyGroupsPickerUiOptions,
+} from './schema';
 import Autocomplete, {
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
