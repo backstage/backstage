@@ -57,10 +57,10 @@ description: Documentation landing page.
     </td>
     <td valign='top'><i>Additional Backstage Features</i><br><br>
       <ul>
-        <li>Search</li>
-        <li>Software Catalog</li>
-        <li>Scaffolder</li>
-        <li>TechDocs</li>
+        <li><a href='https://backstage.io/docs/features/search/'>Search</a></li>
+        <li><a href='https://backstage.io/docs/features/software-catalog/'>Software Catalog</a></li>
+        <li><a href='https://backstage.io/docs/features/software-templates/'>Software Templates (aka Scaffolder)</a></li>
+        <li><a href='https://backstage.io/docs/features/techdocs/'>TechDocs</a></li>
       </ul>
     </td>
   </tr>
@@ -77,32 +77,32 @@ description: Documentation landing page.
   <tr>
     <td valign='top'><i>Creating and Configuring Plugins</i><br><br>
       <ul>
-        <li>Introduction to Plugins</li>
-        <li>Create a Backstage Plugin</li>
-        <li>Plugin Development</li>
-        <li>Integrating a Plugin into the Software Catalog</li>
-        <li>Integrating Search into a Plugin</li>
-        <li>Defining Configuration for your Plugin</li>
-        <li>Tutorial: using Permissions in your Plugin</li>
-        <li>Plugin Analytics</li>
+        <li><a href='https://backstage.io/docs/plugins/'>Introduction to Plugins</a></li>
+        <li><a href='https://backstage.io/docs/plugins/create-a-plugin'>Create a Backstage Plugin</a></li>
+        <li><a href='https://backstage.io/docs/plugins/plugin-development'>Plugin Development</a></li>
+        <li><a href='https://backstage.io/docs/plugins/integrating-plugin-into-software-catalog'>Integrating a Plugin into the Software Catalog</a></li>
+        <li><a href='https://backstage.io/docs/plugins/integrating-search-into-plugins'>Integrating Search into a Plugin</a></li>
+        <li><a href='https://backstage.io/docs/conf/defining'>Defining Configuration for your Plugin</a></li>
+        <li><a href='https://backstage.io/docs/permissions/plugin-authors/01-setup'>Tutorial: using Permissions in your Plugin</a></li>
+        <li><a href='https://backstage.io/docs/plugins/analytics'>Plugin Analytics</a></li>
       </ul>
     </td>
     <td valign='top'><i>Glossary, FAQ, and other reference material.</i><br>
       <ul>
-        <li>Glossary</li>
-        <li>Designing for Backstage</li>
-        <li>Architecture Decision Records (ADRs)</li>
-        <li>Deprecations</li>
-        <li>Utility APIs</li>
-        <li>Package Index</li>
-        <li>FAQ</li>
+        <li><a href='https://backstage.io/docs/references/glossary'>Glossary</a></li>
+        <li><a href='https://backstage.io/docs/dls/design'>Designing for Backstage</a></li>
+        <li><a href='https://backstage.io/docs/architecture-decisions/'>Architecture Decision Records (ADRs)</a></li>
+        <li><a href='https://backstage.io/docs/api/deprecations'>Deprecations</a></li>
+        <li><a href='https://backstage.io/docs/api/utility-apis'>Utility APIs</a></li>
+        <li><a href='https://backstage.io/docs/reference/'>Package Index</a></li>
+        <li><a href='https://backstage.io/docs/faq/'>FAQ</a></li>
       </ul>
     </td>
     <td valign='top'><i>Contributions are welcome and greatly appreciated!</i><br>
       <ul>
-        <li>Contributor's Guide</li>
-        <li>Getting Involved</li>
-        <li>Backstage Project Structure</li>
+        <li><a href='https://backstage.io/docs/contribute/'>Contributor's Guide</a></li>
+        <li><a href='https://backstage.io/docs/contribute/getting-involved'>Getting Involved</a></li>
+        <li><a href=https://backstage.io/docs/contribute/project-structure'>Backstage Project Structure</a></li>
       </ul>
     </td>
   </tr>
