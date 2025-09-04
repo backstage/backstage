@@ -21,9 +21,24 @@ import { StitchingStrategy } from '../../../stitching/types';
 import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
 
 const UPDATE_CHUNK_SIZE = 100; // Smaller chunks reduce contention
-const DEADLOCK_SQLSTATE = '40P01';
 const DEADLOCK_RETRY_ATTEMPTS = 3;
 const DEADLOCK_BASE_DELAY_MS = 25;
+
+// PostgreSQL deadlock error code
+const POSTGRES_DEADLOCK_SQLSTATE = '40P01';
+
+/**
+ * Checks if the given error is a deadlock error for the database engine in use.
+ */
+function isDeadlockError(knex: Knex | Knex.Transaction, e: unknown): boolean {
+  if (knex.client.config.client.includes('pg')) {
+    // PostgreSQL deadlock detection
+    return (e as any)?.code === POSTGRES_DEADLOCK_SQLSTATE;
+  }
+
+  // Add more database engine checks here as needed
+  return false;
+}
 
 /**
  * Marks a number of entities for stitching some time in the near
@@ -37,9 +52,8 @@ export async function markForStitching(options: {
   entityRefs?: Iterable<string>;
   entityIds?: Iterable<string>;
 }): Promise<void> {
-  // Sort inputs to ensure consistent lock order across concurrent writers
-  const entityRefs = split(options.entityRefs, true);
-  const entityIds = split(options.entityIds, true);
+  const entityRefs = sortSplit(options.entityRefs);
+  const entityIds = sortSplit(options.entityIds);
   const knex = options.knex;
   const mode = options.strategy.mode;
 
@@ -64,7 +78,7 @@ export async function markForStitching(options: {
             next_update_at: knex.fn.now(),
           })
           .whereIn('entity_ref', chunk);
-      });
+      }, knex);
     }
 
     for (const chunk of entityIds) {
@@ -82,7 +96,7 @@ export async function markForStitching(options: {
             next_update_at: knex.fn.now(),
           })
           .whereIn('entity_id', chunk);
-      });
+      }, knex);
     }
   } else if (mode === 'deferred') {
     // It's OK that this is shared across refresh state rows; it just needs to
@@ -98,12 +112,10 @@ export async function markForStitching(options: {
             next_stitch_ticket: ticket,
           })
           .whereIn('entity_ref', chunk);
-      });
+      }, knex);
     }
 
     for (const chunk of entityIds) {
-      // Ensure ids are sorted for deterministic lock order
-
       await retryOnDeadlock(async () => {
         await knex<DbRefreshStateRow>('refresh_state')
           .update({
@@ -111,26 +123,25 @@ export async function markForStitching(options: {
             next_stitch_ticket: ticket,
           })
           .whereIn('entity_id', chunk);
-      });
+      }, knex);
     }
   } else {
     throw new Error(`Unknown stitching strategy mode ${mode}`);
   }
 }
 
-function split(input: Iterable<string> | undefined, sort = false): string[][] {
+function sortSplit(input: Iterable<string> | undefined): string[][] {
   if (!input) {
     return [];
   }
   const array = Array.isArray(input) ? input.slice() : [...input];
-  if (sort) {
-    array.sort();
-  }
+  array.sort();
   return splitToChunks(array, UPDATE_CHUNK_SIZE);
 }
 
 async function retryOnDeadlock<T>(
   fn: () => Promise<T>,
+  knex: Knex | Knex.Transaction,
   retries = DEADLOCK_RETRY_ATTEMPTS,
   baseMs = DEADLOCK_BASE_DELAY_MS,
 ): Promise<T> {
@@ -139,7 +150,7 @@ async function retryOnDeadlock<T>(
     try {
       return await fn();
     } catch (e: any) {
-      if (e?.code === DEADLOCK_SQLSTATE && attempt < retries) {
+      if (isDeadlockError(knex, e) && attempt < retries) {
         await sleep(baseMs * Math.pow(2, attempt));
         attempt++;
         continue;

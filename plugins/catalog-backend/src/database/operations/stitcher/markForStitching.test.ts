@@ -436,14 +436,10 @@ describe('markForStitching', () => {
     },
   );
 
-  const deadlockTestDatabases = TestDatabases.create({
-    ids: ['POSTGRES_17', 'POSTGRES_16', 'SQLITE_3'],
-    disableDocker: false,
-  });
-  it.each(deadlockTestDatabases.eachSupportedId())(
+  it.each(databases.eachSupportedId())(
     'reproduces deadlock scenario when concurrent transactions update overlapping entity sets %p',
     async databaseId => {
-      const knex = await deadlockTestDatabases.init(databaseId);
+      const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
       // Setup test data with multiple entities
@@ -559,7 +555,7 @@ describe('markForStitching', () => {
             error?.message?.includes('deadlock detected') ||
             error?.message?.includes('deadlock'),
         );
-      expect(deadlockErrors.length).toEqual(0);
+      expect(deadlockErrors).toEqual([]);
 
       // Verify final state - all entities should have been marked for stitching
       const finalState = await knex<DbRefreshStateRow>('refresh_state')
