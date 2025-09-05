@@ -23,7 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ALL_RELATIONS } from '../../types';
+import { ALL_RELATIONS } from '../../lib/types';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';

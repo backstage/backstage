@@ -291,6 +291,7 @@ export namespace DependencyGraphTypes {
     from: string;
     to: string;
     label?: string;
+    distance?: number;
   };
   export type DependencyNode<T = {}> = T & {
     id: string;

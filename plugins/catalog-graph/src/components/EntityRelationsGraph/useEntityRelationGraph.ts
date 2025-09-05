@@ -106,13 +106,15 @@ export function useEntityRelationGraph({
     requestEntities,
   ]);
 
-  const filteredEntities = useMemo(
-    () =>
-      entityFilter
-        ? pickBy(entities, (value, _key) => entityFilter(value))
-        : entities,
-    [entities, entityFilter],
-  );
+  const filteredEntities = useMemo(() => {
+    if (loading) {
+      return {};
+    }
+
+    return entityFilter
+      ? pickBy(entities, (value, _key) => entityFilter(value))
+      : entities;
+  }, [loading, entities, entityFilter]);
 
   return {
     entities: filteredEntities,

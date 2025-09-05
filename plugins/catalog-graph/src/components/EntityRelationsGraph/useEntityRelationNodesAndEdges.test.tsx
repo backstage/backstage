@@ -29,7 +29,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { filter, keyBy } from 'lodash';
 import { useEntityRelationGraph as useEntityRelationGraphMocked } from './useEntityRelationGraph';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
-import { EntityNode } from './types';
+import { EntityNode } from '../../lib/types';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
 jest.mock('./useEntityRelationGraph');
@@ -256,24 +256,21 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
         to: 'k:d/a1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
         to: 'b:d/c1',
       },
       {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
-        to: 'k:d/a1',
-      },
-      {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
@@ -333,52 +330,25 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF],
         to: 'k:d/a1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c1',
       },
       {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: [RELATION_PART_OF],
-        to: 'b:d/c',
-      },
-      {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: [RELATION_OWNER_OF],
-        to: 'k:d/a1',
-      },
-      {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c2',
-      },
-      {
-        from: 'b:d/c2',
-        label: 'visible',
-        relations: [RELATION_PART_OF],
-        to: 'b:d/c1',
-      },
-      {
-        from: 'k:d/a1',
-        label: 'visible',
-        relations: [RELATION_OWNED_BY],
-        to: 'b:d/c',
-      },
-      {
-        from: 'k:d/a1',
-        label: 'visible',
-        relations: [RELATION_OWNED_BY],
-        to: 'b:d/c1',
       },
     ]);
   });
@@ -434,24 +404,28 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
         to: 'k:d/a1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
         to: 'b:d/c1',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
         to: 'k:d/a1',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
@@ -511,48 +485,56 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF],
         to: 'k:d/a1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c1',
       },
       {
+        distance: 1,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_PART_OF],
         to: 'b:d/c',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_OWNER_OF],
         to: 'k:d/a1',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c2',
       },
       {
+        distance: 2,
         from: 'b:d/c2',
         label: 'visible',
         relations: [RELATION_PART_OF],
         to: 'b:d/c1',
       },
       {
+        distance: 1,
         from: 'k:d/a1',
         label: 'visible',
         relations: [RELATION_OWNED_BY],
         to: 'b:d/c',
       },
       {
+        distance: 2,
         from: 'k:d/a1',
         label: 'visible',
         relations: [RELATION_OWNED_BY],
@@ -610,24 +592,21 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
-        from: 'b:d/c1',
+        distance: 1,
+        from: 'b:d/c2',
         label: 'visible',
-        relations: ['hasPart', 'partOf'],
-        to: 'b:d/c2',
+        relations: ['partOf', 'hasPart'],
+        to: 'b:d/c1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: ['hasPart', 'partOf'],
         to: 'b:d/c1',
       },
       {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: ['ownerOf', 'ownedBy'],
-        to: 'k:d/a1',
-      },
-      {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: ['ownerOf', 'ownedBy'],
@@ -686,6 +665,7 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
@@ -738,12 +718,14 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
         to: 'b:d/c1',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],

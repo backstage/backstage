@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useMemo, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
-import { RelationPairs } from '../../types';
-import { EntityEdge, EntityNode } from './types';
+import { RelationPairs } from '../../lib/types';
+import { EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { useRelations } from '../../hooks/useRelations';
+import { buildGraph } from '../../lib/graph';
+import {
+  builtInTransformers,
+  TransformerContext,
+} from '../../lib/graph-transformations';
 
 /**
  * Generate nodes and edges to render the entity graph.
@@ -69,6 +74,11 @@ export function useEntityRelationNodesAndEdges({
     relationPairs: incomingRelationPairs,
   });
 
+  const forwardRelations = useMemo(
+    () => relationPairs.map(pair => pair[0]),
+    [relationPairs],
+  );
+
   useDebounce(
     () => {
       if (!entities || Object.keys(entities).length === 0) {
@@ -98,141 +108,46 @@ export function useEntityRelationNodesAndEdges({
         return node;
       });
 
-      const edges: EntityEdge[] = [];
-      const visitedNodes = new Set<string>();
-      const nodeQueue = [...rootEntityRefs];
+      const edges = buildGraph({
+        rootEntityRefs,
+        entities,
+        includeRelation,
+        kinds,
+        mergeRelations,
+        relationPairs,
+        unidirectional,
+      });
 
-      const hasEdge = (
-        fromRef: string,
-        toRef: string,
-        relation: [string, string?],
-      ): boolean => {
-        return edges.some(
-          edge =>
-            fromRef === edge.from &&
-            toRef === edge.to &&
-            edge.relations.some(
-              rel => rel[0] === relation[0] && rel[1] === relation[1],
-            ),
-        );
+      const transformerContext: TransformerContext = {
+        nodeDistances: new Map(),
+        edges,
+
+        rootEntityRefs,
+        unidirectional,
+        maxDepth,
+        forwardRelations,
       };
-
-      while (nodeQueue.length > 0) {
-        const entityRef = nodeQueue.pop()!;
-        const entity = entities[entityRef];
-        visitedNodes.add(entityRef);
-
-        if (entity) {
-          entity?.relations?.forEach(rel => {
-            // Check if the related entity should be displayed, if not, ignore
-            // the relation too
-            if (!entities[rel.targetRef]) {
-              return;
-            }
-
-            if (!includeRelation(rel.type)) {
-              return;
-            }
-
-            if (
-              kinds &&
-              !kinds.some(kind =>
-                rel.targetRef.startsWith(`${kind.toLocaleLowerCase('en-US')}:`),
-              )
-            ) {
-              return;
-            }
-
-            if (mergeRelations) {
-              const pair = relationPairs.find(
-                ([l, r]) => l === rel.type || r === rel.type,
-              ) ?? [rel.type];
-              const [left] = pair;
-              const from = left === rel.type ? entityRef : rel.targetRef;
-              const to = left === rel.type ? rel.targetRef : entityRef;
-              if (!unidirectional || !hasEdge(from, to, pair)) {
-                edges.push({
-                  from,
-                  to,
-                  relations: pair,
-                  label: 'visible',
-                });
-              }
-            } else {
-              if (
-                !unidirectional ||
-                !hasEdge(entityRef, rel.targetRef, [rel.type])
-              ) {
-                edges.push({
-                  from: entityRef,
-                  to: rel.targetRef,
-                  relations: [rel.type],
-                  label: 'visible',
-                });
-              }
-            }
-
-            if (!visitedNodes.has(rel.targetRef)) {
-              nodeQueue.push(rel.targetRef);
-              visitedNodes.add(rel.targetRef);
-            }
-
-            // if unidirectional add missing relations as entities are only visited once
-            if (unidirectional) {
-              const findIndex = edges.findIndex(
-                edge =>
-                  entityRef === edge.from &&
-                  rel.targetRef === edge.to &&
-                  !edge.relations.includes(rel.type),
-              );
-              if (findIndex >= 0) {
-                if (mergeRelations) {
-                  const pair = relationPairs.find(
-                    ([l, r]) => l === rel.type || r === rel.type,
-                  ) ?? [rel.type];
-                  edges[findIndex].relations = [
-                    ...edges[findIndex].relations,
-                    ...pair,
-                  ];
-                } else {
-                  edges[findIndex].relations = [
-                    ...edges[findIndex].relations,
-                    rel.type,
-                  ];
-                }
-              }
-            }
-          });
-        }
+      builtInTransformers['reduce-edges'](transformerContext);
+      builtInTransformers['set-distances'](transformerContext);
+      if (unidirectional) {
+        builtInTransformers['order-forward'](transformerContext);
+        builtInTransformers['strip-distant-edges'](transformerContext);
+      }
+      if (mergeRelations || unidirectional) {
+        // Merge relations even if only unidirectional, the next transformer
+        // 'remove-backward-edges' needs to know about all relations before it
+        // strips away the backward ones
+        builtInTransformers['merge-relations'](transformerContext);
+      }
+      if (unidirectional && !mergeRelations) {
+        builtInTransformers['remove-backward-edges'](transformerContext);
       }
 
-      // Reduce edges as the dependency graph anyway ignores duplicated edges regarding from / to
-      // Additionally, this will improve rendering speed for the dependency graph
-      const finalEdges = edges.reduce((previousEdges, currentEdge) => {
-        const indexFound = previousEdges.findIndex(
-          previousEdge =>
-            previousEdge.from === currentEdge.from &&
-            previousEdge.to === currentEdge.to,
-        );
-        if (indexFound >= 0) {
-          previousEdges[indexFound] = {
-            ...previousEdges[indexFound],
-            relations: Array.from(
-              new Set([
-                ...previousEdges[indexFound].relations,
-                ...currentEdge.relations,
-              ]),
-            ),
-          };
-          return previousEdges;
-        }
-        return [...previousEdges, currentEdge];
-      }, [] as EntityEdge[]);
-
-      setNodesAndEdges({ nodes, edges: finalEdges });
+      setNodesAndEdges({ nodes, edges: transformerContext.edges });
     },
     100,
     [
+      maxDepth,
       entities,
       rootEntityRefs,
       kinds,
@@ -241,6 +156,7 @@ export function useEntityRelationNodesAndEdges({
       mergeRelations,
       onNodeClick,
       relationPairs,
+      forwardRelations,
     ],
   );
 

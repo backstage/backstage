@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 
-export { ALL_RELATIONS, ALL_RELATION_PAIRS } from './relations';
-export type { RelationPairs } from './relations';
+import { EntityEdge } from '../types';
+
+export interface TransformerContext {
+  /**
+   * The distance from an entity node to a root entity
+   *
+   * NOTE: This is not set until the setDistances transformation is applied
+   */
+  nodeDistances: Map<string, number>;
+
+  edges: EntityEdge[];
+
+  // Options:
+  rootEntityRefs: string[];
+  unidirectional: boolean;
+  maxDepth: number;
+  forwardRelations: string[];
+}
+
+export type GraphTransformer = (options: TransformerContext) => void;

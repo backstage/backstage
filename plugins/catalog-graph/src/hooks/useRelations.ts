@@ -19,7 +19,7 @@ import { useCallback, useMemo } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { catalogGraphApiRef } from '../api';
-import { RelationPairs } from '../types';
+import { RelationPairs } from '../lib/types';
 
 export interface UseRelationsOptions {
   relations?: string[];
@@ -30,6 +30,7 @@ export interface UseRelationsResult {
   relations: string[];
   relationPairs: RelationPairs;
   defaultRelations: string[];
+  relationsToInclude: string[];
   includeRelation: (type: string) => boolean;
 }
 
@@ -48,15 +49,13 @@ export function useRelations(
 
   const relations = opts.relations ?? knownRelations;
   const relationPairs = opts.relationPairs ?? knownRelationPairs;
+  const relationsToInclude = opts.relations ?? defaultRelations;
 
   const includeRelation = useCallback(
     (type: string) => {
-      if (opts.relations) {
-        return opts.relations.includes(type);
-      }
-      return defaultRelations.includes(type);
+      return relationsToInclude.includes(type);
     },
-    [opts.relations, defaultRelations],
+    [relationsToInclude],
   );
 
   return useMemo(
@@ -64,8 +63,15 @@ export function useRelations(
       relations,
       relationPairs,
       defaultRelations,
+      relationsToInclude,
       includeRelation,
     }),
-    [relations, relationPairs, defaultRelations, includeRelation],
+    [
+      relations,
+      relationPairs,
+      defaultRelations,
+      relationsToInclude,
+      includeRelation,
+    ],
   );
 }

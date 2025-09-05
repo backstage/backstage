@@ -32,13 +32,12 @@ import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
-  Direction,
-  EntityNode,
   EntityRelationsGraph,
   EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { catalogGraphTranslationRef } from '../../translation';
+import { Direction, EntityNode } from '../../lib/types';
 
 /** @public */
 export type CatalogGraphCardClassKey = 'card' | 'graph';

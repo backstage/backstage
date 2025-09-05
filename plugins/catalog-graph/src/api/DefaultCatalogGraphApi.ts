@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ALL_RELATION_PAIRS, ALL_RELATIONS, RelationPairs } from '../types';
+import { ALL_RELATION_PAIRS, ALL_RELATIONS, RelationPairs } from '../lib/types';
 import {
   CatalogGraphApi,
   DefaultRelations,

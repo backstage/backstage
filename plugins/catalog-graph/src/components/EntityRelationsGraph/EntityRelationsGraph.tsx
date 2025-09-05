@@ -30,8 +30,8 @@ import classNames from 'classnames';
 import { MouseEvent, useEffect, useMemo } from 'react';
 import { DefaultRenderLabel } from './DefaultRenderLabel';
 import { DefaultRenderNode } from './DefaultRenderNode';
-import { RelationPairs } from '../../types';
-import { Direction, EntityEdge, EntityNode } from './types';
+import { RelationPairs } from '../../lib/types';
+import { Direction, EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
 /** @public */
