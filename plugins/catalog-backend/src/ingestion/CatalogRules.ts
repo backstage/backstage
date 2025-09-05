@@ -26,14 +26,17 @@ import { minimatch } from 'minimatch';
  * An undefined list of matchers means match all, an empty list of matchers means match none.
  */
 export type CatalogRule = {
-  allow: Array<{
-    kind: string;
-  }>;
+  allow: CatalogRuleAllow[];
   locations?: Array<{
     exact?: string;
     type: string;
     pattern?: string;
   }>;
+};
+
+type CatalogRuleAllow = {
+  kind: string;
+  type?: string;
 };
 
 /**
@@ -78,6 +81,9 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
    * catalog:
    *   rules:
    *   - allow: [Component, API]
+   *   - allow:
+   *     - kind: Resource
+   *       type: database
    *   - allow: [Template]
    *     locations:
    *       - type: url
@@ -105,7 +111,14 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       const globalRules = config
         .getConfigArray('catalog.rules')
         .map(ruleConf => ({
-          allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
+          allow: ruleConf
+            .get<Array<string | CatalogRuleAllow>>('allow')
+            .map(kindOrObject => {
+              if (typeof kindOrObject === 'string') {
+                return { kind: kindOrObject };
+              }
+              return kindOrObject;
+            }),
           locations: ruleConf
             .getOptionalConfigArray('locations')
             ?.map(locationConfig => {
@@ -199,13 +212,17 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     return false;
   }
 
-  private matchEntity(entity: Entity, matchers?: { kind: string }[]): boolean {
+  private matchEntity(entity: Entity, matchers?: CatalogRuleAllow[]): boolean {
     if (!matchers) {
       return true;
     }
 
     for (const matcher of matchers) {
-      if (entity?.kind?.toLowerCase() !== matcher.kind.toLowerCase()) {
+      if (entity.kind?.toLowerCase() !== matcher.kind.toLowerCase()) {
+        continue;
+      }
+
+      if (matcher.type && matcher.type !== entity.spec?.type) {
         continue;
       }
 
