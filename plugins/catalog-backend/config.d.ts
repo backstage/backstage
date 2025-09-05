@@ -38,8 +38,11 @@ export interface Config {
        * Allow entities of these particular kinds.
        *
        * E.g. ["Component", "API", "Template", "Location"]
+       *
+       * You can also specify the type of the entity by using an object with `kind` and optional `type` properties.
+       * E.g. [{ kind: "Component", type: "service" }]
        */
-      allow: Array<string>;
+      allow: Array<string | { kind: string; type?: string }>;
       /**
        * Limit this rule to a specific location
        *
