@@ -70,7 +70,7 @@ export function compileAjvSchema(
   const extraSchemas = getExtraSchemas(schema);
   const ajv = new Ajv({
     allowUnionTypes: true,
-    allErrors: true,
+    allErrors: process.env.NODE_ENV !== 'production',
     validateSchema: true,
   });
   if (extraSchemas.length) {

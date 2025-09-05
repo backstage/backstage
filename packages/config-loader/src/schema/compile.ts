@@ -52,7 +52,7 @@ export function compileConfigSchemas(
   const deprecationByDataPath = new Map<string, string>();
 
   const ajv = new Ajv({
-    allErrors: true,
+    allErrors: process.env.NODE_ENV !== 'production',
     allowUnionTypes: true,
     coerceTypes: true,
     schemas: {

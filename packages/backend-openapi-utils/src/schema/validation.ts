@@ -24,7 +24,7 @@ import { RequestBodyParser } from './request-body-validation';
 import { mockttpToFetchRequest, mockttpToFetchResponse } from './utils';
 import { ResponseBodyParser } from './response-body-validation';
 
-const ajv = new Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: process.env.NODE_ENV !== 'production' });
 
 class RequestBodyValidator implements Validator {
   schema: OpenAPIObject;
