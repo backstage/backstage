@@ -365,7 +365,7 @@ export async function createConfig(
   return {
     mode,
     profile: false,
-    ...(isDev
+    ...(isDev && !process.env.CI
       ? {
           watchOptions: {
             ignored: /node_modules\/(?!__backstage-autodetected-plugins__)/,
