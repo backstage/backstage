@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-export * from './types';
-export { isMultiUserSettingError } from './types';
+/** @public */
+export function stringifyDataLoaderKey(bucket: string, key: string) {
+  return `${encodeURIComponent(bucket)}/${encodeURIComponent(key)}`;
+}
 
-export { stringifyDataLoaderKey, parseDataLoaderKey } from './keys';
+/** @public */
+export function parseDataLoaderKey(bucketAndKey: string) {
+  const [bucket, key] = bucketAndKey.split('/');
+  return { bucket: decodeURIComponent(bucket), key: decodeURIComponent(key) };
+}
