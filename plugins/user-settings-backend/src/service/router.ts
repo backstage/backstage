@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
+import { InputError, serializeError } from '@backstage/errors';
+import { map } from 'already';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { SignalsService } from '@backstage/plugin-signals-node';
-import { UserSettingsSignal } from '@backstage/plugin-user-settings-common';
+import {
+  MultiUserSetting,
+  UserSettingsSignal,
+  parseDataLoaderKey,
+} from '@backstage/plugin-user-settings-common';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 
 export async function createRouter(options: {
@@ -39,6 +44,59 @@ export async function createRouter(options: {
     });
     return credentials.principal.userEntityRef;
   };
+
+  // get multiple values
+  router.get('/multi', async (req, res) => {
+    const userEntityRef = await getUserEntityRef(req);
+
+    const bucketsAndKeys: ReturnType<typeof parseDataLoaderKey>[] = [];
+
+    const items = req.query.items;
+    if (typeof items === 'string') {
+      bucketsAndKeys.push(parseDataLoaderKey(items));
+    } else if (Array.isArray(items)) {
+      bucketsAndKeys.push(
+        ...items.map(item => {
+          if (typeof item !== 'string') {
+            throw new InputError(
+              'Expected query param "items" to be an array of strings',
+            );
+          }
+          return parseDataLoaderKey(item);
+        }),
+      );
+    } else {
+      throw new InputError('Expected query param "items" to be an array');
+    }
+
+    const userSettings = await map(
+      bucketsAndKeys,
+      { concurrency: 10 },
+      async ({ bucket, key }): Promise<MultiUserSetting> => {
+        try {
+          const setting = await options.userSettingsStore.get({
+            userEntityRef,
+            bucket,
+            key,
+          });
+          return setting;
+        } catch (e) {
+          if (e instanceof Error) {
+            const serialized = serializeError(e);
+            return { bucket, key, error: serialized };
+          }
+
+          return {
+            bucket,
+            key,
+            error: { name: 'Error', message: 'Unknown error' },
+          };
+        }
+      },
+    );
+
+    res.json(userSettings);
+  });
 
   // get a single value
   router.get('/buckets/:bucket/keys/:key(*)', async (req, res) => {
