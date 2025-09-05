@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend-module-github': minor
 ---
 
-Add field blockCreations in github branch protection scaffolder actions
+Add block creations field in github branch protection scaffolder actions
