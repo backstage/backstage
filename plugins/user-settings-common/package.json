@@ -37,6 +37,10 @@
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
   },
+  "dependencies": {
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
   }
