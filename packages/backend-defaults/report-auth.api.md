@@ -5,7 +5,7 @@
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
@@ -23,8 +23,31 @@ export const authServiceFactory: ServiceFactory<
 >;
 
 // @public
+export function createExternalTokenHandler<TContext>(
+  handler: ExternalTokenHandler<TContext>,
+): ExternalTokenHandler<TContext>;
+
+// @public
+export interface ExternalTokenHandler<TContext> {
+  // (undocumented)
+  initialize(ctx: { options: Config }): TContext;
+  // (undocumented)
+  type: string;
+  // (undocumented)
+  verifyToken(
+    token: string,
+    ctx: TContext,
+  ): Promise<
+    | {
+        subject: string;
+      }
+    | undefined
+  >;
+}
+
+// @public
 export const externalTokenTypeHandlersRef: ServiceRef<
-  TokenTypeHandler,
+  ExternalTokenHandler<unknown>,
   'plugin',
   'multiton'
 >;
@@ -58,25 +81,6 @@ export const pluginTokenHandlerDecoratorServiceRef: ServiceRef<
   'plugin',
   'singleton'
 >;
-
-// @public
-export interface ExternalTokenHandler {
-  // (undocumented)
-  verifyToken(token: string): Promise<
-    | {
-        subject: string;
-        allAccessRestrictions?: AccessRestrictionsMap;
-      }
-    | undefined
-  >;
-}
-
-// @public
-export interface TokenTypeHandler {
-  factory: (configs: Config[]) => TokenHandler | TokenHandler[];
-  // (undocumented)
-  type: string;
-}
 
 // (No @packageDocumentation comment for this package)
 ```
