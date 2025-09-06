@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultAuthService } from './DefaultAuthService';
 import {
-  ExternalAuthTokenManager,
+  ExternalAuthTokenHandler,
   externalTokenTypeHandlersRef,
 } from './external/ExternalAuthTokenHandler';
 import {
@@ -107,7 +107,7 @@ export const authServiceFactory = createServiceFactory({
       }),
     );
 
-    const externalTokens = ExternalAuthTokenManager.create({
+    const externalTokens = ExternalAuthTokenHandler.create({
       ownPluginId: plugin.getId(),
       config,
       logger,
