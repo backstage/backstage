@@ -17,14 +17,17 @@
 import { EntityEdge } from '../types';
 import { GraphTransformer } from './types';
 
-function concatRelations(a: readonly string[], b: readonly string[]): string[] {
-  return Array.from(new Set<string>([...a, ...b]));
+function concatRelations(
+  a: readonly string[] | undefined,
+  b: readonly string[] | undefined,
+): string[] {
+  return Array.from(new Set<string>([...(a ?? []), ...(b ?? [])]));
 }
 
 /** Merge relations in multiple edges into one edge */
 export const mergeRelations: GraphTransformer = options => {
-  // The key is on the form `from-to`
   const mergedEdges = new Map<string, EntityEdge>();
+
   options.edges.forEach(edge => {
     const keyForward = `${edge.from}-${edge.to}`;
     const keyBackward = `${edge.to}-${edge.from}`;
@@ -39,12 +42,13 @@ export const mergeRelations: GraphTransformer = options => {
       );
     } else if (edgeBackward) {
       edgeBackward.relations = concatRelations(
-        edge.relations,
         edgeBackward.relations,
+        edge.relations,
       );
     } else {
       mergedEdges.set(keyForward, edge);
     }
   });
+
   options.edges = Array.from(mergedEdges.values());
 };

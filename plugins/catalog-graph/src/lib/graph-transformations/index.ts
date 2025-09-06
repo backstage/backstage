@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export type { GraphTransformer, TransformerContext } from './types';
+export type {
+  GraphTransformer,
+  TransformationContext,
+  GraphTransformationDebugger,
+} from './types';
+export { cloneTransformationContext } from './types';
 
 import { reduceEdges } from './reduce-edges';
 import { setDistances } from './set-distance';
@@ -23,7 +28,7 @@ import { stripDistantEdges } from './strip-distant-edges';
 import { mergeRelations } from './merge-relations';
 import { removeBackwardEdges } from './remove-backward-edges';
 
-export const builtInTransformers = {
+export const builtInTransformations = {
   'reduce-edges': reduceEdges,
   'set-distances': setDistances,
   'order-forward': orderForward,
@@ -31,3 +36,5 @@ export const builtInTransformers = {
   'merge-relations': mergeRelations,
   'remove-backward-edges': removeBackwardEdges,
 };
+
+export type BuiltInTransformations = keyof typeof builtInTransformations;

@@ -14,23 +14,69 @@
  * limitations under the License.
  */
 
-import { EntityEdge } from '../types';
+import { EntityEdge, EntityNode } from '../types';
 
-export interface TransformerContext {
+/**
+ * Contextual information for a graph transformation.
+ *
+ * @public
+ */
+export interface TransformationContext {
   /**
    * The distance from an entity node to a root entity
    *
-   * NOTE: This is not set until the setDistances transformation is applied
+   * NOTE: This is empty until the 'set-distances' transformation is applied
    */
   nodeDistances: Map<string, number>;
 
   edges: EntityEdge[];
+  nodes: EntityNode[];
 
   // Options:
   rootEntityRefs: string[];
   unidirectional: boolean;
   maxDepth: number;
-  forwardRelations: string[];
 }
 
-export type GraphTransformer = (options: TransformerContext) => void;
+/**
+ * A function that transforms a graph. The function modifies `nodes` and `edges`
+ * in place.
+ *
+ * @public
+ */
+export type GraphTransformer = (context: TransformationContext) => void;
+
+/**
+ * A function that debugs a graph transformation.
+ * It is given the three arguments:
+ *  * The transformation that was just applied (or undefined before the first
+ *    transformation). If the transformation is a function, its `.name` property
+ *    will be used.
+ *  * The current state (context) of the graph, which _can_ be mutated
+ *  * A cloned copy of the context, useful for logging (as transformations are
+ *    made in place, the original context is modified and the logs will be
+ *    confusing)
+ *
+ * @public
+ */
+export type GraphTransformationDebugger = (
+  transformation: string | undefined,
+  transformationContext: TransformationContext,
+  clonedContext: TransformationContext,
+) => void;
+
+/** @internal */
+export function cloneTransformationContext(
+  transformationContext: TransformationContext,
+): TransformationContext {
+  const clonesContext = JSON.parse(
+    JSON.stringify(transformationContext),
+  ) as TransformationContext;
+  clonesContext.edges = clonesContext.edges.sort((a, b) => {
+    return a.from.localeCompare(b.from) || a.to.localeCompare(b.to);
+  });
+
+  clonesContext.nodeDistances = new Map(transformationContext.nodeDistances);
+
+  return clonesContext;
+}

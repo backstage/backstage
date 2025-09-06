@@ -17,12 +17,6 @@
 import { EntityEdge } from '../types';
 import { GraphTransformer } from './types';
 
-function minDistance(a: number | undefined, b: number | undefined) {
-  if (typeof a === 'undefined') return b;
-  if (typeof b === 'undefined') return a;
-  return Math.min(a, b);
-}
-
 /** Set the distance of each edge to the distance from a root entity */
 export const setDistances: GraphTransformer = ({
   nodeDistances,
@@ -32,67 +26,45 @@ export const setDistances: GraphTransformer = ({
   const edgeMap = new Map<string, EntityEdge[]>();
   edges.forEach(edge => {
     const fromEdges = edgeMap.get(edge.from) ?? [];
-    edgeMap.set(edge.from, [...fromEdges, edge]);
+    fromEdges.push(edge);
+    edgeMap.set(edge.from, fromEdges);
 
     const toEdges = edgeMap.get(edge.to) ?? [];
-    edgeMap.set(edge.to, [...toEdges, edge]);
+    toEdges.push(edge);
+    edgeMap.set(edge.to, toEdges);
   });
-
-  // Sets the distance on as many edges as possible.
-  // Returns true if all edges have a distance
-  const setEdgeDistances = () => {
-    return (
-      edges.filter(edge => {
-        if (
-          rootEntityRefs.includes(edge.from) ||
-          rootEntityRefs.includes(edge.to)
-        ) {
-          edge.distance = 1;
-          return false;
-        }
-
-        const distance = minDistance(
-          edgeMap
-            .get(edge.from)!
-            .reduce(
-              (prev, cur) => minDistance(prev, cur.distance),
-              undefined as number | undefined,
-            ),
-          edgeMap
-            .get(edge.to)!
-            .reduce(
-              (prev, cur) => minDistance(prev, cur.distance),
-              undefined as number | undefined,
-            ),
-        );
-
-        if (typeof distance !== 'undefined') {
-          edge.distance = minDistance(edge.distance, distance + 1);
-        }
-        return typeof edge.distance === 'undefined';
-      }).length === 0
-    );
-  };
-
-  let distanceComplete = false;
-  while (!distanceComplete) {
-    distanceComplete = setEdgeDistances();
-  }
 
   rootEntityRefs.forEach(rootEntityRef => {
     nodeDistances.set(rootEntityRef, 0);
   });
-  edges.forEach(edge => {
-    const curFrom = nodeDistances.get(edge.from);
-    const curTo = nodeDistances.get(edge.to);
+  const visitedNodes = new Set<string>(rootEntityRefs);
+  let currentNodes = rootEntityRefs;
+  let distance = 0;
 
-    const fromDistance = minDistance(curFrom, edge.distance);
-    const toDistance = minDistance(curTo, edge.distance);
-    if (typeof fromDistance !== 'undefined') {
-      nodeDistances.set(edge.from, fromDistance);
+  while (currentNodes.length > 0) {
+    const thisDistance = ++distance;
+
+    const nextNodes: string[] = [];
+    currentNodes.forEach(node => {
+      edgeMap.get(node)?.forEach(edge => {
+        edge.distance ??= thisDistance;
+
+        const fromDistance = nodeDistances.get(edge.from) ?? thisDistance;
+        nodeDistances.set(edge.from, fromDistance);
+        nextNodes.push(edge.from);
+
+        const toDistance = nodeDistances.get(edge.to) ?? thisDistance;
+        nodeDistances.set(edge.to, toDistance);
+        nextNodes.push(edge.to);
+      });
+    });
+
+    for (const currentNode of currentNodes) {
+      visitedNodes.add(currentNode);
     }
-    if (typeof toDistance !== 'undefined') {
-      nodeDistances.set(edge.to, toDistance);
-    }
-  });
+
+    currentNodes = Array.from(new Set(nextNodes)).filter(
+      node => !visitedNodes.has(node),
+    );
+  }
 };

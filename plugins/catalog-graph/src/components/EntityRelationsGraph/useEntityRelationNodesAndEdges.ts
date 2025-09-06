@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MouseEvent, useMemo, useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { RelationPairs } from '../../lib/types';
 import { EntityEdge, EntityNode } from '../../lib/types';
@@ -22,8 +22,12 @@ import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { useRelations } from '../../hooks/useRelations';
 import { buildGraph } from '../../lib/graph';
 import {
-  builtInTransformers,
-  TransformerContext,
+  BuiltInTransformations,
+  builtInTransformations,
+  cloneTransformationContext,
+  GraphTransformationDebugger,
+  GraphTransformer,
+  TransformationContext,
 } from '../../lib/graph-transformations';
 
 /**
@@ -39,6 +43,7 @@ export function useEntityRelationNodesAndEdges({
   entityFilter,
   onNodeClick,
   relationPairs: incomingRelationPairs,
+  onPostTransformation,
 }: {
   rootEntityRefs: string[];
   maxDepth?: number;
@@ -49,6 +54,7 @@ export function useEntityRelationNodesAndEdges({
   entityFilter?: (entity: Entity) => boolean;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
+  onPostTransformation?: GraphTransformationDebugger;
 }): {
   loading: boolean;
   nodes?: EntityNode[];
@@ -73,11 +79,6 @@ export function useEntityRelationNodesAndEdges({
     relations,
     relationPairs: incomingRelationPairs,
   });
-
-  const forwardRelations = useMemo(
-    () => relationPairs.map(pair => pair[0]),
-    [relationPairs],
-  );
 
   useDebounce(
     () => {
@@ -118,32 +119,62 @@ export function useEntityRelationNodesAndEdges({
         unidirectional,
       });
 
-      const transformerContext: TransformerContext = {
+      const transformationContext: TransformationContext = {
         nodeDistances: new Map(),
         edges,
+        nodes,
 
         rootEntityRefs,
         unidirectional,
         maxDepth,
-        forwardRelations,
       };
-      builtInTransformers['reduce-edges'](transformerContext);
-      builtInTransformers['set-distances'](transformerContext);
+
+      const debugTransformation = (
+        transformation: BuiltInTransformations | GraphTransformer | undefined,
+      ) => {
+        onPostTransformation?.(
+          typeof transformation === 'function'
+            ? transformation.name
+            : transformation,
+          transformationContext,
+          cloneTransformationContext(transformationContext),
+        );
+      };
+
+      debugTransformation(undefined);
+
+      const runTransformation = (
+        transformation: BuiltInTransformations | GraphTransformer,
+      ) => {
+        if (typeof transformation === 'function') {
+          transformation(transformationContext);
+        } else {
+          builtInTransformations[transformation](transformationContext);
+        }
+
+        debugTransformation(transformation);
+      };
+
+      runTransformation('reduce-edges');
+      runTransformation('set-distances');
       if (unidirectional) {
-        builtInTransformers['order-forward'](transformerContext);
-        builtInTransformers['strip-distant-edges'](transformerContext);
+        runTransformation('strip-distant-edges');
       }
       if (mergeRelations || unidirectional) {
         // Merge relations even if only unidirectional, the next transformer
         // 'remove-backward-edges' needs to know about all relations before it
         // strips away the backward ones
-        builtInTransformers['merge-relations'](transformerContext);
+        runTransformation('merge-relations');
       }
       if (unidirectional && !mergeRelations) {
-        builtInTransformers['remove-backward-edges'](transformerContext);
+        runTransformation('order-forward');
+        runTransformation('remove-backward-edges');
       }
 
-      setNodesAndEdges({ nodes, edges: transformerContext.edges });
+      setNodesAndEdges({
+        nodes: transformationContext.nodes,
+        edges: transformationContext.edges,
+      });
     },
     100,
     [
@@ -156,7 +187,6 @@ export function useEntityRelationNodesAndEdges({
       mergeRelations,
       onNodeClick,
       relationPairs,
-      forwardRelations,
     ],
   );
 

@@ -22,7 +22,7 @@ import { GraphTransformer } from './types';
  * merged the relations
  */
 export const removeBackwardEdges: GraphTransformer = ctx => {
-  const { forwardRelations, edges } = ctx;
+  const { edges } = ctx;
 
   const edgesMapFrom = new Map<string, EntityEdge[]>();
 
@@ -32,22 +32,9 @@ export const removeBackwardEdges: GraphTransformer = ctx => {
     edgesMapFrom.set(edge.from, theseEdges);
   });
 
-  ctx.edges = edges.filter(edge => {
-    if (edge.relations.length === 2) {
-      // If there are two relations, only keep the forward one
-      if (!forwardRelations.includes(edge.relations[1])) {
-        edge.relations.pop();
-      }
-      if (!forwardRelations.includes(edge.relations[0])) {
-        edge.relations.pop();
-      }
-      return edge.relations.length > 0;
-    } else if (edge.relations.length === 1) {
-      // If there is only one relation and it's backwards, remove it
-      if (!forwardRelations.includes(edge.relations[0])) {
-        return false;
-      }
+  edges.forEach(edge => {
+    if (edge.relations.length > 1) {
+      edge.relations = edge.relations.slice(0, 1);
     }
-    return true;
   });
 };
