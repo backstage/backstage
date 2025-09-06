@@ -25,7 +25,7 @@ import {
 import { AuthenticationError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
-import { ExternalTokenHandler } from './external/ExternalTokenHandler';
+import { ExternalAuthTokenManager } from './external/export class ExternalAuthTokenManager {';
 import {
   createCredentialsWithNonePrincipal,
   createCredentialsWithServicePrincipal,
@@ -41,7 +41,7 @@ export class DefaultAuthService implements AuthService {
   constructor(
     private readonly userTokenHandler: UserTokenHandler,
     private readonly pluginTokenHandler: PluginTokenHandler,
-    private readonly externalTokenHandler: ExternalTokenHandler,
+    private readonly externalTokenHandler: ExternalAuthTokenManager,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
     private readonly pluginKeySource: PluginKeySource,
