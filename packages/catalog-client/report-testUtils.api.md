@@ -5,6 +5,8 @@
 ```ts
 import { AddLocationRequest } from '@backstage/catalog-client';
 import { AddLocationResponse } from '@backstage/catalog-client';
+import type { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
+import type { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
@@ -20,6 +22,7 @@ import { GetLocationsResponse } from '@backstage/catalog-client';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
+import { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
 
 // @public
@@ -27,6 +30,10 @@ export class InMemoryCatalogClient implements CatalogApi {
   constructor(options?: { entities?: Entity[] });
   // (undocumented)
   addLocation(_location: AddLocationRequest): Promise<AddLocationResponse>;
+  // (undocumented)
+  analyzeLocation(
+    _location: AnalyzeLocationRequest,
+  ): Promise<AnalyzeLocationResponse>;
   // (undocumented)
   getEntities(request?: GetEntitiesRequest): Promise<GetEntitiesResponse>;
   // (undocumented)
@@ -63,6 +70,8 @@ export class InMemoryCatalogClient implements CatalogApi {
   removeEntityByUid(uid: string): Promise<void>;
   // (undocumented)
   removeLocationById(_id: string): Promise<void>;
+  // (undocumented)
+  streamEntities(request?: StreamEntitiesRequest): AsyncIterable<Entity[]>;
   // (undocumented)
   validateEntity(
     _entity: Entity,

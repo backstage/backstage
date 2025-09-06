@@ -1,5 +1,60 @@
 # @internal/scaffolder
 
+## 0.0.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/plugin-scaffolder-react@1.19.1-next.1
+
+## 0.0.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-scaffolder-react@1.19.1-next.0
+
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-scaffolder-react@1.19.0
+
+## 0.0.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.19.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+
+## 0.0.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.18.1-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.18.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.0.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.18.0-next.2
+
 ## 0.0.11-next.0
 
 ### Patch Changes

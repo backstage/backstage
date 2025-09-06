@@ -40,10 +40,16 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  StreamEntitiesRequest,
   ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
 import { DefaultApiClient, TypedResponse } from './schema/openapi';
+import type {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
+import { DEFAULT_STREAM_ENTITIES_LIMIT } from './constants.ts';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -429,6 +435,48 @@ export class CatalogClient implements CatalogApi {
       valid: false,
       errors,
     };
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.analyzeLocation}
+   */
+  async analyzeLocation(
+    request: AnalyzeLocationRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<AnalyzeLocationResponse> {
+    const response = await this.apiClient.analyzeLocation(
+      {
+        body: request,
+      },
+      options,
+    );
+
+    if (response.status !== 200) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json() as Promise<AnalyzeLocationResponse>;
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.streamEntities}
+   */
+  async *streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity[]> {
+    let cursor: string | undefined = undefined;
+    const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
+    do {
+      const res = await this.queryEntities(
+        cursor ? { ...request, cursor, limit } : { ...request, limit },
+        options,
+      );
+
+      yield res.items;
+
+      cursor = res.pageInfo.nextCursor;
+    } while (cursor);
   }
 
   //

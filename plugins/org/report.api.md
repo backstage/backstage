@@ -10,6 +10,13 @@ import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 
 // @public (undocumented)
+export type ComponentsGridClassKey =
+  | 'card'
+  | 'bold'
+  | 'smallFont'
+  | 'entityTypeBox';
+
+// @public (undocumented)
 export const EntityGroupProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
@@ -33,6 +40,7 @@ export const EntityOwnershipCard: (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
+  maxScrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -94,7 +102,17 @@ export const OwnershipCard: (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
+  maxScrollHeight?: string;
 }) => JSX_2.Element;
+
+// @public (undocumented)
+export type OwnershipCardClassKey =
+  | 'card'
+  | 'cardContent'
+  | 'list'
+  | 'listItemText'
+  | 'listItemSecondaryAction'
+  | 'grid';
 
 // @public (undocumented)
 export const UserProfileCard: (props: {
@@ -103,4 +121,10 @@ export const UserProfileCard: (props: {
   maxRelations?: number;
   hideIcons?: boolean;
 }) => JSX_2.Element;
+
+// @public (undocumented)
+export type UserProfileCardClassKey =
+  | 'closeButton'
+  | 'moreButton'
+  | 'dialogPaper';
 ```

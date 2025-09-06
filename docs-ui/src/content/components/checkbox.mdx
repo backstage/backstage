@@ -1,0 +1,51 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CheckboxSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  checkboxPropDefs,
+  checkboxUsageSnippet,
+  checkboxDefaultSnippet,
+  checkboxVariantsSnippet,
+} from './checkbox.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Checkbox"
+  description="A checkbox component that can be used to trigger actions."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CheckboxSnippet story="Default" />}
+  code={checkboxDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={checkboxUsageSnippet} />
+
+## API reference
+
+<PropsTable data={checkboxPropDefs} />
+
+## Examples
+
+### All variants
+
+Here's a view when checkboxes have different variants.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<CheckboxSnippet story="AllVariants" />}
+  code={checkboxVariantsSnippet}
+/>
+
+<Theming component="Checkbox" />
+
+<ChangelogComponent component="checkbox" />

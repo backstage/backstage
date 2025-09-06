@@ -22,47 +22,68 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
 import { EntityRelationAggregation } from '../types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../translation';
+import Box from '@material-ui/core/Box';
 
-const useStyles = makeStyles(theme => ({
-  card: {
-    maxHeight: '100%',
+/** @public */
+export type OwnershipCardClassKey =
+  | 'card'
+  | 'cardContent'
+  | 'list'
+  | 'listItemText'
+  | 'listItemSecondaryAction'
+  | 'grid';
+
+const useStyles = makeStyles(
+  theme =>
+    createStyles({
+      card: {
+        maxHeight: '100%',
+      },
+      cardContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      },
+      list: {
+        [theme.breakpoints.down('xs')]: {
+          padding: `0 0 12px`,
+        },
+      },
+      listItemText: {
+        [theme.breakpoints.down('xs')]: {
+          paddingRight: 0,
+          paddingLeft: 0,
+        },
+      },
+      listItemSecondaryAction: {
+        [theme.breakpoints.down('xs')]: {
+          width: '100%',
+          top: 'auto',
+          right: 'auto',
+          position: 'relative',
+          transform: 'unset',
+        },
+      },
+      grid: {
+        overflowY: 'auto',
+        marginTop: 0,
+      },
+      box: {
+        overflowY: 'auto',
+        padding: theme.spacing(0, 1, 1),
+        margin: theme.spacing(0, -1),
+      },
+    }),
+  {
+    name: 'PluginOrgOwnershipCard',
   },
-  cardContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
-  },
-  list: {
-    [theme.breakpoints.down('xs')]: {
-      padding: `0 0 12px`,
-    },
-  },
-  listItemText: {
-    [theme.breakpoints.down('xs')]: {
-      paddingRight: 0,
-      paddingLeft: 0,
-    },
-  },
-  listItemSecondaryAction: {
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-      top: 'auto',
-      right: 'auto',
-      position: 'relative',
-      transform: 'unset',
-    },
-  },
-  grid: {
-    overflowY: 'auto',
-    marginTop: 0,
-  },
-}));
+);
 
 /** @public */
 export const OwnershipCard = (props: {
@@ -73,16 +94,20 @@ export const OwnershipCard = (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
+  maxScrollHeight?: string;
 }) => {
   const {
     variant,
     entityFilterKind,
     hideRelationsToggle,
     entityLimit = 6,
+    maxScrollHeight: propMaxScrollHeight,
   } = props;
   const relationAggregation = props.relationAggregation ?? props.relationsType;
   const relationsToggle =
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
+  const maxScrollHeight =
+    variant !== 'fullHeight' ? propMaxScrollHeight : undefined;
   const classes = useStyles();
   const { entity } = useEntity();
   const { t } = useTranslationRef(orgTranslationRef);
@@ -150,13 +175,15 @@ export const OwnershipCard = (props: {
           </ListItem>
         </List>
       )}
-      <ComponentsGrid
-        className={classes.grid}
-        entity={entity}
-        entityLimit={entityLimit}
-        relationAggregation={getRelationAggregation}
-        entityFilterKind={entityFilterKind}
-      />
+      <Box maxHeight={maxScrollHeight} className={classes.box}>
+        <ComponentsGrid
+          className={classes.grid}
+          entity={entity}
+          entityLimit={entityLimit}
+          relationAggregation={getRelationAggregation}
+          entityFilterKind={entityFilterKind}
+        />
+      </Box>
     </InfoCard>
   );
 };

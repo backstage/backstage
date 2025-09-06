@@ -1,5 +1,70 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.5-next.0
+
+### Patch Changes
+
+- a84ddea: The log message now indicates that the pipeline trigger token was deleted and not pipeline itself.
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.9.4
+
+### Patch Changes
+
+- 5bb870b: Show additional information about the cause in error messages from GitLab
+- df2bfab: The `description` property in `publish:gitlab:merge-request` has been made optional again to comply with the GitLab API.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.9.4-next.1
+
+### Patch Changes
+
+- 5bb870b: Show additional information about the cause in error messages from GitLab
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- df2bfab: The `description` property in `publish:gitlab:merge-request` has been made optional again to comply with the GitLab API.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+
+## 0.9.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/integration@1.17.1
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.9.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
+## 0.9.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+
 ## 0.9.3-next.0
 
 ### Patch Changes

@@ -1,5 +1,171 @@
 # @backstage/plugin-techdocs
 
+## 1.14.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+  - @backstage/plugin-search-react@1.9.4-next.0
+  - @backstage/plugin-techdocs-react@1.3.3-next.0
+  - @backstage/integration-react@1.2.10-next.0
+  - @backstage/plugin-auth-react@0.1.19-next.0
+
+## 1.14.2-next.0
+
+### Patch Changes
+
+- 1dfee19: Reverts a change in CSS layout that shifted the content of the Techdocs too far to the left.
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/theme@0.6.8
+  - @backstage/plugin-auth-react@0.1.18
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.2
+
+## 1.14.0
+
+### Minor Changes
+
+- cb0541f: Adds `additionalAllowedURIProtocols` to sanitizer config
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- f231c2b: Fixes CSS to adjust based on whether or not the global Backstage sidebar is on the page.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/theme@0.6.8
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-auth-react@0.1.18
+  - @backstage/plugin-techdocs-react@1.3.2
+
+## 1.14.0-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/plugin-search-react@1.9.3-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/plugin-auth-react@0.1.18-next.0
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.2-next.0
+
+## 1.14.0-next.1
+
+### Minor Changes
+
+- cb0541f: Adds `additionalAllowedURIProtocols` to sanitizer config
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/plugin-search-react@1.9.3-next.0
+  - @backstage/plugin-techdocs-react@1.3.2-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/plugin-auth-react@0.1.18-next.0
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.13.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-search-react@1.9.2
+
+## 1.13.2
+
+### Patch Changes
+
+- 1debf7f: Fixed an issue causing TechDocs to not properly handle initial redirect.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration@1.17.1
+  - @backstage/theme@0.6.7
+  - @backstage/integration-react@1.2.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-auth-react@0.1.17
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-search-react@1.9.2
+  - @backstage/plugin-techdocs-react@1.3.1
+
+## 1.13.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/integration-react@1.2.9-next.1
+  - @backstage/plugin-techdocs-react@1.3.1-next.1
+  - @backstage/plugin-search-common@1.2.19-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/plugin-search-react@1.9.2-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-auth-react@0.1.17-next.1
+
 ## 1.13.2-next.0
 
 ### Patch Changes

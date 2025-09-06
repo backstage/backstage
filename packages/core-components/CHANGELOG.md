@@ -1,5 +1,78 @@
 # @backstage/core-components
 
+## 0.17.6-next.0
+
+### Patch Changes
+
+- e409bec: Fixes for rendering initials in the avatar component.
+
+## 0.17.5
+
+### Patch Changes
+
+- 1de1186: Added missing space for alert display component
+- 77467bb: Updated dependency `linkifyjs` to `4.3.2`.
+- 5563605: Added `FavoriteToggleProps`.
+- Updated dependencies
+  - @backstage/theme@0.6.8
+
+## 0.17.5-next.2
+
+### Patch Changes
+
+- 77467bb: Updated dependency `linkifyjs` to `4.3.2`.
+
+## 0.17.5-next.1
+
+### Patch Changes
+
+- 5563605: Added `FavoriteToggleProps`.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.4
+
+### Patch Changes
+
+- f6ffea6: Add optional message field for auth providers. This is intended to be a user friendly message that displays in the OAuth request dialog. A default message will be displayed if one is not provided.
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+
+## 0.17.4-next.2
+
+### Patch Changes
+
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.17.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+
 ## 0.17.4-next.0
 
 ### Patch Changes

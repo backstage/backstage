@@ -1,0 +1,63 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { AvatarSnippet } from '@/snippets/stories-snippets';
+import {
+  avatarPropDefs,
+  snippetUsage,
+  snippetSizes,
+  snippetFallback,
+} from './avatar.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Avatar"
+  description="An avatar component with a fallback for initials."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<AvatarSnippet story="Default" />}
+  code={`<Avatar src="https://avatars.githubusercontent.com/u/1540635?v=4" name="Charles de Dreuille" />`}
+/>
+
+## Usage
+
+<CodeBlock code={snippetUsage} />
+
+## API reference
+
+<PropsTable data={avatarPropDefs} />
+
+## Examples
+
+### Sizes
+
+Avatar sizes can be set using the `size` prop.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<AvatarSnippet story="Sizes" />}
+  code={snippetSizes}
+/>
+
+### Fallback
+
+If the image is not available, the avatar will show the initials of the name.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<AvatarSnippet story="Fallback" />}
+  code={snippetFallback}
+/>
+
+<Theming component="Avatar" />
+
+<ChangelogComponent component="avatar" />

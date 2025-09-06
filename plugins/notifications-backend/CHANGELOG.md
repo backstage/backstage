@@ -1,5 +1,80 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-signals-node@0.1.24-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+  - @backstage/plugin-notifications-node@0.2.19-next.0
+
+## 0.5.9
+
+### Patch Changes
+
+- 9152ba8: Add an optional generic object `metadata` field to `NotificationPayload`. Metadata can be used to store additional unstructured data for the notification and are available to use by processors.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-notifications-common@0.1.0
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-notifications-node@0.2.18
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+  - @backstage/plugin-signals-node@0.1.23
+
+## 0.5.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-auth-node@0.6.6-next.0
+  - @backstage/plugin-notifications-node@0.2.18-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-signals-node@0.1.23-next.0
+
+## 0.5.8
+
+### Patch Changes
+
+- 4401dfb: Allow defining default notification settings via configuration
+- 9a5a73f: Fix `addTopic` migration when `user_settings` present
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.5
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-notifications-node@0.2.17
+  - @backstage/plugin-signals-node@0.1.22
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+  - @backstage/plugin-notifications-common@0.0.10-next.0
+  - @backstage/plugin-signals-node@0.1.22-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-notifications-node@0.2.17-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
 ## 0.5.8-next.0
 
 ### Patch Changes

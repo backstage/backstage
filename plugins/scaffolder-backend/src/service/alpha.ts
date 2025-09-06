@@ -17,9 +17,14 @@
 import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { scaffolderTemplateRules, scaffolderActionRules } from './rules';
+import {
+  scaffolderTemplateRules,
+  scaffolderActionRules,
+  scaffolderTaskRules,
+} from './rules';
 
 const templateConditionExports = createConditionExports({
   pluginId: 'scaffolder',
@@ -31,6 +36,12 @@ const actionsConditionExports = createConditionExports({
   pluginId: 'scaffolder',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
   rules: scaffolderActionRules,
+});
+
+const taskConditionExports = createConditionExports({
+  pluginId: 'scaffolder',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+  rules: scaffolderTaskRules,
 });
 
 /**
@@ -90,3 +101,17 @@ export const createScaffolderActionConditionalDecision =
  * @alpha
  */
 export const scaffolderActionConditions = actionsConditionExports.conditions;
+
+/**
+ * @alpha
+ */
+export const createScaffolderTaskConditionalDecision =
+  taskConditionExports.createConditionalDecision;
+
+/**
+ * These conditions are used when creating conditional decisions for scaffolder
+ * tasks that are returned by authorization policies.
+ *
+ * @alpha
+ */
+export const scaffolderTaskConditions = taskConditionExports.conditions;

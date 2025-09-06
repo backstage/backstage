@@ -157,7 +157,10 @@ Accepts the format \`gitlab.com?repo=project_name&owner=group_name\` where \
 \`project_name\` is the repository name and \`group_name\` is a group or username`),
         title: z => z.string().describe('The name for the merge request'),
         description: z =>
-          z.string().describe('The description of the merge request'),
+          z
+            .string()
+            .optional()
+            .describe('The description of the merge request'),
         branchName: z =>
           z.string().describe('The source branch name of the merge request'),
         targetBranchName: z =>

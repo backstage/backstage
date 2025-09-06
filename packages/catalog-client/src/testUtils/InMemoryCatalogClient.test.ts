@@ -26,12 +26,12 @@ const entity1: Entity = {
     name: 'e1',
     uid: 'u1',
   },
-  relations: [{ type: 'relatedTo', targetRef: 'customkind:default/e2' }],
+  relations: [{ type: 'relatedTo', targetRef: 'secondcustomkind:default/e2' }],
 };
 
 const entity2: Entity = {
   apiVersion: 'v1',
-  kind: 'CustomKind',
+  kind: 'SecondCustomKind',
   metadata: {
     namespace: 'default',
     name: 'e2',
@@ -67,9 +67,21 @@ describe('InMemoryCatalogClient', () => {
 
     await expect(
       client.getEntities({
-        filter: { 'relations.relatedTo': 'customkind:default/e2' },
+        filter: { 'relations.relatedTo': 'secondcustomkind:default/e2' },
       }),
     ).resolves.toEqual({ items: [entity1] });
+
+    await expect(
+      client.getEntities({
+        filter: { kind: ['not-existing', 'CustomKind'] },
+      }),
+    ).resolves.toEqual({ items: [entity1] });
+
+    await expect(
+      client.getEntities({
+        filter: { kind: ['SecondCustomKind', 'also-not-existing'] },
+      }),
+    ).resolves.toEqual({ items: [entity2] });
   });
 
   it('getEntitiesByRefs', async () => {
@@ -77,7 +89,7 @@ describe('InMemoryCatalogClient', () => {
     await expect(
       client.getEntitiesByRefs({
         entityRefs: [
-          'customkind:default/e2',
+          'secondcustomkind:default/e2',
           'customkind:missing/missing',
           'customkind:default/e1',
         ],
@@ -86,7 +98,7 @@ describe('InMemoryCatalogClient', () => {
     await expect(
       client.getEntitiesByRefs({
         entityRefs: [
-          'customkind:default/e2',
+          'secondcustomkind:default/e2',
           'customkind:missing/missing',
           'customkind:default/e1',
         ],
@@ -111,12 +123,22 @@ describe('InMemoryCatalogClient', () => {
     });
   });
 
+  it('streamEntities', async () => {
+    const client = new InMemoryCatalogClient({ entities });
+    const stream = client.streamEntities();
+    const results: Entity[][] = [];
+    for await (const page of stream) {
+      results.push(page);
+    }
+    expect(results).toEqual([entities]);
+  });
+
   it('getEntityAncestors', async () => {
     const client = new InMemoryCatalogClient({ entities });
     await expect(
-      client.getEntityAncestors({ entityRef: 'customkind:default/e2' }),
+      client.getEntityAncestors({ entityRef: 'secondcustomkind:default/e2' }),
     ).resolves.toEqual({
-      rootEntityRef: 'customkind:default/e2',
+      rootEntityRef: 'secondcustomkind:default/e2',
       items: [{ entity: entity2, parentEntityRefs: [] }],
     });
   });
@@ -124,7 +146,7 @@ describe('InMemoryCatalogClient', () => {
   it('getEntityByRef', async () => {
     const client = new InMemoryCatalogClient({ entities });
     await expect(
-      client.getEntityByRef('customkind:default/e2'),
+      client.getEntityByRef('secondcustomkind:default/e2'),
     ).resolves.toEqual(entity2);
     await expect(
       client.getEntityByRef('customkind:missing/missing'),
@@ -147,7 +169,7 @@ describe('InMemoryCatalogClient', () => {
   it('refreshEntity', async () => {
     const client = new InMemoryCatalogClient({ entities });
     await expect(
-      client.refreshEntity('customkind:default/e2'),
+      client.refreshEntity('secondcustomkind:default/e2'),
     ).resolves.toBeUndefined();
   });
 });

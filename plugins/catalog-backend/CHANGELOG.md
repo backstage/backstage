@@ -1,5 +1,135 @@
 # @backstage/plugin-catalog-backend
 
+## 3.0.2-next.0
+
+### Patch Changes
+
+- 37b4eaf: The 'get-catalog-entity' action now throws a ConflictError instead of generic Error if multiple entities are found, so MCP call doesn't fail with 500.
+- a4c82ad: Only run provider orphan cleanup if the engine is started in the first place
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-permission-node@0.10.4-next.0
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 3.0.1
+
+### Patch Changes
+
+- 1752be6: Attempt to circumvent event listener memory leak in compression middleware
+- 9658703: Sort built-in relation fields for more stable entity hash in the processing engine
+- 9dd213c: Make the processing hash calculation not care about the order of the processors.
+
+  This change does not affect the behavior of the catalog, but it will make the processing
+  hash calculation more robust against changes in the order of processors. This should lead to
+  more stable processing hashes, which in turn should lead to fewer unnecessary reprocessing
+  of entities.
+
+  After deploying this fix, you may see a period of increased processing and stitching, but
+  this should stabilize over time as the processing hashes become more consistent.
+
+- fa6fa60: Fixed getLocationByEntity to use `original_value` instead of `value` when querying search table
+- 3a7dad9: Updated `better-sqlite3` to v12
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
+## 3.0.1-next.1
+
+### Patch Changes
+
+- 1752be6: Attempt to circumvent event listener memory leak in compression middleware
+- 9dd213c: Make the processing hash calculation not care about the order of the processors.
+
+  This change does not affect the behavior of the catalog, but it will make the processing
+  hash calculation more robust against changes in the order of processors. This should lead to
+  more stable processing hashes, which in turn should lead to fewer unnecessary reprocessing
+  of entities.
+
+  After deploying this fix, you may see a period of increased processing and stitching, but
+  this should stabilize over time as the processing hashes become more consistent.
+
+- fa6fa60: Fixed getLocationByEntity to use `original_value` instead of `value` when querying search table
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.1
+
+## 3.0.1-next.0
+
+### Patch Changes
+
+- 3a7dad9: Updated `better-sqlite3` to v12
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-permission-node@0.10.3-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+
+## 3.0.0
+
+### Major Changes
+
+- 5127ebe: **BREAKING**: The default `catalog.stitchingStrategy` has been switched to `{ mode: 'deferred' }`.
+- d675d96: **BREAKING**: The relations compatibility mode is no longer enabled by default, and the `disableRelationsCompatiblity` flag has been removed. To re-enable relations compatibility, the new `enableRelationsCompatibility` flag can be used instead.
+- 2339363: **BREAKING:** The experimental `catalog.useUrlReadersSearch` configuration flag (introduced in v1.36) has been removed.
+
+  The `UrlReaderProcessor` now always uses the `search` method of `UrlReaders`. Built-in `UrlReaderService` implementations have been updated accordingly.
+  If you use custom `UrlReaderService` implementations, you need to adapt their `search` method to correctly handle both specific URLs and potential
+  search patterns (see changes on built-in readers [in the original PR](https://github.com/backstage/backstage/pull/28379/files#diff-68b0452f173ee54bdd40f7b5e047a9cb8bb59200425622c212c217b76dac1d1b)).
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. Each `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+- 687bfc8: **BREAKING**: The default `catalog.orphanStrategy` has been switched to `'delete'`.
+- 5de7a9d: **BREAKING**: The default `catalog.orphanProviderStrategy` has been switched to `'delete'`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-node@0.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/integration@1.17.1
+  - @backstage/backend-openapi-utils@0.5.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+
+## 3.0.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/backend-openapi-utils@0.5.5-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
 ## 3.0.0-next.0
 
 ### Major Changes

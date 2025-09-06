@@ -1,5 +1,53 @@
 # @backstage/plugin-auth-node
 
+## 0.6.7-next.0
+
+### Patch Changes
+
+- 3aff9e1: Changes OAuth cookies from domain-scoped to host-only by avoid setting the domain attribute in the default cookie configurer.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
 ## 0.6.4
 
 ### Patch Changes

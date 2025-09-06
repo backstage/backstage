@@ -1,0 +1,162 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer utilities {
+  .bui-block {
+    display: block;
+  }
+
+  .bui-border-base {
+    border-color: var(--bui-border);
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .bui-border-error {
+    border-color: var(--bui-border-danger);
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .bui-border-none {
+    border-color: transparent;
+    border-width: 0;
+  }
+
+  .bui-border-selected {
+    border-color: var(--bui-border-pressed);
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .bui-border-warning {
+    border-color: var(--bui-border-warning);
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .bui-flex {
+    display: flex;
+  }
+
+  .bui-flex-col {
+    flex-direction: column;
+  }
+
+  .bui-flex-nowrap {
+    flex-wrap: nowrap;
+  }
+
+  .bui-flex-row {
+    flex-direction: row;
+  }
+
+  .bui-flex-wrap {
+    flex-wrap: wrap;
+  }
+
+  .bui-flex-wrap-reverse {
+    flex-wrap: wrap-reverse;
+  }
+
+  .bui-hidden {
+    display: none;
+  }
+
+  .bui-inline {
+    display: inline;
+  }
+
+  .bui-inline-block {
+    display: inline-block;
+  }
+
+  .bui-items-center {
+    align-items: center;
+  }
+
+  .bui-items-end {
+    align-items: flex-end;
+  }
+
+  .bui-items-start {
+    align-items: flex-start;
+  }
+
+  .bui-items-stretch {
+    align-items: stretch;
+  }
+
+  .bui-justify-around {
+    justify-content: space-around;
+  }
+
+  .bui-justify-between {
+    justify-content: space-between;
+  }
+
+  .bui-justify-center {
+    justify-content: center;
+  }
+
+  .bui-justify-end {
+    justify-content: flex-end;
+  }
+
+  .bui-justify-start {
+    justify-content: flex-start;
+  }
+
+  .bui-justify-stretch {
+    justify-content: stretch;
+  }
+
+  .bui-rounded-2xl {
+    border-radius: var(--bui-radius-full);
+  }
+
+  .bui-rounded-2xs {
+    border-radius: var(--bui-radius-1);
+  }
+
+  .bui-rounded-lg {
+    border-radius: var(--bui-radius-5);
+  }
+
+  .bui-rounded-md {
+    border-radius: var(--bui-radius-4);
+  }
+
+  .bui-rounded-none {
+    border-radius: 0;
+  }
+
+  .bui-rounded-sm {
+    border-radius: var(--bui-radius-3);
+  }
+
+  .bui-rounded-xl {
+    border-radius: var(--bui-radius-6);
+  }
+
+  .bui-rounded-xs {
+    border-radius: var(--bui-radius-2);
+  }
+
+  .bui-wrap-reverse {
+    flex-wrap: wrap-reverse;
+  }
+}

@@ -1,5 +1,109 @@
 # @backstage/create-app
 
+## 0.7.4-next.1
+
+### Patch Changes
+
+- 02dbe8e: Add missing dependency to `@backstage/cli`, `@backstage/core-plugin-api` and `@backstage/integration-react`
+
+## 0.7.4-next.0
+
+### Patch Changes
+
+- b2d9fc1: Creates a plugin that redirects from the Home page to the Catalog index page to avoid seeing a not found page error when starting the app.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.2
+
+### Patch Changes
+
+- d7a3d04: Created a flag for scaffolding apps using the new frontend system.
+- 4704160: Bumped create-app version.
+- 1e8a013: Bumped create-app version.
+- e33fce1: Added Notifications and Signals to be installed by default
+- 8b1bf6e: Updated the `app.packages` config setting now that it no longer is experimental
+- 2a156e0: Updated the `better-sqlite` dependency from `v9.0.0` to `v13.0.0`. You can apply this change to your instance by applying the following change to your `packages/backend/package.json` and running `yarn install`.
+
+  ```diff
+    "dependencies": {
+      "app": "link:../app",
+  -    "better-sqlite3": "^9.0.0",
+  +    "better-sqlite3": "^12.0.0",
+      "node-gyp": "^10.0.0",
+      "pg": "^8.11.3"
+    }
+  ```
+
+## 0.7.2-next.3
+
+### Patch Changes
+
+- 8b1bf6e: Updated the `app.packages` config setting now that it no longer is experimental
+
+## 0.7.2-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.2-next.1
+
+### Patch Changes
+
+- d7a3d04: Created a flag for scaffolding apps using the new frontend system.
+- 2a156e0: Updated the `better-sqlite` dependency from `v9.0.0` to `v13.0.0`. You can apply this change to your instance by applying the following change to your `packages/backend/package.json` and running `yarn install`.
+
+  ```diff
+    "dependencies": {
+      "app": "link:../app",
+  -    "better-sqlite3": "^9.0.0",
+  +    "better-sqlite3": "^12.0.0",
+      "node-gyp": "^10.0.0",
+      "pg": "^8.11.3"
+    }
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.1
+
+### Patch Changes
+
+- 952cefe: Bumped create-app version.
+- 2339363: **BREAKING:** The experimental `catalog.useUrlReadersSearch` configuration flag (introduced in v1.36) has been removed.
+
+  The `UrlReaderProcessor` now always uses the `search` method of `UrlReaders`. Built-in `UrlReaderService` implementations have been updated accordingly.
+  If you use custom `UrlReaderService` implementations, you need to adapt their `search` method to correctly handle both specific URLs and potential
+  search patterns (see changes on built-in readers [in the original PR](https://github.com/backstage/backstage/pull/28379/files#diff-68b0452f173ee54bdd40f7b5e047a9cb8bb59200425622c212c217b76dac1d1b)).
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. Each `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+- c4a0830: Removed deprecated 'allowedHosts' field from GitHub Publish action input in default template files to fix validation errors with strict Zod validation.
+
+## 0.7.1-next.2
+
+### Patch Changes
+
+- c4a0830: Removed deprecated 'allowedHosts' field from GitHub Publish action input in default template files to fix validation errors with strict Zod validation.
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
 ## 0.7.1-next.0
 
 ### Patch Changes

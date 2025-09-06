@@ -5,8 +5,6 @@ sidebar_label: Extension Overrides
 description: Frontend extension overrides
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 ## Introduction
 
 An important customization point in the frontend system is the ability to override existing extensions. It can be used for anything from slight tweaks to the extension logic, to completely replacing an extension with a custom implementation. While extensions are encouraged to make themselves configurable, there are many situations where you need to override an extension to achieve the desired behavior. The ability to override extensions should be kept in mind when building plugins, and can be a powerful tool to allow for deeper customizations without the need to re-implement large parts of the plugin.
@@ -89,7 +87,7 @@ const exampleExtension = PageBlueprint.make({
   params: {
     loader: () =>
       import('./components/ExamplePage').then(m => <m.ExamplePage />),
-    defaultPath: '/example',
+    path: '/example',
   },
 });
 ```
@@ -318,7 +316,7 @@ import {
 
 const customSearchPage = PageBlueprint.make({
   params: {
-    defaultPath: '/search',
+    path: '/search',
     loader: () =>
       import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
   },

@@ -1,5 +1,69 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.7.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/backend-defaults@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 0.7.2
+
+### Patch Changes
+
+- 8dfe76f: Added support for multiple group patterns instead of a single one to increase flexibility when filtering groups from GitLab.
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.2-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/integration@1.17.1
+  - @backstage/plugin-catalog-common@1.1.5
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/integration@1.17.1
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
 ## 0.7.1-next.0
 
 ### Patch Changes

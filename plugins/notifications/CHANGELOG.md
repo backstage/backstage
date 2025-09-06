@@ -1,5 +1,115 @@
 # @backstage/plugin-notifications
 
+## 0.5.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+
+## 0.5.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.1.0
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.5.8
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- 5a70981: Fix duplicate notification origins with multiple channels
+- 8a24e0f: Improve customization of the notification snackbar.
+
+  Users can now customize the notification snackbar by providing custom components and icons
+  for different severity levels. Additionally, the location of the snackbar notifications
+  can be modified, the density of the snackbar can be changed, and the number of snacks can
+  be limited.
+
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/theme@0.6.8
+  - @backstage/plugin-notifications-common@0.1.0
+
+## 0.5.8-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-notifications-common@0.0.10
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.5.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-notifications-common@0.0.10-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-signals-react@0.0.15-next.0
+
 ## 0.5.7-next.0
 
 ### Patch Changes

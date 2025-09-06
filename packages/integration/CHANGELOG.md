@@ -1,5 +1,27 @@
 # @backstage/integration
 
+## 1.18.0-next.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
+## 1.17.1
+
+### Patch Changes
+
+- e0189b8: UrlReader: Fix handling of access tokens for GitLab readURL requests
+- d1e4a6d: Fixed bug where the GitLab user token and GitLab integration token were being merged together
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 1.17.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
 ## 1.17.1-next.0
 
 ### Patch Changes

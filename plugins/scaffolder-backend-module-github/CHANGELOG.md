@@ -1,5 +1,95 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.8.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- a22cce0: Fixed bug in the `customProperties` type which was preventing it being used to set a list of values against a key (e.g. for multi-select fields)
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.8.2-next.1
+
+### Patch Changes
+
+- a22cce0: Fixed bug in the `customProperties` type which was preventing it being used to set a list of values against a key (e.g. for multi-select fields)
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+
+## 0.8.1
+
+### Patch Changes
+
+- f36bcf9: Added support for file deletion to `publish:github:pull-request` action.
+
+  Example usage:
+
+  ```diff
+    - action: publish:github:pull-request
+      id: clean-up-pr
+      input:
+        description: This is the description
+  +     filesToDelete:
+  +       - outdated/changelog.md
+  +       - sample-file.txt
+        owner: owner
+        repo: repo
+        title: Title Goes Here
+
+  ```
+
+- 38db3eb: Fix typo in `InputError`
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/integration@1.17.1
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-node@1.17.2
+
+## 0.8.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
+## 0.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+
 ## 0.8.1-next.0
 
 ### Patch Changes

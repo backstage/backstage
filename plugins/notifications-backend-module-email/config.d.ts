@@ -132,6 +132,23 @@ export interface Config {
            */
           receiverEmails?: string[];
         };
+        /**
+         * Optional SES config for mail options. Allows for delegated sender
+         */
+        sesConfig?: {
+          /**
+           * ARN of the identity to use as the source of the email
+           */
+          sourceArn?: string;
+          /**
+           * ARN of the identity to use for the "From"/sender address of the email
+           */
+          fromArn?: string;
+          /**
+           * Name of the configuration set to use when sending email via ses
+           */
+          configurationSetName?: string;
+        };
         cache?: {
           /**
            * Email cache TTL, defaults to 1 hour

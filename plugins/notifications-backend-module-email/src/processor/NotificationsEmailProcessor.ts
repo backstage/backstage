@@ -52,6 +52,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly transportConfig: Config;
   private readonly sender: string;
   private readonly replyTo?: string;
+  private readonly sesConfig?: Config;
   private readonly cacheTtl: number;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
@@ -76,6 +77,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       emailProcessorConfig.getOptionalConfig('broadcastConfig');
     this.sender = emailProcessorConfig.getString('sender');
     this.replyTo = emailProcessorConfig.getOptionalString('replyTo');
+    this.sesConfig = emailProcessorConfig.getOptionalConfig('sesConfig');
     this.concurrencyLimit =
       emailProcessorConfig.getOptionalNumber('concurrencyLimit') ?? 2;
     this.throttleInterval = emailProcessorConfig.has('throttleInterval')
@@ -292,6 +294,24 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     return contentParts.join('\n\n');
   }
 
+  private async getSesOptions() {
+    if (!this.sesConfig) {
+      return undefined;
+    }
+    const ses: Record<string, string> = {};
+    const sourceArn = this.sesConfig.getOptionalString('sourceArn');
+    const fromArn = this.sesConfig.getOptionalString('fromArn');
+    const configurationSetName = this.sesConfig.getOptionalString(
+      'configurationSetName',
+    );
+
+    if (sourceArn) ses.SourceArn = sourceArn;
+    if (fromArn) ses.FromArn = fromArn;
+    if (configurationSetName) ses.ConfigurationSetName = configurationSetName;
+
+    return Object.keys(ses).length > 0 ? ses : undefined;
+  }
+
   private async sendPlainEmail(notification: Notification, emails: string[]) {
     const mailOptions = {
       from: this.sender,
@@ -299,6 +319,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: this.getHtmlContent(notification),
       text: this.getTextContent(notification),
       replyTo: this.replyTo,
+      ses: await this.getSesOptions(),
     };
 
     await this.sendMails(mailOptions, emails);
@@ -316,6 +337,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: await this.templateRenderer?.getHtml?.(notification),
       text: await this.templateRenderer?.getText?.(notification),
       replyTo: this.replyTo,
+      ses: await this.getSesOptions(),
     };
 
     await this.sendMails(mailOptions, emails);

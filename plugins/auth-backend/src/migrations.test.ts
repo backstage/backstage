@@ -107,4 +107,83 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20250707164600_user_created_at.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateUntilBefore(knex, '20250707164600_user_created_at.js');
+
+      if (knex.client.config.client.includes('sqlite')) {
+        // Sqlite doesn't support adding a column with non-constant default when table has data
+        // so we just test that the migration runs without errors
+        await migrateUpOnce(knex);
+
+        return;
+      }
+
+      const user_info = JSON.stringify({
+        claims: {
+          ent: ['group:default/group1', 'group:default/group2'],
+        },
+      });
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user',
+          user_info,
+          exp: knex.fn.now(),
+        })
+        .into('user_info');
+
+      const { exp } = await knex('user_info').first();
+
+      await migrateUpOnce(knex);
+
+      const { created_at, updated_at } = await knex('user_info').first();
+
+      expect(updated_at).toEqual(exp);
+      expect(created_at).toBeDefined();
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user',
+          user_info,
+          updated_at: knex.fn.now(),
+        })
+        .into('user_info')
+        .onConflict(['user_entity_ref'])
+        .merge();
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user-2',
+          user_info,
+          updated_at: knex.fn.now(),
+        })
+        .into('user_info');
+
+      await expect(
+        knex('user_info').select('created_at', 'updated_at'),
+      ).resolves.toEqual([
+        {
+          created_at: expect.any(Date),
+          updated_at: expect.any(Date),
+        },
+        {
+          created_at: expect.any(Date),
+          updated_at: expect.any(Date),
+        },
+      ]);
+
+      await migrateDownOnce(knex);
+
+      await expect(knex('user_info').select('exp')).resolves.toEqual([
+        { exp: expect.any(Date) },
+        { exp: expect.any(Date) },
+      ]);
+
+      await knex.destroy();
+    },
+  );
 });

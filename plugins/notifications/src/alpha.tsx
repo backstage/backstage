@@ -17,7 +17,6 @@
 import {
   ApiBlueprint,
   PageBlueprint,
-  createApiFactory,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
@@ -31,7 +30,7 @@ import { NotificationsClient, notificationsApiRef } from './api';
 
 const page = PageBlueprint.make({
   params: {
-    defaultPath: '/notifications',
+    path: '/notifications',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('./components/NotificationsPage').then(m => (
@@ -41,14 +40,13 @@ const page = PageBlueprint.make({
 });
 
 const api = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: notificationsApiRef,
       deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
         new NotificationsClient({ discoveryApi, fetchApi }),
     }),
-  },
 });
 
 /** @alpha */

@@ -50,6 +50,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'supportConfig.default.title': 'Support Not Configured';
     readonly 'supportConfig.default.linkTitle': 'Add `app.support` config key';
     readonly 'errorBoundary.title': 'Please contact {{slackChannel}} for help.';
+    readonly 'oauthRequestDialog.message': 'Sign-in to allow {{appTitle}} access to {{provider}} APIs and identities.';
     readonly 'oauthRequestDialog.title': 'Login Required';
     readonly 'oauthRequestDialog.authRedirectTitle': 'This will trigger a http redirect to OAuth Login.';
     readonly 'oauthRequestDialog.login': 'Log in';

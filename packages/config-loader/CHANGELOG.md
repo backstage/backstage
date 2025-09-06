@@ -1,5 +1,21 @@
 # @backstage/config-loader
 
+## 1.10.2
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 1.10.2-next.0
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
 ## 1.10.1
 
 ### Patch Changes

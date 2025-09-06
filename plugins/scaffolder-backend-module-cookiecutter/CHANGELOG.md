@@ -1,5 +1,67 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.3.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/backend-defaults@0.12.1-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.3.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.0
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.2-next.0
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+
+## 0.3.13
+
+### Patch Changes
+
+- cf9ba6f: Fixing the typescript issue with using `z.unknown()`
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/integration@1.17.1
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.3.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
+## 0.3.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+
 ## 0.3.13-next.0
 
 ### Patch Changes

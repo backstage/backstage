@@ -15,6 +15,7 @@
  */
 import yargs from 'yargs';
 import { createCliPlugin } from '../../wiring/factory';
+import { lazy } from '../../lib/lazy';
 
 export default createCliPlugin({
   pluginId: 'info',
@@ -24,9 +25,7 @@ export default createCliPlugin({
       description: 'Show helpful information for debugging and reporting bugs',
       execute: async ({ args }) => {
         yargs().parse(args);
-        const { default: command } =
-          require('./commands/info') as typeof import('./commands/info');
-        await command();
+        await lazy(() => import('./commands/info'), 'default')(args);
       },
     });
   },

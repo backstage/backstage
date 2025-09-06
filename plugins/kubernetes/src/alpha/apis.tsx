@@ -16,7 +16,6 @@
 
 import {
   ApiBlueprint,
-  createApiFactory,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
@@ -41,8 +40,8 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const kubernetesApiExtension = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: kubernetesApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -56,13 +55,12 @@ export const kubernetesApiExtension = ApiBlueprint.make({
           kubernetesAuthProvidersApi,
         }),
     }),
-  },
 });
 
 export const kubernetesProxyApi = ApiBlueprint.make({
   name: 'proxy',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: kubernetesProxyApiRef,
       deps: {
         kubernetesApi: kubernetesApiRef,
@@ -72,13 +70,12 @@ export const kubernetesProxyApi = ApiBlueprint.make({
           kubernetesApi,
         }),
     }),
-  },
 });
 
 export const kubernetesAuthProvidersApi = ApiBlueprint.make({
   name: 'auth-providers',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: kubernetesAuthProvidersApiRef,
       deps: {
         gitlabAuthApi: gitlabAuthApiRef,
@@ -109,13 +106,12 @@ export const kubernetesAuthProvidersApi = ApiBlueprint.make({
         });
       },
     }),
-  },
 });
 
 export const kubernetesClusterLinkFormatterApi = ApiBlueprint.make({
   name: 'cluster-link-formatter',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: kubernetesClusterLinkFormatterApiRef,
       deps: { googleAuthApi: googleAuthApiRef },
       factory: deps => {
@@ -126,5 +122,4 @@ export const kubernetesClusterLinkFormatterApi = ApiBlueprint.make({
         });
       },
     }),
-  },
 });

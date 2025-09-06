@@ -37,6 +37,7 @@ import { merge } from 'lodash';
 import {
   ComponentType,
   useCallback,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -217,6 +218,13 @@ export const Stepper = (stepperProps: StepperProps) => {
     },
     [validation, analytics],
   );
+
+  useEffect(() => {
+    const main = document.querySelector('main');
+    if (main && typeof main.scrollTo === 'function') {
+      main.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }, [activeStep]);
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 

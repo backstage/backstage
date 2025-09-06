@@ -1,0 +1,47 @@
+import { PropsTable } from '@/components/PropsTable';
+import { TooltipSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  tooltipDefaultSnippet,
+  tooltipUsageSnippet,
+  tooltipTriggerPropDefs,
+  tooltipPropDefs,
+} from './tooltip.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Tooltip"
+  description="A tooltip displays a description of an element on hover or focus."
+/>
+
+<Snippet
+  py={4}
+  preview={<TooltipSnippet story="Default" />}
+  code={tooltipDefaultSnippet}
+  align="center"
+/>
+
+## Usage
+
+<CodeBlock code={tooltipUsageSnippet} />
+
+## API reference
+
+### TooltipTrigger
+
+The trigger will wrap both the trigger and the tooltip.
+
+<PropsTable data={tooltipTriggerPropDefs} />
+
+### Tooltip
+
+The tooltip will wrap the content of the tooltip.
+
+<PropsTable data={tooltipPropDefs} />
+
+<Theming component="Tooltip" />
+
+<ChangelogComponent component="tooltip" />

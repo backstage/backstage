@@ -1,5 +1,17 @@
 # @backstage/catalog-model
 
+## 1.7.5
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+
+## 1.7.5-next.0
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+
 ## 1.7.4
 
 ### Patch Changes

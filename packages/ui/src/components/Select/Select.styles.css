@@ -1,0 +1,176 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.bui-Select[data-invalid] {
+  & .bui-SelectTrigger {
+    border-color: var(--bui-fg-danger);
+  }
+}
+
+.bui-SelectTrigger {
+  box-sizing: border-box;
+  border-radius: var(--bui-radius-3);
+  border: 1px solid var(--bui-border);
+  background-color: var(--bui-bg-surface-1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  gap: var(--bui-space-2);
+  width: 100%;
+
+  & svg {
+    flex-shrink: 0;
+    color: var(--bui-fg-secondary);
+  }
+
+  &[data-size='small'] {
+    height: 2rem;
+    padding-inline: var(--bui-space-3);
+  }
+
+  &[data-size='medium'] {
+    height: 3rem;
+    padding-inline: var(--bui-space-4);
+  }
+
+  &[data-size='small'] svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &[data-size='medium'] svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &::placeholder {
+    color: var(--bui-fg-secondary);
+  }
+
+  &:hover {
+    transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
+    border-color: var(--bui-border-hover);
+  }
+
+  &:focus-visible {
+    border-color: var(--bui-border-pressed);
+    outline: 0;
+  }
+
+  &[data-invalid] {
+    border-color: var(--bui-fg-danger);
+  }
+  &[data-invalid]:hover {
+    border-width: 2px;
+  }
+
+  &[data-invalid]:focus-visible {
+    border-width: 2px;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    border-color: var(--bui-border-disabled);
+    color: var(--bui-fg-disabled);
+  }
+
+  &[disabled] .bui-SelectValue {
+    color: var(--bui-fg-disabled);
+  }
+
+  &[data-popup-open] .bui-SelectIcon {
+    transform: rotate(180deg);
+  }
+}
+
+.bui-SelectValue {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  font-weight: var(--bui-font-weight-regular);
+  color: var(--bui-fg-primary);
+  text-align: left;
+
+  & .bui-SelectItemIndicator {
+    display: none;
+  }
+
+  &[disabled] {
+    color: var(--bui-fg-disabled);
+  }
+}
+
+.bui-SelectItem {
+  position: relative;
+  width: var(--anchor-width);
+  display: grid;
+  grid-template-areas: 'icon text';
+  grid-template-columns: 1rem 1fr;
+  align-items: center;
+  padding-block: var(--bui-space-2);
+  padding-left: var(--bui-space-3);
+  padding-right: var(--bui-space-4);
+  color: var(--bui-fg-primary);
+  border-radius: var(--bui-radius-3);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--bui-font-size-3);
+  gap: var(--bui-space-1);
+  outline: none;
+
+  &[data-focused] {
+    z-index: 0;
+    position: relative;
+    color: var(--bui-fg-primary);
+  }
+
+  &[data-focused]::before {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0.25rem;
+    border-radius: 0.25rem;
+    background-color: var(--bui-bg-tint-hover);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    color: var(--bui-fg-disabled);
+  }
+
+  &[data-selected] .bui-SelectItemIndicator {
+    opacity: 1;
+  }
+}
+
+.bui-SelectItemIndicator {
+  grid-area: icon;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.bui-SelectItemLabel {
+  flex: 1;
+  grid-area: text;
+}

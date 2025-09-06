@@ -1,5 +1,202 @@
 # @backstage/frontend-app-api
 
+## 0.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/frontend-defaults@0.3.1-next.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 8e21c4d: Use an app plugin for built-in extension app node specs.
+- df7bd3b: **BREAKING**: Removed the deprecated `FrontendFeature` type, import it from `@backstage/frontend-plugin-api` instead.
+- 8e21c4d: The `AppNodeSpec.plugin` property is now required.
+- 5e12252: **BREAKING**: Restructured some of option fields of `createApp` and `createSpecializedApp`.
+
+  - For `createApp`, all option fields _except_ `features` and `bindRoutes` have been moved into a new `advanced` object field.
+  - For `createSpecializedApp`, all option fields _except_ `features`, `config`, and `bindRoutes` have been moved into a new `advanced` object field.
+
+  This helps highlight that some options are meant to rarely be needed or used, and simplifies the usage of those options that are almost always required.
+
+  As an example, if you used to supply a custom config loader, you would update your code as follows:
+
+  ```diff
+   createApp({
+     features: [...],
+  -  configLoader: new MyCustomLoader(),
+  +  advanced: {
+  +    configLoader: new MyCustomLoader(),
+  +  },
+   })
+  ```
+
+### Patch Changes
+
+- d9e00e3: Add support for a new `aliasFor` option for `createRouteRef`. This allows for the creation of a new route ref that acts as an alias for an existing route ref that is installed in the app. This is particularly useful when creating modules that override existing plugin pages, without referring to the existing plugin. For example:
+
+  ```tsx
+  export default createFrontendModule({
+    pluginId: 'catalog',
+    extensions: [
+      PageBlueprint.make({
+        params: {
+          defaultPath: '/catalog',
+          routeRef: createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+          loader: () =>
+            import('./CustomCatalogIndexPage').then(m => (
+              <m.CustomCatalogIndexPage />
+            )),
+        },
+      }),
+    ],
+  });
+  ```
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- ef54427: Internal cleanup of routing system data.
+- 391f0ca: External route references are no longer required to be exported via a plugin instance to function. The default target will still be resolved even if the external route reference is not included in `externalRoutes` of a plugin, but users of the plugin will not be able to configure the target of the route. This is particularly useful when building modules or overrides for existing plugins, allowing you add external routes both within and out from the plugin.
+- f3f9d57: Renaming the `getNodesByRoutePath` parameter from `sourcePath` to `routePath`
+- 8b1bf6e: Deprecated new frontend system config setting `app.experimental.packages` to just `app.packages`. The old config will continue working for the time being, but may be removed in a future release.
+- fda1bbc: Added a default implementation of the `SwappableComponentsApi` and removing the legacy `ComponentsApi` implementation
+- 1c2cc37: Improved runtime error message clarity when extension factories don't return an iterable object.
+- 3d2499f: Moved `createSpecializedApp` options to a new `CreateSpecializedAppOptions` type.
+- Updated dependencies
+  - @backstage/frontend-defaults@0.3.0
+  - @backstage/frontend-plugin-api@0.11.0
+
+## 0.12.0-next.3
+
+### Minor Changes
+
+- 8e21c4d: Use an app plugin for built-in extension app node specs.
+- 8e21c4d: The `AppNodeSpec.plugin` property is now required.
+- 5e12252: **BREAKING**: Restructured some of option fields of `createApp` and `createSpecializedApp`.
+
+  - For `createApp`, all option fields _except_ `features` and `bindRoutes` have been moved into a new `advanced` object field.
+  - For `createSpecializedApp`, all option fields _except_ `features`, `config`, and `bindRoutes` have been moved into a new `advanced` object field.
+
+  This helps highlight that some options are meant to rarely be needed or used, and simplifies the usage of those options that are almost always required.
+
+  As an example, if you used to supply a custom config loader, you would update your code as follows:
+
+  ```diff
+   createApp({
+     features: [...],
+  -  configLoader: new MyCustomLoader(),
+  +  advanced: {
+  +    configLoader: new MyCustomLoader(),
+  +  },
+   })
+  ```
+
+### Patch Changes
+
+- f3f9d57: Renaming the `getNodesByRoutePath` parameter from `sourcePath` to `routePath`
+- 8b1bf6e: Deprecated new frontend system config setting `app.experimental.packages` to just `app.packages`. The old config will continue working for the time being, but may be removed in a future release.
+- fda1bbc: Added a default implementation of the `SwappableComponentsApi` and removing the legacy `ComponentsApi` implementation
+- 1c2cc37: Improved runtime error message clarity when extension factories don't return an iterable object.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/frontend-defaults@0.3.0-next.3
+
+## 0.12.0-next.2
+
+### Minor Changes
+
+- df7bd3b: **BREAKING**: Removed the deprecated `FrontendFeature` type, import it from `@backstage/frontend-plugin-api` instead.
+
+### Patch Changes
+
+- d9e00e3: Add support for a new `aliasFor` option for `createRouteRef`. This allows for the creation of a new route ref that acts as an alias for an existing route ref that is installed in the app. This is particularly useful when creating modules that override existing plugin pages, without referring to the existing plugin. For example:
+
+  ```tsx
+  export default createFrontendModule({
+    pluginId: 'catalog',
+    extensions: [
+      PageBlueprint.make({
+        params: {
+          defaultPath: '/catalog',
+          routeRef: createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+          loader: () =>
+            import('./CustomCatalogIndexPage').then(m => (
+              <m.CustomCatalogIndexPage />
+            )),
+        },
+      }),
+    ],
+  });
+  ```
+
+- 3d2499f: Moved `createSpecializedApp` options to a new `CreateSpecializedAppOptions` type.
+- Updated dependencies
+  - @backstage/frontend-defaults@0.3.0-next.2
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.5-next.1
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/frontend-defaults@0.2.5-next.1
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.2.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.11.4
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/core-app-api@1.18.0
+  - @backstage/frontend-defaults@0.2.4
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.11.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.18.0-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.11.4-next.1
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/core-app-api@1.17.2-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-defaults@0.2.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
 ## 0.11.4-next.0
 
 ### Patch Changes
