@@ -64,7 +64,7 @@ function resolveInputDataContainer(
   extensionData: Array<ExtensionDataRef>,
   attachment: AppNode,
   inputName: string,
-  collector: ErrorCollector,
+  collector: ErrorCollector<'node' | 'inputName'>,
 ): ({ node: AppNode } & ExtensionDataContainer<ExtensionDataRef>) | undefined {
   const dataMap = new Map<string, unknown>();
 
@@ -211,7 +211,7 @@ function resolveV2Inputs(
     >;
   },
   attachments: ReadonlyMap<string, AppNode[]>,
-  collector: ErrorCollector,
+  parentCollector: ErrorCollector<'node'>,
 ):
   | undefined
   | ResolvedExtensionInputs<{
@@ -223,6 +223,7 @@ function resolveV2Inputs(
   let failed = false;
   const resolvedInputs = mapValues(inputMap, (input, inputName) => {
     const attachedNodes = attachments.get(inputName) ?? [];
+    const collector = parentCollector.child({ inputName });
 
     if (input.config.singleton) {
       if (attachedNodes.length > 1) {
@@ -232,7 +233,6 @@ function resolveV2Inputs(
           message: `expected ${
             input.config.optional ? 'at most' : 'exactly'
           } one '${inputName}' input but received multiple: '${attachedNodeIds}'`,
-          context: { inputName },
         });
         failed = true;
         return undefined;
@@ -241,7 +241,6 @@ function resolveV2Inputs(
           collector.report({
             code: 'EXTENSION_MISSING_REQUIRED_INPUT',
             message: `input '${inputName}' is required but was not received`,
-            context: { inputName },
           });
           failed = true;
         }
@@ -481,7 +480,7 @@ export function createAppNodeInstance(options: {
 export function instantiateAppNodeTree(
   rootNode: AppNode,
   apis: ApiHolder,
-  errors: ErrorCollector,
+  collector: ErrorCollector,
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware,
 ): boolean {
   function createInstance(node: AppNode): AppNodeInstance | undefined {
@@ -512,7 +511,7 @@ export function instantiateAppNodeTree(
       node,
       apis,
       attachments: instantiatedAttachments,
-      collector: errors,
+      collector,
     });
 
     return node.instance;

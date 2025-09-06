@@ -19,34 +19,96 @@ import {
   AppNodeSpec,
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { Expand } from '@backstage/types';
 
-/** @public */
-export type AppError = {
-  code: string;
-  message: string;
-  context?: {
-    node?: AppNode;
-    spec?: AppNodeSpec;
-    plugin?: FrontendPlugin;
-    extensionId?: string;
-    inputName?: string;
-    dataRefId?: string;
-  };
+type AppErrorTypes = {
+  // resolveAppNodeSpecs
+  EXTENSION_FORBIDDEN: 'plugin' | 'extensionId';
+  EXTENSION_DUPLICATED: 'plugin' | 'extensionId';
+  EXTENSION_CONFIG_FORBIDDEN: 'extensionId';
+  EXTENSION_CONFIG_UNKNOWN_EXTENSION: 'extensionId';
+  // resolveAppTree
+  DUPLICATE_EXTENSION_ID: 'spec';
+  DUPLICATE_REDIRECT_TARGET: 'spec' | 'inputName';
+  // instantiateAppNodeTree
+  EXTENSION_DUPLICATE_INPUT: 'node' | 'inputName';
+  EXTENSION_MISSING_INPUT_DATA: 'node' | 'inputName';
+  EXTENSION_TOO_MANY_ATTACHMENTS: 'node' | 'inputName';
+  EXTENSION_MISSING_REQUIRED_INPUT: 'node' | 'inputName';
+  INVALID_CONFIGURATION: 'node';
+  EXTENSION_FACTORY_INVALID_OUTPUT: 'node';
+  EXTENSION_FACTORY_DUPLICATE_OUTPUT: 'node' | 'dataRefId';
+  EXTENSION_FACTORY_MISSING_REQUIRED_OUTPUT: 'node' | 'dataRefId';
+  EXTENSION_FACTORY_UNEXPECTED_OUTPUT: 'node' | 'dataRefId';
+  UNEXPECTED_EXTENSION_VERSION: 'node';
+  FAILED_TO_INSTANTIATE_EXTENSION: 'node';
+  // createSpecializedApp
+  NO_API_FACTORY: 'node';
 };
 
+type AppErrorContext = {
+  node?: AppNode;
+  spec?: AppNodeSpec;
+  plugin?: FrontendPlugin;
+  extensionId?: string;
+  dataRefId?: string;
+  inputName?: string;
+};
+
+/** @public */
+export type AppError<TCode extends keyof AppErrorTypes = keyof AppErrorTypes> =
+  {
+    code: TCode;
+    message: string;
+    context: Expand<
+      AppErrorContext &
+        Pick<
+          Required<AppErrorContext>,
+          keyof AppErrorTypes extends TCode ? never : AppErrorTypes[TCode]
+        >
+    >;
+  };
+
 /** @internal */
-export interface ErrorCollector {
-  report(report: AppError): void;
-  child(context?: AppError['context']): ErrorCollector;
+export interface ErrorCollector<
+  TContext extends keyof AppErrorContext = never,
+> {
+  // Type-only: here to make sure that all required keys are present
+  $$contextKeys: { [K in TContext]: K };
+  report<TCode extends keyof AppErrorTypes>(
+    report: Exclude<
+      AppErrorTypes[TCode],
+      TContext
+    > extends infer IContext extends keyof AppErrorContext
+      ? [IContext] extends [never]
+        ? {
+            code: TCode;
+            message: string;
+          }
+        : {
+            code: TCode;
+            message: string;
+            context: Pick<Required<AppErrorContext>, IContext>;
+          }
+      : never,
+  ): void;
+  child<TAdditionalContext extends AppErrorContext>(
+    context?: TAdditionalContext & AppErrorContext,
+  ): ErrorCollector<
+    (TContext | keyof TAdditionalContext) & keyof AppErrorContext
+  >;
   collectErrors(): AppError[] | undefined;
 }
 
 /** @internal */
-export function createErrorCollector(context?: AppError['context']) {
+export function createErrorCollector(
+  context?: AppError['context'],
+): ErrorCollector {
   const errors: AppError[] = [];
   const children: ErrorCollector[] = [];
   return {
-    report(report: AppError) {
+    $$contextKeys: null as any,
+    report(report) {
       errors.push({ ...report, context: { ...context, ...report.context } });
     },
     collectErrors() {
@@ -60,10 +122,10 @@ export function createErrorCollector(context?: AppError['context']) {
       }
       return allErrors;
     },
-    child(childContext: AppError['context']) {
+    child(childContext) {
       const child = createErrorCollector(childContext);
       children.push(child);
-      return child;
+      return child as ErrorCollector<any>;
     },
   };
 }
