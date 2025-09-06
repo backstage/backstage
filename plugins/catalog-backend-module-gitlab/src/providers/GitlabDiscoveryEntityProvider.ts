@@ -233,22 +233,11 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     };
 
     const groupToProcess = new Map<string, GitLabGroup>();
-    let groupFilters;
+    const groupFilters = Array.isArray(this.config.groupPattern)
+      ? this.config.groupPattern
+      : [this.config.groupPattern];
 
-    if (this.config.groupPattern !== undefined) {
-      const patterns = Array.isArray(this.config.groupPattern)
-        ? this.config.groupPattern
-        : [this.config.groupPattern];
-
-      if (patterns.length === 1 && patterns[0].source === '[\\s\\S]*') {
-        // if the pattern is a catch-all, we don't need to filter groups
-        groupFilters = new Array<RegExp>();
-      } else {
-        groupFilters = patterns;
-      }
-    }
-
-    if (groupFilters && groupFilters.length > 0) {
+    if (this.config.groupPattern && groupFilters && groupFilters.length > 0) {
       const groups = paginated<GitLabGroup>(
         options => this.gitLabClient.listGroups(options),
         {
@@ -259,7 +248,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
       for await (const group of groups) {
         if (
-          groupFilters.some(groupFilter => groupFilter.test(group.full_path)) &&
+          groupFilters.some(
+            groupFilter => groupFilter && groupFilter.test(group.full_path),
+          ) &&
           !groupToProcess.has(group.full_path)
         ) {
           groupToProcess.set(group.full_path, group);

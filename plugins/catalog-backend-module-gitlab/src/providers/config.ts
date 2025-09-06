@@ -41,17 +41,15 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   );
 
   const configValue = config.getOptional('groupPattern');
-  let groupPattern;
+  let groupPattern = undefined;
 
-  if ((configValue && typeof configValue === 'string') || !configValue) {
-    groupPattern = new RegExp(
-      config.getOptionalString('groupPattern') ?? /[\s\S]*/,
-    );
-  } else if (configValue && Array.isArray(configValue)) {
+  if (configValue && Array.isArray(configValue)) {
     const configPattern = config.getOptionalStringArray('groupPattern') ?? [];
     groupPattern = configPattern.map(pattern => new RegExp(pattern));
-  } else {
-    groupPattern = new RegExp(/[\s\S]*/);
+  }
+
+  if (configValue && typeof configValue === 'string') {
+    groupPattern = new RegExp(configValue);
   }
 
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
