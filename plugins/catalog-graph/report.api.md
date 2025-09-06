@@ -181,8 +181,31 @@ export type EntityRelationsGraphProps = {
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
+  onPostTransformation?: GraphTransformationDebugger;
 };
 
 // @public
+export type GraphTransformationDebugger = (
+  transformation: string | undefined,
+  transformationContext: TransformationContext,
+  clonedContext: TransformationContext,
+) => void;
+
+// @public
 export type RelationPairs = [string, string][];
+
+// @public
+export interface TransformationContext {
+  // (undocumented)
+  edges: EntityEdge[];
+  // (undocumented)
+  maxDepth: number;
+  nodeDistances: Map<string, number>;
+  // (undocumented)
+  nodes: EntityNode[];
+  // (undocumented)
+  rootEntityRefs: string[];
+  // (undocumented)
+  unidirectional: boolean;
+}
 ```

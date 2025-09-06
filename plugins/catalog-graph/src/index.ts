@@ -35,3 +35,7 @@ export type {
   EntityNode,
 } from './lib/types';
 export { Direction } from './lib/types';
+export type {
+  TransformationContext,
+  GraphTransformationDebugger,
+} from './lib/graph-transformations';
