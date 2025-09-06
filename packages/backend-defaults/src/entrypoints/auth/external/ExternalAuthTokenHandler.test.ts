@@ -15,7 +15,7 @@
  */
 
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
-import { ExternalAuthTokenManager } from './ExternalAuthTokenHandler';
+import { ExternalAuthTokenHandler } from './ExternalAuthTokenHandler';
 import { createExternalTokenHandler } from './helpers';
 import { AccessRestrictionsMap, ExternalTokenHandler } from './types';
 import {
@@ -108,7 +108,7 @@ describe('ExternalTokenHandler', () => {
       }),
     );
 
-    const plugin1 = new ExternalAuthTokenManager('plugin1', [
+    const plugin1 = new ExternalAuthTokenHandler('plugin1', [
       {
         context: undefined,
         handler: handler1,
@@ -119,7 +119,7 @@ describe('ExternalTokenHandler', () => {
         allAccessRestrictions: accessRestrictions,
       },
     ]);
-    const plugin2 = new ExternalAuthTokenManager('plugin2', [
+    const plugin2 = new ExternalAuthTokenHandler('plugin2', [
       {
         context: undefined,
         handler: handler1,
@@ -160,7 +160,7 @@ describe('ExternalTokenHandler', () => {
       ),
     );
 
-    const handler = ExternalAuthTokenManager.create({
+    const handler = ExternalAuthTokenHandler.create({
       ownPluginId: 'catalog',
       logger: mockServices.logger.mock(),
       config: mockServices.rootConfig({
@@ -252,7 +252,7 @@ describe('ExternalTokenHandler', () => {
     const verifyMock = jest.fn().mockResolvedValue({});
     const initializeMock = jest.fn().mockReturnValue({ context: 'a' });
 
-    const handler = ExternalAuthTokenManager.create({
+    const handler = ExternalAuthTokenHandler.create({
       ownPluginId: 'catalog',
       logger: mockServices.logger.mock(),
       config: mockServices.rootConfig({
@@ -305,7 +305,7 @@ describe('ExternalTokenHandler', () => {
   });
   it('should fail if config contains types not declared', async () => {
     const createHandler = () =>
-      ExternalAuthTokenManager.create({
+      ExternalAuthTokenHandler.create({
         ownPluginId: 'catalog',
         logger: mockServices.logger.mock(),
         config: mockServices.rootConfig({
@@ -338,7 +338,7 @@ describe('ExternalTokenHandler', () => {
 
   it('should show valid custom types in errors', async () => {
     const createHandler = () =>
-      ExternalAuthTokenManager.create({
+      ExternalAuthTokenHandler.create({
         ownPluginId: 'catalog',
         logger: mockServices.logger.mock(),
         config: mockServices.rootConfig({

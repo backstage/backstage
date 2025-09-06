@@ -60,13 +60,13 @@ type ContextMapEntry<T> = {
  *
  * @internal
  */
-export class ExternalAuthTokenManager {
+export class ExternalAuthTokenHandler {
   static create(options: {
     ownPluginId: string;
     config: RootConfigService;
     logger: LoggerService;
     externalTokenHandlers?: ExternalTokenHandler<unknown>[];
-  }): ExternalAuthTokenManager {
+  }): ExternalAuthTokenHandler {
     const {
       ownPluginId,
       config,
@@ -110,7 +110,7 @@ export class ExternalAuthTokenManager {
       );
     }
 
-    return new ExternalAuthTokenManager(ownPluginId, contexts);
+    return new ExternalAuthTokenHandler(ownPluginId, contexts);
   }
 
   constructor(
