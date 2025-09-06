@@ -1613,7 +1613,7 @@ describe('instantiateAppNodeTree', () => {
             code: 'EXTENSION_MISSING_INPUT_DATA',
             message:
               "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
-            context: { node },
+            context: { node, inputName: 'singleton' },
           },
         ]);
       });

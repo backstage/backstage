@@ -123,7 +123,7 @@ export function createErrorCollector(
       return allErrors;
     },
     child(childContext) {
-      const child = createErrorCollector(childContext);
+      const child = createErrorCollector({ ...context, ...childContext });
       children.push(child);
       return child as ErrorCollector<any>;
     },
