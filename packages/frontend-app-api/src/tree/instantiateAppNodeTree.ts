@@ -32,33 +32,6 @@ type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 
-function resolveV1InputDataMap(
-  dataMap: {
-    [name in string]: ExtensionDataRef;
-  },
-  attachment: AppNode,
-  inputName: string,
-) {
-  return mapValues(dataMap, ref => {
-    const value = attachment.instance?.getData(ref);
-    if (value === undefined && !ref.config.optional) {
-      const expected = Object.values(dataMap)
-        .filter(r => !r.config.optional)
-        .map(r => `'${r.id}'`)
-        .join(', ');
-
-      const provided = [...(attachment.instance?.getDataRefs() ?? [])]
-        .map(r => `'${r.id}'`)
-        .join(', ');
-
-      throw new Error(
-        `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
-      );
-    }
-    return value;
-  });
-}
-
 function resolveInputDataContainer(
   extensionData: Array<ExtensionDataRef>,
   attachment: AppNode,
@@ -133,61 +106,6 @@ function reportUndeclaredAttachments(
       ].join(' '),
     );
   }
-}
-
-function resolveV1Inputs(
-  inputMap: {
-    [inputName in string]: {
-      $$type: '@backstage/ExtensionInput';
-      extensionData: {
-        [name in string]: ExtensionDataRef;
-      };
-      config: { optional: boolean; singleton: boolean };
-    };
-  },
-  attachments: ReadonlyMap<string, AppNode[]>,
-) {
-  return mapValues(inputMap, (input, inputName) => {
-    const attachedNodes = attachments.get(inputName) ?? [];
-
-    if (input.config.singleton) {
-      if (attachedNodes.length > 1) {
-        const attachedNodeIds = attachedNodes.map(e => e.spec.id);
-        throw Error(
-          `expected ${
-            input.config.optional ? 'at most' : 'exactly'
-          } one '${inputName}' input but received multiple: '${attachedNodeIds.join(
-            "', '",
-          )}'`,
-        );
-      } else if (attachedNodes.length === 0) {
-        if (input.config.optional) {
-          return undefined;
-        }
-        throw Error(`input '${inputName}' is required but was not received`);
-      }
-      return {
-        node: attachedNodes[0],
-        output: resolveV1InputDataMap(
-          input.extensionData,
-          attachedNodes[0],
-          inputName,
-        ),
-      };
-    }
-
-    return attachedNodes.map(attachment => ({
-      node: attachment,
-      output: resolveV1InputDataMap(input.extensionData, attachment, inputName),
-    }));
-  }) as {
-    [inputName in string]: {
-      node: AppNode;
-      output: {
-        [name in string]: unknown;
-      };
-    };
-  };
 }
 
 function resolveV2Inputs(
@@ -271,28 +189,7 @@ export function createAppNodeInstance(options: {
       reportUndeclaredAttachments(id, internalExtension.inputs, attachments);
     }
 
-    if (internalExtension.version === 'v1') {
-      const namedOutputs = internalExtension.factory({
-        node,
-        apis,
-        config: parsedConfig,
-        inputs: resolveV1Inputs(internalExtension.inputs, attachments),
-      });
-
-      for (const [name, output] of Object.entries(namedOutputs)) {
-        const ref = internalExtension.output[name];
-        if (!ref) {
-          throw new Error(`unknown output provided via '${name}'`);
-        }
-        if (extensionData.has(ref.id)) {
-          throw new Error(
-            `duplicate extension data '${ref.id}' received via output '${name}'`,
-          );
-        }
-        extensionData.set(ref.id, output);
-        extensionDataRefs.add(ref);
-      }
-    } else if (internalExtension.version === 'v2') {
+    if (internalExtension.version === 'v2') {
       const context = {
         node,
         apis,
