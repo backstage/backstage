@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { AccessRestrictionsMap } from './types';
+import { AccessRestrictionsMap, ExternalTokenHandler } from './types';
 
 /**
  * Parses and returns the `accessRestrictions` configuration from an
@@ -146,4 +146,10 @@ function readPermissionAttributes(externalAccessEntryConfig: Config) {
   };
 
   return Object.keys(result).length ? result : undefined;
+}
+
+export function createExternalTokenHandler<TContext>(
+  handler: ExternalTokenHandler<TContext>,
+): ExternalTokenHandler<TContext> {
+  return handler;
 }

@@ -60,7 +60,7 @@ export const pluginTokenHandlerDecoratorServiceRef: ServiceRef<
 >;
 
 // @public
-export interface TokenHandler {
+export interface ExternalTokenHandler {
   // (undocumented)
   verifyToken(token: string): Promise<
     | {
