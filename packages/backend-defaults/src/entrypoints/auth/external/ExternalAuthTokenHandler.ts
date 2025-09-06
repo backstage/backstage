@@ -21,85 +21,82 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
-import { LegacyConfigWrapper, LegacyTokenHandler } from './legacy';
-import { StaticTokenHandler } from './static';
-import { JWKSHandler } from './jwks';
-import { TokenHandler } from './types';
-import { Config } from '@backstage/config';
-import { groupBy } from 'lodash';
-import { TokenTypeHandler } from './types';
+import { legacyTokenHandler } from './legacy';
+import { staticTokenHandler } from './static';
+import { jwksTokenHandler } from './jwks';
+import { AccessRestrictionsMap, ExternalTokenHandler } from './types';
+import { readAccessRestrictionsFromConfig } from './helpers';
 
 const NEW_CONFIG_KEY = 'backend.auth.externalAccess';
 const OLD_CONFIG_KEY = 'backend.auth.keys';
 let loggedDeprecationWarning = false;
 
-type LegacyTokenTypeHandler = {
-  type: 'legacy';
-  /**
-   * A factory function that takes all token configuration for a given type
-   * and returns a TokenHandler or an array of TokenHandlers.
-   */
-  factory: (
-    configs: (
-      | import('@backstage/config').Config
-      | { legacy: true; config: import('@backstage/config').Config }
-    )[],
-  ) => TokenHandler | TokenHandler[];
-};
-
 /**
  * @public
  * This service is used to decorate the default plugin token handler with custom logic.
  */
-export const externalTokenTypeHandlersRef = createServiceRef<TokenTypeHandler>({
+export const externalTokenTypeHandlersRef = createServiceRef<
+  ExternalTokenHandler<unknown>
+>({
   id: 'core.auth.externalTokenHandlers',
   multiton: true,
   // defaultFactory // :pepe-think: seems like is not possible to use defaultFactory with multiton
 });
 
-const defaultHandlers: (TokenTypeHandler | LegacyTokenTypeHandler)[] = [
-  {
-    type: 'static',
-    factory: configs => new StaticTokenHandler(configs),
-  },
-  {
-    type: 'legacy',
-    factory: (configs: (Config | { legacy: true; config: Config })[]) =>
-      new LegacyTokenHandler(configs),
-  },
-  {
-    type: 'jwks',
-    factory: configs => new JWKSHandler(configs),
-  },
+const defaultHandlers: ExternalTokenHandler<unknown>[] = [
+  staticTokenHandler,
+  legacyTokenHandler,
+  jwksTokenHandler,
 ];
 
+type ContextMapEntry<T> = {
+  context: T;
+  handler: ExternalTokenHandler<T>;
+  allAccessRestrictions?: AccessRestrictionsMap;
+};
 /**
  * Handles all types of external caller token types (i.e. not Backstage user
  * tokens, nor Backstage backend plugin tokens).
  *
  * @internal
  */
-export class ExternalTokenHandler {
+export class ExternalAuthTokenManager {
   static create(options: {
     ownPluginId: string;
     config: RootConfigService;
     logger: LoggerService;
-    externalTokenHandlers?: TokenTypeHandler[];
-  }): ExternalTokenHandler {
+    externalTokenHandlers?: ExternalTokenHandler<unknown>[];
+  }): ExternalAuthTokenManager {
     const {
       ownPluginId,
       config,
-      logger,
       externalTokenHandlers: customHandlers,
     } = options;
 
     const handlersTypes = [...defaultHandlers, ...(customHandlers ?? [])];
 
     const handlerConfigs = config.getOptionalConfigArray(NEW_CONFIG_KEY) ?? [];
-    const handlerConfigByType: Record<string, Config[]> & {
-      legacy?: (Config | LegacyConfigWrapper)[];
-    } = groupBy(handlerConfigs, (handlerConfig: Config) =>
-      handlerConfig.getString('type'),
+    const contexts: ContextMapEntry<unknown>[] = handlerConfigs.map(
+      handlerConfig => {
+        const type = handlerConfig.getString('type');
+
+        const handler = handlersTypes.find(h => h.type === type);
+        if (!handler) {
+          const valid = handlersTypes.map(h => `'${h.type}'`).join(', ');
+          throw new Error(
+            `Unknown type '${type}' in ${NEW_CONFIG_KEY}, expected one of ${valid}`,
+          );
+        }
+        return {
+          context: handler.initialize({
+            options: handlerConfig.getConfig('options'),
+          }),
+          handler,
+          allAccessRestrictions: handlerConfig
+            ? readAccessRestrictionsFromConfig(handlerConfig)
+            : undefined,
+        };
+      },
     );
 
     // Load the old keys too
@@ -107,45 +104,22 @@ export class ExternalTokenHandler {
 
     if (legacyConfigs.length && !loggedDeprecationWarning) {
       loggedDeprecationWarning = true;
-      logger.warn(
-        `DEPRECATION WARNING: The ${OLD_CONFIG_KEY} config has been replaced by ${NEW_CONFIG_KEY}, see https://backstage.io/docs/auth/service-to-service-auth`,
-      );
-    }
-    for (const handlerConfig of legacyConfigs) {
-      handlerConfigByType.legacy ??= [];
-      handlerConfigByType.legacy.push({ legacy: true, config: handlerConfig });
-    }
-
-    const invalidTypes = Object.keys(handlerConfigByType).filter(
-      type => !handlersTypes.some(handler => handler.type === type),
-    );
-
-    if (invalidTypes.length > 0) {
-      const valid = handlersTypes
-        .map(handler => `'${handler.type}'`)
-        .join(', ');
+      // :pepe-think: this message was here for more than a year, and replacing this simplifies things a lot
       throw new Error(
-        `Unknown type(s) '${invalidTypes.join(
-          ', ',
-        )}' in ${NEW_CONFIG_KEY}, expected one of ${valid}`,
+        `The ${OLD_CONFIG_KEY} config has been replaced by ${NEW_CONFIG_KEY}, see https://backstage.io/docs/auth/service-to-service-auth`,
       );
     }
 
-    const handlers = handlersTypes.flatMap(handler => {
-      const configs = handlerConfigByType[handler.type] ?? [];
-      const handlerInstances = handler.factory(configs);
-      if (Array.isArray(handlerInstances)) {
-        return handlerInstances;
-      }
-      return [handlerInstances];
-    });
-
-    return new ExternalTokenHandler(ownPluginId, handlers);
+    return new ExternalAuthTokenManager(ownPluginId, contexts);
   }
 
   constructor(
     private readonly ownPluginId: string,
-    private readonly handlers: TokenHandler[],
+    private readonly contexts: {
+      context: unknown;
+      handler: ExternalTokenHandler<unknown>;
+      allAccessRestrictions?: AccessRestrictionsMap;
+    }[],
   ) {}
 
   async verifyToken(token: string): Promise<
@@ -155,10 +129,9 @@ export class ExternalTokenHandler {
       }
     | undefined
   > {
-    for (const handler of this.handlers) {
-      const result = await handler.verifyToken(token);
+    for (const { handler, allAccessRestrictions, context } of this.contexts) {
+      const result = await handler.verifyToken(token, context);
       if (result) {
-        const { allAccessRestrictions, ...rest } = result;
         if (allAccessRestrictions) {
           const accessRestrictions = allAccessRestrictions.get(
             this.ownPluginId,
@@ -173,12 +146,12 @@ export class ExternalTokenHandler {
           }
 
           return {
-            ...rest,
+            ...result,
             accessRestrictions,
           };
         }
 
-        return rest;
+        return result;
       }
     }
 

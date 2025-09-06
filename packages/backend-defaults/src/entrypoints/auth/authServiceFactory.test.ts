@@ -30,9 +30,9 @@ import { setupServer } from 'msw/node';
 import { toInternalBackstageCredentials } from './helpers';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
-import { AccessRestrictionsMap, TokenHandler } from './external/types';
-import { Config } from '@backstage/config';
-import { externalTokenTypeHandlersRef } from './external/ExternalTokenHandler';
+
+import { externalTokenTypeHandlersRef } from './external/ExternalAuthTokenHandler';
+import { createExternalTokenHandler } from './external/helpers';
 
 const server = setupServer();
 
@@ -44,7 +44,7 @@ const mockDeps = [
       backend: {
         baseUrl: 'http://localhost',
         auth: {
-          keys: [{ secret: 'abc' }],
+          // keys: [{ secret: 'abc' }],
           externalAccess: [
             {
               type: 'static',
@@ -460,7 +460,6 @@ describe('authServiceFactory', () => {
   describe('add custom  ExternalTokenHandler', () => {
     it('should allow custom logic to be injected into the plugin token handler', async () => {
       const customLogic = jest.fn();
-      const customAddEntry = jest.fn();
       const customConfig = jest.fn();
       const deps = [
         discoveryServiceFactory,
@@ -469,7 +468,7 @@ describe('authServiceFactory', () => {
             backend: {
               baseUrl: 'http://localhost',
               auth: {
-                keys: [{ secret: 'abc' }],
+                // keys: [{ secret: 'abc' }w],
                 externalAccess: [
                   {
                     type: 'static',
@@ -502,37 +501,30 @@ describe('authServiceFactory', () => {
         }),
       ];
 
-      class CustomHandler implements TokenHandler {
-        constructor(options: Config[]) {
-          for (const option of options) {
-            customAddEntry(option);
-          }
-        }
-        async verifyToken(token: string): Promise<
-          | {
-              subject: string;
-              allAccessRestrictions?: AccessRestrictionsMap;
-            }
-          | undefined
-        > {
+      const customExternalTokenHandler = createExternalTokenHandler<{
+        [`custom-config`]: string;
+        foo: string;
+      }>({
+        type: 'custom',
+        initialize({ options }) {
+          const customConfigValue = options.getString('custom-config');
+          const foo = options.getString('foo');
+          customConfig(customConfigValue);
+          return { [`custom-config`]: customConfigValue, foo };
+        },
+        async verifyToken(token, ctx) {
           customLogic(token);
           return {
-            subject: 'foo',
+            subject: ctx.foo,
           };
-        }
-      }
+        },
+      });
 
       const customPluginTokenHandler = createServiceFactory({
         service: externalTokenTypeHandlersRef,
         deps: {},
         async factory() {
-          return {
-            type: 'custom',
-            factory: (configs: Config[]) => {
-              customConfig(configs);
-              return new CustomHandler(configs);
-            },
-          };
+          return customExternalTokenHandler;
         },
       });
       const tester = ServiceFactoryTester.from(authServiceFactory, {
@@ -541,29 +533,8 @@ describe('authServiceFactory', () => {
       const searchAuth = await tester.getSubject('search');
       await searchAuth.authenticate('custom-token');
 
-      expect(customAddEntry).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            options: expect.objectContaining({
-              [`custom-config`]: 'custom-config',
-              foo: 'bar',
-            }),
-          }),
-        }),
-      );
       expect(customLogic).toHaveBeenCalledWith('custom-token');
-      expect(customConfig).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({
-            data: expect.objectContaining({
-              options: expect.objectContaining({
-                [`custom-config`]: 'custom-config',
-                foo: 'bar',
-              }),
-            }),
-          }),
-        ]),
-      );
+      expect(customConfig).toHaveBeenCalledWith('custom-config');
     });
   });
 });

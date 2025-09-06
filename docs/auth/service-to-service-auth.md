@@ -255,15 +255,37 @@ backend:
           subject: legacy-scaffolder
 ```
 
-The old style keys config is also supported as an alternative, but please
-consider using the new style above instead:
+:::warning
+The old style `backend.auth.keys` config is **no longer supported** and has been removed.
+If you are still using this configuration, you must migrate to the new `backend.auth.externalAccess` format above.
 
-```yaml title="in e.g. app-config.production.yaml"
+You'll see an error like `"Unknown key 'backend.auth.keys'"` during Backstage startup if you haven't migrated yet.
+:::
+
+To migrate from the old config format:
+
+```yaml title="❌ Old format (no longer supported)"
 backend:
   auth:
     keys:
       - secret: my-secret-key-catalog
       - secret: my-secret-key-scaffolder
+```
+
+Convert to:
+
+```yaml title="✅ New format"
+backend:
+  auth:
+    externalAccess:
+      - type: legacy
+        options:
+          secret: my-secret-key-catalog
+          subject: external:backstage-plugin
+      - type: legacy
+        options:
+          secret: my-secret-key-scaffolder
+          subject: external:backstage-plugin
 ```
 
 The secrets must be any base64-encoded random data, but for security reasons
@@ -444,11 +466,17 @@ const decoratedPluginTokenHandler = createServiceFactory({
 });
 ```
 
-### Custom ExternalTokenHandler
+### Adding custom ExternalTokenHandler
 
 The `externalTokenTypeHandlersRef` can be used to add custom external token handlers to the default implementation.
 
-The returned object from the factory function must have a `type` property which is used to identify the handler. The `factory` method is called with an array of `Config` objects, for the given type. The factory method can return a single handler or an array of handlers. The handlers are then used to handle the token for the given type.
+Your service factory must return an object with a `type` property that matches the token type in your configuration (e.g., 'custom', 'api-key'). When Backstage encounters tokens of this type, it calls your `initialize` method with all the configuration entries that match this type. Your factory can return either a single token handler or an array of handlers to process and validate these tokens.
+
+:::note Note
+
+During token verification, all the token handlers are tested. Consider this when adding many token handlers, as it may impact performance.
+
+:::
 
 For example, if we want to add a custom external token handler for the `custom` type:
 
@@ -474,20 +502,72 @@ And we can implement the custom token handler like this:
 
 ```ts
 import {
-  TokenHandler,
+  ExternalTokenHandler,
   externalTokenTypeHandlersRef,
+  createExternalTokenHandler,
 } from '@backstage/backend-defaults/auth';
-import { Config } from '@backstage/config';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 
 const customExternalTokenHandlers = createServiceFactory({
   service: externalTokenTypeHandlersRef,
   deps: {},
   async factory() {
-    return {
+    return createExternalTokenHandler({
       type: 'custom',
-      factory: (configs: Config[]) => new CustomTokenHandler(configs), // can return a simple handler or an array of handlers
-    };
+      initialize({ options }) {
+        // Initialize your handler context from config
+        const customOptions = options.getString('customOptions');
+        return { customOptions };
+      },
+      async verifyToken(token, context) {
+        // Your custom token validation logic here
+        // Return undefined if token is invalid
+        // Return { subject: 'your-subject' } if token is valid
+
+        if (token === 'valid-token') {
+          return { subject: `custom:${context.customOptions}` };
+        }
+        return undefined;
+      },
+    });
+  },
+});
+```
+
+The `createExternalTokenHandler` helper simplifies creating external token handlers with the new API:
+
+- **`type`**: A string identifier for your token handler type that matches the config
+- **`initialize`**: Called once for each config entry of this type, receives the config options and returns a context object that will be passed to `verifyToken`
+- **`verifyToken`**: Called for each token verification with the token and context, returns the subject if valid or `undefined` if not
+
+```ts
+// Example of a more complex handler with external API call
+const apiTokenHandler = createExternalTokenHandler({
+  type: 'api-validation',
+  initialize({ options }) {
+    const apiBaseUrl = options.getString('apiBaseUrl');
+    const apiKey = options.getString('apiKey');
+    return { apiBaseUrl, apiKey };
+  },
+  async verifyToken(token, { apiBaseUrl, apiKey }) {
+    try {
+      const response = await fetch(`${apiBaseUrl}/validate-token`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      if (response.ok) {
+        const { userId } = await response.json();
+        return { subject: `api:${userId}` };
+      }
+    } catch (error) {
+      // Log error but don't throw - return undefined for invalid tokens
+    }
+    return undefined;
   },
 });
 ```
