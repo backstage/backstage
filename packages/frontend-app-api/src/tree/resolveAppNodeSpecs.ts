@@ -56,7 +56,7 @@ export function resolveAppNodeSpecs(options: {
   ) => {
     if (forbidden.has(extension.id)) {
       collector.report({
-        code: 'EXTENSION_FORBIDDEN',
+        code: 'EXTENSION_IGNORED',
         message: `It is forbidden to override the '${extension.id}' extension, attempted by the '${extension.plugin.id}' plugin`,
         context: {
           plugin: extension.plugin,
@@ -153,13 +153,13 @@ export function resolveAppNodeSpecs(options: {
     }
   }
 
-  const seendExtensionIds = new Set<string>();
+  const seenExtensionIds = new Set<string>();
   const deduplicatedExtensions = configuredExtensions.filter(
     ({ extension, params }) => {
-      if (seendExtensionIds.has(extension.id)) {
+      if (seenExtensionIds.has(extension.id)) {
         collector.report({
-          code: 'EXTENSION_DUPLICATED',
-          message: `The extension '${extension.id}' is duplicated`,
+          code: 'EXTENSION_IGNORED',
+          message: `The '${extension.id}' extension from the '${params.plugin.id}' plugin is a duplicate and will be ignored`,
           context: {
             plugin: params.plugin,
             extensionId: extension.id,
@@ -167,7 +167,7 @@ export function resolveAppNodeSpecs(options: {
         });
         return false;
       }
-      seendExtensionIds.add(extension.id);
+      seenExtensionIds.add(extension.id);
       return true;
     },
   );
@@ -178,7 +178,7 @@ export function resolveAppNodeSpecs(options: {
 
     if (forbidden.has(extensionId)) {
       collector.report({
-        code: 'EXTENSION_CONFIG_FORBIDDEN',
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
         message: `Configuration of the '${extensionId}' extension is forbidden`,
         context: {
           extensionId,
@@ -206,7 +206,7 @@ export function resolveAppNodeSpecs(options: {
       order.set(extensionId, existing);
     } else {
       collector.report({
-        code: 'EXTENSION_CONFIG_UNKNOWN_EXTENSION',
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
         message: `Extension ${extensionId} does not exist`,
         context: {
           extensionId,

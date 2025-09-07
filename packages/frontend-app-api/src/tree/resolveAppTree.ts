@@ -122,15 +122,8 @@ export function resolveAppTree(
   const redirectTargetsByKey = new Map<string, { id: string; input: string }>();
 
   for (const spec of specs) {
-    // The main check with a more helpful error message happens in resolveAppNodeSpecs
+    // The main check with a helpful error message happens in resolveAppNodeSpecs
     if (nodes.has(spec.id)) {
-      errorCollector.report({
-        code: 'DUPLICATE_EXTENSION_ID',
-        message: `Unexpected duplicate extension id '${spec.id}'`,
-        context: {
-          spec,
-        },
-      });
       continue;
     }
 
@@ -144,10 +137,10 @@ export function resolveAppTree(
           const key = makeRedirectKey(replace);
           if (redirectTargetsByKey.has(key)) {
             errorCollector.report({
-              code: 'DUPLICATE_REDIRECT_TARGET',
+              code: 'EXTENSION_INPUT_REDIRECT_CONFLICT',
               message: `Duplicate redirect target for input '${inputName}' in extension '${spec.id}'`,
               context: {
-                spec,
+                node,
                 inputName,
               },
             });

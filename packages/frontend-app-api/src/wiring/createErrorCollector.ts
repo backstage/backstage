@@ -14,41 +14,32 @@
  * limitations under the License.
  */
 
-import {
-  AppNode,
-  AppNodeSpec,
-  FrontendPlugin,
-} from '@backstage/frontend-plugin-api';
+import { AppNode, FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { Expand } from '@backstage/types';
 
 type AppErrorTypes = {
   // resolveAppNodeSpecs
-  EXTENSION_FORBIDDEN: 'plugin' | 'extensionId';
-  EXTENSION_DUPLICATED: 'plugin' | 'extensionId';
-  EXTENSION_CONFIG_FORBIDDEN: 'extensionId';
-  EXTENSION_CONFIG_UNKNOWN_EXTENSION: 'extensionId';
+  EXTENSION_IGNORED: 'plugin' | 'extensionId';
+  INVALID_EXTENSION_CONFIG_KEY: 'extensionId';
   // resolveAppTree
-  DUPLICATE_EXTENSION_ID: 'spec';
-  DUPLICATE_REDIRECT_TARGET: 'spec' | 'inputName';
+  EXTENSION_INPUT_REDIRECT_CONFLICT: 'node' | 'inputName';
   // instantiateAppNodeTree
-  EXTENSION_DUPLICATE_INPUT: 'node' | 'inputName';
-  EXTENSION_MISSING_INPUT_DATA: 'node' | 'inputName';
-  EXTENSION_TOO_MANY_ATTACHMENTS: 'node' | 'inputName';
-  EXTENSION_MISSING_REQUIRED_INPUT: 'node' | 'inputName';
-  INVALID_CONFIGURATION: 'node';
-  EXTENSION_FACTORY_INVALID_OUTPUT: 'node';
-  EXTENSION_FACTORY_DUPLICATE_OUTPUT: 'node' | 'dataRefId';
-  EXTENSION_FACTORY_MISSING_REQUIRED_OUTPUT: 'node' | 'dataRefId';
-  EXTENSION_FACTORY_UNEXPECTED_OUTPUT: 'node' | 'dataRefId';
-  UNEXPECTED_EXTENSION_VERSION: 'node';
-  FAILED_TO_INSTANTIATE_EXTENSION: 'node';
+  EXTENSION_INPUT_DATA_IGNORED: 'node' | 'inputName';
+  EXTENSION_INPUT_DATA_MISSING: 'node' | 'inputName';
+  EXTENSION_ATTACHMENT_CONFLICT: 'node' | 'inputName';
+  EXTENSION_ATTACHMENT_MISSING: 'node' | 'inputName';
+  EXTENSION_CONFIGURATION_INVALID: 'node';
+  EXTENSION_INVALID: 'node';
+  EXTENSION_OUTPUT_CONFLICT: 'node' | 'dataRefId';
+  EXTENSION_OUTPUT_MISSING: 'node' | 'dataRefId';
+  EXTENSION_OUTPUT_IGNORED: 'node' | 'dataRefId';
+  EXTENSION_FACTORY_ERROR: 'node';
   // createSpecializedApp
-  NO_API_FACTORY: 'node';
+  API_EXTENSION_INVALID: 'node';
 };
 
 type AppErrorContext = {
   node?: AppNode;
-  spec?: AppNodeSpec;
   plugin?: FrontendPlugin;
   extensionId?: string;
   dataRefId?: string;

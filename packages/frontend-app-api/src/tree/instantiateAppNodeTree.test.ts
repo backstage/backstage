@@ -411,7 +411,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'INVALID_CONFIGURATION',
+            code: 'EXTENSION_CONFIGURATION_INVALID',
             message:
               "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
             context: { node },
@@ -443,7 +443,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'app/test'; caused by NopeError: NOPE",
             context: { node },
@@ -476,7 +476,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'app/test', duplicate extension data 'test' received via output 'test2'",
             context: { node },
@@ -508,7 +508,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'app/test', unknown output provided via 'nonexistent'",
             context: { node },
@@ -544,7 +544,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'app/test', input 'singleton' is required but was not received",
             context: { node },
@@ -669,7 +669,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'app/test', expected exactly one 'singleton' input but received multiple: 'app/test', 'app/test'",
             context: { node },
@@ -713,7 +713,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'app/test', expected at most one 'singleton' input but received multiple: 'app/test', 'app/test'",
             context: { node },
@@ -751,7 +751,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'app/test', extension 'app/test' could not be attached because its output data ('test', 'other') does not match what the input 'singleton' requires ('other')",
             context: { node },
@@ -1073,7 +1073,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'INVALID_CONFIGURATION',
+            code: 'EXTENSION_CONFIGURATION_INVALID',
             message:
               "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
             context: { node },
@@ -1121,7 +1121,7 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            code: 'EXTENSION_FACTORY_INVALID_OUTPUT',
+            code: 'EXTENSION_INVALID',
             message: 'extension factory did not provide an iterable object',
             context: { node: expect.anything() },
           },
@@ -1138,8 +1138,8 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            // TODO: This should probably be EXTENSION_FACTORY_INVALID_OUTPUT
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            // TODO: This should probably be EXTENSION_INVALID
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'test', extension factory override did not provide an iterable object",
             context: { node: expect.anything() },
@@ -1157,8 +1157,8 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            // TODO: This should probably be EXTENSION_FACTORY_INVALID_OUTPUT
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            // TODO: This should probably be EXTENSION_INVALID
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'test', extension factory middleware did not provide an iterable object",
             context: { node: expect.anything() },
@@ -1175,7 +1175,7 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            code: 'EXTENSION_FACTORY_INVALID_OUTPUT',
+            code: 'EXTENSION_INVALID',
             message: 'extension factory did not provide an iterable object',
             context: { node: expect.anything() },
           },
@@ -1194,7 +1194,7 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            code: 'EXTENSION_FACTORY_INVALID_OUTPUT',
+            code: 'EXTENSION_INVALID',
             message: 'extension factory did not provide an iterable object',
             context: { node: expect.anything() },
           },
@@ -1214,8 +1214,8 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            // TODO: This should probably be EXTENSION_FACTORY_INVALID_OUTPUT
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            // TODO: This should probably be EXTENSION_INVALID
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'test:test', extension factory did not provide an iterable object",
             context: { node: expect.anything() },
@@ -1236,8 +1236,8 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            // TODO: This should probably be EXTENSION_FACTORY_INVALID_OUTPUT
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            // TODO: This should probably be EXTENSION_INVALID
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'test:test', original blueprint factory did not provide an iterable object",
             context: { node: expect.anything() },
@@ -1271,7 +1271,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+            code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'app/test'; caused by NopeError: NOPE",
             context: { node },
@@ -1303,7 +1303,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'EXTENSION_FACTORY_DUPLICATE_OUTPUT',
+            code: 'EXTENSION_OUTPUT_CONFLICT',
             message: "extension factory output duplicate data 'test'",
             context: { dataRefId: 'test', node },
           },
@@ -1335,7 +1335,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'EXTENSION_FACTORY_MISSING_REQUIRED_OUTPUT',
+            code: 'EXTENSION_OUTPUT_MISSING',
             message: "missing required extension data output 'test'",
             context: {
               dataRefId: 'test',
@@ -1370,7 +1370,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeDefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'EXTENSION_FACTORY_UNEXPECTED_OUTPUT',
+            code: 'EXTENSION_OUTPUT_IGNORED',
             message: "unexpected output 'test'",
             context: { dataRefId: 'test', node },
           },
@@ -1404,7 +1404,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'EXTENSION_MISSING_REQUIRED_INPUT',
+            code: 'EXTENSION_ATTACHMENT_MISSING',
             message: "input 'singleton' is required but was not received",
             context: { inputName: 'singleton', node },
           },
@@ -1529,7 +1529,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'EXTENSION_TOO_MANY_ATTACHMENTS',
+            code: 'EXTENSION_ATTACHMENT_CONFLICT',
             message:
               "expected exactly one 'singleton' input but received multiple: 'app/test', 'app/test'",
             context: { inputName: 'singleton', node },
@@ -1573,7 +1573,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'EXTENSION_TOO_MANY_ATTACHMENTS',
+            code: 'EXTENSION_ATTACHMENT_CONFLICT',
             message:
               "expected at most one 'singleton' input but received multiple: 'app/test', 'app/test'",
             context: { inputName: 'singleton', node },
@@ -1610,7 +1610,7 @@ describe('instantiateAppNodeTree', () => {
         ).toBeUndefined();
         expect(collector.collectErrors()).toEqual([
           {
-            code: 'EXTENSION_MISSING_INPUT_DATA',
+            code: 'EXTENSION_INPUT_DATA_MISSING',
             message:
               "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
             context: { node, inputName: 'singleton' },

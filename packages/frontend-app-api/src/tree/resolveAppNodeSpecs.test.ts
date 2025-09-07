@@ -440,7 +440,7 @@ describe('resolveAppNodeSpecs', () => {
 
     expect(collector.collectErrors()).toEqual([
       {
-        code: 'EXTENSION_FORBIDDEN',
+        code: 'EXTENSION_IGNORED',
         message:
           "It is forbidden to override the 'test/forbidden' extension, attempted by the 'test' plugin",
         context: {
@@ -473,7 +473,7 @@ describe('resolveAppNodeSpecs', () => {
 
     expect(collector.collectErrors()).toEqual([
       {
-        code: 'EXTENSION_FORBIDDEN',
+        code: 'EXTENSION_IGNORED',
         message:
           "It is forbidden to override the 'forbidden' extension, attempted by the 'forbidden' plugin",
         context: {
@@ -496,7 +496,7 @@ describe('resolveAppNodeSpecs', () => {
 
     expect(collector.collectErrors()).toEqual([
       {
-        code: 'EXTENSION_CONFIG_FORBIDDEN',
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
         message: "Configuration of the 'forbidden' extension is forbidden",
         context: {
           extensionId: 'forbidden',

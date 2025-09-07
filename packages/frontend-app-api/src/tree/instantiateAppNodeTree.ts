@@ -102,7 +102,7 @@ function resolveInputDataContainer(
   mapWithFailures(extensionData, ref => {
     if (dataMap.has(ref.id)) {
       collector.report({
-        code: 'EXTENSION_DUPLICATE_INPUT',
+        code: 'EXTENSION_INPUT_DATA_IGNORED',
         message: `Unexpected duplicate input data '${ref.id}'`,
       });
       return;
@@ -120,7 +120,7 @@ function resolveInputDataContainer(
         .join(', ');
 
       collector.report({
-        code: 'EXTENSION_MISSING_INPUT_DATA',
+        code: 'EXTENSION_INPUT_DATA_MISSING',
         message: `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
       });
       throw INSTANTIATION_FAILED;
@@ -265,7 +265,7 @@ function resolveV2Inputs(
       if (attachedNodes.length > 1) {
         const attachedNodeIds = attachedNodes.map(e => e.spec.id).join("', '");
         collector.report({
-          code: 'EXTENSION_TOO_MANY_ATTACHMENTS',
+          code: 'EXTENSION_ATTACHMENT_CONFLICT',
           message: `expected ${
             input.config.optional ? 'at most' : 'exactly'
           } one '${inputName}' input but received multiple: '${attachedNodeIds}'`,
@@ -274,7 +274,7 @@ function resolveV2Inputs(
       } else if (attachedNodes.length === 0) {
         if (!input.config.optional) {
           collector.report({
-            code: 'EXTENSION_MISSING_REQUIRED_INPUT',
+            code: 'EXTENSION_ATTACHMENT_MISSING',
             message: `input '${inputName}' is required but was not received`,
           });
           throw INSTANTIATION_FAILED;
@@ -326,7 +326,7 @@ export function createAppNodeInstance(options: {
     };
   } catch (e) {
     collector.report({
-      code: 'INVALID_CONFIGURATION',
+      code: 'EXTENSION_CONFIGURATION_INVALID',
       message: `Invalid configuration for extension '${id}'; caused by ${e}`,
     });
     return undefined;
@@ -393,7 +393,7 @@ export function createAppNodeInstance(options: {
         !outputDataValues?.[Symbol.iterator]
       ) {
         collector.report({
-          code: 'EXTENSION_FACTORY_INVALID_OUTPUT',
+          code: 'EXTENSION_INVALID',
           message: 'extension factory did not provide an iterable object',
         });
         throw INSTANTIATION_FAILED;
@@ -403,7 +403,7 @@ export function createAppNodeInstance(options: {
       mapWithFailures(outputDataValues, value => {
         if (outputDataMap.has(value.id)) {
           collector.report({
-            code: 'EXTENSION_FACTORY_DUPLICATE_OUTPUT',
+            code: 'EXTENSION_OUTPUT_CONFLICT',
             message: `extension factory output duplicate data '${value.id}'`,
             context: {
               dataRefId: value.id,
@@ -421,7 +421,7 @@ export function createAppNodeInstance(options: {
         if (value === undefined) {
           if (!ref.config.optional) {
             collector.report({
-              code: 'EXTENSION_FACTORY_MISSING_REQUIRED_OUTPUT',
+              code: 'EXTENSION_OUTPUT_MISSING',
               message: `missing required extension data output '${ref.id}'`,
               context: {
                 dataRefId: ref.id,
@@ -439,7 +439,7 @@ export function createAppNodeInstance(options: {
         for (const dataRefId of outputDataMap.keys()) {
           // TODO: Make this a warning
           collector.report({
-            code: 'EXTENSION_FACTORY_UNEXPECTED_OUTPUT',
+            code: 'EXTENSION_OUTPUT_IGNORED',
             message: `unexpected output '${dataRefId}'`,
             context: {
               dataRefId: dataRefId,
@@ -449,7 +449,7 @@ export function createAppNodeInstance(options: {
       }
     } else {
       collector.report({
-        code: 'UNEXPECTED_EXTENSION_VERSION',
+        code: 'EXTENSION_INVALID',
         message: `unexpected extension version '${
           (internalExtension as any).version
         }'`,
@@ -459,7 +459,7 @@ export function createAppNodeInstance(options: {
   } catch (e) {
     if (e !== INSTANTIATION_FAILED) {
       collector.report({
-        code: 'FAILED_TO_INSTANTIATE_EXTENSION',
+        code: 'EXTENSION_FACTORY_ERROR',
         message: `Failed to instantiate extension '${id}'${
           e.name === 'Error' ? `, ${e.message}` : `; caused by ${e}`
         }`,

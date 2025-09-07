@@ -394,7 +394,7 @@ function createApiFactories(options: {
       factories.push(apiFactory);
     } else {
       options.collector.report({
-        code: 'NO_API_FACTORY',
+        code: 'API_EXTENSION_INVALID',
         message: `API extension '${apiNode.spec.id}' did not output an API factory`,
         context: {
           node: apiNode,

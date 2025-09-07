@@ -238,7 +238,7 @@ describe('buildAppTree', () => {
     `);
   });
 
-  it('emits an error when duplicated extensions are detected', () => {
+  it('ignores duplicate extensions', () => {
     const tree = resolveAppTree(
       'a',
       [
@@ -248,13 +248,6 @@ describe('buildAppTree', () => {
       collector,
     );
     expect(Array.from(tree.nodes.keys())).toEqual(['a']);
-    expect(collector.collectErrors()).toEqual([
-      {
-        code: 'DUPLICATE_EXTENSION_ID',
-        message: "Unexpected duplicate extension id 'a'",
-        context: { spec: { ...baseSpec, id: 'a' } },
-      },
-    ]);
   });
 
   describe('redirects', () => {
@@ -300,11 +293,13 @@ describe('buildAppTree', () => {
 
       expect(collector.collectErrors()).toEqual([
         {
-          code: 'DUPLICATE_REDIRECT_TARGET',
+          code: 'EXTENSION_INPUT_REDIRECT_CONFLICT',
           message:
             "Duplicate redirect target for input 'test' in extension 'b'",
           context: {
-            spec: { ...baseSpec, id: 'b', extension: e2 },
+            node: expect.objectContaining({
+              spec: { ...baseSpec, id: 'b', extension: e2 },
+            }),
             inputName: 'test',
           },
         },
