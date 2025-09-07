@@ -1121,8 +1121,9 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            code: 'EXTENSION_INVALID',
-            message: 'extension factory did not provide an iterable object',
+            code: 'EXTENSION_FACTORY_ERROR',
+            message:
+              "Failed to instantiate extension 'test', extension factory did not provide an iterable object",
             context: { node: expect.anything() },
           },
         ]);
@@ -1138,7 +1139,6 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            // TODO: This should probably be EXTENSION_INVALID
             code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'test', extension factory override did not provide an iterable object",
@@ -1157,7 +1157,6 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            // TODO: This should probably be EXTENSION_INVALID
             code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'test', extension factory middleware did not provide an iterable object",
@@ -1175,8 +1174,9 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            code: 'EXTENSION_INVALID',
-            message: 'extension factory did not provide an iterable object',
+            code: 'EXTENSION_FACTORY_ERROR',
+            message:
+              "Failed to instantiate extension 'test:test', extension factory did not provide an iterable object",
             context: { node: expect.anything() },
           },
         ]);
@@ -1194,8 +1194,9 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            code: 'EXTENSION_INVALID',
-            message: 'extension factory did not provide an iterable object',
+            code: 'EXTENSION_FACTORY_ERROR',
+            message:
+              "Failed to instantiate extension 'test:test', extension factory did not provide an iterable object",
             context: { node: expect.anything() },
           },
         ]);
@@ -1214,7 +1215,6 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            // TODO: This should probably be EXTENSION_INVALID
             code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'test:test', extension factory did not provide an iterable object",
@@ -1236,7 +1236,6 @@ describe('instantiateAppNodeTree', () => {
           ),
         ).toEqual([
           {
-            // TODO: This should probably be EXTENSION_INVALID
             code: 'EXTENSION_FACTORY_ERROR',
             message:
               "Failed to instantiate extension 'test:test', original blueprint factory did not provide an iterable object",

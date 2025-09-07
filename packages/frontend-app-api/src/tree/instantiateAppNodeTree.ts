@@ -392,11 +392,7 @@ export function createAppNodeInstance(options: {
         typeof outputDataValues !== 'object' ||
         !outputDataValues?.[Symbol.iterator]
       ) {
-        collector.report({
-          code: 'EXTENSION_INVALID',
-          message: 'extension factory did not provide an iterable object',
-        });
-        throw INSTANTIATION_FAILED;
+        throw new Error('extension factory did not provide an iterable object');
       }
 
       const outputDataMap = new Map<string, unknown>();
