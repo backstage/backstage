@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { CONFIG_KEY_PART_PATTERN } from '@backstage/config';
 import { BackendFeature } from '../types';
 import {
   BackendPluginRegistrationPoints,
   InternalBackendPluginRegistration,
   InternalBackendRegistrations,
 } from './types';
+import { ID_PATTERN, ID_PATTERN_OLD } from './constants';
 
 /**
  * The configuration options passed to {@link createBackendPlugin}.
@@ -50,9 +50,14 @@ export function createBackendPlugin(
   options: CreateBackendPluginOptions,
 ): BackendFeature {
   function getRegistrations() {
-    if (!CONFIG_KEY_PART_PATTERN.test(options.pluginId)) {
+    if (!ID_PATTERN.test(options.pluginId)) {
+      console.warn(
+        `WARNING: The pluginId '${options.pluginId}' will be invalid soon please must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+      );
+    }
+    if (!ID_PATTERN_OLD.test(options.pluginId)) {
       throw new Error(
-        `Invalid pluginId '${options.pluginId}', must match the pattern ${CONFIG_KEY_PART_PATTERN} (letters, digits, dashes, and underscores only, starting with a letter)`,
+        `Invalid pluginId '${options.pluginId}', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
       );
     }
 
