@@ -29,8 +29,8 @@ export const mergeRelations: GraphTransformer = options => {
   const mergedEdges = new Map<string, EntityEdge>();
 
   options.edges.forEach(edge => {
-    const keyForward = `${edge.from}-${edge.to}`;
-    const keyBackward = `${edge.to}-${edge.from}`;
+    const keyForward = `${edge.from} ! ${edge.to}`;
+    const keyBackward = `${edge.to} ! ${edge.from}`;
 
     const edgeForward = mergedEdges.get(keyForward);
     const edgeBackward = mergedEdges.get(keyBackward);

@@ -6,6 +6,7 @@
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -24,10 +25,21 @@ export const ALL_RELATION_PAIRS: RelationPairs;
 export const ALL_RELATIONS: string[];
 
 // @public
+export type BuiltInTransformations =
+  | 'reduce-edges'
+  | 'set-distances'
+  | 'order-forward'
+  | 'strip-distant-edges'
+  | 'merge-relations'
+  | 'remove-backward-edges'
+  | 'remove-isolated-nodes';
+
+// @public
 export interface CatalogGraphApi {
   readonly defaultRelations: string[];
   readonly knownRelationPairs: [string, string][];
   readonly knownRelations: string[];
+  readonly maxDepth: number;
 }
 
 // @public
@@ -78,22 +90,32 @@ export type CustomNodeClassKey = 'node' | 'text' | 'clickable';
 
 // @public
 export class DefaultCatalogGraphApi implements CatalogGraphApi {
-  constructor(options?: DefaultCatalogGraphApiOptions);
+  constructor({
+    config,
+    knownRelations,
+    additionalKnownRelations,
+    knownRelationPairs,
+    additionalKnownRelationPairs,
+    defaultRelationTypes,
+  }: DefaultCatalogGraphApiOptions);
   // (undocumented)
   readonly defaultRelations: string[];
   // (undocumented)
   readonly knownRelationPairs: [string, string][];
   // (undocumented)
   readonly knownRelations: string[];
+  // (undocumented)
+  readonly maxDepth: number;
 }
 
 // @public
 export interface DefaultCatalogGraphApiOptions {
+  readonly additionalKnownRelationPairs?: RelationPairs;
+  readonly additionalKnownRelations?: string[];
   // (undocumented)
+  config: ConfigApi;
   readonly defaultRelationTypes?: DefaultRelations;
-  // (undocumented)
   readonly knownRelationPairs?: RelationPairs;
-  // (undocumented)
   readonly knownRelations?: string[];
 }
 
@@ -198,7 +220,12 @@ export type EntityRelationsGraphProps = {
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
   allowFullscreen?: boolean;
+  transformations?: (GraphTransformer | BuiltInTransformations)[];
+  noDefaultTransformations?: boolean;
 };
+
+// @public
+export type GraphTransformer = (context: TransformationContext) => void;
 
 // @public
 export type RelationPairs = [string, string][];

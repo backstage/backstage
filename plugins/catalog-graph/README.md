@@ -139,42 +139,26 @@ Once you have your custom implementation, you can follow these steps to modify t
 <EntityCatalogGraphCard variant=“gridItem” renderNode={MyCustomRenderNode} height={400} />
 ```
 
-### Custom relations
+### Configuration and custom relations
 
-Implementers with added custom relations can add them to the catalog graph plugin by overriding the default API. This also allows some relations to not be selected by default.
+This plugin can be configured to understand custom relations and relation pairs, as well as which relations to be selected by default, using `app-config.yaml`.
 
-In `packages/app/src/apis.ts`, import the api ref and create the API as:
-
-```ts
-import {
-  ALL_RELATIONS,
-  ALL_RELATION_PAIRS,
-  catalogGraphApiRef,
-  DefaultCatalogGraphApi,
-} from '@backstage/plugin-catalog-graph';
-
-// ...
-
-  createApiFactory({
-    api: catalogGraphApiRef,
-    deps: {},
-    factory: () =>
-      new DefaultCatalogGraphApi({
-        // The relations to support
-        knownRelations: [...ALL_RELATIONS, 'myRelationOf', 'myRelationFor'],
-        // The relation pairs to support
-        knownRelationPairs: [
-          ...ALL_RELATION_PAIRS,
-          ['myRelationOf', 'myRelationFor'],
-        ],
-        // Select what relations to be shown by default, either by including them,
-        // or excluding some from all known relations:
-        defaultRelationTypes: {
-          // Don't show/select these by default
-          exclude: ['myRelationOf', 'myRelationFor'],
-        },
-      }),
-  }),
+```yaml
+catalogGraph:
+  # Override the built-in set of known relations, or
+  knownRelations: [myRelationOf, myRelationFor]
+  # Append known relations to the built-in set
+  additionalKnownRelations: [myRelationOf, myRelationFor]
+  # Override the built-in set of known relation pairs
+  knownRelationPairs: [[myRelationOf, myRelationFor], [builtBy, builtFor]]
+  # Append known relation pairs to the built-in set
+  additionalKnownRelationPairs:
+    [[myRelationOf, myRelationFor], [builtBy, builtFor]]
+  # Default relations to have selected, either include (override) or exclude from the built-in relations
+  defaultRelationTypes:
+    exclude:
+      - myRelationOf
+      - myRelationFor
 ```
 
 ## Development

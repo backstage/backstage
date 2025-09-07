@@ -18,14 +18,14 @@ import {
   ApiBlueprint,
   createFrontendPlugin,
   PageBlueprint,
+  configApiRef,
 } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
-import {
-  catalogGraphApiRef,
-  DefaultCatalogGraphApi,
-  Direction,
-} from '@backstage/plugin-catalog-graph';
+import { Direction } from './lib/types';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
+
+export { Direction };
 
 const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'relations',
@@ -86,12 +86,12 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
   },
 });
 
-const CatalogGraphApi = ApiBlueprint.make({
+const catalogGraphApi = ApiBlueprint.make({
   params: defineParams =>
     defineParams({
       api: catalogGraphApiRef,
-      deps: {},
-      factory: () => new DefaultCatalogGraphApi(),
+      deps: { config: configApiRef },
+      factory: ({ config }) => new DefaultCatalogGraphApi({ config }),
     }),
 });
 
@@ -104,7 +104,7 @@ export default createFrontendPlugin({
   externalRoutes: {
     catalogEntity: catalogEntityRouteRef,
   },
-  extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi],
+  extensions: [CatalogGraphPage, CatalogGraphEntityCard, catalogGraphApi],
 });
 
 export { catalogGraphTranslationRef } from './translation';

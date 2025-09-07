@@ -353,57 +353,90 @@ export function DependencyGraph<NodeData, EdgeData>(
         ) {
           setContainerHeight(newContainerHeight);
         }
-      }, 100),
+      }, 10),
     [measureRef, containerHeight, containerWidth, maxWidth, maxHeight, zoom],
   );
 
   const setNodesAndEdges = useCallback(() => {
-    // Cleaning up lingering nodes and edges
-    const currentGraphNodes = graph.current.nodes();
-    const currentGraphEdges = graph.current.edges();
+    const cleanupLingeringNodes = () => {
+      const currentGraphNodes = new Set(graph.current.nodes());
+      currentGraphNodes
+        .difference(new Set(nodes.map(node => node.id)))
+        .forEach(nodeId => {
+          graph.current.removeNode(nodeId);
+        });
+    };
 
-    currentGraphNodes.forEach(nodeId => {
-      const remainingNode = nodes.some(node => node.id === nodeId);
-      if (!remainingNode) {
-        graph.current.removeNode(nodeId);
-      }
-    });
-
-    currentGraphEdges.forEach(e => {
-      const remainingEdge = edges.some(
-        edge => edge.from === e.v && edge.to === e.w,
-      );
-      if (!remainingEdge) {
-        graph.current.removeEdge(e.v, e.w);
-      }
-    });
-
-    // Adding/updating nodes and edges
-    nodes.forEach(node => {
-      const existingNode = graph.current
-        .nodes()
-        .find(nodeId => node.id === nodeId);
-
-      if (existingNode && graph.current.node(existingNode)) {
-        const { width, height, x, y } = graph.current.node(existingNode);
-        graph.current.setNode(existingNode, { ...node, width, height, x, y });
-      } else {
-        graph.current.setNode(node.id, { ...node, width: 0, height: 0 });
-      }
-    });
-
-    edges.forEach(e => {
-      graph.current.setEdge(e.from, e.to, {
-        ...e,
-        label: e.label,
-        width: 0,
-        height: 0,
-        labelpos: labelPosition,
-        labeloffset: labelOffset,
-        weight: edgeWeight,
-        minlen: edgeRanks,
+    const cleanupLingeringEdges = () => {
+      const currentGraphEdges = graph.current.edges();
+      const newEdgesMap = new Map<string, Set<string>>();
+      edges.forEach(e => {
+        let toSet = newEdgesMap.get(e.from);
+        if (!toSet) {
+          toSet = new Set<string>();
+          newEdgesMap.set(e.from, toSet);
+        }
+        toSet.add(e.to);
       });
-    });
+      currentGraphEdges.forEach(e => {
+        const remainingEdge = newEdgesMap.get(e.v)?.has(e.w);
+        if (!remainingEdge) {
+          graph.current.removeEdge(e.v, e.w);
+        }
+      });
+    };
+
+    const addAndUpdateNodes = () => {
+      const currentGraphNodes = new Set(graph.current.nodes());
+      nodes.forEach(node => {
+        const hasExistingNode = currentGraphNodes.has(node.id);
+        const existingNode = hasExistingNode
+          ? graph.current.node(node.id)
+          : undefined;
+
+        if (existingNode) {
+          const { width, height, x, y } = existingNode;
+          graph.current.setNode(node.id, { ...node, width, height, x, y });
+        } else {
+          graph.current.setNode(node.id, { ...node, width: 0, height: 0 });
+        }
+      });
+    };
+
+    const addAndUpdateEdges = () => {
+      const currentEdgesMap = new Map<string, Map<string, dagre.Edge>>();
+      graph.current.edges().forEach(e => {
+        let toMap = currentEdgesMap.get(e.v);
+        if (!toMap) {
+          toMap = new Map<string, dagre.Edge>();
+          currentEdgesMap.set(e.v, toMap);
+        }
+        toMap.set(e.w, e);
+      });
+
+      edges.forEach(e => {
+        const foundEdge = currentEdgesMap.get(e.from)?.get(e.to);
+        const existingEdge = foundEdge
+          ? graph.current.edge(foundEdge)
+          : undefined;
+
+        graph.current.setEdge(e.from, e.to, {
+          ...e,
+          label: e.label,
+          width: existingEdge?.width ?? 0,
+          height: existingEdge?.height ?? 0,
+          labelpos: labelPosition,
+          labeloffset: labelOffset,
+          weight: edgeWeight,
+          minlen: edgeRanks,
+        });
+      });
+    };
+
+    cleanupLingeringNodes();
+    cleanupLingeringEdges();
+    addAndUpdateNodes();
+    addAndUpdateEdges();
   }, [edges, nodes, labelPosition, labelOffset, edgeWeight, edgeRanks]);
 
   const updateGraph = useMemo(
@@ -420,7 +453,7 @@ export function DependencyGraph<NodeData, EdgeData>(
           setGraphNodes(graph.current.nodes());
           setGraphEdges(graph.current.edges());
         },
-        250,
+        10,
         { leading: true },
       ),
     [],

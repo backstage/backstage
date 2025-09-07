@@ -251,5 +251,13 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
+// @public
+export enum Direction {
+  BOTTOM_TOP = 'BT',
+  LEFT_RIGHT = 'LR',
+  RIGHT_LEFT = 'RL',
+  TOP_BOTTOM = 'TB',
+}
+
 // (No @packageDocumentation comment for this package)
 ```

@@ -23,24 +23,22 @@ import { GraphTransformer } from './types';
  * Additionally, this will improve rendering speed for the dependency graph
  */
 export const reduceEdges: GraphTransformer = ctx => {
-  ctx.edges = ctx.edges.reduce((previousEdges, currentEdge) => {
-    const indexFound = previousEdges.findIndex(
-      previousEdge =>
-        previousEdge.from === currentEdge.from &&
-        previousEdge.to === currentEdge.to,
-    );
-    if (indexFound >= 0) {
-      previousEdges[indexFound] = {
-        ...previousEdges[indexFound],
-        relations: Array.from(
-          new Set([
-            ...previousEdges[indexFound].relations,
-            ...currentEdge.relations,
-          ]),
-        ),
-      };
-      return previousEdges;
+  const edgeMap = new Map<string, EntityEdge>();
+
+  ctx.edges.forEach(currentEdge => {
+    const edgeKey = `${currentEdge.from} ! ${currentEdge.to}`;
+
+    const edgeFound = edgeMap.get(edgeKey);
+
+    if (edgeFound) {
+      edgeFound.relations = Array.from(
+        new Set([...edgeFound.relations, ...currentEdge.relations]),
+      );
+      return;
     }
-    return [...previousEdges, currentEdge];
+
+    edgeMap.set(edgeKey, currentEdge);
   }, [] as EntityEdge[]);
+
+  ctx.edges = Array.from(edgeMap.values());
 };
