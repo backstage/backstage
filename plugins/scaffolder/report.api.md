@@ -492,6 +492,7 @@ export type RouterProps = {
     actions?: boolean;
     tasks?: boolean;
     create?: boolean;
+    templatingExtensions?: boolean;
   };
 };
 
