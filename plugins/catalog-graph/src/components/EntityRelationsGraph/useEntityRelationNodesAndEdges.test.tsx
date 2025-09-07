@@ -593,10 +593,10 @@ describe('useEntityRelationNodesAndEdges', () => {
     expect(edges).toEqual([
       {
         distance: 1,
-        from: 'b:d/c2',
+        from: 'b:d/c1',
         label: 'visible',
-        relations: ['partOf', 'hasPart'],
-        to: 'b:d/c1',
+        relations: ['hasPart', 'partOf'],
+        to: 'b:d/c2',
       },
       {
         distance: 1,
