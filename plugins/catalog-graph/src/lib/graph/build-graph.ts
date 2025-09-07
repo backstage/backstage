@@ -30,6 +30,15 @@ export interface BuildGraphOptions {
   unidirectional: boolean;
 }
 
+function kindOfEntityRef(entityRef: string) {
+  const i = entityRef.indexOf(':');
+  return i >= 0 ? entityRef.substring(0, i) : '';
+}
+
+function getEdgeKey(from: string, to: string) {
+  return `${from} ! ${to}`;
+}
+
 export function buildGraph({
   rootEntityRefs,
   entities,
@@ -39,22 +48,36 @@ export function buildGraph({
   relationPairs,
   unidirectional,
 }: BuildGraphOptions): EntityEdge[] {
-  const edges: EntityEdge[] = [];
   const visitedNodes = new Set<string>();
   const nodeQueue = [...rootEntityRefs];
+
+  const kindSet = kinds
+    ? new Set(kinds.map(k => k.toLocaleLowerCase('en-US')))
+    : undefined;
+
+  // from-to map to edges
+  const edgeMap = new Map<string, EntityEdge[]>();
+
+  const addEdge = (edge: EntityEdge) => {
+    const key = getEdgeKey(edge.from, edge.to);
+    const curEdges = edgeMap.get(key);
+    if (curEdges) {
+      curEdges.push(edge);
+    } else {
+      edgeMap.set(key, [edge]);
+    }
+  };
 
   const hasEdge = (
     fromRef: string,
     toRef: string,
     relation: [string, string?],
   ): boolean => {
-    return edges.some(
-      edge =>
-        fromRef === edge.from &&
-        toRef === edge.to &&
-        edge.relations.some(
-          rel => rel[0] === relation[0] && rel[1] === relation[1],
-        ),
+    const foundEdges = edgeMap.get(getEdgeKey(fromRef, toRef));
+    return !!foundEdges?.some(edge =>
+      edge.relations.some(
+        rel => rel[0] === relation[0] && rel[1] === relation[1],
+      ),
     );
   };
 
@@ -75,12 +98,7 @@ export function buildGraph({
           return;
         }
 
-        if (
-          kinds &&
-          !kinds.some(kind =>
-            rel.targetRef.startsWith(`${kind.toLocaleLowerCase('en-US')}:`),
-          )
-        ) {
+        if (kindSet && !kindSet.has(kindOfEntityRef(rel.targetRef))) {
           return;
         }
 
@@ -92,7 +110,7 @@ export function buildGraph({
           const from = left === rel.type ? entityRef : rel.targetRef;
           const to = left === rel.type ? rel.targetRef : entityRef;
           if (!unidirectional || !hasEdge(from, to, pair)) {
-            edges.push({
+            addEdge({
               from,
               to,
               relations: pair,
@@ -104,7 +122,7 @@ export function buildGraph({
             !unidirectional ||
             !hasEdge(entityRef, rel.targetRef, [rel.type])
           ) {
-            edges.push({
+            addEdge({
               from: entityRef,
               to: rel.targetRef,
               relations: [rel.type],
@@ -120,26 +138,17 @@ export function buildGraph({
 
         // if unidirectional add missing relations as entities are only visited once
         if (unidirectional) {
-          const findIndex = edges.findIndex(
-            edge =>
-              entityRef === edge.from &&
-              rel.targetRef === edge.to &&
-              !edge.relations.includes(rel.type),
-          );
-          if (findIndex >= 0) {
+          const foundEdge = edgeMap
+            .get(getEdgeKey(entityRef, rel.targetRef))
+            ?.find(edge => !edge.relations.includes(rel.type));
+          if (foundEdge) {
             if (mergeRelations) {
               const pair = relationPairs.find(
                 ([l, r]) => l === rel.type || r === rel.type,
               ) ?? [rel.type];
-              edges[findIndex].relations = [
-                ...edges[findIndex].relations,
-                ...pair,
-              ];
+              foundEdge.relations = [...foundEdge.relations, ...pair];
             } else {
-              edges[findIndex].relations = [
-                ...edges[findIndex].relations,
-                rel.type,
-              ];
+              foundEdge.relations = [...foundEdge.relations, rel.type];
             }
           }
         }
@@ -147,5 +156,5 @@ export function buildGraph({
     }
   }
 
-  return edges;
+  return Array.from(edgeMap.values()).flat(1);
 }

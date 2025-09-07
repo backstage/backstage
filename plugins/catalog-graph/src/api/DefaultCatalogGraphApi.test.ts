@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import { mockApis } from '@backstage/test-utils';
 import { DefaultCatalogGraphApi } from './DefaultCatalogGraphApi';
+
+const config = mockApis.config();
 
 describe('DefaultCatalogGraphApi', () => {
   it('default config', async () => {
-    const { defaultRelations } = new DefaultCatalogGraphApi();
+    const { defaultRelations } = new DefaultCatalogGraphApi({ config });
 
     expect(defaultRelations.includes('')).toBe(false);
     expect(defaultRelations.includes('fooRelation')).toBe(false);
@@ -28,6 +31,7 @@ describe('DefaultCatalogGraphApi', () => {
 
   it('empty include config', async () => {
     const { defaultRelations } = new DefaultCatalogGraphApi({
+      config,
       defaultRelationTypes: { include: [] },
     });
 
@@ -39,6 +43,7 @@ describe('DefaultCatalogGraphApi', () => {
 
   it('include config', async () => {
     const { defaultRelations } = new DefaultCatalogGraphApi({
+      config,
       defaultRelationTypes: { include: ['ownedBy'] },
     });
 
@@ -50,6 +55,7 @@ describe('DefaultCatalogGraphApi', () => {
 
   it('exclude config', async () => {
     const { defaultRelations } = new DefaultCatalogGraphApi({
+      config,
       defaultRelationTypes: { exclude: ['ownedBy', 'ownerOf'] },
     });
 

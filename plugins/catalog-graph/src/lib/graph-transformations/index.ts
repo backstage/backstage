@@ -16,12 +16,33 @@
 
 export type { GraphTransformer, TransformationContext } from './types';
 
+import { GraphTransformer } from './types';
+
+// Edge transformations
 import { reduceEdges } from './reduce-edges';
 import { setDistances } from './set-distance';
 import { orderForward } from './order-forward';
 import { stripDistantEdges } from './strip-distant-edges';
 import { mergeRelations } from './merge-relations';
 import { removeBackwardEdges } from './remove-backward-edges';
+
+// Node transformations
+import { removeIsolatedNodes } from './remove-isolated-nodes';
+
+/**
+ * The names of the built-in transformations that can be referenced when
+ * applying custom transformations to a graph.
+ *
+ * @public
+ */
+export type BuiltInTransformations =
+  | 'reduce-edges'
+  | 'set-distances'
+  | 'order-forward'
+  | 'strip-distant-edges'
+  | 'merge-relations'
+  | 'remove-backward-edges'
+  | 'remove-isolated-nodes';
 
 export const builtInTransformations = {
   'reduce-edges': reduceEdges,
@@ -30,6 +51,12 @@ export const builtInTransformations = {
   'strip-distant-edges': stripDistantEdges,
   'merge-relations': mergeRelations,
   'remove-backward-edges': removeBackwardEdges,
-};
 
-export type BuiltInTransformations = keyof typeof builtInTransformations;
+  /**
+   * Nodes can have been be isolated (i.e. without edges) after some
+   * transformations. This transformation removes such nodes.
+   * This transformation is not run by default, but can be useful when having
+   * applied custom transformations.
+   */
+  'remove-isolated-nodes': removeIsolatedNodes,
+} satisfies Record<BuiltInTransformations, GraphTransformer>;

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { ALL_RELATION_PAIRS, ALL_RELATIONS, RelationPairs } from '../lib/types';
 import {
   CatalogGraphApi,
@@ -28,9 +29,117 @@ import {
  * @public
  */
 export interface DefaultCatalogGraphApiOptions {
+  config: ConfigApi;
+
+  /**
+   * Known relations.
+   * Defaults to the built-in relations, but can be customed so the UI suggests
+   * other relations in the drop-down.
+   *
+   * Can also be configured via `catalogGraph.knownRelations` in app config.
+   */
   readonly knownRelations?: string[];
+
+  /**
+   * Add known relations on top of the built-in ones.
+   *
+   * Can also be configured via `catalogGraph.additionalKnownRelations` in app config.
+   */
+  readonly additionalKnownRelations?: string[];
+
+  /**
+   * Known relation pairs.
+   * Defaults to the built-in relation pairs, but can be customed to incude more
+   * relations pairs for custom relations.
+   *
+   * Can also be configured via `catalogGraph.knownRelationPairs` in app config.
+   */
   readonly knownRelationPairs?: RelationPairs;
+
+  /**
+   * Add known relations on top of the built-in ones.
+   *
+   * Can also be configured via `catalogGraph.additionalKnownRelationPairs` in app config.
+   */
+  readonly additionalKnownRelationPairs?: RelationPairs;
+
+  /**
+   * Default relation types. These are the relation types that will be used by
+   * default in the UI, unless overridden by props.
+   *
+   * Defaults to all relations, but can be customed to include more relations
+   * or exclude certain relations that aren't suitable or feasible to display.
+   *
+   * Can also be configured via `catalogGraph.defaultRelationTypes` in app config.
+   */
   readonly defaultRelationTypes?: DefaultRelations;
+}
+
+function ensureRelationPairs(configArray: unknown): RelationPairs | undefined {
+  if (!configArray) return undefined;
+
+  const errorMessage =
+    'Invalid relation pair in config catalogGraph.knownRelationPairs or ' +
+    'catalogGraph.additionalKnownRelationPairs, ' +
+    `expected array of [strings, string] tuple`;
+
+  if (!Array.isArray(configArray)) {
+    throw new Error(errorMessage);
+  }
+
+  return configArray.map(value => {
+    if (
+      !Array.isArray(value) ||
+      value.length !== 2 ||
+      typeof value[0] !== 'string' ||
+      typeof value[1] !== 'string'
+    ) {
+      throw new Error(errorMessage);
+    }
+    return value as [string, string];
+  });
+}
+
+function ensureDefaultRelationTypes(
+  config: unknown,
+): DefaultRelations | undefined {
+  if (!config) {
+    return undefined;
+  }
+
+  if (
+    typeof config === 'object' &&
+    (Array.isArray((config as any).exclude) ||
+      Array.isArray((config as any).include))
+  ) {
+    return config as DefaultRelations;
+  }
+
+  throw new Error(
+    'Invalid config catalogGraph.defaultRelationTypes, ' +
+      'expected either { exclude: string[] } or { include: string[] }',
+  );
+}
+
+function concatRelations(
+  base: string[],
+  additional: string[] | undefined,
+): string[] {
+  return Array.from(new Set([...base, ...(additional ?? [])]));
+}
+
+function concatRelationPairs(
+  base: [string, string][],
+  additional: [string, string][] | undefined,
+): [string, string][] {
+  const seenPairs = [] as [string, string][];
+  return [...base, ...(additional ?? [])].filter(pair => {
+    if (seenPairs.some(seen => seen[0] === pair[0] && seen[1] === pair[1])) {
+      return false;
+    }
+    seenPairs.push(pair);
+    return true;
+  });
 }
 
 /**
@@ -42,18 +151,43 @@ export class DefaultCatalogGraphApi implements CatalogGraphApi {
   readonly knownRelations: string[];
   readonly knownRelationPairs: [string, string][];
   readonly defaultRelations: string[];
+  readonly maxDepth: number;
 
-  constructor(
-    options: DefaultCatalogGraphApiOptions = {
-      knownRelations: ALL_RELATIONS,
-      knownRelationPairs: ALL_RELATION_PAIRS,
-      defaultRelationTypes: { exclude: [] },
-    },
-  ) {
-    this.knownRelations = options.knownRelations ?? ALL_RELATIONS;
-    this.knownRelationPairs = options.knownRelationPairs ?? ALL_RELATION_PAIRS;
+  constructor({
+    config,
+    knownRelations,
+    additionalKnownRelations,
+    knownRelationPairs,
+    additionalKnownRelationPairs,
+    defaultRelationTypes,
+  }: DefaultCatalogGraphApiOptions) {
+    this.knownRelations = concatRelations(
+      knownRelations ??
+        config.getOptionalStringArray('catalogGraph.knownRelations') ??
+        ALL_RELATIONS,
+      additionalKnownRelations ??
+        config.getOptionalStringArray(
+          'catalogGraph.additionalKnownRelations',
+        ) ??
+        [],
+    );
 
-    const defaultRelations = options.defaultRelationTypes;
+    this.knownRelationPairs = concatRelationPairs(
+      knownRelationPairs ??
+        ensureRelationPairs(
+          config.getOptional('catalogGraph.knownRelationPairs'),
+        ) ??
+        ALL_RELATION_PAIRS,
+      additionalKnownRelationPairs ??
+        ensureRelationPairs(
+          config.getOptional('catalogGraph.additionalKnownRelationPairs'),
+        ) ??
+        [],
+    );
+
+    const defaultRelations = ensureDefaultRelationTypes(
+      defaultRelationTypes,
+    ) ?? { exclude: [] };
 
     if (Array.isArray((defaultRelations as DefaultRelationsInclude).include)) {
       const defaultRelationsInclude =
@@ -70,5 +204,8 @@ export class DefaultCatalogGraphApi implements CatalogGraphApi {
         rel => !defaultRelationsExclude.exclude.includes(rel),
       );
     }
+
+    const maxDepth = config.getOptionalNumber('catalogGraph.maxDepth');
+    this.maxDepth = maxDepth ?? Number.POSITIVE_INFINITY;
   }
 }

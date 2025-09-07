@@ -33,6 +33,10 @@ import { DefaultRenderNode } from './DefaultRenderNode';
 import { RelationPairs } from '../../lib/types';
 import { Direction, EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
+import {
+  BuiltInTransformations,
+  GraphTransformer,
+} from '../../lib/graph-transformations';
 
 /** @public */
 export type EntityRelationsGraphClassKey = 'progress' | 'container' | 'graph';
@@ -91,6 +95,23 @@ export type EntityRelationsGraphProps = {
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
+
+  /**
+   * Custom transformers to apply when the graph has been constructed from
+   * entities.
+   *
+   * By default, these are applied after the built-in transformers have run.
+   * To override this behavior, set
+   * {@link EntityRelationsGraphProps.noDefaultTransformations | noDefaultTransformations }
+   * to `true`.
+   *
+   * The values can be either transformation functions or built-in
+   * transformation types.
+   */
+  transformations?: (GraphTransformer | BuiltInTransformations)[];
+
+  /** Don't apply default transformations */
+  noDefaultTransformations?: boolean;
 };
 
 /**
@@ -116,6 +137,8 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     renderLabel,
     curve,
     showArrowHeads,
+    transformations,
+    noDefaultTransformations,
   } = props;
 
   const theme = useTheme();
@@ -139,6 +162,8 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     entityFilter,
     onNodeClick,
     relationPairs,
+    transformations,
+    noDefaultTransformations,
   });
 
   useEffect(() => {
