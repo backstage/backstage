@@ -32,7 +32,17 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    # From your Backstage root directory
    yarn --cwd packages/app add @backstage/plugin-catalog-graph
    ```
-2. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
+2. Add a dependency to your `packages/backend/package.json` (optional but improves performance):
+   ```sh
+   # From your Backstage root directory
+   yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-graph
+   ```
+   and add the backend to `packages/backend/src/index.ts`
+   ```ts
+   backend.add(import('@backstage/plugin-catalog-backend-module-graph'));
+   ```
+   and configure the graph plugin to use this backend module by setting `catalogGraph.fetchMode` to `backend`, see below.
+3. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
 
    ```typescript
    <FlatRoutes>
@@ -56,7 +66,7 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    />
    ```
 
-3. Bind the external routes of the `catalogGraphPlugin` in your `packages/app/src/App.tsx`:
+4. Bind the external routes of the `catalogGraphPlugin` in your `packages/app/src/App.tsx`:
 
    ```typescript
    bindRoutes({ bind }) {
@@ -68,7 +78,7 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    }
    ```
 
-4. Add `EntityCatalogGraphCard` to any entity page that you want in your `packages/app/src/components/catalog/EntityPage.tsx`:
+5. Add `EntityCatalogGraphCard` to any entity page that you want in your `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```typescript
    <Grid item md={6} xs={12}>
@@ -139,42 +149,33 @@ Once you have your custom implementation, you can follow these steps to modify t
 <EntityCatalogGraphCard variant=“gridItem” renderNode={MyCustomRenderNode} height={400} />
 ```
 
-### Custom relations
+### Configuration and custom relations
 
-Implementers with added custom relations can add them to the catalog graph plugin by overriding the default API. This also allows some relations to not be selected by default.
+This plugin can be configured to:
 
-In `packages/app/src/apis.ts`, import the api ref and create the API as:
+- Use `catalog-backend-module-graph` for more effectively fetching the graph
+- Understand custom relations and relation pairs
+- Set which relations to be selected by default in the UI
 
-```ts
-import {
-  ALL_RELATIONS,
-  ALL_RELATION_PAIRS,
-  catalogGraphApiRef,
-  DefaultCatalogGraphApi,
-} from '@backstage/plugin-catalog-graph';
-
-// ...
-
-  createApiFactory({
-    api: catalogGraphApiRef,
-    deps: {},
-    factory: () =>
-      new DefaultCatalogGraphApi({
-        // The relations to support
-        knownRelations: [...ALL_RELATIONS, 'myRelationOf', 'myRelationFor'],
-        // The relation pairs to support
-        knownRelationPairs: [
-          ...ALL_RELATION_PAIRS,
-          ['myRelationOf', 'myRelationFor'],
-        ],
-        // Select what relations to be shown by default, either by including them,
-        // or excluding some from all known relations:
-        defaultRelationTypes: {
-          // Don't show/select these by default
-          exclude: ['myRelationOf', 'myRelationFor'],
-        },
-      }),
-  }),
+```yaml
+catalogGraph:
+  # Fetch graphs more effectively if catalog-backend-module-graph is installed,
+  # by specifying 'backend', otherwise leave unset or use 'frontend'
+  fetchMode: backend
+  # Override the built-in set of known relations, or
+  knownRelations: [myRelationOf, myRelationFor]
+  # Append known relations to the built-in set
+  additionalKnownRelations: [myRelationOf, myRelationFor]
+  # Override the built-in set of known relation pairs
+  knownRelationPairs: [[myRelationOf, myRelationFor], [builtBy, builtFor]]
+  # Append known relation pairs to the built-in set
+  additionalKnownRelationPairs:
+    [[myRelationOf, myRelationFor], [builtBy, builtFor]]
+  # Default relations to have selected, either include (override) or exclude from the built-in relations
+  defaultRelationTypes:
+    exclude:
+      - myRelationOf
+      - myRelationFor
 ```
 
 ## Development

@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
-import { useEffect, useMemo } from 'react';
-import { useEntityStore } from './useEntityStore';
+import { useApi } from '@backstage/core-plugin-api';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { useMemo } from 'react';
 import { pickBy } from 'lodash';
-import { useRelations } from '../../hooks/useRelations';
+import { useEntityRelationGraphFromBackend } from './useEntityRelationGraphFromBackend';
+import { useEntityRelationGraphFromFrontend } from './useEntityRelationGraphFromFrontend';
+import { useEntityRelationGraphFilter } from './useEntityRelationFilter';
+import { catalogGraphApiRef } from '../../api';
+import { useFetchMethod } from './useFetchMethod';
 
 /**
  * Discover the graph of entities connected by relations, starting from a set of
@@ -26,12 +30,8 @@ import { useRelations } from '../../hooks/useRelations';
  */
 export function useEntityRelationGraph({
   rootEntityRefs,
-  filter: {
-    maxDepth = Number.POSITIVE_INFINITY,
-    relations,
-    kinds,
-    entityFilter,
-  } = {},
+  filter: { maxDepth: userMaxDepth, relations, kinds, entityFilter } = {},
+  entitySet,
 }: {
   rootEntityRefs: string[];
   filter?: {
@@ -40,85 +40,85 @@ export function useEntityRelationGraph({
     kinds?: string[];
     entityFilter?: (entity: Entity) => boolean;
   };
+  entitySet?: Entity[];
 }): {
-  entities?: { [ref: string]: Entity };
+  entities: { [ref: string]: Entity };
   loading: boolean;
   error?: Error;
 } {
-  const { entities, loading, error, requestEntities } = useEntityStore();
-  const { includeRelation } = useRelations({ relations });
+  const { maxDepth: systemMaxDepth } = useApi(catalogGraphApiRef);
 
-  useEffect(() => {
-    const expectedEntities = new Set([...rootEntityRefs]);
-    const processedEntityRefs = new Set<string>();
+  const maxDepth = Math.max(
+    1,
+    Math.min(userMaxDepth ?? Number.POSITIVE_INFINITY, systemMaxDepth),
+  );
 
-    let nextDepthRefQueue = [...rootEntityRefs];
-    let depth = 0;
+  const fetchMethod = useFetchMethod(!!entitySet);
 
-    while (
-      nextDepthRefQueue.length > 0 &&
-      (!isFinite(maxDepth) || depth < maxDepth)
-    ) {
-      const entityRefQueue = nextDepthRefQueue;
-      nextDepthRefQueue = [];
+  const backendEntities = useEntityRelationGraphFromBackend(
+    {
+      rootEntityRefs,
+      maxDepth,
+      relations,
+      filter: {
+        ...(kinds ? { kind: kinds } : {}),
+      },
+    },
+    { noFetch: fetchMethod !== 'backend' },
+  );
+  const frontendEntities = useEntityRelationGraphFromFrontend(
+    {
+      rootEntityRefs,
+      maxDepth,
+      relations,
+      kinds,
+    },
+    { noFetch: fetchMethod !== 'frontend' },
+  );
+  const asyncEntities =
+    fetchMethod === 'backend' ? backendEntities : frontendEntities;
 
-      while (entityRefQueue.length > 0) {
-        const entityRef = entityRefQueue.shift()!;
-        const entity = entities[entityRef];
-
-        processedEntityRefs.add(entityRef);
-
-        if (entity && entity.relations) {
-          // If the entity is filtered out then no need to check any
-          // of its outgoing relationships to other entities
-          if (entityFilter && !entityFilter(entity)) {
-            continue;
-          }
-          for (const rel of entity.relations) {
-            if (
-              includeRelation(rel.type) &&
-              (!kinds ||
-                kinds.some(kind =>
-                  rel.targetRef.startsWith(
-                    `${kind.toLocaleLowerCase('en-US')}:`,
-                  ),
-                ))
-            ) {
-              if (!processedEntityRefs.has(rel.targetRef)) {
-                nextDepthRefQueue.push(rel.targetRef);
-                expectedEntities.add(rel.targetRef);
-              }
-            }
-          }
-        }
-      }
-
-      ++depth;
+  const fetchedEntities = useMemo(() => {
+    if (entitySet) {
+      return Object.fromEntries(entitySet.map(e => [stringifyEntityRef(e), e]));
+    } else if (fetchMethod === 'frontend' || fetchMethod === 'backend') {
+      return asyncEntities.entities;
     }
-    requestEntities([...expectedEntities]);
-  }, [
-    entities,
+    return undefined;
+  }, [entitySet, fetchMethod, asyncEntities.entities]);
+
+  // The backendEntities can contain more entities than wanted, as it caches
+  // results to avoid excessive re-fetching when the user is changing maxDepth
+  // down (or back up again). So the filtering logic is applied here to:
+  //  * Ensure only entities are returned when reusing a larger cache
+  //  * Respect entityFilter (if provided)
+  //  * Perform graph filtering when the set of entities is provided by the user
+  const filteredAsyncEntities = useEntityRelationGraphFilter({
     rootEntityRefs,
-    maxDepth,
-    includeRelation,
-    kinds,
+    allEntities: fetchedEntities,
     entityFilter,
-    requestEntities,
-  ]);
+    kinds,
+    maxDepth,
+    relations,
+  });
+
+  // As there might be no change to what entities are returned, the result is
+  // memoized, to avoid unnecessary re-renders.
+  const memoizedEntities = useMemo(
+    () => filteredAsyncEntities,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(Object.keys(filteredAsyncEntities).sort())],
+  );
 
   const filteredEntities = useMemo(() => {
-    if (loading) {
-      return {};
-    }
-
     return entityFilter
-      ? pickBy(entities, (value, _key) => entityFilter(value))
-      : entities;
-  }, [loading, entities, entityFilter]);
+      ? pickBy(memoizedEntities, (value, _key) => entityFilter(value))
+      : memoizedEntities;
+  }, [memoizedEntities, entityFilter]);
 
   return {
     entities: filteredEntities,
-    loading,
-    error,
+    loading: asyncEntities.loading,
+    error: asyncEntities.error,
   };
 }

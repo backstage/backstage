@@ -33,6 +33,10 @@ import { DefaultRenderNode } from './DefaultRenderNode';
 import { RelationPairs } from '../../lib/types';
 import { Direction, EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
+import {
+  BuiltInTransformations,
+  GraphTransformer,
+} from '../../lib/graph-transformations';
 
 /** @public */
 export type EntityRelationsGraphClassKey = 'progress' | 'container' | 'graph';
@@ -61,7 +65,7 @@ const useStyles = makeStyles(
         transition: 'filter 0.1s ease-in-out',
       },
       '& path[marker-end]:hover': {
-        filter: `drop-shadow(2px 2px 4px ${theme.palette.primary.dark});`,
+        filter: `drop-shadow(2px 2px 4px ${theme.palette.primary.dark})`,
       },
       '& g[data-testid=label]': {
         transition: 'transform 0s',
@@ -93,6 +97,29 @@ export type EntityRelationsGraphProps = {
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
   allowFullscreen?: boolean;
+
+  /**
+   * Custom transformers to apply when the graph has been constructed from
+   * entities.
+   *
+   * By default, these are applied after the built-in transformers have run.
+   * To override this behavior, set
+   * {@link EntityRelationsGraphProps.noDefaultTransformations | noDefaultTransformations }
+   * to `true`.
+   *
+   * The values can be either transformation functions or built-in
+   * transformation types.
+   */
+  transformations?: (GraphTransformer | BuiltInTransformations)[];
+
+  /** Don't apply default transformations */
+  noDefaultTransformations?: boolean;
+
+  /**
+   * Don't fetch entities from the backend, instead use only entities in this
+   * provided set.
+   */
+  entitySet?: Entity[];
 };
 
 /**
@@ -120,6 +147,9 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     curve,
     showArrowHeads,
     allowFullscreen,
+    transformations,
+    noDefaultTransformations,
+    entitySet,
   } = props;
 
   const theme = useTheme();
@@ -143,6 +173,9 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     entityFilter,
     onNodeClick,
     relationPairs,
+    transformations,
+    noDefaultTransformations,
+    entitySet,
   });
 
   useEffect(() => {

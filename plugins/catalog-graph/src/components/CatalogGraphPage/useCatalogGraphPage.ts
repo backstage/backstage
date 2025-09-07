@@ -25,10 +25,33 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Direction } from '../../lib/types';
+
+type QueryType = {
+  selectedRelations?: string[] | string;
+  selectedKinds?: string[] | string;
+  rootEntityRefs?: string[] | string;
+  maxDepth?: string[] | string;
+  unidirectional?: string[] | string;
+  mergeRelations?: string[] | string;
+  direction?: string[] | Direction;
+  showFilters?: string[] | string;
+  curve?: string[] | 'curveStepBefore' | 'curveMonotoneX';
+};
+
+function setIfChanged<Prop extends keyof QueryType>(
+  query: QueryType,
+  newQuery: QueryType,
+  prop: Prop,
+) {
+  if (JSON.stringify(query[prop]) !== JSON.stringify(newQuery[prop])) {
+    query[prop] = newQuery[prop];
+  }
+}
 
 export type CatalogGraphPageValue = {
   rootEntityNames: CompoundEntityRef[];
@@ -71,24 +94,31 @@ export function useCatalogGraphPage({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const query = useMemo(
-    () =>
-      (qs.parse(location.search, {
-        arrayLimit: 10000,
-        ignoreQueryPrefix: true,
-      }) || {}) as {
-        selectedRelations?: string[] | string;
-        selectedKinds?: string[] | string;
-        rootEntityRefs?: string[] | string;
-        maxDepth?: string[] | string;
-        unidirectional?: string[] | string;
-        mergeRelations?: string[] | string;
-        direction?: string[] | Direction;
-        showFilters?: string[] | string;
-        curve?: string[] | 'curveStepBefore' | 'curveMonotoneX';
-      },
-    [location.search],
-  );
+  const queryRef = useRef<QueryType>(undefined as any);
+  if (!queryRef.current) {
+    queryRef.current = (qs.parse(location.search, {
+      arrayLimit: 10000,
+      ignoreQueryPrefix: true,
+    }) || {}) as QueryType;
+  }
+  const query = queryRef.current;
+
+  // Modify ref fields individually if they've changed, to avoid unnecessary
+  // re-renders, causing flickering
+  const newQuery = (qs.parse(location.search, {
+    arrayLimit: 10000,
+    ignoreQueryPrefix: true,
+  }) || {}) as QueryType;
+
+  setIfChanged(query, newQuery, 'rootEntityRefs');
+  setIfChanged(query, newQuery, 'selectedRelations');
+  setIfChanged(query, newQuery, 'selectedKinds');
+  setIfChanged(query, newQuery, 'maxDepth');
+  setIfChanged(query, newQuery, 'unidirectional');
+  setIfChanged(query, newQuery, 'mergeRelations');
+  setIfChanged(query, newQuery, 'direction');
+  setIfChanged(query, newQuery, 'showFilters');
+  setIfChanged(query, newQuery, 'curve');
 
   const rootEntityNames = useMemo(
     () =>
@@ -113,7 +143,7 @@ export function useCatalogGraphPage({
 
       const newSearch = qs.stringify(
         {
-          ...query,
+          ...queryRef.current,
           rootEntityRefs: value.map(r => stringifyEntityRef(r)),
         },
         { arrayFormat: 'brackets', addQueryPrefix: true },
@@ -121,7 +151,7 @@ export function useCatalogGraphPage({
 
       navigate(newSearch);
     },
-    [rootEntityNames, navigate, query],
+    [rootEntityNames, navigate],
   );
 
   const [maxDepth, setMaxDepth] = useState<number>(() =>
