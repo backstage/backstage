@@ -15,63 +15,81 @@
  */
 
 import { AppNode, FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { Expand } from '@backstage/types';
 
-type AppErrorTypes = {
+/**
+ * @public
+ */
+export type AppErrorTypes = {
   // resolveAppNodeSpecs
-  EXTENSION_IGNORED: 'plugin' | 'extensionId';
-  INVALID_EXTENSION_CONFIG_KEY: 'extensionId';
-  // resolveAppTree
-  EXTENSION_INPUT_REDIRECT_CONFLICT: 'node' | 'inputName';
-  // instantiateAppNodeTree
-  EXTENSION_INPUT_DATA_IGNORED: 'node' | 'inputName';
-  EXTENSION_INPUT_DATA_MISSING: 'node' | 'inputName';
-  EXTENSION_ATTACHMENT_CONFLICT: 'node' | 'inputName';
-  EXTENSION_ATTACHMENT_MISSING: 'node' | 'inputName';
-  EXTENSION_CONFIGURATION_INVALID: 'node';
-  EXTENSION_INVALID: 'node';
-  EXTENSION_OUTPUT_CONFLICT: 'node' | 'dataRefId';
-  EXTENSION_OUTPUT_MISSING: 'node' | 'dataRefId';
-  EXTENSION_OUTPUT_IGNORED: 'node' | 'dataRefId';
-  EXTENSION_FACTORY_ERROR: 'node';
-  // createSpecializedApp
-  API_EXTENSION_INVALID: 'node';
-};
-
-type AppErrorContext = {
-  node?: AppNode;
-  plugin?: FrontendPlugin;
-  extensionId?: string;
-  dataRefId?: string;
-  inputName?: string;
-};
-
-/** @public */
-export type AppError<TCode extends keyof AppErrorTypes = keyof AppErrorTypes> =
-  {
-    code: TCode;
-    message: string;
-    context: Expand<
-      AppErrorContext &
-        Pick<
-          Required<AppErrorContext>,
-          keyof AppErrorTypes extends TCode ? never : AppErrorTypes[TCode]
-        >
-    >;
+  EXTENSION_IGNORED: {
+    context: { plugin: FrontendPlugin; extensionId: string };
   };
+  INVALID_EXTENSION_CONFIG_KEY: {
+    context: { extensionId: string };
+  };
+  // resolveAppTree
+  EXTENSION_INPUT_REDIRECT_CONFLICT: {
+    context: { node: AppNode; inputName: string };
+  };
+  // instantiateAppNodeTree
+  EXTENSION_INPUT_DATA_IGNORED: {
+    context: { node: AppNode; inputName: string };
+  };
+  EXTENSION_INPUT_DATA_MISSING: {
+    context: { node: AppNode; inputName: string };
+  };
+  EXTENSION_ATTACHMENT_CONFLICT: {
+    context: { node: AppNode; inputName: string };
+  };
+  EXTENSION_ATTACHMENT_MISSING: {
+    context: { node: AppNode; inputName: string };
+  };
+  EXTENSION_CONFIGURATION_INVALID: {
+    context: { node: AppNode };
+  };
+  EXTENSION_INVALID: {
+    context: { node: AppNode };
+  };
+  EXTENSION_OUTPUT_CONFLICT: {
+    context: { node: AppNode; dataRefId: string };
+  };
+  EXTENSION_OUTPUT_MISSING: {
+    context: { node: AppNode; dataRefId: string };
+  };
+  EXTENSION_OUTPUT_IGNORED: {
+    context: { node: AppNode; dataRefId: string };
+  };
+  EXTENSION_FACTORY_ERROR: {
+    context: { node: AppNode };
+  };
+  // createSpecializedApp
+  API_EXTENSION_INVALID: {
+    context: { node: AppNode };
+  };
+};
+
+/**
+ * @public
+ */
+export type AppError =
+  keyof AppErrorTypes extends infer ICode extends keyof AppErrorTypes
+    ? ICode extends any
+      ? {
+          code: ICode;
+          message: string;
+          context: AppErrorTypes[ICode]['context'];
+        }
+      : never
+    : never;
 
 /** @internal */
-export interface ErrorCollector<
-  TContext extends keyof AppErrorContext = never,
-> {
-  // Type-only: here to make sure that all required keys are present
-  $$contextKeys: { [K in TContext]: K };
+export interface ErrorCollector<TContext extends {} = {}> {
   report<TCode extends keyof AppErrorTypes>(
-    report: Exclude<
-      AppErrorTypes[TCode],
-      TContext
-    > extends infer IContext extends keyof AppErrorContext
-      ? [IContext] extends [never]
+    report: Omit<
+      AppErrorTypes[TCode]['context'],
+      keyof TContext
+    > extends infer IContext extends {}
+      ? [{}] extends [IContext]
         ? {
             code: TCode;
             message: string;
@@ -79,28 +97,28 @@ export interface ErrorCollector<
         : {
             code: TCode;
             message: string;
-            context: Pick<Required<AppErrorContext>, IContext>;
+            context: IContext;
           }
       : never,
   ): void;
-  child<TAdditionalContext extends AppErrorContext>(
-    context?: TAdditionalContext & AppErrorContext,
-  ): ErrorCollector<
-    (TContext | keyof TAdditionalContext) & keyof AppErrorContext
-  >;
+  child<TAdditionalContext extends {}>(
+    context: TAdditionalContext,
+  ): ErrorCollector<TContext & TAdditionalContext>;
   collectErrors(): AppError[] | undefined;
 }
 
 /** @internal */
 export function createErrorCollector(
-  context?: AppError['context'],
+  context?: Partial<AppError['context']>,
 ): ErrorCollector {
   const errors: AppError[] = [];
   const children: ErrorCollector[] = [];
   return {
-    $$contextKeys: null as any,
-    report(report) {
-      errors.push({ ...report, context: { ...context, ...report.context } });
+    report(report: { code: string; message: string; context?: {} }) {
+      errors.push({
+        ...report,
+        context: { ...context, ...report.context },
+      } as AppError);
     },
     collectErrors() {
       const allErrors = [

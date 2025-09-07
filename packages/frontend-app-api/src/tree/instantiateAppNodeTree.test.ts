@@ -1098,7 +1098,7 @@ describe('instantiateAppNodeTree', () => {
           });
           const errors = collector.collectErrors();
           for (const error of errors ?? []) {
-            expect(error.context?.node).toBe(node);
+            expect('node' in error.context && error.context.node).toBe(node);
           }
           return errors;
         }

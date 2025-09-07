@@ -5,7 +5,6 @@
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
-import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
@@ -18,16 +17,97 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
-export type AppError = {
-  code: string;
-  message: string;
-  context?: {
-    node?: AppNode;
-    spec?: AppNodeSpec;
-    plugin?: FrontendPlugin;
-    extensionId?: string;
-    inputName?: string;
-    dataRefId?: string;
+export type AppError =
+  keyof AppErrorTypes extends infer ICode extends keyof AppErrorTypes
+    ? ICode extends any
+      ? {
+          code: ICode;
+          message: string;
+          context: AppErrorTypes[ICode]['context'];
+        }
+      : never
+    : never;
+
+// @public (undocumented)
+export type AppErrorTypes = {
+  EXTENSION_IGNORED: {
+    context: {
+      plugin: FrontendPlugin;
+      extensionId: string;
+    };
+  };
+  INVALID_EXTENSION_CONFIG_KEY: {
+    context: {
+      extensionId: string;
+    };
+  };
+  EXTENSION_INPUT_REDIRECT_CONFLICT: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_INPUT_DATA_IGNORED: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_INPUT_DATA_MISSING: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_ATTACHMENT_CONFLICT: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_ATTACHMENT_MISSING: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_CONFIGURATION_INVALID: {
+    context: {
+      node: AppNode;
+    };
+  };
+  EXTENSION_INVALID: {
+    context: {
+      node: AppNode;
+    };
+  };
+  EXTENSION_OUTPUT_CONFLICT: {
+    context: {
+      node: AppNode;
+      dataRefId: string;
+    };
+  };
+  EXTENSION_OUTPUT_MISSING: {
+    context: {
+      node: AppNode;
+      dataRefId: string;
+    };
+  };
+  EXTENSION_OUTPUT_IGNORED: {
+    context: {
+      node: AppNode;
+      dataRefId: string;
+    };
+  };
+  EXTENSION_FACTORY_ERROR: {
+    context: {
+      node: AppNode;
+    };
+  };
+  API_EXTENSION_INVALID: {
+    context: {
+      node: AppNode;
+    };
   };
 };
 

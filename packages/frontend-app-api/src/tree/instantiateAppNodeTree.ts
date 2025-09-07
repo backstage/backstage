@@ -95,7 +95,7 @@ function resolveInputDataContainer(
   extensionData: Array<ExtensionDataRef>,
   attachment: AppNode,
   inputName: string,
-  collector: ErrorCollector<'node' | 'inputName'>,
+  collector: ErrorCollector<{ node: AppNode; inputName: string }>,
 ): { node: AppNode } & ExtensionDataContainer<ExtensionDataRef> {
   const dataMap = new Map<string, unknown>();
 
@@ -250,7 +250,7 @@ function resolveV2Inputs(
     >;
   },
   attachments: ReadonlyMap<string, AppNode[]>,
-  parentCollector: ErrorCollector<'node'>,
+  parentCollector: ErrorCollector<{ node: AppNode }>,
 ): ResolvedExtensionInputs<{
   [inputName in string]: ExtensionInput<
     ExtensionDataRef,

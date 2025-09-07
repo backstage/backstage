@@ -19,4 +19,4 @@ export {
   type CreateSpecializedAppOptions,
 } from './createSpecializedApp';
 export { type FrontendPluginInfoResolver } from './createPluginInfoAttacher';
-export { type AppError } from './createErrorCollector';
+export { type AppError, type AppErrorTypes } from './createErrorCollector';
