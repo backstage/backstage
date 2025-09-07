@@ -21,25 +21,26 @@ import {
   RELATION_OWNER_OF,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiRegistry, mockApis } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react';
-import { pick } from 'lodash';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
-import { useEntityStore as useEntityStoreMocked } from './useEntityStore';
+import { useEntityRelationGraphFromBackend as useEntityRelationGraphFromBackendMocked } from './useEntityRelationGraphFromBackend';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
-jest.mock('./useEntityStore');
+jest.mock('./useEntityRelationGraphFromBackend');
 
-const useEntityStore = useEntityStoreMocked as jest.Mock<
-  ReturnType<typeof useEntityStoreMocked>
->;
+const useEntityRelationGraphFromBackend =
+  useEntityRelationGraphFromBackendMocked as jest.Mock<
+    ReturnType<typeof useEntityRelationGraphFromBackendMocked>
+  >;
 
 function GraphContext(props: PropsWithChildren<{}>) {
+  const config = mockApis.config();
   return (
     <ApiProvider
       apis={TestApiRegistry.from([
         catalogGraphApiRef,
-        new DefaultCatalogGraphApi(),
+        new DefaultCatalogGraphApi({ config }),
       ])}
     >
       {props.children}
@@ -48,8 +49,6 @@ function GraphContext(props: PropsWithChildren<{}>) {
 }
 
 describe('useEntityRelationGraph', () => {
-  const requestEntities = jest.fn();
-
   beforeEach(() => {
     const entities = {
       'b:d/c': {
@@ -165,27 +164,21 @@ describe('useEntityRelationGraph', () => {
         ],
       },
     };
-    let rootEntityRefsFilter: string[] = [];
 
-    requestEntities.mockImplementation(r => {
-      rootEntityRefsFilter = r;
-    });
-
-    useEntityStore.mockImplementation(() => ({
+    useEntityRelationGraphFromBackend.mockImplementation(() => ({
+      entities: entities,
       loading: false,
-      entities: pick(entities, rootEntityRefsFilter),
-      requestEntities,
+      error: undefined,
     }));
   });
 
   afterEach(() => jest.resetAllMocks());
 
   test('should return no entities for empty root entity refs', async () => {
-    useEntityStore.mockReturnValue({
-      loading: false,
+    useEntityRelationGraphFromBackend.mockReturnValue({
       entities: {},
+      loading: false,
       error: undefined,
-      requestEntities,
     });
 
     const { result } = renderHook(
@@ -197,15 +190,17 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBeUndefined();
     expect(loading).toBe(false);
     expect(entities).toEqual({});
-    expect(requestEntities).toHaveBeenNthCalledWith(1, []);
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(1, {
+      maxDepth: Number.POSITIVE_INFINITY,
+      rootEntityRefs: [],
+    });
   });
 
   test('should pass through loading state', async () => {
-    useEntityStore.mockReturnValue({
-      loading: true,
+    useEntityRelationGraphFromBackend.mockReturnValue({
       entities: {},
+      loading: true,
       error: undefined,
-      requestEntities,
     });
 
     const { result } = renderHook(
@@ -217,16 +212,18 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBeUndefined();
     expect(loading).toBe(true);
     expect(entities).toEqual({});
-    expect(requestEntities).toHaveBeenNthCalledWith(1, []);
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(1, {
+      maxDepth: Number.POSITIVE_INFINITY,
+      rootEntityRefs: [],
+    });
   });
 
   test('should pass through error state', async () => {
     const err = new Error('Hello World');
-    useEntityStore.mockReturnValue({
-      loading: false,
+    useEntityRelationGraphFromBackend.mockReturnValue({
       entities: {},
+      loading: false,
       error: err,
-      requestEntities,
     });
 
     const { result } = renderHook(
@@ -238,19 +235,17 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBe(err);
     expect(loading).toBe(false);
     expect(entities).toEqual({});
-    expect(requestEntities).toHaveBeenNthCalledWith(1, []);
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(1, {
+      maxDepth: Number.POSITIVE_INFINITY,
+      rootEntityRefs: [],
+    });
   });
 
   test('should walk relation tree', async () => {
-    const { result, rerender } = renderHook(
+    const { result } = renderHook(
       () => useEntityRelationGraph({ rootEntityRefs: ['b:d/c'] }),
       { wrapper: GraphContext },
     );
-
-    // Simulate rerendering as this is triggered automatically due to the mock
-    for (let i = 0; i < 5; ++i) {
-      rerender();
-    }
 
     const { entities, loading, error } = result.current;
 
@@ -262,22 +257,14 @@ describe('useEntityRelationGraph', () => {
       'b:d/c2': expect.anything(),
       'k:d/a1': expect.anything(),
     });
-    expect(requestEntities).toHaveBeenNthCalledWith(1, ['b:d/c']);
-    expect(requestEntities).toHaveBeenNthCalledWith(2, [
-      'b:d/c',
-      'k:d/a1',
-      'b:d/c1',
-    ]);
-    expect(requestEntities).toHaveBeenNthCalledWith(3, [
-      'b:d/c',
-      'k:d/a1',
-      'b:d/c1',
-      'b:d/c2',
-    ]);
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(1, {
+      maxDepth: Number.POSITIVE_INFINITY,
+      rootEntityRefs: ['b:d/c'],
+    });
   });
 
   test('should limit max depth', async () => {
-    const { result, rerender } = renderHook(
+    const { result } = renderHook(
       () =>
         useEntityRelationGraph({
           rootEntityRefs: ['b:d/c'],
@@ -285,11 +272,6 @@ describe('useEntityRelationGraph', () => {
         }),
       { wrapper: GraphContext },
     );
-
-    // Simulate rerendering as this is triggered automatically due to the mock
-    for (let i = 0; i < 5; ++i) {
-      rerender();
-    }
 
     expect(result.current.entities).toEqual({
       'b:d/c': expect.anything(),

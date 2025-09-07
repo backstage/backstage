@@ -55,4 +55,7 @@ export interface CatalogGraphApi {
 
   /** The default relations to show in the graph */
   readonly defaultRelations: string[];
+
+  /** The max depth which the user cannot override */
+  readonly maxDepth: number;
 }
