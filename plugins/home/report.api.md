@@ -84,7 +84,7 @@ export const createCardExtension: typeof createCardExtension_2;
 // @public
 export const CustomHomepageGrid: (
   props: CustomHomepageGridProps,
-) => JSX_2.Element;
+) => JSX_2.Element | null;
 
 // @public
 export type CustomHomepageGridProps = {

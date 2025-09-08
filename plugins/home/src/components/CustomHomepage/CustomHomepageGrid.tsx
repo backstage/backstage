@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function useHomeStorage(
   defaultWidgets: GridWidget[],
-): [GridWidget[], (value: GridWidget[]) => void] {
+): [GridWidget[], (value: GridWidget[]) => void, boolean] {
   const key = 'home';
   const storageApi = useApi(storageApiRef).forBucket('home.customHomepage');
   // TODO: Support multiple home pages
@@ -110,6 +110,9 @@ function useHomeStorage(
     storageApi.observe$<string>(key),
     storageApi.snapshot(key),
   );
+
+  const isStorageLoading = homeSnapshot.presence === 'unknown' || !homeSnapshot;
+
   const widgets: GridWidget[] = useMemo(() => {
     if (homeSnapshot.presence === 'absent') {
       return defaultWidgets;
@@ -122,7 +125,7 @@ function useHomeStorage(
     }
   }, [homeSnapshot, defaultWidgets]);
 
-  return [widgets, setWidgets];
+  return [widgets, setWidgets, isStorageLoading];
 }
 
 const convertConfigToDefaultWidgets = (
@@ -213,7 +216,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       ? convertConfigToDefaultWidgets(props.config, availableWidgets)
       : [];
   }, [props.config, availableWidgets]);
-  const [widgets, setWidgets] = useHomeStorage(defaultLayout);
+  const [widgets, setWidgets, isStorageLoading] = useHomeStorage(defaultLayout);
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = useState(editModeOn);
@@ -321,6 +324,11 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       }),
     );
   };
+
+  // Don't render anything while storage is loading
+  if (isStorageLoading) {
+    return null;
+  }
 
   return (
     <>
