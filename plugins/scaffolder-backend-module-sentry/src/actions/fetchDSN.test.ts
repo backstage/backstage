@@ -130,7 +130,7 @@ describe('sentry:fetch:dsn action', () => {
       http.get(
         `https://sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
         async () => {
-          return HttpResponse.text('Bad response', { status: 200 });
+          return HttpResponse.text('Bad response', { status: 400 });
         },
       ),
     );
