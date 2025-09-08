@@ -39,10 +39,13 @@ import Typography from '@material-ui/core/Typography';
 import { WidgetSettingsOverlay } from './WidgetSettingsOverlay';
 import { AddWidgetDialog } from './AddWidgetDialog';
 import { CustomHomepageButtons } from './CustomHomepageButtons';
+import { CancelConfirmDialog } from './CancelConfirmDialog';
 import {
   CustomHomepageGridProps,
   CustomHomepageGridStateV1,
   CustomHomepageGridStateV1Schema,
+  CustomHomepageGridStateV2,
+  CustomHomepageGridStateV2Schema,
   GridWidget,
   LayoutConfiguration,
   LayoutConfigurationSchema,
@@ -90,39 +93,64 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function useHomeStorage(
   defaultWidgets: GridWidget[],
-): [GridWidget[], (value: GridWidget[]) => void] {
-  const key = 'home';
+  key: string,
+): [
+  GridWidget[],
+  (value: GridWidget[], persist?: boolean) => void,
+  GridWidget[] | null,
+] {
   const storageApi = useApi(storageApiRef).forBucket('home.customHomepage');
-  // TODO: Support multiple home pages
-  const setWidgets = useCallback(
-    (value: GridWidget[]) => {
-      const grid: CustomHomepageGridStateV1 = {
-        version: 1,
-        pages: {
-          default: value,
-        },
-      };
-      storageApi.set(key, JSON.stringify(grid));
-    },
-    [key, storageApi],
-  );
+
   const homeSnapshot = useObservable(
     storageApi.observe$<string>(key),
     storageApi.snapshot(key),
   );
-  const widgets: GridWidget[] = useMemo(() => {
+
+  const { widgets, backup } = useMemo(() => {
     if (homeSnapshot.presence === 'absent') {
-      return defaultWidgets;
+      return { widgets: defaultWidgets, backup: null };
     }
     try {
-      const grid: CustomHomepageGridStateV1 = JSON.parse(homeSnapshot.value!);
-      return CustomHomepageGridStateV1Schema.parse(grid).pages.default;
+      const parsed = JSON.parse(homeSnapshot.value!);
+
+      // Try V2 parse first
+      try {
+        const gridV2 = CustomHomepageGridStateV2Schema.parse(parsed);
+        return {
+          widgets: gridV2.pages.default.current,
+          backup: gridV2.pages.default.backup,
+        };
+      } catch {
+        // Handle V1 → V2 migration
+        const gridV1: CustomHomepageGridStateV1 =
+          CustomHomepageGridStateV1Schema.parse(parsed);
+        return {
+          widgets: gridV1.pages.default,
+          backup: gridV1.pages.default,
+        };
+      }
     } catch (e) {
-      return defaultWidgets;
+      return { widgets: defaultWidgets, backup: null };
     }
   }, [homeSnapshot, defaultWidgets]);
 
-  return [widgets, setWidgets];
+  const setWidgets = useCallback(
+    (value: GridWidget[], persist: boolean = false) => {
+      const grid: CustomHomepageGridStateV2 = {
+        version: 2,
+        pages: {
+          default: {
+            current: value,
+            backup: persist ? value : backup || value,
+          },
+        },
+      };
+      storageApi.set(key, JSON.stringify(grid));
+    },
+    [backup, key, storageApi],
+  );
+
+  return [widgets, setWidgets, backup];
 }
 
 const convertConfigToDefaultWidgets = (
@@ -213,8 +241,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       ? convertConfigToDefaultWidgets(props.config, availableWidgets)
       : [];
   }, [props.config, availableWidgets]);
-  const [widgets, setWidgets] = useHomeStorage(defaultLayout);
+  const [widgets, setWidgets, backup] = useHomeStorage(defaultLayout, 'home');
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
+  const [cancelConfirmDialogOpen, setCancelConfirmDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = useState(editModeOn);
   const getWidgetByName = (name: string) => {
@@ -289,7 +318,33 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           layout: { ...w.layout, isDraggable: movable, isResizable: resizable },
         };
       }),
+      !mode,
     );
+  };
+
+  const discardChanges = () => {
+    setCancelConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDiscard = () => {
+    if (backup) {
+      setWidgets(
+        backup.map(w => ({
+          ...w,
+          layout: {
+            ...w.layout,
+            isDraggable: false,
+            isResizable: false,
+          },
+        })),
+      );
+    }
+    setEditMode(false);
+    setCancelConfirmDialogOpen(false);
+  };
+
+  const handleCancelDiscard = () => {
+    setCancelConfirmDialogOpen(false);
   };
 
   const handleLayoutChange = (newLayout: Layout[], _: Layouts) => {
@@ -333,6 +388,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           changeEditMode={changeEditMode}
           defaultConfigAvailable={props.config !== undefined}
           restoreDefault={handleRestoreDefaultConfig}
+          discardChanges={discardChanges}
         />
       </ContentHeader>
       <Dialog
@@ -341,6 +397,11 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       >
         <AddWidgetDialog widgets={availableWidgets} handleAdd={handleAdd} />
       </Dialog>
+      <CancelConfirmDialog
+        open={cancelConfirmDialogOpen}
+        onClose={handleCancelDiscard}
+        onConfirm={handleConfirmDiscard}
+      />
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
           {t('customHomepage.noWidgets')}
