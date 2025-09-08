@@ -222,14 +222,15 @@ export class CacheManager {
    */
   private static constructNamespace(
     pluginId: string,
-    storeOptions: CacheStoreOptions | undefined,
+    storeOptions: RedisCacheStoreOptions | undefined,
   ): string {
-    if (storeOptions?.client?.namespace) {
-      const separator = storeOptions.client.keyPrefixSeparator ?? ':';
-      return `${storeOptions.client.namespace}${separator}${pluginId}`;
-    }
+    const prefix = storeOptions?.client?.namespace
+      ? `${storeOptions.client.namespace}${
+          storeOptions.client.keyPrefixSeparator ?? ':'
+        }`
+      : '';
 
-    return pluginId;
+    return `${prefix}${pluginId}`;
   }
 
   /** @internal */
