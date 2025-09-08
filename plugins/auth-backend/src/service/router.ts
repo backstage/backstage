@@ -164,7 +164,7 @@ export async function createRouter(
     httpAuth,
     enableDynamicClientRegistration:
       config.getOptionalBoolean(
-        'auth.experimental.enableDynamicClientRegistration',
+        'auth.experimentalDynamicClientRegistration.enabled',
       ) ?? false,
   });
 

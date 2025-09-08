@@ -81,7 +81,7 @@ export const mcpPlugin = createBackendPlugin({
 
         if (
           config.getOptionalBoolean(
-            'auth.experimental.enableDynamicClientRegistration',
+            'auth.experimentalDynamicClientRegistration.enabled',
           )
         ) {
           // This should be replaced with throwing a WWW-Authenticate header, but that doesn't seem to be supported by
