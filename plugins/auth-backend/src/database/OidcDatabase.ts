@@ -167,6 +167,32 @@ export class OidcDatabase {
       Object.entries(row).filter(([_, value]) => value !== undefined),
     );
 
+    // MySQL and SQLite3 don't support RETURNING
+    if (
+      this.db.client.config.client.includes('sqlite3') ||
+      this.db.client.config.client.includes('mysql')
+    ) {
+      return await this.db.transaction(async trx => {
+        await trx<OAuthAuthorizationSessionRow>('oauth_authorization_sessions')
+          .where('id', session.id)
+          .update(updatedFields);
+
+        const updated = await trx<OAuthAuthorizationSessionRow>(
+          'oauth_authorization_sessions',
+        )
+          .where('id', session.id)
+          .first();
+
+        if (!updated) {
+          throw new Error(
+            `Failed to retrieve updated authorization session with id ${session.id}`,
+          );
+        }
+
+        return this.rowToAuthorizationSession(updated) as AuthorizationSession;
+      });
+    }
+
     const [updated] = await this.db<OAuthAuthorizationSessionRow>(
       'oauth_authorization_sessions',
     )
@@ -228,6 +254,32 @@ export class OidcDatabase {
     const updatedFields = Object.fromEntries(
       Object.entries(row).filter(([_, value]) => value !== undefined),
     );
+
+    // MySQL and SQLite3 don't support RETURNING
+    if (
+      this.db.client.config.client.includes('sqlite3') ||
+      this.db.client.config.client.includes('mysql')
+    ) {
+      return await this.db.transaction(async trx => {
+        await trx<OidcAuthorizationCodeRow>('oidc_authorization_codes')
+          .where('code', authorizationCode.code)
+          .update(updatedFields);
+
+        const updated = await trx<OidcAuthorizationCodeRow>(
+          'oidc_authorization_codes',
+        )
+          .where('code', authorizationCode.code)
+          .first();
+
+        if (!updated) {
+          throw new Error(
+            `Failed to retrieve updated authorization code with code ${authorizationCode.code}`,
+          );
+        }
+
+        return this.rowToAuthorizationCode(updated) as AuthorizationCode;
+      });
+    }
 
     const [updated] = await this.db<OidcAuthorizationCodeRow>(
       'oidc_authorization_codes',
