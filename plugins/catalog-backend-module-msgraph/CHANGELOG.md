@@ -1,5 +1,42 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.8.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+
+## 0.8.0-next.0
+
+### Minor Changes
+
+- 577f0ed: **BREAKING**: Encode query filters for requests made to msgraph. If you currently have manually encoded characters in a filter, this is a breaking change and must be updated to avoid requests being double encoded.
+
+  ```diff
+  user:
+  -    filter: department in('MARKETING', 'RESEARCH %26 DEVELOPMENT')
+  +    filter: department in('MARKETING', 'RESEARCH & DEVELOPMENT')
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.18.0
+
+## 0.7.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.7.3-next.0
 
 ### Patch Changes

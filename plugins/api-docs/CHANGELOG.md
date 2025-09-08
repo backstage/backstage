@@ -1,5 +1,46 @@
 # @backstage/plugin-api-docs
 
+## 0.12.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+  - @backstage/plugin-catalog@1.31.3-next.1
+
+## 0.12.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog@1.31.3-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+
+## 0.12.10
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- 633327c: Improved styling for dark mode
+- 8b1bf6e: Updated README instructions for the new frontend system
+- Updated dependencies
+  - @backstage/plugin-catalog@1.31.2
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-catalog-react@1.20.0
+
 ## 0.12.10-next.3
 
 ### Patch Changes

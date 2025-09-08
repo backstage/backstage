@@ -26,7 +26,6 @@ import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/p
 import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
-import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import {
   AuthService,
@@ -38,6 +37,7 @@ import {
   LoggerService,
   PermissionsService,
   RootConfigService,
+  SchedulerService,
   ServiceFactory,
   ServiceRef,
   UserInfoService,
@@ -57,6 +57,9 @@ import { mockCredentials } from './mockCredentials';
 import { MockEventsService } from './MockEventsService';
 import { MockPermissionsService } from './MockPermissionsService';
 import { simpleMock } from './simpleMock';
+import { MockSchedulerService } from './MockSchedulerService';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';
 
 /** @internal */
 function createLoggerMock() {
@@ -136,8 +139,16 @@ function simpleFactoryWithOptions<
  * ```
  */
 export namespace mockServices {
-  export function rootConfig(options?: rootConfig.Options): RootConfigService {
-    return new ConfigReader(options?.data, 'mock-config');
+  export function rootConfig(
+    options?: rootConfig.Options,
+  ): RootConfigService & { update(options: { data: JsonObject }): void } {
+    const config = ObservableConfigProxy.create(new AbortController());
+    config.setConfig(new ConfigReader(options?.data ?? {}, 'mock-config'));
+    return Object.assign(config, {
+      update({ data }: { data: JsonObject }): void {
+        config.setConfig(new ConfigReader(data, 'mock-config'));
+      },
+    });
   }
   export namespace rootConfig {
     export type Options = { data?: JsonObject };
@@ -496,8 +507,15 @@ export namespace mockServices {
     }));
   }
 
+  export function scheduler(): SchedulerService {
+    return new MockSchedulerService();
+  }
   export namespace scheduler {
-    export const factory = () => schedulerServiceFactory;
+    export const factory = (options?: {
+      skipTaskRunOnStartup?: boolean;
+      includeManualTasksOnStartup?: boolean;
+      includeInitialDelayedTasksOnStartup?: boolean;
+    }) => new MockSchedulerService().factory(options);
     export const mock = simpleMock(coreServices.scheduler, () => ({
       createScheduledTaskRunner: jest.fn(),
       getScheduledTasks: jest.fn(),

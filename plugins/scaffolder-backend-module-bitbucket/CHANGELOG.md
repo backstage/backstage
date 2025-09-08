@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.3.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.13-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.12
+
 ## 0.3.13-next.0
 
 ### Patch Changes

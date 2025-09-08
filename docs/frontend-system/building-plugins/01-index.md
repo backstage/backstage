@@ -5,8 +5,6 @@ sidebar_label: Overview
 description: Building frontend plugins using the new frontend system
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 This section covers how to build your own frontend [plugins](../architecture/15-plugins.md) and
 [overrides](../architecture/25-extension-overrides.md). They are sometimes collectively referred to as
 frontend _features_, and what you install to build up a Backstage frontend [app](../architecture/10-app.md).
@@ -187,7 +185,7 @@ export const examplePlugin = createFrontendPlugin({
 
 ## Plugin specific extensions
 
-There are many different plugins that you can extend with additional functionality through extensions. One such plugin is [the catalog plugin](../../features/software-catalog/), one of the core features of Backstage. It lets you catalog the software in your organization, where each item in the catalog has its own page that can be populated with tools and information relating to that catalog entity. In this example we will explore how our plugin can provide such a tool to display on an entity page.
+There are many different plugins that you can extend with additional functionality through extensions. One such plugin is [the catalog plugin](https://backstage.io/docs/features/software-catalog/), one of the core features of Backstage. It lets you catalog the software in your organization, where each item in the catalog has its own page that can be populated with tools and information relating to that catalog entity. In this example we will explore how our plugin can provide such a tool to display on an entity page.
 
 ```tsx title="in src/plugin.ts - An example entity content extension"
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';

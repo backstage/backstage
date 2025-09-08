@@ -52,7 +52,7 @@ describe('authModuleGoogleProvider', () => {
     expect(res.status).toBe(302);
 
     const nonceCookie = agent.jar.getCookie('google-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/google/handler',
       script: false,
       secure: false,

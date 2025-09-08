@@ -8797,6 +8797,10 @@
   align-items: end;
 }
 
+.bui-align-baseline {
+  align-items: baseline;
+}
+
 .bui-align-stretch {
   align-items: stretch;
 }

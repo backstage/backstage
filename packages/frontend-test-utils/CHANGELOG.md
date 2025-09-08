@@ -1,5 +1,26 @@
 # @backstage/frontend-test-utils
 
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/frontend-app-api@0.12.1-next.0
+  - @backstage/plugin-app@0.2.1-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- df7bd3b: Updated import of the `FrontendFeature` type.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/frontend-app-api@0.12.0
+  - @backstage/plugin-app@0.2.0
+  - @backstage/test-utils@1.7.11
+
 ## 0.3.5-next.2
 
 ### Patch Changes

@@ -1,5 +1,31 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-signals-node@0.1.24-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+  - @backstage/plugin-notifications-node@0.2.19-next.0
+
+## 0.5.9
+
+### Patch Changes
+
+- 9152ba8: Add an optional generic object `metadata` field to `NotificationPayload`. Metadata can be used to store additional unstructured data for the notification and are available to use by processors.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-notifications-common@0.1.0
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-notifications-node@0.2.18
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+  - @backstage/plugin-signals-node@0.1.23
+
 ## 0.5.9-next.0
 
 ### Patch Changes

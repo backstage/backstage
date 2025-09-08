@@ -5,15 +5,7 @@ sidebar_label: Testing
 description: Testing plugins in the frontend system
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 # Testing Frontend Plugins
-
-:::note Note
-
-The new frontend system is in alpha, and some plugins do not yet fully implement it.
-
-:::
 
 Utilities for testing frontend features and components are available in `@backstage/frontend-test-utils`.
 

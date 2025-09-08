@@ -1,5 +1,65 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.5-next.0
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/backend-defaults@0.12.1-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.14-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.3-next.0
+  - @backstage/plugin-scaffolder-common@1.7.1-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-permission-node@0.10.4-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.12-next.0
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 2.2.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+- 2032660: Fixed fs:readdir action example
+- 11dc90f: Implement max length for scaffolder auditor audit logging with default of 256
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+
+### Patch Changes
+
+- caee2eb: Fixed WinstonLogger throwing when redactions were null or undefined
+- 4ae87f5: add `getResources` method to `permissionIntegrationRouter` for frontend task permission checks
+- b817c1d: Stop logging of `SPLAT` twice in logs
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0
+  - @backstage/backend-defaults@0.12.0
+  - @backstage/plugin-scaffolder-common@1.7.0
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.4
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.2
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.11
+  - @backstage/plugin-events-node@0.4.14
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.12
+
 ## 2.2.0-next.1
 
 ### Minor Changes

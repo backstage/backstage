@@ -82,13 +82,19 @@ export function convertLegacyEntityContentExtension(
     }
   }
   name = name && kebabCase(name);
-
+  // TODO(blam): Remove support for all the `default*` props in the future, this breaks backwards compatibility without it
+  // As this is marked as BREAKING ALPHA, it doesn't affect the public API so it falls in range and gets picked
+  // up by packages that depend on `catalog-react`.
   return EntityContentBlueprint.make({
     name: overrides?.name ?? name,
     params: {
       filter: overrides?.filter,
-      path: overrides?.path ?? `/${kebabCase(infix)}`,
-      title: overrides?.title ?? startCase(infix),
+      path: (overrides?.path ??
+        overrides?.defaultPath ??
+        `/${kebabCase(infix)}`) as string,
+      title: (overrides?.title ??
+        overrides?.defaultTitle ??
+        startCase(infix)) as string,
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
       loader: async () => compatWrapper(element),
     },
