@@ -63,6 +63,8 @@ describe('OidcService', () => {
       getUserInfo: jest.fn(),
     } as unknown as jest.Mocked<UserInfoDatabase>;
 
+    const mockConfig = mockServices.rootConfig.mock();
+
     return {
       service: OidcService.create({
         auth: mockAuth,
@@ -70,11 +72,13 @@ describe('OidcService', () => {
         baseUrl: 'http://mock-base-url',
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
+        config: mockConfig,
       }),
       mocks: {
         auth: mockAuth,
         tokenIssuer: mockTokenIssuer,
         userInfo: mockUserInfo,
+        config: mockConfig,
       },
     };
   }
@@ -214,6 +218,44 @@ describe('OidcService', () => {
         );
         expect(client.clientId).toBeDefined();
         expect(client.clientSecret).toBeDefined();
+      });
+
+      it('should throw an error for invalid redirect URI', async () => {
+        const {
+          service,
+          mocks: { config },
+        } = await createOidcService(databaseId);
+
+        config.getOptionalStringArray.mockReturnValue([
+          'https://example.com/*',
+        ]);
+
+        await expect(
+          service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['https://invalid.com/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+      });
+
+      it('should create a new client with valid redirect URI', async () => {
+        const {
+          service,
+          mocks: { config },
+        } = await createOidcService(databaseId);
+
+        config.getOptionalStringArray.mockReturnValue(['cursor://*']);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['cursor://callback'],
+        });
+
+        expect(client).toEqual(
+          expect.objectContaining({
+            redirectUris: ['cursor://callback'],
+          }),
+        );
       });
 
       it('should create a client with default values', async () => {

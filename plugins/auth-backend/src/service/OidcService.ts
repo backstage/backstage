@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, RootConfigService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import {
@@ -33,6 +33,7 @@ export class OidcService {
     private readonly baseUrl: string,
     private readonly userInfo: UserInfoDatabase,
     private readonly oidc: OidcDatabase,
+    private readonly config: RootConfigService,
   ) {}
 
   static create(options: {
@@ -41,6 +42,7 @@ export class OidcService {
     baseUrl: string;
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
+    config: RootConfigService;
   }) {
     return new OidcService(
       options.auth,
@@ -48,6 +50,7 @@ export class OidcService {
       options.baseUrl,
       options.userInfo,
       options.oidc,
+      options.config,
     );
   }
 
@@ -116,8 +119,21 @@ export class OidcService {
     const generatedClientId = crypto.randomUUID();
     const generatedClientSecret = crypto.randomUUID();
 
-    // todo(blam): add validation for redirectUris here.
-    // should be a list of urls and / or allowed schemes or something.
+    const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
+      'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
+    );
+
+    if (allowedRedirectUriPatterns) {
+      for (const redirectUri of opts.redirectUris ?? []) {
+        if (
+          !allowedRedirectUriPatterns.some(pattern =>
+            new RegExp(pattern).test(redirectUri),
+          )
+        ) {
+          throw new InputError('Invalid redirect_uri');
+        }
+      }
+    }
 
     return await this.oidc.createClient({
       clientId: generatedClientId,

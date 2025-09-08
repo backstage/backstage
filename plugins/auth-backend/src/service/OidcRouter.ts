@@ -20,6 +20,7 @@ import {
   AuthService,
   HttpAuthService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
@@ -33,7 +34,7 @@ export class OidcRouter {
     private readonly auth: AuthService,
     private readonly appUrl: string,
     private readonly httpAuth: HttpAuthService,
-    private readonly enableDynamicClientRegistration: boolean,
+    private readonly config: RootConfigService,
   ) {}
 
   static create(options: {
@@ -45,7 +46,7 @@ export class OidcRouter {
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
     httpAuth: HttpAuthService;
-    enableDynamicClientRegistration: boolean;
+    config: RootConfigService;
   }) {
     return new OidcRouter(
       OidcService.create(options),
@@ -53,7 +54,7 @@ export class OidcRouter {
       options.auth,
       options.appUrl,
       options.httpAuth,
-      options.enableDynamicClientRegistration,
+      options.config,
     );
   }
 
@@ -97,7 +98,11 @@ export class OidcRouter {
       res.json(userInfo);
     });
 
-    if (this.enableDynamicClientRegistration) {
+    if (
+      this.config.getOptionalBoolean(
+        'auth.experimentalDynamicClientRegistration.enabled',
+      )
+    ) {
       // Authorization endpoint
       // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
       // Handles the initial authorization request from the client, validates parameters,
@@ -140,7 +145,7 @@ export class OidcRouter {
           // the plugin is mounted somewhere else?
           // support slashes in baseUrl?
           const authSessionRedirectUrl = new URL(
-            `/auth/sessions/${result.id}`,
+            `/oauth2/authorize/${result.id}`,
             this.appUrl,
           );
 

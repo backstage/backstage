@@ -70,6 +70,15 @@ describe('OidcRouter', () => {
 
     const mockAuth = mockServices.auth.mock();
     const mockHttpAuth = mockServices.httpAuth.mock();
+    const mockConfig = mockServices.rootConfig({
+      data: {
+        auth: {
+          experimentalDynamicClientRegistration: {
+            enabled: true,
+          },
+        },
+      },
+    });
 
     const oidcService = OidcService.create({
       auth: mockAuth,
@@ -77,6 +86,7 @@ describe('OidcRouter', () => {
       baseUrl: 'http://localhost:7000',
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
+      config: mockConfig,
     });
 
     const oidcRouter = OidcRouter.create({
@@ -88,7 +98,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       httpAuth: mockHttpAuth,
-      enableDynamicClientRegistration: true,
+      config: mockConfig,
     });
 
     return {
@@ -303,7 +313,7 @@ describe('OidcRouter', () => {
           .expect(302);
 
         expect(response.header.location).toMatch(
-          /^http:\/\/localhost:3000\/auth\/sessions\/[a-f0-9-]+$/,
+          /^http:\/\/localhost:3000\/oauth2\/authorize\/[a-f0-9-]+$/,
         );
       });
 
