@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Link } from '@backstage/core-components';
+import { Link, LinkButton } from '@backstage/core-components';
 import {
   createFrontendPlugin,
   createRouteRef,
@@ -83,6 +83,9 @@ const IndexPage = PageBlueprint.make({
             <div>
               <Link to="/settings">Settings</Link>
             </div>
+            <LinkButton to="/home" variant="contained" color="primary">
+              This is a test link!
+            </LinkButton>
             <PluginInfo />
           </div>
         );
