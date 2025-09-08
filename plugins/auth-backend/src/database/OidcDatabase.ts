@@ -16,6 +16,15 @@
 import { Knex } from 'knex';
 import { AuthDatabase } from './AuthDatabase';
 
+function toDate(value?: Date | string | number): Date | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  return typeof value === 'string' || typeof value === 'number'
+    ? new Date(value)
+    : value;
+}
 type OidcClientRow = {
   client_id: string;
   client_secret: string;
@@ -39,13 +48,13 @@ type OAuthAuthorizationSessionRow = {
   code_challenge_method: string | null;
   nonce: string | null;
   status: 'pending' | 'approved' | 'rejected' | 'expired';
-  expires_at: string;
+  expires_at: Date | string;
 };
 
 type OidcAuthorizationCodeRow = {
   code: string;
   session_id: string;
-  expires_at: string;
+  expires_at: Date | string;
   used: boolean;
 };
 
@@ -72,26 +81,26 @@ export type AuthorizationSession = {
   codeChallengeMethod?: string;
   nonce?: string;
   status: 'pending' | 'approved' | 'rejected' | 'expired';
-  expiresAt: string;
+  expiresAt: Date;
 };
 
 export type ConsentRequest = {
   id: string;
   sessionId: string;
-  expiresAt: string;
+  expiresAt: Date;
 };
 
 export type AuthorizationCode = {
   code: string;
   sessionId: string;
-  expiresAt: string;
+  expiresAt: Date;
   used: boolean;
 };
 
 export type AccessToken = {
   tokenId: string;
   sessionId: string;
-  expiresAt: string;
+  expiresAt: Date;
 };
 
 /**
@@ -342,7 +351,7 @@ export class OidcDatabase {
       codeChallengeMethod: row.code_challenge_method ?? undefined,
       nonce: row.nonce ?? undefined,
       status: row.status,
-      expiresAt: row.expires_at,
+      expiresAt: toDate(row.expires_at),
     };
   }
 
@@ -363,7 +372,7 @@ export class OidcDatabase {
     return {
       code: row.code,
       sessionId: row.session_id,
-      expiresAt: row.expires_at,
+      expiresAt: toDate(row.expires_at),
       used: Boolean(row.used),
     };
   }

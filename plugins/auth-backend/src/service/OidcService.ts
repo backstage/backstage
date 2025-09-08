@@ -174,7 +174,7 @@ export class OidcService {
     }
 
     const sessionId = crypto.randomUUID();
-    const sessionExpiresAt = DateTime.now().plus({ hours: 1 }).toISO();
+    const sessionExpiresAt = DateTime.now().plus({ hours: 1 }).toJSDate();
 
     await this.oidc.createAuthorizationSession({
       id: sessionId,
@@ -211,7 +211,7 @@ export class OidcService {
       throw new NotFoundError('Invalid authorization session');
     }
 
-    if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
+    if (DateTime.fromJSDate(session.expiresAt) < DateTime.now()) {
       throw new InputError('Authorization session expired');
     }
 
@@ -226,7 +226,7 @@ export class OidcService {
     });
 
     const authorizationCode = crypto.randomBytes(32).toString('base64url');
-    const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toISO();
+    const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toJSDate();
 
     await this.oidc.createAuthorizationCode({
       code: authorizationCode,
@@ -255,7 +255,7 @@ export class OidcService {
       throw new NotFoundError('Invalid authorization session');
     }
 
-    if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
+    if (DateTime.fromJSDate(session.expiresAt) < DateTime.now()) {
       throw new InputError('Authorization session expired');
     }
 
@@ -293,7 +293,7 @@ export class OidcService {
       throw new NotFoundError('Invalid authorization session');
     }
 
-    if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
+    if (DateTime.fromJSDate(session.expiresAt) < DateTime.now()) {
       throw new InputError('Authorization session expired');
     }
 
@@ -353,7 +353,7 @@ export class OidcService {
     }
 
     const sessionId = crypto.randomUUID();
-    const sessionExpiresAt = DateTime.now().plus({ hours: 1 }).toISO();
+    const sessionExpiresAt = DateTime.now().plus({ hours: 1 }).toJSDate();
 
     await this.oidc.createAuthorizationSession({
       id: sessionId,
@@ -375,7 +375,7 @@ export class OidcService {
     });
 
     const authorizationCode = crypto.randomBytes(32).toString('base64url');
-    const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toISO();
+    const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toJSDate();
 
     await this.oidc.createAuthorizationCode({
       code: authorizationCode,
@@ -429,7 +429,7 @@ export class OidcService {
       throw new AuthenticationError('Invalid authorization code');
     }
 
-    if (DateTime.fromISO(authCode.expiresAt) < DateTime.now()) {
+    if (DateTime.fromJSDate(authCode.expiresAt) < DateTime.now()) {
       throw new AuthenticationError('Authorization code expired');
     }
 

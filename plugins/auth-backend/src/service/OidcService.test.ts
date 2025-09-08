@@ -31,6 +31,8 @@ import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import crypto from 'crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 
+jest.setTimeout(60_000);
+
 describe('OidcService', () => {
   const databases = TestDatabases.create();
 

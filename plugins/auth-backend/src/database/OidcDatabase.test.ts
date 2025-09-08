@@ -117,7 +117,7 @@ describe('Oidc Database', () => {
           codeChallenge: 'test-challenge',
           codeChallengeMethod: 'S256',
           nonce: 'test-nonce',
-          expiresAt: '2025-01-01T00:00:00Z',
+          expiresAt: new Date('2025-01-01T00:00:00Z'),
         });
 
         expect(session).toEqual(
@@ -132,7 +132,7 @@ describe('Oidc Database', () => {
             codeChallenge: 'test-challenge',
             codeChallengeMethod: 'S256',
             nonce: 'test-nonce',
-            expiresAt: '2025-01-01T00:00:00Z',
+            expiresAt: new Date('2025-01-01T00:00:00Z'),
             status: 'pending',
           }),
         );
@@ -155,7 +155,7 @@ describe('Oidc Database', () => {
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
-          expiresAt: '2025-01-01T00:00:00Z',
+          expiresAt: new Date('2025-01-01T00:00:00Z'),
         });
 
         await expect(
@@ -190,20 +190,20 @@ describe('Oidc Database', () => {
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
-          expiresAt: '2025-01-01T00:00:00Z',
+          expiresAt: new Date('2025-01-01T00:00:00Z'),
         });
 
         const authCode = await oidc.createAuthorizationCode({
           code: 'test-code',
           sessionId: session.id,
-          expiresAt: '2025-01-01T00:00:00Z',
+          expiresAt: new Date('2025-01-01T00:00:00Z'),
         });
 
         expect(authCode).toEqual(
           expect.objectContaining({
             code: 'test-code',
             sessionId: session.id,
-            expiresAt: '2025-01-01T00:00:00Z',
+            expiresAt: new Date('2025-01-01T00:00:00Z'),
           }),
         );
       });
@@ -230,13 +230,13 @@ describe('Oidc Database', () => {
           codeChallenge: 'test-challenge',
           codeChallengeMethod: 'S256',
           nonce: 'test-nonce',
-          expiresAt: '2025-01-01T00:00:00Z',
+          expiresAt: new Date('2025-01-01T00:00:00Z'),
         });
 
         const authCode = await oidc.createAuthorizationCode({
           code: 'test-code',
           sessionId: session.id,
-          expiresAt: '2025-01-01T00:00:00Z',
+          expiresAt: new Date('2025-01-01T00:00:00Z'),
         });
 
         const authCodeFromDb = await oidc.getAuthorizationCode({
@@ -267,13 +267,13 @@ describe('Oidc Database', () => {
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
-          expiresAt: '2025-01-01T00:00:00Z',
+          expiresAt: new Date('2025-01-01T00:00:00Z'),
         });
 
         const authCode = await oidc.createAuthorizationCode({
           code: 'test-code',
           sessionId: session.id,
-          expiresAt: '2025-01-01T00:00:00Z',
+          expiresAt: new Date('2025-01-01T00:00:00Z'),
         });
 
         const updatedAuthCode = await oidc.updateAuthorizationCode({
