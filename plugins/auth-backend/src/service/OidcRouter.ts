@@ -276,13 +276,11 @@ export class OidcRouter {
       const {
         grant_type: grantType,
         code,
-        client_id: clientId,
-        client_secret: clientSecret,
         redirect_uri: redirectUri,
         code_verifier: codeVerifier,
       } = req.body;
 
-      if (!grantType || !code || !clientId || !clientSecret || !redirectUri) {
+      if (!grantType || !code || !redirectUri) {
         this.logger.error(
           `Failed to exchange code for token: Missing required parameters`,
         );
@@ -295,8 +293,6 @@ export class OidcRouter {
       try {
         const result = await this.oidc.exchangeCodeForToken({
           code,
-          clientId,
-          clientSecret,
           redirectUri,
           codeVerifier,
           grantType,

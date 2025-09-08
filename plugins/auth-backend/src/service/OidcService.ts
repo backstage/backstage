@@ -396,32 +396,14 @@ export class OidcService {
 
   public async exchangeCodeForToken(params: {
     code: string;
-    clientId: string;
-    clientSecret: string;
     redirectUri: string;
     codeVerifier?: string;
     grantType: string;
   }) {
-    const {
-      code,
-      clientId,
-      clientSecret,
-      redirectUri,
-      codeVerifier,
-      grantType,
-    } = params;
+    const { code, redirectUri, codeVerifier, grantType } = params;
 
     if (grantType !== 'authorization_code') {
       throw new InputError('Unsupported grant type');
-    }
-
-    const client = await this.oidc.getClient({ clientId });
-    if (!client) {
-      throw new AuthenticationError('Invalid client');
-    }
-
-    if (client.clientSecret !== clientSecret) {
-      throw new AuthenticationError('Invalid client credentials');
     }
 
     const authCode = await this.oidc.getAuthorizationCode({ code });
@@ -443,9 +425,6 @@ export class OidcService {
 
     if (!session) {
       throw new NotFoundError('Invalid authorization session');
-    }
-    if (session.clientId !== clientId) {
-      throw new AuthenticationError('Client ID mismatch');
     }
 
     if (session.redirectUri !== redirectUri) {

@@ -668,8 +668,6 @@ describe('OidcService', () => {
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
-          clientId: client.clientId,
-          clientSecret: client.clientSecret,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
         });
@@ -689,45 +687,10 @@ describe('OidcService', () => {
         await expect(
           service.exchangeCodeForToken({
             code: 'test-code',
-            clientId: 'test-client',
-            clientSecret: 'test-secret',
             redirectUri: 'https://example.com/callback',
             grantType: 'client_credentials',
           }),
         ).rejects.toThrow('Unsupported grant type');
-      });
-
-      it('should throw error for invalid client', async () => {
-        const { service } = await createOidcService(databaseId);
-
-        await expect(
-          service.exchangeCodeForToken({
-            code: 'test-code',
-            clientId: 'invalid-client',
-            clientSecret: 'test-secret',
-            redirectUri: 'https://example.com/callback',
-            grantType: 'authorization_code',
-          }),
-        ).rejects.toThrow('Invalid client');
-      });
-
-      it('should throw error for invalid client secret', async () => {
-        const { service } = await createOidcService(databaseId);
-
-        const client = await service.registerClient({
-          clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
-        });
-
-        await expect(
-          service.exchangeCodeForToken({
-            code: 'test-code',
-            clientId: client.clientId,
-            clientSecret: 'invalid-secret',
-            redirectUri: 'https://example.com/callback',
-            grantType: 'authorization_code',
-          }),
-        ).rejects.toThrow('Invalid client credentials');
       });
 
       it('should handle PKCE verification', async () => {
@@ -759,8 +722,6 @@ describe('OidcService', () => {
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
-          clientId: client.clientId,
-          clientSecret: client.clientSecret,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           codeVerifier,
@@ -792,8 +753,6 @@ describe('OidcService', () => {
         await expect(
           service.exchangeCodeForToken({
             code,
-            clientId: client.clientId,
-            clientSecret: client.clientSecret,
             redirectUri: 'https://example.com/callback',
             grantType: 'authorization_code',
             codeVerifier: 'invalid-verifier',
