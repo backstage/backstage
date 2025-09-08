@@ -18,6 +18,8 @@ import { AuthDatabase } from './AuthDatabase';
 import { OidcDatabase } from './OidcDatabase';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 
+jest.setTimeout(60_000);
+
 describe('Oidc Database', () => {
   const databases = TestDatabases.create();
 

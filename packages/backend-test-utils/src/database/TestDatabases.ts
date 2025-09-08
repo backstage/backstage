@@ -104,7 +104,7 @@ export class TestDatabases {
     if (supportedIds.length > 0) {
       afterAll(async () => {
         await databases.shutdown();
-      }, 30_000);
+      });
     }
 
     return databases;
