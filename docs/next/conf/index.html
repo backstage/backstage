@@ -25,7 +25,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.4a5e1784.css">
-<script src="/assets/js/runtime~main.f2e19531.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.94b47491.js" defer="defer"></script>
 <script src="/assets/js/main.9ababb53.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -38,10 +38,22 @@ authors to use to make it simple to pick up and install a plugin, while still
 allowing for customization.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="supplying-configuration">Supplying Configuration<a href="#supplying-configuration" class="hash-link" aria-label="Direct link to Supplying Configuration" title="Direct link to Supplying Configuration">​</a></h2>
 <p>Configuration is stored in YAML files where the defaults are <code>app-config.yaml</code>
-and <code>app-config.local.yaml</code> for local overrides. Other sets of files can by
-loaded by passing <code>--config &lt;path&gt;</code> flags. The configuration files themselves
-contain plain YAML, but with support for loading in data and secrets from
-various sources using for example <code>$env</code> and <code>$file</code> keys.</p>
+and <code>app-config.local.yaml</code> for local overrides. Additionally, it is possible
+to define environment based configuration files with <code>BACKSTAGE_ENV</code>
+environment variable, which will load <code>app-config.&lt;BACKSTAGE_ENV&gt;.yaml</code>.</p>
+<p>Loading order of these files is as follows:</p>
+<ol>
+<li><code>app-config.yaml</code></li>
+<li><code>app-config.&lt;BACKSTAGE_ENV&gt;.yaml</code></li>
+<li><code>app-config.local.yaml</code></li>
+<li><code>app-config.&lt;BACKSTAGE_ENV&gt;.local.yaml</code></li>
+</ol>
+<p>Other sets of files can by loaded by passing <code>--config &lt;path&gt;</code> flags.
+Read more about the configuration loading order in the
+<a href="/docs/next/conf/writing#configuration-files">Configuration Files</a> section.</p>
+<p>The configuration files themselves contain plain YAML, but with support for
+loading in data and secrets from various sources using for example
+<code>$env</code> and <code>$file</code> keys.</p>
 <p>It is also possible to supply configuration through environment variables, for
 example <code>APP_CONFIG_app_baseUrl=https://staging.example.com</code>. However these
 should be used sparingly, usually just for temporary overrides during
