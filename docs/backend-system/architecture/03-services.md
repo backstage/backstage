@@ -225,8 +225,8 @@ This allows you to provide more advanced options for the service implementation 
 
 ## Multiton
 
-By default the service reference will point to a singleton instance of the service. This mean if a new service factory uses this reference will override the previous one. This is the most common use-case, but in some cases you may want to have multiple instances of the same service.
-For some services, is desirable to extend the functionality instead of overriding it. For example, some services could have many handler to address a specific event, and you may want to add a new handler instead of overriding the previous one. In this case, you can use the `multiton` option when creating the service reference:
+By default the service reference will point to a singleton instance of the service. This mean if a new service factory uses this reference it will override the previous one. This is the most common use-case, but in some cases you may want to have multiple instances of the same service.
+For some services, it is desirable to extend the functionality instead of overriding it. For example, some services could have many handlers to address specific events, and you may want to add a new handler instead of overriding the previous one. In this case, you can use the `multiton` option when creating the service reference:
 
 ```ts
 // example-service-ref.ts
