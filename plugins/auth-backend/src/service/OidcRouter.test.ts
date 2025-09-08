@@ -86,6 +86,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       httpAuth: mockHttpAuth,
+      enableDynamicClientRegistration: true,
     });
 
     return {

@@ -209,6 +209,8 @@ scaffolder:
   defaultCommitMessage: 'Initial commit'
 
 auth:
+  experimental:
+    enableDynamicClientRegistration: true
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
   # the auth-backend.
   #

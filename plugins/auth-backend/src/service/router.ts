@@ -162,6 +162,10 @@ export async function createRouter(
     oidc,
     logger,
     httpAuth,
+    enableDynamicClientRegistration:
+      config.getOptionalBoolean(
+        'auth.experimental.enableDynamicClientRegistration',
+      ) ?? false,
   });
 
   router.use(oidcRouter.getRouter());
