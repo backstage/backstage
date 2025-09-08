@@ -90,7 +90,7 @@ describe('ConfigSources', () => {
       { name: 'FileConfigSource', path: `${root}app-config.local.yaml` },
     ]);
 
-    process.env = Object.assign(process.env, { BACKSTAGE_ENVIRONMENT: 'test' });
+    process.env = Object.assign(process.env, { BACKSTAGE_ENV: 'test' });
     expect(
       mergeSources(
         ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),

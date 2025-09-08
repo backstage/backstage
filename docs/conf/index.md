@@ -17,15 +17,15 @@ allowing for customization.
 
 Configuration is stored in YAML files where the defaults are `app-config.yaml`
 and `app-config.local.yaml` for local overrides. Additionally, it is possible
-to define environment based configuration files with `BACKSTAGE_ENVIRONMENT`
-environment variable, which will load `app-config.<BACKSTAGE_ENVIRONMENT>.yaml`.
+to define environment based configuration files with `BACKSTAGE_ENV`
+environment variable, which will load `app-config.<BACKSTAGE_ENV>.yaml`.
 
 Loading order of these files is as follows:
 
 1. `app-config.yaml`
-2. `app-config.<BACKSTAGE_ENVIRONMENT>.yaml`
+2. `app-config.<BACKSTAGE_ENV>.yaml`
 3. `app-config.local.yaml`
-4. `app-config.<BACKSTAGE_ENVIRONMENT>.local.yaml`
+4. `app-config.<BACKSTAGE_ENV>.local.yaml`
 
 Other sets of files can by loaded by passing `--config <path>` flags.
 Read more about the configuration loading order in the
