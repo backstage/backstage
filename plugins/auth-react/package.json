@@ -6,6 +6,7 @@
     "role": "web-library",
     "pluginId": "auth",
     "pluginPackages": [
+      "@backstage/plugin-auth",
       "@backstage/plugin-auth-backend",
       "@backstage/plugin-auth-node",
       "@backstage/plugin-auth-react"
