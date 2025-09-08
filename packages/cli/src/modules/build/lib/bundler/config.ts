@@ -264,22 +264,26 @@ export async function createConfig(
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            import: isRemote ? false : undefined
           },
           'react-dom': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            import: isRemote ? false : undefined
           },
           // React Router
           'react-router': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            import: isRemote ? false : undefined
           },
           'react-router-dom': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            import: isRemote ? false : undefined
           },
           // MUI v4
           '@material-ui/core/styles': {
