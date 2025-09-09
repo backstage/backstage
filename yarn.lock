@@ -49876,6 +49876,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
     "@yarnpkg/builder": "npm:^4.2.1"
     "@yarnpkg/core": "npm:^4.4.1"

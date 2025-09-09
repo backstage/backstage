@@ -18,6 +18,7 @@ import assert from 'assert';
 import { valid as semverValid } from 'semver';
 import { ppath, xfs } from '@yarnpkg/fslib';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
+import { ForwardedError } from '@backstage/errors';
 import { memoize } from './memoize';
 import { getWorkspaceRoot } from './getWorkspaceRoot';
 
@@ -26,11 +27,16 @@ export const getCurrentBackstageVersion = memoize(() => {
 
   let backstageVersion: string | null = null;
   try {
-    backstageVersion = semverValid(xfs.readJsonSync(backstageJsonPath).version);
+    const backstageVersionRaw = xfs.readJsonSync(backstageJsonPath).version;
+    assert(backstageVersionRaw !== undefined, 'Version field is missing');
+    backstageVersion = semverValid(backstageVersionRaw);
 
-    assert(backstageVersion !== null);
-  } catch {
-    throw new Error('Valid version string not found in backstage.json');
+    assert(backstageVersion !== null, 'Version exists but is not valid semver');
+  } catch (err) {
+    throw new ForwardedError(
+      'Valid version string not found in backstage.json',
+      err,
+    );
   }
 
   return backstageVersion;
