@@ -24,6 +24,7 @@ import {
   startTestBackend,
   TestDatabases,
   TestDatabaseId,
+  mockCredentials,
 } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import crypto from 'crypto';
@@ -413,13 +414,9 @@ describe('OidcRouter', () => {
           ],
         });
 
-        httpAuth.credentials.mockResolvedValueOnce({
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/test-user',
-          },
-          $$type: '@backstage/BackstageCredentials',
-        });
+        httpAuth.credentials.mockResolvedValueOnce(
+          mockCredentials.user('user:default/test-user'),
+        );
 
         auth.isPrincipal.mockReturnValueOnce(true);
 
@@ -437,7 +434,7 @@ describe('OidcRouter', () => {
 
       it('should reject auth session', async () => {
         const {
-          mocks: { service },
+          mocks: { service, httpAuth, auth },
           router,
         } = await createRouter(databaseId);
 
@@ -456,6 +453,12 @@ describe('OidcRouter', () => {
           scope: 'openid',
           state: 'test-state',
         });
+
+        httpAuth.credentials.mockResolvedValueOnce(
+          mockCredentials.user('user:default/test-user'),
+        );
+
+        auth.isPrincipal.mockReturnValueOnce(true);
 
         const { server } = await startTestBackend({
           features: [
@@ -496,13 +499,9 @@ describe('OidcRouter', () => {
           router,
         } = await createRouter(databaseId);
 
-        httpAuth.credentials.mockResolvedValueOnce({
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/test-user',
-          },
-          $$type: '@backstage/BackstageCredentials',
-        });
+        httpAuth.credentials.mockResolvedValueOnce(
+          mockCredentials.user('user:default/test-user'),
+        );
 
         auth.isPrincipal.mockReturnValueOnce(true);
 
@@ -590,13 +589,9 @@ describe('OidcRouter', () => {
           token: 'mock-access-token-pkce',
         });
 
-        httpAuth.credentials.mockResolvedValueOnce({
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/test-user-pkce',
-          },
-          $$type: '@backstage/BackstageCredentials',
-        });
+        httpAuth.credentials.mockResolvedValueOnce(
+          mockCredentials.user('user:default/test-user-pkce'),
+        );
 
         auth.isPrincipal.mockReturnValueOnce(true);
 
@@ -725,13 +720,9 @@ describe('OidcRouter', () => {
           token: 'mock-access-token-s256',
         });
 
-        httpAuth.credentials.mockResolvedValueOnce({
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/test-user-s256',
-          },
-          $$type: '@backstage/BackstageCredentials',
-        });
+        httpAuth.credentials.mockResolvedValueOnce(
+          mockCredentials.user('user:default/test-user-s256'),
+        );
 
         auth.isPrincipal.mockReturnValueOnce(true);
 

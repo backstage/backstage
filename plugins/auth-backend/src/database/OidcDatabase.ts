@@ -202,14 +202,24 @@ export class OidcDatabase {
       });
     }
 
-    const [updated] = await this.db<OAuthAuthorizationSessionRow>(
+    const returnedRows = await this.db<OAuthAuthorizationSessionRow>(
       'oauth_authorization_sessions',
     )
       .where('id', session.id)
       .update(updatedFields)
       .returning('*');
 
-    return this.rowToAuthorizationSession(updated) as AuthorizationSession;
+    if (returnedRows.length !== 1) {
+      throw new Error(
+        `Failed to retrieve updated authorization session with id ${session.id}`,
+      );
+    }
+
+    const [returnedSession] = returnedRows;
+
+    return this.rowToAuthorizationSession(
+      returnedSession,
+    ) as AuthorizationSession;
   }
 
   async getAuthorizationSession({ id }: { id: string }) {
@@ -290,17 +300,25 @@ export class OidcDatabase {
       });
     }
 
-    const [updated] = await this.db<OidcAuthorizationCodeRow>(
+    const returnedRows = await this.db<OidcAuthorizationCodeRow>(
       'oidc_authorization_codes',
     )
       .where('code', authorizationCode.code)
       .update(updatedFields)
       .returning('*');
 
-    return this.rowToAuthorizationCode(updated) as AuthorizationCode;
+    if (returnedRows.length !== 1) {
+      throw new Error(
+        `Failed to retrieve updated authorization code with code ${authorizationCode.code}`,
+      );
+    }
+
+    const [returnedCode] = returnedRows;
+
+    return this.rowToAuthorizationCode(returnedCode) as AuthorizationCode;
   }
 
-  private rowToClient(row: Partial<OidcClientRow>): Partial<Client> {
+  private rowToClient(row: OidcClientRow): Client {
     return {
       clientId: row.client_id,
       clientName: row.client_name,
@@ -332,12 +350,12 @@ export class OidcDatabase {
       code_challenge_method: session.codeChallengeMethod,
       nonce: session.nonce,
       status: session.status,
-      expires_at: session.expiresAt,
+      expires_at: toDate(session.expiresAt),
     };
   }
 
   private rowToAuthorizationSession(
-    row: Partial<OAuthAuthorizationSessionRow>,
+    row: OAuthAuthorizationSessionRow,
   ): Partial<AuthorizationSession> {
     return {
       id: row.id,
@@ -361,13 +379,13 @@ export class OidcDatabase {
     return {
       code: authorizationCode.code,
       session_id: authorizationCode.sessionId,
-      expires_at: authorizationCode.expiresAt,
+      expires_at: toDate(authorizationCode.expiresAt),
       used: authorizationCode.used,
     };
   }
 
   private rowToAuthorizationCode(
-    row: Partial<OidcAuthorizationCodeRow>,
+    row: OidcAuthorizationCodeRow,
   ): Partial<AuthorizationCode> {
     return {
       code: row.code,

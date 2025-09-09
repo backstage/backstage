@@ -466,6 +466,7 @@ describe('OidcService', () => {
 
         await service.rejectAuthorizationSession({
           sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
         });
 
         await expect(
@@ -553,6 +554,7 @@ describe('OidcService', () => {
 
         await service.rejectAuthorizationSession({
           sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
         });
 
         await expect(
@@ -580,6 +582,7 @@ describe('OidcService', () => {
 
         await service.rejectAuthorizationSession({
           sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
         });
 
         await expect(
@@ -595,6 +598,7 @@ describe('OidcService', () => {
         await expect(
           service.rejectAuthorizationSession({
             sessionId: 'invalid-session',
+            userEntityRef: 'user:default/test',
           }),
         ).rejects.toThrow('Invalid authorization session');
       });
@@ -621,6 +625,7 @@ describe('OidcService', () => {
         await expect(
           service.rejectAuthorizationSession({
             sessionId: authSession.id,
+            userEntityRef: 'user:default/test',
           }),
         ).rejects.toThrow('Authorization session not found or expired');
       });
@@ -641,49 +646,15 @@ describe('OidcService', () => {
 
         await service.rejectAuthorizationSession({
           sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
         });
 
         await expect(
           service.rejectAuthorizationSession({
             sessionId: authSession.id,
-          }),
-        ).rejects.toThrow('Authorization session not found or expired');
-      });
-    });
-
-    describe('authorize', () => {
-      it('should create direct authorization', async () => {
-        const { service } = await createOidcService(databaseId);
-
-        const client = await service.registerClient({
-          clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
-        });
-
-        const result = await service.authorize({
-          clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
-          responseType: 'code',
-          userEntityRef: 'user:default/test',
-          state: 'test-state',
-        });
-
-        expect(result.redirectUrl).toMatch(
-          /^https:\/\/example\.com\/callback\?code=.+&state=test-state$/,
-        );
-      });
-
-      it('should throw error for invalid client', async () => {
-        const { service } = await createOidcService(databaseId);
-
-        await expect(
-          service.authorize({
-            clientId: 'invalid-client',
-            redirectUri: 'https://example.com/callback',
-            responseType: 'code',
             userEntityRef: 'user:default/test',
           }),
-        ).rejects.toThrow('Invalid client_id');
+        ).rejects.toThrow('Authorization session not found or expired');
       });
     });
 
@@ -698,12 +669,16 @@ describe('OidcService', () => {
           redirectUris: ['https://example.com/callback'],
         });
 
-        const authResult = await service.authorize({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
-          userEntityRef: 'user:default/test',
           scope: 'openid',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
         });
 
         const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
@@ -751,13 +726,17 @@ describe('OidcService', () => {
           .update(codeVerifier)
           .digest('base64url');
 
-        const authResult = await service.authorize({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
-          userEntityRef: 'user:default/test',
           codeChallenge,
           codeChallengeMethod: 'S256',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
         });
 
         const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
@@ -781,13 +760,17 @@ describe('OidcService', () => {
         });
 
         const codeChallenge = 'test-challenge';
-        const authResult = await service.authorize({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
-          userEntityRef: 'user:default/test',
           codeChallenge,
           codeChallengeMethod: 'S256',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
         });
 
         const code = new URL(authResult.redirectUrl).searchParams.get('code')!;

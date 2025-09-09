@@ -134,19 +134,19 @@ export class OidcRouter {
             clientId: clientId as string,
             redirectUri: redirectUri as string,
             responseType: responseType as string,
-            scope: scope as string,
-            state: state as string,
-            nonce: nonce as string,
-            codeChallenge: codeChallenge as string,
-            codeChallengeMethod: codeChallengeMethod as string,
+            scope: scope as string | undefined,
+            state: state as string | undefined,
+            nonce: nonce as string | undefined,
+            codeChallenge: codeChallenge as string | undefined,
+            codeChallengeMethod: codeChallengeMethod as string | undefined,
           });
 
           // todo(blam): maybe this URL could be overridable by config if
           // the plugin is mounted somewhere else?
           // support slashes in baseUrl?
           const authSessionRedirectUrl = new URL(
-            `/oauth2/authorize/${result.id}`,
-            this.appUrl,
+            `./oauth2/authorize/${result.id}`,
+            ensureTrailingSlash(this.appUrl),
           );
 
           return res.redirect(authSessionRedirectUrl.toString());
@@ -171,7 +171,7 @@ export class OidcRouter {
       });
 
       // Authorization Session request details endpoint
-      // Returns Authorization Session request details for the frontned
+      // Returns Authorization Session request details for the frontend
       router.get('/v1/sessions/:sessionId', async (req, res) => {
         const { sessionId } = req.params;
 
@@ -263,12 +263,25 @@ export class OidcRouter {
           });
         }
 
+        const httpCredentials = await this.httpAuth.credentials(req);
+
+        if (!this.auth.isPrincipal(httpCredentials, 'user')) {
+          return res.status(401).json({
+            error: 'unauthorized',
+            error_description: 'Authentication required',
+          });
+        }
+
+        const { userEntityRef } = httpCredentials.principal;
         try {
           const session = await this.oidc.getAuthorizationSession({
             sessionId,
           });
 
-          await this.oidc.rejectAuthorizationSession({ sessionId });
+          await this.oidc.rejectAuthorizationSession({
+            sessionId,
+            userEntityRef,
+          });
 
           const errorParams = new URLSearchParams();
           errorParams.append('error', 'access_denied');
@@ -412,4 +425,10 @@ export class OidcRouter {
 
     return router;
   }
+}
+function ensureTrailingSlash(appUrl: string): string | URL | undefined {
+  if (appUrl.endsWith('/')) {
+    return appUrl;
+  }
+  return `${appUrl}/`;
 }

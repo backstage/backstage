@@ -300,9 +300,14 @@ export class OidcService {
     };
   }
 
-  public async rejectAuthorizationSession(opts: { sessionId: string }) {
+  public async rejectAuthorizationSession(opts: {
+    sessionId: string;
+    userEntityRef: string;
+  }) {
+    const { sessionId, userEntityRef } = opts;
+
     const session = await this.oidc.getAuthorizationSession({
-      id: opts.sessionId,
+      id: sessionId,
     });
 
     if (!session) {
@@ -320,94 +325,8 @@ export class OidcService {
     await this.oidc.updateAuthorizationSession({
       id: session.id,
       status: 'rejected',
-    });
-  }
-
-  public async authorize(opts: {
-    clientId: string;
-    redirectUri: string;
-    responseType: string;
-    scope?: string;
-    state?: string;
-    nonce?: string;
-    codeChallenge?: string;
-    codeChallengeMethod?: string;
-    userEntityRef: string;
-  }) {
-    const {
-      clientId,
-      redirectUri,
-      responseType,
-      scope,
-      state,
-      nonce,
-      codeChallenge,
-      codeChallengeMethod,
       userEntityRef,
-    } = opts;
-
-    if (responseType !== 'code') {
-      throw new InputError('Only authorization code flow is supported');
-    }
-
-    const client = await this.oidc.getClient({ clientId });
-    if (!client) {
-      throw new InputError('Invalid client_id');
-    }
-
-    if (!client.redirectUris.includes(redirectUri)) {
-      throw new InputError('Invalid redirect_uri');
-    }
-
-    if (codeChallenge) {
-      if (
-        !codeChallengeMethod ||
-        !['S256', 'plain'].includes(codeChallengeMethod)
-      ) {
-        throw new InputError('Invalid code_challenge_method');
-      }
-    }
-
-    const sessionId = crypto.randomUUID();
-    const sessionExpiresAt = DateTime.now().plus({ hours: 1 }).toJSDate();
-
-    await this.oidc.createAuthorizationSession({
-      id: sessionId,
-      clientId,
-      userEntityRef,
-      redirectUri,
-      responseType,
-      scope,
-      state,
-      codeChallenge,
-      codeChallengeMethod,
-      nonce,
-      expiresAt: sessionExpiresAt,
     });
-
-    await this.oidc.updateAuthorizationSession({
-      id: sessionId,
-      status: 'approved',
-    });
-
-    const authorizationCode = crypto.randomBytes(32).toString('base64url');
-    const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toJSDate();
-
-    await this.oidc.createAuthorizationCode({
-      code: authorizationCode,
-      sessionId,
-      expiresAt: codeExpiresAt,
-    });
-
-    const redirectUrl = new URL(redirectUri);
-    redirectUrl.searchParams.append('code', authorizationCode);
-    if (state) {
-      redirectUrl.searchParams.append('state', state);
-    }
-
-    return {
-      redirectUrl: redirectUrl.toString(),
-    };
   }
 
   public async exchangeCodeForToken(params: {
