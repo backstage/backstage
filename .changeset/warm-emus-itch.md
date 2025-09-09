@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Fix incorrect defaultTarget on `createComponentRouteRef`.
+Fix incorrect `defaultTarget` on `createComponentRouteRef`.
