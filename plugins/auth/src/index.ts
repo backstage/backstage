@@ -14,4 +14,3 @@
  * limitations under the License.
  */
 export { default } from './plugin';
-export { rootRouteRef } from './routes';
