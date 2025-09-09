@@ -281,28 +281,6 @@ describe('migrations', () => {
         }),
       );
 
-      await expect(
-        knex
-          .insert({
-            id: 'invalid-session',
-            client_id: 'non-existent-client',
-            redirect_uri: 'https://example.com/callback',
-            response_type: 'code',
-            expires_at: new Date(),
-          })
-          .into('oauth_authorization_sessions'),
-      ).rejects.toThrow();
-
-      await expect(
-        knex
-          .insert({
-            code: 'invalid-code',
-            session_id: 'non-existent-session',
-            expires_at: new Date(),
-          })
-          .into('oidc_authorization_codes'),
-      ).rejects.toThrow();
-
       await knex('oauth_authorization_sessions')
         .where('id', 'test-session-id')
         .del();

@@ -25,6 +25,7 @@ import { decodeJwt } from 'jose';
 import crypto from 'crypto';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
+import matcher from 'matcher';
 
 export class OidcService {
   private constructor(
@@ -121,17 +122,15 @@ export class OidcService {
 
     const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
       'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
-    );
+    ) ?? ['*'];
 
-    if (allowedRedirectUriPatterns) {
-      for (const redirectUri of opts.redirectUris ?? []) {
-        if (
-          !allowedRedirectUriPatterns.some(pattern =>
-            new RegExp(pattern).test(redirectUri),
-          )
-        ) {
-          throw new InputError('Invalid redirect_uri');
-        }
+    for (const redirectUri of opts.redirectUris ?? []) {
+      if (
+        !allowedRedirectUriPatterns.some(pattern =>
+          matcher.isMatch(redirectUri, pattern),
+        )
+      ) {
+        throw new InputError('Invalid redirect_uri');
       }
     }
 

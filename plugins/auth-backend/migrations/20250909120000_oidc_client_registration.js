@@ -44,12 +44,12 @@ exports.up = async function up(knex) {
       .comment('The name of the client, should be human readable');
 
     table
-      .text('response_types')
+      .text('response_types', 'longtext')
       .notNullable()
       .comment('JSON array of supported response types');
 
     table
-      .text('grant_types')
+      .text('grant_types', 'longtext')
       .notNullable()
       .comment('JSON array of supported grant types');
 
@@ -82,7 +82,10 @@ exports.up = async function up(knex) {
       .nullable()
       .comment('Backstage user entity reference');
 
-    table.text('redirect_uri').notNullable().comment('Client redirect URI');
+    table
+      .text('redirect_uri', 'longtext')
+      .notNullable()
+      .comment('Client redirect URI');
 
     table.text('scope').nullable().comment('Requested scopes space-separated');
 

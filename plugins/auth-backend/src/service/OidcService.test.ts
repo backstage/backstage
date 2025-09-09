@@ -244,16 +244,16 @@ describe('OidcService', () => {
           mocks: { config },
         } = await createOidcService(databaseId);
 
-        config.getOptionalStringArray.mockReturnValue(['cursor://*']);
+        config.getOptionalStringArray.mockReturnValue(['cursor:*']);
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['cursor://callback'],
+          redirectUris: ['cursor://callback/asd?asd=asd'],
         });
 
         expect(client).toEqual(
           expect.objectContaining({
-            redirectUris: ['cursor://callback'],
+            redirectUris: ['cursor://callback/asd?asd=asd'],
           }),
         );
       });
