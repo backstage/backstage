@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { compatWrapper } from '@backstage/core-compat-api';
 import {
   createFrontendPlugin,
   PageBlueprint,
@@ -24,8 +23,7 @@ export const AuthPage = PageBlueprint.make({
   params: {
     path: '/oauth2',
     routeRef: rootRouteRef,
-    loader: () =>
-      import('./components/Router').then(m => compatWrapper(<m.Router />)),
+    loader: () => import('./components/Router').then(m => <m.Router />),
   },
 });
 

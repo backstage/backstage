@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+
 import {
   Box,
   Button,
@@ -38,13 +38,7 @@ import {
   EmptyState,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import {
-  alertApiRef,
-  useApi,
-  fetchApiRef,
-  discoveryApiRef,
-} from '@backstage/core-plugin-api';
-import { isError } from '@backstage/errors';
+import { useConsentSession } from './useConsentSession';
 
 const useStyles = makeStyles(theme => ({
   authCard: {
@@ -89,260 +83,164 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-interface Session {
-  id: string;
-  clientName?: string;
-  clientId: string;
-  redirectUri: string;
-  scopes?: string[];
-  responseType?: string;
-  state?: string;
-  nonce?: string;
-  codeChallenge?: string;
-  codeChallengeMethod?: string;
-  expiresAt?: string;
-}
+const ConsentPageLayout = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) => (
+  <Page themeId="tool">
+    <Header title={title} />
+    <Content>{children}</Content>
+  </Page>
+);
 
 export const ConsentPage = () => {
   const classes = useStyles();
   const { sessionId } = useParams<{ sessionId: string }>();
-  const alertApi = useApi(alertApiRef);
-  const fetchApi = useApi(fetchApiRef);
-  const discoveryApi = useApi(discoveryApiRef);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [completed, setCompleted] = useState<
-    | {
-        action: 'approve' | 'reject';
-      }
-    | undefined
-  >(undefined);
-
-  useEffect(() => {
-    const fetchSession = async () => {
-      if (!sessionId) return;
-
-      try {
-        const baseUrl = await discoveryApi.getBaseUrl('auth');
-        const response = await fetchApi.fetch(
-          `${baseUrl}/v1/sessions/${sessionId}`,
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setSession(data);
-      } catch (err) {
-        setError(isError(err) ? err.message : 'Failed to load consent request');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSession();
-  }, [sessionId, discoveryApi, fetchApi]);
-
-  const handleAction = useCallback(
-    async (action: 'approve' | 'reject') => {
-      if (!session) return;
-
-      setSubmitting(true);
-      try {
-        const baseUrl = await discoveryApi.getBaseUrl('auth');
-        const response = await fetchApi.fetch(
-          `${baseUrl}/v1/sessions/${session.id}/${action}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-
-        setCompleted({
-          action,
-        });
-
-        if (result.redirectUrl) {
-          window.location.href = result.redirectUrl;
-        }
-      } catch (err) {
-        alertApi.post({
-          message: isError(err) ? err.message : `Failed to ${action} consent`,
-          severity: 'error',
-        });
-      } finally {
-        setSubmitting(false);
-      }
-    },
-    [session, discoveryApi, fetchApi, alertApi],
-  );
+  const { state, handleAction } = useConsentSession({ sessionId });
 
   if (!sessionId) {
     return (
-      <Page themeId="tool">
-        <Header title="Authorization Error" />
-        <Content>
-          <EmptyState
-            missing="data"
-            title="Invalid Request"
-            description="The consent request ID is missing or invalid."
-          />
-        </Content>
-      </Page>
+      <ConsentPageLayout title="Authorization Error">
+        <EmptyState
+          missing="data"
+          title="Invalid Request"
+          description="The consent request ID is missing or invalid."
+        />
+      </ConsentPageLayout>
     );
   }
 
-  if (loading) {
+  if (state.status === 'loading') {
     return (
-      <Page themeId="tool">
-        <Header title="Authorization Request" />
-        <Content>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight={300}
-          >
-            <Progress />
-          </Box>
-        </Content>
-      </Page>
+      <ConsentPageLayout title="Authorization Request">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight={300}
+        >
+          <Progress />
+        </Box>
+      </ConsentPageLayout>
     );
   }
 
-  if (error ?? !session) {
+  if (state.status === 'error') {
     return (
-      <Page themeId="tool">
-        <Header title="Authorization Error" />
-        <Content>
-          <ResponseErrorPanel
-            error={new Error(error || 'Authorization request not found')}
-          />
-        </Content>
-      </Page>
+      <ConsentPageLayout title="Authorization Error">
+        <ResponseErrorPanel error={new Error(state.error)} />
+      </ConsentPageLayout>
     );
   }
 
-  if (completed) {
+  if (state.status === 'completed') {
     return (
-      <Page themeId="tool">
-        <Header title="Authorization Complete" />
-        <Content>
-          <Card className={classes.authCard}>
-            <CardContent>
-              <Box textAlign="center">
-                {completed.action === 'approve' ? (
-                  <CheckCircleIcon
-                    style={{ fontSize: 64, color: 'green', marginBottom: 16 }}
-                  />
-                ) : (
-                  <CancelIcon
-                    style={{ fontSize: 64, color: 'red', marginBottom: 16 }}
-                  />
-                )}
-                <Typography variant="h5" gutterBottom>
-                  {completed.action === 'approve'
-                    ? 'Authorization Approved'
-                    : 'Authorization Denied'}
-                </Typography>
-                <Typography variant="body1" color="textSecondary" gutterBottom>
-                  {completed.action === 'approve'
-                    ? 'You have successfully authorized the application to access your Backstage account.'
-                    : 'You have denied the application access to your Backstage account.'}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Redirecting to the application...
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Content>
-      </Page>
-    );
-  }
-
-  const appName = session.clientName ?? session.clientId;
-
-  return (
-    <Page themeId="tool">
-      <Header title="Authorization Request" />
-      <Content>
+      <ConsentPageLayout title="Authorization Complete">
         <Card className={classes.authCard}>
           <CardContent>
-            <Box className={classes.appHeader}>
-              <AppsIcon className={classes.appIcon} />
-              <Box>
-                <Typography className={classes.appName}>{appName}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  wants to access your Backstage account
-                </Typography>
-              </Box>
-            </Box>
-
-            <Divider />
-
-            <Alert
-              severity="warning"
-              icon={<WarningIcon />}
-              className={classes.securityWarning}
-            >
-              <Typography variant="body2">
-                <strong>Security Notice:</strong> By authorizing this
-                application, you are granting it access to your Backstage
-                account. The application will receive an access token that
-                allows it to act on your behalf.
+            <Box textAlign="center">
+              {state.action === 'approve' ? (
+                <CheckCircleIcon
+                  style={{ fontSize: 64, color: 'green', marginBottom: 16 }}
+                />
+              ) : (
+                <CancelIcon
+                  style={{ fontSize: 64, color: 'red', marginBottom: 16 }}
+                />
+              )}
+              <Typography variant="h5" gutterBottom>
+                {state.action === 'approve'
+                  ? 'Authorization Approved'
+                  : 'Authorization Denied'}
               </Typography>
-              <Box mt={1}>
-                <Typography variant="body2">
-                  <strong>Callback URL:</strong>
-                </Typography>
-                <Box className={classes.callbackUrl}>{session.redirectUri}</Box>
-              </Box>
-            </Alert>
-
-            <Box mt={2}>
+              <Typography variant="body1" color="textSecondary" gutterBottom>
+                {state.action === 'approve'
+                  ? 'You have successfully authorized the application to access your Backstage account.'
+                  : 'You have denied the application access to your Backstage account.'}
+              </Typography>
               <Typography variant="body2" color="textSecondary">
-                Make sure you trust this application and recognize the callback
-                URL above. Only authorize applications you trust.
+                Redirecting to the application...
               </Typography>
             </Box>
           </CardContent>
-
-          <CardActions className={classes.buttonContainer}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="large"
-              disabled={submitting}
-              onClick={() => handleAction('reject')}
-              startIcon={<CancelIcon />}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              disabled={submitting}
-              onClick={() => handleAction('approve')}
-              startIcon={<CheckCircleIcon />}
-            >
-              {submitting ? 'Authorizing...' : 'Authorize'}
-            </Button>
-          </CardActions>
         </Card>
-      </Content>
-    </Page>
+      </ConsentPageLayout>
+    );
+  }
+
+  const session = state.session;
+  const isSubmitting = state.status === 'submitting';
+  const appName = session.clientName ?? session.clientId;
+
+  return (
+    <ConsentPageLayout title="Authorization Request">
+      <Card className={classes.authCard}>
+        <CardContent>
+          <Box className={classes.appHeader}>
+            <AppsIcon className={classes.appIcon} />
+            <Box>
+              <Typography className={classes.appName}>{appName}</Typography>
+              <Typography variant="body2" color="textSecondary">
+                wants to access your Backstage account
+              </Typography>
+            </Box>
+          </Box>
+
+          <Divider />
+
+          <Alert
+            severity="warning"
+            icon={<WarningIcon />}
+            className={classes.securityWarning}
+          >
+            <Typography variant="body2">
+              <strong>Security Notice:</strong> By authorizing this application,
+              you are granting it access to your Backstage account. The
+              application will receive an access token that allows it to act on
+              your behalf.
+            </Typography>
+            <Box mt={1}>
+              <Typography variant="body2">
+                <strong>Callback URL:</strong>
+              </Typography>
+              <Box className={classes.callbackUrl}>{session.redirectUri}</Box>
+            </Box>
+          </Alert>
+
+          <Box mt={2}>
+            <Typography variant="body2" color="textSecondary">
+              Make sure you trust this application and recognize the callback
+              URL above. Only authorize applications you trust.
+            </Typography>
+          </Box>
+        </CardContent>
+
+        <CardActions className={classes.buttonContainer}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            size="large"
+            disabled={isSubmitting}
+            onClick={() => handleAction('reject')}
+            startIcon={<CancelIcon />}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            disabled={isSubmitting}
+            onClick={() => handleAction('approve')}
+            startIcon={<CheckCircleIcon />}
+          >
+            {isSubmitting ? 'Authorizing...' : 'Authorize'}
+          </Button>
+        </CardActions>
+      </Card>
+    </ConsentPageLayout>
   );
 };
