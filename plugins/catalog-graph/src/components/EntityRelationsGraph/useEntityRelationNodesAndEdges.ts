@@ -24,8 +24,6 @@ import { buildGraph } from '../../lib/graph';
 import {
   BuiltInTransformations,
   builtInTransformations,
-  cloneTransformationContext,
-  GraphTransformationDebugger,
   GraphTransformer,
   TransformationContext,
 } from '../../lib/graph-transformations';
@@ -43,7 +41,6 @@ export function useEntityRelationNodesAndEdges({
   entityFilter,
   onNodeClick,
   relationPairs: incomingRelationPairs,
-  onPostTransformation,
 }: {
   rootEntityRefs: string[];
   maxDepth?: number;
@@ -54,7 +51,6 @@ export function useEntityRelationNodesAndEdges({
   entityFilter?: (entity: Entity) => boolean;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
-  onPostTransformation?: GraphTransformationDebugger;
 }): {
   loading: boolean;
   nodes?: EntityNode[];
@@ -129,20 +125,6 @@ export function useEntityRelationNodesAndEdges({
         maxDepth,
       };
 
-      const debugTransformation = (
-        transformation: BuiltInTransformations | GraphTransformer | undefined,
-      ) => {
-        onPostTransformation?.(
-          typeof transformation === 'function'
-            ? transformation.name
-            : transformation,
-          transformationContext,
-          cloneTransformationContext(transformationContext),
-        );
-      };
-
-      debugTransformation(undefined);
-
       const runTransformation = (
         transformation: BuiltInTransformations | GraphTransformer,
       ) => {
@@ -151,8 +133,6 @@ export function useEntityRelationNodesAndEdges({
         } else {
           builtInTransformations[transformation](transformationContext);
         }
-
-        debugTransformation(transformation);
       };
 
       runTransformation('reduce-edges');

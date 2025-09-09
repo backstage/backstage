@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-export type {
-  GraphTransformer,
-  TransformationContext,
-  GraphTransformationDebugger,
-} from './types';
-export { cloneTransformationContext } from './types';
+export type { GraphTransformer, TransformationContext } from './types';
 
 import { reduceEdges } from './reduce-edges';
 import { setDistances } from './set-distance';

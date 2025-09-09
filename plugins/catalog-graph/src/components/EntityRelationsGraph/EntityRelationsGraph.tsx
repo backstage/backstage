@@ -33,7 +33,6 @@ import { DefaultRenderNode } from './DefaultRenderNode';
 import { RelationPairs } from '../../lib/types';
 import { Direction, EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
-import { GraphTransformationDebugger } from '../../lib/graph-transformations';
 
 /** @public */
 export type EntityRelationsGraphClassKey = 'progress' | 'container' | 'graph';
@@ -92,7 +91,6 @@ export type EntityRelationsGraphProps = {
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
-  onPostTransformation?: GraphTransformationDebugger;
 };
 
 /**
@@ -118,7 +116,6 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     renderLabel,
     curve,
     showArrowHeads,
-    onPostTransformation,
   } = props;
 
   const theme = useTheme();
@@ -142,7 +139,6 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     entityFilter,
     onNodeClick,
     relationPairs,
-    onPostTransformation,
   });
 
   useEffect(() => {

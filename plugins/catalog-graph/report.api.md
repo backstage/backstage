@@ -181,15 +181,7 @@ export type EntityRelationsGraphProps = {
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
-  onPostTransformation?: GraphTransformationDebugger;
 };
-
-// @public
-export type GraphTransformationDebugger = (
-  transformation: string | undefined,
-  transformationContext: TransformationContext,
-  clonedContext: TransformationContext,
-) => void;
 
 // @public
 export type RelationPairs = [string, string][];

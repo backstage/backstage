@@ -45,38 +45,3 @@ export interface TransformationContext {
  * @public
  */
 export type GraphTransformer = (context: TransformationContext) => void;
-
-/**
- * A function that debugs a graph transformation.
- * It is given the three arguments:
- *  * The transformation that was just applied (or undefined before the first
- *    transformation). If the transformation is a function, its `.name` property
- *    will be used.
- *  * The current state (context) of the graph, which _can_ be mutated
- *  * A cloned copy of the context, useful for logging (as transformations are
- *    made in place, the original context is modified and the logs will be
- *    confusing)
- *
- * @public
- */
-export type GraphTransformationDebugger = (
-  transformation: string | undefined,
-  transformationContext: TransformationContext,
-  clonedContext: TransformationContext,
-) => void;
-
-/** @internal */
-export function cloneTransformationContext(
-  transformationContext: TransformationContext,
-): TransformationContext {
-  const clonesContext = JSON.parse(
-    JSON.stringify(transformationContext),
-  ) as TransformationContext;
-  clonesContext.edges = clonesContext.edges.sort((a, b) => {
-    return a.from.localeCompare(b.from) || a.to.localeCompare(b.to);
-  });
-
-  clonesContext.nodeDistances = new Map(transformationContext.nodeDistances);
-
-  return clonesContext;
-}
