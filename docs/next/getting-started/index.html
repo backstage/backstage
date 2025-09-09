@@ -25,7 +25,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.4a5e1784.css">
-<script src="/assets/js/runtime~main.51f88855.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.8b9812ae.js" defer="defer"></script>
 <script src="/assets/js/main.9ababb53.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -42,7 +42,7 @@
 <a href="https://docs.microsoft.com/en-us/windows/wsl/" target="_blank" rel="noopener noreferrer">Windows Subsystem for Linux</a></li>
 <li>A GNU-like build environment available at the command line.
 For example, on Debian/Ubuntu you will want to have the <code>make</code> and <code>build-essential</code> packages installed.
-On macOS, you will want to have run <code>xcode-select --install</code> to get the XCode command line build tooling in place.</li>
+On macOS, you will want to run <code>xcode-select --install</code> to get the XCode command line build tooling in place.</li>
 <li>An account with elevated rights to install the dependencies</li>
 <li><code>curl</code> or <code>wget</code> installed</li>
 <li>Node.js <a href="/docs/next/overview/versioning-policy#nodejs-releases">Active LTS Release</a> installed using one of these
@@ -72,8 +72,8 @@ need to be opened: 3000, 7007. This is quite uncommon, unless you&#x27;re instal
 </ul>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="1-create-your-backstage-app">1. Create your Backstage App<a href="#1-create-your-backstage-app" class="hash-link" aria-label="Direct link to 1. Create your Backstage App" title="Direct link to 1. Create your Backstage App">​</a></h2>
 <div class="theme-admonition theme-admonition-caution admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>caution</div><div class="admonitionContent_BuS1"><p>The Backstage app we&#x27;ll be creating will only have demo data until we set up integrations with your specific data sources!</p></div></div>
-<p>To install the Backstage Standalone app, we will make use of <code>npx</code>. <code>npx</code> is a tool that comes preinstalled with Node.js and lets you run commands straight from <code>npm</code> or other registries. Before we jump in to running the command, let&#x27;s chat about what it does.</p>
-<p>This command will create a new directory with a Backstage app inside. The wizard will ask you for the name of the app. This name will be created as sub directory in your current working directory.</p>
+<p>To install the Backstage Standalone app, we will make use of <code>npx</code>. <code>npx</code> is a tool that comes preinstalled with Node.js and lets you run commands straight from <code>npm</code> or other registries. Before we run the command, let&#x27;s discuss what it does.</p>
+<p>This command will create a new directory with a Backstage app inside. The wizard will ask you for the name of the app. This name will be created as subdirectory in your current working directory.</p>
 <p><img decoding="async" loading="lazy" alt="create app" src="/assets/images/create-app-output-a47b1569049245f0993e1b6fa07589dd.png" width="1064" height="1434" class="img_ev3q"></p>
 <p>Inside that directory, it will generate all the files and folder structure
 needed for you to run your app.</p>
