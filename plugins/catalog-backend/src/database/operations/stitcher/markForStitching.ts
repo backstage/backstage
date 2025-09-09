@@ -17,7 +17,9 @@
 import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
 import { v4 as uuid } from 'uuid';
+import { ErrorLike, isError } from '@backstage/errors';
 import { StitchingStrategy } from '../../../stitching/types';
+import { setTimeout as sleep } from 'timers/promises';
 import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
 
 const UPDATE_CHUNK_SIZE = 100; // Smaller chunks reduce contention
@@ -30,10 +32,13 @@ const POSTGRES_DEADLOCK_SQLSTATE = '40P01';
 /**
  * Checks if the given error is a deadlock error for the database engine in use.
  */
-function isDeadlockError(knex: Knex | Knex.Transaction, e: unknown): boolean {
+function isDeadlockError(
+  knex: Knex | Knex.Transaction,
+  e: unknown,
+): e is ErrorLike {
   if (knex.client.config.client.includes('pg')) {
     // PostgreSQL deadlock detection
-    return (e as any)?.code === POSTGRES_DEADLOCK_SQLSTATE;
+    return isError(e) && e.code === POSTGRES_DEADLOCK_SQLSTATE;
   }
 
   // Add more database engine checks here as needed
@@ -149,7 +154,7 @@ async function retryOnDeadlock<T>(
   for (;;) {
     try {
       return await fn();
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (isDeadlockError(knex, e) && attempt < retries) {
         await sleep(baseMs * Math.pow(2, attempt));
         attempt++;
@@ -158,8 +163,4 @@ async function retryOnDeadlock<T>(
       throw e;
     }
   }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
