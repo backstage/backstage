@@ -25,7 +25,10 @@ import {
   TestDatabaseId,
   TestDatabases,
 } from '@backstage/backend-test-utils';
-import { NotificationSendOptions } from '@backstage/plugin-notifications-node';
+import {
+  NotificationRecipientResolver,
+  NotificationSendOptions,
+} from '@backstage/plugin-notifications-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { v4 as uuid } from 'uuid';
@@ -500,7 +503,10 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       defaultCredentials: mockCredentials.service(),
     });
 
-    const recipientResolver = jest.fn();
+    const resolveFn = jest.fn();
+    const recipientResolver: NotificationRecipientResolver = {
+      resolveNotificationRecipients: resolveFn,
+    };
 
     beforeAll(async () => {
       const router = await createRouter({
@@ -533,7 +539,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         .set('Accept', 'application/json');
 
     it('should use custom recipient resolver', async () => {
-      recipientResolver.mockResolvedValue(['user:default/mock']);
+      resolveFn.mockResolvedValue({
+        userEntityRefs: ['user:default/mock'],
+      });
       const response = await sendNotification({
         recipients: {
           type: 'entity',
@@ -565,8 +573,10 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       expect(notifications).toHaveLength(1);
     });
 
-    it('should return error if recipient resolver returns something other than an array of user entity refs', async () => {
-      recipientResolver.mockResolvedValue(['system:default/mock']);
+    it('should ignore if recipient resolver returns something other than an array of user entity refs', async () => {
+      resolveFn.mockResolvedValue({
+        userEntityRefs: ['system:default/mock'],
+      });
       const response = await sendNotification({
         recipients: {
           type: 'entity',
@@ -576,7 +586,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
           title: 'test notification',
         },
       });
-      expect(response.status).toEqual(400);
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
     });
   });
 
