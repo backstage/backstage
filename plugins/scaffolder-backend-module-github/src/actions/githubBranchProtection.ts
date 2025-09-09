@@ -77,7 +77,7 @@ export function createGithubBranchProtectionAction(options: {
         requireLastPushApproval = false,
         requiredCommitSigning = false,
         requiredLinearHistory = false,
-        blockCreations = false,
+        blockCreations,
         token: providedToken,
       } = ctx.input;
 
