@@ -1,5 +1,15 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.3-next.1
+
+### Patch Changes
+
+- 1d47bf3: Proxy `/.well-known/oauth-authorization-server` to `/.well-known/openid-configuration` on `auth-backend` when `auth.experimentalDynamicClientRegistration.enabled` is enabled.
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1-next.1
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+
 ## 0.1.3-next.0
 
 ### Patch Changes

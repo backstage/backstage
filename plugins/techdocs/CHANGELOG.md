@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs
 
+## 1.14.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-react@0.1.19-next.1
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/core-compat-api@0.5.2-next.2
+
 ## 1.14.2-next.1
 
 ### Patch Changes

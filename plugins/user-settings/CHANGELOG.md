@@ -1,5 +1,15 @@
 # @backstage/plugin-user-settings
 
+## 0.8.26-next.2
+
+### Patch Changes
+
+- b713b54: Tool-tip text correction for the Theme selection in settings page
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+  - @backstage/core-compat-api@0.5.2-next.2
+
 ## 0.8.26-next.1
 
 ### Patch Changes
