@@ -89,8 +89,8 @@ app
 - **package.json**: Root package.json for the project. _Note: Be sure that you
   don't add any npm dependencies here as they probably should be installed in
   the intended workspace rather than in the root._
-- **packages/**: Lerna leaf packages or "workspaces". Everything here is going
-  to be a separate package managed by Lerna.
+- **packages/**: Yarn workspaces, everything here is going
+  to be a separate package, managed by Yarn.
 - **packages/app/**: A fully functioning Backstage frontend app that acts as a
   good starting point for you to get to know Backstage.
 - **packages/backend/**: We include a backend that helps power features such as
