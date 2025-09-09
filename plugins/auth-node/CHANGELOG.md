@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-node
 
+## 0.6.7-next.1
+
+### Patch Changes
+
+- 54ddfef: Updating plugin metadata
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+
 ## 0.6.7-next.0
 
 ### Patch Changes

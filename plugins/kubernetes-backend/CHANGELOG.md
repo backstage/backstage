@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.2-next.2
+
+### Patch Changes
+
+- dd7b6d2: Fix a bug where `getDefault` in the `kubernetesFetcherExtensionPoint` had the wrong `this` value
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.1
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration-aws-node@0.1.17
+
 ## 0.20.2-next.1
 
 ### Patch Changes

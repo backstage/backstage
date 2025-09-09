@@ -1,5 +1,13 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.3-next.0
+  - @backstage/backend-defaults@0.12.1-next.1
+
 ## 0.5.9-next.0
 
 ### Patch Changes
