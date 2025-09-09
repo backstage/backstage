@@ -34,7 +34,11 @@ import {
 } from '@material-ui/core/styles';
 import { compact } from 'lodash';
 import useObservable from 'react-use/esm/useObservable';
-import { ContentHeader, ErrorBoundary } from '@backstage/core-components';
+import {
+  ContentHeader,
+  ErrorBoundary,
+  Progress,
+} from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import { WidgetSettingsOverlay } from './WidgetSettingsOverlay';
 import { AddWidgetDialog } from './AddWidgetDialog';
@@ -325,9 +329,8 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     );
   };
 
-  // Don't render anything while storage is loading
   if (isStorageLoading) {
-    return null;
+    return <Progress />;
   }
 
   return (
