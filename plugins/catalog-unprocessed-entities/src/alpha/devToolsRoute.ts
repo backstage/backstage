@@ -20,6 +20,8 @@ import { DevToolsRouteBlueprint } from '@backstage/plugin-devtools-react';
 /**
  * DevTools route extension for catalog unprocessed entities
  * This demonstrates how to create extensions at the app level using the new DevTools extension system
+ *
+ * @alpha
  */
 export const unprocessedEntitiesDevToolsRoute = DevToolsRouteBlueprint.make({
   params: {

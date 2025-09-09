@@ -6,6 +6,8 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { DevToolsRouteBlueprintParams } from '@backstage/plugin-devtools-react';
+import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -87,6 +89,17 @@ const _default: OverridableFrontendPlugin<
   }
 >;
 export default _default;
+
+// @alpha
+export const unprocessedEntitiesDevToolsRoute: ExtensionDefinition<{
+  kind: 'devtools-route';
+  name: undefined;
+  config: {};
+  configInput: {};
+  output: ExtensionDataRef<DevToolsRouteData, 'devtools.route', {}>;
+  inputs: {};
+  params: DevToolsRouteBlueprintParams;
+}>;
 
 // (No @packageDocumentation comment for this package)
 ```
