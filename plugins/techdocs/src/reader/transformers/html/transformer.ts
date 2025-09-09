@@ -20,7 +20,12 @@ import { useCallback, useMemo } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { Transformer } from '../transformer';
-import { removeUnsafeIframes, removeUnsafeLinks } from './hooks';
+import {
+  removeRestrictedAttributes,
+  removeUnsafeIframes,
+  removeUnsafeLinks,
+  removeUnsafeMetaTags,
+} from './hooks';
 
 /**
  * Returns html sanitizer configuration
@@ -51,26 +56,9 @@ export const useSanitizerTransformer = (): Transformer => {
         DOMPurify.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
       }
 
-      // Only allow meta tags if they are used for refreshing the page. They are required for the redirect feature.
-      DOMPurify.addHook('uponSanitizeElement', (currNode, data) => {
-        if (data.tagName === 'meta') {
-          const isMetaRefreshTag =
-            currNode.getAttribute('http-equiv') === 'refresh' &&
-            currNode.getAttribute('content')?.includes('url=');
-          if (!isMetaRefreshTag) {
-            currNode.parentNode?.removeChild(currNode);
-          }
-        }
-      });
+      DOMPurify.addHook('uponSanitizeElement', removeUnsafeMetaTags);
 
-      // Only allow http-equiv and content attributes on meta tags. They are required for the redirect feature.
-      DOMPurify.addHook('uponSanitizeAttribute', (currNode, data) => {
-        if (currNode.tagName !== 'META') {
-          if (data.attrName === 'http-equiv' || data.attrName === 'content') {
-            currNode.removeAttribute(data.attrName);
-          }
-        }
-      });
+      DOMPurify.addHook('uponSanitizeAttribute', removeRestrictedAttributes);
 
       const tagNameCheck = config?.getOptionalString(
         'allowedCustomElementTagNameRegExp',
@@ -122,7 +110,7 @@ export const useSanitizerTransformer = (): Transformer => {
             ? new RegExp(attributeNameCheck)
             : undefined,
         },
-      });
+      }) as Element;
     },
     [config],
   );
