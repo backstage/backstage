@@ -228,7 +228,7 @@ export class OidcRouter {
             });
           }
 
-          const userEntityRef = httpCredentials.principal.userEntityRef;
+          const { userEntityRef } = httpCredentials.principal;
 
           const result = await this.oidc.approveAuthorizationSession({
             sessionId,
@@ -368,9 +368,15 @@ export class OidcRouter {
       // Allows clients to register themselves dynamically with the provider
       router.post('/v1/register', async (req, res) => {
         // todo(blam): maybe add zod types for validating input
-        const registrationRequest = req.body;
+        const {
+          client_name: clientName,
+          redirect_uris: redirectUris,
+          response_types: responseTypes,
+          grant_types: grantTypes,
+          scope,
+        } = req.body;
 
-        if (!registrationRequest.redirect_uris?.length) {
+        if (!redirectUris?.length) {
           res.status(400).json({
             error: 'invalid_request',
             error_description: 'redirect_uris is required',
@@ -380,11 +386,11 @@ export class OidcRouter {
 
         try {
           const client = await this.oidc.registerClient({
-            clientName: registrationRequest.client_name,
-            redirectUris: registrationRequest.redirect_uris,
-            responseTypes: registrationRequest.response_types,
-            grantTypes: registrationRequest.grant_types,
-            scope: registrationRequest.scope,
+            clientName,
+            redirectUris,
+            responseTypes,
+            grantTypes,
+            scope,
           });
 
           res.status(201).json({
