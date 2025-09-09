@@ -264,24 +264,30 @@ export async function createConfig(
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            import: false,
           },
           'react-dom': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            import: false,
           },
           // React Router
           'react-router': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            import: false,
           },
           'react-router-dom': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            import: false,
           },
           // MUI v4
+          // not setting import: false for MUI packages as this
+          // will break once Backstage moves to BUI
           '@material-ui/core/styles': {
             singleton: true,
             requiredVersion: '*',
@@ -293,6 +299,8 @@ export async function createConfig(
             eager: !isRemote,
           },
           // MUI v5
+          // not setting import: false for MUI packages as this
+          // will break once Backstage moves to BUI
           '@mui/material/styles/': {
             singleton: true,
             requiredVersion: '*',
