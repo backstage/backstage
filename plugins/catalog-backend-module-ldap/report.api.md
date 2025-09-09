@@ -6,10 +6,11 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
-import { Client } from 'ldapjs';
+import { Client } from 'ldapts';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { Entry } from 'ldapts';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GroupEntity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
@@ -18,8 +19,8 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
-import { SearchEntry } from 'ldapjs';
-import { SearchOptions } from 'ldapjs';
+import { SearchOptions } from 'ldapts';
+import { SearchResult } from 'ldapts';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
@@ -36,14 +37,14 @@ export default catalogModuleLdapOrgEntityProvider;
 export function defaultGroupTransformer(
   vendor: LdapVendor,
   config: GroupConfig,
-  entry: SearchEntry,
+  entry: Entry,
 ): Promise<GroupEntity | undefined>;
 
 // @public
 export function defaultUserTransformer(
   vendor: LdapVendor,
   config: UserConfig,
-  entry: SearchEntry,
+  entry: Entry,
 ): Promise<UserEntity | undefined>;
 
 // @public
@@ -70,7 +71,7 @@ export type GroupConfig = {
 export type GroupTransformer = (
   vendor: LdapVendor,
   config: GroupConfig,
-  group: SearchEntry,
+  group: Entry,
 ) => Promise<GroupEntity | undefined>;
 
 // @public
@@ -92,14 +93,9 @@ export class LdapClient {
     bind?: BindConfig,
     tls?: TLSConfig,
   ): Promise<LdapClient>;
-  getRootDSE(): Promise<SearchEntry | undefined>;
+  getRootDSE(): Promise<Entry | undefined>;
   getVendor(): Promise<LdapVendor>;
-  search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
-  searchStreaming(
-    dn: string,
-    options: SearchOptions,
-    f: (entry: SearchEntry) => Promise<void> | void,
-  ): Promise<void>;
+  search(dn: string, options: SearchOptions): Promise<SearchResult>;
 }
 
 // @public
@@ -203,12 +199,12 @@ export type LdapProviderConfig = {
 export type LdapVendor = {
   dnAttributeName: string;
   uuidAttributeName: string;
-  decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
+  decodeStringAttribute: (entry: Entry, name: string) => string[];
 };
 
 // @public
 export function mapStringAttr(
-  entry: SearchEntry,
+  entry: Entry,
   vendor: LdapVendor,
   attributeName: string | undefined,
   setter: (value: string) => void,
@@ -265,7 +261,7 @@ export type UserConfig = {
 export type UserTransformer = (
   vendor: LdapVendor,
   config: UserConfig,
-  user: SearchEntry,
+  user: Entry,
 ) => Promise<UserEntity | undefined>;
 
 // @public
