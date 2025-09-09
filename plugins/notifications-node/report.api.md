@@ -42,10 +42,15 @@ export interface NotificationProcessor {
 export type NotificationProcessorFilters = NotificationProcessorFilters_2;
 
 // @public
-export type NotificationRecipientResolver = (
-  entityRef: string | string[] | null,
-  excludeEntityRefs: string | string[],
-) => Promise<string[]>;
+export interface NotificationRecipientResolver {
+  // (undocumented)
+  resolveNotificationRecipients(options: {
+    entityRefs: string[];
+    excludedEntityRefs?: string[];
+  }): Promise<{
+    userEntityRefs: string[];
+  }>;
+}
 
 // @public (undocumented)
 export type NotificationRecipients =

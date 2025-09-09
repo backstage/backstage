@@ -15,33 +15,28 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
-import { getUsersForEntityRef } from './getUsersForEntityRef';
 import {
   RELATION_HAS_MEMBER,
   RELATION_OWNED_BY,
   RELATION_PARENT_OF,
 } from '@backstage/catalog-model';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { DefaultNotificationRecipientResolver } from './DefaultNotificationRecipientResolver.ts';
 
 describe('getUsersForEntityRef', () => {
-  it('should return empty array if entityRef is null', async () => {
-    await expect(
-      getUsersForEntityRef(null, [], {
-        auth: mockServices.auth(),
-        catalog: catalogServiceMock(),
-      }),
-    ).resolves.toEqual([]);
-  });
-
   it('should resolve users without calling catalog', async () => {
     const catalog = catalogServiceMock();
     jest.spyOn(catalog, 'getEntitiesByRefs');
+    const resolver = new DefaultNotificationRecipientResolver(
+      mockServices.auth(),
+      catalog,
+    );
     await expect(
-      getUsersForEntityRef(['user:foo', 'user:ignored'], ['user:ignored'], {
-        auth: mockServices.auth(),
-        catalog,
+      resolver.resolveNotificationRecipients({
+        entityRefs: ['user:foo', 'user:ignored'],
+        excludeEntityRefs: ['user:ignored'],
       }),
-    ).resolves.toEqual(['user:foo']);
+    ).resolves.toEqual({ userEntityRefs: ['user:foo'] });
     expect(catalog.getEntitiesByRefs).not.toHaveBeenCalled();
   });
 
@@ -85,16 +80,18 @@ describe('getUsersForEntityRef', () => {
       ],
     });
 
+    const resolver = new DefaultNotificationRecipientResolver(
+      mockServices.auth(),
+      catalog,
+    );
     await expect(
-      getUsersForEntityRef(
-        'group:default/parent_group',
-        ['user:default/ignored'],
-        {
-          auth: mockServices.auth(),
-          catalog,
-        },
-      ),
-    ).resolves.toEqual(['user:default/foo', 'user:default/bar']);
+      resolver.resolveNotificationRecipients({
+        entityRefs: ['group:default/parent_group'],
+        excludeEntityRefs: ['user:default/ignored'],
+      }),
+    ).resolves.toEqual({
+      userEntityRefs: ['user:default/foo', 'user:default/bar'],
+    });
   });
 
   it('should resolve user owner of entity from entity ref', async () => {
@@ -116,12 +113,16 @@ describe('getUsersForEntityRef', () => {
       ],
     });
 
+    const resolver = new DefaultNotificationRecipientResolver(
+      mockServices.auth(),
+      catalog,
+    );
     await expect(
-      getUsersForEntityRef('component:default/test_component', [], {
-        auth: mockServices.auth(),
-        catalog,
+      resolver.resolveNotificationRecipients({
+        entityRefs: ['component:default/test_component'],
+        excludeEntityRefs: [],
       }),
-    ).resolves.toEqual(['user:default/foo']);
+    ).resolves.toEqual({ userEntityRefs: ['user:default/foo'] });
   });
 
   it('should resolve group owner of entity from entity ref', async () => {
@@ -156,11 +157,59 @@ describe('getUsersForEntityRef', () => {
       ],
     });
 
+    const resolver = new DefaultNotificationRecipientResolver(
+      mockServices.auth(),
+      catalog,
+    );
     await expect(
-      getUsersForEntityRef('component:default/test_component', [], {
-        auth: mockServices.auth(),
-        catalog,
+      resolver.resolveNotificationRecipients({
+        entityRefs: ['component:default/test_component'],
+        excludeEntityRefs: [],
       }),
-    ).resolves.toEqual(['user:default/foo']);
+    ).resolves.toEqual({ userEntityRefs: ['user:default/foo'] });
+  });
+
+  it('should filter excluded refs after resolving', async () => {
+    const catalog = catalogServiceMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'test_component',
+          },
+          relations: [
+            {
+              type: RELATION_OWNED_BY,
+              targetRef: 'group:default/owner_group',
+            },
+          ],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Group',
+          metadata: {
+            name: 'owner_group',
+          },
+          relations: [
+            {
+              type: RELATION_HAS_MEMBER,
+              targetRef: 'user:default/foo',
+            },
+          ],
+        },
+      ],
+    });
+
+    const resolver = new DefaultNotificationRecipientResolver(
+      mockServices.auth(),
+      catalog,
+    );
+    await expect(
+      resolver.resolveNotificationRecipients({
+        entityRefs: ['component:default/test_component'],
+        excludeEntityRefs: ['user:default/foo'],
+      }),
+    ).resolves.toEqual({ userEntityRefs: [] });
   });
 });
