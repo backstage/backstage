@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './saml';
-export * from './microsoft';
-export * from './onelogin';
-export * from './bitbucket';
-export * from './bitbucketServer';
-export * from './atlassian';
-export * from './vmwareCloud';
-export * from './openshift';
-export type { OAuthApiCreateOptions, AuthApiCreateOptions } from './types';
+import { createBackend } from '@backstage/backend-defaults';
+import authPlugin from '@backstage/plugin-auth-backend';
+import authModuleOpenShiftProvider from '../src';
+
+const backend = createBackend();
+
+backend.add(authPlugin);
+backend.add(authModuleOpenShiftProvider);
+
+backend.start();
