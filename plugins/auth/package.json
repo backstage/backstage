@@ -1,9 +1,8 @@
 {
-  "name": "@backstage/plugin-auth-react",
-  "version": "0.1.19-next.0",
-  "description": "Web library for the auth plugin",
+  "name": "@backstage/plugin-auth",
+  "version": "0.0.0",
   "backstage": {
-    "role": "web-library",
+    "role": "frontend-plugin",
     "pluginId": "auth",
     "pluginPackages": [
       "@backstage/plugin-auth",
@@ -13,19 +12,28 @@
     ]
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/auth-react"
+    "directory": "plugins/auth"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
@@ -40,13 +48,18 @@
   },
   "dependencies": {
     "@backstage/core-components": "workspace:^",
-    "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@material-ui/core": "^4.9.13",
-    "@react-hookz/web": "^24.0.0"
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "react-use": "^17.2.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-defaults": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
