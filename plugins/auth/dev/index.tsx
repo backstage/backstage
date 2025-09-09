@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-// todo
+import { createApp } from '@backstage/frontend-defaults';
+import { createRoot } from 'react-dom/client';
+
+import plugin from '../src';
+
+const app = createApp({
+  features: [plugin],
+});
+
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(app.createRoot());

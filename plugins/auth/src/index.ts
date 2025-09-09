@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { authPlugin, AuthRouter } from './plugin';
+export { default } from './plugin';
 export { rootRouteRef } from './routes';
