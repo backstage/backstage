@@ -186,9 +186,12 @@ const readDuration = (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await createOpenApiRouter();
-  // Be generous in upload size to support a wide range of templates in dry-run mode.
-  router.use(express.json({ limit: '10MB' }));
+  const router = await createOpenApiRouter({
+    middleware: [
+      // Be generous in upload size to support a wide range of templates in dry-run mode.
+      express.json({ limit: '10MB' }),
+    ],
+  });
 
   const {
     logger: parentLogger,
