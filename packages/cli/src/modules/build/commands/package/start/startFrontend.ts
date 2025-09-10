@@ -55,11 +55,12 @@ export async function startFrontend(options: StartAppOptions) {
     verifyVersions: options.verifyVersions,
     skipOpenBrowser: options.skipOpenBrowser,
     linkedWorkspace: options.linkedWorkspace,
-    moduleFederation: await getModuleFederationOptions(
-      packageJson,
-      resolvePath(paths.targetDir),
-      options.isModuleFederationRemote,
-    ),
+    moduleFederationRemote: options.isModuleFederationRemote
+      ? await getModuleFederationOptions(
+          packageJson,
+          resolvePath(paths.targetDir),
+        )
+      : undefined,
   });
 
   await waitForExit();

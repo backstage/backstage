@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import { ModuleFederationOptions } from './types';
+import { ModuleFederationRemoteOptions } from './types';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../../../../lib/entryPoints';
 import {
@@ -26,24 +25,10 @@ import {
 export async function getModuleFederationOptions(
   packageJson: BackstagePackageJson,
   packageDir: string,
-  isModuleFederationRemote?: boolean,
-): Promise<ModuleFederationOptions | undefined> {
-  if (
-    !isModuleFederationRemote &&
-    !process.env.EXPERIMENTAL_MODULE_FEDERATION
-  ) {
-    return undefined;
-  }
-
-  console.log(
-    chalk.yellow(
-      `⚠️  WARNING: Module federation is experimental and will receive immediate breaking changes in the future.`,
-    ),
-  );
-
-  let exposes: ModuleFederationOptions['exposes'];
+): Promise<ModuleFederationRemoteOptions | undefined> {
+  let exposes: ModuleFederationRemoteOptions['exposes'];
   const packageRole = packageJson.backstage?.role;
-  if (isModuleFederationRemote && packageJson.exports && packageRole) {
+  if (packageJson.exports && packageRole) {
     const project = await createTypeDistProject();
     exposes = Object.fromEntries(
       readEntryPoints(packageJson)
@@ -70,7 +55,6 @@ export async function getModuleFederationOptions(
   }
 
   return {
-    mode: isModuleFederationRemote ? 'remote' : 'host',
     // The default output mode requires the name to be a usable as a code
     // symbol, there might be better options here but for now we need to
     // sanitize the name.
