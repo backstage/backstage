@@ -283,7 +283,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
         catalog: {
           rules: [
             {
-              allow: [{ kind: 'Component', type: 'service' }],
+              allow: [{ kind: 'Component', 'spec.type': 'service' }],
               locations: [{ type: 'url', pattern: 'https://github.com/b/**' }],
             },
           ],

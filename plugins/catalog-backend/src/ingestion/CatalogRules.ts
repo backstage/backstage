@@ -36,7 +36,7 @@ export type CatalogRule = {
 
 type CatalogRuleAllow = {
   kind: string;
-  type?: string;
+  'spec.type'?: string;
 };
 
 /**
@@ -222,7 +222,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
         continue;
       }
 
-      if (matcher.type && matcher.type !== entity.spec?.type) {
+      if (matcher['spec.type'] && matcher['spec.type'] !== entity.spec?.type) {
         continue;
       }
 
