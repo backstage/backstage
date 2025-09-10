@@ -2,7 +2,7 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
-Add support for specifying an entity `type` in `catalog.rules.allow` rules within the catalog configuration.
+Add support for specifying an entity `spec.type` in `catalog.rules.allow` rules within the catalog configuration.
 
 For example, this enables allowing all `Template` entities with the type `website`:
 
@@ -18,7 +18,7 @@ For example, this enables allowing all `Template` entities with the type `websit
           - Location
 +     - allow:
 +         - kind: Template
-+           type: website
++           spec.type: website
         locations:
           - type: url
             pattern: https://github.com/org/*\/blob/master/*.yaml
