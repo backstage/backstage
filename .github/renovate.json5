@@ -79,4 +79,20 @@
       allowedVersions: '<5.0.0',
     },
   ],
+  customManagers: [
+    {
+      description: 'Update versions of default module federation shared modules',
+      customType: 'regex',
+      managerFilePatterns: [
+        'packages/module-federation-common/src/defaultSharedImports.ts',
+      ],
+      matchStringsStrategy: 'recursive',
+      matchStrings: [
+        'const *defaultSharedImports *: *SharedImport *\\[\\] *= *\\[[^\\]]*\\]',
+        '\\{\\s*[\\s\\S]*?module *: *\\(\\) *=> *import *\\([\\s\\S]*?\\)[\\s\\S]*?\\}',
+        'name *: *[\'"](?<depName>([^\'"@]+)|(@[^\'"\\/]+\\/[^\'"\\/]+))(\\/[^\'"]*)?[\'"](?:,)?(?:[\\s\\S]*?)version *: *[\'"](?<currentValue>\\d+\\.\\d+\\.\\d+)[\'"]',
+      ],
+      datasourceTemplate: 'npm',
+    },
+  ],
 }
