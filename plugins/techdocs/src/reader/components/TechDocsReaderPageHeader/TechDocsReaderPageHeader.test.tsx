@@ -226,7 +226,7 @@ describe('<TechDocsReaderPageHeader />', () => {
 
     await waitFor(() => {
       expect(document.title).toEqual(
-        'Test Entity | Foo | ... | Qux | Quux | Backstage',
+        'Test Entity | Foo | Bar | Baz | Qux | Quux | Backstage',
       );
     });
   });
