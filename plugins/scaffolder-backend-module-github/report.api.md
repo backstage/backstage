@@ -291,6 +291,7 @@ export function createGithubRepoCreateAction(options: {
     requiredLinearHistory?: boolean | undefined;
     customProperties?: Record<string, string | string[]> | undefined;
     subscribe?: boolean | undefined;
+    autoInit?: boolean | undefined;
   },
   {
     remoteUrl: string;
