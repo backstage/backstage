@@ -130,7 +130,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
 
     // No entity metadata = 404. Don't render content at all.
     if (entityMetadataLoading === false && !entityMetadata)
-      return <NotFoundErrorPage />;
+      return <NotFoundErrorPage status="404" statusMessage="Page not found" />;
 
     // Do not return content until dom is ready; instead, render a state
     // indicator, which handles progress and content errors on our behalf.

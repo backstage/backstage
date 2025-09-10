@@ -19,6 +19,7 @@
 // These types end up being inlined and duplicated into this package at build time.
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 export type {
+  ErrorPageProps,
   BootErrorPageProps,
   SignInPageProps,
   ErrorBoundaryFallbackProps,
