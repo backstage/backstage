@@ -16,11 +16,6 @@
 
 import type { Transformer } from './transformer';
 
-// See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
-const scriptProtocolPattern =
-  // eslint-disable-next-line no-control-regex
-  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
-
 export const rewriteDocLinks = (): Transformer => {
   return dom => {
     const updateDom = <T extends Element>(
@@ -38,12 +33,6 @@ export const rewriteDocLinks = (): Transformer => {
             }
 
             try {
-              if (scriptProtocolPattern.test(elemAttribute)) {
-                throw new TypeError(
-                  `Invalid location ref '${elemAttribute}', target is a javascript: URL`,
-                );
-              }
-
               const normalizedWindowLocation = normalizeUrl(
                 window.location.href,
               );

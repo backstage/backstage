@@ -71,33 +71,6 @@ describe('rewriteDocLinks', () => {
     expect(getSample(shadowDom, 'a', 'href')).toEqual([]);
     expect(shadowDom.innerHTML).toContain(expectedText);
   });
-
-  it('should rewrite javascript hrefs as text', async () => {
-    const samples: Array<[string, string]> = [
-      // eslint-disable-next-line no-script-url
-      ['javascript:alert(1)', 'JS 1'],
-      ['  javascript:alert(2)', 'JS 2 (leading space)'],
-      ['\n\tjavascript:alert(3)', 'JS 3 (whitespace)'],
-      // eslint-disable-next-line no-script-url
-      ['JaVaScRiPt:alert(4)', 'JS 4 (mixed case)'],
-      ['javascript&#x3A;alert(5)', 'JS 5 (entity-encoded colon)'],
-    ];
-
-    const html = samples
-      .map(([href, text]) => `<a href="${href}">${text}</a>`)
-      .join('\n');
-
-    const shadowDom = await createTestShadowDom(html, {
-      preTransformers: [rewriteDocLinks()],
-      postTransformers: [],
-    });
-
-    // There should be no <a> tags, but the link text should remain.
-    expect(getSample(shadowDom, 'a', 'href')).toEqual([]);
-    for (const [, text] of samples) {
-      expect(shadowDom.innerHTML).toContain(text);
-    }
-  });
 });
 
 describe('normalizeUrl', () => {
