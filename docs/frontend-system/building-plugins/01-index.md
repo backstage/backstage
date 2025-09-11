@@ -198,15 +198,6 @@ const exampleEntityContent = EntityContentBlueprint.make({
   params: {
     path: 'example',
     title: 'Example',
-    // Optional: associate this content with a group on the entity page tabs
-    // Use a known default group id like "overview", "quality", "documentation",
-    // or provide a custom string. You can also override or disable this via app-config (see note below).
-    // group: 'overview',
-    // Optional: set a tab icon. When using a string, the icon is resolved via the IconsApi.
-    // Ensure your app has icon bundles enabled/installed so the icon id is available.
-    // Note: icons are shown in the entity page tab groups only if `showIcons` is enabled in the
-    //       catalog entity page config (page:catalog/entity) via app-config.
-    // icon: 'dashboard',
     loader: () =>
       import('./components/ExampleEntityContent').then(m => (
         <m.ExampleEntityContent />
