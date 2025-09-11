@@ -525,7 +525,6 @@ export function DependencyGraph<NodeData, EdgeData>(
               })}
               {graphNodes.map((id: string) => {
                 const node = graph.current.node(id);
-
                 if (!node) return null;
                 return (
                   <Node
