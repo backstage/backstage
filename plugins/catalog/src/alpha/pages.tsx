@@ -88,6 +88,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.filterFunction.optional(),
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
       EntityContentBlueprint.dataRefs.group.optional(),
+      EntityContentBlueprint.dataRefs.icon.optional(),
     ]),
     contextMenuItems: createExtensionInput([
       coreExtensionData.reactElement,
@@ -98,8 +99,17 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
     schema: {
       groups: z =>
         z
-          .array(z.record(z.string(), z.object({ title: z.string() })))
+          .array(
+            z.record(
+              z.string(),
+              z.object({
+                title: z.string(),
+                icon: z.string().optional(),
+              }),
+            ),
+          )
           .optional(),
+      showIcons: z => z.boolean().optional().default(false),
     },
   },
   factory(originalFactory, { config, inputs }) {
@@ -124,7 +134,11 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
 
         type Groups = Record<
           string,
-          { title: string; items: Array<(typeof inputs.contents)[0]> }
+          {
+            title: string;
+            icon?: string;
+            items: Array<(typeof inputs.contents)[0]>;
+          }
         >;
 
         // Get available headers, sorted by if they have a filter function or not.
@@ -158,7 +172,11 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             const [groupId, groupValue] = Object.entries(group)[0];
             return {
               ...rest,
-              [groupId]: { title: groupValue.title, items: [] },
+              [groupId]: {
+                title: groupValue.title,
+                icon: config.showIcons ? groupValue.icon : undefined,
+                items: [],
+              },
             };
           }, {});
         }
@@ -192,13 +210,18 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                 header={header}
                 contextMenuItems={filteredMenuItems}
               >
-                {Object.values(groups).flatMap(({ title, items }) =>
+                {Object.values(groups).flatMap(({ title, icon, items }) =>
                   items.map(output => (
                     <EntityLayout.Route
-                      group={title}
+                      group={{ title, icon }}
                       key={output.get(coreExtensionData.routePath)}
                       path={output.get(coreExtensionData.routePath)}
                       title={output.get(EntityContentBlueprint.dataRefs.title)}
+                      icon={
+                        config.showIcons
+                          ? output.get(EntityContentBlueprint.dataRefs.icon)
+                          : undefined
+                      }
                       if={buildFilterFn(
                         output.get(
                           EntityContentBlueprint.dataRefs.filterFunction,
