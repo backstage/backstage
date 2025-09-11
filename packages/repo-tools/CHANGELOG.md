@@ -1,5 +1,12 @@
 # @backstage/repo-tools
 
+## 0.15.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.3-next.0
+
 ## 0.15.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/backend-defaults
 
+## 0.12.1-next.1
+
+### Patch Changes
+
+- 4eda590: Fixed cache namespace and key prefix separator configuration to properly use configured values instead of hardcoded plugin ID. The cache manager now correctly combines the configured namespace with plugin IDs using the configured separator for Redis and Valkey. Memcache and memory store continue to use plugin ID as namespace.
+- Updated dependencies
+  - @backstage/config-loader@1.10.3-next.0
+  - @backstage/plugin-auth-node@0.6.7-next.1
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/integration-aws-node@0.1.17
+
 ## 0.12.1-next.0
 
 ### Patch Changes

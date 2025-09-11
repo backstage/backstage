@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isElement } from '../utils';
+
 /**
  * Checks whether a node is iframe or not.
  * @param node - can be any element.
@@ -42,9 +44,10 @@ const isSafe = (node: Element, hosts: string[]) => {
  * @param node - can be any element.
  * @param hosts - list of allowed hosts.
  */
-export const removeUnsafeIframes = (hosts: string[]) => (node: Element) => {
+export const removeUnsafeIframes = (hosts: string[]) => (node: Node) => {
+  if (!isElement(node)) return;
+
   if (isIframe(node) && !isSafe(node, hosts)) {
     node.remove();
   }
-  return node;
 };

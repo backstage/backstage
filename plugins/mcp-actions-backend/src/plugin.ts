@@ -17,7 +17,8 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { json, Router } from 'express';
+import { json } from 'express';
+import Router from 'express-promise-router';
 import { McpService } from './services/McpService';
 import { createStreamableRouter } from './routers/createStreamableRouter';
 import { createSseRouter } from './routers/createSseRouter';
@@ -42,8 +43,19 @@ export const mcpPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         actions: actionsServiceRef,
         registry: actionsRegistryServiceRef,
+        rootRouter: coreServices.rootHttpRouter,
+        discovery: coreServices.discovery,
+        config: coreServices.rootConfig,
       },
-      async init({ actions, logger, httpRouter, httpAuth }) {
+      async init({
+        actions,
+        logger,
+        httpRouter,
+        httpAuth,
+        rootRouter,
+        discovery,
+        config,
+      }) {
         const mcpService = await McpService.create({
           actions,
         });
@@ -66,6 +78,26 @@ export const mcpPlugin = createBackendPlugin({
         router.use('/v1', streamableRouter);
 
         httpRouter.use(router);
+
+        if (
+          config.getOptionalBoolean(
+            'auth.experimentalDynamicClientRegistration.enabled',
+          )
+        ) {
+          // This should be replaced with throwing a WWW-Authenticate header, but that doesn't seem to be supported by
+          // many of the MCP client as of yet. So this seems to be the oldest version of the spec thats implemented.
+          rootRouter.use(
+            '/.well-known/oauth-authorization-server',
+            async (_, res) => {
+              const authBaseUrl = await discovery.getBaseUrl('auth');
+              const oidcResponse = await fetch(
+                `${authBaseUrl}/.well-known/openid-configuration`,
+              );
+
+              res.json(await oidcResponse.json());
+            },
+          );
+        }
       },
     });
   },

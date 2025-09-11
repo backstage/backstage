@@ -1385,34 +1385,24 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect.anything(),
       );
     });
-    it('disallows users from seeing tasks they do not own', async () => {
-      const { permissions, router, taskBroker } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementationOnce(async () => [
-          {
-            conditions: {
-              resourceType: 'scaffolder-task',
-              rule: 'IS_TASK_OWNER',
-              params: { createdBy: ['user'] },
-            },
-            pluginId: 'scaffolder',
-            resourceType: 'scaffolder-task',
-            result: AuthorizeResult.CONDITIONAL,
+    it('allows payloads up to 10MB', async () => {
+      const { unwrappedRouter } = await createTestRouter();
+      const mockToken = mockCredentials.user.token();
+      const mockTemplate = generateMockTemplate();
+
+      const response = await request(unwrappedRouter)
+        .post('/v2/dry-run')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          template: mockTemplate,
+          values: {
+            requiredParameter1: 'A'.repeat(9 * 1024 * 1024), // ~9MB
+            requiredParameter2: 'required-value-2',
           },
-        ]);
-      const response = await request(router).get(
-        `/v2/tasks?createdBy=not-user`,
-      );
-      expect(taskBroker.list).toHaveBeenCalledWith({
-        filters: { createdBy: ['not-user'], status: undefined },
-        order: undefined,
-        pagination: { limit: undefined, offset: undefined },
-        permissionFilters: { key: 'created_by', values: ['user'] },
-      });
+          directoryContents: [],
+        });
+
       expect(response.status).toBe(200);
-      expect(response.body.totalTasks).toBe(0);
-      expect(response.body.tasks).toEqual([]);
     });
   });
 

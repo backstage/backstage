@@ -1,5 +1,30 @@
 # example-app
 
+## 0.2.113-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.7.1-next.0
+  - @backstage/plugin-auth-react@0.1.19-next.1
+  - @backstage/plugin-home@0.8.12-next.2
+  - @backstage/plugin-scaffolder@1.34.1-next.2
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+  - @backstage/plugin-user-settings@0.8.26-next.2
+  - @backstage/plugin-scaffolder-react@1.19.1-next.2
+  - @backstage/plugin-catalog@1.31.3-next.2
+  - @backstage/cli@0.34.2-next.2
+  - @backstage/plugin-catalog-graph@0.4.23-next.2
+  - @backstage/plugin-catalog-import@0.13.5-next.2
+  - @backstage/plugin-org@0.6.44-next.2
+  - @backstage/plugin-techdocs@1.14.2-next.2
+  - @backstage/plugin-api-docs@0.12.11-next.2
+  - @backstage/plugin-kubernetes@0.12.11-next.2
+  - @backstage/plugin-kubernetes-cluster@0.0.29-next.2
+  - @backstage/plugin-search@1.4.30-next.2
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.28-next.0
+
 ## 0.2.113-next.1
 
 ### Patch Changes

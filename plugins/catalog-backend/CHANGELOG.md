@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend
 
+## 3.0.2-next.1
+
+### Patch Changes
+
+- 2204f5b: Prevent deadlock in catalog deferred stitching
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration@1.18.0-next.0
+
 ## 3.0.2-next.0
 
 ### Patch Changes
