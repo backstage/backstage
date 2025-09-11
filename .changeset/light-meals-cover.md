@@ -1,9 +1,5 @@
 ---
 '@backstage/plugin-catalog-react': minor
-'@backstage/plugin-kubernetes': minor
-'example-app-next': minor
-'@backstage/plugin-api-docs': minor
-'@backstage/plugin-techdocs': minor
 '@backstage/plugin-catalog': minor
 ---
 
