@@ -19,17 +19,24 @@ import {
   useState,
   MouseEvent,
   MouseEventHandler,
+  ReactElement,
 } from 'react';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 
 import Typography from '@material-ui/core/Typography';
-import ButtonBase from '@material-ui/core/ButtonBase';
 import Popover from '@material-ui/core/Popover';
 import { TabProps, TabClassKey } from '@material-ui/core/Tab';
 import { capitalize } from '@material-ui/core/utils';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import List from '@material-ui/core/List';
+import { useApi } from '@backstage/core-plugin-api';
+import { IconsApi, iconsApiRef } from '@backstage/frontend-plugin-api';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -52,9 +59,6 @@ const styles = (theme: Theme) =>
       [theme.breakpoints.up('sm')]: {
         minWidth: 160,
       },
-    },
-    popInButton: {
-      width: '100%',
     },
     defaultTab: {
       ...theme.typography.caption,
@@ -141,7 +145,7 @@ type EntityTabsGroupItem = {
   index: number;
   label: string;
   path: string;
-  group: string;
+  icon?: string | ReactElement;
 };
 
 type EntityTabsGroupProps = TabProps & {
@@ -152,8 +156,23 @@ type EntityTabsGroupProps = TabProps & {
   onSelectTab: MouseEventHandler<HTMLAnchorElement>;
 };
 
+function resolveIcon(
+  icon: string | ReactElement | undefined,
+  iconsApi: IconsApi,
+) {
+  const itemIcon = icon;
+  if (typeof itemIcon === 'string') {
+    const Icon = iconsApi.getIcon(itemIcon);
+    if (Icon) {
+      return <Icon />;
+    }
+  }
+  return itemIcon;
+}
+
 const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const iconsApi = useApi(iconsApiRef);
 
   const open = Boolean(anchorEl);
   const submenuId = open ? 'tabbed-submenu' : undefined;
@@ -165,7 +184,6 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
     disableFocusRipple = false,
     items,
     fullWidth,
-    icon,
     indicator,
     label,
     onSelectTab,
@@ -175,6 +193,7 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
     highlightedButton,
   } = props;
 
+  const groupIcon = resolveIcon(props.icon, iconsApi);
   const testId = 'data-testid' in props && props['data-testid'];
 
   const handleMenuClose = () => {
@@ -191,31 +210,24 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
     classes && {
       [classes.disabled!]: disabled,
       [classes.selected!]: selected,
-      [classes.labelIcon!]: label && icon,
+      [classes.labelIcon!]: label && groupIcon,
       [classes.fullWidth!]: fullWidth,
       [classes.wrapped!]: wrapped,
     },
     className,
   ];
 
-  const innerButtonClasses = [
-    classes?.root,
-    classes?.[`textColor${capitalize(textColor)}` as TabClassKey],
-    classes?.defaultTab,
-    classes && {
-      [classes.disabled!]: disabled,
-      [classes.labelIcon!]: label && icon,
-      [classes.fullWidth!]: fullWidth,
-      [classes.wrapped!]: wrapped,
-    },
-  ];
-
   if (items.length === 1) {
     return (
-      <ButtonBase
+      <Button
         focusRipple={!disableFocusRipple}
         data-testid={testId}
-        className={classnames(classArray)}
+        className={classnames(
+          classArray,
+          classes && {
+            [classes.labelIcon!]: label && (items[0].icon ?? groupIcon),
+          },
+        )}
         ref={ref}
         role="tab"
         aria-selected={selected}
@@ -223,18 +235,19 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
         component={Link}
         onClick={onSelectTab}
         to={items[0]?.path}
+        startIcon={resolveIcon(items[0].icon, iconsApi) ?? groupIcon}
       >
         <Typography className={classes?.wrapper} variant="button">
-          {icon}
           {items[0].label}
         </Typography>
         {indicator}
-      </ButtonBase>
+      </Button>
     );
   }
+  const hasIcons = items.some(i => i.icon);
   return (
     <>
-      <ButtonBase
+      <Button
         data-testid={testId}
         focusRipple={!disableFocusRipple}
         className={classnames(classArray)}
@@ -243,12 +256,13 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
         aria-selected={selected}
         disabled={disabled}
         onClick={handleMenuClick}
+        startIcon={groupIcon}
       >
         <Typography className={classes?.wrapper} variant="button">
           {label}
         </Typography>
         <ExpandMoreIcon />
-      </ButtonBase>
+      </Button>
       <Popover
         id={submenuId}
         open={open}
@@ -263,35 +277,44 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
           horizontal: 'center',
         }}
       >
-        {items.map((i, idx) => (
-          <div key={`popover_item_${idx}`}>
-            <ButtonBase
-              focusRipple={!disableFocusRipple}
-              className={classnames(
-                innerButtonClasses,
-                classes?.popInButton,
-                highlightedButton === i.index
-                  ? classes?.selectedButton
-                  : classes?.unselectedButton,
-              )}
-              ref={ref}
-              aria-selected={selected}
-              disabled={disabled}
-              component={Link}
-              onClick={e => {
-                handleMenuClose();
-                onSelectTab(e);
-              }}
-              to={i.path}
-            >
-              <Typography className={classes?.wrapper} variant="button">
-                {icon}
-                {i.label}
-              </Typography>
-              {indicator}
-            </ButtonBase>
-          </div>
-        ))}
+        <List component="nav">
+          {items.map((i, idx) => {
+            const itemIcon = resolveIcon(i.icon, iconsApi);
+            return (
+              <ListItem
+                key={`popover_item_${idx}`}
+                button
+                focusRipple={!disableFocusRipple}
+                classes={{
+                  selected: classnames(classes?.selectedButton),
+                  default: classnames(classes?.unselectedButton),
+                  disabled: classnames(classes?.disabled),
+                }}
+                ref={ref}
+                aria-selected={selected}
+                disabled={disabled}
+                selected={highlightedButton === i.index}
+                component={Link}
+                onClick={e => {
+                  handleMenuClose();
+                  onSelectTab(e);
+                }}
+                to={i.path}
+              >
+                {itemIcon && <ListItemIcon>{itemIcon}</ListItemIcon>}
+                <ListItemText
+                  inset={!itemIcon && hasIcons}
+                  primary={
+                    <>
+                      <Typography variant="button">{i.label}</Typography>
+                      {indicator}
+                    </>
+                  }
+                />
+              </ListItem>
+            );
+          })}
+        </List>
       </Popover>
     </>
   );

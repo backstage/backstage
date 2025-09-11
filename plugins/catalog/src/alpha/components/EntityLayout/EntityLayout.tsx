@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentProps, ReactNode } from 'react';
+import { ComponentProps, ReactNode, ReactElement } from 'react';
 
 import Alert from '@material-ui/lab/Alert';
 
@@ -44,7 +44,8 @@ import { EntityTabs } from '../EntityTabs';
 export type EntityLayoutRouteProps = {
   path: string;
   title: string;
-  group: string;
+  group: string | { title: string; icon?: string };
+  icon?: string | ReactElement;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
 };
@@ -132,6 +133,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
               title: elementProps.title,
               group: elementProps.group,
               children: elementProps.children,
+              icon: elementProps.icon,
             },
           ];
         }),

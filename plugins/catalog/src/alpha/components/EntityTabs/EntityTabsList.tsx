@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
@@ -59,15 +59,12 @@ type Tab = {
   id: string;
   label: string;
   path: string;
-  group: string;
+  group: { title: string; icon?: string };
+  icon?: string | ReactElement;
 };
 
-type TabItem = {
-  group: string;
-  id: string;
+type TabItem = Tab & {
   index: number;
-  label: string;
-  path: string;
 };
 
 type EntityTabsListProps = {
@@ -82,13 +79,21 @@ export function EntityTabsList(props: EntityTabsListProps) {
   const { tabs: items, onChange, selectedIndex: selectedItem = 0 } = props;
 
   const groups = useMemo(
-    () => [...new Set(items.map(item => item.group))],
+    () =>
+      Object.values(
+        items.reduce((result, i) => {
+          result[i.group.title] = i.group;
+          return result;
+        }, {} as Record<string, Tab['group']>),
+      ),
     [items],
   );
 
   const [selectedGroup, setSelectedGroup] = useState<number>(
     selectedItem && items[selectedItem]
-      ? groups.indexOf(items[selectedItem].group)
+      ? groups.findIndex(
+          ({ title }) => title === items[selectedItem].group.title,
+        )
       : 0,
   );
 
@@ -101,7 +106,11 @@ export function EntityTabsList(props: EntityTabsListProps) {
 
   useEffect(() => {
     if (selectedItem === undefined || !items[selectedItem]) return;
-    setSelectedGroup(groups.indexOf(items[selectedItem].group));
+    setSelectedGroup(
+      groups.findIndex(
+        ({ title }) => title === items[selectedItem].group.title,
+      ),
+    );
   }, [items, selectedItem, groups, setSelectedGroup]);
 
   return (
@@ -118,7 +127,7 @@ export function EntityTabsList(props: EntityTabsListProps) {
         {groups.map((group, groupIndex) => {
           const groupItems: TabItem[] = [];
           items.forEach((item, itemIndex) => {
-            if (item.group === group) {
+            if (item.group.title === group.title) {
               groupItems.push({
                 ...item,
                 index: itemIndex,
@@ -130,8 +139,9 @@ export function EntityTabsList(props: EntityTabsListProps) {
               data-testid={`header-tab-${groupIndex}`}
               className={styles.defaultTab}
               classes={{ selected: styles.selected, root: styles.tabRoot }}
-              key={group}
-              label={group}
+              key={group.title}
+              label={group.title}
+              icon={group.icon}
               value={groupIndex}
               items={groupItems}
               highlightedButton={selectedItem}
