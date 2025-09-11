@@ -103,6 +103,26 @@ describe('StorageTaskBroker', () => {
     expect(task.secrets).toEqual(fakeSecrets);
   }, 10000);
 
+  it('should return secrets with priority over defaults', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    await broker.dispatch(emptyTaskWithFakeSecretsSpec);
+    const task = await broker.claim();
+
+    task.enrichSecrets?.({ backstageToken: 'new-secret' });
+
+    expect(task.secrets).toEqual(fakeSecrets);
+  }, 10000);
+
+  it('should return all secrets', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    await broker.dispatch(emptyTaskWithFakeSecretsSpec);
+    const task = await broker.claim();
+
+    task.enrichSecrets?.({ otherToken: 'new-secret' });
+
+    expect(task.secrets).toEqual({ ...fakeSecrets, otherToken: 'new-secret' });
+  }, 10000);
+
   it('should complete a task', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch(emptyTaskSpec);
@@ -232,7 +252,7 @@ describe('StorageTaskBroker', () => {
           id: taskId,
         }),
       ]),
-      totalTasks: 13,
+      totalTasks: 15,
     });
   });
 

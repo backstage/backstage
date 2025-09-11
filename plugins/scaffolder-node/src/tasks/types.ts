@@ -169,6 +169,8 @@ export interface TaskContext {
   getWorkspaceName(): Promise<string>;
 
   getInitiatorCredentials(): Promise<BackstageCredentials>;
+
+  enrichSecrets?(secrets: TaskSecrets): void;
 }
 
 /**

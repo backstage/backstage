@@ -53,6 +53,16 @@ describe('NunjucksWorkflowRunner', () => {
 
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
+      scaffolder: {
+        defaultEnvironment: {
+          parameters: {
+            region: 'us-east-1',
+          },
+          secrets: {
+            AWS_ACCESS_KEY: 'test-secret-value',
+          },
+        },
+      },
       integrations: {
         github: [{ host: 'github.com', token: 'token' }],
       },
@@ -90,6 +100,9 @@ describe('NunjucksWorkflowRunner', () => {
     cancelSignal: new AbortController().signal,
     getWorkspaceName: () => Promise.resolve('test-workspace'),
     getInitiatorCredentials: () => Promise.resolve(credentials),
+    enrichSecrets(newSecrets: TaskSecrets) {
+      this.secrets = { ...newSecrets, ...this.secrets };
+    },
   });
 
   function expectTaskLog(message: string) {
@@ -212,12 +225,26 @@ describe('NunjucksWorkflowRunner', () => {
       { result: AuthorizeResult.ALLOW },
     ]);
 
+    const config = new ConfigReader({
+      scaffolder: {
+        defaultEnvironment: {
+          parameters: {
+            region: 'us-east-1',
+          },
+          secrets: {
+            AWS_ACCESS_KEY: 'test-secret-value',
+          },
+        },
+      },
+    });
+
     runner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
       workingDirectory: mockDir.path,
       logger,
       permissions: mockedPermissionApi,
+      config,
     });
   });
 
@@ -494,6 +521,7 @@ describe('NunjucksWorkflowRunner', () => {
             action: 'jest-mock-action',
             input: {
               foo: '${{parameters.input | lower }}',
+              region: '${{environment.region}}',
             },
           },
         ],
@@ -505,7 +533,9 @@ describe('NunjucksWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { foo: 'backstage' } }),
+        expect.objectContaining({
+          input: { foo: 'backstage', region: 'us-east-1' },
+        }),
       );
     });
 
@@ -1083,7 +1113,9 @@ describe('NunjucksWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ secrets: { foo: 'bar' } }),
+        expect.objectContaining({
+          secrets: { foo: 'bar', AWS_ACCESS_KEY: 'test-secret-value' },
+        }),
       );
     });
 
@@ -1097,6 +1129,7 @@ describe('NunjucksWorkflowRunner', () => {
               action: 'jest-mock-action',
               input: {
                 b: '${{ secrets.foo }}',
+                aws_key: '${{ secrets.AWS_ACCESS_KEY }}',
               },
             },
           ],
@@ -1107,7 +1140,36 @@ describe('NunjucksWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { b: 'bar' } }),
+        expect.objectContaining({
+          input: { b: 'bar', aws_key: 'test-secret-value' },
+        }),
+      );
+    });
+
+    it('should give priority to task secrets over default ones', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-mock-action',
+              input: {
+                b: '${{ secrets.foo }}',
+                aws_key: '${{ secrets.AWS_ACCESS_KEY }}',
+              },
+            },
+          ],
+        },
+        { foo: 'bar', AWS_ACCESS_KEY: 'another-value-from-task' },
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { b: 'bar', aws_key: 'another-value-from-task' },
+        }),
       );
     });
 

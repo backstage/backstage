@@ -323,6 +323,7 @@ export async function createRouter(
     auditor,
     workingDirectory,
     permissions,
+    config,
     ...templateExtensions,
   });
 

@@ -57,6 +57,7 @@ export class TaskManager implements TaskContext {
   private isDone = false;
 
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
+  private additionalSecrets: TaskSecrets = {};
 
   static create(
     task: CurrentClaimedTask,
@@ -108,8 +109,11 @@ export class TaskManager implements TaskContext {
     return this.signal;
   }
 
-  get secrets() {
-    return this.task.secrets;
+  get secrets(): TaskSecrets | undefined {
+    return {
+      ...this.additionalSecrets,
+      ...this.task.secrets,
+    };
   }
 
   get createdBy() {
@@ -215,6 +219,10 @@ export class TaskManager implements TaskContext {
       );
     }
     return this.auth.getNoneCredentials();
+  }
+
+  enrichSecrets(secrets: TaskSecrets): void {
+    this.additionalSecrets = secrets;
   }
 }
 

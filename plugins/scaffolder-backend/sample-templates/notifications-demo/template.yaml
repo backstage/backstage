@@ -67,7 +67,7 @@ spec:
         recipients: ${{ parameters.recipients }}
         entityRefs: ${{ parameters.entityRefs }}
         title: ${{ parameters.title }}
-        description: ${{ parameters.description }}
+        info: ${{ parameters.description }}
         link: ${{ parameters.link }}
         severity: ${{ parameters.severity }}
         topic: ${{ parameters.topic }}
