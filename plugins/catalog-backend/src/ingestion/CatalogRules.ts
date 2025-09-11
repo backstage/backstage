@@ -19,6 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import path from 'path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { minimatch } from 'minimatch';
+import { z } from 'zod';
 
 /**
  * Rules to apply to catalog entities.
@@ -46,6 +47,16 @@ type CatalogRuleAllow = {
 export type CatalogRulesEnforcer = {
   isAllowed(entity: Entity, location: LocationSpec): boolean;
 };
+
+const allowRuleParser = z.array(
+  z
+    .object({
+      kind: z.string(),
+      'spec.type': z.string().optional(),
+    })
+    .or(z.string())
+    .transform(val => (typeof val === 'string' ? { kind: val } : val)),
+);
 
 /**
  * Implements the default catalog rule set, consuming the config keys
@@ -111,14 +122,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       const globalRules = config
         .getConfigArray('catalog.rules')
         .map(ruleConf => ({
-          allow: ruleConf
-            .get<Array<string | CatalogRuleAllow>>('allow')
-            .map(kindOrObject => {
-              if (typeof kindOrObject === 'string') {
-                return { kind: kindOrObject };
-              }
-              return kindOrObject;
-            }),
+          allow: allowRuleParser.parse(ruleConf.get('allow')),
           locations: ruleConf
             .getOptionalConfigArray('locations')
             ?.map(locationConfig => {
