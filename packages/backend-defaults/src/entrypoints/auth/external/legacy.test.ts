@@ -235,35 +235,5 @@ describe('LegacyTokenHandler', () => {
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid type in config for key 'subject' in 'mock-config', got number, wanted string"`,
     );
-
-    // // old style add
-    // expect(() =>
-    //   handler.addOld(new ConfigReader({ secret: 'b2s=' })),
-    // ).not.toThrow();
-    // expect(() =>
-    //   handler.addOld(new ConfigReader({ _missingsecret: true })),
-    // ).toThrowErrorMatchingInlineSnapshot(
-    //   `"Missing required config value at 'secret' in 'mock-config'"`,
-    // );
-    // expect(() =>
-    //   handler.addOld(new ConfigReader({ secret: '' })),
-    // ).toThrowErrorMatchingInlineSnapshot(
-    //   `"Invalid type in config for key 'secret' in 'mock-config', got empty-string, wanted string"`,
-    // );
-    // expect(() =>
-    //   handler.addOld(new ConfigReader({ secret: 'has spaces' })),
-    // ).toThrowErrorMatchingInlineSnapshot(
-    //   `"Illegal secret, must be a valid base64 string"`,
-    // );
-    // expect(() =>
-    //   handler.addOld(new ConfigReader({ secret: 'hasnewline\n' })),
-    // ).toThrowErrorMatchingInlineSnapshot(
-    //   `"Illegal secret, must be a valid base64 string"`,
-    // );
-    // expect(() =>
-    //   handler.addOld(new ConfigReader({ secret: 3 })),
-    // ).toThrowErrorMatchingInlineSnapshot(
-    //   `"Invalid type in config for key 'secret' in 'mock-config', got number, wanted string"`,
-    // );
   });
 });
