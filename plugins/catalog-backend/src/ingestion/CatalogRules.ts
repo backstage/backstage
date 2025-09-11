@@ -83,7 +83,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
    *   - allow: [Component, API]
    *   - allow:
    *     - kind: Resource
-   *       type: database
+   *       'spec.type': database
    *   - allow: [Template]
    *     locations:
    *       - type: url

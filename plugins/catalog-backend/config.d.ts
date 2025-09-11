@@ -39,8 +39,8 @@ export interface Config {
        *
        * E.g. ["Component", "API", "Template", "Location"]
        *
-       * You can also specify the type of the entity by using an object with `kind` and optional `type` properties.
-       * E.g. [{ kind: "Component", type: "service" }]
+       * You can also specify the type of the entity by using an object with `kind` and optional `spec.type` properties.
+       * E.g. [{ kind: "Component", 'spec.type': "service" }]
        */
       allow: Array<string | { kind: string; 'spec.type'?: string }>;
       /**
