@@ -16,10 +16,18 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
 
 /** @internal */
 export const entityContentTitleDataRef = createExtensionDataRef<string>().with({
   id: 'catalog.entity-content-title',
+});
+
+/** @internal */
+export const entityContentIconDataRef = createExtensionDataRef<
+  string | ReactElement
+>().with({
+  id: 'catalog.entity-content-icon',
 });
 
 /** @internal */
