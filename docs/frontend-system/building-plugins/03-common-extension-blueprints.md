@@ -73,10 +73,10 @@ Avoid using `convertLegacyEntityCardExtension` from `@backstage/core-compat-api`
 
 Creates entity content to be displayed on the entity pages of the catalog plugin. Exported as `EntityContentBlueprint`.
 
-Supports optional params such as `group` and `icon` in addition to `path`, `title`, `loader`, `filter`, and `routeRef`:
+Supports optional params such as `group` and `icon`to:
 
 - group: string | false — associates the content with a tab group on the entity page (for example "overview", "quality", "deployment", or any custom id). You can override or disable this per-installation via app-config using `app.extensions[...].config.group`, where `false` removes the grouping.
-- icon: string | ReactElement — sets the tab icon. Note: when providing a string, the icon is looked up via the app's IconsApi; make sure icon bundles are enabled/installed in your app (see the Icons blueprint reference above) so that the icon id you use is available.
+- icon: string — sets the tab icon. Note: when providing a string, the icon is looked up via the app's IconsApi; make sure icon bundles are enabled/installed in your app (see the Icons blueprint reference above) so that the icon id you use is available.
 
 To render icons in the entity page tabs, the page must also have icons enabled via app configuration. Set `showIcons: true` on the catalog entity page config (created via `page:catalog/entity`). Example:
 
