@@ -18,14 +18,36 @@
 
 IMPLEMENTATION PLAN:
 
-- create a utility that converts the MUI theme palette into printed CSS variables
-populating the variables in packages/ui/src/css/core.css
-- the conversion utility will be created in an adjacent `convertMuiToBuiTheme` file, which defines a `convertMuiToBuiTheme` function that accepts a MUI theme instance and returns CSS in text format
-- create tests for the conversion utility
-- Create a page that shows the generated CSS variables and allows the user to copy them
-- The page should show coverted CSS variables for all installed themes in the app, which can be acquired via the AppThemeApi, defined at packages/core-plugin-api/src/apis/definitions/AppThemeApi.ts
-- The AppThemeApi can be accessed via the useApi(appThemeApiRef) hook
-- The app themes only provide a `Provider` component that in turn provides the MUI theme. The theme can be accessed by wrapping the component in the theme's `Provider` component and then using the `useTheme` hook from MUI
+- Create a converter utility that maps a MUI v5 `Theme` to BUI CSS variables,
+  covering palette, typography, spacing, and shape tokens to match
+  `packages/ui/src/css/core.css`.
+- Place it in an adjacent `convertMuiToBuiTheme.ts` file exporting
+  `convertMuiToBuiTheme(theme: Theme, options?): string`, returning
+  deterministic CSS text.
+- Scope output blocks as:
+  - `:root { ... }` for light themes
+  - `[data-theme-mode='dark'] { ... }` for dark themes
+  Optionally prefix by theme id (e.g. `[data-app-theme='<id>']`) so multiple
+  theme blocks can coexist without conflicts.
+- Do not modify `packages/ui/src/css/core.css`; generate CSS for copy/download
+  only.
+- Define a mapping from MUI fields to `--bui-*` tokens with sensible fallbacks
+  aligning with core defaults. Handle success/warning/error/background/text
+  surfaces, borders, and link/hover states.
+- Add tests for light/dark and fallback behavior using MUI `createTheme` and
+  snapshot the generated CSS.
+- Build the page to list all installed themes via `useApi(appThemeApiRef)`,
+  render a minimal child under each theme `Provider`, and read `useTheme()` to
+  get the runtime theme instance. Provide Copy and Download actions and an
+  optional live preview applying the generated variables.
+- Performance: memoize generated CSS by theme id and regenerate when the
+  installed theme list changes. Observing `activeThemeId$()` is optional unless
+  previewing the active theme.
+
+REQUIREMENTS:
+
+- No changes can be made outside the plugins/bui-themer/src directory
+- Only components from the `@backstage/ui` package at `packages/ui` can be used
 
 */
 
