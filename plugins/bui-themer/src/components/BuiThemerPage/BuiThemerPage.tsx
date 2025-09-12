@@ -13,4 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ExampleComponent } from './ExampleComponent';
+
+export function BuiThemerPage() {
+  return <div>TODO</div>;
+}

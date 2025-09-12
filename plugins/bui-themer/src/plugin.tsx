@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  convertLegacyRouteRef,
+  convertLegacyRouteRefs,
+} from '@backstage/core-compat-api';
 import {
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
-
+import {
+  createFrontendPlugin,
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from './routes';
 
+// Old system
 export const buiThemerPlugin = createPlugin({
   id: 'bui-themer',
   routes: {
@@ -31,7 +40,25 @@ export const BuiThemerPage = buiThemerPlugin.provide(
   createRoutableExtension({
     name: 'BuiThemerPage',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/BuiThemerPage').then(m => m.BuiThemerPage),
     mountPoint: rootRouteRef,
   }),
 );
+
+// New system
+export default createFrontendPlugin({
+  pluginId: 'bui-themer',
+  extensions: [
+    PageBlueprint.make({
+      params: {
+        path: '/bui-themer',
+        loader: () =>
+          import('./components/BuiThemerPage').then(m => <m.BuiThemerPage />),
+        routeRef: convertLegacyRouteRef(rootRouteRef),
+      },
+    }),
+  ],
+  routes: convertLegacyRouteRefs({
+    root: rootRouteRef,
+  }),
+});
