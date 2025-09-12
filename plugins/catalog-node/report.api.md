@@ -60,6 +60,7 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
+  getPriority?(): number;
 };
 
 // @public
