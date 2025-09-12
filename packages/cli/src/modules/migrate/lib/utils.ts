@@ -14,9 +14,52 @@
  * limitations under the License.
  */
 
-import ora from 'ora';
+import fs from 'fs-extra';
 import chalk from 'chalk';
+import ora from 'ora';
+import yaml from 'yaml';
+import z from 'zod';
+import { paths } from '../../../lib/paths';
 import { run } from '@backstage/cli-common';
+
+const yarnRcSchema = z.object({
+  plugins: z
+    .array(
+      z.object({
+        path: z.string(),
+      }),
+    )
+    .optional(),
+});
+
+export async function getHasYarnPlugin() {
+  const yarnRcPath = paths.resolveTargetRoot('.yarnrc.yml');
+  const yarnRcContent = await fs.readFile(yarnRcPath, 'utf-8').catch(e => {
+    if (e.code === 'ENOENT') {
+      // gracefully continue in case the file doesn't exist
+      return '';
+    }
+    throw e;
+  });
+
+  if (!yarnRcContent) {
+    return false;
+  }
+
+  const parseResult = yarnRcSchema.safeParse(yaml.parse(yarnRcContent));
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Unexpected content in .yarnrc.yml: ${parseResult.error.toString()}`,
+    );
+  }
+
+  const yarnRc = parseResult.data;
+
+  return yarnRc.plugins?.some(
+    plugin => plugin.path === '.yarn/plugins/@yarnpkg/plugin-backstage.cjs',
+  );
+}
 
 export async function runYarnInstall() {
   const spinner = ora({
@@ -30,7 +73,7 @@ export async function runYarnInstall() {
     await run(['yarn', 'install'], {
       env: {
         FORCE_COLOR: 'true',
-        // We filter out all of the npm_* environment variables that are added when
+        // We filter out all npm_* environment variables that are added when
         // executing through yarn. This works around an issue where these variables
         // incorrectly override local yarn or npm config in the project directory.
         ...Object.fromEntries(
