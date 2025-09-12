@@ -67,6 +67,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        preferProjectId: false,
       }),
     );
   });
@@ -113,6 +114,7 @@ describe('config', () => {
         includeUsersWithoutSeat: true,
         membership: undefined,
         topics: undefined,
+        preferProjectId: false,
       }),
     );
   });
@@ -159,6 +161,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        preferProjectId: false,
       }),
     );
   });
@@ -205,6 +208,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        preferProjectId: false,
       }),
     );
   });
@@ -252,6 +256,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        preferProjectId: false,
       }),
     );
   });
@@ -299,6 +304,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        preferProjectId: false,
         schedule: {
           frequency: { minutes: 30 },
           timeout: {
@@ -391,6 +397,7 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: true,
         topics: undefined,
+        preferProjectId: false,
       }),
     );
   });
@@ -437,6 +444,7 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: undefined,
         topics: undefined,
+        preferProjectId: false,
       }),
     );
   });
@@ -483,6 +491,7 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: undefined,
         topics: 'topic1',
+        preferProjectId: false,
       }),
     );
   });
@@ -529,6 +538,54 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: undefined,
         topics: 'topic1,topic2,topic3',
+        preferProjectId: false,
+      }),
+    );
+  });
+
+  it('valid config with preferProjectId', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              preferProjectId: true,
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        restrictUsersToGroup: false,
+        excludeRepos: [],
+        skipForkedRepos: false,
+        includeArchivedRepos: false,
+        includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
+        preferProjectId: true,
       }),
     );
   });

@@ -83,6 +83,8 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const topicsArray = config.getOptionalStringArray('topics');
   const topics = topicsArray?.length ? topicsArray.join(',') : undefined;
 
+  const preferProjectId = config.getOptionalBoolean('preferProjectId') ?? false;
+
   return {
     id,
     group,
@@ -104,6 +106,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     includeUsersWithoutSeat,
     membership,
     topics,
+    preferProjectId,
   };
 }
 

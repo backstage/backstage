@@ -262,6 +262,15 @@ export type GitlabProviderConfig = {
    * https://docs.gitlab.com/api/projects/#list-projects
    */
   topics?: string;
+
+  /**
+   * If true, prefer using the numeric project ID when identifying projects
+   * over the namespaced path. This can be more reliable, especially if projects
+   * are renamed or moved.
+   *
+   * Defaults to `false`.
+   */
+  preferProjectId?: boolean;
 };
 
 /**
