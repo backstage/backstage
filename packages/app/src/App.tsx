@@ -73,6 +73,7 @@ import {
 } from '@backstage/plugin-notifications';
 import { CustomizableHomePage } from './components/home/CustomizableHomePage';
 import { HomePage } from './components/home/HomePage';
+import { BuiThemerPage } from '@backstage/plugin-bui-themer';
 
 const app = createApp({
   apis,
@@ -208,6 +209,7 @@ const routes = (
       {customDevToolsPage}
     </Route>
     <Route path="/notifications" element={<NotificationsPage />} />
+    <Route path="/bui-themer" element={<BuiThemerPage />} />
   </FlatRoutes>
 );
 
