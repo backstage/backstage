@@ -46,6 +46,7 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
     "@backstage/plugin-auth-react": "workspace:^",
+    "@backstage/plugin-bui-themer": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-graph": "workspace:^",
