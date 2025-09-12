@@ -4,6 +4,6 @@
 
 | Name                           | Location     | Severity |
 | :----------------------------- | :----------- | :------- |
-| @backstage/plugin-catalog-node | package.json | error    |
-| @backstage/plugin-auth-node    | package.json | error    |
+| @backstage/plugin-catalog-node | plugins/catalog-backend-module-unprocessed/package.json | error    |
+| @backstage/plugin-auth-node    | plugins/catalog-backend-module-unprocessed/package.json | error    |
 

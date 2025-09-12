@@ -4,5 +4,5 @@
 
 | Name | Location     | Severity |
 | :- | :----------- | :------- |
-| yn | package.json | error    |
+| yn | plugins/permission-backend/package.json | error    |
 
