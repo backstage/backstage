@@ -63,11 +63,11 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     private readonly integration: BitbucketCloudIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const { host, username, appPassword } = integration.config;
+    const { host, username, appPassword, token } = integration.config;
 
-    if (username && !appPassword) {
+    if (username && !appPassword && !token) {
       throw new Error(
-        `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required appPassword.`,
+        `Bitbucket Cloud integration for '${host}' has configured a username but is missing both token and appPassword.`,
       );
     }
   }
@@ -223,9 +223,14 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
   }
 
   toString() {
-    const { host, username, appPassword } = this.integration.config;
-    const authed = Boolean(username && appPassword);
-    return `bitbucketCloud{host=${host},authed=${authed}}`;
+    const { host, token, username, appPassword } = this.integration.config;
+    const usingToken = Boolean(token);
+    const usingAppPassword = Boolean(username && appPassword);
+
+    return `bitbucketCloud{host=${host},authed=${
+      // eslint-disable-next-line no-nested-ternary
+      usingToken ? 'token' : usingAppPassword ? 'appPassword' : 'false'
+    }}`;
   }
 
   private async getLastCommitShortHash(url: string): Promise<string> {

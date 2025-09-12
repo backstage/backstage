@@ -62,21 +62,30 @@ export type BitbucketCloudIntegrationConfig = {
  * @param config - The config object of a single integration
  * @public
  */
+
 export function readBitbucketCloudIntegrationConfig(
   config: Config,
 ): BitbucketCloudIntegrationConfig {
-  const host = BITBUCKET_CLOUD_HOST;
-  const apiBaseUrl = BITBUCKET_CLOUD_API_BASE_URL;
-  // If config is provided, we assume authenticated access is desired
-  // (as the anonymous one is provided by default).
-  const username = config.getString('username');
-  const appPassword = config.getString('appPassword')?.trim();
+  const host = config.getString('host') ?? BITBUCKET_CLOUD_HOST;
+  const apiBaseUrl =
+    config.getOptionalString('apiBaseUrl') ?? BITBUCKET_CLOUD_API_BASE_URL;
+
+  const username = config.getOptionalString('username');
+  const appPassword = config.getOptionalString('appPassword')?.trim();
+  const token = config.getOptionalString('token');
+
+  if (!token && (!username || !appPassword)) {
+    throw new Error(
+      `Bitbucket Cloud integration for '${host}' must configure either a token or both username and appPassword.`,
+    );
+  }
 
   return {
     host,
     apiBaseUrl,
     username,
     appPassword,
+    token,
     commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }

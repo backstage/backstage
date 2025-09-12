@@ -56,6 +56,7 @@ describe('readBitbucketCloudIntegrationConfig', () => {
       buildConfig({
         username: 'u',
         appPassword: '\n\n\np',
+        host: 'bitbucket.org',
       }),
     );
     expect(output).toEqual({
@@ -70,6 +71,7 @@ describe('readBitbucketCloudIntegrationConfig', () => {
     const valid: any = {
       username: 'u',
       appPassword: 'p',
+      host: 'bitbucket.org',
     };
     expect(() =>
       readBitbucketCloudIntegrationConfig(
@@ -115,6 +117,7 @@ describe('readBitbucketCloudIntegrationConfigs', () => {
         {
           username: 'u',
           appPassword: 'p',
+          host: 'bitbucket.org',
         },
       ]),
     );
