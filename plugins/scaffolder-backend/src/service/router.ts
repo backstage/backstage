@@ -26,6 +26,7 @@ import {
   resolveSafeChildPath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
+import { Schema } from 'jsonschema';
 import {
   CompoundEntityRef,
   Entity,
@@ -131,6 +132,8 @@ import {
 } from './rules';
 
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
+import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import { isObject } from 'lodash';
 
 /**
  * RouterOptions
@@ -163,6 +166,7 @@ export interface RouterOptions {
   events?: EventsService;
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
+  actionsRegistry: ActionsService;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -198,7 +202,7 @@ export async function createRouter(
     config,
     database,
     catalog,
-    actions,
+    actions = [],
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
@@ -210,6 +214,7 @@ export async function createRouter(
     auth,
     httpAuth,
     auditor,
+    actionsRegistry,
   } = options;
 
   const concurrentTasksLimit =
@@ -301,7 +306,44 @@ export async function createRouter(
     workers.push(worker);
   }
 
-  actions?.forEach(action => actionRegistry.register(action));
+  // TODO(blam): it's a little unfortunate that you have to restart the scaffolder
+  // backend in order to pick these up. We should really just make `ActionsRegistry.get()` async
+  // and then we can move this logic into the there instead.
+  const { actions: distributedActions } = await actionsRegistry.list({
+    credentials: await auth.getOwnServiceCredentials(),
+  });
+
+  for (const action of actions) {
+    actionRegistry.register(action);
+  }
+
+  for (const action of distributedActions) {
+    actionRegistry.register({
+      id: action.id,
+      description: action.description,
+      examples: [],
+      supportsDryRun:
+        action.attributes?.readOnly === true &&
+        action.attributes?.destructive === false,
+      handler: async ctx => {
+        const { output } = await actionsRegistry.invoke({
+          id: action.id,
+          input: ctx.input,
+          credentials: await ctx.getInitiatorCredentials(),
+        });
+
+        if (isObject(output)) {
+          for (const [key, value] of Object.entries(output)) {
+            ctx.output(key as keyof typeof output, value);
+          }
+        }
+      },
+      schema: {
+        input: action.schema.input as Schema,
+        output: action.schema.output as Schema,
+      },
+    });
+  }
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
 
