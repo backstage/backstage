@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-/** @alpha */
-export type BackendFeatureMeta =
-  | {
-      type: 'plugin';
-      pluginId: string;
-    }
-  | {
-      type: 'module';
-      pluginId: string;
-      moduleId: string;
-    };
+/** @public */
+export interface InstanceMetadataServicePluginInfo {
+  pluginId: string;
+  modules: {
+    moduleId: string;
+  }[];
+}
 
-/** @alpha */
+/** @public */
 export interface InstanceMetadataService {
-  getInstalledFeatures: () => BackendFeatureMeta[];
+  getInstalledPlugins: () => readonly InstanceMetadataServicePluginInfo[];
 }
