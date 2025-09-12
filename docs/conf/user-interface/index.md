@@ -114,11 +114,161 @@ Backstage UI is using light by default under `:root` but you can target it more 
 }
 ```
 
-### Available tokens
+### CSS variables
+
+By adjusting just a few theme variables, you can easily transform the look and feel of your Backstage instance to align with your brand identity. All colors are defined using these variables, ensuring they adapt seamlessly to both light and dark modes.
+
+We recommend starting with a core set of CSS variables to quickly achieve a branded experience. You’ll also find a complete list of available variables below, giving you full flexibility to fine-tune the design to your needs.
+
+And if you’d like to go even further, you can target specific component class names for advanced customization.
+
+| Token Name           | Description                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------- |
+| `--bui-bg`           | This is used to define the background color of your app. It will only be used once. |
+| `--bui-bg-surface-1` | We ar using this color to sit on top of `--bui-bg` mostly for `Card`, `Dialog`, ... |
+| `--bui-bg-surface-2` | This is for content inside elevated components. This colour is less common.         |
+| `--bui-bg-solid`     | This is used for main actions like primary buttons.                                 |
+| `--bui-fg-solid`     | This is for texts or icons on top of a solid backgrounds.                           |
+| `--bui-fg-primary`   | Your primary text or icon colours.                                                  |
+| `--bui-fg-secondary` | Your secondary text or icon colours.                                                |
+| `--bui-fg-link`      | Used for links.                                                                     |
+| `--bui-border`       | Main borders around surfaces like `Card`, `Dialog`, ...                             |
+| `--bui-font-regular` | The main font of your app.                                                          |
+
+<details>
+  <summary>All available CSS variables</summary>
+
+#### Base colors
+
+These colors are used for special purposes like ring, scrollbar, ...
+
+| Token Name     | Description                                                             |
+| -------------- | ----------------------------------------------------------------------- |
+| `--bui-black`  | Pure black color. This one should be the same in light and dark themes. |
+| `--bui-white`  | Pure white color. This one should be the same in light and dark themes. |
+| `--bui-gray-1` | You can use these mostly for backgrounds colors.                        |
+| `--bui-gray-2` | You can use these mostly for backgrounds colors.                        |
+| `--bui-gray-3` | You can use these mostly for backgrounds colors.                        |
+| `--bui-gray-4` | You can use these mostly for backgrounds colors.                        |
+| `--bui-gray-5` | You can use these mostly for backgrounds colors.                        |
+| `--bui-gray-6` | You can use these mostly for backgrounds colors.                        |
+| `--bui-gray-7` | You can use these mostly for backgrounds colors.                        |
+| `--bui-gray-8` | You can use these mostly for backgrounds colors.                        |
+
+#### Core background colors
+
+These colors are used for the background of your application. We are mostly using for now a single elevated background for panels. `--bui-bg` should mostly use as the main background color of your app.
+
+| Token Name                | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| `--bui-bg`                | The background color of your Backstage instance. |
+| `--bui-bg-surface-1`      | Use for any panels or elevated surfaces.         |
+| `--bui-bg-surface-2`      | Use for any panels or elevated surfaces.         |
+| `--bui-bg-solid`          | Used for solid background colors.                |
+| `--bui-bg-solid-hover`    | Used for solid background colors when hovered.   |
+| `--bui-bg-solid-pressed`  | Used for solid background colors when pressed.   |
+| `--bui-bg-solid-disabled` | Used for solid background colors when disabled.  |
+| `--bui-bg-tint`           | Used for tint background colors.                 |
+| `--bui-bg-tint-hover`     | Used for tint background colors when hovered.    |
+| `--bui-bg-tint-focus`     | Used for tint background colors when active.     |
+| `--bui-bg-tint-disabled`  | Used for tint background colors when disabled.   |
+| `--bui-bg-danger`         | Used to show errors information.                 |
+| `--bui-bg-warning`        | Used to show warnings information.               |
+| `--bui-bg-success`        | Used to show success information.                |
+
+#### Foreground colors
+
+Foreground colours are meant to work in pair with a background colours. Typeically this would work for icons, texts, shapes, ... Use a matching name to know what foreground color to use. These colors are prefixed with `fg` to make it easier to identify.
+
+| Token Name               | Description                                                       |
+| ------------------------ | ----------------------------------------------------------------- |
+| `--bui-fg-primary`       | It should be used on top of main background surfaces.             |
+| `--bui-fg-secondary`     | It should be used on top of main background surfaces.             |
+| `--bui-fg-link`          | It should be used on top of main background surfaces.             |
+| `--bui-fg-link-hover`    | It should be used on top of main background surfaces.             |
+| `--bui-fg-disabled`      | It should be used on top of main background surfaces.             |
+| `--bui-fg-solid`         | It should be used on top of solid background colors.              |
+| `--bui-fg-tint`          | It should be used on top of tint background colors.               |
+| `--bui-fg-tint-disabled` | It should be used on top of tint background colors when disabled. |
+| `--bui-fg-danger`        | It should be used on top of danger background colors.             |
+| `--bui-fg-warning`       | It should be used on top of warning background colors.            |
+| `--bui-fg-success`       | It should be used on top of success background colors.            |
+
+#### Border colors
+
+These border colors are mostly meant to be used as borders on top of any components with low contrast to help as a separator with the different background colors.
+
+| Token Name              | Description                                         |
+| ----------------------- | --------------------------------------------------- |
+| `--bui-border`          | It should be used on top of `--bui-bg-surface-1`.   |
+| `--bui-border-hover`    | Used when the component is interactive and hovered. |
+| `--bui-border-pressed`  | Used when the component is interactive and hovered. |
+| `--bui-border-disabled` | Used when the component is disabled.                |
+| `--bui-border-danger`   | It should be used on top of `--bui-bg-danger`.      |
+| `--bui-border-warning`  | It should be used on top of `--bui-bg-warning`.     |
+| `--bui-border-success`  | It should be used on top of `--bui-bg-success`.     |
+
+#### Special colors
+
+These colors are used for special purposes like ring, scrollbar, ...
+
+| Token Name              | Description                       |
+| ----------------------- | --------------------------------- |
+| `--bui-ring`            | The color of the ring.            |
+| `--bui-scrollbar`       | The color of the scrollbar.       |
+| `--bui-scrollbar-thumb` | The color of the scrollbar thumb. |
+
+#### Font families
+
+We have two fonts that we use across Backstage UI. The first one is the sans-serif font that we use for the body of the application. The second one is the monospace font that we use for code blocks and tables.
+
+| Token Name           | Description                        |
+| -------------------- | ---------------------------------- |
+| `--bui-font-regular` | The sans-serif font for the theme. |
+| `--bui-font-mono`    | The monospace font for the theme.  |
+
+#### Font weights
+
+We have two font weights that we use across Backstage UI. Regular or Bold.
+
+| Token Name                  | Description                            |
+| --------------------------- | -------------------------------------- |
+| `--bui-font-weight-regular` | The regular font weight for the theme. |
+| `--bui-font-weight-bold`    | The bold font weight for the theme.    |
+
+#### Spacing
+
+We built a spacing system based on a single value `--bui-space`. This value is used to calculate the spacing for all the components. By default if you would like to increase or decrease the spacing between your components you can do it simply by updating `--bui-space` and it will apply to all spacing values.
+
+`--bui-space` is not used directly in any components but serve as an easy way to calculate the other values.
+
+| Token Name    | Description                                                       |
+| ------------- | ----------------------------------------------------------------- |
+| `--bui-space` | The base unit for the spacing system. Default value is `0.25rem.` |
+
+#### Radius
+
+We use a radius system to make sure that the components have a consistent look and feel.
+
+| Token Name          | Description                                               |
+| ------------------- | --------------------------------------------------------- |
+| `--bui-radius-1`    | The radius of the component. Default value is `0.125rem`. |
+| `--bui-radius-2`    | The radius of the component. Default value is `0.25rem`.  |
+| `--bui-radius-3`    | The radius of the component. Default value is `0.5rem`.   |
+| `--bui-radius-4`    | The radius of the component. Default value is `0.75rem`.  |
+| `--bui-radius-5`    | The radius of the component. Default value is `1rem`.     |
+| `--bui-radius-6`    | The radius of the component. Default value is `1.25rem`.  |
+| `--bui-radius-full` | The radius of the component. Default value is `9999px`.   |
+
+</details>
 
 ### Component class names
 
-### Custom font
+All Backstage UI components come with a set of CSS classes that you can use to style them. To make it easier to identify the class name you can use, we use a specific structure for the class names.
+
+![classname-structure](../../assets/user-interface/css-classname-structure.png)
+
+Every component has a unique prefix `.bui-` followed by the component name. Component props are represented using the `data-` attribute. That way, class names are easily identifiable.
 
 ## Create a theme for MUI (Legacy)
 
