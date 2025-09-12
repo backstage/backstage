@@ -26,7 +26,7 @@ import { Stream, Readable } from 'stream';
 
 import {
   getFileTreeRecursively,
-  getHeadersForFileExtension,
+  getHeadersForFilename,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import {
@@ -243,8 +243,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
       const filePath = decodeURI(req.path.replace(/^\//, ''));
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
-      const fileExtension = path.extname(filePath);
-      const responseHeaders = getHeadersForFileExtension(fileExtension);
+      const responseHeaders = getHeadersForFilename(filePath);
 
       const downloadResponse = await this.storageClient.download(
         this.containerName,
