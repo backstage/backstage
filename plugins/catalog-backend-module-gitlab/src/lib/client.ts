@@ -341,8 +341,9 @@ export class GitLabClient {
 
   /**
    * General existence check.
+   * @see {@link https://docs.gitlab.com/api/repository_files/#get-file-from-repository | GitLab Repository Files API}
    *
-   * @param projectPath - The path to the project
+   * @param projectPath - The path to the project, either the numeric ID or the namespaced path. Prefer the numeric ID when possible.
    * @param branch - The branch used to search
    * @param filePath - The path to the file
    */
