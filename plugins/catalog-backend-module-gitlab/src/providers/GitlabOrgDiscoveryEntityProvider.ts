@@ -199,9 +199,13 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     this.groupNameTransformer =
       options.groupNameTransformer ?? defaultGroupNameTransformer;
 
-    this.groupPatterns = Array.isArray(this.config.groupPattern)
-      ? this.config.groupPattern
-      : [this.config.groupPattern];
+    if (Array.isArray(this.config.groupPattern)) {
+      this.groupPatterns = this.config.groupPattern;
+    } else if (this.config.groupPattern) {
+      this.groupPatterns = [this.config.groupPattern];
+    } else {
+      this.groupPatterns = [new RegExp('[\\s\\S]*')];
+    }
 
     this.gitLabClient = new GitLabClient({
       config: this.integration.config,
