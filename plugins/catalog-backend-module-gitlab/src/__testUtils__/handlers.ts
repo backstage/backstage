@@ -266,24 +266,34 @@ const httpProjectFindByIdDynamic = all_projects_response.map(project => {
     return res(ctx.json(all_projects_response.find(p => p.id === project.id)));
   });
 });
-const httpProjectCatalogDynamic = all_projects_response.map(project => {
-  const path: string = project.path_with_namespace
-    ? project.path_with_namespace!.replace(/\//g, '%2F')
-    : `${project.path_with_namespace}%2F${project.name}`;
 
-  return rest.head(
-    `${apiBaseUrl}/projects/${path}/repository/files/catalog-info.yaml`,
-    (req, res, ctx) => {
-      const branch = req.url.searchParams.get('ref');
-      if (
-        branch === project.default_branch ||
-        branch === 'main' ||
-        branch === 'develop'
-      ) {
-        return res(ctx.status(200));
-      }
-      return res(ctx.status(404, 'Not Found'));
-    },
+/**
+ * Checks for both project id and namespaced path, as these can both be used for the :id segment in Gitlab API:
+ * https://docs.gitlab.com/api/repository_files/#get-file-from-repository
+ */
+const httpProjectCatalogDynamic = all_projects_response.flatMap(project => {
+  const paths: string[] = [
+    project.id.toString(),
+    project.path_with_namespace ?? '',
+  ];
+
+  return paths.map(path =>
+    rest.head(
+      `${apiBaseUrl}/projects/${encodeURIComponent(
+        path,
+      )}/repository/files/catalog-info.yaml`,
+      (req, res, ctx) => {
+        const branch = req.url.searchParams.get('ref');
+        if (
+          branch === project.default_branch ||
+          branch === 'main' ||
+          branch === 'develop'
+        ) {
+          return res(ctx.status(200));
+        }
+        return res(ctx.status(404, 'Not Found'));
+      },
+    ),
   );
 });
 

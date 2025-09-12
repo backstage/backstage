@@ -531,7 +531,12 @@ describe('hasFile', () => {
     });
   });
 
-  it('should find catalog file', async () => {
+  it('should find catalog file by stringified project id', async () => {
+    const hasFile = await client.hasFile('1', 'main', 'catalog-info.yaml');
+    expect(hasFile).toBe(true);
+  });
+
+  it('should find catalog file by namespace path', async () => {
     const hasFile = await client.hasFile(
       'group1/test-repo1',
       'main',
