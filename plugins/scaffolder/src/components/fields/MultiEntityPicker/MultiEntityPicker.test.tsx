@@ -262,6 +262,71 @@ describe('<MultiEntityPicker />', () => {
     });
   });
 
+  describe('with existing form data', () => {
+    beforeEach(() => {
+      uiSchema = { 'ui:options': {} };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData: ['group:default/team-a'],
+      } as unknown as FieldProps;
+    });
+
+    it('preserves existing data on blur', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
+    });
+
+    it('preserves existing data on value create', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
+    });
+
+    it('preserves existing data on selecting an existing option', async () => {
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.mouseDown(input);
+      const optionA = screen.getByText('squad-b');
+      await userEvent.click(optionA as HTMLElement);
+
+      expect(onChange).toHaveBeenCalledWith([
+        'group:default/team-a',
+        'group:default/squad-b',
+      ]);
+    });
+  });
+
   describe('uses full entity ref', () => {
     beforeEach(() => {
       uiSchema = {
