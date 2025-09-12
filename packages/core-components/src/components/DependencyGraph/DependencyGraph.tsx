@@ -158,6 +158,10 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    */
   edgeWeight?: number;
   /**
+   * Custom edge rendering component
+   */
+  renderEdge?: Types.RenderEdgeFunction<EdgeData>;
+  /**
    * Custom node rendering component
    */
   renderNode?: Types.RenderNodeFunction<NodeData>;
@@ -238,6 +242,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     labelOffset = 10,
     edgeRanks = 1,
     edgeWeight = 1,
+    renderEdge,
     renderLabel,
     defs,
     zoom = 'enabled',
@@ -504,6 +509,8 @@ export function DependencyGraph<NodeData, EdgeData>(
               {graphEdges.map(e => {
                 const edge = graph.current.edge(e) as GraphEdge<EdgeData>;
                 if (!edge) return null;
+                if (renderEdge) return renderEdge({ edge, id: e });
+
                 return (
                   <Edge
                     key={`${e.v}-${e.w}`}
