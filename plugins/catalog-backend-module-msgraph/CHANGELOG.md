@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.8.0-next.3
+
+### Patch Changes
+
+- 7597781: Ensure that msgraph parent group stays same in case the group has multiple parents
+- Updated dependencies
+  - @backstage/config@1.3.3
+
 ## 0.8.0-next.2
 
 ### Patch Changes

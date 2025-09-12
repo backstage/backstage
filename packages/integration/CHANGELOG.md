@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 1.18.0-next.1
+
+### Patch Changes
+
+- 56897d7: Fixes issue with Github credentials provider which fails to match organization name if using allowedInstallationOwners
+- Updated dependencies
+  - @backstage/config@1.3.3
+
 ## 1.18.0-next.0
 
 ### Minor Changes

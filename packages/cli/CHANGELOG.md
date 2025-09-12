@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.34.2-next.3
+
+### Patch Changes
+
+- fffd434: Disallow import fallback of critical shared dependencies in module federation.
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.1
+  - @backstage/cli-node@0.2.14
+  - @backstage/config@1.3.3
+  - @backstage/release-manifests@0.0.13
+
 ## 0.34.2-next.2
 
 ### Patch Changes

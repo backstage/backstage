@@ -1,5 +1,20 @@
 # @backstage/plugin-app
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 99790db: Add implementation of OpenShift authentication provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/frontend-plugin-api@0.12.0-next.1
+  - @backstage/core-components@0.17.6-next.2
+  - @backstage/integration-react@1.2.10-next.1
+  - @backstage/plugin-permission-react@0.4.37-next.0
+
 ## 0.2.1-next.0
 
 ### Patch Changes

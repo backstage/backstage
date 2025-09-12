@@ -1,5 +1,17 @@
 # @backstage/core-app-api
 
+## 1.19.0-next.0
+
+### Minor Changes
+
+- 3fca906: Add `OpenShiftAuth` helper to create default OAuth flow for OpenShift.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/config@1.3.3
+
 ## 1.18.0
 
 ### Minor Changes

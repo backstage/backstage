@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.0-next.3
+
+### Patch Changes
+
+- 79ff318: Removed the deprecation warning when not passing an explicit type to `EntityCardBlueprint`. Omitting the type is now intended, allowing the layout to pick the default type instead, typically `content`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/frontend-plugin-api@0.12.0-next.1
+  - @backstage/core-components@0.17.6-next.2
+  - @backstage/core-compat-api@0.5.2-next.3
+  - @backstage/integration-react@1.2.10-next.1
+  - @backstage/plugin-permission-react@0.4.37-next.0
+  - @backstage/frontend-test-utils@0.3.6-next.1
+
 ## 1.21.0-next.2
 
 ### Minor Changes

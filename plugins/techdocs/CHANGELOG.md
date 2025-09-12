@@ -1,5 +1,29 @@
 # @backstage/plugin-techdocs
 
+## 1.15.0-next.3
+
+### Minor Changes
+
+- a0b604c: Adding redirect handling for TechDocs URLs that reference entities that now reference an external entity for TechDocs. Including tests and documentation.
+
+### Patch Changes
+
+- 313cec7: Updated dependency `dompurify` to `^3.2.4`.
+- 8d18d23: TechDocs page titles have been improved, especially for deeply nested pages.
+- 4ce5831: Support Techdocs redirect with dompurify 3.2.6+
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.3.3-next.1
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/integration@1.18.0-next.1
+  - @backstage/frontend-plugin-api@0.12.0-next.1
+  - @backstage/plugin-catalog-react@1.21.0-next.3
+  - @backstage/core-components@0.17.6-next.2
+  - @backstage/core-compat-api@0.5.2-next.3
+  - @backstage/integration-react@1.2.10-next.1
+  - @backstage/plugin-auth-react@0.1.19-next.2
+  - @backstage/plugin-search-react@1.9.4-next.1
+  - @backstage/config@1.3.3
+
 ## 1.14.2-next.2
 
 ### Patch Changes

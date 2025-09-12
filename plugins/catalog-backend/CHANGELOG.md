@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend
 
+## 3.0.2-next.2
+
+### Patch Changes
+
+- e934a27: Updating `catalog:get-catalog-entity` action to be `readOnly` and non destructive
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.1
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/config@1.3.3
+
 ## 3.0.2-next.1
 
 ### Patch Changes

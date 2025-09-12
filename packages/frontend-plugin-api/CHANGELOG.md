@@ -1,5 +1,17 @@
 # @backstage/frontend-plugin-api
 
+## 0.12.0-next.1
+
+### Minor Changes
+
+- 894d514: Make `openshiftApiRef` available to the new frontend system.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/core-components@0.17.6-next.2
+
 ## 0.11.1-next.0
 
 ### Patch Changes
