@@ -133,7 +133,7 @@ import {
 
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
-import { isObject } from 'lodash';
+import { isPlainObject } from 'lodash';
 
 /**
  * RouterOptions
@@ -335,8 +335,8 @@ export async function createRouter(
           credentials: await ctx.getInitiatorCredentials(),
         });
 
-        if (isObject(output)) {
-          for (const [key, value] of Object.entries(output)) {
+        if (isPlainObject(output)) {
+          for (const [key, value] of Object.entries(output as JsonObject)) {
             ctx.output(key as keyof typeof output, value);
           }
         }

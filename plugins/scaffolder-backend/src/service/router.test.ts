@@ -280,7 +280,7 @@ describe('scaffolder router', () => {
       expect(response.body.length).toBe(2);
     });
 
-    it('should include actiosn from the remote actions registry', async () => {
+    it('should include actions from the remote actions registry', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       mockActionsRegistry.register({
         name: 'my-demo-action',
