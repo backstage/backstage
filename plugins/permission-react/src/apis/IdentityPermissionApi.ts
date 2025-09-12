@@ -47,10 +47,10 @@ export class IdentityPermissionApi implements PermissionApi {
   async authorize(
     request: AuthorizePermissionRequest,
   ): Promise<AuthorizePermissionResponse> {
-    const response = await this.permissionClient.authorize(
-      [request],
-      await this.identityApi.getCredentials(),
-    );
+    const { token } = await this.identityApi.getCredentials();
+    const response = await this.permissionClient.authorize([request], {
+      token,
+    });
     return response[0];
   }
 }
