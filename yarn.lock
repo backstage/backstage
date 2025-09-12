@@ -2529,6 +2529,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    express-promise-router: "npm:^4.1.0"
   languageName: unknown
   linkType: soft
 
@@ -2590,6 +2591,7 @@ __metadata:
     express-promise-router: "npm:^4.1.0"
     express-rate-limit: "npm:^7.5.0"
     fs-extra: "npm:^11.2.0"
+    get-port: "npm:^5.1.1"
     git-url-parse: "npm:^15.0.0"
     helmet: "npm:^6.0.0"
     http-errors: "npm:^2.0.0"
@@ -2624,6 +2626,7 @@ __metadata:
     winston-transport: "npm:^4.5.0"
     yauzl: "npm:^3.0.0"
     yn: "npm:^4.0.0"
+    zen-observable: "npm:^0.10.0"
     zod: "npm:^3.22.4"
     zod-to-json-schema: "npm:^3.20.4"
   peerDependencies:
@@ -2773,6 +2776,7 @@ __metadata:
     textextensions: "npm:^5.16.0"
     uuid: "npm:^11.0.0"
     yn: "npm:^4.0.0"
+    zen-observable: "npm:^0.10.0"
     zod: "npm:^3.22.4"
     zod-to-json-schema: "npm:^3.20.4"
   languageName: unknown

@@ -124,7 +124,7 @@ export interface InstanceMetadataService {
 // @alpha (undocumented)
 export const instanceMetadataServiceRef: ServiceRef<
   InstanceMetadataService,
-  'plugin',
+  'root',
   'singleton'
 >;
 
