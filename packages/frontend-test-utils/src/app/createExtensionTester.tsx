@@ -35,6 +35,8 @@ import { resolveAppNodeSpecs } from '../../../frontend-app-api/src/tree/resolveA
 import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
 import { TestApiRegistry } from '@backstage/test-utils';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 
@@ -191,16 +193,29 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
       );
     }
 
+    const collector = createErrorCollector();
+
     const tree = resolveAppTree(
       subject.id,
       resolveAppNodeSpecs({
         features: [],
         builtinExtensions: this.#extensions.map(_ => _.extension),
         parameters: readAppExtensionsConfig(this.#getConfig()),
+        collector,
       }),
+      collector,
     );
 
-    instantiateAppNodeTree(tree.root, TestApiRegistry.from());
+    instantiateAppNodeTree(tree.root, TestApiRegistry.from(), collector);
+
+    const errors = collector.collectErrors();
+    if (errors) {
+      throw new Error(
+        `Failed to resolve the extension tree: ${errors
+          .map(e => e.message)
+          .join(', ')}`,
+      );
+    }
 
     this.#tree = tree;
 

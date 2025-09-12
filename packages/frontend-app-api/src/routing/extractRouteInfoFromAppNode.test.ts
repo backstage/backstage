@@ -38,6 +38,18 @@ import { Root } from '../extensions/Root';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createRouteAliasResolver } from './RouteAliasResolver';
+import { createErrorCollector } from '../wiring/createErrorCollector';
+
+const collector = createErrorCollector();
+
+afterEach(() => {
+  const errors = collector.collectErrors();
+  if (errors) {
+    throw new Error(
+      `Unexpected errors: ${errors.map(e => e.message).join(', ')}`,
+    );
+  }
+});
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -102,10 +114,12 @@ function routeInfoFromExtensions(
       ],
       parameters: readAppExtensionsConfig(mockApis.config()),
       forbidden: new Set(['root']),
+      collector,
     }),
+    collector,
   );
 
-  instantiateAppNodeTree(tree.root, TestApiRegistry.from());
+  instantiateAppNodeTree(tree.root, TestApiRegistry.from(), collector);
 
   return extractRouteInfoFromAppNode(
     tree.root,
