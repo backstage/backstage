@@ -46,7 +46,7 @@ type Options = {
 
 /**
  * @public
- * Issues and verifies {@link https://backstage.iceio/docs/auth/service-to-service-auth | service-to-service tokens}.
+ * Issues and verifies {@link https://backstage.io/docs/auth/service-to-service-auth | service-to-service tokens}.
  */
 export interface PluginTokenHandler {
   verifyToken(
