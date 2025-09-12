@@ -544,7 +544,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   /**
    * Return the unique project identifier, preferring the numeric ID when available.
    * @param project - The GitLab project object.
-   * @param [fallback=''] - A fallback string to use if neither ID nor path_with_namespace is available.
+   * @param fallback - A fallback string to use if neither ID nor path_with_namespace is available. Defaults to an empty string.
    * @returns The project identifier as a string.
    */
   private getProjectIdentifier(
