@@ -309,6 +309,9 @@ export async function createRouter(
   // TODO(blam): it's a little unfortunate that you have to restart the scaffolder
   // backend in order to pick these up. We should really just make `ActionsRegistry.get()` async
   // and then we can move this logic into the there instead.
+  // But we can't make those changes until next major.
+  // Alternatively, we could look at setting up a periodic task that refreshes the actions registry, but
+  // not feeling that it's worth the complexity.
   const { actions: distributedActions } = await actionsRegistry.list({
     credentials: await auth.getOwnServiceCredentials(),
   });
