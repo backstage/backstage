@@ -84,9 +84,9 @@ const _default: OverridableFrontendPlugin<
         relations?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
-        unidirectional?: boolean | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
+        unidirectional?: boolean | undefined;
       } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
@@ -157,9 +157,9 @@ const _default: OverridableFrontendPlugin<
         rootEntityRefs?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
-        unidirectional?: boolean | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
+        unidirectional?: boolean | undefined;
         selectedRelations?: string[] | undefined;
         selectedKinds?: string[] | undefined;
         showFilters?: boolean | undefined;

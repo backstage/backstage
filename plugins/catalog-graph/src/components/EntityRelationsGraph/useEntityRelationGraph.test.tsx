@@ -13,22 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PropsWithChildren } from 'react';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
   RELATION_HAS_PART,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import { TestApiRegistry } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react';
 import { pick } from 'lodash';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
 import { useEntityStore as useEntityStoreMocked } from './useEntityStore';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
 jest.mock('./useEntityStore');
 
 const useEntityStore = useEntityStoreMocked as jest.Mock<
   ReturnType<typeof useEntityStoreMocked>
 >;
+
+function GraphContext(props: PropsWithChildren<{}>) {
+  return (
+    <ApiProvider
+      apis={TestApiRegistry.from([
+        catalogGraphApiRef,
+        new DefaultCatalogGraphApi(),
+      ])}
+    >
+      {props.children}
+    </ApiProvider>
+  );
+}
 
 describe('useEntityRelationGraph', () => {
   const requestEntities = jest.fn();
@@ -171,8 +188,9 @@ describe('useEntityRelationGraph', () => {
       requestEntities,
     });
 
-    const { result } = renderHook(() =>
-      useEntityRelationGraph({ rootEntityRefs: [] }),
+    const { result } = renderHook(
+      () => useEntityRelationGraph({ rootEntityRefs: [] }),
+      { wrapper: GraphContext },
     );
     const { entities, loading, error } = result.current;
 
@@ -190,8 +208,9 @@ describe('useEntityRelationGraph', () => {
       requestEntities,
     });
 
-    const { result } = renderHook(() =>
-      useEntityRelationGraph({ rootEntityRefs: [] }),
+    const { result } = renderHook(
+      () => useEntityRelationGraph({ rootEntityRefs: [] }),
+      { wrapper: GraphContext },
     );
     const { entities, loading, error } = result.current;
 
@@ -210,8 +229,9 @@ describe('useEntityRelationGraph', () => {
       requestEntities,
     });
 
-    const { result } = renderHook(() =>
-      useEntityRelationGraph({ rootEntityRefs: [] }),
+    const { result } = renderHook(
+      () => useEntityRelationGraph({ rootEntityRefs: [] }),
+      { wrapper: GraphContext },
     );
     const { entities, loading, error } = result.current;
 
@@ -222,8 +242,9 @@ describe('useEntityRelationGraph', () => {
   });
 
   test('should walk relation tree', async () => {
-    const { result, rerender } = renderHook(() =>
-      useEntityRelationGraph({ rootEntityRefs: ['b:d/c'] }),
+    const { result, rerender } = renderHook(
+      () => useEntityRelationGraph({ rootEntityRefs: ['b:d/c'] }),
+      { wrapper: GraphContext },
     );
 
     // Simulate rerendering as this is triggered automatically due to the mock
@@ -256,11 +277,13 @@ describe('useEntityRelationGraph', () => {
   });
 
   test('should limit max depth', async () => {
-    const { result, rerender } = renderHook(() =>
-      useEntityRelationGraph({
-        rootEntityRefs: ['b:d/c'],
-        filter: { maxDepth: 1 },
-      }),
+    const { result, rerender } = renderHook(
+      () =>
+        useEntityRelationGraph({
+          rootEntityRefs: ['b:d/c'],
+          filter: { maxDepth: 1 },
+        }),
+      { wrapper: GraphContext },
     );
 
     // Simulate rerendering as this is triggered automatically due to the mock
@@ -277,11 +300,13 @@ describe('useEntityRelationGraph', () => {
 
   test('should update on filter change', async () => {
     let maxDepth: number = Number.POSITIVE_INFINITY;
-    const { result, rerender } = renderHook(() =>
-      useEntityRelationGraph({
-        rootEntityRefs: ['b:d/c'],
-        filter: { maxDepth },
-      }),
+    const { result, rerender } = renderHook(
+      () =>
+        useEntityRelationGraph({
+          rootEntityRefs: ['b:d/c'],
+          filter: { maxDepth },
+        }),
+      { wrapper: GraphContext },
     );
 
     // Simulate rerendering as this is triggered automatically due to the mock
@@ -310,13 +335,15 @@ describe('useEntityRelationGraph', () => {
   });
 
   test('should filter by relation', async () => {
-    const { result, rerender } = renderHook(() =>
-      useEntityRelationGraph({
-        rootEntityRefs: ['b:d/c'],
-        filter: {
-          relations: [RELATION_HAS_PART, RELATION_PART_OF],
-        },
-      }),
+    const { result, rerender } = renderHook(
+      () =>
+        useEntityRelationGraph({
+          rootEntityRefs: ['b:d/c'],
+          filter: {
+            relations: [RELATION_HAS_PART, RELATION_PART_OF],
+          },
+        }),
+      { wrapper: GraphContext },
     );
 
     // Simulate rerendering as this is triggered automatically due to the mock
@@ -332,14 +359,16 @@ describe('useEntityRelationGraph', () => {
   });
 
   test('should filter by kind', async () => {
-    const { result, rerender } = renderHook(() =>
-      useEntityRelationGraph({
-        rootEntityRefs: ['b:d/c'],
-        filter: {
-          relations: [RELATION_OWNED_BY, RELATION_OWNER_OF],
-          kinds: ['k'],
-        },
-      }),
+    const { result, rerender } = renderHook(
+      () =>
+        useEntityRelationGraph({
+          rootEntityRefs: ['b:d/c'],
+          filter: {
+            relations: [RELATION_OWNED_BY, RELATION_OWNER_OF],
+            kinds: ['k'],
+          },
+        }),
+      { wrapper: GraphContext },
     );
 
     // Simulate rerendering as this is triggered automatically due to the mock
@@ -354,13 +383,15 @@ describe('useEntityRelationGraph', () => {
   });
 
   test('should filter by func', async () => {
-    const { result, rerender } = renderHook(() =>
-      useEntityRelationGraph({
-        rootEntityRefs: ['b:d/c'],
-        filter: {
-          entityFilter: e => e.metadata.name !== 'c2',
-        },
-      }),
+    const { result, rerender } = renderHook(
+      () =>
+        useEntityRelationGraph({
+          rootEntityRefs: ['b:d/c'],
+          filter: {
+            entityFilter: e => e.metadata.name !== 'c2',
+          },
+        }),
+      { wrapper: GraphContext },
     );
 
     // Simulate rerendering as this is triggered automatically due to the mock
@@ -376,10 +407,12 @@ describe('useEntityRelationGraph', () => {
   });
 
   test('should support multiple roots by kind', async () => {
-    const { result, rerender } = renderHook(() =>
-      useEntityRelationGraph({
-        rootEntityRefs: ['b:d/c', 'b:d/c2'],
-      }),
+    const { result, rerender } = renderHook(
+      () =>
+        useEntityRelationGraph({
+          rootEntityRefs: ['b:d/c', 'b:d/c2'],
+        }),
+      { wrapper: GraphContext },
     );
 
     // Simulate rerendering as this is triggered automatically due to the mock
