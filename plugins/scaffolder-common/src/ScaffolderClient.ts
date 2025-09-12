@@ -41,6 +41,7 @@ import {
   ScaffolderTask,
 } from './api';
 import { DefaultApiClient, TaskStatus, TypedResponse } from './schema/openapi';
+import { DateTime } from 'luxon';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -328,6 +329,16 @@ export class ScaffolderClient implements ScaffolderApi {
           }
 
           const logs = (await response.json()) as LogEvent[];
+
+          logs.forEach(log => {
+            if (log.createdAt) {
+              log.createdAt = DateTime.fromISO(log.createdAt, {
+                zone: 'utc',
+              })
+                .setZone(DateTime.local().zoneName)
+                .toISO() as string;
+            }
+          });
 
           for (const event of logs) {
             after = Number(event.id);
