@@ -28,14 +28,20 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import {
-  EntityHeaderBlueprint,
-  EntityContentBlueprint,
   defaultEntityContentGroups,
+  EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
+  EntityHeaderBlueprint,
+  EntityLayoutBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
+import { EntityLayoutRouteProps } from './components/EntityLayout/EntityLayout.tsx';
+import { EntityHeader } from './components/EntityHeader';
+import sortBy from 'lodash/sortBy';
+import { Fragment, useMemo } from 'react';
+import { EntityContextMenu } from './components/EntityContextMenu';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -81,7 +87,9 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   inputs: {
     headers: createExtensionInput([
       EntityHeaderBlueprint.dataRefs.element.optional(),
+      EntityHeaderBlueprint.dataRefs.component.optional(),
       EntityHeaderBlueprint.dataRefs.filterFunction.optional(),
+      EntityHeaderBlueprint.dataRefs.order.optional(),
     ]),
     contents: createExtensionInput([
       coreExtensionData.reactElement,
@@ -95,6 +103,12 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
     contextMenuItems: createExtensionInput([
       coreExtensionData.reactElement,
       EntityContextMenuItemBlueprint.dataRefs.filterFunction.optional(),
+      EntityContextMenuItemBlueprint.dataRefs.portalElement.optional(),
+    ]),
+    layouts: createExtensionInput([
+      EntityLayoutBlueprint.dataRefs.component,
+      EntityLayoutBlueprint.dataRefs.order.optional(),
+      EntityLayoutBlueprint.dataRefs.filterFunction.optional(),
     ]),
   },
   config: {
@@ -113,7 +127,11 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const { EntityLayout } = await import('./components/EntityLayout');
 
         const menuItems = inputs.contextMenuItems.map(item => ({
+          id: item.node.spec.id,
           element: item.get(coreExtensionData.reactElement),
+          portalElement: item.get(
+            EntityContextMenuItemBlueprint.dataRefs.portalElement,
+          ),
           filter:
             item.get(EntityContextMenuItemBlueprint.dataRefs.filterFunction) ??
             (() => true),
@@ -124,19 +142,16 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           { title: string; items: Array<(typeof inputs.contents)[0]> }
         >;
 
-        // Get available headers, sorted by if they have a filter function or not.
-        // TODO(blam): we should really have priority or some specificity here which can be used to sort the headers.
-        // That can be done with embedding the priority in the dataRef alongside the filter function.
-        const headers = inputs.headers
-          .map(header => ({
+        // Get available headers, sorted by order or existence of filter.
+        const headers = sortBy(
+          inputs.headers.map(header => ({
             element: header.get(EntityHeaderBlueprint.dataRefs.element),
+            component: header.get(EntityHeaderBlueprint.dataRefs.component),
             filter: header.get(EntityHeaderBlueprint.dataRefs.filterFunction),
-          }))
-          .sort((a, b) => {
-            if (a.filter && !b.filter) return -1;
-            if (!a.filter && b.filter) return 1;
-            return 0;
-          });
+            order: header.get(EntityHeaderBlueprint.dataRefs.order),
+          })),
+          [({ order }) => order, ({ filter }) => filter],
+        );
 
         let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
           (rest, group) => {
@@ -172,44 +187,76 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           group.items.push(output);
         }
 
+        const layouts = sortBy(
+          inputs.layouts.map(header => ({
+            component: header.get(EntityLayoutBlueprint.dataRefs.component),
+            filter: header.get(EntityLayoutBlueprint.dataRefs.filterFunction),
+            order: header.get(EntityLayoutBlueprint.dataRefs.order),
+          })),
+          [({ order }) => order, ({ filter }) => filter],
+        );
+
         const Component = () => {
           const entityFromUrl = useEntityFromUrl();
           const { entity } = entityFromUrl;
           const filteredMenuItems = entity
-            ? menuItems.filter(i => i.filter(entity)).map(i => i.element)
+            ? menuItems.filter(i => i.filter(entity))
             : [];
+          const contextMenuItems = filteredMenuItems.map(i => i.element);
+          const contextMenuPortals = filteredMenuItems.flatMap(item =>
+            item.portalElement
+              ? [<Fragment key={item.id}>{item.portalElement}</Fragment>]
+              : [],
+          );
 
-          const header = headers.find(
-            h => !h.filter || h.filter(entity!),
-          )?.element;
+          const { component: HeaderComponent, element: headerElement } =
+            headers.find(h => !h.filter || (entity && h.filter(entity))) ?? {};
+
+          const contextMenu = contextMenuItems.length ? (
+            <EntityContextMenu contextMenuItems={contextMenuItems} />
+          ) : undefined;
+
+          const header = HeaderComponent ? (
+            <HeaderComponent contextMenu={contextMenu} />
+          ) : (
+            headerElement ?? <EntityHeader contextMenu={contextMenu} />
+          );
+
+          const Layout =
+            layouts.find(l => !l.filter || l.filter(entity!))?.component ??
+            EntityLayout;
+
+          const groupedRoutes = useMemo(
+            () =>
+              Object.values(groups).flatMap(({ title, items }) =>
+                items.flatMap(output => {
+                  const filterFn = buildFilterFn(
+                    output.get(EntityContentBlueprint.dataRefs.filterFunction),
+                    output.get(
+                      EntityContentBlueprint.dataRefs.filterExpression,
+                    ),
+                  );
+
+                  if (!entity || (filterFn && !filterFn(entity))) {
+                    return [];
+                  }
+                  return [
+                    {
+                      group: title,
+                      path: output.get(coreExtensionData.routePath),
+                      title: output.get(EntityContentBlueprint.dataRefs.title),
+                      children: output.get(coreExtensionData.reactElement),
+                    } satisfies EntityLayoutRouteProps,
+                  ];
+                }),
+              ),
+            [entity],
+          );
 
           return (
             <AsyncEntityProvider {...entityFromUrl}>
-              <EntityLayout
-                header={header}
-                contextMenuItems={filteredMenuItems}
-              >
-                {Object.values(groups).flatMap(({ title, items }) =>
-                  items.map(output => (
-                    <EntityLayout.Route
-                      group={title}
-                      key={output.get(coreExtensionData.routePath)}
-                      path={output.get(coreExtensionData.routePath)}
-                      title={output.get(EntityContentBlueprint.dataRefs.title)}
-                      if={buildFilterFn(
-                        output.get(
-                          EntityContentBlueprint.dataRefs.filterFunction,
-                        ),
-                        output.get(
-                          EntityContentBlueprint.dataRefs.filterExpression,
-                        ),
-                      )}
-                    >
-                      {output.get(coreExtensionData.reactElement)}
-                    </EntityLayout.Route>
-                  )),
-                )}
-              </EntityLayout>
+              {contextMenuPortals}
+              <Layout header={header} groupedRoutes={groupedRoutes} />
             </AsyncEntityProvider>
           );
         };

@@ -343,6 +343,13 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef<
+        JSX_2.Element,
+        'catalog.entity-context-menu-item.portal',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
@@ -357,12 +364,18 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-function',
       {}
     >;
+    portalElement: ConfigurableExtensionDataRef<
+      JSX_2.Element,
+      'catalog.entity-context-menu-item.portal',
+      {}
+    >;
   };
 }>;
 
 // @alpha (undocumented)
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
+  usePortal?: () => ReactNode;
   icon: JSX_2.Element;
   filter?: EntityPredicate | ((entity: Entity) => boolean);
 };
@@ -371,9 +384,18 @@ export type EntityContextMenuItemParams = {
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
   kind: 'entity-header';
   params: {
-    loader: () => Promise<JSX.Element>;
     filter?: EntityPredicate | ((entity: Entity) => boolean);
-  };
+    order?: number;
+  } & (
+    | {
+        loader: () => Promise<JSX_2.Element>;
+      }
+    | {
+        componentLoader: () => Promise<
+          (props: EntityContentLayoutHeaderProps) => JSX_2.Element
+        >;
+      }
+  );
   output:
     | ExtensionDataRef<
         (entity: Entity) => boolean,
@@ -395,6 +417,20 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef<
+        (props: EntityContentLayoutHeaderProps) => JSX_2.Element,
+        'catalog.entity-header.component',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        number,
+        'catalog.entity-layout.order',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
@@ -412,6 +448,16 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',
+      {}
+    >;
+    order: ConfigurableExtensionDataRef<
+      number,
+      'catalog.entity-layout.order',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityContentLayoutHeaderProps) => JSX_2.Element,
+      'catalog.entity-header.component',
       {}
     >;
   };
@@ -475,6 +521,84 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
+export const EntityLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'entity-layout';
+  params: {
+    loader: () => Promise<(props: EntityLayoutBlueprintProps) => JSX_2.Element>;
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
+    order?: number;
+  };
+  output:
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        number,
+        'catalog.entity-layout.order',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        (props: EntityLayoutBlueprintProps) => JSX_2.Element,
+        'catalog.entity-layout.component',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    order: ConfigurableExtensionDataRef<
+      number,
+      'catalog.entity-layout.order',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityLayoutBlueprintProps) => JSX_2.Element,
+      'catalog.entity-layout.component',
+      {}
+    >;
+  };
+}>;
+
+// Warning: (ae-missing-release-tag) "EntityLayoutBlueprintProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface EntityLayoutBlueprintProps {
+  // (undocumented)
+  groupedRoutes: Array<{
+    path: string;
+    title: string;
+    group: string;
+    children: JSX_2.Element;
+  }>;
+  // (undocumented)
+  header: JSX_2.Element;
+}
+
+// @alpha (undocumented)
 export type EntityPredicate =
   | EntityPredicateExpression
   | EntityPredicatePrimitive
@@ -529,17 +653,21 @@ export function useEntityPermission(
 };
 
 // @alpha (undocumented)
-export type UseProps = () =>
+export type UseProps = () => {
+  title: ReactNode;
+  disabled?: boolean;
+} & (
   | {
-      title: ReactNode;
       href: string;
-      disabled?: boolean;
     }
   | {
-      title: ReactNode;
       onClick: () => void | Promise<void>;
-      disabled?: boolean;
-    };
+    }
+);
+
+// Warnings were encountered during analysis:
+//
+// src/alpha/blueprints/EntityHeaderBlueprint.d.ts:16:9 - (ae-forgotten-export) The symbol "EntityContentLayoutHeaderProps" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -29,3 +29,7 @@ export {
   type UseProps,
 } from './EntityContextMenuItemBlueprint';
 export { EntityIconLinkBlueprint } from './EntityIconLinkBlueprint';
+export {
+  EntityLayoutBlueprint,
+  type EntityLayoutBlueprintProps,
+} from './EntityLayoutBlueprint';

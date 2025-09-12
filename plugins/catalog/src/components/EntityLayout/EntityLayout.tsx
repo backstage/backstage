@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  Entity,
-  EntityRelation,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   Breadcrumbs,
   Content,
@@ -58,16 +53,18 @@ import { TabProps } from '@material-ui/core/Tab';
 import Alert from '@material-ui/lab/Alert';
 import {
   ComponentProps,
-  useEffect,
-  useState,
   ElementType,
   ReactNode,
+  useEffect,
+  useState,
 } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
+import { headerProps } from '../../utils/headerProps.ts';
+import { findParentRelation } from '../../utils/findParentRelation.ts';
 
 /** @public */
 export type EntityLayoutRouteProps = {
@@ -102,32 +99,6 @@ function EntityLayoutTitle(props: {
       {entity && <FavoriteEntity entity={entity} />}
     </Box>
   );
-}
-
-function headerProps(
-  paramKind: string | undefined,
-  paramNamespace: string | undefined,
-  paramName: string | undefined,
-  entity: Entity | undefined,
-): { headerTitle: string; headerType: string } {
-  const kind = paramKind ?? entity?.kind ?? '';
-  const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
-  const name =
-    entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
-
-  return {
-    headerTitle: `${name}${
-      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
-    }`,
-    headerType: (() => {
-      let t = kind.toLocaleLowerCase('en-US');
-      if (entity && entity.spec && 'type' in entity.spec) {
-        t += ' — ';
-        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
-      }
-      return t;
-    })(),
-  };
 }
 
 function EntityLabels(props: { entity: Entity }) {
@@ -192,21 +163,6 @@ export interface EntityLayoutProps {
    * It adds breadcrumbs in the Entity page to enhance user navigation and context awareness.
    */
   parentEntityRelations?: string[];
-}
-
-function findParentRelation(
-  entityRelations: EntityRelation[] = [],
-  relationTypes: string[] = [],
-) {
-  for (const type of relationTypes) {
-    const foundRelation = entityRelations.find(
-      relation => relation.type === type,
-    );
-    if (foundRelation) {
-      return foundRelation; // Return the first found relation and stop
-    }
-  }
-  return null;
 }
 
 const useStyles = makeStyles(theme => ({

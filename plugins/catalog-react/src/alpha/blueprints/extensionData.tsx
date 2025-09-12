@@ -28,6 +28,11 @@ export const entityFilterFunctionDataRef = createExtensionDataRef<
 >().with({ id: 'catalog.entity-filter-function' });
 
 /** @internal */
+export const entityLayoutOrderRef = createExtensionDataRef<number>().with({
+  id: 'catalog.entity-layout.order',
+});
+
+/** @internal */
 export const entityFilterExpressionDataRef =
   createExtensionDataRef<string>().with({
     id: 'catalog.entity-filter-expression',
