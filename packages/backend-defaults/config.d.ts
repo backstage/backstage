@@ -96,6 +96,31 @@ export interface Config {
         };
 
     /**
+     * Server-level HTTP options configuration for the backend.
+     * These options are passed directly to the underlying Node.js HTTP server.
+     *
+     * Timeout values support multiple formats:
+     * - A number in milliseconds
+     * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library
+     * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'
+     * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`
+     */
+    server?: {
+      /** Sets the timeout value for receiving the complete HTTP headers from the client. */
+      headersTimeout?: number | string | HumanDuration;
+      /** Sets the timeout value for receiving the entire request (headers and body) from the client. */
+      requestTimeout?: number | string | HumanDuration;
+      /** Sets the timeout value for inactivity on a socket during keep-alive. */
+      keepAliveTimeout?: number | string | HumanDuration;
+      /** Sets the timeout value for sockets. */
+      timeout?: number | string | HumanDuration;
+      /** Limits maximum incoming headers count. */
+      maxHeadersCount?: number;
+      /** Sets the maximum number of requests socket can handle before closing keep alive connection. */
+      maxRequestsPerSocket?: number;
+    };
+
+    /**
      * Options used by the default auditor service.
      */
     auditor?: {
