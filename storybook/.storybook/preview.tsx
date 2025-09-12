@@ -7,7 +7,7 @@ import { useGlobals } from '@storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
 
 // Default Backstage theme CSS (from packages/ui)
-import '../packages/ui/src/css/styles.css';
+import '../../packages/ui/src/css/styles.css';
 
 // Custom Storybook chrome/styles
 import './storybook.css';

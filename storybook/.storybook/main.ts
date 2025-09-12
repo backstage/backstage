@@ -14,7 +14,7 @@ const backstageCoreStories = [
   'plugins/catalog-react',
 ];
 
-const rootPath = '../';
+const rootPath = '../../';
 const storiesSrcMdx = 'src/**/*.mdx';
 const storiesSrcGlob = 'src/**/*.stories.@(js|jsx|mjs|ts|tsx)';
 
