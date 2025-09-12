@@ -288,6 +288,17 @@ and provide options using `--option`, for example:
 backstage-cli new --select plugin --option pluginId=foo
 ```
 
+The `--option` flag supports both predefined values (like `pluginId`) and arbitrary
+custom values for use in custom templates:
+
+```bash
+backstage-cli new --select my-custom-template \
+  --option pluginId=my-plugin \
+  --option apiUrl=https://api.example.com \
+  --option databaseType=postgres \
+  --option featureEnabled=true
+```
+
 This command is typically added as script in the root `package.json` to be
 executed with `yarn new`. For example you may have it set up like this:
 

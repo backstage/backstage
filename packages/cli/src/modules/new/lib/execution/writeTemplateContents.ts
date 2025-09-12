@@ -40,6 +40,7 @@ export async function writeTemplateContents(
 
     const templater = await PortableTemplater.create({
       values: {
+        ...(input.customValues ?? {}),
         ...roleValues,
         packageName: input.packageName,
       },

@@ -60,8 +60,10 @@ describe('collectTemplateParams', () => {
       version: '0.1.0',
       license: 'Apache-2.0',
       private: true,
+      publishRegistry: undefined,
       packageName: '@internal/plugin-other',
       packagePath: 'plugins/other',
+      customValues: undefined,
     });
   });
 
@@ -83,8 +85,10 @@ describe('collectTemplateParams', () => {
       version: '0.1.0',
       license: 'Apache-2.0',
       private: true,
+      publishRegistry: undefined,
       packageName: '@internal/plugin-test1',
       packagePath: 'plugins/test1',
+      customValues: undefined,
     });
   });
 
@@ -109,8 +113,10 @@ describe('collectTemplateParams', () => {
       version: '0.1.0',
       license: 'Apache-2.0',
       private: true,
+      publishRegistry: undefined,
       packageName: '@internal/plugin-test2',
       packagePath: 'plugins/test2',
+      customValues: undefined,
     });
   });
 
@@ -137,8 +143,10 @@ describe('collectTemplateParams', () => {
         version: '0.1.0',
         license: 'Apache-2.0',
         private: true,
+        publishRegistry: undefined,
         packageName: '@internal/plugin-test3',
         packagePath: 'plugins/test3',
+        customValues: undefined,
       });
     });
     expect(logs).toEqual({
@@ -147,6 +155,59 @@ describe('collectTemplateParams', () => {
       warn: [
         `DEPRECATION WARNING: The 'id' parameter is deprecated, use 'pluginId' instead`,
       ],
+    });
+  });
+
+  it('should preserve custom values that do not match prompts', async () => {
+    await expect(
+      collectPortableTemplateInput({
+        ...baseOptions,
+        prefilledParams: {
+          pluginId: 'test-plugin',
+          customApiUrl: 'https://api.example.com',
+          databaseType: 'postgres',
+          enableFeature: 'true',
+        },
+      }),
+    ).resolves.toEqual({
+      roleParams: {
+        role: 'frontend-plugin',
+        pluginId: 'test-plugin',
+      },
+      owner: undefined,
+      version: '0.1.0',
+      license: 'Apache-2.0',
+      private: true,
+      packageName: '@internal/plugin-test-plugin',
+      packagePath: 'plugins/test-plugin',
+      customValues: {
+        customApiUrl: 'https://api.example.com',
+        databaseType: 'postgres',
+        enableFeature: 'true',
+      },
+    });
+  });
+
+  it('should not include customValues when no arbitrary values are provided', async () => {
+    await expect(
+      collectPortableTemplateInput({
+        ...baseOptions,
+        prefilledParams: {
+          pluginId: 'test-plugin',
+        },
+      }),
+    ).resolves.toEqual({
+      roleParams: {
+        role: 'frontend-plugin',
+        pluginId: 'test-plugin',
+      },
+      owner: undefined,
+      version: '0.1.0',
+      license: 'Apache-2.0',
+      private: true,
+      packageName: '@internal/plugin-test-plugin',
+      packagePath: 'plugins/test-plugin',
+      customValues: undefined,
     });
   });
 });
