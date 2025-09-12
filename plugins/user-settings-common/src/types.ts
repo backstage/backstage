@@ -14,8 +14,47 @@
  * limitations under the License.
  */
 
+import type { SerializedError } from '@backstage/errors';
+import type { JsonValue } from '@backstage/types';
+
 /** @public */
 export type UserSettingsSignal = {
   type: 'key-changed' | 'key-deleted';
   key: string;
 };
+
+/**
+ * A failed fetch of a user setting in a bucket
+ *
+ * @public
+ */
+export type MultiUserSettingError = {
+  bucket: string;
+  key: string;
+  error: SerializedError;
+};
+
+/**
+ * A successful value of a user setting in a bucket
+ *
+ * @public
+ */
+export type MultiUserSettingSuccess = {
+  bucket: string;
+  key: string;
+  value: JsonValue;
+};
+
+/**
+ * A single setting in a bucket, or an error, used result from the /multi endpoint
+ *
+ * @public
+ */
+export type MultiUserSetting = MultiUserSettingError | MultiUserSettingSuccess;
+
+/** @public */
+export function isMultiUserSettingError(
+  setting: MultiUserSetting,
+): setting is MultiUserSettingError {
+  return 'error' in setting;
+}
