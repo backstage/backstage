@@ -544,6 +544,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   /**
    * Return the unique project identifier, preferring the numeric ID when available.
    * @param project - The GitLab project object.
+   * @param [fallback=''] - A fallback string to use if neither ID nor path_with_namespace is available.
    * @returns The project identifier as a string.
    */
   private getProjectIdentifier(
@@ -597,7 +598,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       this.config.fallbackBranch;
 
     const hasFile = await client.hasFile(
-      project.path_with_namespace ?? '',
+      this.getProjectIdentifier(project),
       project_branch,
       this.config.catalogFile,
     );
