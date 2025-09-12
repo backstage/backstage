@@ -8,7 +8,8 @@
     "pluginPackages": [
       "@backstage/plugin-user-settings",
       "@backstage/plugin-user-settings-backend",
-      "@backstage/plugin-user-settings-common"
+      "@backstage/plugin-user-settings-common",
+      "@backstage/plugin-user-settings-node"
     ]
   },
   "publishConfig": {
@@ -54,6 +55,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/plugin-user-settings-common": "workspace:^",
+    "@backstage/plugin-user-settings-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

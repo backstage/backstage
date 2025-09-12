@@ -79,6 +79,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/user-settings                            @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/user-settings-backend                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/user-settings-common                     @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/user-settings-node                       @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 
 /scripts                                          @backstage/operations-maintainers
 

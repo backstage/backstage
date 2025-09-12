@@ -6,6 +6,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ElementType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -129,6 +130,7 @@ export const UserSettingsSignInAvatar: (props: {
 export class UserSettingsStorage implements StorageApi {
   // (undocumented)
   static create(options: {
+    configApi: ConfigApi;
     fetchApi: FetchApi;
     discoveryApi: DiscoveryApi;
     errorApi: ErrorApi;

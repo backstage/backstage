@@ -8,7 +8,8 @@
     "pluginPackages": [
       "@backstage/plugin-user-settings",
       "@backstage/plugin-user-settings-backend",
-      "@backstage/plugin-user-settings-common"
+      "@backstage/plugin-user-settings-common",
+      "@backstage/plugin-user-settings-node"
     ]
   },
   "publishConfig": {
@@ -114,6 +115,15 @@
               "visibility": "frontend",
               "additionalProperties": true
             }
+          }
+        }
+      },
+      "userSettings": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "visibility": "frontend"
           }
         }
       }

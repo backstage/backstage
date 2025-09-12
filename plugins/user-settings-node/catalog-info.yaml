@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-user-settings-node
+  title: '@backstage/plugin-user-settings-node'
+  description: Node.js library for the user-settings plugin
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers
