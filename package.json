@@ -163,7 +163,7 @@
     "storybook": "^8.6.12",
     "typedoc": "^0.28.0",
     "typescript": "~5.7.0",
-    "vite": "^7.1.2"
+    "vite": "^7.1.5"
   },
   "packageManager": "yarn@4.8.1",
   "engines": {
