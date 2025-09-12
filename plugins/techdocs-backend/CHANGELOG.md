@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.0-next.2
+
+### Minor Changes
+
+- a0b604c: Adding new entity that specifies an external entity in the techdocs-entity annotation and updates to documentation regarding TechDocs redirects.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.1
+  - @backstage/config@1.3.3
+
 ## 2.1.0-next.1
 
 ### Patch Changes

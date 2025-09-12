@@ -1,5 +1,19 @@
 # @backstage/plugin-user-settings
 
+## 0.8.26-next.3
+
+### Patch Changes
+
+- 320a9ac: Add the OpenShift authenticator provider to the default `user-settings` providers page.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/frontend-plugin-api@0.12.0-next.1
+  - @backstage/plugin-catalog-react@1.21.0-next.3
+  - @backstage/core-app-api@1.19.0-next.0
+  - @backstage/core-components@0.17.6-next.2
+  - @backstage/core-compat-api@0.5.2-next.3
+  - @backstage/plugin-signals-react@0.0.16-next.0
+
 ## 0.8.26-next.2
 
 ### Patch Changes

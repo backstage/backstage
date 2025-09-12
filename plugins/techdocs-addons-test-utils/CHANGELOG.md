@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.1.0-next.3
+
+### Minor Changes
+
+- 72543e9: Adding catalogApiRef to test-utils to support catalog API usage by TechDocs reader page.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.15.0-next.3
+  - @backstage/plugin-techdocs-react@1.3.3-next.1
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/plugin-catalog-react@1.21.0-next.3
+  - @backstage/core-app-api@1.19.0-next.0
+  - @backstage/integration-react@1.2.10-next.1
+  - @backstage/test-utils@1.7.12-next.0
+  - @backstage/plugin-catalog@1.31.3-next.3
+  - @backstage/plugin-search-react@1.9.4-next.1
+
 ## 1.0.53-next.2
 
 ### Patch Changes

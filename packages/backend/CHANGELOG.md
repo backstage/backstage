@@ -1,5 +1,15 @@
 # example-backend
 
+## 0.0.42-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@2.2.1-next.2
+  - @backstage/plugin-catalog-backend@3.0.2-next.2
+  - @backstage/plugin-techdocs-backend@2.1.0-next.2
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.0-next.0
+
 ## 0.0.42-next.1
 
 ### Patch Changes

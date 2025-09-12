@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.2.1-next.2
+
+### Patch Changes
+
+- a57185f: Added support for executing actions from the `ActionsRegistry` in the `scaffolder-backend`
+- c3405db: Fixed a regression that prevented uploads greater than 100KB. Uploads up to 10MB are supported again.
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.1
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/config@1.3.3
+  - @backstage/plugin-scaffolder-common@1.7.1-next.0
+
 ## 2.2.1-next.1
 
 ### Patch Changes

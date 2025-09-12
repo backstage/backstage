@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs-react
 
+## 1.3.3-next.1
+
+### Patch Changes
+
+- a0b604c: Update to documentation regarding TechDocs redirects.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/frontend-plugin-api@0.12.0-next.1
+  - @backstage/core-components@0.17.6-next.2
+  - @backstage/config@1.3.3
+
 ## 1.3.3-next.0
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/app-defaults
 
+## 1.7.0-next.1
+
+### Minor Changes
+
+- 9956704: Add and configure the OpenShift authentication provider to the default APIs.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0-next.0
+  - @backstage/core-app-api@1.19.0-next.0
+  - @backstage/core-components@0.17.6-next.2
+  - @backstage/plugin-permission-react@0.4.37-next.0
+
 ## 1.6.6-next.0
 
 ### Patch Changes
