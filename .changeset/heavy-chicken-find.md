@@ -6,7 +6,7 @@ Allow using custom manifest location in the yarn plugin and version bump.
 
 The Backstage yarn plugin and version bump allows two new environment variables to configure custom manifest location:
 
-- `BACKSTAGE_MANIFEST_BASE_URL`: The base URL for fetching the Backstage version
+- `BACKSTAGE_VERSIONS_BASE_URL`: The base URL for fetching the Backstage version
   manifest. Defaults to `https://versions.backstage.io/v1/releases/VERSION/manifest.json`.
   Useful for running the plugin in environment without direct access to the internet,
   for example by using a mirror of the versions API or a proxy.

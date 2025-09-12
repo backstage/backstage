@@ -96,8 +96,8 @@ describe('getPackageVersion', () => {
     });
 
     it('uses custom versionsBaseUrl from environment when provided', async () => {
-      const originalEnv = process.env.BACKSTAGE_MANIFEST_BASE_URL;
-      process.env.BACKSTAGE_MANIFEST_BASE_URL = 'https://custom.example.com';
+      const originalEnv = process.env.BACKSTAGE_VERSIONS_BASE_URL;
+      process.env.BACKSTAGE_VERSIONS_BASE_URL = 'https://custom.example.com';
 
       const descriptor = {
         scope: '@backstage',
@@ -113,7 +113,7 @@ describe('getPackageVersion', () => {
         fetch: expect.any(Function),
       });
 
-      process.env.BACKSTAGE_MANIFEST_BASE_URL = originalEnv;
+      process.env.BACKSTAGE_VERSIONS_BASE_URL = originalEnv;
     });
 
     it('uses yarn httpUtils for fetching with proper response format', async () => {
