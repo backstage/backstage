@@ -547,7 +547,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   ): Promise<boolean> {
     if (!this.config.projectPattern.test(project.path_with_namespace ?? '')) {
       this.logger.debug(
-        `Skipping project ${project.path_with_namespace} as it does not match the project pattern ${this.config.projectPattern}.`,
+        `Skipping project ${project.path_with_namespace}, id:${project.id} as it does not match the project pattern ${this.config.projectPattern}.`,
       );
       return false;
     }
@@ -557,7 +557,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       !project.path_with_namespace!.startsWith(`${this.config.group}/`)
     ) {
       this.logger.debug(
-        `Skipping project ${project.path_with_namespace} as it does not match the group pattern ${this.config.group}.`,
+        `Skipping project ${project.path_with_namespace}, id:${project.id} as it does not match the group pattern ${this.config.group}.`,
       );
       return false;
     }
@@ -567,14 +567,14 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       project.hasOwnProperty('forked_from_project')
     ) {
       this.logger.debug(
-        `Skipping project ${project.path_with_namespace} as it is a forked project.`,
+        `Skipping project ${project.path_with_namespace}, id:${project.id} as it is a forked project.`,
       );
       return false;
     }
 
     if (this.config.excludeRepos?.includes(project.path_with_namespace ?? '')) {
       this.logger.debug(
-        `Skipping project ${project.path_with_namespace} as it is excluded.`,
+        `Skipping project ${project.path_with_namespace}, id:${project.id} as it is excluded.`,
       );
       return false;
     }
