@@ -248,6 +248,8 @@ lockdown
 lockfile
 lockfiles
 lookbehind
+lookup
+lookups
 lowercased
 lunr
 Luxon
