@@ -541,6 +541,18 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       });
   }
 
+  /**
+   * Return the unique project identifier, preferring the numeric ID when available.
+   * @param project - The GitLab project object.
+   * @returns The project identifier as a string.
+   */
+  private getProjectIdentifier(
+    project: GitLabProject,
+    fallback: string = '',
+  ): string {
+    return project.id?.toString() ?? project.path_with_namespace ?? fallback;
+  }
+
   private async shouldProcessProject(
     project: GitLabProject,
     client: GitLabClient,
