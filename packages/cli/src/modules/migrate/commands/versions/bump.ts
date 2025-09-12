@@ -114,11 +114,11 @@ export default async (opts: OptionValues) => {
     if (opts.release === 'next') {
       const next = await getManifestByReleaseLine({
         releaseLine: 'next',
-        versionsBaseUrl: env.BACKSTAGE_MANIFEST_BASE_URL,
+        versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
       });
       const main = await getManifestByReleaseLine({
         releaseLine: 'main',
-        versionsBaseUrl: env.BACKSTAGE_MANIFEST_BASE_URL,
+        versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
       });
       // Prefer manifest with the latest release version
       releaseManifest = semver.gt(next.releaseVersion, main.releaseVersion)
@@ -127,7 +127,7 @@ export default async (opts: OptionValues) => {
     } else {
       releaseManifest = await getManifestByReleaseLine({
         releaseLine: opts.release,
-        versionsBaseUrl: env.BACKSTAGE_MANIFEST_BASE_URL,
+        versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
       });
     }
     findTargetVersion = createVersionFinder({
@@ -143,8 +143,8 @@ export default async (opts: OptionValues) => {
     );
     console.log();
 
-    const yarnPluginUrl = env.BACKSTAGE_MANIFEST_BASE_URL
-      ? `${env.BACKSTAGE_MANIFEST_BASE_URL}/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`
+    const yarnPluginUrl = env.BACKSTAGE_VERSIONS_BASE_URL
+      ? `${env.BACKSTAGE_VERSIONS_BASE_URL}/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`
       : `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`;
 
     await run('yarn', ['plugin', 'import', yarnPluginUrl]);

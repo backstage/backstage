@@ -1061,18 +1061,19 @@ describe('environment variables', () => {
 
   beforeEach(() => {
     delete process.env.BACKSTAGE_MANIFEST_FILE;
-    delete process.env.BACKSTAGE_MANIFEST_BASE_URL;
+    process.env.BACKSTAGE_VERSIONS_BASE_URL = 'https://custom.example.com';
   });
 
   afterEach(() => {
     jest.resetAllMocks();
-    delete process.env.BACKSTAGE_MANIFEST_FILE;
-    delete process.env.BACKSTAGE_MANIFEST_BASE_URL;
   });
 
-  it('should use custom base URL when BACKSTAGE_MANIFEST_BASE_URL is set', async () => {
-    process.env.BACKSTAGE_MANIFEST_BASE_URL = 'https://custom.example.com';
+  afterAll(() => {
+    delete process.env.BACKSTAGE_MANIFEST_FILE;
+    delete process.env.BACKSTAGE_VERSIONS_BASE_URL;
+  });
 
+  it('should use custom base URL when BACKSTAGE_VERSIONS_BASE_URL is set', async () => {
     mockDir.setContent({
       'yarn.lock': lockfileMock,
       'package.json': JSON.stringify({
@@ -1230,9 +1231,7 @@ describe('environment variables', () => {
     });
   });
 
-  it('should use custom base URL for yarn plugin when BACKSTAGE_MANIFEST_BASE_URL is set with yarn plugin', async () => {
-    process.env.BACKSTAGE_MANIFEST_BASE_URL = 'https://custom.example.com';
-
+  it('should use custom base URL for yarn plugin when BACKSTAGE_VERSIONS_BASE_URL is set with yarn plugin', async () => {
     mockDir.setContent({
       '.yarnrc.yml': yarnRcMock,
       'yarn.lock': lockfileMock,
@@ -1331,8 +1330,6 @@ describe('environment variables', () => {
   });
 
   it('should handle network errors when using custom base URL', async () => {
-    process.env.BACKSTAGE_MANIFEST_BASE_URL = 'https://custom.example.com';
-
     mockDir.setContent({
       'yarn.lock': lockfileMock,
       'package.json': JSON.stringify({

@@ -29,7 +29,7 @@ backstage.json.
 
 The plugin functionality can be configured with environment variables:
 
-- `BACKSTAGE_MANIFEST_BASE_URL` - The base URL for fetching the Backstage version
+- `BACKSTAGE_VERSIONS_BASE_URL` - The base URL for fetching the Backstage version
   manifest. Defaults to `https://versions.backstage.io/v1/releases/VERSION/manifest.json`.
   Useful for running the plugin in environment without direct access to the internet,
   for example by using a mirror of the versions API or a proxy.

@@ -43,8 +43,6 @@ describe('getPackageVersion', () => {
   const mockConfiguration = {} as Configuration;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-
     mockGetCurrentBackstageVersion.mockReturnValue('1.23.4');
     mockStructUtils.stringifyIdent.mockImplementation(
       (descriptor: any) =>
@@ -57,6 +55,10 @@ describe('getPackageVersion', () => {
       protocol: range.includes('backstage:') ? 'backstage:' : 'npm:',
       selector: range.includes('^') ? '^' : range.split(':')[1] || '',
     }));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('successful package resolution', () => {
@@ -96,8 +98,8 @@ describe('getPackageVersion', () => {
     });
 
     it('uses custom versionsBaseUrl from environment when provided', async () => {
-      const originalEnv = process.env.BACKSTAGE_MANIFEST_BASE_URL;
-      process.env.BACKSTAGE_MANIFEST_BASE_URL = 'https://custom.example.com';
+      const originalEnv = process.env.BACKSTAGE_VERSIONS_BASE_URL;
+      process.env.BACKSTAGE_VERSIONS_BASE_URL = 'https://custom.example.com';
 
       const descriptor = {
         scope: '@backstage',
@@ -113,7 +115,7 @@ describe('getPackageVersion', () => {
         fetch: expect.any(Function),
       });
 
-      process.env.BACKSTAGE_MANIFEST_BASE_URL = originalEnv;
+      process.env.BACKSTAGE_VERSIONS_BASE_URL = originalEnv;
     });
 
     it('uses yarn httpUtils for fetching with proper response format', async () => {

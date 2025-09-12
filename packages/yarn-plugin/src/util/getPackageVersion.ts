@@ -52,7 +52,7 @@ export const getPackageVersion = async (
     ? await xfs.readJsonSync(manifestFile as PortablePath)
     : await getManifestByVersion({
         version: backstageVersion,
-        versionsBaseUrl: env.BACKSTAGE_MANIFEST_BASE_URL,
+        versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
         // We override the fetch function used inside getManifestByVersion with a
         // custom implementation that calls yarn's built-in `httpUtils` method
         // instead. This has a couple of benefits:
