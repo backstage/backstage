@@ -4329,9 +4329,11 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": "npm:^4.9.13"
