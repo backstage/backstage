@@ -31,6 +31,7 @@ import {
 } from './extensionData';
 import { JSX } from 'react';
 
+/** @alpha */
 export interface EntityContentLayoutHeaderProps {
   contextMenu?: JSX.Element;
 }

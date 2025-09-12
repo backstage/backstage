@@ -30,6 +30,7 @@ import {
 } from './extensionData';
 import { JSX } from 'react';
 
+/** @alpha */
 export interface EntityLayoutBlueprintProps {
   groupedRoutes: Array<{
     path: string;

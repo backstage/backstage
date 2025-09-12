@@ -323,6 +323,12 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
+export interface EntityContentLayoutHeaderProps {
+  // (undocumented)
+  contextMenu?: JSX_2.Element;
+}
+
+// @alpha (undocumented)
 export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
@@ -583,9 +589,7 @@ export const EntityLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// Warning: (ae-missing-release-tag) "EntityLayoutBlueprintProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha (undocumented)
 export interface EntityLayoutBlueprintProps {
   // (undocumented)
   groupedRoutes: Array<{
@@ -643,6 +647,14 @@ export type EntityPredicateValue =
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
+// @alpha (undocumented)
+export type SubRoute = {
+  group: string;
+  path: string;
+  title: string;
+  children: JSX_2.Element;
+};
+
 // @alpha
 export function useEntityPermission(
   permission: ResourcePermission<'catalog-entity'>,
@@ -665,9 +677,12 @@ export type UseProps = () => {
     }
 );
 
-// Warnings were encountered during analysis:
-//
-// src/alpha/blueprints/EntityHeaderBlueprint.d.ts:16:9 - (ae-forgotten-export) The symbol "EntityContentLayoutHeaderProps" needs to be exported by the entry point index.d.ts
+// @alpha (undocumented)
+export function useSelectedSubRoute(subRoutes: SubRoute[]): {
+  index: number;
+  route?: SubRoute;
+  element?: JSX_2.Element;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { JSX } from 'react';
 
-export { EntityTabs } from './EntityTabs';
+/** @alpha */
+export type SubRoute = {
+  group: string;
+  path: string;
+  title: string;
+  children: JSX.Element;
+};

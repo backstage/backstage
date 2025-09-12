@@ -822,9 +822,9 @@ Minimal example that renders a simple link bar and the selected content:
 import {
   EntityLayoutBlueprint,
   type EntityLayoutBlueprintProps,
+  useSelectedSubRoute,
 } from '@backstage/plugin-catalog-react/alpha';
 import { Page, Content, Link } from '@backstage/core-components';
-import { useSelectedSubRoute } from '@backstage/plugin-catalog/alpha';
 
 const MyEntityLayout = ({
   header,

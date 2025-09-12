@@ -16,7 +16,9 @@
 
 export * from './blueprints';
 export * from './converters';
+export * from './hooks';
 export * from './predicates';
 export { catalogReactTranslationRef } from '../translation';
+export * from './types';
 export { isOwnerOf } from '../utils/isOwnerOf';
 export { useEntityPermission } from '../hooks/useEntityPermission';

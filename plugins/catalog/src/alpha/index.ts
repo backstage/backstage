@@ -17,4 +17,3 @@
 export { default } from './plugin';
 
 export * from './translation';
-export { useSelectedSubRoute } from './components/EntityTabs';

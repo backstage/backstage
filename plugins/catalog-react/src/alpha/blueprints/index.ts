@@ -20,7 +20,10 @@ export {
   EntityContentLayoutBlueprint,
   type EntityContentLayoutProps,
 } from './EntityContentLayoutBlueprint';
-export { EntityHeaderBlueprint } from './EntityHeaderBlueprint';
+export {
+  EntityHeaderBlueprint,
+  type EntityContentLayoutHeaderProps,
+} from './EntityHeaderBlueprint';
 export { defaultEntityContentGroups } from './extensionData';
 export type { EntityCardType } from './extensionData';
 export {
