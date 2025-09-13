@@ -15,6 +15,7 @@
  */
 
 import { Theme as Mui5Theme } from '@mui/material/styles';
+import { themes } from '@backstage/theme';
 
 export interface ConvertMuiToBuiThemeOptions {
   /**
@@ -37,6 +38,31 @@ export function convertMuiToBuiTheme(
   theme: Mui5Theme,
   options: ConvertMuiToBuiThemeOptions = {},
 ): string {
+  // Early validation of required theme properties
+  if (!theme) {
+    throw new Error('Theme is required');
+  }
+
+  if (!theme.palette) {
+    throw new Error('Theme palette is required');
+  }
+
+  if (!theme.palette.mode) {
+    throw new Error('Theme palette mode is required');
+  }
+
+  if (!theme.typography) {
+    throw new Error('Theme typography is required');
+  }
+
+  if (!theme.spacing) {
+    throw new Error('Theme spacing is required');
+  }
+
+  if (!theme.shape) {
+    throw new Error('Theme shape is required');
+  }
+
   const { themeId, includeThemeId = false } = options;
   const isDark = theme.palette.mode === 'dark';
 
@@ -211,36 +237,92 @@ function generateSurfaceColors(
 ): Record<string, string> {
   const isDark = palette.mode === 'dark';
 
-  // Helper function to get tint colors with proper fallbacks
+  // Get the default Backstage theme for fallback values
+  const defaultTheme = isDark ? themes.dark : themes.light;
+  const defaultMuiTheme = defaultTheme.getTheme('v5');
+
+  if (!defaultMuiTheme) {
+    throw new Error(
+      `Failed to get MUI v5 theme from Backstage ${
+        isDark ? 'dark' : 'light'
+      } theme`,
+    );
+  }
+
+  const defaultPalette = defaultMuiTheme.palette;
+  if (!defaultPalette) {
+    throw new Error(
+      `Failed to get palette from Backstage ${isDark ? 'dark' : 'light'} theme`,
+    );
+  }
+
+  // Helper function to get tint colors
   const getTintColor = (opacity: string) => {
-    if (palette.primary?.main) {
-      return `${palette.primary.main}${opacity}`;
+    const primaryColor = palette.primary?.main || defaultPalette.primary?.main;
+    if (!primaryColor) {
+      throw new Error('Primary color not found in current or default theme');
     }
-    return isDark
-      ? `rgba(156, 201, 255, ${opacity === '40' ? '0.12' : '0.16'})`
-      : `rgba(31, 84, 147, ${opacity === '40' ? '0.4' : '0.6'})`;
+    return `${primaryColor}${opacity}`;
   };
 
-  // Helper function to get fallback colors based on theme mode
-  const getFallbackColor = (lightColor: string, darkColor: string) => {
+  // Helper function to get colors based on theme mode
+  const getThemeColor = (lightColor: string, darkColor: string) => {
     return isDark ? darkColor : lightColor;
   };
 
   return {
-    'surface-2': getFallbackColor('#ececec', '#242424'),
-    solid: palette.primary?.main || getFallbackColor('#1f5493', '#9cc9ff'),
+    'surface-2': getThemeColor('#ececec', '#242424'),
+    solid:
+      palette.primary?.main ||
+      defaultPalette.primary?.main ||
+      (() => {
+        throw new Error('Primary color not found in current or default theme');
+      })(),
     'solid-hover':
-      palette.primary?.dark || getFallbackColor('#163a66', '#83b9fd'),
+      palette.primary?.dark ||
+      defaultPalette.primary?.dark ||
+      (() => {
+        throw new Error(
+          'Primary dark color not found in current or default theme',
+        );
+      })(),
     'solid-pressed':
-      palette.primary?.dark || getFallbackColor('#0f2b4e', '#83b9fd'),
-    'solid-disabled': getFallbackColor('#ebebeb', '#222222'),
+      palette.primary?.dark ||
+      defaultPalette.primary?.dark ||
+      (() => {
+        throw new Error(
+          'Primary dark color not found in current or default theme',
+        );
+      })(),
+    'solid-disabled': getThemeColor('#ebebeb', '#222222'),
     tint: 'transparent',
     'tint-hover': getTintColor('40'),
     'tint-pressed': getTintColor('60'),
-    'tint-disabled': getFallbackColor('#ebebeb', 'transparent'),
-    danger: palette.error?.light || getFallbackColor('#feebe7', '#3b1219'),
-    warning: palette.warning?.light || getFallbackColor('#fff2b2', '#302008'),
-    success: palette.success?.light || getFallbackColor('#e6f6eb', '#132d21'),
+    'tint-disabled': getThemeColor('#ebebeb', 'transparent'),
+    danger:
+      palette.error?.light ||
+      defaultPalette.error?.light ||
+      (() => {
+        throw new Error(
+          'Error light color not found in current or default theme',
+        );
+      })(),
+    warning:
+      palette.warning?.light ||
+      defaultPalette.warning?.light ||
+      (() => {
+        throw new Error(
+          'Warning light color not found in current or default theme',
+        );
+      })(),
+    success:
+      palette.success?.light ||
+      defaultPalette.success?.light ||
+      (() => {
+        throw new Error(
+          'Success light color not found in current or default theme',
+        );
+      })(),
   };
 }
 
@@ -252,17 +334,75 @@ function generateForegroundColors(
 ): Record<string, string> {
   const isDark = palette.mode === 'dark';
 
+  // Get the default Backstage theme for fallback values
+  const defaultTheme = isDark ? themes.dark : themes.light;
+  const defaultMuiTheme = defaultTheme.getTheme('v5');
+
+  if (!defaultMuiTheme) {
+    throw new Error(
+      `Failed to get MUI v5 theme from Backstage ${
+        isDark ? 'dark' : 'light'
+      } theme`,
+    );
+  }
+
+  const defaultPalette = defaultMuiTheme.palette;
+  if (!defaultPalette) {
+    throw new Error(
+      `Failed to get palette from Backstage ${isDark ? 'dark' : 'light'} theme`,
+    );
+  }
+
   return {
-    link: palette.primary?.main || (isDark ? '#9cc9ff' : '#1f5493'),
-    'link-hover': palette.primary?.dark || (isDark ? '#7eb5f7' : '#1f2d5c'),
-    disabled: palette.text?.disabled || (isDark ? '#9e9e9e' : '#9e9e9e'),
+    link:
+      palette.primary?.main ||
+      defaultPalette.primary?.main ||
+      (() => {
+        throw new Error('Primary color not found in current or default theme');
+      })(),
+    'link-hover':
+      palette.primary?.dark ||
+      defaultPalette.primary?.dark ||
+      (() => {
+        throw new Error(
+          'Primary dark color not found in current or default theme',
+        );
+      })(),
+    disabled:
+      palette.text?.disabled ||
+      defaultPalette.text?.disabled ||
+      (() => {
+        throw new Error(
+          'Text disabled color not found in current or default theme',
+        );
+      })(),
     solid: isDark ? '#101821' : '#ffffff',
     'solid-disabled': isDark ? '#575757' : '#9c9c9c',
-    tint: palette.primary?.main || (isDark ? '#9cc9ff' : '#1f5493'),
+    tint:
+      palette.primary?.main ||
+      defaultPalette.primary?.main ||
+      (() => {
+        throw new Error('Primary color not found in current or default theme');
+      })(),
     'tint-disabled': isDark ? '#575757' : '#9e9e9e',
-    danger: palette.error?.main || '#e22b2b',
-    warning: palette.warning?.main || '#e36d05',
-    success: palette.success?.main || '#1db954',
+    danger:
+      palette.error?.main ||
+      defaultPalette.error?.main ||
+      (() => {
+        throw new Error('Error color not found in current or default theme');
+      })(),
+    warning:
+      palette.warning?.main ||
+      defaultPalette.warning?.main ||
+      (() => {
+        throw new Error('Warning color not found in current or default theme');
+      })(),
+    success:
+      palette.success?.main ||
+      defaultPalette.success?.main ||
+      (() => {
+        throw new Error('Success color not found in current or default theme');
+      })(),
   };
 }
 
@@ -274,13 +414,47 @@ function generateBorderColors(
 ): Record<string, string> {
   const isDark = palette.mode === 'dark';
 
+  // Get the default Backstage theme for fallback values
+  const defaultTheme = isDark ? themes.dark : themes.light;
+  const defaultMuiTheme = defaultTheme.getTheme('v5');
+
+  if (!defaultMuiTheme) {
+    throw new Error(
+      `Failed to get MUI v5 theme from Backstage ${
+        isDark ? 'dark' : 'light'
+      } theme`,
+    );
+  }
+
+  const defaultPalette = defaultMuiTheme.palette;
+  if (!defaultPalette) {
+    throw new Error(
+      `Failed to get palette from Backstage ${isDark ? 'dark' : 'light'} theme`,
+    );
+  }
+
   return {
     '': isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)',
     hover: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.2)',
     pressed: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)',
     disabled: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
-    danger: palette.error?.main || '#f87a7a',
-    warning: palette.warning?.main || '#e36d05',
-    success: palette.success?.main || '#53db83',
+    danger:
+      palette.error?.main ||
+      defaultPalette.error?.main ||
+      (() => {
+        throw new Error('Error color not found in current or default theme');
+      })(),
+    warning:
+      palette.warning?.main ||
+      defaultPalette.warning?.main ||
+      (() => {
+        throw new Error('Warning color not found in current or default theme');
+      })(),
+    success:
+      palette.success?.main ||
+      defaultPalette.success?.main ||
+      (() => {
+        throw new Error('Success color not found in current or default theme');
+      })(),
   };
 }
