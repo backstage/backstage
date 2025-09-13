@@ -17,39 +17,48 @@
 import { Theme as Mui5Theme } from '@mui/material/styles';
 import { blend, alpha } from '@mui/system/colorManipulator';
 
+export interface ConvertMuiToBuiThemeResult {
+  css: string;
+  styleObject: Record<string, string>;
+}
+
 /**
  * Converts a MUI v5 Theme to BUI CSS variables
  * @param theme - The MUI v5 theme to convert
- * @returns CSS string with BUI variables
+ * @returns Object containing CSS string and style object with BUI variables
  */
-export function convertMuiToBuiTheme(theme: Mui5Theme): string {
-  const variables = generateBuiVariables(theme);
+export function convertMuiToBuiTheme(
+  theme: Mui5Theme,
+): ConvertMuiToBuiThemeResult {
+  const styleObject = generateBuiVariables(theme);
 
   const selector =
     theme.palette.mode === 'dark' ? "[data-theme-mode='dark']" : ':root';
 
-  return `${selector} {\n${variables}\n}`;
+  const css = `${selector} {\n${Object.entries(styleObject)
+    .map(([key, value]) => `  ${key}: ${value};`)
+    .join('\n')}\n}`;
+
+  return { css, styleObject };
 }
 
 /**
  * Generates BUI CSS variables from MUI theme
  */
-function generateBuiVariables(theme: Mui5Theme): string {
-  const variables: string[] = [];
+function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
+  const styleObject: Record<string, string> = {};
 
   // Font families
   if (theme.typography.fontFamily) {
-    variables.push(`  --bui-font-regular: ${theme.typography.fontFamily};`);
+    styleObject['--bui-font-regular'] = theme.typography.fontFamily;
   }
 
   // Font weights
-  variables.push(
-    `  --bui-font-weight-regular: ${
-      theme.typography.fontWeightRegular || 400
-    };`,
+  styleObject['--bui-font-weight-regular'] = String(
+    theme.typography.fontWeightRegular || 400,
   );
-  variables.push(
-    `  --bui-font-weight-bold: ${theme.typography.fontWeightBold || 600};`,
+  styleObject['--bui-font-weight-bold'] = String(
+    theme.typography.fontWeightBold || 600,
   );
 
   // Font sizes - map MUI typography scale to BUI scale
@@ -74,21 +83,22 @@ function generateBuiVariables(theme: Mui5Theme): string {
         ? typographyVariant.fontSize
         : undefined;
     if (fontSize) {
-      variables.push(`  ${buiVar}: ${fontSize};`);
+      styleObject[buiVar] =
+        typeof fontSize === 'string' ? fontSize : `${fontSize}px`;
     }
   });
 
   const spacing = theme.spacing(1);
   // Skip spacing if the theme is using the default
   if (spacing !== '8px') {
-    variables.push(`  --bui-space: calc(${spacing} * 0.5);`);
+    styleObject['--bui-space'] = `calc(${spacing} * 0.5)`;
   }
 
   // Border radius
   if (theme.shape?.borderRadius) {
     const radius = theme.shape.borderRadius;
     const radiusValue = typeof radius === 'number' ? `${radius}px` : radius;
-    variables.push(`  --bui-radius-3: ${radiusValue};`);
+    styleObject['--bui-radius-3'] = radiusValue;
   }
 
   // Colors - map MUI palette to BUI color tokens
@@ -96,24 +106,21 @@ function generateBuiVariables(theme: Mui5Theme): string {
 
   // Base colors
   if (palette.common?.black) {
-    variables.push(`  --bui-black: ${palette.common.black};`);
+    styleObject['--bui-black'] = palette.common.black;
   }
   if (palette.common?.white) {
-    variables.push(`  --bui-white: ${palette.common.white};`);
+    styleObject['--bui-white'] = palette.common.white;
   }
 
   // Background colors
   if (palette.background?.default) {
-    variables.push(`  --bui-bg: ${palette.background.default};`);
-  }
-  if (palette.background?.paper) {
-    variables.push(`  --bui-bg-surface-1: ${palette.background.paper};`);
+    styleObject['--bui-bg'] = palette.background.default;
   }
 
   // Generate surface colors
   Object.entries({
-    'surface-1': palette.background.default,
-    'surface-2': palette.background.paper,
+    'surface-1': palette.background.paper,
+    'surface-2': palette.background.default,
     solid: palette.primary.main,
     'solid-hover': blend(palette.primary.main, palette.primary.dark, 0.5),
     'solid-pressed': palette.primary.dark,
@@ -126,15 +133,15 @@ function generateBuiVariables(theme: Mui5Theme): string {
     warning: palette.warning.light,
     success: palette.success.light,
   }).forEach(([key, value]) => {
-    variables.push(`  --bui-bg-${key}: ${value};`);
+    styleObject[`--bui-bg-${key}`] = value;
   });
 
   // Foreground colors
   if (palette.text?.primary) {
-    variables.push(`  --bui-fg-primary: ${palette.text.primary};`);
+    styleObject['--bui-fg-primary'] = palette.text.primary;
   }
   if (palette.text?.secondary) {
-    variables.push(`  --bui-fg-secondary: ${palette.text.secondary};`);
+    styleObject['--bui-fg-secondary'] = palette.text.secondary;
   }
 
   // Generate foreground colors
@@ -150,7 +157,7 @@ function generateBuiVariables(theme: Mui5Theme): string {
     warning: palette.warning.main,
     success: palette.success.main,
   }).forEach(([key, value]) => {
-    variables.push(`  --bui-fg-${key}: ${value};`);
+    styleObject[`--bui-fg-${key}`] = value;
   });
 
   // Border colors
@@ -159,13 +166,13 @@ function generateBuiVariables(theme: Mui5Theme): string {
     warning: palette.warning.main,
     success: palette.success.main,
   }).forEach(([key, value]) => {
-    variables.push(`  --bui-border${key ? `-${key}` : ''}: ${value};`);
+    styleObject[`--bui-border${key ? `-${key}` : ''}`] = value;
   });
 
   // Special colors
   if (palette.primary?.main) {
-    variables.push(`  --bui-ring: ${palette.primary.main};`);
+    styleObject['--bui-ring'] = palette.primary.main;
   }
 
-  return variables.join('\n');
+  return styleObject;
 }

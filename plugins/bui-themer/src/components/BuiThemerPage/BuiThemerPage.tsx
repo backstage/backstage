@@ -49,10 +49,10 @@ interface ThemeContentProps {
 
 interface IsolatedPreviewProps {
   mode: 'light' | 'dark';
-  css: string;
+  styleObject: Record<string, string>;
 }
 
-function BuiThemePreview({ mode, css }: IsolatedPreviewProps) {
+function BuiThemePreview({ mode, styleObject }: IsolatedPreviewProps) {
   return (
     <div
       // Setting the theme mode ensures that the correct defaults are picked up from the BUI theme
@@ -60,16 +60,7 @@ function BuiThemePreview({ mode, css }: IsolatedPreviewProps) {
       style={{
         // Apply the generated CSS variables directly to this container
         // This creates a scoped context where the variables take precedence
-        ...Object.fromEntries(
-          css
-            .split('\n')
-            .filter(line => line.trim().startsWith('--bui-'))
-            .map(line => {
-              const [key, value] = line.trim().split(':');
-              return [key?.trim(), value?.replace(';', '').trim()];
-            })
-            .filter(([key, value]) => key && value),
-        ),
+        ...styleObject,
         width: '100%',
         backgroundColor: 'var(--bui-bg-surface-2)',
         padding: 'var(--bui-space-3)',
@@ -178,7 +169,7 @@ function ThemeContent({
   const [generatedCss, setGeneratedCss] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('css');
 
-  const css = useMemo(() => {
+  const { css, styleObject } = useMemo(() => {
     return convertMuiToBuiTheme(muiTheme);
   }, [muiTheme]);
 
@@ -258,7 +249,7 @@ function ThemeContent({
 
             <TabPanel id="preview">
               <Box>
-                <BuiThemePreview mode={variant} css={generatedCss} />
+                <BuiThemePreview mode={variant} styleObject={styleObject} />
               </Box>
             </TabPanel>
           </Tabs>
