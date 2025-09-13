@@ -28,13 +28,7 @@ import {
   Text,
   Switch,
 } from '@backstage/ui';
-import {
-  convertMuiToBuiTheme,
-  ConvertMuiToBuiThemeOptions,
-} from './convertMuiToBuiTheme';
-
-// Memoization cache for generated CSS
-const cssCache = new Map<string, string>();
+import { convertMuiToBuiTheme } from './convertMuiToBuiTheme';
 
 interface ThemeContentProps {
   themeId: string;
@@ -54,37 +48,10 @@ function ThemeContent({
   const [includeThemeId, setIncludeThemeId] = useState(false);
 
   const css = useMemo(() => {
-    // Create cache key based on theme properties and options
-    const cacheKey = `${themeId}-${includeThemeId}-${JSON.stringify({
-      palette: muiTheme.palette,
-      typography: muiTheme.typography,
-      spacing: muiTheme.spacing,
-      shape: muiTheme.shape,
-    })}`;
-
-    // Check cache first
-    if (cssCache.has(cacheKey)) {
-      return cssCache.get(cacheKey)!;
-    }
-
-    const options: ConvertMuiToBuiThemeOptions = {
+    return convertMuiToBuiTheme(muiTheme, {
       themeId,
       includeThemeId,
-    };
-    const result = convertMuiToBuiTheme(muiTheme, options);
-
-    // Cache the result
-    cssCache.set(cacheKey, result);
-
-    // Clean up old cache entries (keep only last 50)
-    if (cssCache.size > 50) {
-      const firstKey = cssCache.keys().next().value;
-      if (firstKey) {
-        cssCache.delete(firstKey);
-      }
-    }
-
-    return result;
+    });
   }, [muiTheme, themeId, includeThemeId]);
 
   useEffect(() => {
