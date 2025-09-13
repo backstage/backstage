@@ -17,38 +17,16 @@
 import { Theme as Mui5Theme } from '@mui/material/styles';
 import { blend, alpha } from '@mui/system/colorManipulator';
 
-export interface ConvertMuiToBuiThemeOptions {
-  /**
-   * Theme ID to use for scoping CSS variables
-   */
-  themeId?: string;
-  /**
-   * Whether to include theme ID scoping in the CSS
-   */
-  includeThemeId?: boolean;
-}
-
 /**
  * Converts a MUI v5 Theme to BUI CSS variables
  * @param theme - The MUI v5 theme to convert
- * @param options - Conversion options
  * @returns CSS string with BUI variables
  */
-export function convertMuiToBuiTheme(
-  theme: Mui5Theme,
-  options: ConvertMuiToBuiThemeOptions = {},
-): string {
-  const { themeId, includeThemeId = false } = options;
-  const isDark = theme.palette.mode === 'dark';
-
-  // Generate CSS variables based on theme
+export function convertMuiToBuiTheme(theme: Mui5Theme): string {
   const variables = generateBuiVariables(theme);
 
-  // Create CSS selector based on theme mode and ID
-  let selector = isDark ? "[data-theme-mode='dark']" : ':root';
-  if (includeThemeId && themeId) {
-    selector = `[data-app-theme='${themeId}'] ${selector}`;
-  }
+  const selector =
+    theme.palette.mode === 'dark' ? "[data-theme-mode='dark']" : ':root';
 
   return `${selector} {\n${variables}\n}`;
 }
