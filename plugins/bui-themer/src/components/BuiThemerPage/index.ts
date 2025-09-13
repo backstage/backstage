@@ -15,3 +15,6 @@
  */
 
 export { BuiThemerPage } from './BuiThemerPage';
+export { BuiThemePreview } from './BuiThemePreview';
+export { ThemeContent } from './ThemeContent';
+export { MuiThemeExtractor } from './MuiThemeExtractor';
