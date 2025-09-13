@@ -17,7 +17,7 @@
 /**
  * A constant that specifies the location of the certificate for the service account.
  *
- * @internal
+ * @public
  */
 export const SERVICEACCOUNT_CA_PATH =
   '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt';
