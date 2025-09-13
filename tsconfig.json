@@ -8,6 +8,8 @@
     "plugins/*/dev",
     "plugins/*/migrations"
   ],
+  "exclude": ["**/*.stories.tsx", "**/*.stories.ts"],
+  "references": [{ "path": "./tsconfig.stories.json" }],
   "compilerOptions": {
     "outDir": "dist-types",
     "rootDir": ".",

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "strict": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ES2022",
+    "lib": ["DOM", "ES2022"],
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "outDir": "dist-types/stories",
+    "types": ["react", "node"]
+  },
+  "include": [
+    "packages/ui/src/**/*.stories.tsx",
+    "packages/core-components/src/**/*.stories.tsx"
+  ],
+  "exclude": ["node_modules", "dist", "build"]
+}
