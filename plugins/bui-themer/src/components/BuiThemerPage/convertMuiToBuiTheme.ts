@@ -152,12 +152,6 @@ function generateBuiVariables(theme: Mui5Theme): string {
     variables.push(`  --bui-white: ${palette.common.white};`);
   }
 
-  // Gray scale - generate from primary color or use defaults
-  const grayScale = generateGrayScale(palette.mode === 'dark');
-  Object.entries(grayScale).forEach(([key, value]) => {
-    variables.push(`  --bui-gray-${key}: ${value};`);
-  });
-
   // Background colors
   if (palette.background?.default) {
     variables.push(`  --bui-bg: ${palette.background.default};`);
@@ -198,35 +192,6 @@ function generateBuiVariables(theme: Mui5Theme): string {
   }
 
   return variables.join('\n');
-}
-
-/**
- * Generates gray scale colors
- */
-function generateGrayScale(isDark: boolean): Record<string, string> {
-  if (isDark) {
-    return {
-      '1': '#191919',
-      '2': '#242424',
-      '3': '#373737',
-      '4': '#464646',
-      '5': '#575757',
-      '6': '#7b7b7b',
-      '7': '#9e9e9e',
-      '8': '#b4b4b4',
-    };
-  }
-
-  return {
-    '1': '#f8f8f8',
-    '2': '#ececec',
-    '3': '#d9d9d9',
-    '4': '#c1c1c1',
-    '5': '#9e9e9e',
-    '6': '#8c8c8c',
-    '7': '#757575',
-    '8': '#595959',
-  };
 }
 
 /**
