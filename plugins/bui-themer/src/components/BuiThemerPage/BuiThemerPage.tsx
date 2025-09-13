@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { AppTheme, useApi } from '@backstage/core-plugin-api';
 import { appThemeApiRef } from '@backstage/core-plugin-api';
 import { Theme, useTheme } from '@mui/material/styles';
@@ -65,6 +65,7 @@ function BuiThemePreview({ mode, styleObject }: IsolatedPreviewProps) {
         backgroundColor: 'var(--bui-bg-surface-2)',
         padding: 'var(--bui-space-3)',
         borderRadius: 'var(--bui-radius-2)',
+        border: '1px solid var(--bui-border)',
       }}
     >
       <Flex direction="column" gap="4">
@@ -166,23 +167,18 @@ function ThemeContent({
   variant,
   muiTheme,
 }: ThemeContentProps) {
-  const [generatedCss, setGeneratedCss] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('css');
 
   const { css, styleObject } = useMemo(() => {
     return convertMuiToBuiTheme(muiTheme);
   }, [muiTheme]);
 
-  useEffect(() => {
-    setGeneratedCss(css);
+  const handleCopy = useCallback(() => {
+    window.navigator.clipboard.writeText(css);
   }, [css]);
 
-  const handleCopy = useCallback(() => {
-    window.navigator.clipboard.writeText(generatedCss);
-  }, [generatedCss]);
-
   const handleDownload = useCallback(() => {
-    const blob = new Blob([generatedCss], { type: 'text/css' });
+    const blob = new Blob([css], { type: 'text/css' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -191,7 +187,7 @@ function ThemeContent({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [generatedCss, themeId]);
+  }, [css, themeId]);
 
   return (
     <Card>
@@ -223,27 +219,22 @@ function ThemeContent({
             </TabList>
 
             <TabPanel id="css">
-              <Box>
-                <Text variant="body-small" style={{ marginBottom: '8px' }}>
-                  Generated CSS:
-                </Text>
-                <Box
-                  p="3"
-                  style={{
-                    backgroundColor: 'var(--bui-bg-surface-2)',
-                    border: '1px solid var(--bui-border)',
-                    borderRadius: 'var(--bui-radius-2)',
-                    fontFamily: 'monospace',
-                    fontSize: '14px',
-                    lineHeight: '1.5',
-                    height: '600px',
-                    overflow: 'auto',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-all',
-                  }}
-                >
-                  {generatedCss}
-                </Box>
+              <Box
+                p="3"
+                style={{
+                  backgroundColor: 'var(--bui-bg-surface-2)',
+                  border: '1px solid var(--bui-border)',
+                  borderRadius: 'var(--bui-radius-2)',
+                  fontFamily: 'monospace',
+                  fontSize: '14px',
+                  lineHeight: '1.5',
+                  height: '600px',
+                  overflow: 'auto',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-all',
+                }}
+              >
+                {css}
               </Box>
             </TabPanel>
 
@@ -289,10 +280,11 @@ export function BuiThemerPage() {
   return (
     <Container>
       <HeaderPage title="BUI Theme Converter" />
-      <Box mt="4">
+      <Box m="4">
         <Text variant="body-medium" color="secondary">
-          Convert MUI v5 themes to BUI CSS variables. Select a theme to generate
-          the corresponding BUI CSS variables that can be copied or downloaded.
+          Convert your MUI v5 theme into BUI CSS variables. Pick a theme to view
+          and export the generated BUI CSS variable definitions for use in your
+          project.
         </Text>
       </Box>
 
