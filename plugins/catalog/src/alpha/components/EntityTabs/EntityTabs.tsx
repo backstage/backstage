@@ -15,57 +15,12 @@
  */
 import { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
-
-type SubRoute = {
-  group: string;
-  path: string;
-  title: string;
-  children: JSX.Element;
-};
-
-export function useSelectedSubRoute(subRoutes: SubRoute[]): {
-  index: number;
-  route?: SubRoute;
-  element?: JSX.Element;
-} {
-  const params = useParams();
-
-  const routes = subRoutes.map(({ path, children }) => ({
-    caseSensitive: false,
-    path: `${path}/*`,
-    element: children,
-  }));
-
-  // TODO: remove once react-router updated
-  const sortedRoutes = routes.sort((a, b) =>
-    // remove "/*" symbols from path end before comparing
-    b.path.replace(/\/\*$/, '').localeCompare(a.path.replace(/\/\*$/, '')),
-  );
-
-  const element = useRoutes(sortedRoutes) ?? subRoutes[0]?.children;
-
-  // TODO(Rugvip): Once we only support v6 stable we can always prefix
-  // This avoids having a double / prefix for react-router v6 beta, which in turn breaks
-  // the tab highlighting when using relative paths for the tabs.
-  let currentRoute = params['*'] ?? '';
-  if (!currentRoute.startsWith('/')) {
-    currentRoute = `/${currentRoute}`;
-  }
-
-  const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
-  const foundIndex = matchedRoute
-    ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
-    : 0;
-
-  return {
-    index: foundIndex === -1 ? 0 : foundIndex,
-    element,
-    route: subRoutes[foundIndex] ?? subRoutes[0],
-  };
-}
+import {
+  SubRoute,
+  useSelectedSubRoute,
+} from '@backstage/plugin-catalog-react/alpha';
 
 type EntityTabsProps = {
   routes: SubRoute[];
