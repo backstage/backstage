@@ -52,16 +52,24 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain(':root {');
-    expect(result).toContain('--bui-font-regular: Roboto, sans-serif;');
+    expect(result.css).toContain(':root {');
+    expect(result.css).toContain('--bui-font-regular: Roboto, sans-serif;');
     // Spacing is skipped for default 8px
-    expect(result).not.toContain('--bui-space:');
-    expect(result).toContain('--bui-radius-3: 4px;');
-    expect(result).toContain('--bui-bg: #f5f5f5;');
-    expect(result).toContain('--bui-bg-surface-1: #ffffff;');
-    expect(result).toContain('--bui-fg-primary: #000000;');
-    expect(result).toContain('--bui-fg-secondary: #666666;');
-    expect(result).toContain('--bui-bg-solid: #1976d2;');
+    expect(result.css).not.toContain('--bui-space:');
+    expect(result.css).toContain('--bui-radius-3: 4px;');
+    expect(result.css).toContain('--bui-bg: #f5f5f5;');
+    expect(result.css).toContain('--bui-bg-surface-1: #ffffff;');
+    expect(result.css).toContain('--bui-fg-primary: #000000;');
+    expect(result.css).toContain('--bui-fg-secondary: #666666;');
+    expect(result.css).toContain('--bui-bg-solid: #1976d2;');
+
+    // Test style object
+    expect(result.styleObject).toHaveProperty(
+      '--bui-font-regular',
+      'Roboto, sans-serif',
+    );
+    expect(result.styleObject).toHaveProperty('--bui-bg-solid', '#1976d2');
+    expect(result.styleObject).toHaveProperty('--bui-fg-primary', '#000000');
   });
 
   it('should generate CSS for dark theme', () => {
@@ -85,11 +93,15 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain("[data-theme-mode='dark'] {");
-    expect(result).toContain('--bui-bg: #121212;');
-    expect(result).toContain('--bui-bg-surface-1: #1e1e1e;');
-    expect(result).toContain('--bui-fg-primary: #ffffff;');
-    expect(result).toContain('--bui-fg-secondary: #b3b3b3;');
+    expect(result.css).toContain("[data-theme-mode='dark'] {");
+    expect(result.css).toContain('--bui-bg: #121212;');
+    expect(result.css).toContain('--bui-bg-surface-1: #1e1e1e;');
+    expect(result.css).toContain('--bui-fg-primary: #ffffff;');
+    expect(result.css).toContain('--bui-fg-secondary: #b3b3b3;');
+
+    // Test style object
+    expect(result.styleObject).toHaveProperty('--bui-bg-surface-1', '#1e1e1e');
+    expect(result.styleObject).toHaveProperty('--bui-fg-primary', '#ffffff');
   });
 
   it('should handle missing theme properties gracefully', () => {
@@ -97,12 +109,12 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain(':root {');
-    expect(result).toContain('--bui-font-weight-regular: 400;');
-    expect(result).toContain('--bui-font-weight-bold: 700;');
+    expect(result.css).toContain(':root {');
+    expect(result.css).toContain('--bui-font-weight-regular: 400;');
+    expect(result.css).toContain('--bui-font-weight-bold: 700;');
     // Should have default values even when theme properties are missing
-    expect(result).toContain('--bui-black: #000;');
-    expect(result).toContain('--bui-white: #fff;');
+    expect(result.css).toContain('--bui-black: #000;');
+    expect(result.css).toContain('--bui-white: #fff;');
   });
 
   it('should generate surface colors correctly', () => {
@@ -130,11 +142,11 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain('--bui-bg-solid: #1976d2;');
-    expect(result).toContain('--bui-bg-solid-hover: rgb(21, 100, 179);');
-    expect(result).toContain('--bui-bg-danger: #ffcdd2;');
-    expect(result).toContain('--bui-bg-warning: #ffe0b2;');
-    expect(result).toContain('--bui-bg-success: #c8e6c9;');
+    expect(result.css).toContain('--bui-bg-solid: #1976d2;');
+    expect(result.css).toContain('--bui-bg-solid-hover: rgb(21, 100, 179);');
+    expect(result.css).toContain('--bui-bg-danger: #ffcdd2;');
+    expect(result.css).toContain('--bui-bg-warning: #ffe0b2;');
+    expect(result.css).toContain('--bui-bg-success: #c8e6c9;');
   });
 
   it('should generate foreground colors correctly', () => {
@@ -162,12 +174,12 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain('--bui-fg-link: #1976d2;');
-    expect(result).toContain('--bui-fg-link-hover: #115293;');
-    expect(result).toContain('--bui-fg-disabled: #cccccc;');
-    expect(result).toContain('--bui-fg-danger: #f44336;');
-    expect(result).toContain('--bui-fg-warning: #ff9800;');
-    expect(result).toContain('--bui-fg-success: #4caf50;');
+    expect(result.css).toContain('--bui-fg-link: #1976d2;');
+    expect(result.css).toContain('--bui-fg-link-hover: #115293;');
+    expect(result.css).toContain('--bui-fg-disabled: #cccccc;');
+    expect(result.css).toContain('--bui-fg-danger: #f44336;');
+    expect(result.css).toContain('--bui-fg-warning: #ff9800;');
+    expect(result.css).toContain('--bui-fg-success: #4caf50;');
   });
 
   it('should generate border colors correctly', () => {
@@ -189,9 +201,9 @@ describe('convertMuiToBuiTheme', () => {
     const result = convertMuiToBuiTheme(theme);
 
     // Base border colors are no longer generated
-    expect(result).toContain('--bui-border-danger: #f44336;');
-    expect(result).toContain('--bui-border-warning: #ff9800;');
-    expect(result).toContain('--bui-border-success: #4caf50;');
+    expect(result.css).toContain('--bui-border-danger: #f44336;');
+    expect(result.css).toContain('--bui-border-warning: #ff9800;');
+    expect(result.css).toContain('--bui-border-success: #4caf50;');
   });
 
   it('should handle function-based spacing', () => {
@@ -201,7 +213,7 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain('--bui-space: calc(4px * 0.5);');
+    expect(result.css).toContain('--bui-space: calc(4px * 0.5);');
   });
 
   it('should handle string-based spacing', () => {
@@ -211,7 +223,7 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain('--bui-space: calc(calc(1 * 8px) * 0.5);');
+    expect(result.css).toContain('--bui-space: calc(calc(1 * 8px) * 0.5);');
   });
 
   it('should handle string-based border radius', () => {
@@ -223,6 +235,6 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain('--bui-radius-3: 8px;');
+    expect(result.css).toContain('--bui-radius-3: 8px;');
   });
 });
