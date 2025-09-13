@@ -15,7 +15,7 @@
  */
 
 import { Theme as Mui5Theme } from '@mui/material/styles';
-import { themes } from '@backstage/theme';
+import { blend, alpha } from '@mui/system/colorManipulator';
 
 export interface ConvertMuiToBuiThemeOptions {
   /**
@@ -38,31 +38,6 @@ export function convertMuiToBuiTheme(
   theme: Mui5Theme,
   options: ConvertMuiToBuiThemeOptions = {},
 ): string {
-  // Early validation of required theme properties
-  if (!theme) {
-    throw new Error('Theme is required');
-  }
-
-  if (!theme.palette) {
-    throw new Error('Theme palette is required');
-  }
-
-  if (!theme.palette.mode) {
-    throw new Error('Theme palette mode is required');
-  }
-
-  if (!theme.typography) {
-    throw new Error('Theme typography is required');
-  }
-
-  if (!theme.spacing) {
-    throw new Error('Theme spacing is required');
-  }
-
-  if (!theme.shape) {
-    throw new Error('Theme shape is required');
-  }
-
   const { themeId, includeThemeId = false } = options;
   const isDark = theme.palette.mode === 'dark';
 
@@ -125,13 +100,10 @@ function generateBuiVariables(theme: Mui5Theme): string {
     }
   });
 
-  // Spacing - map MUI spacing to BUI spacing scale
-  if (theme.spacing) {
-    const spacingUnit =
-      typeof theme.spacing === 'function' ? theme.spacing(1) : theme.spacing;
-    const spacingValue =
-      typeof spacingUnit === 'number' ? `${spacingUnit}px` : spacingUnit;
-    variables.push(`  --bui-space: ${spacingValue};`);
+  const spacing = theme.spacing(1);
+  // Skip spacing if the theme is using the default
+  if (spacing !== '8px') {
+    variables.push(`  --bui-space: calc(${spacing} * 0.5);`);
   }
 
   // Border radius
@@ -161,8 +133,21 @@ function generateBuiVariables(theme: Mui5Theme): string {
   }
 
   // Generate surface colors
-  const surfaceColors = generateSurfaceColors(palette);
-  Object.entries(surfaceColors).forEach(([key, value]) => {
+  Object.entries({
+    'surface-1': palette.background.default,
+    'surface-2': palette.background.paper,
+    solid: palette.primary.main,
+    'solid-hover': blend(palette.primary.main, palette.primary.dark, 0.5),
+    'solid-pressed': palette.primary.dark,
+    'solid-disabled': palette.action.disabledBackground,
+    tint: 'transparent',
+    'tint-hover': alpha(palette.primary.main, 0.4),
+    'tint-pressed': alpha(palette.primary.main, 0.6),
+    'tint-disabled': palette.action.disabledBackground,
+    danger: palette.error.light,
+    warning: palette.warning.light,
+    success: palette.success.light,
+  }).forEach(([key, value]) => {
     variables.push(`  --bui-bg-${key}: ${value};`);
   });
 
@@ -175,14 +160,27 @@ function generateBuiVariables(theme: Mui5Theme): string {
   }
 
   // Generate foreground colors
-  const foregroundColors = generateForegroundColors(palette);
-  Object.entries(foregroundColors).forEach(([key, value]) => {
+  Object.entries({
+    link: palette.primary.main,
+    'link-hover': palette.primary.dark,
+    disabled: palette.text.disabled,
+    solid: palette.text.primary,
+    'solid-disabled': palette.action.disabled,
+    tint: palette.primary.main,
+    'tint-disabled': palette.action.disabled,
+    danger: palette.error.main,
+    warning: palette.warning.main,
+    success: palette.success.main,
+  }).forEach(([key, value]) => {
     variables.push(`  --bui-fg-${key}: ${value};`);
   });
 
   // Border colors
-  const borderColors = generateBorderColors(palette);
-  Object.entries(borderColors).forEach(([key, value]) => {
+  Object.entries({
+    danger: palette.error.main,
+    warning: palette.warning.main,
+    success: palette.success.main,
+  }).forEach(([key, value]) => {
     variables.push(`  --bui-border${key ? `-${key}` : ''}: ${value};`);
   });
 
@@ -192,234 +190,4 @@ function generateBuiVariables(theme: Mui5Theme): string {
   }
 
   return variables.join('\n');
-}
-
-/**
- * Generates surface background colors
- */
-function generateSurfaceColors(
-  palette: Mui5Theme['palette'],
-): Record<string, string> {
-  const isDark = palette.mode === 'dark';
-
-  // Get the default Backstage theme for fallback values
-  const defaultTheme = isDark ? themes.dark : themes.light;
-  const defaultMuiTheme = defaultTheme.getTheme('v5');
-
-  if (!defaultMuiTheme) {
-    throw new Error(
-      `Failed to get MUI v5 theme from Backstage ${
-        isDark ? 'dark' : 'light'
-      } theme`,
-    );
-  }
-
-  const defaultPalette = defaultMuiTheme.palette;
-  if (!defaultPalette) {
-    throw new Error(
-      `Failed to get palette from Backstage ${isDark ? 'dark' : 'light'} theme`,
-    );
-  }
-
-  // Helper function to get tint colors
-  const getTintColor = (opacity: string) => {
-    const primaryColor = palette.primary?.main || defaultPalette.primary?.main;
-    if (!primaryColor) {
-      throw new Error('Primary color not found in current or default theme');
-    }
-    return `${primaryColor}${opacity}`;
-  };
-
-  // Helper function to get colors based on theme mode
-  const getThemeColor = (lightColor: string, darkColor: string) => {
-    return isDark ? darkColor : lightColor;
-  };
-
-  return {
-    'surface-2': getThemeColor('#ececec', '#242424'),
-    solid:
-      palette.primary?.main ||
-      defaultPalette.primary?.main ||
-      (() => {
-        throw new Error('Primary color not found in current or default theme');
-      })(),
-    'solid-hover':
-      palette.primary?.dark ||
-      defaultPalette.primary?.dark ||
-      (() => {
-        throw new Error(
-          'Primary dark color not found in current or default theme',
-        );
-      })(),
-    'solid-pressed':
-      palette.primary?.dark ||
-      defaultPalette.primary?.dark ||
-      (() => {
-        throw new Error(
-          'Primary dark color not found in current or default theme',
-        );
-      })(),
-    'solid-disabled': getThemeColor('#ebebeb', '#222222'),
-    tint: 'transparent',
-    'tint-hover': getTintColor('40'),
-    'tint-pressed': getTintColor('60'),
-    'tint-disabled': getThemeColor('#ebebeb', 'transparent'),
-    danger:
-      palette.error?.light ||
-      defaultPalette.error?.light ||
-      (() => {
-        throw new Error(
-          'Error light color not found in current or default theme',
-        );
-      })(),
-    warning:
-      palette.warning?.light ||
-      defaultPalette.warning?.light ||
-      (() => {
-        throw new Error(
-          'Warning light color not found in current or default theme',
-        );
-      })(),
-    success:
-      palette.success?.light ||
-      defaultPalette.success?.light ||
-      (() => {
-        throw new Error(
-          'Success light color not found in current or default theme',
-        );
-      })(),
-  };
-}
-
-/**
- * Generates foreground colors
- */
-function generateForegroundColors(
-  palette: Mui5Theme['palette'],
-): Record<string, string> {
-  const isDark = palette.mode === 'dark';
-
-  // Get the default Backstage theme for fallback values
-  const defaultTheme = isDark ? themes.dark : themes.light;
-  const defaultMuiTheme = defaultTheme.getTheme('v5');
-
-  if (!defaultMuiTheme) {
-    throw new Error(
-      `Failed to get MUI v5 theme from Backstage ${
-        isDark ? 'dark' : 'light'
-      } theme`,
-    );
-  }
-
-  const defaultPalette = defaultMuiTheme.palette;
-  if (!defaultPalette) {
-    throw new Error(
-      `Failed to get palette from Backstage ${isDark ? 'dark' : 'light'} theme`,
-    );
-  }
-
-  return {
-    link:
-      palette.primary?.main ||
-      defaultPalette.primary?.main ||
-      (() => {
-        throw new Error('Primary color not found in current or default theme');
-      })(),
-    'link-hover':
-      palette.primary?.dark ||
-      defaultPalette.primary?.dark ||
-      (() => {
-        throw new Error(
-          'Primary dark color not found in current or default theme',
-        );
-      })(),
-    disabled:
-      palette.text?.disabled ||
-      defaultPalette.text?.disabled ||
-      (() => {
-        throw new Error(
-          'Text disabled color not found in current or default theme',
-        );
-      })(),
-    solid: isDark ? '#101821' : '#ffffff',
-    'solid-disabled': isDark ? '#575757' : '#9c9c9c',
-    tint:
-      palette.primary?.main ||
-      defaultPalette.primary?.main ||
-      (() => {
-        throw new Error('Primary color not found in current or default theme');
-      })(),
-    'tint-disabled': isDark ? '#575757' : '#9e9e9e',
-    danger:
-      palette.error?.main ||
-      defaultPalette.error?.main ||
-      (() => {
-        throw new Error('Error color not found in current or default theme');
-      })(),
-    warning:
-      palette.warning?.main ||
-      defaultPalette.warning?.main ||
-      (() => {
-        throw new Error('Warning color not found in current or default theme');
-      })(),
-    success:
-      palette.success?.main ||
-      defaultPalette.success?.main ||
-      (() => {
-        throw new Error('Success color not found in current or default theme');
-      })(),
-  };
-}
-
-/**
- * Generates border colors
- */
-function generateBorderColors(
-  palette: Mui5Theme['palette'],
-): Record<string, string> {
-  const isDark = palette.mode === 'dark';
-
-  // Get the default Backstage theme for fallback values
-  const defaultTheme = isDark ? themes.dark : themes.light;
-  const defaultMuiTheme = defaultTheme.getTheme('v5');
-
-  if (!defaultMuiTheme) {
-    throw new Error(
-      `Failed to get MUI v5 theme from Backstage ${
-        isDark ? 'dark' : 'light'
-      } theme`,
-    );
-  }
-
-  const defaultPalette = defaultMuiTheme.palette;
-  if (!defaultPalette) {
-    throw new Error(
-      `Failed to get palette from Backstage ${isDark ? 'dark' : 'light'} theme`,
-    );
-  }
-
-  return {
-    '': isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)',
-    hover: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.2)',
-    pressed: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)',
-    disabled: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
-    danger:
-      palette.error?.main ||
-      defaultPalette.error?.main ||
-      (() => {
-        throw new Error('Error color not found in current or default theme');
-      })(),
-    warning:
-      palette.warning?.main ||
-      defaultPalette.warning?.main ||
-      (() => {
-        throw new Error('Warning color not found in current or default theme');
-      })(),
-    success:
-      palette.success?.main ||
-      defaultPalette.success?.main ||
-      (() => {
-        throw new Error('Success color not found in current or default theme');
-      })(),
-  };
 }

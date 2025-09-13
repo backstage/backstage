@@ -54,7 +54,8 @@ describe('convertMuiToBuiTheme', () => {
 
     expect(result).toContain(':root {');
     expect(result).toContain('--bui-font-regular: Roboto, sans-serif;');
-    expect(result).toContain('--bui-space: 8px;');
+    // Spacing is skipped for default 8px
+    expect(result).not.toContain('--bui-space:');
     expect(result).toContain('--bui-radius-3: 4px;');
     expect(result).toContain('--bui-bg: #f5f5f5;');
     expect(result).toContain('--bui-bg-surface-1: #ffffff;');
@@ -122,38 +123,6 @@ describe('convertMuiToBuiTheme', () => {
     expect(result).toContain('--bui-white: #fff;');
   });
 
-  it('should generate proper gray scale for light theme', () => {
-    const theme = createTheme({
-      palette: {
-        mode: 'light',
-        primary: {
-          main: '#1976d2',
-        },
-      },
-    });
-
-    const result = convertMuiToBuiTheme(theme);
-
-    expect(result).toContain('--bui-gray-1: #f8f8f8;');
-    expect(result).toContain('--bui-gray-8: #595959;');
-  });
-
-  it('should generate proper gray scale for dark theme', () => {
-    const theme = createTheme({
-      palette: {
-        mode: 'dark',
-        primary: {
-          main: '#90caf9',
-        },
-      },
-    });
-
-    const result = convertMuiToBuiTheme(theme);
-
-    expect(result).toContain('--bui-gray-1: #191919;');
-    expect(result).toContain('--bui-gray-8: #b4b4b4;');
-  });
-
   it('should generate surface colors correctly', () => {
     const theme = createTheme({
       palette: {
@@ -180,7 +149,7 @@ describe('convertMuiToBuiTheme', () => {
     const result = convertMuiToBuiTheme(theme);
 
     expect(result).toContain('--bui-bg-solid: #1976d2;');
-    expect(result).toContain('--bui-bg-solid-hover: #115293;');
+    expect(result).toContain('--bui-bg-solid-hover: rgb(21, 100, 179);');
     expect(result).toContain('--bui-bg-danger: #ffcdd2;');
     expect(result).toContain('--bui-bg-warning: #ffe0b2;');
     expect(result).toContain('--bui-bg-success: #c8e6c9;');
@@ -237,8 +206,7 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain('--bui-border: rgba(0, 0, 0, 0.1);');
-    expect(result).toContain('--bui-border-hover: rgba(0, 0, 0, 0.2);');
+    // Base border colors are no longer generated
     expect(result).toContain('--bui-border-danger: #f44336;');
     expect(result).toContain('--bui-border-warning: #ff9800;');
     expect(result).toContain('--bui-border-success: #4caf50;');
@@ -251,7 +219,7 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain('--bui-space: 4px;');
+    expect(result).toContain('--bui-space: calc(4px * 0.5);');
   });
 
   it('should handle string-based spacing', () => {
@@ -261,7 +229,7 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result).toContain('--bui-space: calc(1 * 8px);');
+    expect(result).toContain('--bui-space: calc(calc(1 * 8px) * 0.5);');
   });
 
   it('should handle string-based border radius', () => {
@@ -274,65 +242,5 @@ describe('convertMuiToBuiTheme', () => {
     const result = convertMuiToBuiTheme(theme);
 
     expect(result).toContain('--bui-radius-3: 8px;');
-  });
-
-  describe('early validation', () => {
-    it('should throw error when theme is undefined', () => {
-      expect(() => convertMuiToBuiTheme(undefined as any)).toThrow(
-        'Theme is required',
-      );
-    });
-
-    it('should throw error when theme palette is missing', () => {
-      const theme = { typography: {}, spacing: () => 8, shape: {} } as any;
-      expect(() => convertMuiToBuiTheme(theme)).toThrow(
-        'Theme palette is required',
-      );
-    });
-
-    it('should throw error when theme palette mode is missing', () => {
-      const theme = {
-        palette: {},
-        typography: {},
-        spacing: () => 8,
-        shape: {},
-      } as any;
-      expect(() => convertMuiToBuiTheme(theme)).toThrow(
-        'Theme palette mode is required',
-      );
-    });
-
-    it('should throw error when theme typography is missing', () => {
-      const theme = {
-        palette: { mode: 'light' },
-        spacing: () => 8,
-        shape: {},
-      } as any;
-      expect(() => convertMuiToBuiTheme(theme)).toThrow(
-        'Theme typography is required',
-      );
-    });
-
-    it('should throw error when theme spacing is missing', () => {
-      const theme = {
-        palette: { mode: 'light' },
-        typography: {},
-        shape: {},
-      } as any;
-      expect(() => convertMuiToBuiTheme(theme)).toThrow(
-        'Theme spacing is required',
-      );
-    });
-
-    it('should throw error when theme shape is missing', () => {
-      const theme = {
-        palette: { mode: 'light' },
-        typography: {},
-        spacing: () => 8,
-      } as any;
-      expect(() => convertMuiToBuiTheme(theme)).toThrow(
-        'Theme shape is required',
-      );
-    });
   });
 });
