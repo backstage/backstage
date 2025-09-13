@@ -15,7 +15,7 @@
  */
 
 import {
-  FederationRuntimePlugin,
+  ModuleFederationRuntimePlugin,
   init,
   loadRemote,
 } from '@module-federation/enhanced/runtime';
@@ -39,7 +39,7 @@ export type DynamicFrontendFeaturesLoaderOptions = {
   moduleFederation: {
     shared?: UserOptions['shared'];
     shareStrategy?: ShareStrategy;
-    plugins?: Array<FederationRuntimePlugin>;
+    plugins?: Array<ModuleFederationRuntimePlugin>;
   };
 };
 
