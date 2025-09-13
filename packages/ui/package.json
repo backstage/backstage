@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@base-ui-components/react": "1.0.0-alpha.7",
+    "@react-types/shared": "^3.30.0",
     "@remixicon/react": "^4.6.0",
     "@storybook/test": "^8.6.12",
     "@tanstack/react-table": "^8.21.3",

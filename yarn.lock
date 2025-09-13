@@ -7546,6 +7546,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@base-ui-components/react": "npm:1.0.0-alpha.7"
+    "@react-types/shared": "npm:^3.30.0"
     "@remixicon/react": "npm:^4.6.0"
     "@storybook/react": "npm:^8.6.12"
     "@storybook/test": "npm:^8.6.12"
