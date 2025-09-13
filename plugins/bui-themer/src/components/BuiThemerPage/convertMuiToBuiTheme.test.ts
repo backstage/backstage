@@ -275,4 +275,64 @@ describe('convertMuiToBuiTheme', () => {
 
     expect(result).toContain('--bui-radius-3: 8px;');
   });
+
+  describe('early validation', () => {
+    it('should throw error when theme is undefined', () => {
+      expect(() => convertMuiToBuiTheme(undefined as any)).toThrow(
+        'Theme is required',
+      );
+    });
+
+    it('should throw error when theme palette is missing', () => {
+      const theme = { typography: {}, spacing: () => 8, shape: {} } as any;
+      expect(() => convertMuiToBuiTheme(theme)).toThrow(
+        'Theme palette is required',
+      );
+    });
+
+    it('should throw error when theme palette mode is missing', () => {
+      const theme = {
+        palette: {},
+        typography: {},
+        spacing: () => 8,
+        shape: {},
+      } as any;
+      expect(() => convertMuiToBuiTheme(theme)).toThrow(
+        'Theme palette mode is required',
+      );
+    });
+
+    it('should throw error when theme typography is missing', () => {
+      const theme = {
+        palette: { mode: 'light' },
+        spacing: () => 8,
+        shape: {},
+      } as any;
+      expect(() => convertMuiToBuiTheme(theme)).toThrow(
+        'Theme typography is required',
+      );
+    });
+
+    it('should throw error when theme spacing is missing', () => {
+      const theme = {
+        palette: { mode: 'light' },
+        typography: {},
+        shape: {},
+      } as any;
+      expect(() => convertMuiToBuiTheme(theme)).toThrow(
+        'Theme spacing is required',
+      );
+    });
+
+    it('should throw error when theme shape is missing', () => {
+      const theme = {
+        palette: { mode: 'light' },
+        typography: {},
+        spacing: () => 8,
+      } as any;
+      expect(() => convertMuiToBuiTheme(theme)).toThrow(
+        'Theme shape is required',
+      );
+    });
+  });
 });
