@@ -218,5 +218,19 @@ export interface Config {
      * housing catalog-info files.
      */
     processingInterval?: HumanDuration | false;
+
+    /**
+     * Catalog processor configuration. Key is the processor name for example
+     * `BuiltinEntityKindProcessor`.
+     */
+    processors?: {
+      [key: string]: {
+        /**
+         * Processor names this processor depends on. This is used to ensure that
+         * the dependencies are processed before this processor.
+         */
+        dependencies?: string[];
+      };
+    };
   };
 }

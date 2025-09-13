@@ -24,12 +24,14 @@ import {
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
 } from '../catalog/types';
-import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { CatalogProcessor, EntityFilter } from '@backstage/plugin-catalog-node';
+import { Config } from '@backstage/config';
 import {
   Entity,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import TopologicalSort from 'topological-sort';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');
@@ -165,4 +167,35 @@ export function expandLegacyCompoundRelationsInEntity(entity: Entity): Entity {
     }
   }
   return entity;
+}
+
+export function buildProcessorGraph(
+  processors: CatalogProcessor[],
+  config: Config,
+): CatalogProcessor[] {
+  const nodes = new Map<string, CatalogProcessor>();
+  for (const processor of processors) {
+    nodes.set(processor.getProcessorName(), processor);
+  }
+
+  const sortOp = new TopologicalSort<string, CatalogProcessor>(nodes);
+  for (const processor of processors) {
+    const dependencies =
+      config.getOptionalStringArray(
+        `catalog.processors.${processor.getProcessorName()}.dependencies`,
+      ) ??
+      processor.getDependencies?.() ??
+      [];
+    for (const dependency of dependencies) {
+      sortOp.addEdge(processor.getProcessorName(), dependency);
+    }
+  }
+
+  const sorted = sortOp.sort();
+  const sortedKeys = [...sorted.keys()];
+  return processors.sort((a, b) => {
+    const aIndex = sortedKeys.indexOf(a.getProcessorName());
+    const bIndex = sortedKeys.indexOf(b.getProcessorName());
+    return bIndex - aIndex;
+  });
 }

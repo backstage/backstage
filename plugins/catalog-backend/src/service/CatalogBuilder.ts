@@ -111,6 +111,7 @@ import {
   catalogEntityPermissionResourceRef,
   CatalogPermissionRuleInput,
 } from '@backstage/plugin-catalog-node/alpha';
+import { buildProcessorGraph } from './util.ts';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -723,9 +724,10 @@ export class CatalogBuilder {
     // Add the ones (if any) that the user added
     processors.push(...this.processors);
 
+    this.checkDuplicateProcessorNames(processors);
     this.checkMissingExternalProcessors(processors);
 
-    return processors;
+    return buildProcessorGraph(processors, config);
   }
 
   // TODO(Rugvip): These old processors are removed, for a while we'll be throwing
@@ -750,6 +752,21 @@ export class CatalogBuilder {
     if (pc?.has('azureApi')) {
       throw new Error(
         `Using deprecated configuration for catalog.processors.azureApi, move to using integrations.azure instead`,
+      );
+    }
+  }
+
+  private checkDuplicateProcessorNames(processors: CatalogProcessor[]) {
+    const processorNames = processors.map(p => p.getProcessorName());
+    const duplicates = processorNames.filter(
+      (name, index) => processorNames.indexOf(name) !== index,
+    );
+
+    if (duplicates.length > 0) {
+      throw new Error(
+        `Duplicate processor names found: ${duplicates.join(
+          ', ',
+        )}. Each processor must have a unique name.`,
       );
     }
   }
