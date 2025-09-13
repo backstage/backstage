@@ -146,6 +146,7 @@
     "ts-morph": "^24.0.0",
     "undici": "^7.2.3",
     "util": "^0.12.3",
+    "v8-profiler-next": "^1.10.0",
     "yaml": "^2.0.0",
     "yargs": "^16.2.0",
     "yml-loader": "^2.1.0",

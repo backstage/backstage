@@ -643,6 +643,7 @@ describe('CatalogClient', () => {
           name: 'exists',
         }),
       ).resolves.toEqual(existingEntity);
+      //
     });
 
     it('returns undefined for 404s', async () => {
