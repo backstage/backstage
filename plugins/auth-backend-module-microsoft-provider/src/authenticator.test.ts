@@ -25,7 +25,7 @@ import {
   PassportOAuthAuthenticatorHelper,
 } from '@backstage/plugin-auth-node';
 import express from 'express';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { FakeMicrosoftAPI } from './__testUtils__/fake';
 import { microsoftAuthenticator } from './authenticator';
@@ -54,55 +54,55 @@ describe('microsoftAuthenticator', () => {
     jest.clearAllMocks();
 
     server.use(
-      rest.post(
+      http.post(
         'https://login.microsoftonline.com/tenantId/oauth2/v2.0/token',
-        async (req, res, ctx) => {
-          return res(
-            ctx.json({
-              ...microsoftApi.token(new URLSearchParams(await req.text())),
-              token_type: 'Bearer',
-              expires_in: 123,
-              ext_expires_in: 123,
-            }),
-          );
+        async ({ request }) => {
+          const body = await request.text();
+          return Response.json({
+            ...microsoftApi.token(new URLSearchParams(body)),
+            token_type: 'Bearer',
+            expires_in: 123,
+            ext_expires_in: 123,
+          });
         },
       ),
-      rest.get('https://graph.microsoft.com/v1.0/me/', (req, res, ctx) => {
+      http.get('https://graph.microsoft.com/v1.0/me/', ({ request }) => {
+        const authHeader = request.headers.get('authorization');
         if (
           !microsoftApi.tokenHasScope(
-            req.headers.get('authorization')!.replace(/^Bearer /, ''),
+            authHeader!.replace(/^Bearer /, ''),
             'User.Read',
           )
         ) {
-          return res(ctx.status(403));
+          return new Response(null, { status: 403 });
         }
-        return res(
-          ctx.json({
-            id: 'conrad',
-            displayName: 'Conrad',
-            surname: 'Ribas',
-            givenName: 'Francisco',
-            mail: 'conrad@example.com',
-          }),
-        );
+        return Response.json({
+          id: 'conrad',
+          displayName: 'Conrad',
+          surname: 'Ribas',
+          givenName: 'Francisco',
+          mail: 'conrad@example.com',
+        });
       }),
-      rest.get(
+      http.get(
         'https://graph.microsoft.com/v1.0/me/photos/*',
-        async (req, res, ctx) => {
+        async ({ request }) => {
+          const authHeader = request.headers.get('authorization');
           if (
             !microsoftApi.tokenHasScope(
-              req.headers.get('authorization')!.replace(/^Bearer /, ''),
+              authHeader!.replace(/^Bearer /, ''),
               'User.Read',
             )
           ) {
-            return res(ctx.status(403));
+            return new Response(null, { status: 403 });
           }
           const imageBuffer = new Uint8Array([104, 111, 119, 100, 121]).buffer;
-          return res(
-            ctx.set('Content-Length', imageBuffer.byteLength.toString()),
-            ctx.set('Content-Type', 'image/jpeg'),
-            ctx.body(imageBuffer),
-          );
+          return new Response(imageBuffer, {
+            headers: {
+              'Content-Length': imageBuffer.byteLength.toString(),
+              'Content-Type': 'image/jpeg',
+            },
+          });
         },
       ),
     );
@@ -212,8 +212,8 @@ describe('microsoftAuthenticator', () => {
 
     it('omits photo data when fetching it fails', async () => {
       server.use(
-        rest.get('https://graph.microsoft.com/v1.0/me/photos/*', (_, res) =>
-          res.networkError('remote hung up'),
+        http.get('https://graph.microsoft.com/v1.0/me/photos/*', () =>
+          Response.error(),
         ),
       );
 
