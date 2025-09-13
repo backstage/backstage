@@ -27,6 +27,10 @@ import {
   HeaderPage,
   Text,
   Switch,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanel,
 } from '@backstage/ui';
 import { convertMuiToBuiTheme } from './convertMuiToBuiTheme';
 
@@ -46,6 +50,7 @@ function ThemeContent({
   const [generatedCss, setGeneratedCss] = useState<string>('');
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [includeThemeId, setIncludeThemeId] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('css');
 
   const css = useMemo(() => {
     return convertMuiToBuiTheme(muiTheme, {
@@ -123,85 +128,114 @@ function ThemeContent({
             <Button onClick={handleDownload} variant="secondary">
               Download CSS
             </Button>
-            <Button
-              onClick={handlePreviewToggle}
-              variant={isPreviewMode ? 'primary' : 'secondary'}
-            >
-              {isPreviewMode ? 'Stop Preview' : 'Preview'}
-            </Button>
           </Flex>
 
-          <Box>
-            <Text variant="body-small" style={{ marginBottom: '8px' }}>
-              Generated CSS:
-            </Text>
-            <Box
-              p="3"
-              style={{
-                backgroundColor: 'var(--bui-bg-surface-2)',
-                border: '1px solid var(--bui-border)',
-                borderRadius: 'var(--bui-radius-2)',
-                fontFamily: 'monospace',
-                fontSize: '14px',
-                lineHeight: '1.5',
-                maxHeight: '400px',
-                overflow: 'auto',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all',
-              }}
-            >
-              {generatedCss}
-            </Box>
-          </Box>
+          <Tabs
+            selectedKey={activeTab}
+            onSelectionChange={key => setActiveTab(key as string)}
+          >
+            <TabList>
+              <Tab id="css">Generated CSS</Tab>
+              <Tab id="preview">Live Preview</Tab>
+            </TabList>
 
-          {isPreviewMode && (
-            <Box>
-              <Text variant="body-medium" style={{ marginBottom: '12px' }}>
-                Live Preview:
-              </Text>
-              <Box
-                p="4"
-                style={{
-                  border: '1px solid var(--bui-border)',
-                  borderRadius: 'var(--bui-radius-2)',
-                  backgroundColor: 'var(--bui-bg-surface-1)',
-                }}
-              >
-                <Flex direction="column" gap="3">
-                  <Box
-                    p="3"
-                    style={{
-                      backgroundColor: 'var(--bui-bg-solid)',
-                      color: 'var(--bui-fg-solid)',
-                      borderRadius: 'var(--bui-radius-1)',
-                    }}
-                  >
-                    <Text variant="body-medium">Solid Button</Text>
-                  </Box>
-                  <Box
-                    p="3"
-                    style={{
-                      backgroundColor: 'var(--bui-bg-tint)',
-                      color: 'var(--bui-fg-tint)',
-                      borderRadius: 'var(--bui-radius-1)',
-                    }}
-                  >
-                    <Text variant="body-medium">Tint Button</Text>
-                  </Box>
-                  <Box
-                    p="3"
-                    style={{
-                      backgroundColor: 'var(--bui-bg-surface-2)',
-                      color: 'var(--bui-fg-primary)',
-                      borderRadius: 'var(--bui-radius-1)',
-                    }}
-                  >
-                    <Text variant="body-medium">Surface Card</Text>
-                  </Box>
-                </Flex>
+            <TabPanel id="css">
+              <Box>
+                <Text variant="body-small" style={{ marginBottom: '8px' }}>
+                  Generated CSS:
+                </Text>
+                <Box
+                  p="3"
+                  style={{
+                    backgroundColor: 'var(--bui-bg-surface-2)',
+                    border: '1px solid var(--bui-border)',
+                    borderRadius: 'var(--bui-radius-2)',
+                    fontFamily: 'monospace',
+                    fontSize: '14px',
+                    lineHeight: '1.5',
+                    maxHeight: '400px',
+                    overflow: 'auto',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-all',
+                  }}
+                >
+                  {generatedCss}
+                </Box>
               </Box>
-            </Box>
-          )}
+            </TabPanel>
+
+            <TabPanel id="preview">
+              <Flex direction="column" gap="4">
+                <Flex gap="3">
+                  <Button
+                    onClick={handlePreviewToggle}
+                    variant={isPreviewMode ? 'primary' : 'secondary'}
+                  >
+                    {isPreviewMode ? 'Stop Preview' : 'Start Preview'}
+                  </Button>
+                </Flex>
+
+                {isPreviewMode ? (
+                  <Box>
+                    <Text
+                      variant="body-medium"
+                      style={{ marginBottom: '12px' }}
+                    >
+                      Live Preview:
+                    </Text>
+                    <Box
+                      p="4"
+                      style={{
+                        border: '1px solid var(--bui-border)',
+                        borderRadius: 'var(--bui-radius-2)',
+                        backgroundColor: 'var(--bui-bg-surface-1)',
+                      }}
+                    >
+                      <Flex direction="column" gap="3">
+                        <Box
+                          p="3"
+                          style={{
+                            backgroundColor: 'var(--bui-bg-solid)',
+                            color: 'var(--bui-fg-solid)',
+                            borderRadius: 'var(--bui-radius-1)',
+                          }}
+                        >
+                          <Text variant="body-medium">Solid Button</Text>
+                        </Box>
+                        <Box
+                          p="3"
+                          style={{
+                            backgroundColor: 'var(--bui-bg-tint)',
+                            color: 'var(--bui-fg-tint)',
+                            borderRadius: 'var(--bui-radius-1)',
+                          }}
+                        >
+                          <Text variant="body-medium">Tint Button</Text>
+                        </Box>
+                        <Box
+                          p="3"
+                          style={{
+                            backgroundColor: 'var(--bui-bg-surface-2)',
+                            color: 'var(--bui-fg-primary)',
+                            borderRadius: 'var(--bui-radius-1)',
+                          }}
+                        >
+                          <Text variant="body-medium">Surface Card</Text>
+                        </Box>
+                      </Flex>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Text variant="body-medium" color="secondary">
+                      Click "Start Preview" to see the theme applied to sample
+                      components.
+                    </Text>
+                  </Box>
+                )}
+              </Flex>
+            </TabPanel>
+          </Tabs>
         </Flex>
       </Box>
     </Card>
