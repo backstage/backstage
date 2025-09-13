@@ -89,12 +89,9 @@ export function BuiThemePreview({ mode, styleObject }: IsolatedPreviewProps) {
               />
               <Checkbox label="Checkbox Option" />
               <RadioGroup label="Radio Group" orientation="horizontal">
-                <Radio value="radio-option" />
-                <Text variant="body-small">Option 1</Text>
-                <Radio value="radio-option" />
-                <Text variant="body-small">Option 2</Text>
-                <Radio value="radio-option" />
-                <Text variant="body-small">Option 3</Text>
+                <Radio value="option-1">Option 1</Radio>
+                <Radio value="option-2">Option 2</Radio>
+                <Radio value="option-3">Option 3</Radio>
               </RadioGroup>
             </Flex>
           </CardBody>
