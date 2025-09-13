@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-import ReactDOM from 'react-dom/client';
-import { createApp } from '@backstage/frontend-defaults';
-import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
-import { dynamicFrontendFeaturesLoader } from '@backstage/frontend-dynamic-feature-loader';
+import { SharedImport } from './types';
+import type { moduleFederationPlugin } from '@module-federation/sdk';
 
-const app = createApp({
-  features: [appModulePublicSignIn, dynamicFrontendFeaturesLoader()],
-});
-
-ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());
+/**
+ * @public
+ */
+export function buildRemoteSharedPackages(
+  sharedImports: SharedImport[],
+): moduleFederationPlugin.Shared {
+  return Object.fromEntries(
+    sharedImports.map(p => [
+      p.name,
+      {
+        singleton: true,
+        requiredVersion: p.requiredVersion ?? '*',
+        ...(p.import ? {} : { import: p.import }),
+        eager: false,
+      },
+    ]),
+  );
+}

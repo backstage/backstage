@@ -236,7 +236,7 @@ export class PluginScanner {
         this.rootDirectoryWatcher = chokidar
           .watch(this._rootDirectory, {
             ignoreInitial: true,
-            followSymlinks: true,
+            followSymlinks: false,
             depth: 1,
             disableGlobbing: true,
           })

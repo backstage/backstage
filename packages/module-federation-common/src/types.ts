@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import ReactDOM from 'react-dom/client';
-import { createApp } from '@backstage/frontend-defaults';
-import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
-import { dynamicFrontendFeaturesLoader } from '@backstage/frontend-dynamic-feature-loader';
+import { Module } from '@module-federation/sdk';
 
-const app = createApp({
-  features: [appModulePublicSignIn, dynamicFrontendFeaturesLoader()],
-});
-
-ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());
+/**
+ * @public
+ */
+export type SharedImport = {
+  name: string;
+  module: () => Promise<Module>;
+  version?: string;
+  requiredVersion?: string;
+  eager?: boolean;
+  import?: boolean;
+};

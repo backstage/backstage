@@ -15,9 +15,9 @@
  */
 
 import {
-  FederationRuntimePlugin,
-  init,
-  loadRemote,
+  ModuleFederationRuntimePlugin,
+  createInstance,
+  ModuleFederation,
 } from '@module-federation/enhanced/runtime';
 import { Module } from '@module-federation/sdk';
 import { DefaultApiClient, Remote } from './schema/openapi';
@@ -27,6 +27,10 @@ import {
   createFrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
 import { ShareStrategy, UserOptions } from '@module-federation/runtime/types';
+import {
+  buildHostSharedPackages,
+  defaultSharedImports,
+} from '@backstage/module-federation-common';
 
 /**
  *
@@ -37,9 +41,12 @@ export type DynamicFrontendFeaturesLoaderOptions = {
    * Additional module federation arguments for the Module Federation runtime initialization.
    */
   moduleFederation: {
-    shared?: UserOptions['shared'];
     shareStrategy?: ShareStrategy;
-    plugins?: Array<FederationRuntimePlugin>;
+    shared?: UserOptions['shared'] | (() => Promise<UserOptions['shared']>);
+    plugins?:
+      | Array<ModuleFederationRuntimePlugin>
+      | (() => Promise<Array<ModuleFederationRuntimePlugin>>);
+    instance?: ModuleFederation | (() => Promise<ModuleFederation>);
   };
 };
 
@@ -98,18 +105,61 @@ export function dynamicFrontendFeaturesLoader(
         return [];
       }
 
+      let instance: ModuleFederation;
       try {
-        init({
-          ...options?.moduleFederation,
-          name: appPackageName
-            .replaceAll('@', '')
-            .replaceAll('/', '__')
-            .replaceAll('-', '_'),
-          remotes: frontendPluginRemotes.map(remote => ({
-            alias: remote.packageName,
-            ...remote.remoteInfo,
-          })),
-        });
+        if (options?.moduleFederation?.instance) {
+          if (typeof options.moduleFederation.instance === 'function') {
+            instance = await options.moduleFederation.instance();
+          } else {
+            instance = options.moduleFederation.instance;
+          }
+        } else {
+          const { shared, errors } = await buildHostSharedPackages(
+            defaultSharedImports,
+          );
+          for (const err of errors) {
+            error(err.message, err.cause);
+          }
+
+          instance = createInstance({
+            name: appPackageName
+              .replaceAll('@', '')
+              .replaceAll('/', '__')
+              .replaceAll('-', '_'),
+            shared,
+            remotes: [],
+          });
+
+          if (options?.moduleFederation?.shareStrategy) {
+            instance.initOptions({
+              name: instance.name,
+              remotes: [],
+              shareStrategy: options.moduleFederation.shareStrategy,
+            });
+          }
+          if (options?.moduleFederation?.plugins) {
+            if (typeof options.moduleFederation.plugins === 'function') {
+              instance.registerPlugins(
+                await options.moduleFederation.plugins(),
+              );
+            } else {
+              instance.registerPlugins(options.moduleFederation.plugins);
+            }
+          }
+          if (options?.moduleFederation?.shared) {
+            if (typeof options.moduleFederation.shared === 'function') {
+              instance.registerShared(await options.moduleFederation.shared());
+            } else {
+              instance.registerShared(options.moduleFederation.shared);
+            }
+          }
+          instance.registerRemotes(
+            frontendPluginRemotes.map(remote => ({
+              alias: remote.packageName,
+              ...remote.remoteInfo,
+            })),
+          );
+        }
       } catch (err) {
         error(`Failed initializing module federation`, err);
         return [];
@@ -131,7 +181,7 @@ export function dynamicFrontendFeaturesLoader(
                     : `${remote.remoteInfo.name}/${exposedModuleName}`;
                 let module: Module;
                 try {
-                  module = await loadRemote<Module>(remoteModuleName);
+                  module = await instance.loadRemote<Module>(remoteModuleName);
                 } catch (err) {
                   error(
                     `Failed loading remote module '${remoteModuleName}' of dynamic plugin '${remote.packageName}'`,
