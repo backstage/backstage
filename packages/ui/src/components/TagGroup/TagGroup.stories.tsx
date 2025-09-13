@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TagGroup, Tag } from '.';
 import type { Selection } from 'react-aria-components';
 import { Flex, Icon, IconNames } from '../../';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj, StoryFn } from '@storybook/react-vite';
 import { HeaderPage } from './HeaderPage';
 import type { HeaderTab } from '../Header/types';
 import { MemoryRouter } from 'react-router-dom';

@@ -156,7 +156,7 @@ are separated out into their own folder, see further down.
 - [`integration/`](https://github.com/backstage/backstage/tree/master/packages/integration) -
   Common functionalities of integrations like GitHub, GitLab, etc.
 
-- [`.storybook/`](https://github.com/backstage/backstage/tree/master/.storybook) -
+- [`storybook/`](https://github.com/backstage/backstage/tree/master/.storybook) -
   This folder contains the Storybook configuration which helps visualize our
   reusable React components. Stories are scanned from packages and plugins across
   the monorepo, and are published in the [Backstage Storybook](https://backstage.io/storybook).
