@@ -31,6 +31,13 @@ import {
   TabList,
   Tab,
   TabPanel,
+  TextField,
+  Select,
+  Checkbox,
+  Radio,
+  RadioGroup,
+  CardHeader,
+  CardBody,
 } from '@backstage/ui';
 import { convertMuiToBuiTheme } from './convertMuiToBuiTheme';
 
@@ -41,6 +48,128 @@ interface ThemeContentProps {
   muiTheme: Theme;
 }
 
+interface IsolatedPreviewProps {
+  mode: 'light' | 'dark';
+  css: string;
+}
+
+function BuiThemePreview({ mode, css }: IsolatedPreviewProps) {
+  return (
+    <div
+      // Setting the theme mode ensures that the correct defaults are picked up from the BUI theme
+      data-theme-mode={mode}
+      style={{
+        // Apply the generated CSS variables directly to this container
+        // This creates a scoped context where the variables take precedence
+        ...Object.fromEntries(
+          css
+            .split('\n')
+            .filter(line => line.trim().startsWith('--bui-'))
+            .map(line => {
+              const [key, value] = line.trim().split(':');
+              return [key?.trim(), value?.replace(';', '').trim()];
+            })
+            .filter(([key, value]) => key && value),
+        ),
+        width: '100%',
+        backgroundColor: 'var(--bui-bg-surface-2)',
+        padding: 'var(--bui-space-3)',
+        borderRadius: 'var(--bui-radius-2)',
+      }}
+    >
+      <Flex direction="column" gap="4">
+        <Card>
+          <CardHeader>Theme Preview</CardHeader>
+          <CardBody>
+            <Text
+              variant="body-small"
+              style={{ color: 'var(--bui-fg-secondary)' }}
+            >
+              This preview shows how your theme will look with various Backstage
+              UI components
+            </Text>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader>Button Variants</CardHeader>
+          <CardBody>
+            <Flex gap="3">
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="tertiary">Tertiary</Button>
+            </Flex>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader>Form Inputs</CardHeader>
+          <CardBody>
+            <Flex direction="column" gap="3">
+              <TextField label="Text Input" placeholder="Enter some text" />
+              <Select
+                label="Select Input"
+                options={[
+                  { value: 'option1', label: 'Option 1' },
+                  { value: 'option2', label: 'Option 2' },
+                  { value: 'option3', label: 'Option 3' },
+                ]}
+              />
+              <Checkbox label="Checkbox Option" />
+              <RadioGroup label="Radio Group" orientation="horizontal">
+                <Radio value="radio-option" />
+                <Text variant="body-small">Option 1</Text>
+                <Radio value="radio-option" />
+                <Text variant="body-small">Option 2</Text>
+                <Radio value="radio-option" />
+                <Text variant="body-small">Option 3</Text>
+              </RadioGroup>
+            </Flex>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader>Surface Variations</CardHeader>
+          <CardBody>
+            <Flex gap="3">
+              <Card
+                style={{
+                  backgroundColor: 'var(--bui-bg-surface-1)',
+                  color: 'var(--bui-fg-primary)',
+                  padding: '12px',
+                  minWidth: '120px',
+                }}
+              >
+                <Text variant="body-small">Surface 1</Text>
+              </Card>
+              <Card
+                style={{
+                  backgroundColor: 'var(--bui-bg-surface-2)',
+                  color: 'var(--bui-fg-primary)',
+                  padding: '12px',
+                  minWidth: '120px',
+                }}
+              >
+                <Text variant="body-small">Surface 2</Text>
+              </Card>
+              <Card
+                style={{
+                  backgroundColor: 'var(--bui-bg-solid)',
+                  color: 'var(--bui-fg-solid)',
+                  padding: '12px',
+                  minWidth: '120px',
+                }}
+              >
+                <Text variant="body-small">Solid</Text>
+              </Card>
+            </Flex>
+          </CardBody>
+        </Card>
+      </Flex>
+    </div>
+  );
+}
+
 function ThemeContent({
   themeId,
   themeTitle,
@@ -48,7 +177,6 @@ function ThemeContent({
   muiTheme,
 }: ThemeContentProps) {
   const [generatedCss, setGeneratedCss] = useState<string>('');
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [includeThemeId, setIncludeThemeId] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('css');
 
@@ -78,29 +206,6 @@ function ThemeContent({
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, [generatedCss, themeId]);
-
-  const handlePreviewToggle = useCallback(() => {
-    setIsPreviewMode(!isPreviewMode);
-    if (!isPreviewMode) {
-      // Apply the generated CSS to a style element
-      const styleId = `bui-theme-preview-${themeId}`;
-      let styleElement = document.getElementById(styleId);
-      if (!styleElement) {
-        styleElement = document.createElement('style');
-        styleElement.id = styleId;
-        document.head.appendChild(styleElement);
-      }
-      styleElement.textContent = generatedCss;
-    } else {
-      // Remove the preview styles
-      const styleElement = document.getElementById(
-        `bui-theme-preview-${themeId}`,
-      );
-      if (styleElement) {
-        styleElement.remove();
-      }
-    }
-  }, [isPreviewMode, generatedCss, themeId]);
 
   return (
     <Card>
@@ -153,7 +258,7 @@ function ThemeContent({
                     fontFamily: 'monospace',
                     fontSize: '14px',
                     lineHeight: '1.5',
-                    maxHeight: '400px',
+                    height: '600px',
                     overflow: 'auto',
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-all',
@@ -165,75 +270,9 @@ function ThemeContent({
             </TabPanel>
 
             <TabPanel id="preview">
-              <Flex direction="column" gap="4">
-                <Flex gap="3">
-                  <Button
-                    onClick={handlePreviewToggle}
-                    variant={isPreviewMode ? 'primary' : 'secondary'}
-                  >
-                    {isPreviewMode ? 'Stop Preview' : 'Start Preview'}
-                  </Button>
-                </Flex>
-
-                {isPreviewMode ? (
-                  <Box>
-                    <Text
-                      variant="body-medium"
-                      style={{ marginBottom: '12px' }}
-                    >
-                      Live Preview:
-                    </Text>
-                    <Box
-                      p="4"
-                      style={{
-                        border: '1px solid var(--bui-border)',
-                        borderRadius: 'var(--bui-radius-2)',
-                        backgroundColor: 'var(--bui-bg-surface-1)',
-                      }}
-                    >
-                      <Flex direction="column" gap="3">
-                        <Box
-                          p="3"
-                          style={{
-                            backgroundColor: 'var(--bui-bg-solid)',
-                            color: 'var(--bui-fg-solid)',
-                            borderRadius: 'var(--bui-radius-1)',
-                          }}
-                        >
-                          <Text variant="body-medium">Solid Button</Text>
-                        </Box>
-                        <Box
-                          p="3"
-                          style={{
-                            backgroundColor: 'var(--bui-bg-tint)',
-                            color: 'var(--bui-fg-tint)',
-                            borderRadius: 'var(--bui-radius-1)',
-                          }}
-                        >
-                          <Text variant="body-medium">Tint Button</Text>
-                        </Box>
-                        <Box
-                          p="3"
-                          style={{
-                            backgroundColor: 'var(--bui-bg-surface-2)',
-                            color: 'var(--bui-fg-primary)',
-                            borderRadius: 'var(--bui-radius-1)',
-                          }}
-                        >
-                          <Text variant="body-medium">Surface Card</Text>
-                        </Box>
-                      </Flex>
-                    </Box>
-                  </Box>
-                ) : (
-                  <Box>
-                    <Text variant="body-medium" color="secondary">
-                      Click "Start Preview" to see the theme applied to sample
-                      components.
-                    </Text>
-                  </Box>
-                )}
-              </Flex>
+              <Box>
+                <BuiThemePreview mode={variant} css={generatedCss} />
+              </Box>
             </TabPanel>
           </Tabs>
         </Flex>
