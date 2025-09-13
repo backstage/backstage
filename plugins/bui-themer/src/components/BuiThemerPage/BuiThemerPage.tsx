@@ -26,7 +26,6 @@ import {
   Flex,
   HeaderPage,
   Text,
-  Switch,
   Tabs,
   TabList,
   Tab,
@@ -177,15 +176,11 @@ function ThemeContent({
   muiTheme,
 }: ThemeContentProps) {
   const [generatedCss, setGeneratedCss] = useState<string>('');
-  const [includeThemeId, setIncludeThemeId] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('css');
 
   const css = useMemo(() => {
-    return convertMuiToBuiTheme(muiTheme, {
-      themeId,
-      includeThemeId,
-    });
-  }, [muiTheme, themeId, includeThemeId]);
+    return convertMuiToBuiTheme(muiTheme);
+  }, [muiTheme]);
 
   useEffect(() => {
     setGeneratedCss(css);
@@ -216,14 +211,6 @@ function ThemeContent({
             <Text variant="body-small" color="secondary">
               {variant} theme
             </Text>
-          </Flex>
-
-          <Flex gap="3" align="center">
-            <Switch
-              isSelected={includeThemeId}
-              onChange={setIncludeThemeId}
-              label="Include theme ID scoping"
-            />
           </Flex>
 
           <Flex gap="3">

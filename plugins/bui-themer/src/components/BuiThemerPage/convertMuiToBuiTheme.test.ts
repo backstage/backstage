@@ -92,24 +92,6 @@ describe('convertMuiToBuiTheme', () => {
     expect(result).toContain('--bui-fg-secondary: #b3b3b3;');
   });
 
-  it('should include theme ID scoping when requested', () => {
-    const theme = createTheme({
-      palette: {
-        mode: 'light',
-        primary: {
-          main: '#1976d2',
-        },
-      },
-    });
-
-    const result = convertMuiToBuiTheme(theme, {
-      themeId: 'my-theme',
-      includeThemeId: true,
-    });
-
-    expect(result).toContain("[data-app-theme='my-theme'] :root {");
-  });
-
   it('should handle missing theme properties gracefully', () => {
     const theme = createTheme({});
 
