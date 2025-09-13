@@ -88,44 +88,6 @@ After verifying everything, introduce the problem of persistence - the todos are
 
 Saving values to the database. Writing a migrations file. Plumbing through the database service.
 
-## Integrations
-
-Now that our plugin is ready for prime time, let's see how we can really leverage the rest of the Backstage ecosystem. Backstage provides a set of core features out of the box, namely, the Software Catalog, Search, Permissions, and Notifications.
-
-### Catalog
-
-We want to show our todos as separate Catalog entities. How can we make this happen?
-
-### Search
-
-We want to make our todos searchable.
-
-### Permissions
-
-We only want users to be able to find their own todos.
-
-### Notifications
-
-We want to set an alarm time for todos that sends a notification when the time is met.
-
 ## SCM Integrations
 
 Our users love the new plugin, and now they want it to automatically fetch todos from their source code.
-
-## Additional Resources and Further Reading
-
-- **Real-world Implementations and Lessons**
-
-  - [Case studies and examples from the community](https://github.com/backstage/community#newsletters).
-  - Best practices derived from mature implementations.
-  - [Existing open-source community-maintained plugins](https://github.com/backstage/community-plugins).
-
-- **Resource Compendium**
-
-  - [Backstage Glossary](https://backstage.io/docs/references/glossary) of key terms.
-  - Recommended readings and tools for advanced developers.
-
-- **Certification and Learning Pathways**
-  - Pathways to deepen your understanding and expertise in plugin development for Backstage.
-
-Stay tuned for detailed exploration and guidance in each of these modules. We're excited to accompany you on your plugin development journey!
