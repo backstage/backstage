@@ -23,9 +23,10 @@ import { ConfigContent } from '../Content/ConfigContent';
 import { DevToolsLayout } from '../DevToolsLayout';
 import { InfoContent } from '../Content/InfoContent';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { DevToolsPageProps } from '../DevToolsPage';
 
 /** @public */
-export const DefaultDevToolsPage = () => (
+export const DefaultDevToolsPage = ({ extensionRoutes }: DevToolsPageProps) => (
   <DevToolsLayout>
     <DevToolsLayout.Route path="info" title="Info">
       <RequirePermission permission={devToolsInfoReadPermission}>
@@ -37,5 +38,14 @@ export const DefaultDevToolsPage = () => (
         <ConfigContent />
       </RequirePermission>
     </DevToolsLayout.Route>
+    {extensionRoutes?.map((route, index) => (
+      <DevToolsLayout.Route
+        key={`extension-${route.path}-${index}`}
+        path={route.path}
+        title={route.title}
+      >
+        {route.children}
+      </DevToolsLayout.Route>
+    ))}
   </DevToolsLayout>
 );

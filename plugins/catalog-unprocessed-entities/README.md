@@ -52,15 +52,21 @@ Import `catalogUnprocessedEntitiesPlugin` in your `App.tsx` and add it to your a
 
 ```typescript
 import catalogUnprocessedEntitiesPlugin from '@backstage/plugin-catalog-unprocessed-entities';
-
-// ...
+import { unprocessedEntitiesDevToolsRoute } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 
 export const app = createApp({
   features: [
+    appFeature,
     // ...
     catalogUnprocessedEntitiesPlugin,
     // ...
   ],
+});
+
+// Optionally add unprocessed entities route to devtools
+const appFeature = createFrontendModule({
+  pluginId: 'app',
+  extensions: [unprocessedEntitiesDevToolsRoute],
 });
 ```
 
