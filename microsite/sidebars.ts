@@ -35,7 +35,6 @@ export default {
           'getting-started/config/database',
           'getting-started/config/authentication',
           'getting-started/configure-app-with-plugins',
-          'getting-started/app-custom-theme',
           'getting-started/homepage',
         ],
       },
@@ -398,6 +397,16 @@ export default {
       'conf/reading',
       'conf/writing',
       'conf/defining',
+      {
+        type: 'category',
+        label: 'User Interface',
+        items: [
+          'conf/user-interface/index',
+          'conf/user-interface/logo',
+          'conf/user-interface/icons',
+          'conf/user-interface/sidebar',
+        ],
+      },
     ],
     Framework: [
       {
