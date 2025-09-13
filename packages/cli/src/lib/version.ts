@@ -18,6 +18,7 @@ import fs from 'fs-extra';
 import semver from 'semver';
 import { paths } from './paths';
 import { Lockfile } from './versioning';
+import { hasBackstageProtocolPackageManagerPlugin } from './packageManagerPlugin';
 
 /* eslint-disable @backstage/no-relative-monorepo-imports */
 /*
@@ -91,6 +92,15 @@ export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
 
 export function createPackageVersionProvider(lockfile?: Lockfile) {
   return (name: string, versionHint?: string): string => {
+    // For @backstage/* packages, return "backstage:^" only if the yarn plugin is available
+    if (name.startsWith('@backstage/')) {
+      const hasYarnPlugin = hasBackstageProtocolPackageManagerPlugin();
+      if (hasYarnPlugin) {
+        return 'backstage:^';
+      }
+      // Fall through to the original logic if plugin is not available
+    }
+
     const packageVersion = packageVersions[name];
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {

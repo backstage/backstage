@@ -19,6 +19,32 @@ import { Lockfile } from './versioning';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
+// Mock the hasBackstageProtocolPackageManagerPlugin function
+jest.mock('./paths', () => ({
+  paths: {
+    resolveTargetRoot: jest.fn(),
+  },
+}));
+
+jest.mock('./packageManagerPlugin', () => ({
+  hasBackstageProtocolPackageManagerPlugin: jest.fn(),
+}));
+
+import * as fs from 'fs-extra';
+
+jest.mock('fs-extra');
+const mockFs = fs as jest.Mocked<typeof fs>;
+
+jest.mock('yaml', () => ({
+  parse: jest.fn(),
+}));
+
+import * as yaml from 'yaml';
+const mockYaml = yaml as jest.Mocked<typeof yaml>;
+
+import { hasBackstageProtocolPackageManagerPlugin } from './packageManagerPlugin';
+const mockHasBackstageProtocolPackageManagerPlugin = hasBackstageProtocolPackageManagerPlugin as jest.MockedFunction<typeof hasBackstageProtocolPackageManagerPlugin>;
+
 describe('createPackageVersionProvider', () => {
   const mockDir = createMockDirectory();
 
@@ -26,6 +52,10 @@ describe('createPackageVersionProvider', () => {
 # yarn lockfile v1
 
 `;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('should provide package versions', async () => {
     mockDir.setContent({
@@ -69,14 +99,37 @@ describe('createPackageVersionProvider', () => {
 
     // No special handling for @types packages.
     expect(provider('@types/t', '1.4.2')).toBe('^1.2.3');
+  });
 
-    const cliVersion = packageVersions['@backstage/cli'];
-    expect(provider('@backstage/cli')).toBe(
-      // If we're currently in pre-release we expect that to be picked instead
-      cliVersion.includes('-') ? `^${cliVersion}` : '*',
-    );
-    expect(provider('@backstage/core-plugin-api')).toBe(
-      `^${corePluginApiPkg.version}`,
-    );
+  it('should return backstage:^ for @backstage/* packages when yarn plugin is available', () => {
+    mockHasBackstageProtocolPackageManagerPlugin.mockReturnValue(true);
+
+    const provider = createPackageVersionProvider();
+
+    expect(provider('@backstage/cli')).toBe('backstage:^');
+    expect(provider('@backstage/core-plugin-api')).toBe('backstage:^');
+    expect(provider('@backstage/backend-plugin-api')).toBe('backstage:^');
+    expect(provider('@backstage/backend-test-utils')).toBe('backstage:^');
+    expect(provider('@backstage/any-package')).toBe('backstage:^');
+  });
+
+  it('should use regular logic for @backstage/* packages when yarn plugin is not available', () => {
+    mockHasBackstageProtocolPackageManagerPlugin.mockReturnValue(false);
+
+    const provider = createPackageVersionProvider();
+
+    // Should return the caret version from packageVersions
+    expect(provider('@backstage/cli')).toMatch(/^\^/);
+    expect(provider('@backstage/core-plugin-api')).toMatch(/^\^/);
+  });
+
+  it('should use regular logic for @backstage/* packages when yarn plugin config is different', () => {
+    mockHasBackstageProtocolPackageManagerPlugin.mockReturnValue(false);
+
+    const provider = createPackageVersionProvider();
+
+    // Should return the caret version from packageVersions since backstage plugin is not found
+    expect(provider('@backstage/cli')).toMatch(/^\^/);
+    expect(provider('@backstage/core-plugin-api')).toMatch(/^\^/);
   });
 });
