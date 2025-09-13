@@ -23,7 +23,7 @@ import { Flex } from '../Flex';
 const meta = {
   title: 'Backstage UI/Grid',
   component: Grid.Root,
-} satisfies Meta<typeof Grid>;
+} satisfies Meta<typeof Grid.Root>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

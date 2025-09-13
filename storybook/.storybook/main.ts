@@ -27,7 +27,7 @@ const stories = backstageCoreStories.flatMap(element => [
 ]);
 
 // Resolve absolute path of a package. Needed in monorepos.
-function getAbsolutePath(value: string): any {
+function getAbsolutePath(value: string): string {
   return dirname(require.resolve(join(value, 'package.json')));
 }
 

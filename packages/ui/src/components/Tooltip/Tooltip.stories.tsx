@@ -19,9 +19,36 @@ import { Placement } from '@react-types/overlays';
 import { TooltipTrigger, Tooltip } from './Tooltip';
 import { Button } from '../Button/Button';
 
+// Wrapper component for the story
+const TooltipWrapper = ({
+  tooltip,
+  isOpen,
+  isDisabled,
+  placement,
+  delay,
+  closeDelay,
+}: {
+  tooltip?: string;
+  isOpen?: boolean;
+  isDisabled?: boolean;
+  placement?: Placement;
+  delay?: number;
+  closeDelay?: number;
+}) => (
+  <TooltipTrigger
+    isOpen={isOpen}
+    isDisabled={isDisabled}
+    delay={delay}
+    closeDelay={closeDelay}
+  >
+    <Button>Button</Button>
+    <Tooltip placement={placement}>{tooltip ?? 'I am a tooltip'}</Tooltip>
+  </TooltipTrigger>
+);
+
 const meta = {
   title: 'Backstage UI/Tooltip',
-  component: TooltipTrigger,
+  component: TooltipWrapper,
   parameters: { layout: 'centered' },
   argTypes: {
     isOpen: {
@@ -41,25 +68,7 @@ const meta = {
       control: { type: 'number' },
     },
   },
-  render: ({ tooltip, isOpen, isDisabled, placement, delay, closeDelay }) => (
-    <TooltipTrigger
-      isOpen={isOpen}
-      isDisabled={isDisabled}
-      delay={delay}
-      closeDelay={closeDelay}
-    >
-      <Button>Button</Button>
-      <Tooltip placement={placement}>{tooltip ?? 'I am a tooltip'}</Tooltip>
-    </TooltipTrigger>
-  ),
-} as Meta<{
-  tooltip?: string;
-  isOpen?: boolean;
-  isDisabled?: boolean;
-  placement?: Placement;
-  delay?: number;
-  closeDelay?: number;
-}>;
+} satisfies Meta<typeof TooltipWrapper>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

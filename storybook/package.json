@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build-storybook": "storybook build --output-dir dist",
+    "build-storybook": "storybook build --output-dir dist-storybook",
     "storybook": "storybook dev -p 6006"
   },
   "eslintConfig": {

@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@storybook/react-vite": "^9.1.5",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "chalk": "^5.4.1",
