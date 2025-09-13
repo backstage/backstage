@@ -5,7 +5,14 @@
 ```ts
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+
+// @public
+export const actionReadPermission: ResourcePermission<'action'>;
+
+// @public (undocumented)
+export const actionsRegistryPermissions: ResourcePermission<'action'>[];
 
 // @public (undocumented)
 export const actionsRegistryServiceFactory: ServiceFactory<
@@ -20,6 +27,9 @@ export const actionsServiceFactory: ServiceFactory<
   'plugin',
   'singleton'
 >;
+
+// @public (undocumented)
+export const RESOURCE_TYPE_ACTION = 'action';
 
 // (No @packageDocumentation comment for this package)
 ```

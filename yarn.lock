@@ -2556,6 +2556,7 @@ __metadata:
     "@backstage/integration-aws-node": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@google-cloud/cloud-sql-connector": "npm:^1.4.0"

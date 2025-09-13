@@ -19,6 +19,7 @@ import {
   HttpAuthService,
   LoggerService,
   PluginMetadataService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
@@ -34,6 +35,8 @@ import {
   NotAllowedError,
   NotFoundError,
 } from '@backstage/errors';
+import { actionReadPermission } from './permissions';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
@@ -44,6 +47,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     private readonly httpAuth: HttpAuthService,
     private readonly auth: AuthService,
     private readonly metadata: PluginMetadataService,
+    private readonly permissions: PermissionsService,
   ) {}
 
   static create({
@@ -51,22 +55,47 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     logger,
     auth,
     metadata,
+    permissions,
   }: {
     httpAuth: HttpAuthService;
     logger: LoggerService;
     auth: AuthService;
     metadata: PluginMetadataService;
+    permissions: PermissionsService;
   }): DefaultActionsRegistryService {
-    return new DefaultActionsRegistryService(logger, httpAuth, auth, metadata);
+    return new DefaultActionsRegistryService(
+      logger,
+      httpAuth,
+      auth,
+      metadata,
+      permissions,
+    );
   }
 
   createRouter(): Router {
     const router = PromiseRouter();
     router.use(json());
 
-    router.get('/.backstage/actions/v1/actions', (_, res) => {
+    router.get('/.backstage/actions/v1/actions', async (req, res) => {
+      const credentials = await this.httpAuth.credentials(req);
+
+      const ids = Array.from(this.actions.keys());
+      const results = await this.permissions.authorize(
+        ids.map(actionId => ({
+          permission: actionReadPermission,
+          resourceRef: actionId,
+        })),
+        { credentials },
+      );
+      const allowedActions = Array.from(this.actions.entries()).filter(
+        (_, index) => {
+          const decision = results[index];
+          return decision?.result === AuthorizeResult.ALLOW;
+        },
+      );
+
       return res.json({
-        actions: Array.from(this.actions.entries()).map(([id, action]) => ({
+        actions: Array.from(allowedActions).map(([id, action]) => ({
           id,
           ...action,
           attributes: {
@@ -108,6 +137,22 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
         if (!action) {
           throw new NotFoundError(`Action "${req.params.actionId}" not found`);
+        }
+
+        const decision = await this.permissions.authorize(
+          [
+            {
+              permission: actionReadPermission,
+              resourceRef: req.params.actionId,
+            },
+          ],
+          { credentials },
+        );
+
+        if (decision[0].result !== AuthorizeResult.ALLOW) {
+          throw new NotAllowedError(
+            `You are not authorized to invoke action "${req.params.actionId}"`,
+          );
         }
 
         const input = action.schema?.input
