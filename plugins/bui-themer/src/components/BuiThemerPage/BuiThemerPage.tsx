@@ -24,10 +24,8 @@ import {
   Card,
   Container,
   Flex,
-  Grid,
   HeaderPage,
   Text,
-  TextField,
   Switch,
 } from '@backstage/ui';
 import {
@@ -136,16 +134,16 @@ function ThemeContent({ themeId, themeTitle, variant }: ThemeContentProps) {
 
   return (
     <Card>
-      <Box p="4">
-        <Flex direction="column" gap="3">
+      <Box p="6">
+        <Flex direction="column" gap="4">
           <Flex justify="between" align="center">
-            <Text variant="title-small">{themeTitle}</Text>
+            <Text variant="title-medium">{themeTitle}</Text>
             <Text variant="body-small" color="secondary">
               {variant} theme
             </Text>
           </Flex>
 
-          <Flex gap="2" align="center">
+          <Flex gap="3" align="center">
             <Switch
               isSelected={includeThemeId}
               onChange={setIncludeThemeId}
@@ -153,7 +151,7 @@ function ThemeContent({ themeId, themeTitle, variant }: ThemeContentProps) {
             />
           </Flex>
 
-          <Flex gap="2">
+          <Flex gap="3">
             <Button onClick={handleCopy} variant="secondary">
               Copy CSS
             </Button>
@@ -172,53 +170,70 @@ function ThemeContent({ themeId, themeTitle, variant }: ThemeContentProps) {
             <Text variant="body-small" style={{ marginBottom: '8px' }}>
               Generated CSS:
             </Text>
-            <TextField
-              value={generatedCss}
-              isReadOnly
-              style={{ fontFamily: 'monospace', fontSize: '12px' }}
-            />
-          </Box>
-
-          {isPreviewMode && (
             <Box
               p="3"
               style={{
+                backgroundColor: 'var(--bui-bg-surface-2)',
                 border: '1px solid var(--bui-border)',
                 borderRadius: 'var(--bui-radius-2)',
-                backgroundColor: 'var(--bui-bg-surface-1)',
+                fontFamily: 'monospace',
+                fontSize: '14px',
+                lineHeight: '1.5',
+                maxHeight: '400px',
+                overflow: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
               }}
             >
-              <Text variant="body-small" style={{ marginBottom: '8px' }}>
+              {generatedCss}
+            </Box>
+          </Box>
+
+          {isPreviewMode && (
+            <Box>
+              <Text variant="body-medium" style={{ marginBottom: '12px' }}>
                 Live Preview:
               </Text>
               <Box
-                p="2"
+                p="4"
                 style={{
-                  backgroundColor: 'var(--bui-bg-solid)',
-                  color: 'var(--bui-fg-solid)',
+                  border: '1px solid var(--bui-border)',
+                  borderRadius: 'var(--bui-radius-2)',
+                  backgroundColor: 'var(--bui-bg-surface-1)',
                 }}
               >
-                <Text>Solid Button</Text>
-              </Box>
-              <Box
-                p="2"
-                mt="2"
-                style={{
-                  backgroundColor: 'var(--bui-bg-tint)',
-                  color: 'var(--bui-fg-tint)',
-                }}
-              >
-                <Text>Tint Button</Text>
-              </Box>
-              <Box
-                p="2"
-                mt="2"
-                style={{
-                  backgroundColor: 'var(--bui-bg-surface-2)',
-                  color: 'var(--bui-fg-primary)',
-                }}
-              >
-                <Text>Surface Card</Text>
+                <Flex direction="column" gap="3">
+                  <Box
+                    p="3"
+                    style={{
+                      backgroundColor: 'var(--bui-bg-solid)',
+                      color: 'var(--bui-fg-solid)',
+                      borderRadius: 'var(--bui-radius-1)',
+                    }}
+                  >
+                    <Text variant="body-medium">Solid Button</Text>
+                  </Box>
+                  <Box
+                    p="3"
+                    style={{
+                      backgroundColor: 'var(--bui-bg-tint)',
+                      color: 'var(--bui-fg-tint)',
+                      borderRadius: 'var(--bui-radius-1)',
+                    }}
+                  >
+                    <Text variant="body-medium">Tint Button</Text>
+                  </Box>
+                  <Box
+                    p="3"
+                    style={{
+                      backgroundColor: 'var(--bui-bg-surface-2)',
+                      color: 'var(--bui-fg-primary)',
+                      borderRadius: 'var(--bui-radius-1)',
+                    }}
+                  >
+                    <Text variant="body-medium">Surface Card</Text>
+                  </Box>
+                </Flex>
               </Box>
             </Box>
           )}
@@ -270,18 +285,17 @@ export function BuiThemerPage() {
             </Box>
           </Card>
         ) : (
-          <Grid.Root gap="3">
+          <Flex direction="column" gap="4">
             {installedThemes.map(theme => (
-              <Grid.Item key={theme.id}>
-                <ThemePreview
-                  themeId={theme.id}
-                  themeTitle={theme.title}
-                  variant={theme.variant}
-                  Provider={theme.Provider}
-                />
-              </Grid.Item>
+              <ThemePreview
+                key={theme.id}
+                themeId={theme.id}
+                themeTitle={theme.title}
+                variant={theme.variant}
+                Provider={theme.Provider}
+              />
             ))}
-          </Grid.Root>
+          </Flex>
         )}
       </Box>
     </Container>
