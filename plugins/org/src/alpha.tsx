@@ -36,26 +36,59 @@ const EntityGroupProfileCard = EntityCardBlueprint.make({
 });
 
 /** @alpha */
-const EntityMembersListCard = EntityCardBlueprint.make({
+const EntityMembersListCard = EntityCardBlueprint.makeWithOverrides({
   name: 'members-list',
-  params: {
-    filter: { kind: 'group' },
-    loader: async () =>
-      import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
-        compatWrapper(<m.MembersListCard />),
-      ),
+  config: {
+    schema: {
+      initialRelationAggregation: z =>
+        z.enum(['direct', 'aggregated']).optional(),
+      showAggregateMembersToggle: z => z.boolean().optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      filter: { kind: 'group' },
+      loader: async () =>
+        import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
+          compatWrapper(
+            <m.MembersListCard
+              relationAggregation={config.initialRelationAggregation}
+              showAggregateMembersToggle={config.showAggregateMembersToggle}
+            />,
+          ),
+        ),
+    });
   },
 });
 
 /** @alpha */
-const EntityOwnershipCard = EntityCardBlueprint.make({
+const EntityOwnershipCard = EntityCardBlueprint.makeWithOverrides({
   name: 'ownership',
-  params: {
-    filter: { kind: { $in: ['group', 'user'] } },
-    loader: async () =>
-      import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
-        compatWrapper(<m.OwnershipCard />),
-      ),
+  config: {
+    schema: {
+      initialRelationAggregation: z =>
+        z.enum(['direct', 'aggregated']).optional(),
+      showAggregateMembersToggle: z => z.boolean().optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      filter: { kind: { $in: ['group', 'user'] } },
+      loader: async () =>
+        import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
+          compatWrapper(
+            <m.OwnershipCard
+              relationAggregation={config.initialRelationAggregation}
+              // harmonize the exposed alpha endpoints, but keep the default behaviour
+              hideRelationsToggle={
+                config.showAggregateMembersToggle === undefined
+                  ? undefined
+                  : !config.showAggregateMembersToggle
+              }
+            />,
+          ),
+        ),
+    });
   },
 });
 
