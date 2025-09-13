@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { Theme, useTheme } from '@mui/material/styles';
 
@@ -36,7 +36,14 @@ export function MuiThemeExtractor(props: {
   );
 }
 
-function MuiThemeExtractorInner(props: { setTheme: (theme: Theme) => void }) {
-  props.setTheme(useTheme());
+function MuiThemeExtractorInner({
+  setTheme,
+}: {
+  setTheme: (theme: Theme) => void;
+}) {
+  const theme = useTheme();
+  useEffect(() => {
+    setTheme(theme);
+  }, [theme, setTheme]);
   return null;
 }
