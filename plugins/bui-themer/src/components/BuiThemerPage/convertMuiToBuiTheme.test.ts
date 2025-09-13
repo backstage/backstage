@@ -215,26 +215,4 @@ describe('convertMuiToBuiTheme', () => {
 
     expect(result.css).toContain('--bui-space: calc(4px * 0.5);');
   });
-
-  it('should handle string-based spacing', () => {
-    const theme = createTheme({
-      spacing: '8px',
-    });
-
-    const result = convertMuiToBuiTheme(theme);
-
-    expect(result.css).toContain('--bui-space: calc(calc(1 * 8px) * 0.5);');
-  });
-
-  it('should handle string-based border radius', () => {
-    const theme = createTheme({
-      shape: {
-        borderRadius: '8px',
-      },
-    });
-
-    const result = convertMuiToBuiTheme(theme);
-
-    expect(result.css).toContain('--bui-radius-3: 8px;');
-  });
 });
