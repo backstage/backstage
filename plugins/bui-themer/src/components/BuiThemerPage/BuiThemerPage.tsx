@@ -15,9 +15,9 @@
  */
 
 import { useMemo, useState, useCallback, useEffect } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { AppTheme, useApi } from '@backstage/core-plugin-api';
 import { appThemeApiRef } from '@backstage/core-plugin-api';
-import { useTheme } from '@mui/material/styles';
+import { Theme, useTheme } from '@mui/material/styles';
 import {
   Box,
   Button,
@@ -33,13 +33,6 @@ import {
   ConvertMuiToBuiThemeOptions,
 } from './convertMuiToBuiTheme';
 
-interface ThemePreviewProps {
-  themeId: string;
-  themeTitle: string;
-  variant: 'light' | 'dark';
-  Provider: React.ComponentType<{ children: React.ReactNode }>;
-}
-
 // Memoization cache for generated CSS
 const cssCache = new Map<string, string>();
 
@@ -47,13 +40,18 @@ interface ThemeContentProps {
   themeId: string;
   themeTitle: string;
   variant: 'light' | 'dark';
+  muiTheme: Theme;
 }
 
-function ThemeContent({ themeId, themeTitle, variant }: ThemeContentProps) {
+function ThemeContent({
+  themeId,
+  themeTitle,
+  variant,
+  muiTheme,
+}: ThemeContentProps) {
   const [generatedCss, setGeneratedCss] = useState<string>('');
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [includeThemeId, setIncludeThemeId] = useState(false);
-  const muiTheme = useTheme();
 
   const css = useMemo(() => {
     // Create cache key based on theme properties and options
@@ -243,21 +241,27 @@ function ThemeContent({ themeId, themeTitle, variant }: ThemeContentProps) {
   );
 }
 
-function ThemePreview({
-  themeId,
-  themeTitle,
-  variant,
-  Provider,
-}: ThemePreviewProps) {
+function MuiThemeExtractor(props: {
+  appTheme: AppTheme;
+  children: (theme: Theme) => JSX.Element;
+}): JSX.Element {
+  const { appTheme, children } = props;
+  const [theme, setTheme] = useState<Theme | null>(null);
+  const { Provider } = appTheme;
+  if (theme) {
+    return children(theme);
+  }
+
   return (
     <Provider>
-      <ThemeContent
-        themeId={themeId}
-        themeTitle={themeTitle}
-        variant={variant}
-      />
+      <MuiThemeExtractorInner setTheme={setTheme} />
     </Provider>
   );
+}
+
+function MuiThemeExtractorInner(props: { setTheme: (theme: Theme) => void }) {
+  props.setTheme(useTheme());
+  return null;
 }
 
 export function BuiThemerPage() {
@@ -287,13 +291,17 @@ export function BuiThemerPage() {
         ) : (
           <Flex direction="column" gap="4">
             {installedThemes.map(theme => (
-              <ThemePreview
-                key={theme.id}
-                themeId={theme.id}
-                themeTitle={theme.title}
-                variant={theme.variant}
-                Provider={theme.Provider}
-              />
+              <MuiThemeExtractor key={theme.id} appTheme={theme}>
+                {muiTheme => (
+                  <ThemeContent
+                    key={theme.id}
+                    themeId={theme.id}
+                    themeTitle={theme.title}
+                    variant={theme.variant}
+                    muiTheme={muiTheme}
+                  />
+                )}
+              </MuiThemeExtractor>
             ))}
           </Flex>
         )}

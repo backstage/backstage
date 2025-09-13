@@ -74,12 +74,22 @@ export function UnifiedThemeProvider(
   const themeName = 'backstage';
 
   useEffect(() => {
+    const oldMode = document.body.getAttribute('data-theme-mode');
+    const oldName = document.body.getAttribute('data-theme-name');
     document.body.setAttribute('data-theme-mode', themeMode);
     document.body.setAttribute('data-theme-name', themeName);
 
     return () => {
-      document.body.removeAttribute('data-theme-mode');
-      document.body.removeAttribute('data-theme-name');
+      if (oldMode) {
+        document.body.setAttribute('data-theme-mode', oldMode);
+      } else {
+        document.body.removeAttribute('data-theme-mode');
+      }
+      if (oldName) {
+        document.body.setAttribute('data-theme-name', oldName);
+      } else {
+        document.body.removeAttribute('data-theme-name');
+      }
     };
   }, [themeMode, themeName]);
 
