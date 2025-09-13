@@ -1,6 +1,6 @@
 ---
 '@backstage/plugin-catalog-unprocessed-entities': patch
-'@backstage/plugin-devtools-react': patch
+'@backstage/plugin-devtools-react': minor
 '@backstage/plugin-devtools': patch
 ---
 
