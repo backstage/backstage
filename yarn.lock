@@ -23888,16 +23888,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ast-types@npm:^0.13.4":
-  version: 0.13.4
-  resolution: "ast-types@npm:0.13.4"
-  dependencies:
-    tslib: "npm:^2.0.1"
-  checksum: 10/c55b375b9aaf44713d8c0f77a08215ab6d44f368b13e44f2141c421022af3c62b615a30c8ea629457f0cbaec409c713401c0188a124552c8fe4a5ad6b17ff3c3
-  languageName: node
-  linkType: hard
-
-"ast-types@npm:^0.16.1":
+"ast-types@npm:0.16.1":
   version: 0.16.1
   resolution: "ast-types@npm:0.16.1"
   dependencies:
@@ -23912,6 +23903,15 @@ __metadata:
   dependencies:
     tslib: "npm:^2.0.1"
   checksum: 10/18e0a9e15d6cea1c1db6266bd5c1cd5d6ed2860da4c48ecebfaee6947dde5f2d20433379b895a442e7ed28e6a98bd4411ff04b05d1f2ae248fff25d96c660df2
+  languageName: node
+  linkType: hard
+
+"ast-types@patch:ast-types@npm%3A0.16.1#~/.yarn/patches/ast-types-npm-0.16.1-596f974e68.patch":
+  version: 0.16.1
+  resolution: "ast-types@patch:ast-types@npm%3A0.16.1#~/.yarn/patches/ast-types-npm-0.16.1-596f974e68.patch::version=0.16.1&hash=538845"
+  dependencies:
+    tslib: "npm:^2.0.1"
+  checksum: 10/15c639f8c04116cc3ef0941569549e7cc389b47901ca8b851ad87d3461d9e1dbf85da25a84c2e135864efdcc1bc833b90be216868b7dc7ac4613afcaa98939e0
   languageName: node
   linkType: hard
 
