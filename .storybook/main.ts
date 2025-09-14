@@ -35,14 +35,75 @@ const config: StorybookConfig = {
   stories,
   addons: [
     getAbsolutePath('@storybook/addon-links'),
-    getAbsolutePath('@storybook/addon-essentials'),
-    getAbsolutePath('@storybook/addon-interactions'),
     getAbsolutePath('@storybook/addon-themes'),
-    getAbsolutePath('@storybook/addon-storysource'),
+    getAbsolutePath('@storybook/addon-docs'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
+  },
+  viteFinal: async config => {
+    // Add Node.js polyfills for browser compatibility
+    //
+    // When upgrading from Storybook 8 to 9 with the react-vite framework,
+    // Node.js polyfills are no longer automatically included by Vite.
+    // This causes "ReferenceError: process is not defined" errors in the browser
+    // when code tries to access Node.js globals like `process` and `util`.
+    //
+    // The @vitest/mocker (included with Storybook 9) expects MSW v2 APIs,
+    // but we want to keep MSW v1 for the rest of the monorepo to avoid
+    // breaking changes. This configuration provides the necessary polyfills
+    // and handles the MSW compatibility issue specifically for Storybook.
+    //
+    // These polyfills provide browser-compatible versions of Node.js globals:
+    // - process: Node.js process object with env
+    // - global -> globalThis: Maps Node.js global to browser's globalThis
+    //
+    // Without these, Backstage components that rely on Node.js APIs will fail
+    // to load in Storybook's browser environment.
+    config.define = {
+      ...config.define,
+      global: 'globalThis',
+      'process.env': '{}',
+      process: '{ env: {}, browser: true }',
+    };
+
+    config.resolve = {
+      ...config.resolve,
+      alias: {
+        ...config.resolve?.alias,
+        // Provide Node.js polyfills for browser
+        process: 'process/browser',
+        util: 'util',
+        buffer: 'buffer',
+        stream: 'stream-browserify',
+        // Fix MSW v2 imports for @vitest/mocker compatibility
+        // @vitest/mocker expects MSW v2 APIs but we want to keep MSW v1 for the rest of the monorepo
+        'msw/browser': join(__dirname, 'msw-browser-shim.js'),
+        'msw/core/http': join(__dirname, 'msw-http-shim.js'),
+      },
+    };
+
+    // Optimize dependencies for better performance
+    config.optimizeDeps = {
+      ...config.optimizeDeps,
+      include: [
+        ...(config.optimizeDeps?.include || []),
+        'process/browser',
+        'util',
+        'buffer',
+        'stream-browserify',
+      ],
+      // Exclude MSW to prevent optimization conflicts with our shims
+      exclude: [
+        ...(config.optimizeDeps?.exclude || []),
+        'msw',
+        'msw/browser',
+        'msw/core/http',
+      ],
+    };
+
+    return config;
   },
 };
 
