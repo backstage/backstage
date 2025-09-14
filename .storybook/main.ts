@@ -42,7 +42,7 @@ const config: StorybookConfig = {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
-  viteFinal: async config => {
+  viteFinal: async (config, { configType }) => {
     // Add Node.js polyfills for browser compatibility
     //
     // When upgrading from Storybook 8 to 9 with the react-vite framework,
@@ -61,12 +61,24 @@ const config: StorybookConfig = {
     //
     // Without these, Backstage components that rely on Node.js APIs will fail
     // to load in Storybook's browser environment.
-    config.define = {
-      ...config.define,
-      global: 'globalThis',
-      'process.env': '{}',
-      process: '{ env: {}, browser: true }',
-    };
+    // Different configurations for development vs production
+    if (configType === 'DEVELOPMENT') {
+      // Development: Include process polyfill to prevent runtime errors
+      config.define = {
+        ...config.define,
+        global: 'globalThis',
+        'process.env': {},
+        process: '({ env: {}, browser: true })',
+      };
+    } else if (configType === 'PRODUCTION') {
+      // Production: Minimal define to avoid esbuild errors
+      config.define = {
+        ...config.define,
+        global: 'globalThis',
+        'process.env': {},
+        // No process polyfill in production build
+      };
+    }
 
     config.resolve = {
       ...config.resolve,
