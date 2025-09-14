@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, JSX } from 'react';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { Theme, useTheme } from '@mui/material/styles';
 

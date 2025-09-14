@@ -20,7 +20,7 @@ import { Box, Card, Container, Flex, HeaderPage, Text } from '@backstage/ui';
 import { ThemeContent } from './ThemeContent';
 import { MuiThemeExtractor } from './MuiThemeExtractor';
 
-export function BuiThemerPage() {
+export const BuiThemerPage = () => {
   const appThemeApi = useApi(appThemeApiRef);
   const installedThemes = appThemeApi.getInstalledThemes();
 
@@ -65,4 +65,4 @@ export function BuiThemerPage() {
       </Box>
     </Container>
   );
-}
+};

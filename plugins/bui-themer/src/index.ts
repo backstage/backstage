@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { buiThemerPlugin, BuiThemerPage } from './plugin';
-export { default } from './plugin';
+export { default, buiThemerPlugin, BuiThemerPage } from './plugin';
