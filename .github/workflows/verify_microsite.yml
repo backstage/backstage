@@ -204,7 +204,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: storybook
-          path: dist-storybook
+          path: storybook/dist-storybook
           if-no-files-found: error
           retention-days: 1
 
