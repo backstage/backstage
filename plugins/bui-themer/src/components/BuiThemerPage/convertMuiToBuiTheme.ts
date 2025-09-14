@@ -15,6 +15,7 @@
  */
 
 import { Theme as Mui5Theme } from '@mui/material/styles';
+import { BackstagePaletteAdditions } from '@backstage/theme';
 import { blend, alpha } from '@mui/system/colorManipulator';
 
 export interface ConvertMuiToBuiThemeResult {
@@ -61,48 +62,25 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     theme.typography.fontWeightBold || 600,
   );
 
-  // Font sizes - map MUI typography scale to BUI scale
-  const fontSizeMap = {
-    h1: '--bui-font-size-10',
-    h2: '--bui-font-size-8',
-    h3: '--bui-font-size-7',
-    h4: '--bui-font-size-6',
-    h5: '--bui-font-size-5',
-    h6: '--bui-font-size-4',
-    body1: '--bui-font-size-4',
-    body2: '--bui-font-size-3',
-    caption: '--bui-font-size-2',
-    overline: '--bui-font-size-1',
-  };
-
-  Object.entries(fontSizeMap).forEach(([muiKey, buiVar]) => {
-    const typographyVariant =
-      theme.typography[muiKey as keyof typeof theme.typography];
-    const fontSize =
-      typeof typographyVariant === 'object' && typographyVariant?.fontSize
-        ? typographyVariant.fontSize
-        : undefined;
-    if (fontSize) {
-      styleObject[buiVar] =
-        typeof fontSize === 'string' ? fontSize : `${fontSize}px`;
-    }
-  });
-
   const spacing = theme.spacing(1);
   // Skip spacing if the theme is using the default
   if (spacing !== '8px') {
     styleObject['--bui-space'] = `calc(${spacing} * 0.5)`;
   }
 
-  // Border radius
-  if (theme.shape?.borderRadius) {
-    const radius = theme.shape.borderRadius;
-    const radiusValue = typeof radius === 'number' ? `${radius}px` : radius;
-    styleObject['--bui-radius-3'] = radiusValue;
+  // Border radius, only translate a 0 radius
+  if (theme.shape.borderRadius === 0) {
+    styleObject['--bui-radius-1'] = '0';
+    styleObject['--bui-radius-2'] = '0';
+    styleObject['--bui-radius-3'] = '0';
+    styleObject['--bui-radius-4'] = '0';
+    styleObject['--bui-radius-5'] = '0';
+    styleObject['--bui-radius-6'] = '0';
   }
 
   // Colors - map MUI palette to BUI color tokens
-  const palette = theme.palette;
+  const palette = theme.palette as typeof theme.palette &
+    Partial<BackstagePaletteAdditions>;
 
   // Base colors
   if (palette.common?.black) {
@@ -112,13 +90,27 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     styleObject['--bui-white'] = palette.common.white;
   }
 
-  // Background colors
-  if (palette.background?.default) {
-    styleObject['--bui-bg'] = palette.background.default;
-  }
+  // Generate foreground colors
+  Object.entries({
+    primary: palette.text.primary,
+    secondary: palette.textSubtle,
+    link: palette.link ?? palette.primary.main,
+    'link-hover': palette.linkHover ?? palette.primary.dark,
+    disabled: palette.text.disabled,
+    solid: palette.primary.contrastText,
+    'solid-disabled': palette.text.disabled,
+    tint: palette.textSubtle,
+    'tint-disabled': palette.textVerySubtle,
+    danger: palette.error.dark,
+    warning: palette.warning.dark,
+    success: palette.success.dark,
+  }).forEach(([key, value]) => {
+    styleObject[`--bui-fg-${key}`] = value;
+  });
 
   // Generate surface colors
   Object.entries({
+    '': palette.background.default,
     'surface-1': palette.background.paper,
     'surface-2': palette.background.default,
     solid: palette.primary.main,
@@ -136,30 +128,6 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     styleObject[`--bui-bg-${key}`] = value;
   });
 
-  // Foreground colors
-  if (palette.text?.primary) {
-    styleObject['--bui-fg-primary'] = palette.text.primary;
-  }
-  if (palette.text?.secondary) {
-    styleObject['--bui-fg-secondary'] = palette.text.secondary;
-  }
-
-  // Generate foreground colors
-  Object.entries({
-    link: palette.primary.main,
-    'link-hover': palette.primary.dark,
-    disabled: palette.text.disabled,
-    solid: palette.text.primary,
-    'solid-disabled': palette.action.disabled,
-    tint: palette.primary.main,
-    'tint-disabled': palette.action.disabled,
-    danger: palette.error.main,
-    warning: palette.warning.main,
-    success: palette.success.main,
-  }).forEach(([key, value]) => {
-    styleObject[`--bui-fg-${key}`] = value;
-  });
-
   // Border colors
   Object.entries({
     danger: palette.error.main,
@@ -169,9 +137,17 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     styleObject[`--bui-border${key ? `-${key}` : ''}`] = value;
   });
 
+  // Base border color if available
+  if (palette.border || palette.divider) {
+    styleObject['--bui-border'] = palette.border || palette.divider;
+    styleObject['--bui-border-danger'] = palette.error.main;
+    styleObject['--bui-border-warning'] = palette.warning.main;
+    styleObject['--bui-border-success'] = palette.success.main;
+  }
+
   // Special colors
-  if (palette.primary?.main) {
-    styleObject['--bui-ring'] = palette.primary.main;
+  if (palette.highlight || palette.primary?.main) {
+    styleObject['--bui-ring'] = palette.highlight || palette.primary.main;
   }
 
   return styleObject;
