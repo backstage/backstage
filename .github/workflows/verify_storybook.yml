@@ -49,6 +49,11 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
+      # Also build and upload storybook
+      - name: Storybook yarn install
+        run: yarn install --immutable
+        working-directory: storybook
+
       - name: Build Storybook
         run: yarn build-storybook
 
