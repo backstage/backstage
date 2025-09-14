@@ -94,6 +94,6 @@ describe('ThemeContent', () => {
 
     fireEvent.click(screen.getByText('Live Preview'));
     // The preview renders content from BuiThemePreview; basic smoke check:
-    expect(screen.getByText('Theme Preview')).toBeInTheDocument();
+    expect(await screen.findByText('Button Variants')).toBeInTheDocument();
   });
 });
