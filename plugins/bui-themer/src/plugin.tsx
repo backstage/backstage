@@ -29,6 +29,7 @@ import {
 import { rootRouteRef } from './routes';
 
 // Old system
+/** @public */
 export const buiThemerPlugin = createPlugin({
   id: 'bui-themer',
   routes: {
@@ -36,6 +37,7 @@ export const buiThemerPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const BuiThemerPage = buiThemerPlugin.provide(
   createRoutableExtension({
     name: 'BuiThemerPage',
@@ -46,6 +48,7 @@ export const BuiThemerPage = buiThemerPlugin.provide(
 );
 
 // New system
+/** @public */
 export default createFrontendPlugin({
   pluginId: 'bui-themer',
   extensions: [
