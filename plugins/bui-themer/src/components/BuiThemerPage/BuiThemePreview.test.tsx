@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { renderInTestApp } from '@backstage/test-utils';
 import { BuiThemePreview } from './BuiThemePreview';
 
 describe('BuiThemePreview', () => {
@@ -34,8 +35,8 @@ describe('BuiThemePreview', () => {
       })),
     });
   });
-  it('renders headings and sample components', () => {
-    const { container } = render(
+  it('renders headings and sample components', async () => {
+    const { container } = await renderInTestApp(
       <BuiThemePreview
         mode="light"
         styleObject={{
@@ -53,7 +54,7 @@ describe('BuiThemePreview', () => {
     );
 
     expect(container.firstChild).toHaveAttribute('data-theme-mode', 'light');
-    expect(screen.getByText('Theme Preview')).toBeInTheDocument();
+    expect(await screen.findByText('Button Variants')).toBeInTheDocument();
     expect(screen.getByText('Button Variants')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Primary' })).toBeInTheDocument();
     expect(
@@ -63,6 +64,7 @@ describe('BuiThemePreview', () => {
       screen.getByRole('button', { name: 'Tertiary' }),
     ).toBeInTheDocument();
     expect(screen.getByText('Form Inputs')).toBeInTheDocument();
-    expect(screen.getByText('Surface Variations')).toBeInTheDocument();
+    expect(screen.getByText('Tag Variants')).toBeInTheDocument();
+    expect(screen.getByText('Text Variants')).toBeInTheDocument();
   });
 });
