@@ -55,12 +55,16 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
   }
 
   // Font weights
-  styleObject['--bui-font-weight-regular'] = String(
-    theme.typography.fontWeightRegular || 400,
-  );
-  styleObject['--bui-font-weight-bold'] = String(
-    theme.typography.fontWeightBold || 600,
-  );
+  if (theme.typography.fontWeightRegular) {
+    styleObject['--bui-font-weight-regular'] = String(
+      theme.typography.fontWeightRegular,
+    );
+  }
+  if (theme.typography.fontWeightBold) {
+    styleObject['--bui-font-weight-bold'] = String(
+      theme.typography.fontWeightBold,
+    );
+  }
 
   const spacing = theme.spacing(1);
   // Skip spacing if the theme is using the default
@@ -83,12 +87,8 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     Partial<BackstagePaletteAdditions>;
 
   // Base colors
-  if (palette.common?.black) {
-    styleObject['--bui-black'] = palette.common.black;
-  }
-  if (palette.common?.white) {
-    styleObject['--bui-white'] = palette.common.white;
-  }
+  styleObject['--bui-black'] = palette.common.black;
+  styleObject['--bui-white'] = palette.common.white;
 
   // Generate foreground colors
   Object.entries({
@@ -138,17 +138,13 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
   });
 
   // Base border color if available
-  if (palette.border || palette.divider) {
-    styleObject['--bui-border'] = palette.border || palette.divider;
-    styleObject['--bui-border-danger'] = palette.error.main;
-    styleObject['--bui-border-warning'] = palette.warning.main;
-    styleObject['--bui-border-success'] = palette.success.main;
-  }
+  styleObject['--bui-border'] = palette.border || palette.divider;
+  styleObject['--bui-border-danger'] = palette.error.main;
+  styleObject['--bui-border-warning'] = palette.warning.main;
+  styleObject['--bui-border-success'] = palette.success.main;
 
   // Special colors
-  if (palette.highlight || palette.primary?.main) {
-    styleObject['--bui-ring'] = palette.highlight || palette.primary.main;
-  }
+  styleObject['--bui-ring'] = palette.highlight || palette.primary.main;
 
   return styleObject;
 }
