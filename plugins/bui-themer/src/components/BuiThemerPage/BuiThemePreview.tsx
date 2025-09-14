@@ -15,6 +15,7 @@
  */
 
 import {
+  Box,
   Button,
   Card,
   CardBody,
@@ -26,6 +27,8 @@ import {
   Select,
   Text,
   TextField,
+  TagGroup,
+  Tag,
 } from '@backstage/ui';
 
 interface IsolatedPreviewProps {
@@ -51,25 +54,27 @@ export function BuiThemePreview({ mode, styleObject }: IsolatedPreviewProps) {
     >
       <Flex direction="column" gap="4">
         <Card>
-          <CardHeader>Theme Preview</CardHeader>
-          <CardBody>
-            <Text
-              variant="body-small"
-              style={{ color: 'var(--bui-fg-secondary)' }}
-            >
-              This preview shows how your theme will look with various Backstage
-              UI components
-            </Text>
-          </CardBody>
-        </Card>
-
-        <Card>
           <CardHeader>Button Variants</CardHeader>
           <CardBody>
             <Flex gap="3">
-              <Button variant="primary">Primary</Button>
-              <Button variant="secondary">Secondary</Button>
-              <Button variant="tertiary">Tertiary</Button>
+              <Flex direction="column" gap="2">
+                <Button variant="primary">Primary</Button>
+                <Button isDisabled variant="primary">
+                  Disabled
+                </Button>
+              </Flex>
+              <Flex direction="column" gap="2">
+                <Button variant="secondary">Secondary</Button>
+                <Button isDisabled variant="secondary">
+                  Disabled
+                </Button>
+              </Flex>
+              <Flex direction="column" gap="2">
+                <Button variant="tertiary">Tertiary</Button>
+                <Button isDisabled variant="tertiary">
+                  Disabled
+                </Button>
+              </Flex>
             </Flex>
           </CardBody>
         </Card>
@@ -98,40 +103,62 @@ export function BuiThemePreview({ mode, styleObject }: IsolatedPreviewProps) {
         </Card>
 
         <Card>
-          <CardHeader>Surface Variations</CardHeader>
+          <CardHeader>Tag Variants</CardHeader>
           <CardBody>
             <Flex gap="3">
-              <Card
-                style={{
-                  backgroundColor: 'var(--bui-bg-surface-1)',
-                  color: 'var(--bui-fg-primary)',
-                  padding: '12px',
-                  minWidth: '120px',
-                }}
-              >
-                <Text variant="body-small">Surface 1</Text>
-              </Card>
-              <Card
-                style={{
-                  backgroundColor: 'var(--bui-bg-surface-2)',
-                  color: 'var(--bui-fg-primary)',
-                  padding: '12px',
-                  minWidth: '120px',
-                }}
-              >
-                <Text variant="body-small">Surface 2</Text>
-              </Card>
-              <Card
-                style={{
-                  backgroundColor: 'var(--bui-bg-solid)',
-                  color: 'var(--bui-fg-solid)',
-                  padding: '12px',
-                  minWidth: '120px',
-                }}
-              >
-                <Text variant="body-small">Solid</Text>
-              </Card>
+              <TagGroup>
+                <Tag>Default</Tag>
+                <Tag
+                  style={{
+                    backgroundColor: 'var(--bui-bg-danger)',
+                    color: 'var(--bui-fg-danger)',
+                    border: `1px solid var(--bui-border-danger)`,
+                  }}
+                >
+                  Danger
+                </Tag>
+                <Tag
+                  style={{
+                    backgroundColor: 'var(--bui-bg-warning)',
+                    color: 'var(--bui-fg-warning)',
+                    border: `1px solid var(--bui-border-warning)`,
+                  }}
+                >
+                  Warning
+                </Tag>
+                <Tag
+                  style={{
+                    backgroundColor: 'var(--bui-bg-success)',
+                    color: 'var(--bui-fg-success)',
+                    border: `1px solid var(--bui-border-success)`,
+                  }}
+                >
+                  Success
+                </Tag>
+              </TagGroup>
             </Flex>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader>Text Variants</CardHeader>
+          <CardBody>
+            <Box
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 'var(--bui-space-3)',
+              }}
+            >
+              <Text variant="title-x-small">Title X Small</Text>
+              <Text variant="body-x-small">Body X Small</Text>
+              <Text variant="title-small">Title Small</Text>
+              <Text variant="body-small">Body Small</Text>
+              <Text variant="title-medium">Title Medium</Text>
+              <Text variant="body-medium">Body Medium</Text>
+              <Text variant="title-large">Title Large</Text>
+              <Text variant="body-large">Body Large</Text>
+            </Box>
           </CardBody>
         </Card>
       </Flex>
