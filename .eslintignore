@@ -11,3 +11,4 @@
 **/templates/**
 **/sample-templates/**
 playwright.config.ts
+stories.d.ts

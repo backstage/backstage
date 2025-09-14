@@ -192,6 +192,11 @@ jobs:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-${{ github.run_id }}
 
+      # Also build and upload storybook
+      - name: Storybook yarn install
+        run: yarn install --immutable
+        working-directory: storybook
+
       - name: Build Storybook
         run: yarn build-storybook
 

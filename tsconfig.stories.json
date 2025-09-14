@@ -1,24 +1,17 @@
 {
+  "extends": "@backstage/cli/config/tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "skipLibCheck": true,
-    "noEmit": false,
-    "emitDeclarationOnly": false,
-    "strict": false,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "module": "ESNext",
-    "target": "ES2022",
-    "lib": ["DOM", "ES2022"],
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "composite": true,
-    "outDir": "dist-types/stories",
-    "types": ["react", "node"]
+    "noEmit": true,
+    "jsxImportSource": "react"
   },
   "include": [
-    "packages/ui/src/**/*.stories.tsx",
-    "packages/core-components/src/**/*.stories.tsx"
+    "stories.d.ts",
+    "packages/**/*.stories.tsx",
+    "packages/**/*.stories.ts",
+    "plugins/**/*.stories.tsx",
+    "plugins/**/*.stories.ts"
   ],
-  "exclude": ["node_modules", "dist", "build"]
+  "exclude": ["node_modules"]
 }

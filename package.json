@@ -63,8 +63,7 @@
     "test:all": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test --coverage",
     "test:e2e": "NODE_OPTIONS=--no-node-snapshot playwright test",
     "tsc": "tsc",
-    "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false",
-    "tsc:stories": "tsc --project tsconfig.stories.json"
+    "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
