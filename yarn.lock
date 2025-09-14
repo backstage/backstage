@@ -18456,6 +18456,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/react@patch:@storybook/react@npm%3A9.1.5#~/.yarn/patches/@storybook-react-npm-9.1.5-2331f18b6b.patch":
+  version: 9.1.5
+  resolution: "@storybook/react@patch:@storybook/react@npm%3A9.1.5#~/.yarn/patches/@storybook-react-npm-9.1.5-2331f18b6b.patch::version=9.1.5&hash=8c1145"
+  dependencies:
+    "@storybook/global": "npm:^5.0.0"
+    "@storybook/react-dom-shim": "npm:9.1.5"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+    storybook: ^9.1.5
+    typescript: ">= 4.9.x"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/17edd1c58208ca26ed805656fadda3b0797a995afc0d64005ce50b4383dc1b3bbfead2c9c4523f1450ee7b82570b0302acadedb17ea3d8aeacfb1b66f7f436d1
+  languageName: node
+  linkType: hard
+
 "@swagger-api/apidom-ast@npm:^1.0.0-beta.11":
   version: 1.0.0-beta.11
   resolution: "@swagger-api/apidom-ast@npm:1.0.0-beta.11"
