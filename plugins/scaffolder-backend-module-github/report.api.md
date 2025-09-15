@@ -137,6 +137,27 @@ export function createGithubEnvironmentAction(options: {
 >;
 
 // @public
+export function createGithubIssuesCreateAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    title: string;
+    body?: string | undefined;
+    assignees?: string[] | undefined;
+    milestone?: string | number | undefined;
+    labels?: string[] | undefined;
+    token?: string | undefined;
+  },
+  {
+    issueUrl: string;
+    issueNumber: number;
+  },
+  'v2'
+>;
+
+// @public
 export function createGithubIssuesLabelAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
