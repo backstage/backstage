@@ -164,6 +164,10 @@ You can also add tabs to show content from other plugins that fit well with the 
 
 Create an extension and/or load a 3rd party extension to add additional tabs.
 
+```shell
+yarn --cwd plugins/<your-plugin> add @backstage/plugin-devtools-react
+```
+
 ```tsx
 import { DevToolsRouteBlueprint } from '@backstage/plugin-devtools-react';
 
