@@ -49,11 +49,11 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
-      - name: Build Storybook for Chromatic
+      - name: Build Storybook
         run: yarn build-storybook:chromatic
 
-      - name: Deploy Storybook to Chromatic
-        uses: chromaui/action@1cfa065cbdab28f6ca3afaeb3d761383076a35aa # v11
+      - name: Run Chromatic
+        uses: chromaui/action@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks

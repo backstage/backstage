@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build-storybook": "storybook build --output-dir dist-storybook",
-    "build-storybook:chromatic": "STORYBOOK_STORY_SET=chromatic storybook build --output-dir dist-storybook-chromatic",
+    "build-storybook:chromatic": "STORYBOOK_STORY_SET=chromatic storybook build --stats-json --output-dir dist-storybook-chromatic",
     "build:all": "backstage-cli repo build --all",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs --exclude 'plugins/@(api-docs|api-docs-module-protoc-gen-doc|app-visualizer|catalog-graph|catalog-import|catalog-unprocessed-entities|config-schema|example-todo-list|example-todo-list-backend)'",
     "build:api-reports": "yarn build:api-reports:only --tsc",
