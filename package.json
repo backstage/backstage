@@ -135,6 +135,7 @@
     "@octokit/rest": "^19.0.3",
     "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^15.0.0",
+    "@storybook/addon-a11y": "^9.1.5",
     "@storybook/addon-docs": "^9.1.5",
     "@storybook/addon-links": "^9.1.5",
     "@storybook/addon-themes": "^9.1.5",
