@@ -31,7 +31,7 @@ import { toInternalBackstageCredentials } from './helpers';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 
-import { externalTokenTypeHandlersRef } from './external/ExternalAuthTokenHandler';
+import { externalTokenHandlersServiceRef } from './external/ExternalAuthTokenHandler';
 import { createExternalTokenHandler } from './external/helpers';
 
 const server = setupServer();
@@ -44,7 +44,7 @@ const mockDeps = [
       backend: {
         baseUrl: 'http://localhost',
         auth: {
-          // keys: [{ secret: 'abc' }],
+          keys: [{ secret: 'abc' }],
           externalAccess: [
             {
               type: 'static',
@@ -468,7 +468,7 @@ describe('authServiceFactory', () => {
             backend: {
               baseUrl: 'http://localhost',
               auth: {
-                // keys: [{ secret: 'abc' }w],
+                keys: [{ secret: 'abc' }],
                 externalAccess: [
                   {
                     type: 'static',
@@ -521,7 +521,7 @@ describe('authServiceFactory', () => {
       });
 
       const customPluginTokenHandler = createServiceFactory({
-        service: externalTokenTypeHandlersRef,
+        service: externalTokenHandlersServiceRef,
         deps: {},
         async factory() {
           return customExternalTokenHandler;

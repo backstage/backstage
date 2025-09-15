@@ -22,7 +22,7 @@ import {
 import { DefaultAuthService } from './DefaultAuthService';
 import {
   ExternalAuthTokenHandler,
-  externalTokenTypeHandlersRef,
+  externalTokenHandlersServiceRef,
 } from './external/ExternalAuthTokenHandler';
 import {
   DefaultPluginTokenHandler,
@@ -67,7 +67,7 @@ export const authServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
     database: coreServices.database,
     pluginTokenHandlerDecorator: pluginTokenHandlerDecoratorServiceRef,
-    externalTokenHandlers: externalTokenTypeHandlersRef,
+    externalTokenHandlers: externalTokenHandlersServiceRef,
   },
   async factory({
     config,

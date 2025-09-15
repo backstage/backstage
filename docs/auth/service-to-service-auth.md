@@ -255,37 +255,15 @@ backend:
           subject: legacy-scaffolder
 ```
 
-:::warning
-The old style `backend.auth.keys` config is **no longer supported** and has been removed.
-If you are still using this configuration, you must migrate to the new `backend.auth.externalAccess` format above.
+The old style keys config is also supported as an alternative, but please
+consider using the new style above instead:
 
-You'll see an error like `"Unknown key 'backend.auth.keys'"` during Backstage startup if you haven't migrated yet.
-:::
-
-To migrate from the old config format:
-
-```yaml title="❌ Old format (no longer supported)"
+```yaml title="in e.g. app-config.production.yaml"
 backend:
   auth:
     keys:
       - secret: my-secret-key-catalog
       - secret: my-secret-key-scaffolder
-```
-
-Convert to:
-
-```yaml title="✅ New format"
-backend:
-  auth:
-    externalAccess:
-      - type: legacy
-        options:
-          secret: my-secret-key-catalog
-          subject: external:backstage-plugin
-      - type: legacy
-        options:
-          secret: my-secret-key-scaffolder
-          subject: external:backstage-plugin
 ```
 
 The secrets must be any base64-encoded random data, but for security reasons
@@ -436,7 +414,7 @@ Each entry has one or more of the following fields:
 
 ## Adding custom or logic for validation and issuing of tokens
 
-The `pluginTokenHandlerDecoratorServiceRef` and `externalTokenTypeHandlersRef` can be used to extend the existing token handler without having to re-implement the entire `AuthService` implementation.
+The `pluginTokenHandlerDecoratorServiceRef` and `externalTokenHandlersServiceRef` can be used to extend the existing token handler without having to re-implement the entire `AuthService` implementation.
 This is particularly useful when you want to add additional logic to the handler, such as logging or metrics or custom token validation.
 
 ### PluginTokenHandler decoration
@@ -468,7 +446,7 @@ const decoratedPluginTokenHandler = createServiceFactory({
 
 ### Adding custom ExternalTokenHandler
 
-The `externalTokenTypeHandlersRef` can be used to add custom external token handlers to the default implementation.
+The `externalTokenHandlersServiceRef` can be used to add custom external token handlers to the default implementation.
 
 Your service factory must return an object with a `type` property that matches the token type in your configuration (e.g., 'custom', 'api-key'). When Backstage encounters tokens of this type, it calls your `initialize` method with all the configuration entries that match this type. Your factory can return either a single token handler or an array of handlers to process and validate these tokens.
 
@@ -503,13 +481,13 @@ And we can implement the custom token handler like this:
 ```ts
 import {
   ExternalTokenHandler,
-  externalTokenTypeHandlersRef,
+  externalTokenHandlersServiceRef,
   createExternalTokenHandler,
 } from '@backstage/backend-defaults/auth';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 
 const customExternalTokenHandlers = createServiceFactory({
-  service: externalTokenTypeHandlersRef,
+  service: externalTokenHandlersServiceRef,
   deps: {},
   async factory() {
     return createExternalTokenHandler({

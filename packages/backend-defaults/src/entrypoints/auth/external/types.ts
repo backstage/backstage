@@ -17,9 +17,6 @@
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 
-/**
- * @public
- */
 export type AccessRestrictionsMap = Map<
   string, // plugin ID
   BackstagePrincipalAccessRestrictions
@@ -38,16 +35,3 @@ export interface ExternalTokenHandler<TContext> {
     ctx: TContext,
   ): Promise<{ subject: string } | undefined>;
 }
-
-// /**
-//  * @public
-//  * This interface is used to handle external tokens.
-//  */
-// export interface TokenTypeHandler {
-//   type: string;
-//   /**
-//    * A factory function that takes all token configuration for a given type
-//    * and returns a TokenHandler or an array of TokenHandlers.
-//    */
-//   factory: (configs: Config[]) => TokenHandler | TokenHandler[];
-// }
