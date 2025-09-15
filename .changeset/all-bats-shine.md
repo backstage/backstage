@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Change webpack caching config param to `contenthash` for cli bundler. This fixes an issue with webpack sometimes generating same hash name output files even though the content of a file was different. See more at [https://webpack.js.org/guides/caching/](https://webpack.js.org/guides/caching/).
+Updated the WebPack configuration to use `contenthash`. This fixes an issue were builds would sometimes generate output files with the same name but different content across builds, leading to breakages when loading the frontend app.
