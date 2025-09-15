@@ -113,6 +113,7 @@ export const DisabledWithIcon: Story = {
     ...WithIcon.args,
     isDisabled: true,
   },
+  render: WithIcon.render,
 };
 
 export const ShowError: Story = {

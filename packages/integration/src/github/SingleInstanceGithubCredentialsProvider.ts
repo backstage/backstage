@@ -102,7 +102,9 @@ class GithubAppManager {
   private readonly allowedInstallationOwners: string[] | undefined; // undefined allows all installations
 
   constructor(config: GithubAppConfig, baseUrl?: string) {
-    this.allowedInstallationOwners = config.allowedInstallationOwners;
+    this.allowedInstallationOwners = config.allowedInstallationOwners?.map(
+      owner => owner.toLocaleLowerCase('en-US'),
+    );
     this.baseUrl = baseUrl;
     this.baseAuthConfig = {
       appId: config.appId,
@@ -121,7 +123,11 @@ class GithubAppManager {
     repo?: string,
   ): Promise<{ accessToken: string | undefined }> {
     if (this.allowedInstallationOwners) {
-      if (!this.allowedInstallationOwners?.includes(owner)) {
+      if (
+        !this.allowedInstallationOwners?.includes(
+          owner.toLocaleLowerCase('en-US'),
+        )
+      ) {
         return { accessToken: undefined }; // An empty token allows anonymous access to public repos
       }
     }

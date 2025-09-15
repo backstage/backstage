@@ -81,6 +81,7 @@ export function createGithubBranchProtectionAction(options: {
     requireLastPushApproval?: boolean | undefined;
     requiredCommitSigning?: boolean | undefined;
     requiredLinearHistory?: boolean | undefined;
+    blockCreations?: boolean | undefined;
     token?: string | undefined;
   },
   {
@@ -132,6 +133,27 @@ export function createGithubEnvironmentAction(options: {
   },
   {
     [x: string]: any;
+  },
+  'v2'
+>;
+
+// @public
+export function createGithubIssuesCreateAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    title: string;
+    body?: string | undefined;
+    assignees?: string[] | undefined;
+    milestone?: string | number | undefined;
+    labels?: string[] | undefined;
+    token?: string | undefined;
+  },
+  {
+    issueUrl: string;
+    issueNumber: number;
   },
   'v2'
 >;

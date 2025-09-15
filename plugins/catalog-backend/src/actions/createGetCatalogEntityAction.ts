@@ -28,6 +28,11 @@ export const createGetCatalogEntityAction = ({
   actionsRegistry.register({
     name: 'get-catalog-entity',
     title: 'Get Catalog Entity',
+    attributes: {
+      destructive: false,
+      readOnly: true,
+      idempotent: true,
+    },
     description: `
 This allows you to get a single entity from the software catalog.
 Each entity in the software catalog has a unique name, kind, and namespace. The default namespace is "default".
