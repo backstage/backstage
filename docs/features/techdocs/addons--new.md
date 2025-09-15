@@ -1,5 +1,5 @@
 ---
-id: addons
+id: addons--new
 title: TechDocs Addons
 description: How to find, use, or create TechDocs Addons.
 ---
