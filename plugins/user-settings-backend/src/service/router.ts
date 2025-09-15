@@ -15,9 +15,9 @@
  */
 
 import { InputError, serializeError } from '@backstage/errors';
-import { map } from 'already';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
+import pLimit from 'p-limit';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
@@ -69,30 +69,32 @@ export async function createRouter(options: {
       throw new InputError('Expected query param "items" to be an array');
     }
 
-    const userSettings = await map(
-      bucketsAndKeys,
-      { concurrency: 10 },
-      async ({ bucket, key }): Promise<MultiUserSetting> => {
-        try {
-          const setting = await options.userSettingsStore.get({
-            userEntityRef,
-            bucket,
-            key,
-          });
-          return setting;
-        } catch (e) {
-          if (e instanceof Error) {
-            const serialized = serializeError(e);
-            return { bucket, key, error: serialized };
-          }
+    const limit = pLimit(10);
 
-          return {
-            bucket,
-            key,
-            error: { name: 'Error', message: 'Unknown error' },
-          };
-        }
-      },
+    const userSettings = await Promise.all(
+      bucketsAndKeys.map(({ bucket, key }) =>
+        limit(async (): Promise<MultiUserSetting> => {
+          try {
+            const setting = await options.userSettingsStore.get({
+              userEntityRef,
+              bucket,
+              key,
+            });
+            return setting;
+          } catch (e) {
+            if (e instanceof Error) {
+              const serialized = serializeError(e);
+              return { bucket, key, error: serialized };
+            }
+
+            return {
+              bucket,
+              key,
+              error: { name: 'Error', message: 'Unknown error' },
+            };
+          }
+        }),
+      ),
     );
 
     res.json(userSettings);
