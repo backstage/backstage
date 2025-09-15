@@ -95,9 +95,10 @@ const preview: Preview = {
     chromatic: {
       modes: {
         'light backstage': allModes['light backstage'],
-        'dark backstage': allModes['dark backstage'],
-        'light spotify': allModes['light spotify'],
-        'dark spotify': allModes['dark spotify'],
+        // TODO: Enable these modes when we have more Chromatic snapshots.
+        // 'dark backstage': allModes['dark backstage'],
+        // 'light spotify': allModes['light spotify'],
+        // 'dark spotify': allModes['dark spotify'],
       },
     },
   },
