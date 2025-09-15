@@ -20,7 +20,7 @@ You can change the following [icons](https://github.com/backstage/backstage/blob
 
 ### Create React Component
 
-In your front-end application, locate the `src` folder. We suggest creating the `assets/icons` directory and `CustomIcons.tsx` file.
+In your front-end application, locate the `src` folder. We suggest creating the `assets/icons` directory and `customIcons.tsx` file.
 
 ```tsx title="customIcons.tsx"
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
