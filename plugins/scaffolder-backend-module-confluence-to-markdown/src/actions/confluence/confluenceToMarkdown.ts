@@ -105,22 +105,54 @@ export const createConfluenceToMarkdownAction = (options: {
       });
 
       for (const url of confluenceUrls) {
-        const { spacekey, title, titleWithSpaces } =
+        const { spacekey, title, titleWithSpaces, pageId } =
           createConfluenceVariables(url);
         // This calls confluence to get the page html and page id
         ctx.logger.info(`Fetching the Confluence content for ${url}`);
-        const getConfluenceDoc = await fetchConfluence(
-          `/rest/api/content?title=${title}&spaceKey=${spacekey}&expand=body.export_view`,
-          confluenceConfig,
-        );
-        if (getConfluenceDoc.results.length === 0) {
-          throw new InputError(
-            `Could not find document ${url}. Please check your input.`,
+        let content: any | undefined;
+        let contentId: string | undefined;
+
+        // Priority 1: If the URL contains a pageId, fetch by ID first
+        if (pageId) {
+          try {
+            const contentById = await fetchConfluence(
+              `/rest/api/content/${pageId}?expand=body.export_view`,
+              confluenceConfig,
+            );
+            content = contentById;
+            contentId = contentById.id;
+          } catch (_e) {
+            // Fallback to title+space if ID fetch failed
+            const getConfluenceDoc = await fetchConfluence(
+              `/rest/api/content?title=${title}&spaceKey=${spacekey}&expand=body.export_view`,
+              confluenceConfig,
+            );
+            if (!getConfluenceDoc.results.length) {
+              throw new InputError(
+                `Could not find document ${url}. Please check your input.`,
+              );
+            }
+            content = getConfluenceDoc.results[0];
+            contentId = content.id;
+          }
+        } else {
+          // No pageId in URL: use legacy title+space lookup
+          const getConfluenceDoc = await fetchConfluence(
+            `/rest/api/content?title=${title}&spaceKey=${spacekey}&expand=body.export_view`,
+            confluenceConfig,
           );
+          if (!getConfluenceDoc.results.length) {
+            throw new InputError(
+              `Could not find document ${url}. Please check your input.`,
+            );
+          }
+          content = getConfluenceDoc.results[0];
+          contentId = content.id;
         }
+
         // This gets attachments for the confluence page if they exist
         const getDocAttachments = await fetchConfluence(
-          `/rest/api/content/${getConfluenceDoc.results[0].id}/child/attachment`,
+          `/rest/api/content/${contentId}/child/attachment`,
           confluenceConfig,
         );
 
@@ -165,7 +197,7 @@ export const createConfluenceToMarkdownAction = (options: {
         await fs.writeFile(repoFileDir, YAML.stringify(mkdocsFile));
 
         // This grabs the confluence html and converts it to markdown and adds attachments
-        const html = getConfluenceDoc.results[0].body.export_view.value;
+        const html = content.body.export_view.value;
         const markdownToPublish = NodeHtmlMarkdown.translate(html);
         let newString: string = markdownToPublish;
         productArray.forEach((product: string[]) => {

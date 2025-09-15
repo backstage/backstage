@@ -187,6 +187,7 @@ export const createConfluenceVariables = (url: string) => {
   let spacekey: string | undefined = undefined;
   let title: string | undefined = undefined;
   let titleWithSpaces: string | undefined = '';
+  let pageId: string | undefined = undefined;
   const params = new URL(url);
   const pathParts = params.pathname.split('/').filter(Boolean);
 
@@ -199,6 +200,10 @@ export const createConfluenceVariables = (url: string) => {
     // /spaces/<SPACEKEY>/pages/<PAGEID>/<TITLE>
     const idx = pathParts.indexOf('spaces');
     spacekey = pathParts[idx + 1];
+    const maybePages = pathParts[idx + 2];
+    if (maybePages === 'pages') {
+      pageId = pathParts[idx + 3];
+    }
     title = pathParts[pathParts.length - 1];
   } else {
     throw new Error(
@@ -207,5 +212,5 @@ export const createConfluenceVariables = (url: string) => {
   }
 
   titleWithSpaces = title?.replace(/\+/g, ' ');
-  return { spacekey, title, titleWithSpaces };
+  return { spacekey, title, titleWithSpaces, pageId };
 };
