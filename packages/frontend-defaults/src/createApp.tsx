@@ -36,6 +36,7 @@ import {
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
 import { resolveAsyncFeatures } from './resolution';
+import { maybeCreateErrorPage } from './maybeCreateErrorPage';
 
 /**
  * Options for {@link createApp}.
@@ -135,6 +136,11 @@ export function createApp(options?: CreateAppOptions): {
       bindRoutes: options?.bindRoutes,
       advanced: options?.advanced,
     });
+
+    const errorPage = maybeCreateErrorPage(app);
+    if (errorPage) {
+      return { default: () => errorPage };
+    }
 
     const rootEl = app.tree.root.instance!.getData(
       coreExtensionData.reactElement,
