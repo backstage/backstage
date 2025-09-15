@@ -2,7 +2,7 @@
 '@backstage/plugin-scaffolder-backend-module-github': patch
 ---
 
-Add `auto_init` option to 'github:repo:create' action to create repository with an initial commit containing a README.md file
+Add `auto_init` option to `github:repo:create` action to create repository with an initial commit containing a README.md file
 
 This initial commit is created by GitHub itself and the commit is signed, so the repository will not be empty after creation.
 
