@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { screen } from '@testing-library/react';
+import { EntityTableColumnTitle } from './TitleColumn';
+import { renderInTestApp } from '@backstage/test-utils';
 
-export * from './blueprints';
-export * from './converters';
-export * from './predicates';
-export { catalogReactTranslationRef } from '../translation';
-export { isOwnerOf } from '../utils/isOwnerOf';
-export { useEntityPermission } from '../hooks/useEntityPermission';
-export * from '../components/EntityTable/TitleColumn';
+describe('<EntityTableColumnTitle />', () => {
+  it('renders the translated title for the given key', async () => {
+    await renderInTestApp(<EntityTableColumnTitle translationKey="name" />);
+    expect(screen.getByText('Name')).toBeInTheDocument();
+  });
+});
