@@ -27,7 +27,7 @@ import {
 } from '@backstage/test-utils';
 import { NotFoundError } from '@backstage/errors';
 import { parseDataLoaderKey } from '@backstage/plugin-user-settings-common';
-import { defer } from 'already';
+import { createDeferred } from '@backstage/types';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { UserSettingsStorage } from './UserSettingsStorage';
@@ -174,7 +174,7 @@ describe('Persistent Storage API', () => {
     const selectedKeyNextHandler = jest.fn();
     const mockData = { hello: 'im a great new value' };
 
-    const serverCall = defer(undefined);
+    const serverCall = createDeferred();
 
     server.use(
       rest.put(
@@ -216,7 +216,7 @@ describe('Persistent Storage API', () => {
       value: mockData,
     });
 
-    await serverCall.promise;
+    await serverCall;
   });
 
   it('should subscribe to key changes when deleting a value', async () => {
@@ -225,7 +225,7 @@ describe('Persistent Storage API', () => {
     const wrongKeyNextHandler = jest.fn();
     const selectedKeyNextHandler = jest.fn();
 
-    const serverCall = defer(undefined);
+    const serverCall = createDeferred();
 
     server.use(
       rest.delete(
@@ -263,7 +263,7 @@ describe('Persistent Storage API', () => {
       value: undefined,
     });
 
-    await serverCall.promise;
+    await serverCall;
   });
 
   it('should not clash with other namespaces when creating buckets', async () => {
