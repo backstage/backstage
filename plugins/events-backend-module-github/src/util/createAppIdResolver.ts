@@ -17,6 +17,7 @@
 import { RequestDetails } from '@backstage/plugin-events-node';
 import { OctokitProviderService } from './octokitProviderService';
 import lodash from 'lodash';
+import type { Octokit } from '@octokit/rest';
 
 export type AppIdResolver = (
   request: RequestDetails,
@@ -54,7 +55,7 @@ export function createAppIdResolver(
       return undefined;
     }
 
-    const octokit = await octokitProvider.getOctokit(repositoryUrl);
+    const octokit: Octokit = await octokitProvider.getOctokit(repositoryUrl);
     appIdPromsie = octokit.rest.apps
       .getInstallation({ installation_id: installationId })
       .then(response => Number(response.data.app_id))

@@ -54,7 +54,7 @@ import {
   EventsService,
   EventSubscriber,
 } from '@backstage/plugin-events-node';
-import {
+import type {
   Commit,
   PushEvent,
   RepositoryArchivedEvent,

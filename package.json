@@ -132,7 +132,7 @@
     "@backstage/eslint-plugin": "workspace:*",
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
-    "@octokit/rest": "^19.0.3",
+    "@octokit/rest": "^21.1.1",
     "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^15.0.0",
     "@storybook/addon-a11y": "^9.1.5",
