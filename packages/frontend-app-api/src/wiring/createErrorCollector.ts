@@ -89,7 +89,7 @@ export interface ErrorCollector<TContext extends {} = {}> {
       AppErrorTypes[TCode]['context'],
       keyof TContext
     > extends infer IContext extends {}
-      ? [{}] extends [IContext]
+      ? {} extends IContext
         ? {
             code: TCode;
             message: string;

@@ -16,8 +16,6 @@
 
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JSX, useEffect, useState } from 'react';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppError, AppErrorTypes } from '@backstage/frontend-app-api';
 
 const DEFAULT_WARNING_CODES: Array<keyof AppErrorTypes> = [
