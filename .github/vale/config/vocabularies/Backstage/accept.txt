@@ -38,6 +38,7 @@ Bitrise
 Blackbox
 bool
 boolean
+breakpoint
 Brex
 broadcasted
 bugfixes
