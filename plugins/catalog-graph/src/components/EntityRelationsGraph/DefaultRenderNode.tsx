@@ -20,7 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { EntityIcon } from './EntityIcon';
-import { EntityNodeData } from './types';
+import { EntityNodeData } from '../../lib/types';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 /** @public */
