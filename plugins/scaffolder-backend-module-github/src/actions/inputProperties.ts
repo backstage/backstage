@@ -413,6 +413,14 @@ const branch = (z: typeof zod) =>
     })
     .optional();
 
+const autoInit = (z: typeof zod) =>
+  z
+    .boolean({
+      description: `Create an initial commit with empty README. Default is 'false'`,
+    })
+    .default(false)
+    .optional();
+
 export {
   repoUrl,
   description,
@@ -458,4 +466,5 @@ export {
   bypassPullRequestAllowances,
   branch,
   blockCreations,
+  autoInit,
 };
