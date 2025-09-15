@@ -233,6 +233,57 @@ describe('ExternalTokenHandler', () => {
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
     });
   });
+  it('successfully uses legacy configs', async () => {
+    const legacyKey = randomBytes(24);
+    const factory = new FakeTokenFactory({
+      issuer: 'my-company',
+      keyDurationSeconds: 100,
+    });
+
+    server.use(
+      rest.get(
+        'https://example.com/.well-known/jwks.json',
+        async (_, res, ctx) => {
+          const keys = await factory.listPublicKeys();
+          return res(ctx.json(keys));
+        },
+      ),
+    );
+
+    const logger = mockServices.logger.mock();
+    const handler = ExternalAuthTokenHandler.create({
+      ownPluginId: 'catalog',
+      logger,
+      config: mockServices.rootConfig({
+        data: {
+          backend: {
+            auth: {
+              keys: [
+                {
+                  secret: legacyKey.toString('base64'),
+                },
+              ],
+            },
+          },
+        },
+      }),
+    });
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      `DEPRECATION WARNING: The backend.auth.keys config has been replaced by backend.auth.externalAccess, see https://backstage.io/docs/auth/service-to-service-auth`,
+    );
+
+    const legacyToken = await new SignJWT({
+      sub: 'backstage-server',
+      exp: DateTime.now().plus({ minutes: 1 }).toUnixInteger(),
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .sign(legacyKey);
+
+    await expect(handler.verifyToken(legacyToken)).resolves.toEqual({
+      subject: 'external:backstage-plugin',
+    });
+  });
   it('successfully uses custom token handlers', async () => {
     const factory = new FakeTokenFactory({
       issuer: 'my-company',

@@ -33,14 +33,13 @@ let loggedDeprecationWarning = false;
 
 /**
  * @public
- * This service is used to decorate the default plugin token handler with custom logic.
+ * This service is used to add custom handlers for external token.
  */
-export const externalTokenTypeHandlersRef = createServiceRef<
+export const externalTokenHandlersServiceRef = createServiceRef<
   ExternalTokenHandler<unknown>
 >({
   id: 'core.auth.externalTokenHandlers',
   multiton: true,
-  // defaultFactory // :pepe-think: seems like is not possible to use defaultFactory with multiton
 });
 
 const defaultHandlers: ExternalTokenHandler<unknown>[] = [
@@ -54,6 +53,7 @@ type ContextMapEntry<T> = {
   handler: ExternalTokenHandler<T>;
   allAccessRestrictions?: AccessRestrictionsMap;
 };
+
 /**
  * Handles all types of external caller token types (i.e. not Backstage user
  * tokens, nor Backstage backend plugin tokens).
@@ -71,6 +71,7 @@ export class ExternalAuthTokenHandler {
       ownPluginId,
       config,
       externalTokenHandlers: customHandlers,
+      logger,
     } = options;
 
     const handlersTypes = [...defaultHandlers, ...(customHandlers ?? [])];
@@ -104,10 +105,21 @@ export class ExternalAuthTokenHandler {
 
     if (legacyConfigs.length && !loggedDeprecationWarning) {
       loggedDeprecationWarning = true;
-      // :pepe-think: this message was here for more than a year, and replacing this simplifies things a lot
-      throw new Error(
-        `The ${OLD_CONFIG_KEY} config has been replaced by ${NEW_CONFIG_KEY}, see https://backstage.io/docs/auth/service-to-service-auth`,
+
+      logger.warn(
+        `DEPRECATION WARNING: The ${OLD_CONFIG_KEY} config has been replaced by ${NEW_CONFIG_KEY}, see https://backstage.io/docs/auth/service-to-service-auth`,
       );
+    }
+
+    for (const legacyConfig of legacyConfigs) {
+      contexts.push({
+        context: legacyTokenHandler.initialize({
+          legacy: true,
+          options: legacyConfig,
+        }),
+        handler: legacyTokenHandler,
+        allAccessRestrictions: readAccessRestrictionsFromConfig(legacyConfig),
+      });
     }
 
     return new ExternalAuthTokenHandler(ownPluginId, contexts);

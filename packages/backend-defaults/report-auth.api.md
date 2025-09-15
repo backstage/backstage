@@ -4,16 +4,9 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
-import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-
-// @public (undocumented)
-export type AccessRestrictionsMap = Map<
-  string, // plugin ID
-  BackstagePrincipalAccessRestrictions
->;
 
 // @public
 export const authServiceFactory: ServiceFactory<
@@ -46,7 +39,7 @@ export interface ExternalTokenHandler<TContext> {
 }
 
 // @public
-export const externalTokenTypeHandlersRef: ServiceRef<
+export const externalTokenHandlersServiceRef: ServiceRef<
   ExternalTokenHandler<unknown>,
   'plugin',
   'multiton'
