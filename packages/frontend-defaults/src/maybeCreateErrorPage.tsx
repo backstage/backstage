@@ -28,9 +28,10 @@ const DEFAULT_WARNING_CODES: Array<keyof AppErrorTypes> = [
 function AppErrorItem(props: { error: AppError }): JSX.Element {
   const { context } = props.error;
 
-  const extensionId =
-    'extensionId' in context ? context.extensionId : context.node.spec.id;
   const node = 'node' in context ? context.node : undefined;
+  const extensionId =
+    'extensionId' in context ? context.extensionId : node?.spec.id;
+  const routeId = 'routeId' in context ? context.routeId : undefined;
   const plugin = 'plugin' in context ? context.plugin : node?.spec.plugin;
   const pluginId = plugin?.id ?? 'N/A';
 
@@ -46,7 +47,8 @@ function AppErrorItem(props: { error: AppError }): JSX.Element {
     <div>
       <b>{props.error.code}</b>: {props.error.message}
       <pre style={{ marginLeft: '1rem' }}>
-        <div>extensionId: {extensionId}</div>
+        {extensionId && <div>extensionId: {extensionId}</div>}
+        {routeId && <div>routeId: {routeId}</div>}
         {pluginId && <div>pluginId: {pluginId}</div>}
         {info && (
           <div>

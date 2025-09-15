@@ -109,6 +109,21 @@ export type AppErrorTypes = {
       node: AppNode;
     };
   };
+  ROUTE_DUPLICATE: {
+    context: {
+      routeId: string;
+    };
+  };
+  ROUTE_BINDING_INVALID_VALUE: {
+    context: {
+      routeId: string;
+    };
+  };
+  ROUTE_NOT_FOUND: {
+    context: {
+      routeId: string;
+    };
+  };
 };
 
 // @public

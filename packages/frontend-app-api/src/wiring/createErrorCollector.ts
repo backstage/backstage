@@ -66,6 +66,16 @@ export type AppErrorTypes = {
   API_EXTENSION_INVALID: {
     context: { node: AppNode };
   };
+  // routing
+  ROUTE_DUPLICATE: {
+    context: { routeId: string };
+  };
+  ROUTE_BINDING_INVALID_VALUE: {
+    context: { routeId: string };
+  };
+  ROUTE_NOT_FOUND: {
+    context: { routeId: string };
+  };
 };
 
 /**

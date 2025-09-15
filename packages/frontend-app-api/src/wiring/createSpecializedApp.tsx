@@ -316,9 +316,9 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
 
-  const routeRefsById = collectRouteIds(features);
+  const routeRefsById = collectRouteIds(features, collector);
   const routeResolutionApi = new RouteResolutionApiProxy(
-    resolveRouteBindings(options?.bindRoutes, config, routeRefsById),
+    resolveRouteBindings(options?.bindRoutes, config, routeRefsById, collector),
     appBasePath,
   );
 
