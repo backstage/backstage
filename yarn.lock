@@ -23897,15 +23897,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ast-types@npm:^0.13.4":
-  version: 0.13.4
-  resolution: "ast-types@npm:0.13.4"
-  dependencies:
-    tslib: "npm:^2.0.1"
-  checksum: 10/c55b375b9aaf44713d8c0f77a08215ab6d44f368b13e44f2141c421022af3c62b615a30c8ea629457f0cbaec409c713401c0188a124552c8fe4a5ad6b17ff3c3
-  languageName: node
-  linkType: hard
-
 "ast-types@patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch::locator=root%40workspace%3A.":
   version: 0.14.2
   resolution: "ast-types@patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch::version=0.14.2&hash=f42322&locator=root%40workspace%3A."
