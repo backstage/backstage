@@ -222,12 +222,23 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     }
 
     for (const matcher of matchers) {
-      if (entity.kind?.toLowerCase() !== matcher.kind.toLowerCase()) {
+      if (
+        entity.kind?.toLocaleLowerCase('en-US') !==
+        matcher.kind.toLocaleLowerCase('en-US')
+      ) {
         continue;
       }
 
-      if (matcher['spec.type'] && matcher['spec.type'] !== entity.spec?.type) {
-        continue;
+      if (matcher['spec.type']) {
+        if (typeof entity.spec?.type !== 'string') {
+          continue;
+        }
+        if (
+          matcher['spec.type'].toLocaleLowerCase('en-US') !==
+          entity.spec.type.toLocaleLowerCase('en-US')
+        ) {
+          continue;
+        }
       }
 
       return true;
