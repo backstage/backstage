@@ -4,5 +4,5 @@
 
 | Name             | Location     | Severity |
 | :--------------- | :----------- | :------- |
-| @backstage/types | package.json | error    |
+| @backstage/types | plugins/events-node/package.json | error    |
 

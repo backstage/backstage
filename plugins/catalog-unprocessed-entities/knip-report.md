@@ -4,5 +4,5 @@
 
 | Name                   | Location     | Severity |
 | :--------------------- | :----------- | :------- |
-| @testing-library/react | package.json | error    |
+| @testing-library/react | plugins/catalog-unprocessed-entities/package.json | error    |
 
