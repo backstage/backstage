@@ -18,7 +18,6 @@ const scaffolderSidebar = tryToLoadCustomSidebar(
   '../docs/features/software-templates/api/sidebar.ts',
 );
 
-
 export default {
   docs: {
     Overview: [
