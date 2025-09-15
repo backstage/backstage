@@ -18,12 +18,14 @@ import express from 'express';
 import request from 'supertest';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { createRouter } from './router';
+import { NotFoundError } from '@backstage/errors';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
   mockCredentials,
   mockServices,
   mockErrorHandler,
 } from '@backstage/backend-test-utils';
+import { stringifyDataLoaderKey } from '@backstage/plugin-user-settings-common';
 
 describe('createRouter', () => {
   const userSettingsStore: jest.Mocked<UserSettingsStore> = {
@@ -95,6 +97,147 @@ describe('createRouter', () => {
         userEntityRef: mockUserRef,
         bucket: 'my-bucket',
         key: 'my-key/with/slashes',
+      });
+    });
+
+    it('returns an error if the Authorization header is missing', async () => {
+      const responses = await request(app)
+        .get('/buckets/my-bucket/keys/my-key')
+        .set('Authorization', mockCredentials.none.header());
+
+      expect(responses.status).toEqual(401);
+      expect(userSettingsStore.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('GET /multi', () => {
+    it('returns single value', async () => {
+      const values = { 'key-1': 'a' };
+
+      userSettingsStore.get.mockImplementation(async ({ bucket, key }) => {
+        if (key in values) {
+          return {
+            bucket: 'my-bucket',
+            key,
+            value: values[key as keyof typeof values],
+          };
+        }
+        throw new NotFoundError(
+          `Unable to find '${key}' in bucket '${bucket}'`,
+        );
+      });
+
+      const url = new URLSearchParams();
+      for (const key of Object.keys(values)) {
+        url.append('items', stringifyDataLoaderKey('my-bucket', key));
+      }
+      const responses = await request(app).get(`/multi?${url.toString()}`);
+
+      expect(responses.status).toEqual(200);
+      expect(responses.body).toEqual([
+        { bucket: 'my-bucket', key: 'key-1', value: 'a' },
+      ]);
+
+      expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.get).toHaveBeenCalledWith({
+        userEntityRef: mockUserRef,
+        bucket: 'my-bucket',
+        key: 'key-1',
+      });
+    });
+
+    it('returns single missing', async () => {
+      const values = { 'key-1': 'a' };
+
+      userSettingsStore.get.mockImplementation(async ({ bucket, key }) => {
+        if (key in values) {
+          return {
+            bucket: 'my-bucket',
+            key,
+            value: values[key as keyof typeof values],
+          };
+        }
+        throw new NotFoundError(
+          `Unable to find '${key}' in bucket '${bucket}'`,
+        );
+      });
+
+      const url = new URLSearchParams();
+      url.append('items', stringifyDataLoaderKey('my-bucket', 'missing-key'));
+      const responses = await request(app).get(`/multi?${url.toString()}`);
+
+      expect(responses.status).toEqual(200);
+      expect(responses.body).toEqual([
+        {
+          bucket: 'my-bucket',
+          key: 'missing-key',
+          error: {
+            name: 'NotFoundError',
+            message: expect.stringContaining('missing-key'),
+          },
+        },
+      ]);
+
+      expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.get).toHaveBeenCalledWith({
+        userEntityRef: mockUserRef,
+        bucket: 'my-bucket',
+        key: 'missing-key',
+      });
+    });
+
+    it('returns existing and missing mixed', async () => {
+      const values = {
+        'key-1': 'a',
+        'key-2': 'b',
+      };
+
+      userSettingsStore.get.mockImplementation(async ({ bucket, key }) => {
+        if (key in values) {
+          return {
+            bucket: 'my-bucket',
+            key,
+            value: values[key as keyof typeof values],
+          };
+        }
+        throw new NotFoundError(
+          `Unable to find '${key}' in bucket '${bucket}'`,
+        );
+      });
+
+      const url = new URLSearchParams();
+      for (const key of Object.keys(values)) {
+        url.append('items', stringifyDataLoaderKey('my-bucket', key));
+      }
+      url.append('items', stringifyDataLoaderKey('my-bucket', 'missing-key'));
+      const responses = await request(app).get(`/multi?${url.toString()}`);
+
+      expect(responses.status).toEqual(200);
+      expect(responses.body).toEqual([
+        { bucket: 'my-bucket', key: 'key-1', value: 'a' },
+        { bucket: 'my-bucket', key: 'key-2', value: 'b' },
+        {
+          bucket: 'my-bucket',
+          key: 'missing-key',
+          error: {
+            name: 'NotFoundError',
+            message: expect.stringContaining('missing-key'),
+          },
+        },
+      ]);
+
+      expect(userSettingsStore.get).toHaveBeenCalledTimes(3);
+      for (const key of Object.keys(values)) {
+        expect(userSettingsStore.get).toHaveBeenCalledWith({
+          userEntityRef: mockUserRef,
+          bucket: 'my-bucket',
+          key,
+        });
+      }
+      expect(userSettingsStore.get).toHaveBeenCalledWith({
+        userEntityRef: mockUserRef,
+        bucket: 'my-bucket',
+        key: 'missing-key',
       });
     });
 

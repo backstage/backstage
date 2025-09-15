@@ -7827,6 +7827,7 @@ __metadata:
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     knex: "npm:^3.0.0"
+    p-limit: "npm:^3.1.0"
     supertest: "npm:^7.0.0"
   languageName: unknown
   linkType: soft
@@ -7868,7 +7869,6 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    already: "npm:^2.2.1"
     dataloader: "npm:^2.0.0"
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
