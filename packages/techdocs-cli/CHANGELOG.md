@@ -1,5 +1,14 @@
 # @techdocs/cli
 
+## 1.9.8
+
+### Patch Changes
+
+- db63208: Fixed an issue where `@techdocs/cli serve` command did not pick up the latest changes to TechDocs.
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/plugin-techdocs-node@1.13.7
+
 ## 1.9.8-next.0
 
 ### Patch Changes

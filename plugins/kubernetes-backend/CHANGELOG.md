@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.2
+
+### Patch Changes
+
+- dd7b6d2: Fix a bug where `getDefault` in the `kubernetesFetcherExtensionPoint` had the wrong `this` value
+- 80cf8c9: Fix issue with default objects not being loaded properly
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/catalog-client@1.12.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-kubernetes-node@0.3.4
+  - @backstage/plugin-permission-node@0.10.4
+
 ## 0.20.2-next.2
 
 ### Patch Changes

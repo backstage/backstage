@@ -1,5 +1,21 @@
 # @backstage/backend-test-utils
 
+## 1.9.0
+
+### Minor Changes
+
+- 4e2c237: The `mockServices.rootConfig()` instance now has an `update` method that can be used to test configuration subscriptions and updates.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/types@1.2.2
+  - @backstage/backend-app-api@1.2.7
+  - @backstage/backend-plugin-api@1.4.3
+
 ## 1.9.0-next.1
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.4.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+
 ## 0.4.15-next.0
 
 ### Patch Changes

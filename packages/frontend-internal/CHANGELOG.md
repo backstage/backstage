@@ -1,5 +1,13 @@
 # @internal/frontend
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/types@1.2.2
+
 ## 0.0.13-next.0
 
 ### Patch Changes

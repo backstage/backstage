@@ -1,5 +1,27 @@
 # @backstage/cli
 
+## 0.34.2
+
+### Patch Changes
+
+- e6f45dc: Updated the WebPack configuration to use `contenthash`. This fixes an issue were builds would sometimes generate output files with the same name but different content across builds, leading to breakages when loading the frontend app.
+- fffd434: Disallow import fallback of critical shared dependencies in module federation.
+- 080f252: Fixed the `new-frontend-plugin` template that was incorrectly passing `id` instead of `pluginId` to `createFrontendPlugin` and unnecessarily importing `React`.
+- e0db9b8: Modify the `backstage.json` also for custom patterns if it extends the default pattern.
+
+  Examples:
+
+  - `@backstage/*` (default pattern)
+  - `@{backstage,backstage-community}/*`
+  - `@{extra1,backstage,extra2}/*`
+
+- 275bda8: Fixed an issue that could cause conflicts of detected modules in workspaces with multiple apps.
+- e1adce4: Updated the backend plugin template to use a new pattern for the `TodoListService` that reduces boilerplate.
+- Updated dependencies
+  - @backstage/config-loader@1.10.3
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+
 ## 0.34.2-next.2
 
 ### Patch Changes

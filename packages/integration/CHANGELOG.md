@@ -1,5 +1,15 @@
 # @backstage/integration
 
+## 1.18.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
+### Patch Changes
+
+- 56897d7: Fixes issue with Github credentials provider which fails to match organization name if using allowedInstallationOwners
+
 ## 1.18.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,44 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.0
+
+### Minor Changes
+
+- 0e9ec44: Introduced new `streamEntities` async generator method for the catalog.
+
+  Catalog API and Catalog Service now includes a `streamEntities` method that allows for streaming entities from the catalog.
+  This method is designed to handle large datasets efficiently by processing entities in a stream rather than loading them
+  all into memory at once. This is useful when you need to fetch a large number of entities but do not want to use pagination
+  or fetch all entities at once.
+
+  Example usage:
+
+  ```ts
+  const pageStream = catalogClient.streamEntities({ pageSize: 100 }, { token });
+  for await (const page of pageStream) {
+    // Handle page of entities
+    for (const entity of page) {
+      console.log(entity);
+    }
+  }
+  ```
+
+### Patch Changes
+
+- 0174799: Fix a potential race condition in EntityListProvider when selecting filters
+- 4316c11: Catalog table columns support i18n
+- 79ff318: Removed the deprecation warning when not passing an explicit type to `EntityCardBlueprint`. Omitting the type is now intended, allowing the layout to pick the default type instead, typically `content`.
+- ad0f58d: Support `default*` for older packages as this package is in range for breaking `/alpha` changes
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/frontend-test-utils@0.3.6
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/integration-react@1.2.10
+
 ## 1.21.0-next.2
 
 ### Minor Changes
