@@ -1,5 +1,59 @@
 # @backstage/plugin-catalog-backend
 
+## 3.1.0
+
+### Minor Changes
+
+- 9b40a55: Add support for specifying an entity `spec.type` in `catalog.rules` and `catalog.locations.rules` within the catalog configuration.
+
+  For example, this enables allowing all `Template` entities with the type `website`:
+
+  ```diff
+    catalog:
+      rules:
+        - allow:
+            - Component
+            - API
+            - Resource
+            - System
+            - Domain
+            - Location
+  +     - allow:
+  +         - kind: Template
+  +           spec.type: website
+          locations:
+            - type: url
+              pattern: https://github.com/org/*\/blob/master/*.yaml
+  ```
+
+### Patch Changes
+
+- 37b4eaf: The 'get-catalog-entity' action now throws a ConflictError instead of generic Error if multiple entities are found, so MCP call doesn't fail with 500.
+- 2bbd24f: Order catalog processors by priority.
+
+  This change enables the ordering of catalog processors by their priority,
+  allowing for more control over the catalog processing sequence.
+  The default priority is set to 20, and processors can be assigned a custom
+  priority to influence their execution order. Lower number indicates higher priority.
+  The priority can be set by implementing the `getPriority` method in the processor class
+  or by adding a `catalog.processors.<processorName>.priority` configuration
+  in the `app-config.yaml` file. The configuration takes precedence over the method.
+
+- e934a27: Updating `catalog:get-catalog-entity` action to be `readOnly` and non destructive
+- 0efcc97: Updated generated schemas
+- 2204f5b: Prevent deadlock in catalog deferred stitching
+- 58874c4: Add support to disable catalog providers and processors via configuration
+- a4c82ad: Only run provider orphan cleanup if the engine is started in the first place
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-permission-node@0.10.4
+
 ## 3.0.2-next.1
 
 ### Patch Changes

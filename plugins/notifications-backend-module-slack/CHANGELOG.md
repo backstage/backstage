@@ -1,5 +1,16 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.1.5
+
+### Patch Changes
+
+- a95cebd: Internal refactoring for better type support
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-node@0.2.19
+  - @backstage/backend-plugin-api@1.4.3
+
 ## 0.1.5-next.1
 
 ### Patch Changes
