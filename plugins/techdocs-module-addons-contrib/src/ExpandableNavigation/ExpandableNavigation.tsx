@@ -92,15 +92,7 @@ export const ExpandableNavigationAddon = () => {
   useEffect(() => {
     if (!checkboxToggles?.length) return;
     function shouldToggle(item: HTMLInputElement) {
-      const isExpanded = item.checked;
-      const shouldExpand = expanded?.expandAllNestedNavs;
-      if (shouldExpand && !isExpanded) {
-        return true;
-      }
-      if (!shouldExpand && isExpanded) {
-        return true;
-      }
-      return false;
+      return expanded?.expandAllNestedNavs !== item.checked;
     }
     for (const item of checkboxToggles) {
       if (shouldToggle(item)) {
