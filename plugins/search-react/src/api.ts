@@ -40,7 +40,11 @@ export interface SearchApi {
  * Search Api Mock that can be used in tests and storybooks
  */
 export class MockSearchApi implements SearchApi {
-  constructor(public mockedResults?: SearchResultSet) {}
+  public mockedResults?: SearchResultSet;
+
+  constructor(mockedResults?: SearchResultSet) {
+    this.mockedResults = mockedResults;
+  }
 
   query(
     _query: SearchQuery,

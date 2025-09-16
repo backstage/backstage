@@ -37,10 +37,13 @@ export interface StaticConfigSourceOptions {
 
 /** @internal */
 class StaticObservableConfigSource implements ConfigSource {
-  constructor(
-    private readonly data: Observable<JsonObject>,
-    private readonly context: string,
-  ) {}
+  private readonly data: Observable<JsonObject>;
+  private readonly context: string;
+
+  constructor(data: Observable<JsonObject>, context: string) {
+    this.data = data;
+    this.context = context;
+  }
 
   async *readConfigData(
     options?: ReadConfigDataOptions | undefined,
@@ -131,10 +134,16 @@ export class StaticConfigSource implements ConfigSource {
     return new StaticConfigSource(data, context);
   }
 
+  private readonly promise: JsonObject | PromiseLike<JsonObject>;
+  private readonly context: string;
+
   private constructor(
-    private readonly promise: JsonObject | PromiseLike<JsonObject>,
-    private readonly context: string,
-  ) {}
+    promise: JsonObject | PromiseLike<JsonObject>,
+    context: string,
+  ) {
+    this.promise = promise;
+    this.context = context;
+  }
 
   async *readConfigData(): AsyncConfigSourceGenerator {
     yield { configs: [{ data: await this.promise, context: this.context }] };

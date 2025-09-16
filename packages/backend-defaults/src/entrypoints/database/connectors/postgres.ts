@@ -294,10 +294,13 @@ function normalizeConnection(
 }
 
 export class PgConnector implements Connector {
-  constructor(
-    private readonly config: Config,
-    private readonly prefix: string,
-  ) {}
+  private readonly config: Config;
+  private readonly prefix: string;
+
+  constructor(config: Config, prefix: string) {
+    this.config = config;
+    this.prefix = prefix;
+  }
 
   async getClient(
     pluginId: string,

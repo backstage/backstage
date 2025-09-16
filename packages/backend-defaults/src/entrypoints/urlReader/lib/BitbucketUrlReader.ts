@@ -69,11 +69,16 @@ export class BitbucketUrlReader implements UrlReaderService {
       });
   };
 
+  private readonly integration: BitbucketIntegration;
+  private readonly deps: { treeResponseFactory: ReadTreeResponseFactory };
+
   constructor(
-    private readonly integration: BitbucketIntegration,
+    integration: BitbucketIntegration,
     logger: LoggerService,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
+    this.integration = integration;
+    this.deps = deps;
     const { host, token, username, appPassword } = integration.config;
     const replacement =
       host === 'bitbucket.org' ? 'bitbucketCloud' : 'bitbucketServer';

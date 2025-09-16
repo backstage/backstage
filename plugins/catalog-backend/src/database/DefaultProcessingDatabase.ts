@@ -55,14 +55,20 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 const BATCH_SIZE = 50;
 
 export class DefaultProcessingDatabase implements ProcessingDatabase {
-  constructor(
-    private readonly options: {
-      database: Knex;
-      logger: LoggerService;
-      refreshInterval: ProcessingIntervalFunction;
-      events: EventsService;
-    },
-  ) {
+  private readonly options: {
+    database: Knex;
+    logger: LoggerService;
+    refreshInterval: ProcessingIntervalFunction;
+    events: EventsService;
+  };
+
+  constructor(options: {
+    database: Knex;
+    logger: LoggerService;
+    refreshInterval: ProcessingIntervalFunction;
+    events: EventsService;
+  }) {
+    this.options = options;
     initDatabaseMetrics(options.database);
   }
 

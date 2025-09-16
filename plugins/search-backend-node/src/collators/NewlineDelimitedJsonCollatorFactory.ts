@@ -69,13 +69,20 @@ export class NewlineDelimitedJsonCollatorFactory
 
   public readonly visibilityPermission: Permission | undefined;
 
+  private readonly searchPattern: string;
+  private readonly reader: UrlReaderService;
+  private readonly logger: LoggerService;
+
   private constructor(
     type: string,
-    private readonly searchPattern: string,
-    private readonly reader: UrlReaderService,
-    private readonly logger: LoggerService,
+    searchPattern: string,
+    reader: UrlReaderService,
+    logger: LoggerService,
     visibilityPermission: Permission | undefined,
   ) {
+    this.searchPattern = searchPattern;
+    this.reader = reader;
+    this.logger = logger;
     this.type = type;
     this.visibilityPermission = visibilityPermission;
   }

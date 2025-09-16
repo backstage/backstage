@@ -129,8 +129,10 @@ class WaitingProgressTracker implements ProgressTrackerWithErrorReports {
   #counts = new Map<string, number>();
   #errors = new Map<string, Error[]>();
   #inFlight = new Array<Promise<void>>();
+  private readonly entityRefs?: Set<string>;
 
-  constructor(private readonly entityRefs?: Set<string>) {
+  constructor(entityRefs?: Set<string>) {
+    this.entityRefs = entityRefs;
     let resolve: (errors: Record<string, Error[]>) => void;
     this.#promise = new Promise<Record<string, Error[]>>(_resolve => {
       resolve = _resolve;

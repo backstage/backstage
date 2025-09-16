@@ -108,7 +108,11 @@ describe('eventsPlugin', () => {
 
   describe('event bus', () => {
     class ReqHelper {
-      constructor(private readonly backend: TestBackend) {}
+      private readonly backend: TestBackend;
+
+      constructor(backend: TestBackend) {
+        this.backend = backend;
+      }
 
       subscribe(id: string, topics: string[], options?: { auth?: string }) {
         return request(this.backend.server)

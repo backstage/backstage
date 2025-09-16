@@ -46,12 +46,19 @@ export class UnprocessedEntitiesModule {
 
   private readonly httpAuth: HttpAuthService;
 
+  private readonly database: Knex;
+  private readonly router: Pick<HttpRouterService, 'use'>;
+  private readonly permissions: PermissionsService;
+
   private constructor(
-    private readonly database: Knex,
-    private readonly router: Pick<HttpRouterService, 'use'>,
-    private readonly permissions: PermissionsService,
+    database: Knex,
+    router: Pick<HttpRouterService, 'use'>,
+    permissions: PermissionsService,
     httpAuth: HttpAuthService,
   ) {
+    this.database = database;
+    this.router = router;
+    this.permissions = permissions;
     this.moduleRouter = Router();
     this.router.use(this.moduleRouter);
 
