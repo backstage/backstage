@@ -18321,6 +18321,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/addon-a11y@npm:^9.1.5":
+  version: 9.1.6
+  resolution: "@storybook/addon-a11y@npm:9.1.6"
+  dependencies:
+    "@storybook/global": "npm:^5.0.0"
+    axe-core: "npm:^4.2.0"
+  peerDependencies:
+    storybook: ^9.1.6
+  checksum: 10/345c44673ccede4073e7415eb7c73f7817cb64b24b75d6f2edae73a0a6e50cc91e098a48dfd55996188aeb04d308c147b6d660bcdd4e5449d601271a83d4f178
+  languageName: node
+  linkType: hard
+
 "@storybook/addon-docs@npm:^9.1.5":
   version: 9.1.5
   resolution: "@storybook/addon-docs@npm:9.1.5"
@@ -24098,10 +24110,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:^4.10.0":
-  version: 4.10.0
-  resolution: "axe-core@npm:4.10.0"
-  checksum: 10/6158489a7a704edc98bd30ed56243b8280c5203c60e095a2feb5bff95d9bf2ef10becfe359b1cbc8601338418999c26cf4eee704181dedbcb487f4d63a06d8d5
+"axe-core@npm:^4.10.0, axe-core@npm:^4.2.0":
+  version: 4.10.3
+  resolution: "axe-core@npm:4.10.3"
+  checksum: 10/9ff51ad0fd0fdec5c0247ea74e8ace5990b54c7f01f8fa3e5cd8ba98b0db24d8ebd7bab4a9bd4d75c28c4edcd1eac455b44c8c6c258c6a98f3d2f88bc60af4cc
   languageName: node
   linkType: hard
 
@@ -44141,6 +44153,7 @@ __metadata:
     "@octokit/rest": "npm:^19.0.3"
     "@playwright/test": "npm:^1.32.3"
     "@spotify/eslint-plugin": "npm:^15.0.0"
+    "@storybook/addon-a11y": "npm:^9.1.5"
     "@storybook/addon-docs": "npm:^9.1.5"
     "@storybook/addon-links": "npm:^9.1.5"
     "@storybook/addon-themes": "npm:^9.1.5"

@@ -1,9 +1,9 @@
-name: Storybook
+name: Chromatic
 on:
   # NOTE: If you change these you must update verify_storybook-noop.yml as well
   pull_request:
     paths:
-      - '.github/workflows/verify_storybook.yml'
+      - '.github/workflows/verify_chromatic.yml'
       - '.storybook/**'
       - 'packages/ui/src/**'
       - 'packages/config/src/**'
@@ -26,7 +26,7 @@ jobs:
         os: [ubuntu-latest]
         node-version: [20.x]
 
-    name: Storybook
+    name: Chromatic
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
@@ -50,13 +50,14 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Build Storybook
-        run: yarn build-storybook
+        run: yarn build-storybook:chromatic
 
-      - name: Deploy Storybook to Chromatic
-        uses: chromaui/action@1cfa065cbdab28f6ca3afaeb3d761383076a35aa # v11
+      - name: Run Chromatic
+        uses: chromaui/action@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: chpt_dab72dc0f97d55b
           storybookBuildDir: dist-storybook
+          onlyChanged: true
