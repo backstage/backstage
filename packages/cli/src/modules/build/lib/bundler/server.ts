@@ -28,6 +28,7 @@ import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
+import { createRuntimeSharedDependeciesEntryPoint } from './moduleFederation';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -108,10 +109,10 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   }
 
   const { frontendConfig, fullConfig } = cliConfig;
-  const url = resolveBaseUrl(frontendConfig, options.moduleFederation);
+  const url = resolveBaseUrl(frontendConfig, options.moduleFederationRemote);
   const { host, port } = resolveEndpoint(
     frontendConfig,
-    options.moduleFederation,
+    options.moduleFederationRemote,
   );
 
   const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
@@ -121,6 +122,14 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       triggerReload();
     },
   });
+
+  const moduleFederationSharedDependenciesEntryPoint =
+    await createRuntimeSharedDependeciesEntryPoint({
+      targetPath: paths.targetPath,
+      watch() {
+        triggerReload();
+      },
+    });
 
   const webpack = process.env.LEGACY_WEBPACK_BUILD
     ? (require('webpack') as typeof import('webpack'))
@@ -140,8 +149,11 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   const config = await createConfig(paths, {
     ...commonConfigOptions,
-    additionalEntryPoints: detectedModulesEntryPoint,
-    moduleFederation: options.moduleFederation,
+    additionalEntryPoints: [
+      ...detectedModulesEntryPoint,
+      ...moduleFederationSharedDependenciesEntryPoint,
+    ],
+    moduleFederationRemote: options.moduleFederationRemote,
   });
 
   const bundler = (webpack ?? rspack) as typeof rspack;
@@ -181,17 +193,16 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
             directory: paths.targetPublic,
           }
         : undefined,
-      historyApiFallback:
-        options.moduleFederation?.mode === 'remote'
-          ? false
-          : {
-              // Paths with dots should still use the history fallback.
-              // See https://github.com/facebookincubator/create-react-app/issues/387.
-              disableDotRule: true,
+      historyApiFallback: options.moduleFederationRemote
+        ? false
+        : {
+            // Paths with dots should still use the history fallback.
+            // See https://github.com/facebookincubator/create-react-app/issues/387.
+            disableDotRule: true,
 
-              // The index needs to be rewritten relative to the new public path, including subroutes.
-              index: `${config.output?.publicPath}index.html`,
-            },
+            // The index needs to be rewritten relative to the new public path, including subroutes.
+            index: `${config.output?.publicPath}index.html`,
+          },
       server:
         url.protocol === 'https:'
           ? {

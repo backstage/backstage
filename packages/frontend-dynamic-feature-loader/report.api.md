@@ -4,6 +4,7 @@
 
 ```ts
 import { FrontendFeatureLoader } from '@backstage/frontend-plugin-api';
+import { ModuleFederation } from '@module-federation/enhanced/runtime';
 import { ModuleFederationRuntimePlugin } from '@module-federation/enhanced/runtime';
 import { ShareStrategy } from '@module-federation/runtime/types';
 import { UserOptions } from '@module-federation/runtime/types';
@@ -16,9 +17,12 @@ export function dynamicFrontendFeaturesLoader(
 // @public (undocumented)
 export type DynamicFrontendFeaturesLoaderOptions = {
   moduleFederation: {
-    shared?: UserOptions['shared'];
     shareStrategy?: ShareStrategy;
-    plugins?: Array<ModuleFederationRuntimePlugin>;
+    shared?: UserOptions['shared'] | (() => Promise<UserOptions['shared']>);
+    plugins?:
+      | Array<ModuleFederationRuntimePlugin>
+      | (() => Promise<Array<ModuleFederationRuntimePlugin>>);
+    instance?: ModuleFederation | (() => Promise<ModuleFederation>);
   };
 };
 ```

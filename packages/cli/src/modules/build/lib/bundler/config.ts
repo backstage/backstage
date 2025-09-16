@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { BundlingOptions, ModuleFederationOptions } from './types';
 import { resolve as resolvePath } from 'node:path';
+import { BundlingOptions, ModuleFederationRemoteOptions } from './types';
 import { rspack, Configuration } from '@rspack/core';
 
 import { BundlingPaths } from './paths';
@@ -39,14 +39,13 @@ import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPl
 
 export function resolveBaseUrl(
   config: Config,
-  moduleFederation?: ModuleFederationOptions,
+  moduleFederationRemote?: ModuleFederationRemoteOptions,
 ): URL {
   const baseUrl = config.getOptionalString('app.baseUrl');
 
-  const defaultBaseUrl =
-    moduleFederation?.mode === 'remote'
-      ? `http://localhost:${process.env.PORT ?? '3000'}`
-      : 'http://localhost:3000';
+  const defaultBaseUrl = moduleFederationRemote
+    ? `http://localhost:${process.env.PORT ?? '3000'}`
+    : 'http://localhost:3000';
 
   try {
     return new URL(baseUrl ?? '/', defaultBaseUrl);
@@ -57,12 +56,12 @@ export function resolveBaseUrl(
 
 export function resolveEndpoint(
   config: Config,
-  moduleFederation?: ModuleFederationOptions,
+  moduleFederationRemote?: ModuleFederationRemoteOptions,
 ): {
   host: string;
   port: number;
 } {
-  const url = resolveBaseUrl(config, moduleFederation);
+  const url = resolveBaseUrl(config, moduleFederationRemote);
 
   return {
     host: config.getOptionalString('app.listen.host') ?? url.hostname,
@@ -117,7 +116,7 @@ export async function createConfig(
     checksEnabled,
     isDev,
     frontendConfig,
-    moduleFederation,
+    moduleFederationRemote,
     publicSubPath = '',
     webpack,
   } = options;
@@ -126,7 +125,7 @@ export async function createConfig(
   // Any package that is part of the monorepo but outside the monorepo root dir need
   // separate resolution logic.
 
-  const validBaseUrl = resolveBaseUrl(frontendConfig, moduleFederation);
+  const validBaseUrl = resolveBaseUrl(frontendConfig, moduleFederationRemote);
   let publicPath = validBaseUrl.pathname.replace(/\/$/, '');
   if (publicSubPath) {
     publicPath = `${publicPath}${publicSubPath}`.replace('//', '/');
@@ -135,7 +134,7 @@ export async function createConfig(
   if (isDev) {
     const { host, port } = resolveEndpoint(
       options.frontendConfig,
-      options.moduleFederation,
+      options.moduleFederationRemote,
     );
 
     const refreshOptions = {
@@ -186,7 +185,7 @@ export async function createConfig(
     }),
   );
 
-  if (options.moduleFederation?.mode !== 'remote') {
+  if (!options.moduleFederationRemote) {
     const templateOptions = {
       meta: {
         'backstage-app-mode': options?.appMode ?? 'public',
@@ -231,20 +230,17 @@ export async function createConfig(
     );
   }
 
-  if (options.moduleFederation) {
-    const isRemote = options.moduleFederation?.mode === 'remote';
-
+  if (options.moduleFederationRemote) {
     const AdaptedModuleFederationPlugin = webpack
       ? (require('@module-federation/enhanced/webpack')
           .ModuleFederationPlugin as unknown as typeof ModuleFederationPlugin)
       : ModuleFederationPlugin;
 
-    const exposes = options.moduleFederation?.exposes
+    const exposes = options.moduleFederationRemote.exposes
       ? Object.fromEntries(
-          Object.entries(options.moduleFederation?.exposes).map(([k, v]) => [
-            k,
-            resolvePath(paths.targetPath, v),
-          ]),
+          Object.entries(options.moduleFederationRemote?.exposes).map(
+            ([k, v]) => [k, resolvePath(paths.targetPath, v)],
+          ),
         )
       : {
           '.': paths.targetEntry,
@@ -252,66 +248,28 @@ export async function createConfig(
 
     plugins.push(
       new AdaptedModuleFederationPlugin({
-        ...(isRemote && {
-          filename: 'remoteEntry.js',
-          exposes,
-        }),
-        name: options.moduleFederation.name,
+        filename: 'remoteEntry.js',
+        exposes,
+        name: options.moduleFederationRemote.name,
         runtime: false,
-        shared: {
-          // React
-          react: {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-            ...(isRemote && { import: false }),
-          },
-          'react-dom': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-            ...(isRemote && { import: false }),
-          },
-          // React Router
-          'react-router': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-            ...(isRemote && { import: false }),
-          },
-          'react-router-dom': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-            ...(isRemote && { import: false }),
-          },
-          // MUI v4
-          // not setting import: false for MUI packages as this
-          // will break once Backstage moves to BUI
-          '@material-ui/core/styles': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-          },
-          '@material-ui/styles': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-          },
-          // MUI v5
-          // not setting import: false for MUI packages as this
-          // will break once Backstage moves to BUI
-          '@mui/material/styles/': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-          },
-          '@emotion/react': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-          },
-        },
+        shared: Object.fromEntries(
+          Object.entries(options.moduleFederationRemote.sharedDependencies).map(
+            ([name, p]) => [
+              name,
+              {
+                ...(p.version === undefined ? {} : { version: p.version }),
+                ...(p.requiredVersion === undefined
+                  ? {}
+                  : { requiredVersion: p.requiredVersion }),
+                ...(p.singleton === undefined
+                  ? {}
+                  : { singleton: p.singleton }),
+                ...(p.import === undefined ? {} : { import: p.import }),
+                eager: false,
+              },
+            ],
+          ),
+        ),
       }),
     );
   }
@@ -426,10 +384,9 @@ export async function createConfig(
       rules: loaders,
     },
     output: {
-      uniqueName: options.moduleFederation?.name,
+      uniqueName: options.moduleFederationRemote?.name,
       path: paths.targetDist,
-      publicPath:
-        options.moduleFederation?.mode === 'remote' ? 'auto' : `${publicPath}/`,
+      publicPath: options.moduleFederationRemote ? 'auto' : `${publicPath}/`,
       filename: isDev ? '[name].js' : 'static/[name].[contenthash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'

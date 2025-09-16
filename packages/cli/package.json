@@ -55,6 +55,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/eslint-plugin": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/module-federation-common": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
     "@backstage/types": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
