@@ -105,6 +105,7 @@ Set the `MCP_TOKEN` environment variable with this token, and configure your MCP
 
 #### Experimental: Dynamic Client Registration
 
+> [!CAUTION]
 > This is highly experimental, proceed with caution.
 
 You can configure both the `auth-backend` and install the `auth` frontend plugin in order to enable [Dynamic Client Registration](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization#dynamic-client-registration) with MCP Clients.
