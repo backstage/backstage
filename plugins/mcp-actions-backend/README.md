@@ -125,7 +125,8 @@ auth:
       - cursor://*
 ```
 
-> Note: the `@backstage/plugin-auth` package is only available currently in the new frontend system.
+> [!NOTE]
+> The `@backstage/plugin-auth` package is currently only available in the new frontend system.
 
 ## Configuring MCP Clients
 
