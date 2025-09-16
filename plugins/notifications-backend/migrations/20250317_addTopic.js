@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// @ts-check
+
 const crypto = require('crypto');
 
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('user_settings', table => {
     table.string('topic').nullable().after('origin');
@@ -41,6 +47,9 @@ exports.up = async function up(knex) {
   });
 };
 
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.down = async function down(knex) {
   await knex.schema.table('user_settings', table => {
     table.dropUnique([], 'user_settings_unique_idx');
