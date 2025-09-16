@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Icon } from '../Icon';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/ButtonLink',
   component: ButtonLink,
   argTypes: {
@@ -33,18 +32,15 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-} satisfies Meta<typeof ButtonLink>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: 'Button',
   },
-};
+});
 
-export const Variants: Story = {
+export const Variants = meta.story({
   render: () => (
     <Flex align="center">
       <ButtonLink
@@ -73,9 +69,9 @@ export const Variants: Story = {
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
     children: 'Button',
   },
@@ -89,9 +85,9 @@ export const Sizes: Story = {
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const WithIcons: Story = {
+export const WithIcons = meta.story({
   args: {
     children: 'Button',
   },
@@ -106,9 +102,9 @@ export const WithIcons: Story = {
       />
     </Flex>
   ),
-};
+});
 
-export const FullWidth: Story = {
+export const FullWidth = meta.story({
   args: {
     children: 'Button',
   },
@@ -123,9 +119,9 @@ export const FullWidth: Story = {
       />
     </Flex>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   render: () => (
     <Flex direction="row" gap="4">
       <ButtonLink variant="primary" isDisabled>
@@ -139,9 +135,9 @@ export const Disabled: Story = {
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
     children: 'Button',
     variant: {
@@ -153,12 +149,12 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
-};
+});
 
 const variants = ['primary', 'secondary'] as const;
 const sizes = ['small', 'medium'] as const;
 
-export const Playground: Story = {
+export const Playground = meta.story({
   args: {
     children: 'Button',
   },
@@ -220,4 +216,4 @@ export const Playground: Story = {
       ))}
     </Flex>
   ),
-};
+});

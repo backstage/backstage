@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Flex } from './Flex';
 import { Text } from '../Text';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Flex',
   component: Flex,
   argTypes: {
@@ -38,10 +37,7 @@ const meta = {
     gap: '4',
     children: 'hello world',
   },
-} satisfies Meta<typeof Flex>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const DecorativeBox = () => {
   return (
@@ -59,7 +55,7 @@ const DecorativeBox = () => {
   );
 };
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: (
       <>
@@ -69,23 +65,23 @@ export const Default: Story = {
       </>
     ),
   },
-};
+});
 
-export const ColumnDirection: Story = {
+export const ColumnDirection = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     direction: 'column',
   },
-};
+});
 
-export const RowDirection: Story = {
+export const RowDirection = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     direction: 'row',
   },
-};
+});
 
-export const AlignLeft: Story = {
+export const AlignLeft = meta.story({
   render: () => (
     <Flex align="start">
       <DecorativeBox />
@@ -93,9 +89,9 @@ export const AlignLeft: Story = {
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const AlignCenter: Story = {
+export const AlignCenter = meta.story({
   render: () => (
     <Flex align="center">
       <DecorativeBox />
@@ -103,9 +99,9 @@ export const AlignCenter: Story = {
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const AlignRight: Story = {
+export const AlignRight = meta.story({
   render: () => (
     <Flex align="end">
       <DecorativeBox />
@@ -113,9 +109,9 @@ export const AlignRight: Story = {
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const ResponsiveAlign: Story = {
+export const ResponsiveAlign = meta.story({
   render: () => (
     <Flex align={{ xs: 'start', md: 'center', lg: 'end' }}>
       <DecorativeBox />
@@ -123,9 +119,9 @@ export const ResponsiveAlign: Story = {
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const ResponsiveGap: Story = {
+export const ResponsiveGap = meta.story({
   render: () => (
     <Flex gap={{ xs: '4', md: '8', lg: '12' }}>
       <DecorativeBox />
@@ -133,9 +129,9 @@ export const ResponsiveGap: Story = {
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const LargeGap: Story = {
+export const LargeGap = meta.story({
   render: () => (
     <Flex gap="8">
       <DecorativeBox />
@@ -143,9 +139,9 @@ export const LargeGap: Story = {
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const WithTextTruncate: Story = {
+export const WithTextTruncate = meta.story({
   render: () => (
     <Flex direction="row" gap="8">
       <Flex>
@@ -164,4 +160,4 @@ export const WithTextTruncate: Story = {
       </Flex>
     </Flex>
   ),
-};
+});

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Placement } from '@react-types/overlays';
 import { TooltipTrigger, Tooltip } from './Tooltip';
 import { Button } from '../Button/Button';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Tooltip',
   component: TooltipTrigger,
   parameters: { layout: 'centered' },
@@ -52,54 +51,44 @@ const meta = {
       <Tooltip placement={placement}>{children ?? 'I am a tooltip'}</Tooltip>
     </TooltipTrigger>
   ),
-} as Meta<{
-  children?: string;
-  isOpen?: boolean;
-  isDisabled?: boolean;
-  placement?: Placement;
-  delay?: number;
-  closeDelay?: number;
-}>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: 'I am a tooltip',
   },
-};
+});
 
-export const IsOpen: Story = {
+export const IsOpen = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isOpen: true,
   },
-};
+});
 
-export const IsDisabled: Story = {
+export const IsDisabled = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isDisabled: true,
   },
-};
+});
 
-export const NoDelays: Story = {
+export const NoDelays = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     delay: 0,
     closeDelay: 0,
   },
-};
+});
 
-export const OrthogonalPlacements: Story = {
+export const OrthogonalPlacements = meta.story({
   parameters: {
     controls: {
       exclude: ['placement'],
     },
   },
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isOpen: true,
   },
   render: ({ isOpen, children }) => {
@@ -113,13 +102,13 @@ export const OrthogonalPlacements: Story = {
       </TooltipTrigger>
     );
   },
-};
+});
 
-export const WithLongText: Story = {
+export const WithLongText = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isOpen: true,
     children:
       'I am a tooltip with a very long text. orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
   },
-};
+});

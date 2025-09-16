@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -15,7 +16,7 @@
  */
 
 import { useState } from 'react';
-import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
+import type { StoryFn } from '@storybook/react-vite';
 import {
   Table,
   TableHeader,
@@ -34,7 +35,7 @@ import { data as data4 } from './mocked-data4';
 import { RiCactusLine } from '@remixicon/react';
 import { TablePagination } from '../TablePagination';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Table',
   decorators: [
     (Story: StoryFn) => (
@@ -43,16 +44,13 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta;
+});
 
 // Added this fix to fix Chromatic timeout error. This bug is due to rerendering the table with too many rows.
 // Work in progress to fix it here - https://github.com/backstage/backstage/pull/30687
 const data1 = data1Raw.slice(0, 10);
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const TableOnly: Story = {
+export const TableOnly = meta.story({
   render: () => {
     return (
       <Table>
@@ -83,9 +81,9 @@ export const TableOnly: Story = {
       </Table>
     );
   },
-};
+});
 
-export const WithPaginationUncontrolled: Story = {
+export const WithPaginationUncontrolled = meta.story({
   render: () => {
     const { data, paginationProps } = useTable({ data: data1 });
 
@@ -117,9 +115,9 @@ export const WithPaginationUncontrolled: Story = {
       </>
     );
   },
-};
+});
 
-export const WithPaginationControlled: Story = {
+export const WithPaginationControlled = meta.story({
   render: () => {
     const [offset, setOffset] = useState(0);
     const [pageSize, setPageSize] = useState(5);
@@ -167,9 +165,9 @@ export const WithPaginationControlled: Story = {
       </>
     );
   },
-};
+});
 
-export const TableRockBand: Story = {
+export const TableRockBand = meta.story({
   render: () => {
     const { data, paginationProps } = useTable({
       data: data4,
@@ -206,9 +204,9 @@ export const TableRockBand: Story = {
       </>
     );
   },
-};
+});
 
-export const RowClick: Story = {
+export const RowClick = meta.story({
   render: () => {
     const { data, paginationProps } = useTable({
       data: data4,
@@ -245,9 +243,9 @@ export const RowClick: Story = {
       </>
     );
   },
-};
+});
 
-export const RowLink: Story = {
+export const RowLink = meta.story({
   render: () => {
     const { data, paginationProps } = useTable({
       data: data4,
@@ -284,9 +282,9 @@ export const RowLink: Story = {
       </>
     );
   },
-};
+});
 
-export const CellText: Story = {
+export const CellText = meta.story({
   render: () => {
     return (
       <Table>
@@ -307,9 +305,9 @@ export const CellText: Story = {
       </Table>
     );
   },
-};
+});
 
-export const CellProfile: Story = {
+export const CellProfile = meta.story({
   render: () => {
     return (
       <Table>
@@ -331,4 +329,4 @@ export const CellProfile: Story = {
       </Table>
     );
   },
-};
+});

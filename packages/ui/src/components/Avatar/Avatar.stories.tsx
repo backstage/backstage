@@ -13,37 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Avatar } from './index';
 import { Flex } from '../..';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Avatar',
   component: Avatar,
-} satisfies Meta<typeof Avatar>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     src: 'https://avatars.githubusercontent.com/u/1540635?v=4',
     name: 'Charles de Dreuille',
   },
-};
+});
 
-export const Fallback: Story = {
+export const Fallback = Default.extend({
   args: {
-    ...Default.args,
     src: 'https://avatars.githubusercontent.com/u/15406AAAAAAAAA',
   },
-};
+});
 
-export const Sizes: Story = {
-  args: {
-    ...Default.args,
-  },
+export const Sizes = Default.extend({
   render: args => (
     <Flex>
       <Avatar {...args} size="small" />
@@ -51,4 +43,4 @@ export const Sizes: Story = {
       <Avatar {...args} size="large" />
     </Flex>
   ),
-};
+});
