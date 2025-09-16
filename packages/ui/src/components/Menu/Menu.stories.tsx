@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import {
   MenuTrigger,
   SubmenuTrigger,
@@ -44,7 +43,7 @@ import { Selection } from 'react-aria-components';
 import { MemoryRouter } from 'react-router-dom';
 import { MenuItem as AriaMenuItem } from 'react-aria-components';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Menu',
   component: MenuTrigger,
   decorators: [
@@ -54,10 +53,7 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta<typeof MenuTrigger>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const options = [
   { label: 'Apple', value: 'apple' },
@@ -71,7 +67,7 @@ const options = [
   { label: 'Honeydew', value: 'honeydew' },
 ];
 
-export const Preview: Story = {
+export const Preview = meta.story({
   args: {
     children: null,
   },
@@ -97,11 +93,11 @@ export const Preview: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const PreviewSubmenu: Story = {
+export const PreviewSubmenu = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger>
@@ -125,11 +121,11 @@ export const PreviewSubmenu: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const PreviewIcons: Story = {
+export const PreviewIcons = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger>
@@ -141,11 +137,11 @@ export const PreviewIcons: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const PreviewSections: Story = {
+export const PreviewSections = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger>
@@ -165,11 +161,11 @@ export const PreviewSections: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const PreviewSeparators: Story = {
+export const PreviewSeparators = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger>
@@ -186,11 +182,11 @@ export const PreviewSeparators: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const PreviewLinks: Story = {
+export const PreviewLinks = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger>
@@ -204,11 +200,11 @@ export const PreviewLinks: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const PreviewAutocompleteMenu: Story = {
+export const PreviewAutocompleteMenu = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger>
@@ -225,11 +221,11 @@ export const PreviewAutocompleteMenu: Story = {
       </MenuAutocomplete>
     </MenuTrigger>
   ),
-};
+});
 
-export const PreviewAutocompleteListbox: Story = {
+export const PreviewAutocompleteListbox = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
@@ -255,11 +251,11 @@ export const PreviewAutocompleteListbox: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const PreviewAutocompleteListboxMultiple: Story = {
+export const PreviewAutocompleteListboxMultiple = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
@@ -286,11 +282,11 @@ export const PreviewAutocompleteListboxMultiple: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const Opened: Story = {
+export const Opened = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -302,11 +298,11 @@ export const Opened: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithIcons: Story = {
+export const WithIcons = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -318,11 +314,11 @@ export const WithIcons: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithScrolling: Story = {
+export const WithScrolling = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -336,11 +332,11 @@ export const WithScrolling: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithSections: Story = {
+export const WithSections = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -360,11 +356,11 @@ export const WithSections: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithSeparators: Story = {
+export const WithSeparators = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -381,11 +377,11 @@ export const WithSeparators: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithColors: Story = {
+export const WithColors = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -401,11 +397,11 @@ export const WithColors: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithLinks: Story = {
+export const WithLinks = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -419,11 +415,11 @@ export const WithLinks: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithLinksTest: Story = {
+export const WithLinksTest = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -435,11 +431,11 @@ export const WithLinksTest: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithListBox: Story = {
+export const WithListBox = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -451,11 +447,11 @@ export const WithListBox: Story = {
       </MenuListBox>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithListBoxControlled: Story = {
+export const WithListBoxControlled = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(new Set(['paul']));
@@ -487,11 +483,11 @@ export const WithListBoxControlled: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const WithAutocompleteMenu: Story = {
+export const WithAutocompleteMenu = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -508,11 +504,11 @@ export const WithAutocompleteMenu: Story = {
       </MenuAutocomplete>
     </MenuTrigger>
   ),
-};
+});
 
-export const WithAutocompleteListbox: Story = {
+export const WithAutocompleteListbox = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
@@ -538,11 +534,11 @@ export const WithAutocompleteListbox: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const Submenu: Story = {
+export const Submenu = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -566,11 +562,11 @@ export const Submenu: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const SubmenuAutocompleteMenu: Story = {
+export const SubmenuAutocompleteMenu = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -590,11 +586,11 @@ export const SubmenuAutocompleteMenu: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});
 
-export const SubmenuAutocompleteListbox: Story = {
+export const SubmenuAutocompleteListbox = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
@@ -626,4 +622,4 @@ export const SubmenuAutocompleteListbox: Story = {
       </Flex>
     );
   },
-};
+});

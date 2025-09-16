@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
 import { Icon } from '../Icon';
@@ -24,7 +23,7 @@ import { ButtonIcon } from '../ButtonIcon';
 import { RiCactusLine } from '@remixicon/react';
 import { Button } from '../Button';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/SearchField',
   component: SearchField,
   argTypes: {
@@ -38,23 +37,20 @@ const meta = {
       control: 'text',
     },
   },
-} satisfies Meta<typeof SearchField>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     name: 'url',
     style: {
       maxWidth: '300px',
     },
   },
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
@@ -62,46 +58,46 @@ export const Sizes: Story = {
       <SearchField {...args} size="medium" />
     </Flex>
   ),
-};
+});
 
-export const DefaultValue: Story = {
+export const DefaultValue = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     defaultValue: 'https://example.com',
   },
-};
+});
 
-export const WithLabel: Story = {
+export const WithLabel = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     label: 'Label',
   },
-};
+});
 
-export const WithDescription: Story = {
+export const WithDescription = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
     description: 'Description',
   },
-};
+});
 
-export const Required: Story = {
+export const Required = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
     isRequired: true,
   },
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isDisabled: true,
   },
-};
+});
 
-export const WithIcon: Story = {
+export const WithIcon = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <SearchField
@@ -111,34 +107,34 @@ export const WithIcon: Story = {
       icon={<Icon name="eye" />}
     />
   ),
-};
+});
 
-export const DisabledWithIcon: Story = {
+export const DisabledWithIcon = meta.story({
   args: {
-    ...WithIcon.args,
+    ...WithIcon.input.args,
     isDisabled: true,
   },
-};
+});
 
-export const ShowError: Story = {
+export const ShowError = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
   },
   render: args => (
     <Form validationErrors={{ url: 'Invalid URL' }}>
       <SearchField {...args} />
     </Form>
   ),
-};
+});
 
-export const Validation: Story = {
+export const Validation = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
     validate: value => (value === 'admin' ? 'Nice try!' : null),
   },
-};
+});
 
-export const CustomField: Story = {
+export const CustomField = meta.story({
   render: () => (
     <>
       <FieldLabel
@@ -154,11 +150,11 @@ export const CustomField: Story = {
       />
     </>
   ),
-};
+});
 
-export const StartCollapsed: Story = {
+export const StartCollapsed = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     startCollapsed: true,
   },
 
@@ -168,11 +164,11 @@ export const StartCollapsed: Story = {
       <SearchField {...args} size="medium" />
     </Flex>
   ),
-};
+});
 
-export const StartCollapsedWithButtons: Story = {
+export const StartCollapsedWithButtons = meta.story({
   args: {
-    ...StartCollapsed.args,
+    ...StartCollapsed.input.args,
   },
   render: args => (
     <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: '600px' }}>
@@ -188,4 +184,4 @@ export const StartCollapsedWithButtons: Story = {
       </Button>
     </Flex>
   ),
-};
+});

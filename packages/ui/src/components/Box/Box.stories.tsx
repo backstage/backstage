@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -15,11 +16,10 @@
  */
 
 import { ReactNode } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Box } from './Box';
 import { Flex } from '../Flex';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Box',
   component: Box,
   argTypes: {
@@ -31,10 +31,7 @@ const meta = {
       control: false,
     },
   },
-} satisfies Meta<typeof Box>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const Card = () => {
   return (
@@ -53,19 +50,19 @@ const Card = () => {
   );
 };
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: 'Hello World',
     mb: '4',
   },
-};
+});
 
-export const Preview: Story = {
+export const Preview = meta.story({
   args: {
     children: <Card />,
     display: 'inline',
   },
-};
+});
 
 const CardDisplay = ({ children }: { children?: ReactNode }) => {
   return (
@@ -85,7 +82,7 @@ const CardDisplay = ({ children }: { children?: ReactNode }) => {
   );
 };
 
-export const Display: Story = {
+export const Display = meta.story({
   render: args => (
     <Flex direction="column" align="center">
       <Flex>
@@ -104,7 +101,7 @@ export const Display: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
 const styleInsideBox = {
   background: 'rgb(196, 202, 251)',
@@ -112,7 +109,7 @@ const styleInsideBox = {
   borderRadius: '4px',
 };
 
-export const Padding: Story = {
+export const Padding = meta.story({
   args: {
     style: {
       background: '#1f47ff',
@@ -169,9 +166,9 @@ export const Padding: Story = {
       </Flex>
     </Flex>
   ),
-};
+});
 
-export const Margin: Story = {
+export const Margin = meta.story({
   args: {
     style: {
       background: '#1f47ff',
@@ -252,4 +249,4 @@ export const Margin: Story = {
       </Flex>
     </Flex>
   ),
-};
+});

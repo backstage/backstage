@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react-vite';
+import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
 import type { HeaderTab } from './types';
 import {
@@ -36,16 +37,13 @@ import {
 } from '@remixicon/react';
 import { HeaderPageBreadcrumb } from '../HeaderPage/types';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Header',
   component: Header,
   parameters: {
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof Header>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const withRouter = (Story: StoryFn) => (
   <MemoryRouter>
@@ -193,19 +191,19 @@ const layoutDecorator = [
   withRouter,
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {},
   decorators: [withRouter],
-};
+});
 
-export const WithTabs: Story = {
+export const WithTabs = meta.story({
   args: {
     tabs,
   },
   decorators: [withRouter],
-};
+});
 
-export const WithCustomActions: Story = {
+export const WithCustomActions = meta.story({
   args: {},
   decorators: [withRouter],
   render: args => (
@@ -234,20 +232,20 @@ export const WithCustomActions: Story = {
       }
     />
   ),
-};
+});
 
-export const WithAllOptionsAndTabs: Story = {
+export const WithAllOptionsAndTabs = meta.story({
   args: {
-    ...WithCustomActions.args,
+    ...WithCustomActions.input.args,
     tabs,
   },
   decorators: [withRouter],
-  render: WithCustomActions.render,
-};
+  render: WithCustomActions.input.render,
+});
 
-export const WithHeaderPage: Story = {
+export const WithHeaderPage = meta.story({
   args: {
-    ...WithAllOptionsAndTabs.args,
+    ...WithAllOptionsAndTabs.input.args,
   },
   decorators: [withRouter],
   render: args => (
@@ -270,9 +268,9 @@ export const WithHeaderPage: Story = {
       />
     </>
   ),
-};
+});
 
-export const WithLayout: Story = {
+export const WithLayout = meta.story({
   decorators: layoutDecorator,
   render: args => (
     <>
@@ -285,9 +283,9 @@ export const WithLayout: Story = {
       />
     </>
   ),
-};
+});
 
-export const WithLayoutNoTabs: Story = {
+export const WithLayoutNoTabs = meta.story({
   decorators: layoutDecorator,
   render: args => (
     <>
@@ -295,9 +293,9 @@ export const WithLayoutNoTabs: Story = {
       <HeaderPage title="Page title" tabs={tabs2} />
     </>
   ),
-};
+});
 
-export const WithEverything: Story = {
+export const WithEverything = meta.story({
   args: {
     tabs,
     titleLink: '/',
@@ -327,9 +325,9 @@ export const WithEverything: Story = {
       />
     </>
   ),
-};
+});
 
-export const WithMockedURLCampaigns: Story = {
+export const WithMockedURLCampaigns = meta.story({
   args: {
     tabs,
   },
@@ -347,9 +345,9 @@ export const WithMockedURLCampaigns: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithMockedURLIntegrations: Story = {
+export const WithMockedURLIntegrations = meta.story({
   args: {
     tabs,
   },
@@ -367,9 +365,9 @@ export const WithMockedURLIntegrations: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithMockedURLNoMatch: Story = {
+export const WithMockedURLNoMatch = meta.story({
   args: {
     tabs,
   },
@@ -391,9 +389,9 @@ export const WithMockedURLNoMatch: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsMatchingStrategies: Story = {
+export const WithTabsMatchingStrategies = meta.story({
   args: {
     title: 'Route Matching Demo',
     tabs: [
@@ -451,9 +449,9 @@ export const WithTabsMatchingStrategies: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsExactMatching: Story = {
+export const WithTabsExactMatching = meta.story({
   args: {
     title: 'Exact Matching Demo',
     tabs: [
@@ -490,9 +488,9 @@ export const WithTabsExactMatching: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsPrefixMatchingDeep: Story = {
+export const WithTabsPrefixMatchingDeep = meta.story({
   args: {
     title: 'Deep Nesting Demo',
     tabs: [
@@ -542,4 +540,4 @@ export const WithTabsPrefixMatchingDeep: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});

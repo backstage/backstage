@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { ButtonIcon } from './ButtonIcon';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Icon } from '../Icon';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/ButtonIcon',
   component: ButtonIcon,
   argTypes: {
@@ -33,16 +32,13 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-} satisfies Meta<typeof ButtonIcon>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   render: () => <ButtonIcon icon={<Icon name="cloud" />} />,
-};
+});
 
-export const Variants: Story = {
+export const Variants = meta.story({
   render: () => (
     <Flex align="center" gap="2">
       <ButtonIcon icon={<Icon name="cloud" />} variant="primary" />
@@ -50,18 +46,18 @@ export const Variants: Story = {
       <ButtonIcon icon={<Icon name="cloud" />} variant="tertiary" />
     </Flex>
   ),
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   render: () => (
     <Flex align="center" gap="2">
       <ButtonIcon icon={<Icon name="cloud" />} size="small" />
       <ButtonIcon icon={<Icon name="cloud" />} size="medium" />
     </Flex>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   render: () => (
     <Flex direction="row" gap="2">
       <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="primary" />
@@ -69,9 +65,9 @@ export const Disabled: Story = {
       <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="tertiary" />
     </Flex>
   ),
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
     variant: {
       initial: 'primary',
@@ -83,12 +79,12 @@ export const Responsive: Story = {
     },
   },
   render: args => <ButtonIcon {...args} icon={<Icon name="cloud" />} />,
-};
+});
 
 const variants = ['primary', 'secondary'] as const;
 const sizes = ['small', 'medium'] as const;
 
-export const Playground: Story = {
+export const Playground = meta.story({
   render: args => (
     <Flex direction="column">
       {variants.map(variant => (
@@ -122,4 +118,4 @@ export const Playground: Story = {
       ))}
     </Flex>
   ),
-};
+});

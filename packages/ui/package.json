@@ -49,7 +49,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "chalk": "^5.4.1",
-    "eslint-plugin-storybook": "^9.1.5",
+    "eslint-plugin-storybook": "0.0.0-pr-32418-sha-6377e85a",
     "glob": "^11.0.1",
     "globals": "^15.11.0",
     "lightningcss": "^1.29.1",
@@ -57,7 +57,7 @@
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
-    "storybook": "^9.1.5"
+    "storybook": "0.0.0-pr-32418-sha-6377e85a"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",

@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Collapsible } from './Collapsible';
 import { Button } from '../Button';
 import { Box } from '../Box';
 import { Text } from '../Text';
 import { Icon } from '../Icon';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Collapsible',
   component: Collapsible.Root,
-} satisfies Meta<typeof Collapsible.Root>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     style: {
       display: 'flex',
@@ -80,11 +76,11 @@ export const Default: Story = {
       </>
     ),
   },
-};
+});
 
-export const Open: Story = {
+export const Open = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     defaultOpen: true,
   },
-};
+});

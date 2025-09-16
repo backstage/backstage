@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { FieldLabel } from './FieldLabel';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/FieldLabel',
   component: FieldLabel,
   argTypes: {
@@ -31,35 +30,32 @@ const meta = {
       control: 'text',
     },
   },
-} satisfies Meta<typeof FieldLabel>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     label: 'Label',
   },
-};
+});
 
-export const WithSecondaryLabel: Story = {
+export const WithSecondaryLabel = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     secondaryLabel: 'Secondary Label',
   },
-};
+});
 
-export const WithDescription: Story = {
+export const WithDescription = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     description: 'Description',
   },
-};
+});
 
-export const WithAllFields: Story = {
+export const WithAllFields = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     secondaryLabel: 'Secondary Label',
     description: 'Description',
   },
-};
+});

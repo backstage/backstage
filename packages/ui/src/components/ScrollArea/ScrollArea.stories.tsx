@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { ScrollArea } from './ScrollArea';
 import { Text } from '../Text/Text';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/ScrollArea',
   component: ScrollArea.Root,
-} satisfies Meta<typeof ScrollArea.Root>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   render: () => (
     <ScrollArea.Root style={{ width: '24rem', height: '8.5rem' }}>
       <ScrollArea.Viewport
@@ -64,4 +60,4 @@ export const Default: Story = {
       </ScrollArea.Scrollbar>
     </ScrollArea.Root>
   ),
-};
+});

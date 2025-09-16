@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Grid } from './Grid';
 import type { GridItemProps } from './types';
 import { Box } from '../Box/Box';
 import { Flex } from '../Flex';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Grid',
   component: Grid.Root,
-} satisfies Meta<typeof Grid.Root>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const FakeBox = () => (
   <Box
@@ -41,7 +37,7 @@ const FakeBox = () => (
   />
 );
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: (
       <>
@@ -51,16 +47,16 @@ export const Default: Story = {
       </>
     ),
   },
-};
+});
 
-export const LargeGap: Story = {
+export const LargeGap = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     gap: '64px',
   },
-};
+});
 
-export const ColumnSizes: Story = {
+export const ColumnSizes = meta.story({
   args: {
     columns: '12',
   },
@@ -78,9 +74,9 @@ export const ColumnSizes: Story = {
       ))}
     </Flex>
   ),
-};
+});
 
-export const RowAndColumns: Story = {
+export const RowAndColumns = meta.story({
   args: {
     columns: '12',
   },
@@ -106,4 +102,4 @@ export const RowAndColumns: Story = {
       </Grid.Item>
     </Grid.Root>
   ),
-};
+});

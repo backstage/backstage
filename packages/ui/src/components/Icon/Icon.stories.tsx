@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Icon } from './Icon';
 import { IconProvider } from './provider';
 import { icons } from './icons';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Icon',
   component: Icon,
   argTypes: {
@@ -31,18 +30,15 @@ const meta = {
   args: {
     name: 'heart',
   },
-} satisfies Meta<typeof Icon>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     name: 'heart',
   },
-};
+});
 
-export const WithCustomIcon: Story = {
+export const WithCustomIcon = meta.story({
   args: {
     name: 'arrow-down',
   },
@@ -53,4 +49,4 @@ export const WithCustomIcon: Story = {
       </IconProvider>
     ),
   ],
-};
+});

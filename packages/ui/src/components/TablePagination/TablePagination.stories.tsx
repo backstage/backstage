@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// TODO: Bring useArgs() back when we update Storybook to 9
-// import { useArgs } from 'storybook/preview-api';
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { TablePagination } from './TablePagination';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/TablePagination',
   component: TablePagination,
   argTypes: {
@@ -30,12 +27,9 @@ const meta = {
     setOffset: { action: 'setOffset' },
     setPageSize: { action: 'setPageSize' },
   },
-} satisfies Meta<typeof TablePagination>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     offset: 0,
     pageSize: 10,
@@ -56,4 +50,4 @@ export const Default: Story = {
       />
     );
   },
-};
+});
