@@ -196,10 +196,7 @@ export const WithEverything = meta.story({
   ),
 });
 
-export const WithLayout = meta.story({
-  args: {
-    ...WithEverything.input.args,
-  },
+export const WithLayout = WithEverything.extend({
   decorators: [withRouter, ...layoutDecorator],
   render: WithEverything.input.render,
 });
