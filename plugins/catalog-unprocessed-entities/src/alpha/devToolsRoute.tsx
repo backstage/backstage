@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import { createElement } from 'react';
-import { DevToolsRouteBlueprint } from '@backstage/plugin-devtools-react';
+import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
+import { compatWrapper } from '@backstage/core-compat-api';
 
 /**
- * DevTools route extension for catalog unprocessed entities
- * This demonstrates how to create extensions at the app level using the new DevTools extension system
+ * DevTools content for catalog unprocessed entities.
  *
  * @alpha
  */
-export const unprocessedEntitiesDevToolsRoute = DevToolsRouteBlueprint.make({
-  params: {
-    path: 'unprocessed-entities',
-    title: 'Unprocessed Entities',
-    loader: () =>
-      import('../components/UnprocessedEntities').then(
-        ({ UnprocessedEntitiesContent }) =>
-          createElement(UnprocessedEntitiesContent),
-      ),
+export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
+  {
+    params: {
+      path: 'unprocessed-entities',
+      title: 'Unprocessed Entities',
+      loader: () =>
+        import('../components/UnprocessedEntities').then(m =>
+          compatWrapper(<m.UnprocessedEntitiesContent />),
+        ),
+    },
   },
-});
+);

@@ -22,6 +22,7 @@ import {
   PageBlueprint,
   NavItemBlueprint,
   createExtensionInput,
+  coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
@@ -31,7 +32,6 @@ import {
 } from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
-import { devToolsRouteDataRef } from '@backstage/plugin-devtools-react';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
@@ -50,9 +50,16 @@ export const devToolsApi = ApiBlueprint.make({
 /** @alpha */
 export const devToolsPage = PageBlueprint.makeWithOverrides({
   inputs: {
-    routes: createExtensionInput([devToolsRouteDataRef], {
-      optional: true,
-    }),
+    contents: createExtensionInput(
+      [
+        coreExtensionData.reactElement,
+        coreExtensionData.routePath,
+        coreExtensionData.routeRef.optional(),
+      ],
+      {
+        optional: true,
+      },
+    ),
   },
   factory(originalFactory, { inputs }) {
     return originalFactory({
@@ -60,13 +67,7 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
       routeRef: convertLegacyRouteRef(rootRouteRef),
       loader: () =>
         import('../components/DevToolsPage').then(m =>
-          compatWrapper(
-            <m.DevToolsPage
-              extensionRoutes={inputs.routes?.map(route =>
-                route.get(devToolsRouteDataRef),
-              )}
-            />,
-          ),
+          compatWrapper(<m.DevToolsPage extensions={inputs.contents} />),
         ),
     });
   },

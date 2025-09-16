@@ -16,19 +16,16 @@
 
 import { useOutlet } from 'react-router-dom';
 import { DefaultDevToolsPage } from '../DefaultDevToolsPage';
-import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
 
 /**
   @public
  */
 export interface DevToolsPageProps {
-  extensionRoutes?: DevToolsRouteData[];
+  extensions?: any[];
 }
 
-export const DevToolsPage = ({ extensionRoutes }: DevToolsPageProps) => {
+export const DevToolsPage = ({ extensions }: DevToolsPageProps) => {
   const outlet = useOutlet();
 
-  return (
-    <>{outlet || <DefaultDevToolsPage extensionRoutes={extensionRoutes} />}</>
-  );
+  return <>{outlet || <DefaultDevToolsPage extensions={extensions} />}</>;
 };

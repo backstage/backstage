@@ -15,4 +15,4 @@
  */
 
 export { default } from './plugin';
-export { unprocessedEntitiesDevToolsRoute } from './devToolsRoute';
+export { unprocessedEntitiesDevToolsContent } from './devToolsRoute';

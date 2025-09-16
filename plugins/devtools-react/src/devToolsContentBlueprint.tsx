@@ -15,11 +15,13 @@
  */
 
 import {
+  coreExtensionData,
   createExtensionBlueprint,
   ExtensionBoundary,
+  RouteRef,
 } from '@backstage/frontend-plugin-api';
-import { devToolsRouteDataRef } from './devToolsRouteDataRef';
 import { JSX } from 'react';
+import { contentTitleDataRef } from './extensionData';
 
 /**
  * Parameters for creating a DevTools route extension
@@ -29,6 +31,7 @@ export interface DevToolsRouteBlueprintParams {
   path: string;
   title: string;
   loader: () => Promise<JSX.Element>;
+  routeRef?: RouteRef;
 }
 
 /**
@@ -46,22 +49,38 @@ export interface DevToolsRouteBlueprintParams {
  * ```
  * @public
  */
-export const DevToolsRouteBlueprint = createExtensionBlueprint({
-  kind: 'devtools-route',
-  attachTo: { id: 'page:devtools', input: 'routes' },
-  output: [devToolsRouteDataRef],
-  factory(params: DevToolsRouteBlueprintParams, { node }) {
-    const children = ExtensionBoundary.lazy(node, params.loader);
-
-    return [
-      devToolsRouteDataRef({
-        path: params.path,
-        title: params.title,
-        children,
-      }),
-    ];
-  },
+export const DevToolsContentBlueprint = createExtensionBlueprint({
+  kind: 'devtools-content',
+  attachTo: { id: 'page:devtools', input: 'contents' },
+  output: [
+    coreExtensionData.reactElement,
+    coreExtensionData.routePath,
+    coreExtensionData.routeRef.optional(),
+    contentTitleDataRef,
+  ],
   dataRefs: {
-    route: devToolsRouteDataRef,
+    title: contentTitleDataRef,
+  },
+  config: {
+    schema: {
+      path: z => z.string().optional(),
+      title: z => z.string().optional(),
+    },
+  },
+  *factory(params: DevToolsRouteBlueprintParams, { node, config }) {
+    const path = config.path ?? params.path;
+    const title = config.title ?? params.title;
+
+    yield coreExtensionData.reactElement(
+      ExtensionBoundary.lazy(node, params.loader),
+    );
+
+    yield coreExtensionData.routePath(path);
+
+    yield contentTitleDataRef(title);
+
+    if (params.routeRef) {
+      yield coreExtensionData.routeRef(params.routeRef);
+    }
   },
 });

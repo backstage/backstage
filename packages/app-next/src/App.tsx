@@ -46,7 +46,7 @@ import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-r
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
 import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
-import { unprocessedEntitiesDevToolsRoute } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
+import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 
 /*
 
@@ -115,7 +115,7 @@ const customHomePageModule = createFrontendModule({
 
 const notFoundErrorPageModule = createFrontendModule({
   pluginId: 'app',
-  extensions: [notFoundErrorPage, unprocessedEntitiesDevToolsRoute],
+  extensions: [notFoundErrorPage, unprocessedEntitiesDevToolsContent],
 });
 
 const collectedLegacyPlugins = convertLegacyAppRoot(

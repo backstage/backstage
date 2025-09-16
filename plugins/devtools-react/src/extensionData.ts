@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { JSX } from 'react';
 
-/**
- * Represents a DevTools route that can be contributed by extensions
- * @public
- */
-export interface DevToolsRouteData {
-  path: string;
-  title: string;
-  children: JSX.Element;
-}
-
-/**
- * Extension data reference for DevTools routes
- * @public
- */
-export const devToolsRouteDataRef =
-  createExtensionDataRef<DevToolsRouteData>().with({
-    id: 'devtools.route',
-  });
+/** @internal */
+export const contentTitleDataRef = createExtensionDataRef<string>().with({
+  id: 'devtools.content-title',
+});

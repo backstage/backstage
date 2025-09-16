@@ -20,10 +20,6 @@
  * @packageDocumentation
  */
 export {
-  type DevToolsRouteData,
-  devToolsRouteDataRef,
-} from './devToolsRouteDataRef';
-export {
   type DevToolsRouteBlueprintParams,
-  DevToolsRouteBlueprint,
-} from './devToolsRouteBlueprint.tsx';
+  DevToolsContentBlueprint,
+} from './devToolsContentBlueprint.tsx';
