@@ -42,7 +42,9 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly catalog: CatalogService;
   private readonly auth: AuthService;
   private readonly slack: WebClient;
-  private readonly sendNotifications;
+  private readonly sendNotifications: (
+    opts: ChatPostMessageArguments[],
+  ) => Promise<void>;
   private readonly messagesSent: Counter;
   private readonly messagesFailed: Counter;
   private readonly broadcastChannels?: string[];
