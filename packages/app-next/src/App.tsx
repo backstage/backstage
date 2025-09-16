@@ -47,7 +47,7 @@ import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
 import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
 import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
-import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import InfoIcon from '@material-ui/icons/Info';
 
 /*

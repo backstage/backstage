@@ -40,11 +40,12 @@ import {
 import { catalogTranslationRef } from '../../translation';
 import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
+import { GroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 export type EntityLayoutRouteProps = {
   path: string;
   title: string;
-  group: string | { title: string; icon?: string };
+  group?: string;
   icon?: string | ReactElement;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
@@ -78,6 +79,8 @@ export interface EntityLayoutProps {
    * It adds breadcrumbs in the Entity page to enhance user navigation and context awareness.
    */
   parentEntityRelations?: string[];
+  groupDefinitions: GroupDefinitions;
+  showIcons?: boolean;
 }
 
 /**
@@ -106,6 +109,8 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     header,
     NotFoundComponent,
     parentEntityRelations,
+    groupDefinitions,
+    showIcons,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
@@ -155,7 +160,13 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {loading && <Progress />}
 
-      {entity && <EntityTabs routes={routes} />}
+      {entity && (
+        <EntityTabs
+          routes={routes}
+          groupDefinitions={groupDefinitions}
+          showIcons={showIcons}
+        />
+      )}
 
       {error && (
         <Content>
