@@ -2843,6 +2843,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/eslint-plugin": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/module-federation-common": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
@@ -3429,6 +3430,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/module-federation-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@module-federation/enhanced": "npm:^0.18.4"
     "@module-federation/runtime": "npm:^0.18.4"
@@ -3585,6 +3587,34 @@ __metadata:
     lodash: "npm:^4.17.21"
     luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/module-federation-common@workspace:^, @backstage/module-federation-common@workspace:packages/module-federation-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/module-federation-common@workspace:packages/module-federation-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@module-federation/runtime": "npm:^0.18.4"
+    "@module-federation/sdk": "npm:^0.18.4"
+    "@types/react": "npm:^18.0.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router-dom: "npm:^6.3.0"
+  peerDependencies:
+    "@emotion/react": ^11.10.5
+    "@material-ui/core": ^4.12.2
+    "@material-ui/styles": ^4.10.0
+    "@mui/material": ^5.12.2
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router: ^6.3.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 

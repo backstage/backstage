@@ -36,6 +36,7 @@ import yn from 'yn';
 import { hasReactDomClient } from './hasReactDomClient';
 import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
 import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
+import { defaultSharedImports } from '@backstage/module-federation-common';
 
 export function resolveBaseUrl(
   config: Config,
@@ -258,60 +259,17 @@ export async function createConfig(
         }),
         name: options.moduleFederation.name,
         runtime: false,
-        shared: {
-          // React
-          react: {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-            ...(isRemote && { import: false }),
-          },
-          'react-dom': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-            ...(isRemote && { import: false }),
-          },
-          // React Router
-          'react-router': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-            ...(isRemote && { import: false }),
-          },
-          'react-router-dom': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-            ...(isRemote && { import: false }),
-          },
-          // MUI v4
-          // not setting import: false for MUI packages as this
-          // will break once Backstage moves to BUI
-          '@material-ui/core/styles': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-          },
-          '@material-ui/styles': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-          },
-          // MUI v5
-          // not setting import: false for MUI packages as this
-          // will break once Backstage moves to BUI
-          '@mui/material/styles/': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-          },
-          '@emotion/react': {
-            singleton: true,
-            requiredVersion: '*',
-            eager: !isRemote,
-          },
-        },
+        shared: Object.fromEntries(
+          defaultSharedImports.map(p => [
+            p.name,
+            {
+              singleton: true,
+              requiredVersion: '*',
+              eager: !isRemote,
+              ...(p.importInRemote === undefined ? {} : { import: p.importInRemote }),
+            },
+          ]),
+        ),
       }),
     );
   }
