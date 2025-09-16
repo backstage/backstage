@@ -725,7 +725,7 @@ app:
 
 Notes:
 
-- Icons for groups and tabs are resolved via the app's IconsApi. When using a string icon id (for example `"dashboard"`), ensure that the corresponding icon bundles are enabled/installed in your app (see the Icons blueprint in the frontend system documentation).
+- Icons for groups and tabs are resolved via the app's IconsApi. When using a string icon id (for example `"dashboard"`), ensure that the corresponding icon bundles are enabled/installed in your app (see the [IconBundleBlueprint documentation](../../reference/frontend-plugin-api.iconbundleblueprint.md)).
 - Group icons are only rendered if `showIcons` is set to `true`.
 
 ### Overriding or disabling a tab's group (per extension)
@@ -741,7 +741,7 @@ app:
         config:
           # Move this tab to a custom group you defined above
           group: custom
-          # Show an icon for this entity content page but only if
+          # Show an icon for this entity content page but only if `showIcons` is enabled for the `page:catalog/entity` extension
           icon: my-icon
 
     # Disassociate from any group and show as a standalone tab
