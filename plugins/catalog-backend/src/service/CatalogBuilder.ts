@@ -861,7 +861,7 @@ export class CatalogBuilder {
   }
 
   private filterProviders(providers: EntityProvider[]) {
-    const { config, logger } = this.env;
+    const { config } = this.env;
     const providersConfig = config.getOptionalConfig('catalog.providers');
     if (!providersConfig) {
       return providers;
