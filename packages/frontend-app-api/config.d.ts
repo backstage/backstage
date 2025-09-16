@@ -134,5 +134,38 @@ export interface Config {
         links?: Array<{ title: string; url: string }>;
       };
     }>;
+
+    /**
+     * Module federation configuration for dynamic plugin loading
+     * @deepVisibility frontend
+     */
+    moduleFederation?: {
+      /**
+       * Shared dependencies configuration for module federation.
+       * Maps package names to their sharing configuration.
+       */
+      sharedDependencies?: {
+        [packageName: string]:
+          | {
+              /**
+               * Version of the shared dependency (optional, use to override the auto-filled value)
+               */
+              version?: string;
+              /**
+               * Required version range for the shared dependency
+               */
+              requiredVersion: string | false;
+              /**
+               * Whether this dependency should be a singleton
+               */
+              singleton?: boolean;
+              /**
+               * Whether to load this dependency eagerly
+               */
+              eager?: boolean;
+            }
+          | false;
+      };
+    };
   };
 }

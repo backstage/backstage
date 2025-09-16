@@ -14,36 +14,42 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import { ModuleFederationOptions } from './types';
+import { ModuleFederationRemoteOptions } from './types';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../../../../lib/entryPoints';
 import {
   createTypeDistProject,
   getEntryPointDefaultFeatureType,
 } from '../../../../lib/typeDistProject';
+import {
+  SharedDependencies,
+  Host,
+  prepareRuntimeSharedDependenciesScript,
+  ConfiguredSharedDependencies,
+  Remote,
+  defaultRemoteSharedDependencies,
+  getConfiguredHostSharedDependencies,
+  defaultHostSharedDependencies,
+  mergeSharedDependencies,
+} from '@backstage/module-federation-common';
+import { dirname, join as joinPath, resolve as resolvePath } from 'path';
+import fs from 'fs-extra';
+import chokidar from 'chokidar';
+import PQueue from 'p-queue';
+import { Config } from '@backstage/config';
+import { z } from 'zod';
+import { fromZodError } from 'zod-validation-error';
 
-export async function getModuleFederationOptions(
+export async function getModuleFederationRemoteOptions(
   packageJson: BackstagePackageJson,
   packageDir: string,
-  isModuleFederationRemote?: boolean,
-): Promise<ModuleFederationOptions | undefined> {
-  if (
-    !isModuleFederationRemote &&
-    !process.env.EXPERIMENTAL_MODULE_FEDERATION
-  ) {
-    return undefined;
-  }
-
-  console.log(
-    chalk.yellow(
-      `⚠️  WARNING: Module federation is experimental and will receive immediate breaking changes in the future.`,
-    ),
-  );
-
-  let exposes: ModuleFederationOptions['exposes'];
+  configuredSharedDependencies:
+    | ConfiguredSharedDependencies<Remote>
+    | undefined,
+): Promise<ModuleFederationRemoteOptions | undefined> {
+  let exposes: ModuleFederationRemoteOptions['exposes'];
   const packageRole = packageJson.backstage?.role;
-  if (isModuleFederationRemote && packageJson.exports && packageRole) {
+  if (packageJson.exports && packageRole) {
     const project = await createTypeDistProject();
     exposes = Object.fromEntries(
       readEntryPoints(packageJson)
@@ -70,7 +76,6 @@ export async function getModuleFederationOptions(
   }
 
   return {
-    mode: isModuleFederationRemote ? 'remote' : 'host',
     // The default output mode requires the name to be a usable as a code
     // symbol, there might be better options here but for now we need to
     // sanitize the name.
@@ -79,5 +84,133 @@ export async function getModuleFederationOptions(
       .replaceAll('/', '__')
       .replaceAll('-', '_'),
     exposes,
+    sharedDependencies: mergeSharedDependencies(
+      defaultRemoteSharedDependencies(),
+      configuredSharedDependencies,
+      'allow-additions',
+    ),
   };
+}
+
+// Module federation host management utilities
+
+// zod schema that corresponds to the ConfiguredSharedDependencies<Host> type
+const configuredHostSharedDependenciesSchema = z.record(
+  z.string(),
+  z.union([
+    z.object({
+      version: z.string().optional(),
+      requiredVersion: z.union([z.string(), z.literal(false)]),
+      singleton: z.boolean().optional(),
+      eager: z.boolean().optional(),
+    }),
+    z.literal(false),
+  ]),
+);
+
+const RUNTIME_SHARED_DEPENDENCIES_MODULE_NAME =
+  '__backstage-module-federation-runtime-shared-dependencies__';
+
+// Make sure we're not issuing multiple writes at the same time, which can cause partial overwrites
+const writeQueue = new PQueue({ concurrency: 1 });
+
+async function writeRuntimeSharedDependenciesModule(
+  targetPath: string,
+  runtimeSharedDependencies: SharedDependencies<Host & { version: string }>,
+) {
+  const script = prepareRuntimeSharedDependenciesScript(
+    runtimeSharedDependencies,
+  );
+
+  await writeQueue.add(async () => {
+    const path = joinPath(
+      targetPath,
+      'node_modules',
+      `${RUNTIME_SHARED_DEPENDENCIES_MODULE_NAME}.js`,
+    );
+
+    await fs.ensureDir(dirname(path));
+    await fs.writeFile(path, script);
+  });
+}
+
+function resolveSharedDependencyVersions(
+  targetPath: string,
+  hostSharedDependencies: SharedDependencies<Host>,
+): SharedDependencies<Host & { version: string }> {
+  return Object.fromEntries(
+    Object.entries(hostSharedDependencies)
+      .filter(([_, sharedDep]) => sharedDep !== undefined)
+      .map(([name, sharedDep]) => {
+        // Use require.resolve to find the package
+        // For scoped modules, keep the scope and the module name, but remove any sub-folder
+        const nameParts = name.split('/');
+        const moduleName =
+          nameParts[0].startsWith('@') && nameParts.length > 1
+            ? `${nameParts[0]}/${nameParts[1]}`
+            : nameParts[0];
+        let packagePath: string;
+        try {
+          packagePath = require.resolve(`${moduleName}/package.json`, {
+            paths: [targetPath],
+          });
+        } catch (e) {
+          throw new Error(
+            `Failed to resolve package.json for module federation shared dependency '${name}': ${e}`,
+          );
+        }
+        const packageJson = require(packagePath);
+
+        if (sharedDep.version && packageJson.version !== sharedDep.version) {
+          throw new Error(
+            `Version mismatch for module federation shared dependency '${name}': '${sharedDep.version}' vs '${packageJson.version}' found in '${packagePath}'.`,
+          );
+        }
+
+        return [
+          name,
+          { ...sharedDep, version: sharedDep.version ?? packageJson.version },
+        ];
+      }),
+  );
+}
+
+export async function createRuntimeSharedDependeciesEntryPoint(options: {
+  config: Config;
+  targetPath: string;
+  watch?: () => void;
+}): Promise<string[]> {
+  const { config, targetPath, watch } = options;
+
+  const doWriteSharedDependenciesModule = async () => {
+    const parsedConfiguredHostSharedDependencies =
+      configuredHostSharedDependenciesSchema.safeParse(
+        getConfiguredHostSharedDependencies(config),
+      );
+    if (!parsedConfiguredHostSharedDependencies.success) {
+      throw new Error(
+        `Invalid module federation shared dependencies in application config: ${JSON.stringify(
+          fromZodError(parsedConfiguredHostSharedDependencies.error).message,
+        )}.`,
+      );
+    }
+
+    const sharedDependencies = mergeSharedDependencies(
+      defaultHostSharedDependencies(),
+      parsedConfiguredHostSharedDependencies.data,
+      'allow-additions',
+    );
+    await writeRuntimeSharedDependenciesModule(
+      targetPath,
+      resolveSharedDependencyVersions(targetPath, sharedDependencies),
+    );
+  };
+
+  if (watch) {
+    const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
+    watcher.on('change', doWriteSharedDependenciesModule);
+  }
+  await doWriteSharedDependenciesModule();
+
+  return [RUNTIME_SHARED_DEPENDENCIES_MODULE_NAME];
 }
