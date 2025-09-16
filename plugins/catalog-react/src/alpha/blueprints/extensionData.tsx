@@ -41,18 +41,50 @@ export const entityFilterExpressionDataRef =
     id: 'catalog.entity-filter-expression',
   });
 
+/** @alpha */
+export type GroupDefinitions = Record<
+  string,
+  {
+    title: string;
+    icon?: string | ReactElement;
+  }
+>;
+
 /**
  * @alpha
  * Default entity content groups.
  */
-export const defaultEntityContentGroups = {
-  overview: 'Overview',
-  documentation: 'Documentation',
-  development: 'Development',
-  deployment: 'Deployment',
-  operation: 'Operation',
-  observability: 'Observability',
-};
+export const defaultEntityContentGroupDefinitions = {
+  overview: {
+    title: 'Overview',
+  },
+  documentation: {
+    title: 'Documentation',
+  },
+  development: {
+    title: 'Development',
+  },
+  deployment: {
+    title: 'Deployment',
+  },
+  operation: {
+    title: 'Operation',
+  },
+  observability: {
+    title: 'Observability',
+  },
+} satisfies GroupDefinitions;
+
+/**
+ * @alpha
+ * Default entity content groups.
+ * @deprecated use defaultEntityContentGroupDefinitions
+ */
+export const defaultEntityContentGroups = Object.fromEntries(
+  Object.entries(defaultEntityContentGroupDefinitions).map(
+    ([key, { title }]) => [key, title],
+  ),
+) as Record<keyof typeof defaultEntityContentGroupDefinitions, string>;
 
 /** @internal */
 export const entityContentGroupDataRef = createExtensionDataRef<string>().with({

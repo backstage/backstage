@@ -25,10 +25,11 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import {
-  EntityHeaderBlueprint,
+  defaultEntityContentGroupDefinitions,
   EntityContentBlueprint,
-  defaultEntityContentGroups,
   EntityContextMenuItemBlueprint,
+  EntityHeaderBlueprint,
+  GroupDefinitions,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
@@ -132,15 +133,6 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             (() => true),
         }));
 
-        type Groups = Record<
-          string,
-          {
-            title: string;
-            icon?: string;
-            items: Array<(typeof inputs.contents)[0]>;
-          }
-        >;
-
         // Get available headers, sorted by if they have a filter function or not.
         // TODO(blam): we should really have priority or some specificity here which can be used to sort the headers.
         // That can be done with embedding the priority in the dataRef alongside the filter function.
@@ -155,43 +147,11 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             return 0;
           });
 
-        let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
-          (rest, group) => {
-            const [groupId, groupValue] = group;
-            return {
-              ...rest,
-              [groupId]: { title: groupValue, items: [] },
-            };
-          },
-          {},
-        );
-
-        // config groups override default groups
-        if (config.groups) {
-          groups = config.groups.reduce<Groups>((rest, group) => {
-            const [groupId, groupValue] = Object.entries(group)[0];
-            return {
-              ...rest,
-              [groupId]: {
-                title: groupValue.title,
-                icon: config.showIcons ? groupValue.icon : undefined,
-                items: [],
-              },
-            };
-          }, {});
-        }
-
-        for (const output of inputs.contents) {
-          const itemId = output.node.spec.id;
-          const itemTitle = output.get(EntityContentBlueprint.dataRefs.title);
-          const itemGroup = output.get(EntityContentBlueprint.dataRefs.group);
-          const group = itemGroup && groups[itemGroup];
-          if (!group) {
-            groups[itemId] = { title: itemTitle, items: [output] };
-            continue;
-          }
-          group.items.push(output);
-        }
+        const groupDefinitions =
+          config.groups?.reduce(
+            (rest, group) => ({ ...rest, ...group }),
+            {} as GroupDefinitions,
+          ) ?? defaultEntityContentGroupDefinitions;
 
         const Component = () => {
           const entityFromUrl = useEntityFromUrl();
@@ -209,32 +169,28 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
               <EntityLayout
                 header={header}
                 contextMenuItems={filteredMenuItems}
+                groupDefinitions={groupDefinitions}
+                showIcons={config.showIcons}
               >
-                {Object.values(groups).flatMap(({ title, icon, items }) =>
-                  items.map(output => (
-                    <EntityLayout.Route
-                      group={{ title, icon }}
-                      key={output.get(coreExtensionData.routePath)}
-                      path={output.get(coreExtensionData.routePath)}
-                      title={output.get(EntityContentBlueprint.dataRefs.title)}
-                      icon={
-                        config.showIcons
-                          ? output.get(EntityContentBlueprint.dataRefs.icon)
-                          : undefined
-                      }
-                      if={buildFilterFn(
-                        output.get(
-                          EntityContentBlueprint.dataRefs.filterFunction,
-                        ),
-                        output.get(
-                          EntityContentBlueprint.dataRefs.filterExpression,
-                        ),
-                      )}
-                    >
-                      {output.get(coreExtensionData.reactElement)}
-                    </EntityLayout.Route>
-                  )),
-                )}
+                {inputs.contents.map(output => (
+                  <EntityLayout.Route
+                    group={output.get(EntityContentBlueprint.dataRefs.group)}
+                    key={output.get(coreExtensionData.routePath)}
+                    path={output.get(coreExtensionData.routePath)}
+                    title={output.get(EntityContentBlueprint.dataRefs.title)}
+                    icon={output.get(EntityContentBlueprint.dataRefs.icon)}
+                    if={buildFilterFn(
+                      output.get(
+                        EntityContentBlueprint.dataRefs.filterFunction,
+                      ),
+                      output.get(
+                        EntityContentBlueprint.dataRefs.filterExpression,
+                      ),
+                    )}
+                  >
+                    {output.get(coreExtensionData.reactElement)}
+                  </EntityLayout.Route>
+                ))}
               </EntityLayout>
             </AsyncEntityProvider>
           );

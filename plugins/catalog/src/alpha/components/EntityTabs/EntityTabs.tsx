@@ -18,9 +18,10 @@ import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes, Outlet } from 'react-router-dom';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
+import { GroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 type SubRoute = {
-  group: string | { title: string; icon?: string };
+  group?: string;
   path: string;
   title: string;
   icon?: string | ReactElement;
@@ -78,10 +79,12 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
 type EntityTabsProps = {
   routes: SubRoute[];
+  groupDefinitions: GroupDefinitions;
+  showIcons?: boolean;
 };
 
 export function EntityTabs(props: EntityTabsProps) {
-  const { routes } = props;
+  const { routes, groupDefinitions, showIcons } = props;
 
   const { index, route, element } = useSelectedSubRoute(routes);
 
@@ -95,7 +98,7 @@ export function EntityTabs(props: EntityTabsProps) {
         // And remove leading / for relative navigation
         to = to.replace(/^\//, '');
         return {
-          group: typeof group === 'string' ? { title: group } : group,
+          group,
           id: path,
           path: to,
           label: title,
@@ -107,7 +110,12 @@ export function EntityTabs(props: EntityTabsProps) {
 
   return (
     <>
-      <EntityTabsList tabs={tabs} selectedIndex={index} />
+      <EntityTabsList
+        tabs={tabs}
+        selectedIndex={index}
+        showIcons={showIcons}
+        groupDefinitions={groupDefinitions}
+      />
       <EntityTabsPanel>
         <Helmet title={route?.title} />
         {element}

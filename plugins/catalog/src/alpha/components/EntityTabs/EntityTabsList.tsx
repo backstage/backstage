@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useMemo } from 'react';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
 import { EntityTabsGroup } from './EntityTabsGroup';
+import { GroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 /** @public */
 export type HeaderTabsClassKey =
@@ -59,60 +60,46 @@ type Tab = {
   id: string;
   label: string;
   path: string;
-  group: { title: string; icon?: string };
+  group?: string;
   icon?: string | ReactElement;
 };
 
-type TabItem = Tab & {
-  index: number;
+type TabGroup = {
+  group?: {
+    title: string;
+    icon?: string | ReactElement;
+  };
+  items: Array<Omit<Tab, 'group'>>;
 };
 
 type EntityTabsListProps = {
   tabs: Tab[];
+  groupDefinitions: GroupDefinitions;
+  showIcons?: boolean;
   selectedIndex?: number;
-  onChange?: (index: number) => void;
 };
 
 export function EntityTabsList(props: EntityTabsListProps) {
   const styles = useStyles();
 
-  const { tabs: items, onChange, selectedIndex: selectedItem = 0 } = props;
+  const { tabs: items, selectedIndex = 0, showIcons, groupDefinitions } = props;
 
   const groups = useMemo(
     () =>
-      Object.values(
-        items.reduce((result, i) => {
-          result[i.group.title] = i.group;
-          return result;
-        }, {} as Record<string, Tab['group']>),
-      ),
-    [items],
+      items.reduce((result, tab) => {
+        const group = tab.group ? groupDefinitions[tab.group] : undefined;
+        const groupOrId = group && tab.group ? tab.group : tab.id;
+        result[groupOrId] = result[groupOrId] ?? {
+          group,
+          items: [],
+        };
+        result[groupOrId].items.push(tab);
+        return result;
+      }, {} as Record<string, TabGroup>),
+    [items, groupDefinitions],
   );
 
-  const [selectedGroup, setSelectedGroup] = useState<number>(
-    selectedItem && items[selectedItem]
-      ? groups.findIndex(
-          ({ title }) => title === items[selectedItem].group.title,
-        )
-      : 0,
-  );
-
-  const handleChange = useCallback(
-    (index: number) => {
-      if (selectedItem !== index) onChange?.(index);
-    },
-    [selectedItem, onChange],
-  );
-
-  useEffect(() => {
-    if (selectedItem === undefined || !items[selectedItem]) return;
-    setSelectedGroup(
-      groups.findIndex(
-        ({ title }) => title === items[selectedItem].group.title,
-      ),
-    );
-  }, [items, selectedItem, groups, setSelectedGroup]);
-
+  const selectedItem = items[selectedIndex];
   return (
     <Box className={styles.tabsWrapper}>
       <Tabs
@@ -122,33 +109,22 @@ export function EntityTabsList(props: EntityTabsListProps) {
         variant="scrollable"
         scrollButtons="auto"
         aria-label="tabs"
-        value={selectedGroup}
+        value={selectedItem?.group ?? selectedItem?.id}
       >
-        {groups.map((group, groupIndex) => {
-          const groupItems: TabItem[] = [];
-          items.forEach((item, itemIndex) => {
-            if (item.group.title === group.title) {
-              groupItems.push({
-                ...item,
-                index: itemIndex,
-              });
-            }
-          });
-          return (
-            <EntityTabsGroup
-              data-testid={`header-tab-${groupIndex}`}
-              className={styles.defaultTab}
-              classes={{ selected: styles.selected, root: styles.tabRoot }}
-              key={group.title}
-              label={group.title}
-              icon={group.icon}
-              value={groupIndex}
-              items={groupItems}
-              highlightedButton={selectedItem}
-              onSelectTab={() => handleChange(groupIndex)}
-            />
-          );
-        })}
+        {Object.entries(groups).map(([id, tabGroup]) => (
+          <EntityTabsGroup
+            data-testid={`header-tab-${id}`}
+            className={styles.defaultTab}
+            classes={{ selected: styles.selected, root: styles.tabRoot }}
+            key={id}
+            label={tabGroup.group?.title}
+            icon={tabGroup.group?.icon}
+            value={id}
+            items={tabGroup.items}
+            highlightedButton={selectedItem?.id}
+            showIcons={showIcons}
+          />
+        ))}
       </Tabs>
     </Box>
   );

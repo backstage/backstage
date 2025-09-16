@@ -152,14 +152,32 @@ export function convertLegacyEntityContentExtension(
 ): ExtensionDefinition;
 
 // @alpha
-export const defaultEntityContentGroups: {
-  overview: string;
-  documentation: string;
-  development: string;
-  deployment: string;
-  operation: string;
-  observability: string;
+export const defaultEntityContentGroupDefinitions: {
+  overview: {
+    title: string;
+  };
+  documentation: {
+    title: string;
+  };
+  development: {
+    title: string;
+  };
+  deployment: {
+    title: string;
+  };
+  operation: {
+    title: string;
+  };
+  observability: {
+    title: string;
+  };
 };
+
+// @alpha @deprecated
+export const defaultEntityContentGroups: Record<
+  keyof typeof defaultEntityContentGroupDefinitions,
+  string
+>;
 
 // @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<{
@@ -603,6 +621,15 @@ export type EntityTableColumnTitleProps = {
     | 'label'
     | 'domain';
 };
+
+// @alpha (undocumented)
+export type GroupDefinitions = Record<
+  string,
+  {
+    title: string;
+    icon?: string | ReactElement;
+  }
+>;
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

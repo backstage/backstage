@@ -21,7 +21,11 @@ export {
   type EntityContentLayoutProps,
 } from './EntityContentLayoutBlueprint';
 export { EntityHeaderBlueprint } from './EntityHeaderBlueprint';
-export { defaultEntityContentGroups } from './extensionData';
+export {
+  defaultEntityContentGroups,
+  defaultEntityContentGroupDefinitions,
+  type GroupDefinitions,
+} from './extensionData';
 export type { EntityCardType } from './extensionData';
 export {
   EntityContextMenuItemBlueprint,
