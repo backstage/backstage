@@ -142,7 +142,6 @@ const styles = (theme: Theme) =>
 
 type EntityTabsGroupItem = {
   id: string;
-  index: number;
   label: string;
   path: string;
   icon?: string | ReactElement;
@@ -151,15 +150,20 @@ type EntityTabsGroupItem = {
 type EntityTabsGroupProps = TabProps & {
   classes?: Partial<ReturnType<typeof styles>>;
   indicator?: ReactNode;
-  highlightedButton?: number;
+  highlightedButton?: string;
   items: EntityTabsGroupItem[];
-  onSelectTab: MouseEventHandler<HTMLAnchorElement>;
+  onSelectTab?: MouseEventHandler<HTMLAnchorElement>;
+  showIcons?: boolean;
 };
 
 function resolveIcon(
   icon: string | ReactElement | undefined,
   iconsApi: IconsApi,
+  showIcons: boolean,
 ) {
+  if (!showIcons) {
+    return undefined;
+  }
   const itemIcon = icon;
   if (typeof itemIcon === 'string') {
     const Icon = iconsApi.getIcon(itemIcon);
@@ -191,9 +195,10 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
     textColor = 'inherit',
     wrapped = false,
     highlightedButton,
+    showIcons = false,
   } = props;
 
-  const groupIcon = resolveIcon(props.icon, iconsApi);
+  const groupIcon = resolveIcon(props.icon, iconsApi, showIcons);
   const testId = 'data-testid' in props && props['data-testid'];
 
   const handleMenuClose = () => {
@@ -235,7 +240,7 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
         component={Link}
         onClick={onSelectTab}
         to={items[0]?.path}
-        startIcon={resolveIcon(items[0].icon, iconsApi) ?? groupIcon}
+        startIcon={resolveIcon(items[0].icon, iconsApi, showIcons)}
       >
         <Typography className={classes?.wrapper} variant="button">
           {items[0].label}
@@ -244,7 +249,7 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
       </Button>
     );
   }
-  const hasIcons = items.some(i => i.icon);
+  const hasIcons = showIcons && items.some(i => i.icon);
   return (
     <>
       <Button
@@ -278,11 +283,11 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
         }}
       >
         <List component="nav">
-          {items.map((i, idx) => {
-            const itemIcon = resolveIcon(i.icon, iconsApi);
+          {items.map(i => {
+            const itemIcon = resolveIcon(i.icon, iconsApi, showIcons);
             return (
               <ListItem
-                key={`popover_item_${idx}`}
+                key={`popover_item_${i.id}`}
                 button
                 focusRipple={!disableFocusRipple}
                 classes={{
@@ -293,11 +298,11 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
                 ref={ref}
                 aria-selected={selected}
                 disabled={disabled}
-                selected={highlightedButton === i.index}
+                selected={highlightedButton === i.id}
                 component={Link}
                 onClick={e => {
                   handleMenuClose();
-                  onSelectTab(e);
+                  onSelectTab?.(e);
                 }}
                 to={i.path}
               >
