@@ -187,4 +187,3 @@ tsconfig.typedoc.tmp.json
 
 # Storybook
 dist-storybook/
-dist-storybook-chromatic/

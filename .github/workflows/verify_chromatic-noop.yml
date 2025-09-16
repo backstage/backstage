@@ -1,11 +1,11 @@
 # NO-OP placeholder that always passes for other paths
 # This is here so that we're able to set the status check as required
 
-name: Storybook Void
+name: Chromatic Void
 on:
   pull_request:
     paths-ignore:
-      - '.github/workflows/verify_storybook.yml'
+      - '.github/workflows/verify_chromatic.yml'
       - 'storybook/**'
       - 'packages/config/src/**'
       - 'packages/theme/src/**'
@@ -25,7 +25,7 @@ jobs:
   noop:
     runs-on: ubuntu-latest
 
-    name: Storybook
+    name: Chromatic
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
