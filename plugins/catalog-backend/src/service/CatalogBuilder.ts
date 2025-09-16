@@ -736,14 +736,6 @@ export class CatalogBuilder {
     if (!processorsConfig) {
       return processors;
     }
-    const keys = Object.keys(processorsConfig);
-    for (const key of keys) {
-      if (!processors.find(p => p.getProcessorName() === key)) {
-        this.env.logger.warn(
-          `Invalid catalog processor configuration catalog.processors.${key}: no such processor`,
-        );
-      }
-    }
 
     return processors.filter(p => {
       const processorConfig = processorsConfig.getOptionalConfig(
@@ -868,15 +860,6 @@ export class CatalogBuilder {
     const providersConfig = config.getOptionalConfig('catalog.providers');
     if (!providersConfig) {
       return providers;
-    }
-
-    const keys = Object.keys(providersConfig);
-    for (const key of keys) {
-      if (!providers.find(p => p.getProviderName() === key)) {
-        logger.warn(
-          `Invalid catalog provider configuration catalog.providers.${key}: no such provider`,
-        );
-      }
     }
 
     return providers.filter(p => {
