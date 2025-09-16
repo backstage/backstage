@@ -28,12 +28,22 @@ import {
 } from '@backstage/backend-plugin-api/alpha';
 
 export class DefaultActionsService implements ActionsService {
+  private readonly discovery: DiscoveryService;
+  private readonly config: RootConfigService;
+  private readonly logger: LoggerService;
+  private readonly auth: AuthService;
+
   private constructor(
-    private readonly discovery: DiscoveryService,
-    private readonly config: RootConfigService,
-    private readonly logger: LoggerService,
-    private readonly auth: AuthService,
-  ) {}
+    discovery: DiscoveryService,
+    config: RootConfigService,
+    logger: LoggerService,
+    auth: AuthService,
+  ) {
+    this.discovery = discovery;
+    this.config = config;
+    this.logger = logger;
+    this.auth = auth;
+  }
 
   static create({
     discovery,

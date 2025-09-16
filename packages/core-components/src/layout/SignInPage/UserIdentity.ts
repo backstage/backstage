@@ -96,13 +96,19 @@ export class UserIdentity implements IdentityApi {
     return new UserIdentity(options.identity, options.authApi, options.profile);
   }
 
+  private readonly identity: BackstageUserIdentity;
+  private readonly authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi;
+  private readonly profile?: ProfileInfo;
+
   private constructor(
-    private readonly identity: BackstageUserIdentity,
-    private readonly authApi: ProfileInfoApi &
-      BackstageIdentityApi &
-      SessionApi,
-    private readonly profile?: ProfileInfo,
-  ) {}
+    identity: BackstageUserIdentity,
+    authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi,
+    profile?: ProfileInfo,
+  ) {
+    this.identity = identity;
+    this.authApi = authApi;
+    this.profile = profile;
+  }
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getUserId} */
   getUserId(): string {

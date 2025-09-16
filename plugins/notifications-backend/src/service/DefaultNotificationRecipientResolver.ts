@@ -47,10 +47,13 @@ const partitionEntityRefs = (refs: string[]): string[][] => {
 export class DefaultNotificationRecipientResolver
   implements NotificationRecipientResolver
 {
-  constructor(
-    private readonly auth: AuthService,
-    private readonly catalog: CatalogService,
-  ) {}
+  private readonly auth: AuthService;
+  private readonly catalog: CatalogService;
+
+  constructor(auth: AuthService, catalog: CatalogService) {
+    this.auth = auth;
+    this.catalog = catalog;
+  }
 
   async resolveNotificationRecipients(options: {
     entityRefs: string[];

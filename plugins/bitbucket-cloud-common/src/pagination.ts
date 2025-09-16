@@ -27,11 +27,19 @@ export class WithPagination<
   TPage extends Models.Paginated<TResultItem>,
   TResultItem,
 > {
+  private readonly createUrl: (options: PaginationOptions) => URL;
+  private readonly fetch: (url: URL) => Promise<TPage>;
+  private readonly pagelen?: number;
+
   constructor(
-    private readonly createUrl: (options: PaginationOptions) => URL,
-    private readonly fetch: (url: URL) => Promise<TPage>,
-    private readonly pagelen?: number,
-  ) {}
+    createUrl: (options: PaginationOptions) => URL,
+    fetch: (url: URL) => Promise<TPage>,
+    pagelen?: number,
+  ) {
+    this.createUrl = createUrl;
+    this.fetch = fetch;
+    this.pagelen = pagelen;
+  }
 
   getPage(options?: PaginationOptions): Promise<TPage> {
     const opts = { page: 1, pagelen: this.pagelen ?? 100, ...options };

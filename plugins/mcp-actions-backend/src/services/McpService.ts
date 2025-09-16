@@ -27,7 +27,11 @@ import { NotFoundError } from '@backstage/errors';
 import { handleErrors } from './handleErrors';
 
 export class McpService {
-  constructor(private readonly actions: ActionsService) {}
+  private readonly actions: ActionsService;
+
+  constructor(actions: ActionsService) {
+    this.actions = actions;
+  }
 
   static async create({ actions }: { actions: ActionsService }) {
     return new McpService(actions);

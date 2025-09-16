@@ -135,10 +135,13 @@ export interface ElementCollection {
 }
 
 class Collection implements ElementCollection {
-  constructor(
-    private readonly node: ReactNode,
-    private readonly featureFlagsApi: FeatureFlagsApi,
-  ) {}
+  private readonly node: ReactNode;
+  private readonly featureFlagsApi: FeatureFlagsApi;
+
+  constructor(node: ReactNode, featureFlagsApi: FeatureFlagsApi) {
+    this.node = node;
+    this.featureFlagsApi = featureFlagsApi;
+  }
 
   selectByComponentData(query: { key: string; withStrictError?: string }) {
     const selection = selectChildren(

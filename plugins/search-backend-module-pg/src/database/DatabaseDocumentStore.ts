@@ -75,7 +75,11 @@ export class DatabaseDocumentStore implements DatabaseStore {
     }
   }
 
-  constructor(private readonly db: Knex) {}
+  private readonly db: Knex;
+
+  constructor(db: Knex) {
+    this.db = db;
+  }
 
   async transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>): Promise<T> {
     return await this.db.transaction(fn);

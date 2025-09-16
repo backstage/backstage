@@ -36,12 +36,22 @@ export class SubRouteRefImpl<Params extends AnyParams>
   declare $$routeRefType: 'sub';
   readonly [routeRefType] = 'sub';
 
+  private readonly id: string;
+  readonly path: string;
+  readonly parent: RouteRef;
+  readonly params: ParamKeys<Params>;
+
   constructor(
-    private readonly id: string,
-    readonly path: string,
-    readonly parent: RouteRef,
-    readonly params: ParamKeys<Params>,
-  ) {}
+    id: string,
+    path: string,
+    parent: RouteRef,
+    params: ParamKeys<Params>,
+  ) {
+    this.id = id;
+    this.path = path;
+    this.parent = parent;
+    this.params = params;
+  }
 
   toString() {
     return `routeRef{type=sub,id=${this.id}}`;

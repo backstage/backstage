@@ -88,15 +88,17 @@ export class PgSearchEngine implements SearchEngine {
   private readonly highlightOptions: PgSearchHighlightOptions;
   private readonly indexerBatchSize: number;
   private readonly normalization: number;
+  private readonly databaseStore: DatabaseStore;
 
   /**
    * @deprecated This will be marked as private in a future release, please us fromConfig instead
    */
   constructor(
-    private readonly databaseStore: DatabaseStore,
+    databaseStore: DatabaseStore,
     config: Config,
     logger?: LoggerService,
   ) {
+    this.databaseStore = databaseStore;
     const uuidTag = uuid();
     const highlightConfig = config.getOptionalConfig(
       'search.pg.highlightOptions',

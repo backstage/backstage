@@ -83,10 +83,13 @@ export class ExternalTokenHandler {
     return new ExternalTokenHandler(ownPluginId, Object.values(handlers));
   }
 
-  constructor(
-    private readonly ownPluginId: string,
-    private readonly handlers: TokenHandler[],
-  ) {}
+  private readonly ownPluginId: string;
+  private readonly handlers: TokenHandler[];
+
+  constructor(ownPluginId: string, handlers: TokenHandler[]) {
+    this.ownPluginId = ownPluginId;
+    this.handlers = handlers;
+  }
 
   async verifyToken(token: string): Promise<
     | {

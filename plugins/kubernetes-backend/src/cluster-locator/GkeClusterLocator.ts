@@ -42,12 +42,22 @@ type GkeClusterLocatorOptions = {
 };
 
 export class GkeClusterLocator implements KubernetesClustersSupplier {
+  private readonly options: GkeClusterLocatorOptions;
+  private readonly client: container.v1.ClusterManagerClient;
+  private clusterDetails: ClusterDetails[] | undefined;
+  private hasClusterDetails: boolean;
+
   constructor(
-    private readonly options: GkeClusterLocatorOptions,
-    private readonly client: container.v1.ClusterManagerClient,
-    private clusterDetails: ClusterDetails[] | undefined = undefined,
-    private hasClusterDetails: boolean = false,
-  ) {}
+    options: GkeClusterLocatorOptions,
+    client: container.v1.ClusterManagerClient,
+    clusterDetails: ClusterDetails[] | undefined = undefined,
+    hasClusterDetails: boolean = false,
+  ) {
+    this.options = options;
+    this.client = client;
+    this.clusterDetails = clusterDetails;
+    this.hasClusterDetails = hasClusterDetails;
+  }
 
   static fromConfigWithClient(
     config: Config,

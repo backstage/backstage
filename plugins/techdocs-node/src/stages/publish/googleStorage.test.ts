@@ -34,7 +34,11 @@ let createdStorageOptions: Array<StorageOptions | undefined> = [];
 
 jest.mock('@google-cloud/storage', () => {
   class GCSFile {
-    constructor(private readonly filePath: string) {}
+    private readonly filePath: string;
+
+    constructor(filePath: string) {
+      this.filePath = filePath;
+    }
 
     exists() {
       return new Promise(async (resolve, reject) => {
@@ -77,7 +81,11 @@ jest.mock('@google-cloud/storage', () => {
   }
 
   class Bucket {
-    constructor(private readonly bucketName: string) {}
+    private readonly bucketName: string;
+
+    constructor(bucketName: string) {
+      this.bucketName = bucketName;
+    }
 
     async getMetadata() {
       if (this.bucketName === 'bad_bucket_name') {
@@ -121,7 +129,10 @@ jest.mock('@google-cloud/storage', () => {
   }
 
   class Storage {
-    constructor(readonly options?: StorageOptions) {
+    readonly options?: StorageOptions;
+
+    constructor(options?: StorageOptions) {
+      this.options = options;
       createdStorageOptions.push(options);
     }
 

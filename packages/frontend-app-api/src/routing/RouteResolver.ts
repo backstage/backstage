@@ -179,18 +179,31 @@ function resolveBasePath(
 }
 
 export class RouteResolver implements RouteResolutionApi {
+  private readonly routePaths: Map<RouteRef, string>;
+  private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
+  private readonly routeObjects: BackstageRouteObject[];
+  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly appBasePath: string; // base path without a trailing slash
+  private readonly routeAliasResolver: RouteAliasResolver;
+  private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
+
   constructor(
-    private readonly routePaths: Map<RouteRef, string>,
-    private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
-    private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<
-      ExternalRouteRef,
-      RouteRef | SubRouteRef
-    >,
-    private readonly appBasePath: string, // base path without a trailing slash
-    private readonly routeAliasResolver: RouteAliasResolver,
-    private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>,
-  ) {}
+    routePaths: Map<RouteRef, string>,
+    routeParents: Map<RouteRef, RouteRef | undefined>,
+    routeObjects: BackstageRouteObject[],
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    appBasePath: string, // base path without a trailing slash
+    routeAliasResolver: RouteAliasResolver,
+    routeRefsById: Map<string, RouteRef | SubRouteRef>,
+  ) {
+    this.routePaths = routePaths;
+    this.routeParents = routeParents;
+    this.routeObjects = routeObjects;
+    this.routeBindings = routeBindings;
+    this.appBasePath = appBasePath;
+    this.routeAliasResolver = routeAliasResolver;
+    this.routeRefsById = routeRefsById;
+  }
 
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:

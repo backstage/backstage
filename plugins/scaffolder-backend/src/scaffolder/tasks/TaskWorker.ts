@@ -90,11 +90,16 @@ export class TaskWorker {
   private parameterAuditTransform: ParameterAuditTransform;
   private stopWorkers: boolean;
 
+  private readonly options: TaskWorkerOptions & {
+    parameterAuditTransform: ParameterAuditTransform;
+  };
+
   private constructor(
-    private readonly options: TaskWorkerOptions & {
+    options: TaskWorkerOptions & {
       parameterAuditTransform: ParameterAuditTransform;
     },
   ) {
+    this.options = options;
     this.stopWorkers = false;
     this.logger = options.logger;
     this.auditor = options.auditor;

@@ -66,14 +66,22 @@ export function encodePageCursor({ page }: { page: number }): string {
 
 export class AuthorizedSearchEngine implements SearchEngine {
   private readonly queryLatencyBudgetMs: number;
+  private readonly searchEngine: SearchEngine;
+  private readonly types: Record<string, DocumentTypeInfo>;
+  private readonly permissions: PermissionsService;
+  private readonly auth: AuthService;
 
   constructor(
-    private readonly searchEngine: SearchEngine,
-    private readonly types: Record<string, DocumentTypeInfo>,
-    private readonly permissions: PermissionsService,
-    private readonly auth: AuthService,
+    searchEngine: SearchEngine,
+    types: Record<string, DocumentTypeInfo>,
+    permissions: PermissionsService,
+    auth: AuthService,
     config: Config,
   ) {
+    this.searchEngine = searchEngine;
+    this.types = types;
+    this.permissions = permissions;
+    this.auth = auth;
     this.queryLatencyBudgetMs =
       config.getOptionalNumber('search.permissions.queryLatencyBudgetMs') ??
       1000;

@@ -128,8 +128,10 @@ const isActionAuthorized = createConditionAuthorizer(
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
+  private readonly options: NunjucksWorkflowRunnerOptions;
 
-  constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
+  constructor(options: NunjucksWorkflowRunnerOptions) {
+    this.options = options;
     this.defaultTemplateFilters = convertFiltersToRecord(
       createDefaultFilters({
         integrations: this.options.integrations,

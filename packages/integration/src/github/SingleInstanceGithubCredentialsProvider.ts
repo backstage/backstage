@@ -279,10 +279,16 @@ export class SingleInstanceGithubCredentialsProvider
     );
   };
 
+  private readonly githubAppCredentialsMux: GithubAppCredentialsMux;
+  private readonly token?: string;
+
   private constructor(
-    private readonly githubAppCredentialsMux: GithubAppCredentialsMux,
-    private readonly token?: string,
-  ) {}
+    githubAppCredentialsMux: GithubAppCredentialsMux,
+    token?: string,
+  ) {
+    this.githubAppCredentialsMux = githubAppCredentialsMux;
+    this.token = token;
+  }
 
   /**
    * Returns {@link GithubCredentials} for a given URL.
