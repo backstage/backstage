@@ -738,10 +738,15 @@ export class CatalogBuilder {
     }
 
     return processors.filter(p => {
-      const processorConfig = processorsConfig.getOptionalConfig(
-        p.getProcessorName(),
-      );
-      return processorConfig?.getOptionalBoolean('enabled') ?? true;
+      try {
+        const processorConfig = processorsConfig.getOptionalConfig(
+          p.getProcessorName(),
+        );
+        return processorConfig?.getOptionalBoolean('enabled') ?? true;
+      } catch (_) {
+        // In case the processor config is not an object, just include the processor
+        return true;
+      }
     });
   }
 
@@ -863,10 +868,15 @@ export class CatalogBuilder {
     }
 
     return providers.filter(p => {
-      const providerConfig = providersConfig.getOptionalConfig(
-        p.getProviderName(),
-      );
-      return providerConfig?.getOptionalBoolean('enabled') ?? true;
+      try {
+        const providerConfig = providersConfig.getOptionalConfig(
+          p.getProviderName(),
+        );
+        return providerConfig?.getOptionalBoolean('enabled') ?? true;
+      } catch (_) {
+        // In case the provider config is not an object, just include the provider
+        return true;
+      }
     });
   }
 
