@@ -22,6 +22,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import useMeasure from 'react-use/esm/useMeasure';
+import { once } from 'lodash';
 import * as d3Zoom from 'd3-zoom';
 import * as d3Selection from 'd3-selection';
 import useTheme from '@material-ui/core/styles/useTheme';
@@ -41,10 +43,17 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { coreComponentsTranslationRef } from '../../translation';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  fullscreenButton: {
+    position: 'absolute',
+    right: 0,
+  },
   root: {
     overflow: 'hidden',
     minHeight: '100%',
     minWidth: '100%',
+  },
+  fixedHeight: {
+    height: '100%',
   },
   fullscreen: {
     backgroundColor: theme.palette.background.paper,
@@ -268,9 +277,11 @@ export function DependencyGraph<NodeData, EdgeData>(
 
   const maxWidth = Math.max(graphWidth, containerWidth);
   const maxHeight = Math.max(graphHeight, containerHeight);
-  const minHeight = Math.min(graphHeight, containerHeight);
 
-  const scalableHeight = fit === 'grow' ? maxHeight : minHeight;
+  const [_measureRef] = useMeasure();
+  const measureRef = once(_measureRef);
+
+  const scalableHeight = fit === 'grow' ? maxHeight : containerHeight;
 
   const containerRef = useMemo(
     () =>
@@ -278,6 +289,8 @@ export function DependencyGraph<NodeData, EdgeData>(
         if (!root) {
           return;
         }
+        measureRef(root);
+
         // Set up zooming + panning
         const node: SVGSVGElement = root.querySelector(
           `svg#${DEPENDENCY_GRAPH_SVG}`,
@@ -328,7 +341,7 @@ export function DependencyGraph<NodeData, EdgeData>(
           setContainerHeight(newContainerHeight);
         }
       }, 100),
-    [containerHeight, containerWidth, maxWidth, maxHeight, zoom],
+    [measureRef, containerHeight, containerWidth, maxWidth, maxHeight, zoom],
   );
 
   const setNodesAndEdges = useCallback(() => {
@@ -431,28 +444,43 @@ export function DependencyGraph<NodeData, EdgeData>(
     updateGraph,
   ]);
 
-  function setNode(id: string, node: Types.DependencyNode<NodeData>) {
-    graph.current.setNode(id, node);
-    updateGraph();
-    return graph.current;
-  }
+  const setNode = useCallback(
+    (id: string, node: Types.DependencyNode<NodeData>) => {
+      graph.current.setNode(id, node);
+      updateGraph();
+      return graph.current;
+    },
+    [updateGraph],
+  );
 
-  function setEdge(id: dagre.Edge, edge: Types.DependencyEdge<EdgeData>) {
-    graph.current.setEdge(id, edge);
-    updateGraph();
-    return graph.current;
-  }
+  const setEdge = useCallback(
+    (id: dagre.Edge, edge: Types.DependencyEdge<EdgeData>) => {
+      graph.current.setEdge(id, edge);
+      updateGraph();
+      return graph.current;
+    },
+    [updateGraph],
+  );
 
   return (
-    <div ref={containerRef} className={styles.root}>
+    <div
+      ref={containerRef}
+      className={combineClasses(
+        styles.root,
+        fit === 'contain' && styles.fixedHeight,
+      )}
+    >
       <FullScreen
         handle={fullScreenHandle}
-        className={fullScreenHandle.active ? styles.fullscreen : styles.root}
+        className={combineClasses(
+          fullScreenHandle.active ? styles.fullscreen : styles.root,
+          fit === 'contain' && styles.fixedHeight,
+        )}
       >
         {allowFullscreen && (
           <Tooltip title={t('dependencyGraph.fullscreenTooltip')}>
             <IconButton
-              style={{ float: 'right' }}
+              className={styles.fullscreenButton}
               onClick={
                 fullScreenHandle.active
                   ? fullScreenHandle.exit
@@ -534,4 +562,8 @@ export function DependencyGraph<NodeData, EdgeData>(
       </FullScreen>
     </div>
   );
+}
+
+function combineClasses(...classes: (string | false | undefined)[]) {
+  return classes.filter(c => !!c).join(' ');
 }
