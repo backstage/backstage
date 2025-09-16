@@ -78,6 +78,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   customProperties: { [key: string]: string | string[] } | undefined,
   subscribe: boolean | undefined,
   logger: LoggerService,
+  autoInit?: boolean | undefined,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
   const user = await client.rest.users.getByUsername({
@@ -109,6 +110,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           has_projects: hasProjects,
           has_wiki: hasWiki,
           has_issues: hasIssues,
+          auto_init: autoInit,
           // Custom properties only available on org repos
           custom_properties: customProperties,
         })
@@ -128,6 +130,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           has_projects: hasProjects,
           has_wiki: hasWiki,
           has_issues: hasIssues,
+          auto_init: autoInit,
         });
 
   let newRepo;

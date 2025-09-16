@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Grid } from './Grid';
 import type { GridItemProps } from './types';
 import { Box } from '../Box/Box';
@@ -23,7 +23,7 @@ import { Flex } from '../Flex';
 const meta = {
   title: 'Backstage UI/Grid',
   component: Grid.Root,
-} satisfies Meta<typeof Grid>;
+} satisfies Meta<typeof Grid.Root>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

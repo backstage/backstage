@@ -28,7 +28,7 @@ import {
   useState,
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction } from '../../lib/types';
 
 export type CatalogGraphPageValue = {
   rootEntityNames: CompoundEntityRef[];

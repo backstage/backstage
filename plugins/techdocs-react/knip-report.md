@@ -4,6 +4,6 @@
 
 | Name                       | Location     | Severity |
 | :------------------------- | :----------- | :------- |
-| @backstage/core-components | package.json | error    |
-| react-helmet               | package.json | error    |
+| @backstage/core-components | plugins/techdocs-react/package.json | error    |
+| react-helmet               | plugins/techdocs-react/package.json | error    |
 

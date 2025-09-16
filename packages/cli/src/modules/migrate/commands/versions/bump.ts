@@ -18,6 +18,7 @@ maybeBootstrapProxy();
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import { minimatch } from 'minimatch';
 import semver from 'semver';
 import { OptionValues } from 'commander';
 import yaml from 'yaml';
@@ -77,6 +78,14 @@ type PkgVersionInfo = {
   name: string;
   location: string;
 };
+
+function extendsDefaultPattern(pattern: string): boolean {
+  if (!pattern.endsWith('/*')) {
+    return false;
+  }
+
+  return minimatch('@backstage/', pattern.slice(0, -1));
+}
 
 export default async (opts: OptionValues) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
@@ -245,8 +254,8 @@ export default async (opts: OptionValues) => {
 
     console.log();
 
-    // Do not update backstage.json when upgrade patterns are used.
-    if (pattern === DEFAULT_PATTERN_GLOB) {
+    // Do not update backstage.json when default pattern is not covered
+    if (extendsDefaultPattern(pattern)) {
       await bumpBackstageJsonVersion(
         releaseManifest.releaseVersion,
         hasYarnPlugin,

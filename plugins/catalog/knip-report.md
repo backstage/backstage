@@ -4,5 +4,5 @@
 
 | Name    | Location     | Severity |
 | :------ | :----------- | :------- |
-| history | package.json | error    |
+| history | plugins/catalog/package.json | error    |
 

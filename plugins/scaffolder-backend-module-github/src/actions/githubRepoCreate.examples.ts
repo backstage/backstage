@@ -1006,4 +1006,19 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Create a repository with an initial commit.',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:repo:create',
+          name: 'Create a new GitHub repository with an initial (signed) commit containing a README',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            autoInit: true,
+          },
+        },
+      ],
+    }),
+  },
 ];

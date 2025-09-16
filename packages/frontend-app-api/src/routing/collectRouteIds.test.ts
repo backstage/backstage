@@ -20,6 +20,18 @@ import {
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { collectRouteIds } from './collectRouteIds';
+import { createErrorCollector } from '../wiring/createErrorCollector';
+
+const collector = createErrorCollector();
+
+afterEach(() => {
+  const errors = collector.collectErrors();
+  if (errors) {
+    throw new Error(
+      `Unexpected errors: ${errors.map(e => e.message).join(', ')}`,
+    );
+  }
+});
 
 describe('collectRouteIds', () => {
   it('should assign IDs to routes', () => {
@@ -33,13 +45,16 @@ describe('collectRouteIds', () => {
       /^ExternalRouteRef\{created at '.*collectRouteIds\.test\.ts.*'\}$/,
     );
 
-    const collected = collectRouteIds([
-      createFrontendPlugin({
-        pluginId: 'test',
-        routes: { ref },
-        externalRoutes: { extRef },
-      }),
-    ]);
+    const collected = collectRouteIds(
+      [
+        createFrontendPlugin({
+          pluginId: 'test',
+          routes: { ref },
+          externalRoutes: { extRef },
+        }),
+      ],
+      collector,
+    );
     expect(Object.fromEntries(collected.routes)).toEqual({
       'test.ref': ref,
     });
@@ -49,5 +64,41 @@ describe('collectRouteIds', () => {
 
     expect(String(ref)).toBe('RouteRef{test.ref}');
     expect(String(extRef)).toBe('ExternalRouteRef{test.extRef}');
+  });
+
+  it('should report duplicate route IDs', () => {
+    const ref = createRouteRef();
+    const extRef = createExternalRouteRef();
+
+    collectRouteIds(
+      [
+        createFrontendPlugin({
+          pluginId: 'test',
+          routes: { 'mid.ref': ref },
+          externalRoutes: { 'mid.extRef': extRef },
+        }),
+        createFrontendPlugin({
+          pluginId: 'test.mid',
+          routes: { ref },
+          externalRoutes: { extRef },
+        }),
+      ],
+      collector,
+    );
+
+    expect(collector.collectErrors()).toEqual([
+      {
+        code: 'ROUTE_DUPLICATE',
+        message:
+          "Duplicate route id 'test.mid.ref' encountered while collecting routes",
+        context: { routeId: 'test.mid.ref' },
+      },
+      {
+        code: 'ROUTE_DUPLICATE',
+        message:
+          "Duplicate external route id 'test.mid.extRef' encountered while collecting routes",
+        context: { routeId: 'test.mid.extRef' },
+      },
+    ]);
   });
 });

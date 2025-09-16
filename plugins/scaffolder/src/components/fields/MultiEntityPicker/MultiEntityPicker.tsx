@@ -50,6 +50,12 @@ import { scaffolderTranslationRef } from '../../../translation';
 
 export { MultiEntityPickerSchema } from './schema';
 
+// AutocompleteChangeReason events that can be triggered when a user inputs a freeSolo option
+const FREE_SOLO_EVENTS: readonly AutocompleteChangeReason[] = [
+  'blur',
+  'create-option',
+];
+
 /**
  * The underlying component that is rendered in the form for the `MultiEntityPicker`
  * field extension.
@@ -110,29 +116,34 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
       const values = refs
         .map(ref => {
+          // If the ref is not a string, then it was a selected option in the picker
           if (typeof ref !== 'string') {
             // if ref does not exist: pass 'undefined' to trigger validation for required value
             return ref ? stringifyEntityRef(ref as Entity) : undefined;
           }
-          if (reason === 'blur' || reason === 'create-option') {
-            // Add in default namespace, etc.
-            let entityRef = ref;
-            try {
-              // Attempt to parse the entity ref into it's full form.
-              entityRef = stringifyEntityRef(
-                parseEntityRef(ref as string, {
-                  defaultKind,
-                  defaultNamespace,
-                }),
-              );
-            } catch (err) {
-              // If the passed in value isn't an entity ref, do nothing.
-            }
 
-            // We need to check against formData here as that's the previous value for this field.
-            if (formData?.includes(ref) || allowArbitraryValues) {
-              return entityRef;
-            }
+          // Add in default namespace, etc.
+          let entityRef = ref;
+          try {
+            // Attempt to parse the entity ref into it's full form.
+            entityRef = stringifyEntityRef(
+              parseEntityRef(ref as string, {
+                defaultKind,
+                defaultNamespace,
+              }),
+            );
+          } catch (err) {
+            // If the passed in value isn't an entity ref, do nothing.
+          }
+
+          // We need to check against formData here as that's the previous value for this field.
+          if (
+            // If value already matches what exists in form data, allow it
+            formData?.includes(ref) ||
+            // If arbitrary values are allowed and the reason is a free solo event, allow it
+            (allowArbitraryValues && FREE_SOLO_EVENTS.includes(reason))
+          ) {
+            return entityRef;
           }
 
           return undefined;

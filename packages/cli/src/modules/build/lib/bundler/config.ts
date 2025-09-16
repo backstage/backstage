@@ -430,10 +430,10 @@ export async function createConfig(
       path: paths.targetDist,
       publicPath:
         options.moduleFederation?.mode === 'remote' ? 'auto' : `${publicPath}/`,
-      filename: isDev ? '[name].js' : 'static/[name].[fullhash:8].js',
+      filename: isDev ? '[name].js' : 'static/[name].[contenthash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
-        : 'static/[name].[chunkhash:8].chunk.js',
+        : 'static/[name].[contenthash:8].chunk.js',
       ...(isDev
         ? {
             devtoolModuleFilenameTemplate: (info: any) =>

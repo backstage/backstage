@@ -4,5 +4,5 @@
 
 | Name           | Location     | Severity |
 | :------------- | :----------- | :------- |
-| @aws-sdk/types | package.json | error    |
+| @aws-sdk/types | plugins/notifications-backend-module-email/package.json | error    |
 

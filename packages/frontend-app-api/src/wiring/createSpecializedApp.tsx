@@ -83,6 +83,11 @@ import {
   FrontendPluginInfoResolver,
 } from './createPluginInfoAttacher';
 import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
+import {
+  AppError,
+  createErrorCollector,
+  ErrorCollector,
+} from './createErrorCollector';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -284,11 +289,14 @@ export type CreateSpecializedAppOptions = {
 export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   apis: ApiHolder;
   tree: AppTree;
+  errors?: AppError[];
 } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
     createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
   );
+
+  const collector = createErrorCollector();
 
   const tree = resolveAppTree(
     'root',
@@ -299,18 +307,18 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
-      allowUnknownExtensionConfig:
-        options?.advanced?.allowUnknownExtensionConfig,
+      collector,
     }),
+    collector,
   );
 
-  const factories = createApiFactories({ tree });
+  const factories = createApiFactories({ tree, collector });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
 
-  const routeRefsById = collectRouteIds(features);
+  const routeRefsById = collectRouteIds(features, collector);
   const routeResolutionApi = new RouteResolutionApiProxy(
-    resolveRouteBindings(options?.bindRoutes, config, routeRefsById),
+    resolveRouteBindings(options?.bindRoutes, config, routeRefsById, collector),
     appBasePath,
   );
 
@@ -353,6 +361,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   instantiateAppNodeTree(
     tree.root,
     apis,
+    collector,
     mergeExtensionFactoryMiddleware(
       options?.advanced?.extensionFactoryMiddleware,
     ),
@@ -366,22 +375,32 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   routeResolutionApi.initialize(routeInfo, routeRefsById.routes);
   appTreeApi.initialize(routeInfo);
 
-  return { apis, tree };
+  return { apis, tree, errors: collector.collectErrors() };
 }
 
-function createApiFactories(options: { tree: AppTree }): AnyApiFactory[] {
+function createApiFactories(options: {
+  tree: AppTree;
+  collector: ErrorCollector;
+}): AnyApiFactory[] {
   const emptyApiHolder = ApiRegistry.from([]);
   const factories = new Array<AnyApiFactory>();
 
   for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
-    instantiateAppNodeTree(apiNode, emptyApiHolder);
-    const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
-    if (!apiFactory) {
-      throw new Error(
-        `No API factory found in for extension ${apiNode.spec.id}`,
-      );
+    if (!instantiateAppNodeTree(apiNode, emptyApiHolder, options.collector)) {
+      continue;
     }
-    factories.push(apiFactory);
+    const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
+    if (apiFactory) {
+      factories.push(apiFactory);
+    } else {
+      options.collector.report({
+        code: 'API_EXTENSION_INVALID',
+        message: `API extension '${apiNode.spec.id}' did not output an API factory`,
+        context: {
+          node: apiNode,
+        },
+      });
+    }
   }
 
   return factories;

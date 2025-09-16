@@ -38,6 +38,7 @@ Bitrise
 Blackbox
 bool
 boolean
+breakpoint
 Brex
 broadcasted
 bugfixes
@@ -248,6 +249,8 @@ lockdown
 lockfile
 lockfiles
 lookbehind
+lookup
+lookups
 lowercased
 lunr
 Luxon

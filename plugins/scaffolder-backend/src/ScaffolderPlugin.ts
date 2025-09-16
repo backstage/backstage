@@ -56,6 +56,7 @@ import {
   convertFiltersToRecord,
   convertGlobalsToRecord,
 } from './util/templating';
+import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * Scaffolder plugin
@@ -139,6 +140,7 @@ export const scaffolderPlugin = createBackendPlugin({
         auditor: coreServices.auditor,
         catalog: catalogServiceRef,
         events: eventsServiceRef,
+        actionsRegistry: actionsServiceRef,
       },
       async init({
         logger,
@@ -153,6 +155,7 @@ export const scaffolderPlugin = createBackendPlugin({
         permissions,
         events,
         auditor,
+        actionsRegistry,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -222,6 +225,7 @@ export const scaffolderPlugin = createBackendPlugin({
           additionalWorkspaceProviders,
           events,
           auditor,
+          actionsRegistry,
         });
         httpRouter.use(router);
       },

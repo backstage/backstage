@@ -297,6 +297,11 @@ const config: Config = {
             specPath: '../plugins/search-backend/src/schema/openapi.yaml',
             outputDir: '../docs/features/search/api',
           } satisfies OpenApiPlugin.Options,
+          scaffolder: {
+            ...defaultOpenApiOptions,
+            specPath: '../plugins/scaffolder-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/software-templates/api',
+          } satisfies OpenApiPlugin.Options,
         },
       },
     ],

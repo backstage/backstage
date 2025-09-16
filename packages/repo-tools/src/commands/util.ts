@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { execFile } from 'child_process';
+import { spawn } from 'child_process';
 import os from 'os';
 import pLimit from 'p-limit';
 
@@ -29,26 +29,43 @@ export function createBinRunner(cwd: string, path: string) {
     limiter(
       () =>
         new Promise<string>((resolve, reject) => {
-          execFile(
-            'node',
-            [path, ...command],
-            {
-              cwd,
-              shell: true,
-              timeout: 3 * 60 * 1000,
-              maxBuffer: 1024 * 1024,
-            },
-            (err, stdout, stderr) => {
-              if (err) {
-                console.log('err', err);
-                reject(new Error(`${err.message}\n${stderr}`));
-              } else if (stderr) {
-                reject(new Error(`Command printed error output: ${stderr}`));
-              } else {
-                resolve(stdout);
-              }
-            },
-          );
+          // Handle the case where path is empty and the script path is the first command argument
+          const args = path ? [path, ...command] : command;
+          const child = spawn('node', args, {
+            cwd,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+
+          let stdout = '';
+          let stderr = '';
+
+          child.stdout?.on('data', data => {
+            stdout += data.toString();
+          });
+
+          child.stderr?.on('data', data => {
+            stderr += data.toString();
+          });
+
+          child.on('error', err => {
+            reject(new Error(`Process error: ${err.message}`));
+          });
+
+          child.on('close', (code, signal) => {
+            if (signal) {
+              reject(
+                new Error(
+                  `Process was killed with signal ${signal}\n${stderr}`,
+                ),
+              );
+            } else if (code !== 0) {
+              reject(new Error(`Process exited with code ${code}\n${stderr}`));
+            } else if (stderr.trim()) {
+              reject(new Error(`Command printed error output: ${stderr}`));
+            } else {
+              resolve(stdout);
+            }
+          });
         }),
     );
 }

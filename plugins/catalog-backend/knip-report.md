@@ -4,5 +4,5 @@
 
 | Name           | Location     | Severity |
 | :------------- | :----------- | :------- |
-| better-sqlite3 | package.json | error    |
+| better-sqlite3 | plugins/catalog-backend/package.json | error    |
 

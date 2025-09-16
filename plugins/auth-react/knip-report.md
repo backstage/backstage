@@ -4,5 +4,5 @@
 
 | Name | Location     | Severity |
 | :-- | :----------- | :------- |
-| msw | package.json | error    |
+| msw | plugins/auth-react/package.json | error    |
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PropsWithChildren } from 'react';
 import {
   DEFAULT_NAMESPACE,
   Entity,
@@ -22,11 +23,14 @@ import {
   RELATION_PART_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { ApiProvider } from '@backstage/core-app-api';
+import { TestApiRegistry } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { filter, keyBy } from 'lodash';
 import { useEntityRelationGraph as useEntityRelationGraphMocked } from './useEntityRelationGraph';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
-import { EntityNode } from './types';
+import { EntityNode } from '../../lib/types';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
 jest.mock('./useEntityRelationGraph');
 
@@ -129,6 +133,19 @@ function deprecatedProperties(entity: Entity): Partial<EntityNode> {
   };
 }
 
+function GraphContext(props: PropsWithChildren<{}>) {
+  return (
+    <ApiProvider
+      apis={TestApiRegistry.from([
+        catalogGraphApiRef,
+        new DefaultCatalogGraphApi(),
+      ])}
+    >
+      {props.children}
+    </ApiProvider>
+  );
+}
+
 describe('useEntityRelationNodesAndEdges', () => {
   beforeEach(() => {
     useEntityRelationGraph.mockImplementation(({ filter: { kinds } }) => ({
@@ -149,10 +166,12 @@ describe('useEntityRelationNodesAndEdges', () => {
       loading: true,
     });
 
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c'],
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c'],
+        }),
+      { wrapper: GraphContext },
     );
 
     const { nodes, edges, loading, error } = result.current;
@@ -170,10 +189,12 @@ describe('useEntityRelationNodesAndEdges', () => {
       error: returnError,
     });
 
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c'],
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c'],
+        }),
+      { wrapper: GraphContext },
     );
 
     const { nodes, edges, loading, error } = result.current;
@@ -185,12 +206,14 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate unidirectional graph with merged relations', async () => {
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c'],
-        unidirectional: true,
-        mergeRelations: true,
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c'],
+          unidirectional: true,
+          mergeRelations: true,
+        }),
+      { wrapper: GraphContext },
     );
 
     await waitFor(() => {
@@ -233,24 +256,21 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
         to: 'k:d/a1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
         to: 'b:d/c1',
       },
       {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
-        to: 'k:d/a1',
-      },
-      {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
@@ -260,12 +280,14 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate unidirectional graph', async () => {
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c'],
-        unidirectional: true,
-        mergeRelations: false,
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c'],
+          unidirectional: true,
+          mergeRelations: false,
+        }),
+      { wrapper: GraphContext },
     );
 
     await waitFor(() => {
@@ -308,63 +330,38 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF],
         to: 'k:d/a1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c1',
       },
       {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: [RELATION_PART_OF],
-        to: 'b:d/c',
-      },
-      {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: [RELATION_OWNER_OF],
-        to: 'k:d/a1',
-      },
-      {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c2',
       },
-      {
-        from: 'b:d/c2',
-        label: 'visible',
-        relations: [RELATION_PART_OF],
-        to: 'b:d/c1',
-      },
-      {
-        from: 'k:d/a1',
-        label: 'visible',
-        relations: [RELATION_OWNED_BY],
-        to: 'b:d/c',
-      },
-      {
-        from: 'k:d/a1',
-        label: 'visible',
-        relations: [RELATION_OWNED_BY],
-        to: 'b:d/c1',
-      },
     ]);
   });
 
   test('should generate bidirectional graph with merged relations', async () => {
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c'],
-        unidirectional: false,
-        mergeRelations: true,
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c'],
+          unidirectional: false,
+          mergeRelations: true,
+        }),
+      { wrapper: GraphContext },
     );
 
     await waitFor(() => {
@@ -407,24 +404,28 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
         to: 'k:d/a1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
         to: 'b:d/c1',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
         to: 'k:d/a1',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
@@ -434,12 +435,14 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate bidirectional graph with all relations', async () => {
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c'],
-        unidirectional: false,
-        mergeRelations: false,
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c'],
+          unidirectional: false,
+          mergeRelations: false,
+        }),
+      { wrapper: GraphContext },
     );
 
     await waitFor(() => {
@@ -482,48 +485,56 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF],
         to: 'k:d/a1',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c1',
       },
       {
+        distance: 1,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_PART_OF],
         to: 'b:d/c',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_OWNER_OF],
         to: 'k:d/a1',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c2',
       },
       {
+        distance: 2,
         from: 'b:d/c2',
         label: 'visible',
         relations: [RELATION_PART_OF],
         to: 'b:d/c1',
       },
       {
+        distance: 1,
         from: 'k:d/a1',
         label: 'visible',
         relations: [RELATION_OWNED_BY],
         to: 'b:d/c',
       },
       {
+        distance: 2,
         from: 'k:d/a1',
         label: 'visible',
         relations: [RELATION_OWNED_BY],
@@ -533,10 +544,12 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate graph with multiple root nodes', async () => {
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c', 'b:d/c2'],
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c', 'b:d/c2'],
+        }),
+      { wrapper: GraphContext },
     );
 
     await waitFor(() => {
@@ -579,24 +592,21 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c1',
         label: 'visible',
         relations: ['hasPart', 'partOf'],
         to: 'b:d/c2',
       },
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: ['hasPart', 'partOf'],
         to: 'b:d/c1',
       },
       {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: ['ownerOf', 'ownedBy'],
-        to: 'k:d/a1',
-      },
-      {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: ['ownerOf', 'ownedBy'],
@@ -606,11 +616,13 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should filter by relation', async () => {
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c'],
-        relations: [RELATION_OWNER_OF],
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c'],
+          relations: [RELATION_OWNER_OF],
+        }),
+      { wrapper: GraphContext },
     );
 
     await waitFor(() => {
@@ -653,6 +665,7 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
@@ -662,11 +675,13 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should filter by kind', async () => {
-    const { result } = renderHook(() =>
-      useEntityRelationNodesAndEdges({
-        rootEntityRefs: ['b:d/c'],
-        kinds: ['b'],
-      }),
+    const { result } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs: ['b:d/c'],
+          kinds: ['b'],
+        }),
+      { wrapper: GraphContext },
     );
 
     await waitFor(() => {
@@ -703,12 +718,14 @@ describe('useEntityRelationNodesAndEdges', () => {
     ]);
     expect(edges).toEqual([
       {
+        distance: 1,
         from: 'b:d/c',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
         to: 'b:d/c1',
       },
       {
+        distance: 2,
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],

@@ -81,6 +81,7 @@ export function createGithubRepoCreateAction(options: {
         requiredLinearHistory: inputProps.requiredLinearHistory,
         customProperties: inputProps.customProperties,
         subscribe: inputProps.subscribe,
+        autoInit: inputProps.autoInit,
       },
       output: {
         remoteUrl: outputProps.remoteUrl,
@@ -113,6 +114,7 @@ export function createGithubRepoCreateAction(options: {
         customProperties,
         subscribe,
         token: providedToken,
+        autoInit = undefined,
       } = ctx.input;
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -164,6 +166,7 @@ export function createGithubRepoCreateAction(options: {
             customProperties,
             subscribe,
             ctx.logger,
+            autoInit,
           );
           return newRepo.clone_url;
         },

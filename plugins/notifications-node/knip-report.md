@@ -4,9 +4,9 @@
 
 | Name                           | Location     | Severity |
 | :----------------------------- | :----------- | :------- |
-| @backstage/plugin-signals-node | package.json | error    |
-| @backstage/catalog-client      | package.json | error    |
-| @backstage/catalog-model       | package.json | error    |
-| knex                           | package.json | error    |
-| uuid                           | package.json | error    |
+| @backstage/plugin-signals-node | plugins/notifications-node/package.json | error    |
+| @backstage/catalog-client      | plugins/notifications-node/package.json | error    |
+| @backstage/catalog-model       | plugins/notifications-node/package.json | error    |
+| knex                           | plugins/notifications-node/package.json | error    |
+| uuid                           | plugins/notifications-node/package.json | error    |
 

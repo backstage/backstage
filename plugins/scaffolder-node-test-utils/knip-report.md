@@ -4,7 +4,7 @@
 
 | Name             | Location     | Severity |
 | :--------------- | :----------- | :------- |
-| react-router-dom | package.json | error    |
-| react-dom        | package.json | error    |
-| react            | package.json | error    |
+| react-router-dom | plugins/scaffolder-node-test-utils/package.json | error    |
+| react-dom        | plugins/scaffolder-node-test-utils/package.json | error    |
+| react            | plugins/scaffolder-node-test-utils/package.json | error    |
 
