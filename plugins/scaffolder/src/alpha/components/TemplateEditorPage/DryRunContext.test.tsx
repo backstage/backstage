@@ -32,7 +32,7 @@ import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { formDecoratorsApiRef } from '../../api';
 
-window.TextEncoder = TextEncoder;
+window.TextEncoder = TextEncoder as any;
 
 describe('base64EncodeContent', () => {
   it('encodes text files', () => {
