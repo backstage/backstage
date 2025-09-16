@@ -1,0 +1,9 @@
+diff --git a/dist/src/core.d.ts b/dist/src/core.d.ts
+index 268cc71b688dad32256c16cd608d974d4c7242fe..4097bfbb0527fa94bd092171e769b2d59d88ed8c 100644
+--- a/dist/src/core.d.ts
++++ b/dist/src/core.d.ts
+@@ -1,3 +1,3 @@
+-import runtimeCore from '@module-federation/runtime-core';
++import * as runtimeCore from '@module-federation/runtime-core';
+ export * from '@module-federation/runtime-core';
+ export default runtimeCore;
