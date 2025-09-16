@@ -108,7 +108,7 @@ Set the `MCP_TOKEN` environment variable with this token, and configure your MCP
 > [!CAUTION]
 > This is highly experimental, proceed with caution.
 
-You can configure both the `auth-backend` and install the `auth` frontend plugin in order to enable [Dynamic Client Registration](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization#dynamic-client-registration) with MCP Clients.
+You can configure the `auth-backend` and install the `auth` frontend plugin in order to enable [Dynamic Client Registration](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization#dynamic-client-registration) with MCP Clients.
 
 This means that there is no token required in your MCP settings, and a token will be given to a client that requests a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup that requires your approval will be opened in your Backstage instance, which is powered by the `auth` plugin.
 
