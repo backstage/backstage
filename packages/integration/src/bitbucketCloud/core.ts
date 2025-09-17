@@ -129,16 +129,14 @@ export function getBitbucketCloudRequestOptions(
 } {
   const headers: Record<string, string> = {};
 
-  if (config.token) {
-    // Prefer token-based (API token)
-    headers.Authorization = `Bearer ${config.token}`;
-  } else if (config.username && config.appPassword) {
-    // Fallback to legacy app password if token isn't provided
-    const credentials = Buffer.from(
-      `${config.username}:${config.appPassword}`,
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
+  if (config.username && (config.token ?? config.appPassword)) {
+    const buffer = Buffer.from(
+      `${config.username}:${config.token ?? config.appPassword}`,
       'utf8',
-    ).toString('base64');
-    headers.Authorization = `Basic ${credentials}`;
+    );
+    headers.Authorization = `Basic ${buffer.toString('base64')}`;
   }
 
   return { headers };

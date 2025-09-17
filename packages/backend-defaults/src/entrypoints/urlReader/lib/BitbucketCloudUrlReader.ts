@@ -63,11 +63,13 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     private readonly integration: BitbucketCloudIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const { host, username, appPassword } = integration.config;
+    const { host, username, appPassword, token } = integration.config;
 
-    if (username && !appPassword) {
+    // TODO: appPassword can be removed once fully
+    // deprecated by BitBucket on 9th June 2026.
+    if (username && !token && !appPassword) {
       throw new Error(
-        `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required appPassword.`,
+        `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required token or appPassword.`,
       );
     }
   }
@@ -223,14 +225,10 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
   }
 
   toString() {
-    const { host, token, username, appPassword } = this.integration.config;
-    const usingToken = Boolean(token);
-    const usingAppPassword = Boolean(username && appPassword);
+    const { host, username, appPassword, token } = this.integration.config;
+    const authed = Boolean(username && (token ?? appPassword));
 
-    return `bitbucketCloud{host=${host},authed=${
-      // eslint-disable-next-line no-nested-ternary
-      usingToken ? 'token' : usingAppPassword ? 'appPassword' : 'false'
-    }}`;
+    return `bitbucketCloud{host=${host},authed=${authed}}`;
   }
 
   private async getLastCommitShortHash(url: string): Promise<string> {
