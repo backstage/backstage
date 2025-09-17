@@ -23,6 +23,7 @@ import {
   useState,
 } from 'react';
 import useMeasure from 'react-use/esm/useMeasure';
+import classNames from 'classnames';
 import { once } from 'lodash';
 import * as d3Zoom from 'd3-zoom';
 import * as d3Selection from 'd3-selection';
@@ -465,14 +466,14 @@ export function DependencyGraph<NodeData, EdgeData>(
   return (
     <div
       ref={containerRef}
-      className={combineClasses(
+      className={classNames(
         styles.root,
         fit === 'contain' && styles.fixedHeight,
       )}
     >
       <FullScreen
         handle={fullScreenHandle}
-        className={combineClasses(
+        className={classNames(
           fullScreenHandle.active ? styles.fullscreen : styles.root,
           fit === 'contain' && styles.fixedHeight,
         )}
@@ -562,8 +563,4 @@ export function DependencyGraph<NodeData, EdgeData>(
       </FullScreen>
     </div>
   );
-}
-
-function combineClasses(...classes: (string | false | undefined)[]) {
-  return classes.filter(c => !!c).join(' ');
 }
