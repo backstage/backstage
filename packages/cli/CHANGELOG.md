@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.34.3
+
+### Patch Changes
+
+- 10df043: Fixed module federation config by only setting `import: false` on shared libraries for remote.
+
 ## 0.34.2
 
 ### Patch Changes
