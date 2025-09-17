@@ -2,20 +2,14 @@ name: Chromatic
 on:
   # NOTE: If you change these you must update verify_storybook-noop.yml as well
   workflow_dispatch:
+  push:
+    branches:
+      - master
   pull_request:
     paths:
       - '.github/workflows/verify_chromatic.yml'
       - '.storybook/**'
       - 'packages/ui/src/**'
-      - 'packages/config/src/**'
-      - 'packages/theme/src/**'
-      - 'packages/types/src/**'
-      - 'packages/errors/src/**'
-      - 'packages/version-bridge/src/**'
-      - 'packages/test-utils/src/**'
-      - 'packages/core-app-api/src/**'
-      - 'packages/core-plugin-api/src/**'
-      - 'packages/core-components/src/**'
       - '**/*.stories.tsx'
 
 jobs:
