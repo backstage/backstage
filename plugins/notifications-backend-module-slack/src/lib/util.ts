@@ -23,12 +23,14 @@ import { ChatPostMessageArguments, KnownBlock } from '@slack/web-api';
 export function toChatPostMessageArgs(options: {
   channel: string;
   payload: NotificationPayload;
+  username?: string;
 }): ChatPostMessageArguments {
-  const { channel, payload } = options;
+  const { channel, payload, username } = options;
 
   const args: ChatPostMessageArguments = {
     channel,
     text: payload.title,
+    ...(username && { username }),
     attachments: [
       {
         color: getColor(payload.severity),
