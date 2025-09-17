@@ -34,8 +34,12 @@ const mockOctokit = {
     },
   },
 };
-jest.mock('octokit', () => ({
+jest.mock('@octokit/rest', () => ({
   Octokit: jest.fn(),
+}));
+
+jest.mock('@octokit/webhooks', () => ({
+  emitterEventNames: ['push', 'pull_request'],
 }));
 
 describe('github:repository:webhook:create', () => {
