@@ -1,6 +1,7 @@
 name: Chromatic
 on:
   # NOTE: If you change these you must update verify_storybook-noop.yml as well
+  workflow_dispatch:
   pull_request:
     paths:
       - '.github/workflows/verify_chromatic.yml'
