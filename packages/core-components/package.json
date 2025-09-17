@@ -90,6 +90,7 @@
     "react-use": "^17.3.2",
     "react-virtualized-auto-sizer": "^1.0.11",
     "react-window": "^1.8.6",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^3.0.1",
     "zen-observable": "^0.10.0",
     "zod": "^3.22.4"
