@@ -25,34 +25,110 @@ import {
   getBitbucketCloudRequestOptions,
 } from './core';
 
+function makeConfig(
+  overrides: Partial<BitbucketCloudIntegrationConfig> = {},
+): BitbucketCloudIntegrationConfig {
+  return {
+    host: 'bitbucket.org',
+    apiBaseUrl: 'https://api.bitbucket.org/2.0', // required by type
+    username: undefined,
+    appPassword: undefined,
+    token: undefined,
+    commitSigningKey: undefined,
+    ...overrides,
+  };
+}
+
 describe('bitbucketCloud core', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);
 
   describe('getBitbucketCloudRequestOptions', () => {
-    it('insert basic auth when needed', () => {
-      const withUsernameAndPassword: BitbucketCloudIntegrationConfig = {
-        host: 'bitbucket.org',
-        apiBaseUrl: 'https://api.bitbucket.org/2.0',
-        username: 'some-user',
-        appPassword: 'my-secret',
-      };
-      const withoutUsernameAndPassword: BitbucketCloudIntegrationConfig = {
-        host: 'bitbucket.org',
-        apiBaseUrl: 'https://api.bitbucket.org/2.0',
-      };
-      expect(
-        (
-          getBitbucketCloudRequestOptions(withUsernameAndPassword)
-            .headers as any
-        ).Authorization,
-      ).toEqual('Basic c29tZS11c2VyOm15LXNlY3JldA==');
-      expect(
-        (
-          getBitbucketCloudRequestOptions(withoutUsernameAndPassword)
-            .headers as any
-        ).Authorization,
-      ).toBeUndefined();
+    // it('insert basic auth when needed', () => {
+    //   const withUsernameAndPassword: BitbucketCloudIntegrationConfig = {
+    //     host: 'bitbucket.org',
+    //     apiBaseUrl: 'https://api.bitbucket.org/2.0',
+    //     username: 'some-user',
+    //     appPassword: 'my-secret',
+    //   };
+    //   const withoutUsernameAndPassword: BitbucketCloudIntegrationConfig = {
+    //     host: 'bitbucket.org',
+    //     apiBaseUrl: 'https://api.bitbucket.org/2.0',
+    //   };
+    //   expect(
+    //     (
+    //       getBitbucketCloudRequestOptions(withUsernameAndPassword)
+    //         .headers as any
+    //     ).Authorization,
+    //   ).toEqual('Basic c29tZS11c2VyOm15LXNlY3JldA==');
+    //   expect(
+    //     (
+    //       getBitbucketCloudRequestOptions(withoutUsernameAndPassword)
+    //         .headers as any
+    //     ).Authorization,
+    //   ).toBeUndefined();
+    // });
+
+    it('returns empty headers when no auth config is provided', () => {
+      const config = makeConfig();
+      const result = getBitbucketCloudRequestOptions(config);
+
+      expect(result).toEqual({ headers: {} });
+    });
+
+    it('uses token-based authentication if token is provided', () => {
+      const config = makeConfig({ token: 'my-secret-token' });
+      const result = getBitbucketCloudRequestOptions(config);
+
+      expect(result.headers).toEqual({
+        Authorization: 'Bearer my-secret-token',
+      });
+    });
+
+    it('uses basic auth if username and appPassword are provided (no token)', () => {
+      const config = makeConfig({
+        username: 'user1',
+        appPassword: 'appPass123',
+      });
+
+      const expectedCredentials = Buffer.from(
+        'user1:appPass123',
+        'utf8',
+      ).toString('base64');
+
+      const result = getBitbucketCloudRequestOptions(config);
+
+      expect(result.headers).toEqual({
+        Authorization: `Basic ${expectedCredentials}`,
+      });
+    });
+
+    it('prefers token over username + appPassword when both are present', () => {
+      const config = makeConfig({
+        token: 'priority-token',
+        username: 'user1',
+        appPassword: 'appPass123',
+      });
+
+      const result = getBitbucketCloudRequestOptions(config);
+
+      expect(result.headers).toEqual({
+        Authorization: 'Bearer priority-token',
+      });
+    });
+
+    it('returns empty headers if only username is provided without appPassword', () => {
+      const config = makeConfig({ username: 'user1' });
+      const result = getBitbucketCloudRequestOptions(config);
+
+      expect(result).toEqual({ headers: {} });
+    });
+
+    it('returns empty headers if only appPassword is provided without username', () => {
+      const config = makeConfig({ appPassword: 'appPass123' });
+      const result = getBitbucketCloudRequestOptions(config);
+
+      expect(result).toEqual({ headers: {} });
     });
   });
 

@@ -66,17 +66,18 @@ export type BitbucketCloudIntegrationConfig = {
 export function readBitbucketCloudIntegrationConfig(
   config: Config,
 ): BitbucketCloudIntegrationConfig {
-  const host = config.getString('host') ?? BITBUCKET_CLOUD_HOST;
-  const apiBaseUrl =
-    config.getOptionalString('apiBaseUrl') ?? BITBUCKET_CLOUD_API_BASE_URL;
+  const host = BITBUCKET_CLOUD_HOST;
+  const apiBaseUrl = BITBUCKET_CLOUD_API_BASE_URL;
 
+  // TODO: username + appPassword option can be removed after Bitbucket Cloud
+  // stopped the support for it on June 9, 2026.
   const username = config.getOptionalString('username');
   const appPassword = config.getOptionalString('appPassword')?.trim();
   const token = config.getOptionalString('token');
 
   if (!token && (!username || !appPassword)) {
     throw new Error(
-      `Bitbucket Cloud integration for '${host}' must configure either a token or both username and appPassword.`,
+      `Bitbucket Cloud integration must configure either a token or both username and appPassword.`,
     );
   }
 

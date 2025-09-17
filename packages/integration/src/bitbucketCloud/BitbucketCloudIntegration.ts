@@ -78,9 +78,7 @@ export class BitbucketCloudIntegration implements ScmIntegration {
     const editUrl = new URL(url);
 
     editUrl.searchParams.set('mode', 'edit');
-    if (urlData.ref) {
-      editUrl.searchParams.set('at', urlData.ref);
-    }
+    editUrl.searchParams.set('at', urlData.ref);
     return editUrl.toString();
   }
 }

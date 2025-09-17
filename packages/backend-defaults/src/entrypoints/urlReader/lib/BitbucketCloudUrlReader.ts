@@ -63,11 +63,11 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     private readonly integration: BitbucketCloudIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const { host, username, appPassword, token } = integration.config;
+    const { host, username, appPassword } = integration.config;
 
-    if (username && !appPassword && !token) {
+    if (username && !appPassword) {
       throw new Error(
-        `Bitbucket Cloud integration for '${host}' has configured a username but is missing both token and appPassword.`,
+        `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required appPassword.`,
       );
     }
   }
