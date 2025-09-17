@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { executePortableTemplate } from './execution';
 import {
   collectPortableTemplateInput,
   loadPortableTemplate,
   loadPortableTemplateConfig,
   selectTemplateInteractively,
 } from './preparation';
-import { executePortableTemplate } from './execution';
-import { PortableTemplateConfig, PortableTemplateParams } from './types';
+import type { PortableTemplateConfig, PortableTemplateParams } from './types';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;

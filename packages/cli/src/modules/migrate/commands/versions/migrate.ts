@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
+
+import { join as joinPath, resolve as resolvePath } from 'node:path';
+import { type BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import chalk from 'chalk';
-import { resolve as resolvePath, join as joinPath } from 'path';
-import { OptionValues } from 'commander';
+import type { OptionValues } from 'commander';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
-import { runYarnInstall } from '../../lib/utils';
 import replace from 'replace-in-file';
+import { runYarnInstall } from '../../lib/utils';
 
 declare module 'replace-in-file' {
   export default function (config: {
@@ -84,7 +85,7 @@ export async function migrateMovedPackages(options?: {
               paths: [pkg.dir],
             }),
           );
-        } catch (ex) {
+        } catch (_ex) {
           console.warn(
             chalk.yellow(
               `Could not find package.json for ${depName}@${depVersion} in ${pkgName} (${depType})`,

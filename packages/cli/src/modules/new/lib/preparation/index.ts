@@ -15,6 +15,6 @@
  */
 
 export { collectPortableTemplateInput } from './collectPortableTemplateInput';
+export { loadPortableTemplate } from './loadPortableTemplate';
 export { loadPortableTemplateConfig } from './loadPortableTemplateConfig';
 export { selectTemplateInteractively } from './selectTemplateInteractively';
-export { loadPortableTemplate } from './loadPortableTemplate';

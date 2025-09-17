@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { extname } from 'path';
-import { BackstagePackageJson } from '@backstage/cli-node';
+import { extname } from 'node:path';
+import type { BackstagePackageJson } from '@backstage/cli-node';
 
 export interface EntryPoint {
   mount: string;
@@ -52,12 +52,12 @@ export function readEntryPoints(pkg: BackstagePackageJson): Array<EntryPoint> {
   if (typeof exp === 'string') {
     return [defaultIndex];
   } else if (exp && typeof exp === 'object' && !Array.isArray(exp)) {
-    const entryPoints = new Array<{
+    const entryPoints: {
       mount: string;
       path: string;
       name: string;
       ext: string;
-    }>();
+    }[] = [];
 
     for (const mount of Object.keys(exp)) {
       const path = exp[mount];

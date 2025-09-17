@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import os from 'os';
+import os from 'node:os';
+import { resolve as resolvePath } from 'node:path';
+import { PackageGraph } from '@backstage/cli-node';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
-import tar, { CreateOptions } from 'tar';
-import { createDistWorkspace } from './packager';
+import tar, { type CreateOptions } from 'tar';
 import { getEnvironmentParallelism } from '../../../lib/parallel';
 import { buildPackage, Output } from './builder';
-import { PackageGraph } from '@backstage/cli-node';
+import { createDistWorkspace } from './packager';
 
 const BUNDLE_FILE = 'bundle.tar.gz';
 const SKELETON_FILE = 'skeleton.tar.gz';

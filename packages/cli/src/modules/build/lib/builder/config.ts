@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import fs from 'fs-extra';
 import {
   extname,
   relative as relativePath,
   resolve as resolvePath,
-} from 'path';
+} from 'node:path';
+import type { BackstagePackageJson } from '@backstage/cli-node';
 import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
-import postcss from 'rollup-plugin-postcss';
-import esbuild from 'rollup-plugin-esbuild';
-import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
+import resolve from '@rollup/plugin-node-resolve';
 import yaml from '@rollup/plugin-yaml';
-import {
-  RollupOptions,
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import type {
   OutputOptions,
-  WarningHandlerWithDefault,
   OutputPlugin,
+  RollupOptions,
+  WarningHandlerWithDefault,
 } from 'rollup';
-
-import { forwardFileImports } from './plugins';
-import { BuildOptions, Output } from './types';
-import { paths } from '../../../../lib/paths';
-import { BackstagePackageJson } from '@backstage/cli-node';
+import dts from 'rollup-plugin-dts';
+import esbuild from 'rollup-plugin-esbuild';
+import postcss from 'rollup-plugin-postcss';
 import { readEntryPoints } from '../../../../lib/entryPoints';
+import { paths } from '../../../../lib/paths';
+import { forwardFileImports } from './plugins';
+import { type BuildOptions, Output } from './types';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -113,7 +112,7 @@ function multiOutputFormat(): OutputPlugin {
 export async function makeRollupConfigs(
   options: BuildOptions,
 ): Promise<RollupOptions[]> {
-  const configs = new Array<RollupOptions>();
+  const configs: RollupOptions[] = [];
   const targetDir = options.targetDir ?? paths.targetDir;
 
   let targetPkg = options.packageJson;
@@ -154,7 +153,7 @@ export async function makeRollupConfigs(
     );
 
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
-    const output = new Array<OutputOptions>();
+    const output: OutputOptions[] = [];
     const mainFields = ['module', 'main'];
 
     // Avoid using node_modules as a directory name, since it's trimmed from published packages.

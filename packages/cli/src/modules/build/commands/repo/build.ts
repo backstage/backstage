@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import { Command, OptionValues } from 'commander';
-import { relative as relativePath } from 'path';
-import { buildPackages, getOutputsForRole } from '../../lib/builder';
-import { paths } from '../../../../lib/paths';
+import { relative as relativePath } from 'node:path';
 import {
-  BackstagePackage,
+  type BackstagePackage,
   PackageGraph,
   PackageRoles,
 } from '@backstage/cli-node';
-import { runParallelWorkers } from '../../../../lib/parallel';
-import { buildFrontend } from '../../lib/buildFrontend';
-import { buildBackend } from '../../lib/buildBackend';
+import chalk from 'chalk';
+import type { Command, OptionValues } from 'commander';
 import { createScriptOptionsParser } from '../../../../lib/optionsParser';
+import { runParallelWorkers } from '../../../../lib/parallel';
+import { paths } from '../../../../lib/paths';
+import { buildBackend } from '../../lib/buildBackend';
+import { buildPackages, getOutputsForRole } from '../../lib/builder';
+import { buildFrontend } from '../../lib/buildFrontend';
 
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
@@ -49,8 +49,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     packages = Array.from(withDevDependents).map(name => graph.get(name)!);
   }
 
-  const apps = new Array<BackstagePackage>();
-  const backends = new Array<BackstagePackage>();
+  const apps: BackstagePackage[] = [];
+  const backends: BackstagePackage[] = [];
 
   const parseBuildScript = createScriptOptionsParser(cmd, ['package', 'build']);
 

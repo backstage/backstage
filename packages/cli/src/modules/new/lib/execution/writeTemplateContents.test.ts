@@ -15,9 +15,9 @@
  */
 
 import { relative as relativePath } from 'node:path';
-import { writeTemplateContents } from './writeTemplateContents';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { paths } from '../../../../lib/paths';
+import { writeTemplateContents } from './writeTemplateContents';
 
 const baseConfig = {
   version: '0.1.0',

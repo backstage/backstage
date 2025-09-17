@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Command, OptionValues } from 'commander';
+import type { Command, OptionValues } from 'commander';
 import { paths } from '../../../../lib/paths';
 import { runCheck } from '../../../../lib/run';
 

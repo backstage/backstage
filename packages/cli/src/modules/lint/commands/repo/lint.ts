@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import fs from 'fs-extra';
-import { Command, OptionValues } from 'commander';
-import { createHash } from 'crypto';
-import { relative as relativePath } from 'path';
+import { createHash } from 'node:crypto';
+import { relative as relativePath } from 'node:path';
 import {
-  PackageGraph,
-  BackstagePackageJson,
+  type BackstagePackageJson,
   Lockfile,
+  PackageGraph,
 } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
-import { runWorkerQueueThreads } from '../../../../lib/parallel';
-import { createScriptOptionsParser } from '../../../../lib/optionsParser';
+import chalk from 'chalk';
+import type { Command, OptionValues } from 'commander';
+import fs from 'fs-extra';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';
+import { createScriptOptionsParser } from '../../../../lib/optionsParser';
+import { runWorkerQueueThreads } from '../../../../lib/parallel';
+import { paths } from '../../../../lib/paths';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -124,11 +124,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       maxWarnings,
     }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
-      const crypto = require('crypto') as typeof import('crypto');
+      const crypto = require('node:crypto') as typeof import('crypto');
       const globby = require('globby') as typeof import('globby');
       const { readFile } =
-        require('fs/promises') as typeof import('fs/promises');
-      const workerPath = require('path') as typeof import('path');
+        require('node:fs/promises') as typeof import('fs/promises');
+      const workerPath = require('node:path') as typeof import('path');
 
       return async ({
         fullDir,
@@ -151,7 +151,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           extensions: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
         });
 
-        let sha: string | undefined = undefined;
+        let sha: string | undefined;
         if (shouldCache) {
           const result = await globby(relativeDir, {
             gitignore: true,

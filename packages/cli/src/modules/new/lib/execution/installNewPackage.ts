@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
+import upperFirst from 'lodash/upperFirst';
 import { paths } from '../../../../lib/paths';
 import { Task } from '../tasks';
-import { PortableTemplateInput } from '../types';
+import type { PortableTemplateInput } from '../types';
 
 export async function installNewPackage(input: PortableTemplateInput) {
   switch (input.roleParams.role) {

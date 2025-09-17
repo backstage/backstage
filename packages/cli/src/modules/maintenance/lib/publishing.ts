@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstagePackage } from '@backstage/cli-node';
+import type { BackstagePackage } from '@backstage/cli-node';
 
 /**
  * A basic check that throws if a packages doesn't contain required backstage metadata for publishing

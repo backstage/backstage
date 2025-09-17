@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { exec as execCb } from 'node:child_process';
+import { assertError } from '@backstage/errors';
 import chalk from 'chalk';
 import ora from 'ora';
 import { promisify } from 'util';
-import { exec as execCb } from 'child_process';
-import { assertError } from '@backstage/errors';
 
 const exec = promisify(execCb);
 

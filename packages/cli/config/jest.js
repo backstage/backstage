@@ -15,8 +15,8 @@
  */
 
 const fs = require('fs-extra');
-const path = require('path');
-const crypto = require('crypto');
+const path = require('node:path');
+const crypto = require('node:crypto');
 const glob = require('util').promisify(require('glob'));
 const { version } = require('../package.json');
 const paths = require('@backstage/cli-common').findPaths(process.cwd());
@@ -329,8 +329,7 @@ async function getRootConfig() {
     rejectFrontendNetworkRequests,
   };
 
-  const workspacePatterns =
-    rootPkgJson.workspaces && rootPkgJson.workspaces.packages;
+  const workspacePatterns = rootPkgJson.workspaces?.packages;
 
   // Check if we're running within a specific monorepo package. In that case just get the single project config.
   if (!workspacePatterns || paths.targetRoot !== paths.targetDir) {
@@ -373,7 +372,7 @@ async function getRootConfig() {
       // We check for the presence of "backstage-cli test" in the package test
       // script to determine whether a given package should be tested
       const packageData = await fs.readJson(packagePath);
-      const testScript = packageData.scripts && packageData.scripts.test;
+      const testScript = packageData.scripts?.test;
       const isSupportedTestScript =
         testScript?.includes('backstage-cli test') ||
         testScript?.includes('backstage-cli package test');

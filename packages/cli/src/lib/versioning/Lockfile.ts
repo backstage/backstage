@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
 import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
+import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
+import fs from 'fs-extra';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
 

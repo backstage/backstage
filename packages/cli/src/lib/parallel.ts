@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import { ErrorLike } from '@backstage/errors';
-import { Worker } from 'worker_threads';
+import os from 'node:os';
+import { Worker } from 'node:worker_threads';
+import type { ErrorLike } from '@backstage/errors';
 
 const defaultParallelism = Math.ceil(os.cpus().length / 2);
 
@@ -161,7 +161,7 @@ export async function runWorkerQueueThreads<TItem, TResult, TData>(
   } = options;
 
   const iterator = items[Symbol.iterator]();
-  const results = new Array<TResult>();
+  const results: TResult[] = [];
   let itemIndex = 0;
 
   await Promise.all(
@@ -219,7 +219,7 @@ function workerQueueThread(
     data: unknown,
   ) => Promise<(item: unknown) => Promise<unknown>>,
 ) {
-  const { parentPort, workerData } = require('worker_threads');
+  const { parentPort, workerData } = require('node:worker_threads');
 
   Promise.resolve()
     .then(() => workerFuncFactory(workerData))
@@ -321,7 +321,7 @@ function workerThread(
     sendMessage: (message: unknown) => void,
   ) => Promise<unknown>,
 ) {
-  const { parentPort, workerData } = require('worker_threads');
+  const { parentPort, workerData } = require('node:worker_threads');
 
   const sendMessage = (message: unknown) => {
     parentPort.postMessage({ type: 'message', message });

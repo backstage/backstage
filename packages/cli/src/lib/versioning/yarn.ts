@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { execFile as execFileCb } from 'node:child_process';
 import { assertError, ForwardedError } from '@backstage/errors';
-import { execFile as execFileCb } from 'child_process';
 import { promisify } from 'util';
 
 const execFile = promisify(execFileCb);

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { Command } from 'commander';
-import { createCliPlugin } from '../../wiring/factory';
 import { lazy } from '../../lib/lazy';
+import { createCliPlugin } from '../../wiring/factory';
 
 export default createCliPlugin({
   pluginId: 'maintenance',

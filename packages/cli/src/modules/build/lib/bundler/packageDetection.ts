@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { BackstagePackageJson } from '@backstage/cli-node';
-import { Config, ConfigReader } from '@backstage/config';
+import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
+import type { BackstagePackageJson } from '@backstage/cli-node';
+import { type Config, ConfigReader } from '@backstage/config';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import PQueue from 'p-queue';
-import { dirname, join as joinPath, resolve as resolvePath } from 'path';
 import { paths as cliPaths } from '../../../../lib/paths';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
@@ -77,10 +77,9 @@ async function detectPackages(
     }
 
     try {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [targetPath] },
-      ));
+      const depPackageJson: BackstagePackageJson = require(
+        require.resolve(`${depName}/package.json`, { paths: [targetPath] }),
+      );
       if (
         ['frontend-plugin', 'frontend-plugin-module'].includes(
           depPackageJson.backstage?.role ?? '',

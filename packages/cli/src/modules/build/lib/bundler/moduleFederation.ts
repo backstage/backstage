@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import type { BackstagePackageJson } from '@backstage/cli-node';
 import chalk from 'chalk';
-import { ModuleFederationOptions } from './types';
-import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../../../../lib/entryPoints';
 import {
   createTypeDistProject,
   getEntryPointDefaultFeatureType,
 } from '../../../../lib/typeDistProject';
+import type { ModuleFederationOptions } from './types';
 
 export async function getModuleFederationOptions(
   packageJson: BackstagePackageJson,

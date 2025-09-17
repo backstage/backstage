@@ -16,16 +16,16 @@
 
 export { isMonoRepo } from './isMonoRepo';
 export {
-  packageFeatureType,
-  PackageGraph,
-  type PackageGraphNode,
-  type BackstagePackage,
-  type BackstagePackageJson,
-  type BackstagePackageFeatureType,
-} from './PackageGraph';
-export {
   Lockfile,
   type LockfileDiff,
   type LockfileDiffEntry,
   type LockfileQueryEntry,
 } from './Lockfile';
+export {
+  type BackstagePackage,
+  type BackstagePackageFeatureType,
+  type BackstagePackageJson,
+  PackageGraph,
+  type PackageGraphNode,
+  packageFeatureType,
+} from './PackageGraph';

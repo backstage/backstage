@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
-import { getPackages } from '@manypkg/get-packages';
+import { resolve as resolvePath } from 'node:path';
 import { PackageRoles } from '@backstage/cli-node';
+import { getPackages } from '@manypkg/get-packages';
+import fs from 'fs-extra';
 import { paths } from '../../../lib/paths';
 
 export default async () => {

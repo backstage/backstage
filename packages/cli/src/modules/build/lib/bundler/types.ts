@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { AppConfig, Config } from '@backstage/config';
-import { BundlingPathsOptions } from './paths';
-import { ConfigSchema } from '@backstage/config-loader';
+import type { AppConfig, Config } from '@backstage/config';
+import type { ConfigSchema } from '@backstage/config-loader';
+import type { BundlingPathsOptions } from './paths';
 
 export type ModuleFederationOptions = {
   // Unique name for this module federation bundle

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { execFile as execFileCb } from 'child_process';
-import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
-import { promisify } from 'util';
+import { execFile as execFileCb } from 'node:child_process';
+import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
+import fs from 'fs-extra';
+import { promisify } from 'util';
 import { paths } from '../../../../lib/paths';
 
 const execFile = promisify(execFileCb);

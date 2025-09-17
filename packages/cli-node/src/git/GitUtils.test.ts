@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { runGit, GitUtils } from './GitUtils';
+import { GitUtils, runGit } from './GitUtils';
 
 describe('runGit', () => {
   it('runs a git command', async () => {

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
+import fs from 'fs-extra';
 import { runPlain } from '../../../lib/run';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
@@ -29,7 +29,7 @@ export async function command() {
     require.resolve('@backstage/cli/config/eslint.backend.js'),
   ];
 
-  const configPaths = new Array<string>();
+  const configPaths: string[] = [];
   await Promise.all(
     packages.map(async ({ dir, packageJson }) => {
       const configPath = resolvePath(dir, '.eslintrc.js');

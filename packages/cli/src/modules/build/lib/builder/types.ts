@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BackstagePackage, BackstagePackageJson } from '@backstage/cli-node';
+import type {
+  BackstagePackage,
+  BackstagePackageJson,
+} from '@backstage/cli-node';
 
 export enum Output {
   esm,

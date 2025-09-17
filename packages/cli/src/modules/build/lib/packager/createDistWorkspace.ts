@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import fs from 'fs-extra';
+import { tmpdir } from 'node:os';
 import {
   join as joinPath,
-  resolve as resolvePath,
   relative as relativePath,
-} from 'path';
-import { tmpdir } from 'os';
-import tar, { CreateOptions, FileOptions } from 'tar';
+  resolve as resolvePath,
+} from 'node:path';
+import {
+  PackageGraph,
+  type PackageGraphNode,
+  PackageRoles,
+} from '@backstage/cli-node';
+import chalk from 'chalk';
+import fs from 'fs-extra';
 import partition from 'lodash/partition';
-import { paths } from '../../../../lib/paths';
-import { run } from '../../../../lib/run';
+import tar, { type CreateOptions, type FileOptions } from 'tar';
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
 } from '../../../../../package.json';
+import { runParallelWorkers } from '../../../../lib/parallel';
+import { paths } from '../../../../lib/paths';
+import { run } from '../../../../lib/run';
+import { createTypeDistProject } from '../../../../lib/typeDistProject';
 import {
-  BuildOptions,
+  type BuildOptions,
   buildPackages,
   getOutputsForRole,
   Output,
 } from '../builder';
 import { productionPack } from './productionPack';
-import {
-  PackageRoles,
-  PackageGraph,
-  PackageGraphNode,
-} from '@backstage/cli-node';
-import { runParallelWorkers } from '../../../../lib/parallel';
-import { createTypeDistProject } from '../../../../lib/typeDistProject';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -160,12 +160,12 @@ export async function createDistWorkspace(
       targets.map(_ => _.name).filter(name => !exclude.includes(name)),
     );
 
-    const standardBuilds = new Array<BuildOptions>();
-    const customBuild = new Array<{
+    const standardBuilds: BuildOptions[] = [];
+    const customBuild: {
       dir: string;
       name: string;
       args?: string[];
-    }>();
+    }[] = [];
 
     for (const pkg of packages) {
       if (!toBuild.has(pkg.packageJson.name)) {
@@ -200,7 +200,7 @@ export async function createDistWorkspace(
         );
         const args = buildScript.includes('--config')
           ? []
-          : configPaths.map(p => ['--config', p]).flat();
+          : configPaths.flatMap(p => ['--config', p]);
         customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name, args });
         continue;
       }

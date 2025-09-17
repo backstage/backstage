@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Yarn } from './yarn';
-import { Lockfile } from './Lockfile';
-import { SpawnOptionsPartialEnv, paths } from '../util';
 import fs from 'fs-extra';
+import { paths, type SpawnOptionsPartialEnv } from '../util';
+import type { Lockfile } from './Lockfile';
+import { Yarn } from './yarn';
 
 /**
  * Package info retrieved from the package manager, usually from NPM.
@@ -131,7 +131,7 @@ async function fileExists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);
     return true;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }

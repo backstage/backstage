@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { CommandGraph } from './CommandGraph';
-import { CliFeature, OpaqueCliPlugin } from './types';
-import { CommandRegistry } from './CommandRegistry';
-import { Command } from 'commander';
-import { version } from '../lib/version';
-import chalk from 'chalk';
-import { exitWithError } from '../lib/errors';
+import { isPromise } from 'node:util/types';
 import { ForwardedError } from '@backstage/errors';
-import { isPromise } from 'util/types';
+import chalk from 'chalk';
+import { Command } from 'commander';
+import { exitWithError } from '../lib/errors';
+import { version } from '../lib/version';
+import { CommandGraph } from './CommandGraph';
+import { CommandRegistry } from './CommandRegistry';
+import { type CliFeature, OpaqueCliPlugin } from './types';
 
 type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
 

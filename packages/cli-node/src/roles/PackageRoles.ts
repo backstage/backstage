@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import { PackageRole, PackageRoleInfo } from './types';
+import type { PackageRole, PackageRoleInfo } from './types';
 
 const packageRoleInfos: PackageRoleInfo[] = [
   {
@@ -135,7 +135,7 @@ export class PackageRoles {
         );
       }
 
-      return this.getRoleInfo(role).role;
+      return PackageRoles.getRoleInfo(role).role;
     }
 
     return undefined;

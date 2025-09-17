@@ -15,9 +15,9 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { withLogCollector } from '@backstage/test-utils';
 import { detectPackageManager } from './PackageManager';
 import { Yarn } from './yarn';
-import { withLogCollector } from '@backstage/test-utils';
 
 const mockDir = createMockDirectory();
 

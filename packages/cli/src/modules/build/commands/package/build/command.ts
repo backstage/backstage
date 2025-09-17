@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { buildPackage, Output } from '../../../lib/builder';
-import { findRoleFromCommand } from '../../../../../lib/role';
 import { PackageGraph, PackageRoles } from '@backstage/cli-node';
-import { paths } from '../../../../../lib/paths';
-import { buildFrontend } from '../../../lib/buildFrontend';
-import { buildBackend } from '../../../lib/buildBackend';
-import { isValidUrl } from '../../../lib/urls';
 import chalk from 'chalk';
+import type { OptionValues } from 'commander';
+import { paths } from '../../../../../lib/paths';
+import { findRoleFromCommand } from '../../../../../lib/role';
+import { buildBackend } from '../../../lib/buildBackend';
+import { buildPackage, Output } from '../../../lib/builder';
+import { buildFrontend } from '../../../lib/buildFrontend';
+import { isValidUrl } from '../../../lib/urls';
 
 export async function command(opts: OptionValues): Promise<void> {
   const webpack = process.env.LEGACY_WEBPACK_BUILD

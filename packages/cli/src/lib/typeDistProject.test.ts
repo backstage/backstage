@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PackageRole, BackstagePackageFeatureType } from '@backstage/cli-node';
+import type {
+  BackstagePackageFeatureType,
+  PackageRole,
+} from '@backstage/cli-node';
 import createFeatureEnvironment from './__testUtils__/createFeatureEnvironment';
 import { getEntryPointDefaultFeatureType } from './typeDistProject';
 

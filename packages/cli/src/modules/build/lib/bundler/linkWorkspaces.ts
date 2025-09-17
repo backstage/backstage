@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
-import { rspack } from '@rspack/core';
+import type { rspack } from '@rspack/core';
 import { paths } from '../../../../lib/paths';
 
 /**
@@ -29,9 +29,8 @@ export async function createWorkspaceLinkingPlugins(
   bundler: typeof rspack,
   workspace: string,
 ) {
-  const { packages: linkedPackages, root: linkedRoot } = await getPackages(
-    workspace,
-  );
+  const { packages: linkedPackages, root: linkedRoot } =
+    await getPackages(workspace);
 
   // Matches all packages in the linked workspaces, as well as sub-path exports from them
   const replacementRegex = new RegExp(

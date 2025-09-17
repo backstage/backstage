@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import yargs from 'yargs';
-import { createCliPlugin } from '../../wiring/factory';
 import { lazy } from '../../lib/lazy';
+import { createCliPlugin } from '../../wiring/factory';
 
 export default createCliPlugin({
   pluginId: 'info',

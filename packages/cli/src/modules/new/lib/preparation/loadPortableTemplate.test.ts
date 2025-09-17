@@ -15,8 +15,8 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { loadPortableTemplate } from './loadPortableTemplate';
 import { TEMPLATE_FILE_NAME } from '../types';
+import { loadPortableTemplate } from './loadPortableTemplate';
 
 describe('loadTemplate', () => {
   const mockDir = createMockDirectory();

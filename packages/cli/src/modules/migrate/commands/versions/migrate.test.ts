@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import {
-  MockDirectory,
   createMockDirectory,
+  type MockDirectory,
 } from '@backstage/backend-test-utils';
-import * as run from '../../../../lib/run';
-import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
+import * as run from '../../../../lib/run';
+import migrate from './migrate';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
@@ -51,7 +51,7 @@ jest.mock('../../../../lib/run', () => {
   };
 });
 
-function expectLogsToMatch(receivedLogs: String[], expected: String[]): void {
+function expectLogsToMatch(receivedLogs: string[], expected: string[]): void {
   expect(receivedLogs.filter(Boolean).sort()).toEqual(expected.sort());
 }
 

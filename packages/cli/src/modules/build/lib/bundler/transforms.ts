@@ -15,10 +15,10 @@
  */
 
 import {
-  RuleSetRule,
-  RspackPluginInstance,
   CssExtractRspackPlugin,
-  WebpackPluginInstance,
+  type RspackPluginInstance,
+  type RuleSetRule,
+  type WebpackPluginInstance,
 } from '@rspack/core';
 
 type Transforms = {
@@ -180,7 +180,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
   ];
 
-  const plugins = new Array<RspackPluginInstance | WebpackPluginInstance>();
+  const plugins: (RspackPluginInstance | WebpackPluginInstance)[] = [];
 
   if (!isDev) {
     plugins.push(

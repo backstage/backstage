@@ -15,18 +15,18 @@
  */
 
 import handlebars from 'handlebars';
-import { PortableTemplateParams } from '../types';
 import camelCase from 'lodash/camelCase';
 import kebabCase from 'lodash/kebabCase';
 import lowerCase from 'lodash/lowerCase';
+import lowerFirst from 'lodash/lowerFirst';
 import snakeCase from 'lodash/snakeCase';
 import startCase from 'lodash/startCase';
 import upperCase from 'lodash/upperCase';
 import upperFirst from 'lodash/upperFirst';
-import lowerFirst from 'lodash/lowerFirst';
-import { Lockfile } from '../../../../lib/versioning';
 import { paths } from '../../../../lib/paths';
 import { createPackageVersionProvider } from '../../../../lib/version';
+import { Lockfile } from '../../../../lib/versioning';
+import type { PortableTemplateParams } from '../types';
 
 const builtInHelpers = {
   camelCase,

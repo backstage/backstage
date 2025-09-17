@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCliPlugin } from '../../wiring/factory';
-import yargs from 'yargs';
+
 import { Command } from 'commander';
+import yargs from 'yargs';
 import { lazy } from '../../lib/lazy';
+import { createCliPlugin } from '../../wiring/factory';
 
 export const configOption = [
   '--config <path>',
   'Config files to load instead of app-config.yaml',
   (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
-  Array<string>(),
+  [] as string[],
 ] as const;
 
 export default createCliPlugin({

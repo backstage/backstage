@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { join: joinPath } = require('path');
+const { join: joinPath } = require('node:path');
 
 /**
  * Creates a ESLint configuration that extends the base Backstage configuration.
@@ -31,7 +31,7 @@ const { join: joinPath } = require('path');
  * - `restrictedSrcSyntax`: Additional patterns to add to no-restricted-syntax in src files
  * - `restrictedTestSyntax`: Additional patterns to add to no-restricted-syntax in test files
  */
-function createConfig(dir, extraConfig = {}) {
+function createConfig(_dir, extraConfig = {}) {
   const {
     extends: extraExtends,
     plugins,
@@ -235,7 +235,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
             name: '@mui/material',
             message: "Please import '@mui/material/...' instead.",
           },
-          ...require('module').builtinModules,
+          ...require('node:module').builtinModules,
           ...(extraConfig.restrictedImports ?? []),
         ],
         // https://mui.com/material-ui/guides/minimizing-bundle-size/

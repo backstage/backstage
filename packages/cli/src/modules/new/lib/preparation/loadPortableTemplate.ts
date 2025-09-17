@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
+import {
+  dirname,
+  relative as relativePath,
+  resolve as resolvePath,
+} from 'node:path';
+import { ForwardedError } from '@backstage/errors';
 import fs from 'fs-extra';
 import recursiveReaddir from 'recursive-readdir';
-import { resolve as resolvePath, relative as relativePath } from 'path';
-import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
+import { z } from 'zod';
+import { fromZodError } from 'zod-validation-error';
 import { paths } from '../../../../lib/paths';
 import {
-  PortableTemplateFile,
-  PortableTemplatePointer,
+  type PortableTemplate,
+  type PortableTemplateFile,
+  type PortableTemplatePointer,
   TEMPLATE_ROLES,
 } from '../types';
-import { PortableTemplate } from '../types';
-import { ForwardedError } from '@backstage/errors';
-import { fromZodError } from 'zod-validation-error';
 
 const templateDefinitionSchema = z
   .object({
@@ -73,7 +76,7 @@ export async function loadPortableTemplate(
     );
   });
 
-  const loadedFiles = new Array<PortableTemplateFile>();
+  const loadedFiles: PortableTemplateFile[] = [];
 
   for (const filePath of filePaths) {
     const path = relativePath(templatePath, filePath);

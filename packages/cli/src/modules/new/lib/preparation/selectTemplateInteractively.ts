@@ -15,7 +15,7 @@
  */
 
 import inquirer from 'inquirer';
-import { PortableTemplateConfig, PortableTemplatePointer } from '../types';
+import type { PortableTemplateConfig, PortableTemplatePointer } from '../types';
 
 export async function selectTemplateInteractively(
   config: PortableTemplateConfig,

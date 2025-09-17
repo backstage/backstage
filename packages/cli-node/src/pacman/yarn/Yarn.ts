@@ -19,11 +19,11 @@ import {
   ForwardedError,
   NotImplementedError,
 } from '@backstage/errors';
-import { PackageInfo, PackageManager } from '../PackageManager';
-import { Lockfile } from '../Lockfile';
-import { YarnVersion } from './types';
 import fs from 'fs-extra';
-import { paths, run, execFile, SpawnOptionsPartialEnv } from '../../util';
+import { execFile, paths, run, type SpawnOptionsPartialEnv } from '../../util';
+import type { Lockfile } from '../Lockfile';
+import type { PackageInfo, PackageManager } from '../PackageManager';
+import type { YarnVersion } from './types';
 
 export class Yarn implements PackageManager {
   constructor(private readonly yarnVersion: YarnVersion) {}
@@ -50,7 +50,7 @@ export class Yarn implements PackageManager {
     try {
       const pkg = await fs.readJson(rootPackageJsonPath);
       return pkg?.workspaces?.packages || [];
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   }

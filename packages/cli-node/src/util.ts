@@ -15,12 +15,12 @@
  */
 
 import {
-  ChildProcess,
+  type ChildProcess,
   execFile as execFileCb,
+  type SpawnOptions,
   spawn,
-  SpawnOptions,
-} from 'child_process';
-import { promisify } from 'util';
+} from 'node:child_process';
+import { promisify } from 'node:util';
 import { findPaths } from '@backstage/cli-common';
 import { ExitCodeError } from './errors';
 

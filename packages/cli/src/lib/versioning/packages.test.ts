@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as runObj from '../run';
-import * as yarn from './yarn';
-import { fetchPackageInfo, mapDependencies } from './packages';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
+import * as runObj from '../run';
+import { fetchPackageInfo, mapDependencies } from './packages';
+import * as yarn from './yarn';
 
 jest.mock('../run', () => {
   return {

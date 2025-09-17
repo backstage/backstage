@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
+import type { OptionValues } from 'commander';
 import { loadCliConfig } from '../lib/config';
 
 export default async (opts: OptionValues) => {

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PackageRole, BackstagePackageFeatureType } from '@backstage/cli-node';
+import type {
+  BackstagePackageFeatureType,
+  PackageRole,
+} from '@backstage/cli-node';
 import { Project } from 'ts-morph';
 
 const mockEntryPoint = 'dist/index.d.ts';

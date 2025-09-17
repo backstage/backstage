@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import ora from 'ora';
 import chalk from 'chalk';
+import ora from 'ora';
 import { run } from '../../../lib/run';
 
 export async function runYarnInstall() {
@@ -25,7 +25,7 @@ export async function runYarnInstall() {
     color: 'green',
   }).start();
 
-  const installOutput = new Array<Buffer>();
+  const installOutput: Buffer[] = [];
   try {
     await run('yarn', ['install'], {
       env: {

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { rollup, RollupOptions } from 'rollup';
+import { relative as relativePath, resolve as resolvePath } from 'node:path';
+import { PackageRoles } from '@backstage/cli-node';
 import chalk from 'chalk';
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import fs from 'fs-extra';
+import { type RollupOptions, rollup } from 'rollup';
+import { runParallelWorkers } from '../../../../lib/parallel';
 import { paths } from '../../../../lib/paths';
 import { makeRollupConfigs } from './config';
-import { BuildOptions, Output } from './types';
-import { PackageRoles } from '@backstage/cli-node';
-import { runParallelWorkers } from '../../../../lib/parallel';
+import { type BuildOptions, Output } from './types';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
