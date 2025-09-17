@@ -112,6 +112,8 @@ declare module 'mini-css-extract-plugin' {
     apply(compiler: webpack.Compiler): void;
   }
 
+  // NOTE: Is this correct?
+  // biome-ignore lint/suspicious/noRedeclare: We need to extend the namespace
   namespace MiniCssExtractPlugin {
     interface PluginOptions {
       /**
@@ -199,6 +201,8 @@ declare module 'webpack-node-externals' {
     options?: webpackNodeExternals.Options,
   ): any;
 
+  // NOTE: Is this correct?
+  // biome-ignore lint/suspicious/noRedeclare: We need to extend the namespace
   namespace webpackNodeExternals {
     type AllowlistOption = string | RegExp | AllowlistFunctionType;
     type ImportTypeCallback = (moduleName: string) => string;

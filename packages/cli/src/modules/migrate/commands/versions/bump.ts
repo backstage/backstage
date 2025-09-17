@@ -16,32 +16,32 @@
 
 maybeBootstrapProxy();
 
-import fs from 'fs-extra';
-import chalk from 'chalk';
-import { minimatch } from 'minimatch';
-import semver from 'semver';
-import { OptionValues } from 'commander';
-import yaml from 'yaml';
-import z from 'zod';
-import { isError, NotFoundError } from '@backstage/errors';
-import { resolve as resolvePath } from 'path';
-import { paths } from '../../../../lib/paths';
-import {
-  mapDependencies,
-  fetchPackageInfo,
-  Lockfile,
-  YarnInfoInspectData,
-} from '../../../../lib/versioning';
+import { resolve as resolvePath } from 'node:path';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
-import { runParallelWorkers } from '../../../../lib/parallel';
+import { isError, NotFoundError } from '@backstage/errors';
 import {
   getManifestByReleaseLine,
   getManifestByVersion,
-  ReleaseManifest,
+  type ReleaseManifest,
 } from '@backstage/release-manifests';
-import { migrateMovedPackages } from './migrate';
-import { runYarnInstall } from '../../lib/utils';
+import chalk from 'chalk';
+import type { OptionValues } from 'commander';
+import fs from 'fs-extra';
+import { minimatch } from 'minimatch';
+import semver from 'semver';
+import yaml from 'yaml';
+import z from 'zod';
+import { runParallelWorkers } from '../../../../lib/parallel';
+import { paths } from '../../../../lib/paths';
 import { run } from '../../../../lib/run';
+import {
+  fetchPackageInfo,
+  Lockfile,
+  mapDependencies,
+  type YarnInfoInspectData,
+} from '../../../../lib/versioning';
+import { runYarnInstall } from '../../lib/utils';
+import { migrateMovedPackages } from './migrate';
 
 function maybeBootstrapProxy() {
   // see https://www.npmjs.com/package/global-agent
@@ -304,7 +304,8 @@ export default async (opts: OptionValues) => {
           )}`,
         );
 
-        let path;
+        // NOTE: Is this correct?
+        let path: string | undefined;
         if (name.startsWith('@backstage/plugin-')) {
           path = `plugins/${name.replace('@backstage/plugin-', '')}`;
         } else if (name.startsWith('@backstage/')) {
@@ -330,9 +331,9 @@ export default async (opts: OptionValues) => {
           `${chalk.bold(
             'NOTE',
           )}: this bump used backstage:^ versions in package.json files, since the Backstage ` +
-            `yarn plugin was detected in the repository. To migrate back to explicit npm versions, ` +
-            `remove the plugin by running "yarn plugin remove @yarnpkg/plugin-backstage", then ` +
-            `repeat this command.`,
+          `yarn plugin was detected in the repository. To migrate back to explicit npm versions, ` +
+          `remove the plugin by running "yarn plugin remove @yarnpkg/plugin-backstage", then ` +
+          `repeat this command.`,
         ),
       );
       console.log();

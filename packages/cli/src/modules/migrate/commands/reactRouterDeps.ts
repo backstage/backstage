@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { PackageGraph, PackageRoles } from '@backstage/cli-node';
+import fs from 'fs-extra';
 
 const REACT_ROUTER_DEPS = ['react-router', 'react-router-dom'];
 const REACT_ROUTER_RANGE = '6.0.0-beta.0 || ^6.3.0';
@@ -39,8 +39,8 @@ export async function command() {
           for (const key of Object.keys(depsCollection)) {
             if (REACT_ROUTER_DEPS.includes(key)) {
               delete depsCollection[key];
-              const peerDeps = (packageJson.peerDependencies =
-                packageJson.peerDependencies ?? {});
+              // NOTE: Is this correct?
+              const peerDeps = packageJson.peerDependencies ?? {};
               peerDeps[key] = REACT_ROUTER_RANGE;
               changed = true;
             }

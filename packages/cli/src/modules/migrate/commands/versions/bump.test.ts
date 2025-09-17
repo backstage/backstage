@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { Command } from 'commander';
-import * as runObj from '../../../../lib/run';
-import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
-import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
-import { YarnInfoInspectData } from '../../../../lib/versioning/packages';
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
-import { NotFoundError } from '@backstage/errors';
 import {
-  MockDirectory,
   createMockDirectory,
+  type MockDirectory,
 } from '@backstage/backend-test-utils';
+import { NotFoundError } from '@backstage/errors';
+import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
+import type { Command } from 'commander';
+import fs from 'fs-extra';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import * as runObj from '../../../../lib/run';
+import type { YarnInfoInspectData } from '../../../../lib/versioning/packages';
+import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 
 // Avoid mutating the global agents used in other tests
 jest.mock('global-agent', () => ({
@@ -34,7 +34,7 @@ jest.mock('global-agent', () => ({
 }));
 jest.mock('undici', () => ({
   setGlobalDispatcher: jest.fn(),
-  EnvHttpProxyAgent: class {},
+  EnvHttpProxyAgent: class { },
 }));
 
 // Remove log coloring to simplify log matching
@@ -54,7 +54,7 @@ jest.mock('ora', () => ({
     console.log(prefixText);
     return {
       start: () => ({
-        succeed: () => {},
+        succeed: () => { },
       }),
     };
   },
@@ -131,8 +131,8 @@ const lockfileMock = `${HEADER}
 
 // Avoid flakes by comparing sorted log lines. File system access is async, which leads to the log line order being indeterministic
 const expectLogsToMatch = (
-  receivedLogs: String[],
-  expected: String[],
+  receivedLogs: string[],
+  expected: string[],
 ): void => {
   expect(receivedLogs.filter(Boolean).sort()).toEqual(expected.sort());
 };
@@ -980,7 +980,8 @@ describe('createVersionFinder', () => {
       releaseLine: tag,
       packageInfoFetcher: fetcher,
     });
-    let result;
+    // NOTE: Is this correct?
+    let result: string | undefined;
     await withLogCollector(async () => {
       result = await versionFinder('@backstage/core');
     });

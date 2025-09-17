@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
 import { paths } from '../../../../lib/paths';
 
 export type BundlingPathsOptions = {
@@ -40,7 +40,8 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     return resolvePath(targetDir, `${pathString}.js`);
   };
 
-  let targetPublic = undefined;
+  // NOTE: Is this correct?
+  let targetPublic = '';
   let targetHtml = resolvePath(targetDir, 'public/index.html');
 
   // Prefer public folder

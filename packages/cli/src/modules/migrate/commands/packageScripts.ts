@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path';
+import {
+  PackageGraph,
+  type PackageRole,
+  PackageRoles,
+} from '@backstage/cli-node';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
-import { PackageGraph, PackageRoles, PackageRole } from '@backstage/cli-node';
 
 const configArgPattern = /--config[=\s][^\s$]+/;
 
@@ -81,8 +85,9 @@ export async function command() {
       };
 
       let changed = false;
+      // NOTE: Is this correct?
       const currentScripts: Record<string, string | undefined> =
-        (packageJson.scripts = packageJson.scripts || {});
+        packageJson.scripts || {};
 
       for (const [name, value] of Object.entries(expectedScripts)) {
         const currentScript = currentScripts[name];

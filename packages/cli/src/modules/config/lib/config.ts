@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ConfigSources, loadConfigSchema } from '@backstage/config-loader';
-import { AppConfig, ConfigReader } from '@backstage/config';
-import { paths } from '../../../lib/paths';
-import { getPackages } from '@manypkg/get-packages';
+import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { resolve as resolvePath } from 'path';
+import { type AppConfig, ConfigReader } from '@backstage/config';
+import { ConfigSources, loadConfigSchema } from '@backstage/config-loader';
+import { getPackages } from '@manypkg/get-packages';
+import { paths } from '../../../lib/paths';
 
 type Options = {
   args: string[];
@@ -39,7 +39,8 @@ export async function loadCliConfig(options: Options) {
   // Consider all packages in the monorepo when loading in config
   const { packages } = await getPackages(targetDir);
 
-  let localPackageNames;
+  // NOTE: Is this correct?
+  let localPackageNames: string[];
   if (options.fromPackage) {
     if (packages.length) {
       const graph = PackageGraph.fromPackages(packages);
