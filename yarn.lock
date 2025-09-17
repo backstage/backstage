@@ -4332,7 +4332,6 @@ __metadata:
     "@aws-sdk/client-eks": "npm:^3.350.0"
     "@aws-sdk/client-organizations": "npm:^3.350.0"
     "@aws-sdk/client-s3": "npm:^3.350.0"
-    "@aws-sdk/credential-providers": "npm:^3.350.0"
     "@aws-sdk/middleware-endpoint": "npm:^3.347.0"
     "@aws-sdk/types": "npm:^3.347.0"
     "@aws-sdk/util-stream-node": "npm:^3.350.0"
@@ -4350,10 +4349,8 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     aws-sdk-client-mock: "npm:^4.0.0"
     aws-sdk-client-mock-jest: "npm:^4.0.0"
-    luxon: "npm:^3.0.0"
     p-limit: "npm:^3.0.2"
     uuid: "npm:^11.0.0"
-    winston: "npm:^3.2.1"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -4371,7 +4368,6 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
-    luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
@@ -4403,7 +4399,6 @@ __metadata:
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -4413,7 +4408,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
@@ -4425,7 +4419,6 @@ __metadata:
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -4435,7 +4428,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
@@ -4470,7 +4462,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/fs-extra": "npm:^11.0.0"
     fs-extra: "npm:^11.2.0"
-    luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     p-limit: "npm:^3.1.0"
     uuid: "npm:^11.0.0"
@@ -4505,7 +4496,6 @@ __metadata:
     "@backstage/plugin-catalog-backend-module-github": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    luxon: "npm:^3.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4515,12 +4505,10 @@ __metadata:
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
@@ -4531,7 +4519,6 @@ __metadata:
     "@types/lodash": "npm:^4.14.151"
     git-url-parse: "npm:^15.0.0"
     lodash: "npm:^4.17.21"
-    luxon: "npm:^3.0.0"
     minimatch: "npm:^9.0.0"
     msw: "npm:^2.0.0"
     type-fest: "npm:^4.41.0"
@@ -4550,7 +4537,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    luxon: "npm:^3.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4572,7 +4558,6 @@ __metadata:
     "@gitbeaker/rest": "npm:^40.0.3"
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
-    luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     node-fetch: "npm:^2.7.0"
     uuid: "npm:^11.0.0"
@@ -4654,7 +4639,6 @@ __metadata:
     "@microsoft/microsoft-graph-types": "npm:^2.6.0"
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
-    luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     p-limit: "npm:^3.0.2"
     qs: "npm:^6.9.4"
@@ -4694,7 +4678,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
-    luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
@@ -5533,19 +5516,13 @@ __metadata:
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@kubernetes-models/apimachinery": "npm:^2.0.0"
-    "@kubernetes-models/base": "npm:^5.0.0"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
-    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/node": "npm:^20.16.0"
     "@types/react": "npm:^18.0.0"
-    cronstrue: "npm:^2.2.0"
-    js-yaml: "npm:^4.0.0"
     kubernetes-models: "npm:^4.1.0"
-    lodash: "npm:^4.17.21"
-    luxon: "npm:^3.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -5660,22 +5637,11 @@ __metadata:
     "@backstage/plugin-kubernetes-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@kubernetes-models/apimachinery": "npm:^2.0.0"
-    "@kubernetes-models/base": "npm:^5.0.0"
-    "@kubernetes/client-node": "npm:1.1.2"
     "@material-ui/core": "npm:^4.12.2"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
-    "@xterm/addon-attach": "npm:^0.11.0"
-    "@xterm/addon-fit": "npm:^0.10.0"
-    "@xterm/xterm": "npm:^5.5.0"
-    cronstrue: "npm:^2.2.0"
-    js-yaml: "npm:^4.0.0"
-    kubernetes-models: "npm:^4.1.0"
-    lodash: "npm:^4.17.21"
-    luxon: "npm:^3.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -26680,7 +26646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cronstrue@npm:^2.2.0, cronstrue@npm:^2.32.0":
+"cronstrue@npm:^2.32.0":
   version: 2.52.0
   resolution: "cronstrue@npm:2.52.0"
   bin:
