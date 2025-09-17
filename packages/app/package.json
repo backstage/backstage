@@ -37,7 +37,6 @@
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
@@ -84,6 +83,7 @@
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@playwright/test": "^1.32.3",
     "@testing-library/dom": "^10.0.0",
