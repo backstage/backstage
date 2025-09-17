@@ -28,7 +28,8 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "lint": "backstage-cli package lint",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "start": "backstage-cli package start",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@biomejs/biome": "^2.2.4",
     "@types/node": "^20.16.0"
   }
 }

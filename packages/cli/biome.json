@@ -1,0 +1,6 @@
+{
+  "extends": ["./config/biome.json"],
+  "files": {
+    "includes": ["**", "!templates"]
+  }
+}
