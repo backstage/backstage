@@ -35,7 +35,7 @@ import { entityRefToName } from './gitHelpers';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 
 const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {

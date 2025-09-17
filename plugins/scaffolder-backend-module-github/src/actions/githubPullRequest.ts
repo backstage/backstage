@@ -25,7 +25,8 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/core';
+
 import { CustomErrorBase, InputError } from '@backstage/errors';
 import {
   createPullRequest,
@@ -503,12 +504,15 @@ export const createPublishGithubPullRequestAction = (
       await checkpoint({
         key: `add.assignees.${pr.owner}.${pr.repo}.${pr.number}`,
         fn: async () => {
-          const result = await client.rest.issues.addAssignees({
-            owner: pr.owner,
-            repo: pr.repo,
-            issue_number: pr.number,
-            assignees,
-          });
+          const result = await client.request(
+            'POST /repos/{owner}/{repo}/issues/{issue_number}/assignees',
+            {
+              owner: pr.owner,
+              repo: pr.repo,
+              issue_number: pr.number,
+              assignees,
+            },
+          );
 
           const addedAssignees = result.data.assignees?.join(', ') ?? '';
 
@@ -540,15 +544,18 @@ export const createPublishGithubPullRequestAction = (
       await checkpoint({
         key: `request.reviewers.${pr.owner}.${pr.repo}.${pr.number}`,
         fn: async () => {
-          const result = await client.rest.pulls.requestReviewers({
-            owner: pr.owner,
-            repo: pr.repo,
-            pull_number: pr.number,
-            reviewers,
-            team_reviewers: teamReviewers
-              ? [...new Set(teamReviewers)]
-              : undefined,
-          });
+          const result = await client.request(
+            'POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers',
+            {
+              owner: pr.owner,
+              repo: pr.repo,
+              pull_number: pr.number,
+              reviewers,
+              team_reviewers: teamReviewers
+                ? [...new Set(teamReviewers)]
+                : undefined,
+            },
+          );
 
           const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
           const addedTeams = result.data.requested_teams?.join(', ') ?? '';

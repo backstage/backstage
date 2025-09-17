@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { getOctokitOptions } from '../util';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
 import { Entity } from '@backstage/catalog-model';

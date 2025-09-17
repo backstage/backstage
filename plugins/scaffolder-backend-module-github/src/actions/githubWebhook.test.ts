@@ -24,7 +24,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 
 const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {

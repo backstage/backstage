@@ -5262,9 +5262,9 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@octokit/auth-callback": "npm:^5.0.0"
+    "@octokit/rest": "npm:^21.1.1"
     "@octokit/webhooks-methods": "npm:^3.0.0"
     lodash: "npm:^4.17.21"
-    octokit: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -6281,13 +6281,13 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@octokit/core": "npm:^5.2.1"
     "@octokit/rest": "npm:^21.1.1"
     "@octokit/webhooks": "npm:^13.6.1"
     "@types/libsodium-wrappers": "npm:^0.7.10"
     fs-extra: "npm:^11.2.0"
     jsonschema: "npm:^1.2.6"
     libsodium-wrappers: "npm:^0.7.11"
-    octokit: "npm:^4.1.2"
     octokit-plugin-create-pull-request: "npm:^5.0.0"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.22.4"
@@ -11703,22 +11703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/app@npm:^15.1.6":
-  version: 15.1.6
-  resolution: "@octokit/app@npm:15.1.6"
-  dependencies:
-    "@octokit/auth-app": "npm:^7.2.1"
-    "@octokit/auth-unauthenticated": "npm:^6.1.3"
-    "@octokit/core": "npm:^6.1.5"
-    "@octokit/oauth-app": "npm:^7.1.6"
-    "@octokit/plugin-paginate-rest": "npm:^12.0.0"
-    "@octokit/types": "npm:^14.0.0"
-    "@octokit/webhooks": "npm:^13.6.1"
-  checksum: 10/abadf0cb131896fee02d2bcd9c804daf345264b95deb3e649a5e82541b937e1085769732485a8117eb375057a64f2b853ca206555eca49902d7becfafb5a96f0
-  languageName: node
-  linkType: hard
-
-"@octokit/auth-app@npm:^7.1.5, @octokit/auth-app@npm:^7.2.1":
+"@octokit/auth-app@npm:^7.1.5":
   version: 7.2.2
   resolution: "@octokit/auth-app@npm:7.2.2"
   dependencies:
@@ -11802,7 +11787,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/auth-unauthenticated@npm:^6.1.2, @octokit/auth-unauthenticated@npm:^6.1.3":
+"@octokit/auth-unauthenticated@npm:^6.1.2":
   version: 6.1.3
   resolution: "@octokit/auth-unauthenticated@npm:6.1.3"
   dependencies:
@@ -11842,7 +11827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/core@npm:^6.1.4, @octokit/core@npm:^6.1.5":
+"@octokit/core@npm:^6.1.4":
   version: 6.1.6
   resolution: "@octokit/core@npm:6.1.6"
   dependencies:
@@ -12015,15 +12000,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-paginate-graphql@npm:^5.2.4":
-  version: 5.2.4
-  resolution: "@octokit/plugin-paginate-graphql@npm:5.2.4"
-  peerDependencies:
-    "@octokit/core": ">=6"
-  checksum: 10/8826aa4b03080bf5c35afd37fc7bfc4d14fa9364ebc94fe182c38a0b77ce2d2a75806a1404a5e6c475e267b02dad1ba9506533a96abc938bf4f3e1cab51c7a3d
-  languageName: node
-  linkType: hard
-
 "@octokit/plugin-paginate-rest@npm:^11.4.2":
   version: 11.6.0
   resolution: "@octokit/plugin-paginate-rest@npm:11.6.0"
@@ -12032,17 +12008,6 @@ __metadata:
   peerDependencies:
     "@octokit/core": ">=6"
   checksum: 10/4b9e1ca479a0c577fe3dade6133b12ff172b6606586eb31ba2b7c7f651e0a173d365d45c5c7512e83659860a36fc4021ad6c0582be4698504fbfc201be17d164
-  languageName: node
-  linkType: hard
-
-"@octokit/plugin-paginate-rest@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@octokit/plugin-paginate-rest@npm:12.0.0"
-  dependencies:
-    "@octokit/types": "npm:^14.0.0"
-  peerDependencies:
-    "@octokit/core": ">=6"
-  checksum: 10/302f0983e4b4746722ffcdb293529e14e00771d61a8edadaa85c38ab4f7f0b274d91bfe9b03a2a9684a45b0ca2c5b633b87bcc78269738c60f6a4d57b1c00b8f
   languageName: node
   linkType: hard
 
@@ -12087,17 +12052,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-rest-endpoint-methods@npm:^14.0.0":
-  version: 14.0.0
-  resolution: "@octokit/plugin-rest-endpoint-methods@npm:14.0.0"
-  dependencies:
-    "@octokit/types": "npm:^14.0.0"
-  peerDependencies:
-    "@octokit/core": ">=6"
-  checksum: 10/c81a92ce37e437f20257a3b97d1f6ed35e38a403deb17a95921f3cb8e9300220ed1ca46170ec8b605982bfc65868c7f21316c917e98718d0e819d9ada118551c
-  languageName: node
-  linkType: hard
-
 "@octokit/plugin-rest-endpoint-methods@npm:^7.1.2":
   version: 7.1.2
   resolution: "@octokit/plugin-rest-endpoint-methods@npm:7.1.2"
@@ -12107,31 +12061,6 @@ __metadata:
   peerDependencies:
     "@octokit/core": ">=3"
   checksum: 10/ebb98326635a95938ebc862a8c8a796cebbcfc3d38840c4e657f6782a556efffa035437985d23d206d0000ea6d7a6653865fc14291ed79da06ec373ec709c324
-  languageName: node
-  linkType: hard
-
-"@octokit/plugin-retry@npm:^7.2.1":
-  version: 7.2.1
-  resolution: "@octokit/plugin-retry@npm:7.2.1"
-  dependencies:
-    "@octokit/request-error": "npm:^6.1.8"
-    "@octokit/types": "npm:^14.0.0"
-    bottleneck: "npm:^2.15.3"
-  peerDependencies:
-    "@octokit/core": ">=6"
-  checksum: 10/64346ff62c2323bb44f5274b43781bfb594d76ca82bcececf4fe4204ecb00f0ba58a92719fbbece1f75981bc00cdfbeaa29fef25ba0a67d14e8f0f46f128a3bd
-  languageName: node
-  linkType: hard
-
-"@octokit/plugin-throttling@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "@octokit/plugin-throttling@npm:10.0.0"
-  dependencies:
-    "@octokit/types": "npm:^14.0.0"
-    bottleneck: "npm:^2.15.3"
-  peerDependencies:
-    "@octokit/core": ^6.1.3
-  checksum: 10/2d20788c50c5507954ad4b34495aba6d8ef154174afa0b7d7d43a47c999b1b26309e9fb578eaa9db431188e35c9787b44f06ed4d45967e0417e03a29bb7eefc8
   languageName: node
   linkType: hard
 
@@ -12323,7 +12252,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/webhooks@npm:^13.6.1, @octokit/webhooks@npm:^13.8.3":
+"@octokit/webhooks@npm:^13.6.1":
   version: 13.9.1
   resolution: "@octokit/webhooks@npm:13.9.1"
   dependencies:
@@ -39337,25 +39266,6 @@ __metadata:
   dependencies:
     "@octokit/types": "npm:^8.0.0"
   checksum: 10/3455ed75180c6dba4fc865b1feae2d7a3f50a67926c850f4dedccb87f7e2bfb6f21afaacd58cd8011a1f0ccdb444b23651933f76b1f48de6487b0268dbb7e449
-  languageName: node
-  linkType: hard
-
-"octokit@npm:^4.1.2":
-  version: 4.1.4
-  resolution: "octokit@npm:4.1.4"
-  dependencies:
-    "@octokit/app": "npm:^15.1.6"
-    "@octokit/core": "npm:^6.1.5"
-    "@octokit/oauth-app": "npm:^7.1.6"
-    "@octokit/plugin-paginate-graphql": "npm:^5.2.4"
-    "@octokit/plugin-paginate-rest": "npm:^12.0.0"
-    "@octokit/plugin-rest-endpoint-methods": "npm:^14.0.0"
-    "@octokit/plugin-retry": "npm:^7.2.1"
-    "@octokit/plugin-throttling": "npm:^10.0.0"
-    "@octokit/request-error": "npm:^6.1.8"
-    "@octokit/types": "npm:^14.0.0"
-    "@octokit/webhooks": "npm:^13.8.3"
-  checksum: 10/e36622057b06e09405218cb61f3365219efa652cff07b639d4954f4ded2a4dbab1df9fbd2e1f0661451188788a6b6abd7802cfe7c7f9c82a3146d93ae4f900ea
   languageName: node
   linkType: hard
 

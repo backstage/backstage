@@ -8,7 +8,7 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GithubCredentialsProvider } from '@backstage/integration';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
