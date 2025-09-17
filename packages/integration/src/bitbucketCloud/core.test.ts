@@ -31,16 +31,28 @@ describe('bitbucketCloud core', () => {
 
   describe('getBitbucketCloudRequestOptions', () => {
     it('insert basic auth when needed', () => {
+      const withUsernameAndToken: BitbucketCloudIntegrationConfig = {
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        username: 'some-user@domain.com',
+        token: 'my-token',
+      };
+      // TODO: appPassword can be removed once fully
+      // deprecated by BitBucket on 9th June 2026.
       const withUsernameAndPassword: BitbucketCloudIntegrationConfig = {
         host: 'bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
         username: 'some-user',
         appPassword: 'my-secret',
       };
-      const withoutUsernameAndPassword: BitbucketCloudIntegrationConfig = {
+      const withoutUsername: BitbucketCloudIntegrationConfig = {
         host: 'bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
       };
+      expect(
+        (getBitbucketCloudRequestOptions(withUsernameAndToken).headers as any)
+          .Authorization,
+      ).toEqual('Basic c29tZS11c2VyQGRvbWFpbi5jb206bXktdG9rZW4=');
       expect(
         (
           getBitbucketCloudRequestOptions(withUsernameAndPassword)
@@ -48,10 +60,8 @@ describe('bitbucketCloud core', () => {
         ).Authorization,
       ).toEqual('Basic c29tZS11c2VyOm15LXNlY3JldA==');
       expect(
-        (
-          getBitbucketCloudRequestOptions(withoutUsernameAndPassword)
-            .headers as any
-        ).Authorization,
+        (getBitbucketCloudRequestOptions(withoutUsername).headers as any)
+          .Authorization,
       ).toBeUndefined();
     });
   });

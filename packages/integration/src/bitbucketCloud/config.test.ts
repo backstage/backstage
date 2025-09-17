@@ -54,22 +54,22 @@ describe('readBitbucketCloudIntegrationConfig', () => {
   it('reads all values', () => {
     const output = readBitbucketCloudIntegrationConfig(
       buildConfig({
+        token: 't',
         username: 'u',
-        appPassword: '\n\n\np',
       }),
     );
     expect(output).toEqual({
       apiBaseUrl: 'https://api.bitbucket.org/2.0',
-      appPassword: 'p',
       host: 'bitbucket.org',
+      token: 't',
       username: 'u',
     });
   });
 
   it('rejects funky configs', () => {
     const valid: any = {
+      token: 't',
       username: 'u',
-      appPassword: 'p',
     };
     expect(() =>
       readBitbucketCloudIntegrationConfig(
@@ -77,15 +77,13 @@ describe('readBitbucketCloudIntegrationConfig', () => {
       ),
     ).toThrow(/username/);
     expect(() =>
-      readBitbucketCloudIntegrationConfig(
-        buildConfig({ ...valid, appPassword: 7 }),
-      ),
-    ).toThrow(/appPassword/);
+      readBitbucketCloudIntegrationConfig(buildConfig({ ...valid, token: 7 })),
+    ).toThrow(/token/);
   });
 
   it('credentials hidden on the frontend', async () => {
     const frontendConfig = await buildFrontendConfig({
-      appPassword: 'p',
+      token: 't',
       username: 'u',
     });
     expect(
@@ -100,6 +98,69 @@ describe('readBitbucketCloudIntegrationConfig', () => {
       },
     ]);
   });
+
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
+  describe('handles deprecated appPassword', () => {
+    it('reads all values', () => {
+      const output = readBitbucketCloudIntegrationConfig(
+        buildConfig({
+          appPassword: '\n\np',
+          username: 'u',
+        }),
+      );
+      expect(output).toEqual({
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        appPassword: 'p',
+        host: 'bitbucket.org',
+        username: 'u',
+      });
+    });
+
+    it('rejects funky configs', () => {
+      const valid: any = {
+        appPassword: 'p',
+        username: 'u',
+      };
+      expect(() =>
+        readBitbucketCloudIntegrationConfig(
+          buildConfig({ ...valid, appPassword: 7 }),
+        ),
+      ).toThrow(/appPassword/);
+    });
+
+    it('rejects if misconfigured', () => {
+      const valid: any = {
+        appPassword: 'p',
+        token: 't',
+        username: 'u',
+      };
+      expect(() =>
+        readBitbucketCloudIntegrationConfig(
+          buildConfig({ ...valid, appPassword: undefined, token: undefined }),
+        ),
+      ).toThrow(/must configure either a token or appPassword/);
+    });
+
+    it('credentials hidden on the frontend', async () => {
+      const frontendConfig = await buildFrontendConfig({
+        appPassword: 'p',
+        username: 'u',
+      });
+      expect(
+        readBitbucketCloudIntegrationConfigs(
+          frontendConfig.getOptionalConfigArray(
+            'integrations.bitbucketCloud',
+          ) ?? [],
+        ),
+      ).toEqual([
+        {
+          apiBaseUrl: 'https://api.bitbucket.org/2.0',
+          host: 'bitbucket.org',
+        },
+      ]);
+    });
+  });
 });
 
 describe('readBitbucketCloudIntegrationConfigs', () => {
@@ -113,15 +174,15 @@ describe('readBitbucketCloudIntegrationConfigs', () => {
     const output = readBitbucketCloudIntegrationConfigs(
       buildConfig([
         {
+          token: 't',
           username: 'u',
-          appPassword: 'p',
         },
       ]),
     );
     expect(output).toContainEqual({
       apiBaseUrl: 'https://api.bitbucket.org/2.0',
-      appPassword: 'p',
       host: 'bitbucket.org',
+      token: 't',
       username: 'u',
     });
   });
