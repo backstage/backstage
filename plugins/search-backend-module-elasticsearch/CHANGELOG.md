@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.7.6
+
+### Patch Changes
+
+- cde70ca: Added support for batchKeyField in the Elasticsearch indexer to allow consistent document IDs during bulk uploads.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-search-backend-node@1.3.15
+
 ## 1.7.6-next.0
 
 ### Patch Changes

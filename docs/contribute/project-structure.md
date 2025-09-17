@@ -221,7 +221,3 @@ future.
 
 - [`catalog-info.yaml`](https://github.com/backstage/backstage/tree/master/catalog-info.yaml) -
   Description of Backstage in the Backstage Entity format.
-
-- [`lerna.json`](https://github.com/backstage/backstage/tree/master/lerna.json) -
-  [Lerna](https://github.com/lerna/lerna) monorepo config. We are using
-  `yarn workspaces`, so this will only be used for executing scripts.

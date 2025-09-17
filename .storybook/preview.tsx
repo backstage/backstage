@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Content, AlertDisplay } from '@backstage/core-components';
 import { apis } from './support/apis';
-import type { Decorator, Preview } from '@storybook/react';
-import { useGlobals } from '@storybook/preview-api';
+import type { Decorator, Preview } from '@storybook/react-vite';
+import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
+import { allModes } from './modes';
 
 // Default Backstage theme CSS (from packages/ui)
 import '../packages/ui/src/css/styles.css';
@@ -52,20 +53,24 @@ const preview: Preview = {
   },
   parameters: {
     layout: 'fullscreen',
+
     backgrounds: {
       disable: true,
     },
+
     controls: {
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/i,
       },
     },
+
     options: {
       storySort: {
         order: ['Backstage UI', 'Plugins', 'Layout', 'Navigation'],
       },
     },
+
     viewport: {
       viewports: {
         initial: {
@@ -80,6 +85,20 @@ const preview: Preview = {
           name: 'Extra Large',
           styles: { width: '1536px', height: '100%' },
         },
+      },
+    },
+
+    docs: {
+      codePanel: true,
+    },
+
+    chromatic: {
+      modes: {
+        'light backstage': allModes['light backstage'],
+        // TODO: Enable these modes when we have more Chromatic snapshots.
+        // 'dark backstage': allModes['dark backstage'],
+        // 'light spotify': allModes['light spotify'],
+        // 'dark spotify': allModes['dark spotify'],
       },
     },
   },

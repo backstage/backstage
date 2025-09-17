@@ -1,5 +1,19 @@
 # @backstage/create-app
 
+## 0.7.4
+
+### Patch Changes
+
+- b2d9fc1: Creates a plugin that redirects from the Home page to the Catalog index page to avoid seeing a not found page error when starting the app.
+- 020d484: Bumped create-app version.
+- 02dbe8e: Add missing dependency to `@backstage/cli`, `@backstage/core-plugin-api` and `@backstage/integration-react`
+
+## 0.7.4-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
 ## 0.7.4-next.1
 
 ### Patch Changes

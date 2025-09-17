@@ -126,7 +126,7 @@ metadata:
 
 The value of this annotation informs of the path to this component's TechDocs within an external entity that owns the TechDocs.
 In conjunction with [backstage.io/techdocs-entity](#backstageiotechdocs-entity) this allows for deep linking into the TechDocs of
-another entity, not just linking to the root of another entities TechDocs.
+another entity, not just linking to the root of another entity's TechDocs.
 
 ### backstage.io/view-url, backstage.io/edit-url
 

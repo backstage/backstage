@@ -38,8 +38,11 @@ export interface Config {
        * Allow entities of these particular kinds.
        *
        * E.g. ["Component", "API", "Template", "Location"]
+       *
+       * You can also specify the type of the entity by using an object with `kind` and optional `spec.type` properties.
+       * E.g. [{ kind: "Component", 'spec.type': "service" }]
        */
-      allow: Array<string>;
+      allow: Array<string | { kind: string; 'spec.type'?: string }>;
       /**
        * Limit this rule to a specific location
        *
@@ -218,5 +221,43 @@ export interface Config {
      * housing catalog-info files.
      */
     processingInterval?: HumanDuration | false;
+
+    /**
+     * Catalog provide specific configuration.
+     * Additional configuration for providers are specified in the catalog
+     * modules.
+     */
+    providers?: {
+      /**
+       * Name is the provider ID, e.g. "bitbucketServer"
+       */
+      [name: string]: {
+        /**
+         * Whether the provider is enabled or not. Defaults to true.
+         */
+        enabled?: boolean;
+      };
+    };
+    /**
+     * Configuration for entity processors. Additional configuration for
+     * processors are specified in the catalog modules.
+     */
+    processors?: {
+      /**
+       * Name is the processor ID, e.g. "catalog-processor"
+       */
+      [name: string]: {
+        /**
+         * Whether the processor is enabled or not. Defaults to true.
+         */
+        enabled?: boolean;
+        /**
+         * The priority of the processor, which is used to determine the order in which
+         * processors are run. The default priority is 20, and lower value means
+         * that the processor runs earlier.
+         */
+        priority?: number;
+      };
+    };
   };
 }

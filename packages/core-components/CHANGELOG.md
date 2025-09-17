@@ -1,5 +1,26 @@
 # @backstage/core-components
 
+## 0.18.0
+
+### Minor Changes
+
+- b9a87f4: Add optional `distance` property to `DependencyEdge` to reflect the distance to a root.
+
+### Patch Changes
+
+- 1ad3d94: Dependency graph can now be opened in full screen mode
+- e409bec: Fixes for rendering initials in the avatar component.
+- ae7d426: update about card links style for pretty display with other language
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+
+## 0.17.6-next.1
+
+### Patch Changes
+
+- 1ad3d94: Dependency graph can now be opened in full screen mode
+- ae7d426: update about card links style for pretty display with other language
+
 ## 0.17.6-next.0
 
 ### Patch Changes

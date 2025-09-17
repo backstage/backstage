@@ -1,5 +1,22 @@
 # @backstage/plugin-auth-react
 
+## 0.1.19
+
+### Patch Changes
+
+- 54ddfef: Updating plugin metadata
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- 54ddfef: Updating plugin metadata
+- Updated dependencies
+  - @backstage/core-components@0.17.6-next.1
+
 ## 0.1.19-next.0
 
 ### Patch Changes

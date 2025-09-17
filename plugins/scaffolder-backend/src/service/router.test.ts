@@ -68,6 +68,8 @@ import {
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import { createRouter } from './router';
 import { DatabaseTaskStore } from '../scaffolder/tasks/DatabaseTaskStore';
+import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 
 function createDatabase(): DatabaseService {
   return DatabaseManager.fromConfig(
@@ -178,6 +180,7 @@ const createTestRouter = async (
       | Record<string, TemplateGlobal>
       | CreatedTemplateGlobal[];
     autocompleteHandlers?: Record<string, AutocompleteHandler>;
+    actionsRegistry?: ActionsService;
   } = {},
 ) => {
   const logger = mockServices.logger.mock({
@@ -246,6 +249,7 @@ const createTestRouter = async (
       }),
       createDebugLogAction(),
     ],
+    actionsRegistry: overrides.actionsRegistry ?? actionsRegistryServiceMock(),
   });
 
   router.use(mockErrorHandler());
@@ -274,6 +278,49 @@ describe('scaffolder router', () => {
       expect(response.status).toEqual(200);
       expect(response.body[0].id).toBeDefined();
       expect(response.body.length).toBe(2);
+    });
+
+    it('should include actions from the remote actions registry', async () => {
+      const mockActionsRegistry = actionsRegistryServiceMock();
+      mockActionsRegistry.register({
+        name: 'my-demo-action',
+        title: 'Test',
+        description: 'Test',
+        schema: {
+          input: z => z.object({ name: z.string() }),
+          output: z => z.object({ name: z.string() }),
+        },
+        action: async () => ({ output: { name: 'test' } }),
+      });
+      const { router } = await createTestRouter({
+        actionsRegistry: mockActionsRegistry,
+      });
+      const response = await request(router).get('/v2/actions').send();
+
+      expect(response.status).toEqual(200);
+      expect(response.body.length).toBe(3);
+
+      expect(response.body).toContainEqual({
+        description: 'Test',
+        examples: [],
+        id: 'test:my-demo-action',
+        schema: {
+          input: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: { name: { type: 'string' } },
+            required: ['name'],
+            type: 'object',
+          },
+          output: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: { name: { type: 'string' } },
+            required: ['name'],
+            type: 'object',
+          },
+        },
+      });
     });
   });
 
@@ -1385,34 +1432,24 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect.anything(),
       );
     });
-    it('disallows users from seeing tasks they do not own', async () => {
-      const { permissions, router, taskBroker } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementationOnce(async () => [
-          {
-            conditions: {
-              resourceType: 'scaffolder-task',
-              rule: 'IS_TASK_OWNER',
-              params: { createdBy: ['user'] },
-            },
-            pluginId: 'scaffolder',
-            resourceType: 'scaffolder-task',
-            result: AuthorizeResult.CONDITIONAL,
+    it('allows payloads up to 10MB', async () => {
+      const { unwrappedRouter } = await createTestRouter();
+      const mockToken = mockCredentials.user.token();
+      const mockTemplate = generateMockTemplate();
+
+      const response = await request(unwrappedRouter)
+        .post('/v2/dry-run')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          template: mockTemplate,
+          values: {
+            requiredParameter1: 'A'.repeat(9 * 1024 * 1024), // ~9MB
+            requiredParameter2: 'required-value-2',
           },
-        ]);
-      const response = await request(router).get(
-        `/v2/tasks?createdBy=not-user`,
-      );
-      expect(taskBroker.list).toHaveBeenCalledWith({
-        filters: { createdBy: ['not-user'], status: undefined },
-        order: undefined,
-        pagination: { limit: undefined, offset: undefined },
-        permissionFilters: { key: 'created_by', values: ['user'] },
-      });
+          directoryContents: [],
+        });
+
       expect(response.status).toBe(200);
-      expect(response.body.totalTasks).toBe(0);
-      expect(response.body.tasks).toEqual([]);
     });
   });
 

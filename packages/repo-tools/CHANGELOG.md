@@ -1,5 +1,21 @@
 # @backstage/repo-tools
 
+## 0.15.2
+
+### Patch Changes
+
+- 133ac7a: Fixed knip-reports command failing when workspace path contains spaces and process termination issues by replacing `execFile` with `spawn` and removing `shell` option.
+- Updated dependencies
+  - @backstage/config-loader@1.10.3
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.15.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.3-next.0
+
 ## 0.15.2-next.0
 
 ### Patch Changes

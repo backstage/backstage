@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.1
+
+### Patch Changes
+
+- 58fc108: Fix scaffolder task log stream not having a minimum height
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-common@1.7.1
+
+## 1.19.1-next.2
+
+### Patch Changes
+
+- 58fc108: Fix scaffolder task log stream not having a minimum height
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+
 ## 1.19.1-next.1
 
 ### Patch Changes

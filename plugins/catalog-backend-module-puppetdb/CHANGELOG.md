@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.2.14
+
+### Patch Changes
+
+- afd368e: **BREAKING ALPHA**: The module has been moved from the `/alpha` export to the root of the package.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.2.14-next.1
+
+### Patch Changes
+
+- afd368e: **BREAKING ALPHA**: The module has been moved from the `/alpha` export to the root of the package.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+
 ## 0.2.14-next.0
 
 ### Patch Changes

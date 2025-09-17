@@ -1,5 +1,35 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.0
+
+### Minor Changes
+
+- 063cdc5: Techdocs: support HumanDuration for cache TTL and timeout configuration
+- a0b604c: Adding new entity that specifies an external entity in the techdocs-entity annotation and updates to documentation regarding TechDocs redirects.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-search-backend-module-techdocs@0.4.6
+  - @backstage/plugin-techdocs-node@1.13.7
+
+## 2.1.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1-next.1
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.6-next.1
+
 ## 2.1.0-next.0
 
 ### Minor Changes

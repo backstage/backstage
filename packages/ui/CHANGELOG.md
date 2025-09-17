@@ -1,5 +1,20 @@
 # @backstage/ui
 
+## 0.7.1
+
+### Patch Changes
+
+- 7307930: Add missing class for flex: baseline
+- 89da341: Fix Select component to properly attach aria-label and aria-labelledby props to the rendered element for improved accessibility.
+- 0ffa4c7: Removed the need to mock `window.matchMedia` in tests, falling back to default breakpoint values instead.
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 7307930: Add missing class for flex: baseline
+- 89da341: Fix Select component to properly attach aria-label and aria-labelledby props to the rendered element for improved accessibility.
+
 ## 0.7.0
 
 ### Minor Changes

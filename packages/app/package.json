@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.113-next.1",
+  "version": "0.2.113",
   "backstage": {
     "role": "frontend"
   },
@@ -94,7 +94,7 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "axios": "^1.11.0",
+    "axios": "^1.12.0",
     "cross-env": "^7.0.0",
     "msw": "^1.0.0"
   },
