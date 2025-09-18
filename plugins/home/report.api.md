@@ -265,13 +265,6 @@ export type Visit = {
 };
 
 // @public
-export type VisitCanSaveFunction = ({
-  pathname,
-}: {
-  pathname: string;
-}) => boolean;
-
-// @public
 export interface VisitDisplayContextValue {
   // (undocumented)
   getChipColor: GetChipColorFunction;
@@ -309,11 +302,6 @@ export type VisitedByTypeProps = {
 };
 
 // @public
-export type VisitEnrichmentFunction = (
-  visit: VisitInput,
-) => Record<string, any> | Promise<Record<string, any>>;
-
-// @public
 export type VisitInput = {
   name: string;
   pathname: string;
@@ -325,22 +313,21 @@ export const VisitListener: ({
   children,
   toEntityRef,
   visitName,
-  enrichVisit,
-  transformPathname,
-  canSave,
 }: {
   children?: ReactNode;
   toEntityRef?: ({ pathname }: { pathname: string }) => string | undefined;
   visitName?: ({ pathname }: { pathname: string }) => string;
-  enrichVisit?: VisitEnrichmentFunction;
-  transformPathname?: VisitTransformPathnameFunction;
-  canSave?: VisitCanSaveFunction;
 }) => JSX.Element;
 
 // @public
 export interface VisitsApi {
+  canSave?(visit: VisitInput): boolean | Promise<boolean>;
+  enrichVisit?(
+    visit: VisitInput,
+  ): Promise<Record<string, any>> | Record<string, any>;
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+  transformPathname?(pathname: string): string;
 }
 
 // @public
@@ -367,10 +354,13 @@ export type VisitsApiSaveParams = {
 
 // @public
 export class VisitsStorageApi implements VisitsApi {
+  canSave(visit: VisitInput): Promise<boolean>;
   // (undocumented)
   static create(options: VisitsStorageApiOptions): VisitsStorageApi;
+  enrichVisit(visit: VisitInput): Promise<Record<string, any>>;
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+  transformPathname(pathname: string): string;
 }
 
 // @public (undocumented)
@@ -378,6 +368,11 @@ export type VisitsStorageApiOptions = {
   limit?: number;
   storageApi: StorageApi;
   identityApi: IdentityApi;
+  transformPathname?: (pathname: string) => string;
+  canSave?: (visit: VisitInput) => boolean | Promise<boolean>;
+  enrichVisit?: (
+    visit: VisitInput,
+  ) => Promise<Record<string, any>> | Record<string, any>;
 };
 
 // @public
@@ -392,13 +387,6 @@ export type VisitsWebStorageApiOptions = {
   identityApi: IdentityApi;
   errorApi: ErrorApi;
 };
-
-// @public
-export type VisitTransformPathnameFunction = ({
-  pathname,
-}: {
-  pathname: string;
-}) => string;
 
 // @public
 export const WelcomeTitle: ({

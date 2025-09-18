@@ -366,11 +366,14 @@ Provide a `transformPathname` function to transform the pathname before it's pro
 
 ```tsx
 import {
-  VisitListener,
-  VisitTransformPathnameFunction,
-} from '@backstage/plugin-home';
+  AnyApiFactory,
+  createApiFactory,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
+import { VisitsStorageApi } from '@backstage/plugin-home';
 
-const transformPathname: VisitTransformPathnameFunction = ({ pathname }) => {
+const transformPathname = (pathname: string) => {
   const pathnameParts = pathname.split('/').filter(part => part !== '');
   const rootPathFromPathname = pathnameParts[0] ?? '';
   if (rootPathFromPathname === 'catalog' && pathnameParts.length >= 4) {
@@ -379,7 +382,21 @@ const transformPathname: VisitTransformPathnameFunction = ({ pathname }) => {
   return pathname;
 };
 
-<VisitListener transformPathname={transformPathname} />;
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      storageApi: storageApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ storageApi, identityApi }) =>
+      VisitsStorageApi.create({
+        storageApi,
+        identityApi,
+        transformPathname,
+      }),
+  }),
+];
 ```
 
 #### Can Save Function
@@ -387,14 +404,37 @@ const transformPathname: VisitTransformPathnameFunction = ({ pathname }) => {
 Provide a `canSave` function to determine which visits should be tracked and saved. This allows you to conditionally save visits to the list:
 
 ```tsx
-import { VisitListener, VisitCanSaveFunction } from '@backstage/plugin-home';
+import {
+  AnyApiFactory,
+  createApiFactory,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
+import { VisitInput, VisitsStorageApi } from '@backstage/plugin-home';
 
-const canSave: VisitCanSaveFunction = ({ pathname }) => {
+const canSave = (visit: VisitInput) => {
   // Don't save visits to admin or settings pages
-  return !pathname.startsWith('/admin') && !pathname.startsWith('/settings');
+  return (
+    !visit.pathname.startsWith('/admin') &&
+    !visit.pathname.startsWith('/settings')
+  );
 };
 
-<VisitListener canSave={canSave} />;
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      storageApi: storageApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ storageApi, identityApi }) =>
+      VisitsStorageApi.create({
+        storageApi,
+        identityApi,
+        canSave,
+      }),
+  }),
+];
 ```
 
 #### Enrich Visit Function
@@ -402,8 +442,14 @@ const canSave: VisitCanSaveFunction = ({ pathname }) => {
 You can also add the `enrichVisit` function to put additional values on each `Visit`. The values could later be used to customize the chips in the `VisitList`. For example, you could add the entity `type` on the `Visit` so that `type` is used for labels instead of `kind`.
 
 ```tsx
-import { VisitListener, VisitInput } from '@backstage/plugin-home';
+import {
+  AnyApiFactory,
+  createApiFactory,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { VisitsStorageApi } from '@backstage/plugin-home';
 
 type EnrichedVisit = VisitInput & {
   type?: string;
@@ -423,18 +469,23 @@ const createEnrichVisit =
       return visit;
     }
   };
-// This example requires its own component in order to use hook to look up entity in catalog
-const AppVisitListener = ({ children }: { children: React.ReactNode }) => {
-  const catalogApi = useApi(catalogApiRef);
-  const enrichVisit = createEnrichVisit(catalogApi);
 
-  return (
-    <>
-      <VisitListener enrichVisit={enrichVisit} />
-      {children}
-    </>
-  );
-};
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      storageApi: storageApiRef,
+      identityApi: identityApiRef,
+      catalogApi: catalogApiRef,
+    },
+    factory: ({ storageApi, identityApi, catalogApi }) =>
+      VisitsStorageApi.create({
+        storageApi,
+        identityApi,
+        enrichVisit: createEnrichVisit(catalogApi),
+      }),
+  }),
+];
 ```
 
 #### Custom Chip Colors and Labels
