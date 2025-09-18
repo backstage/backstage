@@ -13,12 +13,3 @@ integrations:
     - username: user@domain.com
       token: my-token
 ```
-
-Using App password (legacy):
-
-```yaml
-integrations:
-  bitbucketCloud:
-    - username: user
-      appPassword: my-secret
-```

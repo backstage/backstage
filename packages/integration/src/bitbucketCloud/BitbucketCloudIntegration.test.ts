@@ -26,7 +26,6 @@ describe('BitbucketCloudIntegration', () => {
             {
               username: 'u',
               appPassword: 'p',
-              host: 'bitbucket.org',
             },
           ],
         },
