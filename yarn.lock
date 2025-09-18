@@ -5715,7 +5715,6 @@ __metadata:
   resolution: "@backstage/plugin-notifications-backend-module-email@workspace:plugins/notifications-backend-module-email"
   dependencies:
     "@aws-sdk/client-ses": "npm:^3.550.0"
-    "@aws-sdk/types": "npm:^3.347.0"
     "@azure/communication-email": "npm:^1.0.0"
     "@azure/identity": "npm:^4.0.0"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -5775,10 +5774,8 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
-    "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-backend": "workspace:^"
-    "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-notifications-common": "workspace:^"
     "@backstage/plugin-notifications-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
@@ -5789,12 +5786,9 @@ __metadata:
     express: "npm:^4.17.1"
     express-promise-router: "npm:^4.1.0"
     knex: "npm:^3.0.0"
-    msw: "npm:^1.0.0"
     p-throttle: "npm:^4.1.1"
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
-    winston: "npm:^3.2.1"
-    yn: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5832,7 +5826,6 @@ __metadata:
   resolution: "@backstage/plugin-notifications@workspace:plugins/notifications"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
@@ -5844,13 +5837,10 @@ __metadata:
     "@backstage/plugin-signals-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@backstage/types": "workspace:^"
     "@material-ui/core": "npm:^4.9.13"
     "@material-ui/icons": "npm:^4.9.1"
-    "@material-ui/lab": "npm:^4.0.0-alpha.61"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
-    "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
     lodash: "npm:^4.17.21"
     material-ui-confirm: "npm:^3.0.12"
@@ -6147,7 +6137,6 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     msw: "npm:^1.0.0"
     yaml: "npm:^2.0.0"
-    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 
@@ -6307,7 +6296,6 @@ __metadata:
     "@gitbeaker/requester-utils": "npm:^41.2.0"
     "@gitbeaker/rest": "npm:^41.2.0"
     luxon: "npm:^3.0.0"
-    winston: "npm:^3.2.1"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.22.4"
   languageName: unknown
