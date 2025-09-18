@@ -48,6 +48,7 @@ jobs:
         run: yarn build-storybook:chromatic
 
       - name: Run Chromatic
+        id: chromatic
         uses: chromaui/action@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -56,3 +57,12 @@ jobs:
           projectToken: chpt_dab72dc0f97d55b
           storybookBuildDir: dist-storybook
           onlyChanged: true
+
+      - name: Post Chromatic Link in PR Comment
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        uses: dannyhw/storybook-chromatic-link-comment@v0.11
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          review-url: ${{ steps.chromatic.outputs.url }}
+          build-url: ${{ steps.chromatic.outputs.buildUrl }}
+          storybook-url: ${{ steps.chromatic.outputs.storybookUrl }}
