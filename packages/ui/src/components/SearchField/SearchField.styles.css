@@ -36,7 +36,6 @@
     &[data-collapsed='false'] {
       cursor: pointer;
 
-
       &[data-size='medium'] {
         flex-basis: 2.5rem;
         height: 2.5rem;
@@ -48,14 +47,12 @@
       }
 
       &[data-size='medium'] .bui-Input {
-
         &::placeholder {
           opacity: 0;
         }
       }
 
       &[data-size='small'] .bui-Input {
-
         &::placeholder {
           opacity: 0;
         }
@@ -71,8 +68,8 @@
 }
 
 .bui-SearchField .bui-Input {
-
-  transition: padding 0.3s ease-in-out, border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
+  transition: padding 0.3s ease-in-out, border-color 0.2s ease-in-out,
+    outline-color 0.2s ease-in-out;
 
   &[data-hovered] {
     border-color: var(--bui-border-hover);
