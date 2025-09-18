@@ -99,17 +99,7 @@ export namespace DependencyGraphTypes {
    *
    * @public
    */
-  export type RenderEdgeProps<T = unknown> = {
-    edge: DependencyEdge<T>;
-    id: dagre.Edge;
-  };
-
-  /**
-   * Custom React component for graph {@link DependencyGraphTypes.DependencyEdge}
-   *
-   * @public
-   */
-  export type RenderEdgeFunction<T = {}> = (props: {
+  export type RenderEdgeProps<T = {}> = {
     edge: T & {
       points: { x: number; y: number }[];
       label?: string;
@@ -124,8 +114,17 @@ export namespace DependencyGraphTypes {
       to?: string;
       relations?: string[];
     };
-    id: { v: string; w: string };
-  }) => ReactNode;
+    id: dagre.Edge;
+  };
+
+  /**
+   * Custom React component for graph {@link DependencyGraphTypes.DependencyEdge}
+   *
+   * @public
+   */
+  export type RenderEdgeFunction<T = {}> = (
+    props: RenderEdgeProps<T>,
+  ) => ReactNode;
 
   /**
    * Graph direction
