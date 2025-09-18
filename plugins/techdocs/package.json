@@ -83,7 +83,6 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "dompurify": "^3.2.4",
     "git-url-parse": "^15.0.0",
-    "jss": "~10.10.0",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4"
