@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
 import { Icon } from '../Icon';
@@ -23,6 +23,8 @@ import { FieldLabel } from '../FieldLabel';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiCactusLine } from '@remixicon/react';
 import { Button } from '../Button';
+import { Header } from '../Header';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Backstage UI/SearchField',
@@ -167,6 +169,73 @@ export const StartCollapsed: Story = {
       <SearchField {...args} size="small" />
       <SearchField {...args} size="medium" />
     </Flex>
+  ),
+};
+
+export const InHeader: Story = {
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  render: args => (
+    <>
+      <Header
+        title="Title"
+        customActions={
+          <>
+            <ButtonIcon
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+            <SearchField {...args} size="small" />
+            <ButtonIcon
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+          </>
+        }
+      />
+    </>
+  ),
+};
+
+export const StartCollapsedInHeader: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  render: args => (
+    <>
+      <Header
+        title="Title"
+        customActions={
+          <>
+            <ButtonIcon
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+            <SearchField {...args} size="small" />
+            <ButtonIcon
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+          </>
+        }
+      />
+    </>
   ),
 };
 
