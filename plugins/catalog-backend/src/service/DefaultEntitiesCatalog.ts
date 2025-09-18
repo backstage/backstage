@@ -683,7 +683,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .select({
         facet: 'search.key',
         value: 'search.original_value',
-        count: this.database.raw('count(*)'),
+        count: this.database.raw('count(DISTINCT search.entity_id)'),
       })
       .groupBy(['search.key', 'search.original_value']);
 
