@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- .bui-SearchField {
+.bui-SearchField {
   flex: 1;
   flex-shrink: 0;
 
@@ -60,14 +60,34 @@
           opacity: 0;
         }
       }
+
+      .bui-InputWrapper {
+        .bui-Input[data-icon] {
+          padding-right: 0px;
+        }
+      }
     }
   }
 }
 
 .bui-SearchField .bui-Input {
-  padding-left: var(--bui-space-6);
-  padding-right: var(--bui-space-1);
-  transition: padding 0.3s ease-in-out;
+
+  transition: padding 0.3s ease-in-out, border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
+
+  &[data-hovered] {
+    border-color: var(--bui-border-hover);
+  }
+
+  &[data-focused] {
+    border-color: var(--bui-border-pressed);
+    outline-width: 0px;
+  }
+}
+
+.bui-SearchField .bui-InputWrapper {
+  .bui-Input[data-icon] {
+    padding-right: var(--bui-space-6);
+  }
 }
 
 .bui-SearchField .bui-InputIcon {
@@ -76,7 +96,7 @@
   justify-content: center;
 
   &[data-size='small'] {
-    width: var(--bui-space-9);
+    width: var(--bui-space-8);
   }
 
   &[data-size='medium'] {
