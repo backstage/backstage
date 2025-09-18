@@ -1,0 +1,144 @@
+name: Chromatic PR Comment
+
+on:
+  workflow_run:
+    workflows:
+      - 'Chromatic'
+    types:
+      - completed
+
+jobs:
+  post-chromatic-comment:
+    name: Post Chromatic Results
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' }}
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Get PR number
+        id: pr
+        run: |
+          # Extract PR number from the workflow run event
+          PR_NUMBER=$(echo '${{ github.event.workflow_run.head_branch }}' | grep -o 'pull/[0-9]*' | cut -d'/' -f2 || echo '')
+          if [ -z "$PR_NUMBER" ]; then
+            # Fallback: try to get from the workflow run name or other sources
+            PR_NUMBER=$(echo '${{ github.event.workflow_run.display_title }}' | grep -o '#[0-9]*' | cut -d'#' -f2 || echo '')
+          fi
+          echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "PR Number: $PR_NUMBER"
+
+      - name: Get Chromatic URL from workflow run
+        id: chromatic-url
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            // Get the workflow run details
+            const workflowRun = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+
+            // Get the jobs for this workflow run
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+
+            // Find the chromatic job
+            const chromaticJob = jobs.data.jobs.find(job => job.name === 'Chromatic');
+            if (!chromaticJob) {
+              console.log('Chromatic job not found');
+              return;
+            }
+
+            // Get the job steps
+            const jobSteps = await github.rest.actions.getJobForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              job_id: chromaticJob.id,
+            });
+
+            console.log('Chromatic job steps:', jobSteps.data.steps.map(step => ({ name: step.name, conclusion: step.conclusion })));
+
+            // Look for the Chromatic step output
+            // The Chromatic action typically outputs the URL in the step logs
+            // We'll need to parse the logs to extract the URL
+            const logs = await github.rest.actions.downloadJobLogsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              job_id: chromaticJob.id,
+            });
+
+            const logText = Buffer.from(logs.data, 'base64').toString('utf-8');
+            console.log('Log text length:', logText.length);
+
+            // Extract Chromatic URL from logs
+            const urlMatch = logText.match(/https:\/\/[a-zA-Z0-9.-]*chromatic\.com\/builds\/[a-zA-Z0-9-]+/);
+            if (urlMatch) {
+              console.log('Found Chromatic URL:', urlMatch[0]);
+              core.setOutput('url', urlMatch[0]);
+            } else {
+              console.log('No Chromatic URL found in logs');
+              // Look for alternative patterns
+              const altMatch = logText.match(/View your changes at: (https:\/\/[^\s]+)/);
+              if (altMatch) {
+                console.log('Found alternative Chromatic URL:', altMatch[1]);
+                core.setOutput('url', altMatch[1]);
+              }
+            }
+
+      - name: Find existing Chromatic comment
+        if: steps.chromatic-url.outputs.url
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
+        id: find-comment
+        with:
+          issue-number: ${{ steps.pr.outputs.pr-number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '🎨 Chromatic Visual Testing'
+          direction: last
+
+      - name: Create or Update Chromatic Comment
+        if: steps.chromatic-url.outputs.url
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ steps.pr.outputs.pr-number }}
+          body: |
+            ## 🎨 Chromatic Visual Testing
+
+            Visual testing has completed successfully! You can view the results and any visual changes at:
+
+            **🔗 [View Chromatic Build](${{ steps.chromatic-url.outputs.url }})**
+
+            ---
+            *This comment is automatically updated when visual tests run.*
+          edit-mode: replace
+
+      - name: Create comment if no URL found
+        if: steps.chromatic-url.outputs.url == ''
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          issue-number: ${{ steps.pr.outputs.pr-number }}
+          body: |
+            ## 🎨 Chromatic Visual Testing
+
+            Visual testing completed, but the Chromatic URL could not be extracted from the workflow logs.
+
+            Please check the [Chromatic workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) for details.
+
+            ---
+            *This comment is automatically updated when visual tests run.*
