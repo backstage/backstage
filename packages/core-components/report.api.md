@@ -318,7 +318,10 @@ export namespace DependencyGraphTypes {
     NETWORK_SIMPLEX = 'network-simplex',
     TIGHT_TREE = 'tight-tree',
   }
-  export type RenderEdgeFunction<T = {}> = (props: {
+  export type RenderEdgeFunction<T = {}> = (
+    props: RenderEdgeProps<T>,
+  ) => ReactNode;
+  export type RenderEdgeProps<T = {}> = {
     edge: T & {
       points: {
         x: number;
@@ -336,13 +339,6 @@ export namespace DependencyGraphTypes {
       to?: string;
       relations?: string[];
     };
-    id: {
-      v: string;
-      w: string;
-    };
-  }) => ReactNode;
-  export type RenderEdgeProps<T = unknown> = {
-    edge: DependencyEdge<T>;
     id: dagre.Edge;
   };
   export type RenderLabelFunction<T = {}> = (
