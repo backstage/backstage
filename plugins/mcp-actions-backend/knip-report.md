@@ -4,6 +4,6 @@
 
 | Name                      | Location     | Severity |
 | :------------------------ | :----------- | :------- |
-| @backstage/catalog-client | package.json | error    |
-| zod                       | package.json | error    |
+| @backstage/catalog-client | plugins/mcp-actions-backend/package.json | error    |
+| zod                       | plugins/mcp-actions-backend/package.json | error    |
 

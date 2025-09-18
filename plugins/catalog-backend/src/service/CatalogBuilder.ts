@@ -568,9 +568,11 @@ export class CatalogBuilder {
 
     const locationStore = new DefaultLocationStore(dbClient);
     const configLocationProvider = new ConfigLocationEntityProvider(config);
-    const entityProviders = lodash.uniqBy(
-      [...this.entityProviders, locationStore, configLocationProvider],
-      provider => provider.getProviderName(),
+    const entityProviders = this.filterProviders(
+      lodash.uniqBy(
+        [...this.entityProviders, locationStore, configLocationProvider],
+        provider => provider.getProviderName(),
+      ),
     );
 
     const processingEngine = new DefaultCatalogProcessingEngine({
@@ -725,7 +727,52 @@ export class CatalogBuilder {
 
     this.checkMissingExternalProcessors(processors);
 
-    return processors;
+    const filteredProcessors = this.filterProcessors(processors);
+
+    // Lastly sort the processors by priority. Config can override the
+    // priority of a processor to allow control of 3rd party processors.
+    filteredProcessors.sort((a, b) => {
+      const getProcessorPriority = (processor: CatalogProcessor) => {
+        try {
+          return (
+            config.getOptionalNumber(
+              `catalog.processors.${processor.getProcessorName()}.priority`,
+            ) ??
+            processor.getPriority?.() ??
+            20
+          );
+        } catch (_) {
+          // In case the processor config is not an object, just return default priority
+          return 20;
+        }
+      };
+
+      const aPriority = getProcessorPriority(a);
+      const bPriority = getProcessorPriority(b);
+      return aPriority - bPriority;
+    });
+
+    return filteredProcessors;
+  }
+
+  private filterProcessors(processors: CatalogProcessor[]) {
+    const { config } = this.env;
+    const processorsConfig = config.getOptionalConfig('catalog.processors');
+    if (!processorsConfig) {
+      return processors;
+    }
+
+    return processors.filter(p => {
+      try {
+        const processorConfig = processorsConfig.getOptionalConfig(
+          p.getProcessorName(),
+        );
+        return processorConfig?.getOptionalBoolean('enabled') ?? true;
+      } catch (_) {
+        // In case the processor config is not an object, just include the processor
+        return true;
+      }
+    });
   }
 
   // TODO(Rugvip): These old processors are removed, for a while we'll be throwing
@@ -836,6 +883,26 @@ export class CatalogBuilder {
       'MicrosoftGraphOrgReaderProcessor',
       'https://backstage.io/docs/integrations/azure/org',
     );
+  }
+
+  private filterProviders(providers: EntityProvider[]) {
+    const { config } = this.env;
+    const providersConfig = config.getOptionalConfig('catalog.providers');
+    if (!providersConfig) {
+      return providers;
+    }
+
+    return providers.filter(p => {
+      try {
+        const providerConfig = providersConfig.getOptionalConfig(
+          p.getProviderName(),
+        );
+        return providerConfig?.getOptionalBoolean('enabled') ?? true;
+      } catch (_) {
+        // In case the provider config is not an object, just include the provider
+        return true;
+      }
+    });
   }
 
   private static getDefaultProcessingInterval(

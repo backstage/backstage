@@ -1,5 +1,66 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.0
+
+### Minor Changes
+
+- f0f06b4: Adding a new scaffolder action `github:issues:create` following the reference of `github:issues:label` with `dryRun` testing possibility
+
+  It can be used like this
+
+  ```
+    steps:
+      - id: create-simple-issue
+        name: Create Simple Issue
+        action: github:issues:create
+        input:
+          repoUrl: ${{ parameters.repoUrl }}
+          title: "[${{ parameters.projectName }}] Simple Bug Report"
+          body: |
+            ## Bug Description
+            This is a simple bug report created by the scaffolder template.
+
+            ### Steps to Reproduce
+            1. Run the application
+            2. Navigate to the main page
+            3. Click on the problematic button
+
+            ### Expected Behavior
+            The button should work correctly.
+
+            ### Actual Behavior
+            The button does not respond to clicks.
+    output:
+      links:
+        - title: Simple Issue
+          url: ${{ steps['create-simple-issue'].output.issueUrl }}
+  ```
+
+### Patch Changes
+
+- aee107b: Add `auto_init` option to `github:repo:create` action to create repository with an initial commit containing a README.md file
+
+  This initial commit is created by GitHub itself and the commit is signed, so the repository will not be empty after creation.
+
+  ```diff
+    - action: github:repo:create
+      id: init-new-repo
+      input:
+        repoUrl: 'github.com?repo=repo&owner=owner'
+        description: This is the description
+        visibility: private
+  +     autoInit: true
+
+  ```
+
+- 6393b78: Add block creations field in github branch protection scaffolder actions
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-node@0.11.1
+
 ## 0.8.3-next.1
 
 ### Patch Changes

@@ -4,5 +4,5 @@
 
 | Name          | Location    | Severity |
 | :------------ | :---------- | :------- |
-| @octokit/core | src/util.ts | error    |
+| @octokit/core | plugins/scaffolder-backend-module-github/src/util.ts | error    |
 

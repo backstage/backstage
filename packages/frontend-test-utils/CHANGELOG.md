@@ -1,5 +1,16 @@
 # @backstage/frontend-test-utils
 
+## 0.3.6
+
+### Patch Changes
+
+- 6516c3d: Internal update to use and throw app errors.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/plugin-app@0.3.0
+  - @backstage/frontend-app-api@0.13.0
+  - @backstage/types@1.2.2
+
 ## 0.3.6-next.0
 
 ### Patch Changes

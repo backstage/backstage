@@ -28,7 +28,7 @@
     "@uiw/react-codemirror": "^4.23.7",
     "html-react-parser": "^5.2.5",
     "motion": "^12.4.1",
-    "next": "15.3.4",
+    "next": "15.4.7",
     "next-mdx-remote-client": "^2.1.2",
     "prop-types": "^15.8.1",
     "react": "19.1.1",

@@ -47,6 +47,10 @@ export namespace DependencyGraphTypes {
      * Label assigned and rendered with the Edge
      */
     label?: string;
+    /**
+     * Distance to a root entity
+     */
+    distance?: number;
   };
 
   /**

@@ -1,5 +1,16 @@
 # @backstage/frontend-defaults
 
+## 0.3.1
+
+### Patch Changes
+
+- 6516c3d: The default app now leverages the new error reporting functionality from `@backstage/frontend-app-api`. If there are critical errors during startup, an error screen that shows a summary of all errors will now be shown, rather than leaving the screen blank. Other errors will be logged as warnings in the console.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/plugin-app@0.3.0
+  - @backstage/core-components@0.18.0
+  - @backstage/frontend-app-api@0.13.0
+
 ## 0.3.1-next.0
 
 ### Patch Changes
