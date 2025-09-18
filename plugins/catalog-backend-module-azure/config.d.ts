@@ -55,6 +55,24 @@ export interface Config {
           schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
         };
       };
+      /**
+       * AzureBlobEntityProvider configuration
+       */
+      azureBlob?:
+        | {
+            [name: string]: {
+              id: string;
+              containerName: string;
+              accountName: string;
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            };
+          }
+        | {
+            id: string;
+            containerName: string;
+            accountName: string;
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+          };
     };
   };
 }

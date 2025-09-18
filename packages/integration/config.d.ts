@@ -71,6 +71,63 @@ export interface Config {
       commitSigningKey?: string;
     }>;
 
+    /** Integration configuration for Azure Blob Storage */
+    azureBlobStorage?: Array<{
+      /**
+       * The name of the Azure Storage Account, e.g., "mystorageaccount".
+       */
+      accountName?: string;
+
+      /**
+       * The primary or secondary key for the Azure Storage Account.
+       * Only required if connectionString or SAS token are not specified.
+       */
+      accountKey?: string;
+
+      /**
+       * A Shared Access Signature (SAS) token for limited access to resources.
+       */
+      sasToken?: string;
+
+      /**
+       * A full connection string for the Azure Storage Account.
+       * This includes the account name, key, and endpoint details.
+       */
+      connectionString?: string;
+
+      /**
+       * Optional endpoint suffix for custom domains or sovereign clouds.
+       * e.g., "core.windows.net" for public Azure or "core.usgovcloudapi.net" for US Government cloud.
+       */
+      endpointSuffix?: string;
+
+      /**
+       * The host of the target that this matches on, e.g., "blob.core.windows.net".
+       */
+      host: string;
+
+      endpoint?: string;
+      /**
+       * Optional credential to use for Azure Active Directory authentication.
+       */
+      aadCredential?: {
+        /**
+         * The client ID of the Azure AD application.
+         */
+        clientId: string;
+
+        /**
+         * The tenant ID for Azure AD.
+         */
+        tenantId: string;
+
+        /**
+         * The client secret for the Azure AD application.
+         */
+        clientSecret: string;
+      };
+    }>;
+
     /**
      * Integration configuration for Bitbucket
      * @deprecated replaced by bitbucketCloud and bitbucketServer
