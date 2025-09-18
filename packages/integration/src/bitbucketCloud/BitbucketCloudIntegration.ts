@@ -66,6 +66,7 @@ export class BitbucketCloudIntegration implements ScmIntegration {
     // Bitbucket Cloud line numbers use the syntax #lines-42, rather than #L42
     if (options.lineNumber) {
       const url = new URL(resolved);
+
       url.hash = `lines-${options.lineNumber}`;
       return url.toString();
     }

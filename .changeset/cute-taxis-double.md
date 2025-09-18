@@ -5,7 +5,7 @@
 
 **Attention:** Support for Bitbucket Cloud's API token was added. App password is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
 
-API token (recommended):
+API token usage example:
 
 ```yaml
 integrations:
@@ -14,7 +14,7 @@ integrations:
       token: my-token
 ```
 
-App password (deprecated):
+Using App password (legacy):
 
 ```yaml
 integrations:

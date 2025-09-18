@@ -116,10 +116,15 @@ export interface Config {
        */
       username: string;
       /**
+       * Token used to authenticate requests.
+       * @visibility secret
+       */
+      token?: string;
+      /**
        * Bitbucket Cloud app password used to authenticate requests.
        * @visibility secret
        */
-      appPassword: string;
+      appPassword?: string;
       /**
        * PGP signing key for signing commits.
        * @visibility secret
