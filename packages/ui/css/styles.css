@@ -9309,8 +9309,8 @@
 }
 
 .bui-Button[data-variant="primary"] {
-  background-color: var(--bui-bg-solid);
   color: var(--bui-fg-solid);
+  background-color: red;
 
   &:hover {
     background-color: var(--bui-bg-solid-hover);
