@@ -19,7 +19,6 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { ConfigReader } from '@backstage/config';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
-import { randomBytes } from 'crypto';
 import { setupServer } from 'msw/node';
 import { HttpResponse, http } from 'msw';
 import { createSentryFetchDSNAction } from './fetchDSN';
@@ -37,8 +36,9 @@ describe('sentry:fetch:dsn action', () => {
       },
     }),
   });
-
-  const getActionContext = (): ActionContext<{
+  const getActionContext = (
+    authToken: string | null,
+  ): ActionContext<{
     organizationSlug: string;
     projectSlug: string;
     authToken?: string;
@@ -47,9 +47,9 @@ describe('sentry:fetch:dsn action', () => {
       workspacePath: './dev/proj',
       logger: jest.createMockFromModule('winston'),
       input: {
-        organizationSlug: 'org',
-        projectSlug: 'project',
-        authToken: randomBytes(5).toString('hex'),
+        organizationSlug: 'my-org',
+        projectSlug: 'my-project',
+        ...(authToken ? { authToken } : {}),
       },
     });
 
@@ -86,89 +86,65 @@ describe('sentry:fetch:dsn action', () => {
     },
   ];
 
-  it(`should ${examples[0].description}`, async () => {
-    expect.assertions(3);
+  it.each([
+    {
+      templateExample: examples[0],
+      expectedToken:
+        'a14711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d5df96',
+    },
+    {
+      templateExample: examples[1],
+      expectedToken:
+        'b15711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d4gf93',
+    },
+  ])(
+    `should $templateExample.description`,
+    async ({ templateExample, expectedToken }) => {
+      expect.assertions(3);
 
-    let input;
-    try {
-      input = yaml.parse(examples[0].example).steps[0].input;
-    } catch (error) {
-      console.error('Failed to parse YAML:', error);
-    }
+      let input;
+      try {
+        input = yaml.parse(templateExample.example).steps[0].input;
+      } catch (error) {
+        console.error('Failed to parse YAML:', error);
+      }
 
-    const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+      const action = createSentryFetchDSNAction(
+        createScaffolderConfig({
+          sentry: {
+            token:
+              'b15711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d4gf93',
+          },
+        }),
+      );
+      const actionContext = getActionContext(input.authToken);
 
-    worker.use(
-      http.get(
-        `https://sentry.io/api/0/projects/${input.organizationSlug}/${input.projectSlug}/keys/`,
-        async ({ request }) => {
-          expect(request.headers.get('Authorization')).toBe(
-            `Bearer a14711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d5df96`,
-          );
-          expect(request.headers.get('Content-Type')).toBe(`application/json`);
-          return HttpResponse.json(mockSentryKeysResponse, { status: 200 });
+      worker.use(
+        http.get(
+          `https://sentry.io/api/0/projects/${input.organizationSlug}/${input.projectSlug}/keys/`,
+          async ({ request }) => {
+            expect(request.headers.get('Authorization')).toBe(
+              `Bearer ${expectedToken}`,
+            );
+            expect(request.headers.get('Content-Type')).toBe(
+              `application/json`,
+            );
+            return HttpResponse.json(mockSentryKeysResponse, { status: 200 });
+          },
+        ),
+      );
+
+      await action.handler({
+        ...actionContext,
+        input: {
+          ...actionContext.input,
+          ...input,
         },
-      ),
-    );
-
-    await action.handler({
-      ...actionContext,
-      input: {
-        ...actionContext.input,
-        ...input,
-      },
-    });
-    expect(actionContext.output).toHaveBeenCalledWith(
-      'dsn',
-      'https://abcdef1234567890@sentry.io/67890',
-    );
-  });
-
-  it(`should ${examples[1].description}`, async () => {
-    expect.assertions(3);
-
-    let input;
-    try {
-      input = yaml.parse(examples[1].example).steps[0].input;
-    } catch (error) {
-      console.error('Failed to parse YAML:', error);
-    }
-
-    const sentryScaffolderConfigToken = randomBytes(5).toString('hex');
-    const action = createSentryFetchDSNAction(
-      createScaffolderConfig({
-        sentry: {
-          token: sentryScaffolderConfigToken,
-        },
-      }),
-    );
-    const actionContext = getActionContext();
-    actionContext.input.authToken = undefined;
-
-    worker.use(
-      http.get(
-        `https://sentry.io/api/0/projects/${input.organizationSlug}/${input.projectSlug}/keys/`,
-        async ({ request }) => {
-          expect(request.headers.get('Authorization')).toBe(
-            `Bearer ${sentryScaffolderConfigToken}`,
-          );
-          expect(request.headers.get('Content-Type')).toBe(`application/json`);
-          return HttpResponse.json(mockSentryKeysResponse, { status: 200 });
-        },
-      ),
-    );
-
-    await action.handler({
-      ...actionContext,
-      input: {
-        ...actionContext.input,
-        ...input,
-      },
-    });
-    expect(actionContext.output).toHaveBeenCalledWith(
-      'dsn',
-      'https://abcdef1234567890@sentry.io/67890',
-    );
-  });
+      });
+      expect(actionContext.output).toHaveBeenCalledWith(
+        'dsn',
+        'https://abcdef1234567890@sentry.io/67890',
+      );
+    },
+  );
 });
