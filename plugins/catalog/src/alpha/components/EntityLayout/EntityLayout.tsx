@@ -30,6 +30,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { catalogTranslationRef } from '../../translation';
 import { EntityTabs } from '../EntityTabs';
+import { JSX } from 'react';
 
 export type EntityLayoutRouteProps = {
   path: string;

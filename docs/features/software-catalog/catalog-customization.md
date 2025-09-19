@@ -701,7 +701,7 @@ filter:
 
 ### Entity context menu items
 
-You can add custom items to the entity header context menu using the EntityContextMenuItemBlueprint from @backstage/plugin-catalog-react/alpha. This is part of the new frontend system and lets you contribute actions to the entity page menu.
+You can add custom items to the entity header context menu using the `EntityContextMenuItemBlueprint` from `@backstage/plugin-catalog-react/alpha`. This is part of the new frontend system and lets you contribute actions to the entity page menu.
 
 Basic examples:
 
@@ -737,7 +737,7 @@ const myCustomOnClick = EntityContextMenuItemBlueprint.make({
 Filtering which entities see a menu item:
 
 - In code, use the `filter` param with either a predicate function `(entity) => boolean` or an entity predicate query object.
-- In app-config, you can configure `filter` using an entity predicate query only.
+- In `app-config.yaml`, you can configure `filter` using an entity predicate query only.
 
 Examples:
 
@@ -770,10 +770,10 @@ app:
 
 ### Customize the entity page header
 
-You can fully replace the entity page header using the EntityHeaderBlueprint from @backstage/plugin-catalog-react/alpha. There are two ways to provide your header:
+You can fully replace the entity page header using the EntityHeaderBlueprint from `@backstage/plugin-catalog-react/alpha`. There are two ways to provide your header:
 
-- componentLoader: Provide a React component that receives a contextMenu prop that you can place in your header UI.
-- loader: Provide a pre-rendered element if you don't need the contextMenu prop.
+- componentLoader: Provide a React component that receives a `contextMenu` prop that you can place in your header UI.
+- loader: Provide a pre-rendered element if you don't need the `contextMenu` prop.
 
 Example using a component and preserving the context menu:
 
@@ -806,15 +806,15 @@ export const myCustomHeader = EntityHeaderBlueprint.make({
 
 Notes:
 
-- If you use loader instead of componentLoader you will not receive the contextMenu prop. Use componentLoader whenever you want to keep the menu button and contributed menu items.
+- If you use loader instead of `componentLoader` you will not receive the `contextMenu` prop. Use `componentLoader` whenever you want to keep the menu button and contributed menu items.
 - You can register multiple headers and select which one applies using filter and order. The first matching header by order is used.
 
 ### Customize the entire entity layout
 
-To override the whole entity page layout, provide a custom layout component via the EntityLayoutBlueprint. Your component receives two props:
+To override the whole entity page layout, provide a custom layout component via the `EntityLayoutBlueprint`. Your component receives two props:
 
-- header: the header element that was selected (either the default or your overridden header). You should render it near the top.
-- groupedRoutes: an array of route descriptors with path, title, group, and children. You are responsible for rendering navigation and routing for these.
+- `header`: the header element that was selected (either the default or your overridden header). You should render it near the top.
+- `groupedRoutes`: an array of route descriptors with a path, title, group, and children. You are responsible for rendering navigation and routing for these.
 
 Minimal example that renders a simple link bar and the selected content:
 
@@ -862,5 +862,5 @@ export const myCustomEntityLayout = EntityLayoutBlueprint.make({
 
 Tips:
 
-- You can create different layouts for different entity types using filter and order.
-- If you want something close to the default behavior but with a small tweak (e.g. a banner above the tabs), implement your layout by re-creating the bits you need, or start from the minimal example above and add your own navigation.
+- You can create different layouts for different entity types using `filter` and `order`.
+- If you want something close to the default behavior but with a small tweak (e.g., a banner above the tabs), implement your layout by re-creating the bits you need, or start from the minimal example above and add your own navigation.

@@ -19,7 +19,7 @@ import {
   createExtensionDataRef,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
-import { EntityPredicate } from '../predicates/types';
+import { EntityPredicate } from '../predicates';
 import { Entity } from '@backstage/catalog-model';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';

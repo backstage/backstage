@@ -25,8 +25,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
-import { EntityPredicate } from '../predicates/types';
-import { entityPredicateToFilterFunction } from '../predicates/entityPredicateToFilterFunction';
+import {
+  EntityPredicate,
+  entityPredicateToFilterFunction,
+} from '../predicates';
 import type { Entity } from '@backstage/catalog-model';
 import { entityFilterFunctionDataRef } from './extensionData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
