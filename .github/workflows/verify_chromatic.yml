@@ -69,14 +69,13 @@ jobs:
           message: |
             ## 🎨 Visual Testing Results
 
-            Your visual changes have been tested with Chromatic! Here are the results:
+            ${{ steps.chromatic.outputs.changeCount }} visual changes were found in this build.
 
-            - [**Review Changes**](${{ steps.chromatic.outputs.url }}) - View visual diffs and approve/reject changes
-            - [**Build Details**](${{ steps.chromatic.outputs.buildUrl }}) - See detailed build information
+            - [**Review changes**](${{ steps.chromatic.outputs.buildUrl }}) - Please review the changes and approve or reject them.
             - [**Live Storybook**](${{ steps.chromatic.outputs.storybookUrl }}) - Browse the interactive component library
 
             <details>
-            <summary>🔧 <strong>All Available Chromatic Outputs</strong></summary>
+            <summary><strong>All Available Chromatic Outputs</strong></summary>
 
             | Output | Value | Description |
             |--------|-------|-------------|
@@ -94,25 +93,4 @@ jobs:
             | `testCount` | `${{ steps.chromatic.outputs.testCount }}` | The number of tests on the build. |
 
             </details>
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Post Debug Comment (if Chromatic failed)
-        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url == ''
-        uses: mshick/add-pr-comment@v2
-        with:
-          message: |
-            ## 🚨 Chromatic Debug Info
-
-            The Chromatic workflow ran but didn't produce a URL. This could mean:
-            - Chromatic failed to run
-            - No changes were detected
-            - Configuration issue
-
-            **Debug Info:**
-            - Workflow triggered: ✅
-            - Chromatic URL: `${{ steps.chromatic.outputs.url }}`
-            - Exit Code: `${{ steps.chromatic.outputs.code }}`
-            - Changed files: See workflow logs above
-
-            Please check the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.
           repo-token: ${{ secrets.GITHUB_TOKEN }}
