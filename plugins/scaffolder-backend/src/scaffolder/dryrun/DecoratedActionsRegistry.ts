@@ -18,22 +18,30 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionRegistry } from '../actions';
 
 /** @internal */
-export class DecoratedActionsRegistry extends TemplateActionRegistry {
+export class DecoratedActionsRegistry implements TemplateActionRegistry {
+  private readonly actions = new Map<string, TemplateAction>();
+
   constructor(
     private readonly innerRegistry: TemplateActionRegistry,
     extraActions: Array<TemplateAction>,
   ) {
-    super();
     for (const action of extraActions) {
-      this.register(action);
+      this.actions.set(action.id, action);
     }
   }
 
-  get(actionId: string): TemplateAction {
-    try {
-      return super.get(actionId);
-    } catch {
-      return this.innerRegistry.get(actionId);
+  async get(actionId: string): Promise<TemplateAction> {
+    if (this.actions.has(actionId)) {
+      return this.actions.get(actionId)!;
     }
+    return this.innerRegistry.get(actionId);
+  }
+
+  list(): Promise<TemplateAction<any, any, any>[]> {
+    return this.innerRegistry.list();
+  }
+
+  register(action: TemplateAction<any, any, any>): void {
+    this.innerRegistry.register(action);
   }
 }

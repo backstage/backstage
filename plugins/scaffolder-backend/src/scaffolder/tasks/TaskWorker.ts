@@ -25,12 +25,12 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import PQueue from 'p-queue';
-import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
+import { TemplateActionRegistry } from '../actions';
 
 const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 

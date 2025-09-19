@@ -41,7 +41,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuid } from 'uuid';
-import { TemplateActionRegistry } from '../actions';
+import { DefaultTemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 
@@ -74,7 +74,7 @@ export type TemplateTesterCreateOptions = {
   logger: LoggerService;
   auditor?: AuditorService;
   integrations: ScmIntegrations;
-  actionRegistry: TemplateActionRegistry;
+  actionRegistry: DefaultTemplateActionRegistry;
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;

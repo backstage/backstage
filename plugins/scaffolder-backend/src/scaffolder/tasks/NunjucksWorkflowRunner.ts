@@ -33,7 +33,6 @@ import {
   SecureTemplater,
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
-import { TemplateActionRegistry } from '../actions';
 import { generateExampleOutput, isTruthy } from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 
@@ -61,9 +60,10 @@ import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { convertFiltersToRecord } from '../../util/templating';
 import {
-  CheckpointState,
   CheckpointContext,
+  CheckpointState,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { TemplateActionRegistry } from '../actions';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -245,7 +245,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         return;
       }
       const action: TemplateAction<JsonObject> =
-        this.options.actionRegistry.get(step.action);
+        await this.options.actionRegistry.get(step.action);
       const { taskLogger } = createStepLogger({
         task,
         step,

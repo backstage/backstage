@@ -15,15 +15,15 @@
  */
 
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
-import { TemplateActionRegistry } from '../actions';
+import { DefaultTemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   createTemplateAction,
-  TaskSecrets,
   TaskContext,
+  TaskSecrets,
 } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import {
@@ -36,9 +36,10 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
+import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 
 describe('NunjucksWorkflowRunner', () => {
-  let actionRegistry: TemplateActionRegistry;
+  let actionRegistry: DefaultTemplateActionRegistry;
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
   let fakeTaskLog: jest.Mock;
@@ -104,7 +105,10 @@ describe('NunjucksWorkflowRunner', () => {
     // This one is ESM-only
     stripAnsi = await import('strip-ansi').then(m => m.default);
 
-    actionRegistry = new TemplateActionRegistry();
+    actionRegistry = new DefaultTemplateActionRegistry(
+      actionsRegistryServiceMock(),
+      mockServices.auth(),
+    );
     fakeActionHandler = jest.fn();
     fakeTaskLog = jest.fn();
 

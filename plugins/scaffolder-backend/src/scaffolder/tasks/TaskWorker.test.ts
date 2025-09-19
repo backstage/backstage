@@ -25,7 +25,7 @@ import {
   TaskWorkerOptions,
 } from './TaskWorker';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateActionRegistry } from '../actions';
+import { DefaultTemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import {
   SerializedTaskEvent,
@@ -67,7 +67,8 @@ describe('TaskWorker', () => {
 
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
-  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
+  const actionRegistry: DefaultTemplateActionRegistry =
+    {} as DefaultTemplateActionRegistry;
   const workingDirectory = '/tmp/scaffolder';
 
   const workflowRunner: NunjucksWorkflowRunner = {
@@ -211,7 +212,8 @@ describe('Concurrent TaskWorker', () => {
 
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
-  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
+  const actionRegistry: DefaultTemplateActionRegistry =
+    {} as DefaultTemplateActionRegistry;
   const workingDirectory = os.tmpdir();
   let asyncTasksCount = 0;
 
@@ -277,7 +279,8 @@ describe('Concurrent TaskWorker', () => {
 describe('Cancellable TaskWorker', () => {
   let storage: DatabaseTaskStore;
   const integrations: ScmIntegrations = {} as ScmIntegrations;
-  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
+  const actionRegistry: DefaultTemplateActionRegistry =
+    {} as DefaultTemplateActionRegistry;
   const workingDirectory = os.tmpdir();
 
   let myTask: TaskContext | undefined = undefined;
