@@ -1,0 +1,48 @@
+import{j as t,T as p,c,C as l,m as i,a as d}from"./iframe-BkB0QVAX.js";import{s as g,H as u}from"./plugin-CBIYz47d.js";import{c as h}from"./api-CEiBGx8U.js";import{c as f}from"./catalogApiMock-BYYB8rMz.js";import{s as x}from"./api-B9NsujrE.js";import{S as y}from"./SearchContext-CutOky_8.js";import{P as S}from"./Page-D1l5Qs2k.js";import{S as r}from"./Grid-GzVmgdg9.js";import{b as k,a as j,c as C}from"./plugin-DI1j4xAJ.js";import{T as P}from"./TemplateBackstageLogo-D69jtZTo.js";import{T}from"./TemplateBackstageLogoIcon-dbh2gqem.js";import{e as I}from"./routes-Bi26js9W.js";import{w as v}from"./appWrappers-BeDZegEM.js";import{s as G}from"./StarredEntitiesApi-DprOxcyk.js";import{M as A}from"./MockStarredEntitiesApi-BUhK8b6p.js";import{I as B}from"./InfoCard-vDgIcNkq.js";import"./preload-helper-D9Z9MdNV.js";import"./index-6E8IA5LZ.js";import"./Plugin-BB1nd9si.js";import"./componentData-BqyKlC7z.js";import"./useAnalytics-BaiO7IUZ.js";import"./useApp-BcKqXm1b.js";import"./useRouteRef-D7AJ89qx.js";import"./index-CG9-iTWl.js";import"./ref-C0VTUPuL.js";import"./lodash-CwBbdt2Q.js";import"./useAsync-xBHTNlYp.js";import"./useMountedState-pzVPha7m.js";import"./DialogTitle-BDGKjWc8.js";import"./Modal-BGWqml8P.js";import"./Portal-CniYJQFb.js";import"./Backdrop-V6ewlv6k.js";import"./Button-VsEN5bia.js";import"./useObservable-ix0ZtonL.js";import"./isSymbol-DhO4cmIY.js";import"./isObject--vsEa_js.js";import"./toString-Cr1IARFv.js";import"./CardContent-C9KAu5n0.js";import"./ErrorBoundary-CG99R0aj.js";import"./ErrorPanel-33EFS4fI.js";import"./WarningPanel-C4fTNgaU.js";import"./ExpandMore-BpFbETJI.js";import"./AccordionDetails-BPj0HgKP.js";import"./index-DnL3XN75.js";import"./Collapse-CFXKULw1.js";import"./MarkdownContent-C_11qXRU.js";import"./CodeSnippet-928r43_H.js";import"./Box-BYh2ueao.js";import"./styled-BkGenL9r.js";import"./CopyTextButton-SuTXHCNw.js";import"./useCopyToClipboard-ybsekL_1.js";import"./Tooltip-Cw7U8Fon.js";import"./Popper-CoIZ3FWg.js";import"./List-CL3RsQbd.js";import"./ListContext-1D3zRM57.js";import"./ListItem-uoYhpxef.js";import"./ListItemText-ClLUctdJ.js";import"./LinkButton-Dk1fxXeJ.js";import"./Link-DEl3EO73.js";import"./CardHeader-CjkICost.js";import"./Divider-BE4Qblaw.js";import"./CardActions-C5dkW2n_.js";import"./BottomLink-kRokVK0c.js";import"./ArrowForward-BeJ_-l-J.js";const b=[{apiVersion:"1",kind:"Component",metadata:{name:"mock-starred-entity",title:"Mock Starred Entity!"}},{apiVersion:"1",kind:"Component",metadata:{name:"mock-starred-entity-2",title:"Mock Starred Entity 2!"}},{apiVersion:"1",kind:"Component",metadata:{name:"mock-starred-entity-3",title:"Mock Starred Entity 3!"}},{apiVersion:"1",kind:"Component",metadata:{name:"mock-starred-entity-4",title:"Mock Starred Entity 4!"}}],E=f({entities:b}),a=new A;a.toggleStarred("component:default/example-starred-entity");a.toggleStarred("component:default/example-starred-entity-2");a.toggleStarred("component:default/example-starred-entity-3");a.toggleStarred("component:default/example-starred-entity-4");const Ut={title:"Plugins/Home/Templates",decorators:[e=>v(t.jsx(t.Fragment,{children:t.jsx(p,{apis:[[h,E],[G,a],[x,{query:()=>Promise.resolve({results:[]})}],[c,new l({stackoverflow:{baseUrl:"https://api.stackexchange.com/2.2"}})]],children:t.jsx(e,{})})}),{mountedRoutes:{"/hello-company":g.routes.root,"/catalog/:namespace/:kind/:name":I}})]},H=i(e=>({searchBarInput:{maxWidth:"60vw",margin:"auto",backgroundColor:e.palette.background.paper,borderRadius:"50px",boxShadow:e.shadows[1]},searchBarOutline:{borderStyle:"none"}})),R=i(e=>({container:{margin:e.spacing(5,0)},svg:{width:"auto",height:100},path:{fill:"#7df3e1"}})),o=()=>{const e=H(),{svg:s,path:n,container:m}=R();return t.jsx(y,{children:t.jsx(S,{themeId:"home",children:t.jsx(d,{children:t.jsxs(r,{container:!0,justifyContent:"center",spacing:6,children:[t.jsx(k,{className:m,logo:t.jsx(P,{classes:{svg:s,path:n}})}),t.jsx(r,{container:!0,item:!0,xs:12,justifyContent:"center",children:t.jsx(u,{InputProps:{classes:{root:e.searchBarInput,notchedOutline:e.searchBarOutline}},placeholder:"Search"})}),t.jsxs(r,{container:!0,item:!0,xs:12,children:[t.jsx(r,{item:!0,xs:12,md:6,children:t.jsx(j,{})}),t.jsx(r,{item:!0,xs:12,md:6,children:t.jsx(C,{tools:Array(8).fill({url:"#",label:"link",icon:t.jsx(T,{})})})}),t.jsx(r,{item:!0,xs:12,md:6,children:t.jsx(B,{title:"Composable Section",children:t.jsx("div",{style:{height:370}})})})]})]})})})})};o.__docgenInfo={description:"",methods:[],displayName:"DefaultTemplate"};o.parameters={...o.parameters,docs:{...o.parameters?.docs,source:{originalSource:`() => {
+  const classes = useStyles();
+  const {
+    svg,
+    path,
+    container
+  } = useLogoStyles();
+  return <SearchContextProvider>
+      <Page themeId="home">
+        <Content>
+          <Grid container justifyContent="center" spacing={6}>
+            <HomePageCompanyLogo className={container} logo={<TemplateBackstageLogo classes={{
+            svg,
+            path
+          }} />} />
+            <Grid container item xs={12} justifyContent="center">
+              <HomePageSearchBar InputProps={{
+              classes: {
+                root: classes.searchBarInput,
+                notchedOutline: classes.searchBarOutline
+              }
+            }} placeholder="Search" />
+            </Grid>
+            <Grid container item xs={12}>
+              <Grid item xs={12} md={6}>
+                <HomePageStarredEntities />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <HomePageToolkit tools={Array(8).fill({
+                url: '#',
+                label: 'link',
+                icon: <TemplateBackstageLogoIcon />
+              })} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <InfoCard title="Composable Section">
+                  {/* placeholder for content */}
+                  <div style={{
+                  height: 370
+                }} />
+                </InfoCard>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    </SearchContextProvider>;
+}`,...o.parameters?.docs?.source}}};const Wt=["DefaultTemplate"];export{o as DefaultTemplate,Wt as __namedExportsOrder,Ut as default};
