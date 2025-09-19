@@ -67,7 +67,7 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            ## 🎨 Visual Regression Testing
+            ## 🎨 Visual Testing with Chromatic
 
             - **${{ steps.chromatic.outputs.changeCount }}** visual changes are waiting for review - [**Review changes in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})
             - **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})
