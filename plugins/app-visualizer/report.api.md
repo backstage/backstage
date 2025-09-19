@@ -19,12 +19,19 @@ const visualizerPlugin: OverridableFrontendPlugin<
     'nav-item:app-visualizer': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
-      config: {};
-      configInput: {};
+      config: {
+        title: string | undefined;
+        featureFlag: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        featureFlag?: string | undefined;
+      };
       output: ExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
+          featureFlag?: string;
           routeRef: RouteRef<undefined>;
         },
         'core.nav-item.target',
@@ -35,6 +42,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
         title: string;
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
+        featureFlag?: string;
       };
     }>;
     'page:app-visualizer': ExtensionDefinition<{

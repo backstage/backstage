@@ -1449,9 +1449,11 @@ export type NavContentComponent = (
 // @public
 export interface NavContentComponentProps {
   items: Array<{
+    id: string;
     icon: IconComponent_2;
     title: string;
     routeRef: RouteRef_2<undefined>;
+    featureFlag?: string;
     to: string;
     text: string;
   }>;
@@ -1464,24 +1466,33 @@ export const NavItemBlueprint: ExtensionBlueprint<{
     title: string;
     icon: IconComponent_3;
     routeRef: RouteRef<undefined>;
+    featureFlag?: string;
   };
   output: ExtensionDataRef<
     {
       title: string;
       icon: IconComponent_3;
+      featureFlag?: string;
       routeRef: RouteRef<undefined>;
     },
     'core.nav-item.target',
     {}
   >;
   inputs: {};
-  config: {};
-  configInput: {};
+  config: {
+    title: string | undefined;
+    featureFlag: string | undefined;
+  };
+  configInput: {
+    title?: string | undefined;
+    featureFlag?: string | undefined;
+  };
   dataRefs: {
     target: ConfigurableExtensionDataRef<
       {
         title: string;
         icon: IconComponent_3;
+        featureFlag?: string;
         routeRef: RouteRef<undefined>;
       },
       'core.nav-item.target',

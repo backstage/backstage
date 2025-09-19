@@ -44,6 +44,9 @@ describe('NavItemBlueprint', () => {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "additionalProperties": false,
             "properties": {
+              "featureFlag": {
+                "type": "string",
+              },
               "title": {
                 "type": "string",
               },
@@ -101,6 +104,28 @@ describe('NavItemBlueprint', () => {
       title: 'OVERRIDDEN',
       icon: MockIcon,
       routeRef: mockRouteRef,
+    });
+  });
+
+  it('should allow overriding of the featureFlag using config', () => {
+    const extension = NavItemBlueprint.make({
+      params: {
+        icon: MockIcon,
+        routeRef: mockRouteRef,
+        title: 'foo',
+        featureFlag: 'TEST',
+      },
+    });
+
+    const tester = createExtensionTester(extension, {
+      config: { featureFlag: 'OVERRIDDEN' },
+    });
+
+    expect(tester.get(NavItemBlueprint.dataRefs.target)).toEqual({
+      title: 'foo',
+      icon: MockIcon,
+      routeRef: mockRouteRef,
+      featureFlag: 'OVERRIDDEN',
     });
   });
 });

@@ -24,12 +24,19 @@ const _default: OverridableFrontendPlugin<
     'nav-item:user-settings': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
-      config: {};
-      configInput: {};
+      config: {
+        title: string | undefined;
+        featureFlag: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        featureFlag?: string | undefined;
+      };
       output: ExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
+          featureFlag?: string;
           routeRef: RouteRef<undefined>;
         },
         'core.nav-item.target',
@@ -40,6 +47,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
+        featureFlag?: string;
       };
     }>;
     'page:user-settings': ExtensionDefinition<{
@@ -85,12 +93,19 @@ export default _default;
 export const settingsNavItem: ExtensionDefinition<{
   kind: 'nav-item';
   name: undefined;
-  config: {};
-  configInput: {};
+  config: {
+    title: string | undefined;
+    featureFlag: string | undefined;
+  };
+  configInput: {
+    title?: string | undefined;
+    featureFlag?: string | undefined;
+  };
   output: ExtensionDataRef<
     {
       title: string;
       icon: IconComponent;
+      featureFlag?: string;
       routeRef: RouteRef<undefined>;
     },
     'core.nav-item.target',
@@ -101,6 +116,7 @@ export const settingsNavItem: ExtensionDefinition<{
     title: string;
     icon: IconComponent;
     routeRef: RouteRef<undefined>;
+    featureFlag?: string;
   };
 }>;
 

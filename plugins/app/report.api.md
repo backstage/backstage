@@ -82,6 +82,7 @@ const appPlugin: OverridableFrontendPlugin<
             {
               title: string;
               icon: IconComponent;
+              featureFlag?: string;
               routeRef: RouteRef<undefined>;
             },
             'core.nav-item.target',

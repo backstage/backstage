@@ -74,8 +74,8 @@ describe('NavContentBlueprint', () => {
         component: ({ items }) => (
           <div>
             Items:
-            {items.map((item, index) => (
-              <a key={index} href={item.to}>
+            {items.map(item => (
+              <a key={item.id} href={item.to}>
                 {item.title}
               </a>
             ))}
@@ -90,6 +90,7 @@ describe('NavContentBlueprint', () => {
       tester.get(NavContentBlueprint.dataRefs.component)({
         items: [
           {
+            id: 'home',
             to: '/',
             text: 'Home',
             title: 'Home',
@@ -102,7 +103,7 @@ describe('NavContentBlueprint', () => {
       <div>
         Items:
         {[
-          <a key={0} href="/">
+          <a key="home" href="/">
             Home
           </a>,
         ]}

@@ -28,17 +28,17 @@ import {
   NavContentComponent,
 } from '@backstage/frontend-plugin-api';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
-import { useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 
 function DefaultNavContent(props: NavContentComponentProps) {
   return (
     <Sidebar>
-      {props.items.map((item, index) => (
+      {props.items.map(item => (
         <SidebarItem
           to={item.to}
           icon={item.icon}
           text={item.text}
-          key={index}
+          key={item.id}
         />
       ))}
     </Sidebar>
@@ -50,9 +50,11 @@ function DefaultNavContent(props: NavContentComponentProps) {
 function NavContentRenderer(props: {
   Content: NavContentComponent;
   items: Array<{
+    id: string;
     title: string;
     icon: IconComponent;
     routeRef: RouteRef<undefined>;
+    featureFlag?: string;
   }>;
 }) {
   const routeResolutionApi = useApi(routeResolutionApiRef);
@@ -70,12 +72,14 @@ function NavContentRenderer(props: {
       return [
         {
           to: link(),
+          id: item.id,
           text: item.title,
           icon: item.icon,
           title: item.title,
           routeRef: item.routeRef,
+          featureFlag: item.featureFlag,
         },
-      ];
+      ] satisfies ComponentProps<NavContentComponent>['items'];
     });
   }, [props.items, routeResolutionApi]);
 
@@ -100,9 +104,10 @@ export const AppNav = createExtension({
 
     yield coreExtensionData.reactElement(
       <NavContentRenderer
-        items={inputs.items.map(item =>
-          item.get(NavItemBlueprint.dataRefs.target),
-        )}
+        items={inputs.items.map(item => ({
+          id: item.node.spec.id,
+          ...item.get(NavItemBlueprint.dataRefs.target),
+        }))}
         Content={Content}
       />,
     );
