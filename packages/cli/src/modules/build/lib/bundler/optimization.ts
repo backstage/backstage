@@ -72,7 +72,7 @@ export const optimization = (
           },
           filename: isDev
             ? 'module-[name].js'
-            : 'static/module-[name].[chunkhash:8].js',
+            : 'static/module-[name].[contenthash:8].js',
           priority: 10,
           minSize: 100000,
           minChunks: 1,

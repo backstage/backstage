@@ -4,5 +4,5 @@
 
 | Name                      | Location     | Severity |
 | :------------------------ | :----------- | :------- |
-| @backstage/catalog-client | package.json | error    |
+| @backstage/catalog-client | plugins/org-react/package.json | error    |
 

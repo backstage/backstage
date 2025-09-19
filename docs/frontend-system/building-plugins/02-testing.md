@@ -92,7 +92,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should render a the index page', async () => {
+  it('should render the index page', async () => {
     await renderInTestApp(
       createExtensionTester(indexPageExtension).reactElement(),
     );
@@ -147,7 +147,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension, detailsPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should accepts a custom title via config', async () => {
+  it('should accept a custom title via config', async () => {
     const tester = createExtensionTester(indexPageExtension, {
       // Extension configuration for the index page
       config: { title: 'Custom page' },

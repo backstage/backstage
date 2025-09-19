@@ -1,20 +1,22 @@
 # Knip report
 
-## Unused devDependencies (5)
+## Unused dependencies (1)
 
-| Name                             | Location     | Severity |
-| :------------------------------- | :----------- | :------- |
-| @storybook/addon-styling-webpack | package.json | error    |
-| mini-css-extract-plugin          | package.json | error    |
-| @storybook/blocks                | package.json | error    |
-| globals                          | package.json | error    |
-| glob                             | package.json | error    |
+| Name                  | Location     | Severity |
+| :-------------------- | :----------- | :------- |
+| @tanstack/react-table | packages/ui/package.json | error    |
 
-## Unlisted dependencies (3)
+## Unused devDependencies (2)
 
-| Name                   | Location                                   | Severity |
-| :--------------------- | :----------------------------------------- | :------- |
-| @react-types/overlays  | src/components/Tooltip/Tooltip.stories.tsx | error    |
-| react-aria             | src/components/Menu/Combobox.tsx           | error    |
-| @storybook/preview-api | .storybook/preview.tsx                     | error    |
+| Name    | Location     | Severity |
+| :------ | :----------- | :------- |
+| globals | packages/ui/package.json | error    |
+| glob    | packages/ui/package.json | error    |
+
+## Unlisted dependencies (2)
+
+| Name                  | Location                                     | Severity |
+| :-------------------- | :------------------------------------------- | :------- |
+| react-stately         | packages/ui/src/components/TagGroup/TagGroup.stories.tsx | error    |
+| @react-types/overlays | packages/ui/src/components/Tooltip/Tooltip.stories.tsx   | error    |
 

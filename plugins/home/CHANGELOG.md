@@ -1,5 +1,21 @@
 # @backstage/plugin-home
 
+## 0.8.12
+
+### Patch Changes
+
+- 929c55a: Fixed race condition in CustomHomepageGrid by waiting for storage to load before rendering custom layout to prevent
+  rendering of the default content.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/core-components@0.18.0
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/core-app-api@1.19.0
+  - @backstage/plugin-home-react@0.1.30
+
 ## 0.8.12-next.2
 
 ### Patch Changes

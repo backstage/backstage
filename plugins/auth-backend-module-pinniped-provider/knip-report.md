@@ -4,7 +4,7 @@
 
 | Name            | Location     | Severity |
 | :-------------- | :----------- | :------- |
-| express-session | package.json | error    |
-| cookie-parser   | package.json | error    |
-| passport        | package.json | error    |
+| express-session | plugins/auth-backend-module-pinniped-provider/package.json | error    |
+| cookie-parser   | plugins/auth-backend-module-pinniped-provider/package.json | error    |
+| passport        | plugins/auth-backend-module-pinniped-provider/package.json | error    |
 

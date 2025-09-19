@@ -1,5 +1,21 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.3
+
+### Patch Changes
+
+- 1d47bf3: Proxy `/.well-known/oauth-authorization-server` to `/.well-known/openid-configuration` on `auth-backend` when `auth.experimentalDynamicClientRegistration.enabled` is enabled.
+- 7f2a4a0: Updating docs
+- d08b0c9: The MCP backend will now convert known Backstage errors into textual responses with `isError: true`.
+  The error message can be useful for an LLM to understand and maybe give back to the user.
+  Previously all errors where thrown out to `@modelcontextprotocol/sdk` which causes a generic 500.
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+
 ## 0.1.3-next.1
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/frontend-app-api
 
+## 0.13.0
+
+### Minor Changes
+
+- 6516c3d: The `createSpecializedApp` no longer throws when encountering many common errors when starting up the app. It will instead return them through the `errors` property so that they can be handled more gracefully in the app.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/types@1.2.2
+  - @backstage/frontend-defaults@0.3.1
+  - @backstage/core-app-api@1.19.0
+
 ## 0.12.1-next.0
 
 ### Patch Changes

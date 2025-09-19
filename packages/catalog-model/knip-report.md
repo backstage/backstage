@@ -4,5 +4,5 @@
 
 | Name               | Location     | Severity |
 | :----------------- | :----------- | :------- |
-| @types/json-schema | package.json | error    |
+| @types/json-schema | packages/catalog-model/package.json | error    |
 
