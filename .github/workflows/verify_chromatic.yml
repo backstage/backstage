@@ -62,6 +62,16 @@ jobs:
             packages/ui/css/**
             packages/ui/src/**/*.css
 
+      - name: Prepare Chromatic Message
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        id: prepare-message
+        run: |
+          if [ "${{ steps.chromatic.outputs.changeCount }}" = "0" ] || [ -z "${{ steps.chromatic.outputs.changeCount }}" ]; then
+            echo "changes-text=No visual changes detected - [**View build in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
+          else
+            echo "changes-text=**${{ steps.chromatic.outputs.changeCount }}** visual changes are waiting for review - [**Review changes in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
+          fi
+
       - name: Post Chromatic Link in PR Comment
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
         uses: mshick/add-pr-comment@v2
@@ -69,6 +79,6 @@ jobs:
           message: |
             ## 🎨 Visual Testing with Chromatic
 
-            - **${{ steps.chromatic.outputs.changeCount }}** visual changes are waiting for review - [**Review changes in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})
+            - ${{ steps.prepare-message.outputs.changes-text }}
             - **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})
           repo-token: ${{ secrets.GITHUB_TOKEN }}
