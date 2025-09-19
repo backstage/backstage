@@ -9,7 +9,7 @@ on:
     paths:
       - '.github/workflows/verify_chromatic.yml'
       - '.storybook/**'
-      - 'packages/ui/src/**'
+      - 'packages/ui/**'
       - '**/*.stories.tsx'
 
 jobs:
