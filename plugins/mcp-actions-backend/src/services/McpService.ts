@@ -19,12 +19,24 @@ import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { version } from '@backstage/plugin-mcp-actions-backend/package.json';
 import { NotFoundError } from '@backstage/errors';
 
 import { handleErrors } from './handleErrors';
+
+// Type guard to check if a JsonValue is a JsonObject
+function isJsonObject(value: JsonValue): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+// Type guard to check if a JsonObject has a type field equal to 'image'
+function isImageOutput(
+  obj: JsonObject,
+): obj is JsonObject & { type: 'image'; data: JsonValue } {
+  return obj.type === 'image';
+}
 
 export class McpService {
   constructor(private readonly actions: ActionsService) {}
@@ -81,16 +93,26 @@ export class McpService {
           credentials,
         });
 
+        // Check if output is a JsonObject with type 'image'
+        const isImageType = isJsonObject(output) && isImageOutput(output);
+
         return {
-          // todo(blam): unfortunately structuredContent is not supported by most clients yet.
-          // so the validation for the output happens in the default actions registry
-          // and we return it as json text instead for now.
+          // for the moment adding support to image type since clients are now able to render the images
           content: [
             {
-              type: 'text',
-              text: ['```json', JSON.stringify(output, null, 2), '```'].join(
-                '\n',
-              ),
+              type: isImageType ? 'image' : 'text',
+              ...(isImageType
+                ? {
+                    data: output.data,
+                    mimeType: 'image/png',
+                  }
+                : {
+                    text: [
+                      '```json',
+                      JSON.stringify(output, null, 2),
+                      '```',
+                    ].join('\n'),
+                  }),
             },
           ],
         };
