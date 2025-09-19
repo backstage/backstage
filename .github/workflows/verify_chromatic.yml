@@ -58,6 +58,31 @@ jobs:
           storybookBuildDir: dist-storybook
           onlyChanged: true
 
+      - name: Extract Chromatic Details
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        id: extract-details
+        run: |
+          # Try to extract change count from Chromatic logs
+          # This is a best-effort approach as the exact log format may vary
+          echo "Extracting Chromatic details from logs..."
+
+          # Set default values
+          CHANGES_COUNT="Unknown"
+          STORIES_COUNT="Unknown"
+
+          # Try to find change count in various log patterns
+          if [ -f "$GITHUB_WORKSPACE/chromatic-output.log" ]; then
+            CHANGES_COUNT=$(grep -oP '(\d+)\s+changes?' "$GITHUB_WORKSPACE/chromatic-output.log" | head -1 | grep -oP '\d+' || echo "Unknown")
+            STORIES_COUNT=$(grep -oP '(\d+)\s+stories?' "$GITHUB_WORKSPACE/chromatic-output.log" | head -1 | grep -oP '\d+' || echo "Unknown")
+          fi
+
+          # Output the extracted values
+          echo "changes-count=$CHANGES_COUNT" >> $GITHUB_OUTPUT
+          echo "stories-count=$STORIES_COUNT" >> $GITHUB_OUTPUT
+
+          echo "Changes detected: $CHANGES_COUNT"
+          echo "Stories affected: $STORIES_COUNT"
+
       - name: Post Chromatic Link in PR Comment
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
         uses: mshick/add-pr-comment@v2
@@ -72,6 +97,10 @@ jobs:
             | [**Review Changes**](${{ steps.chromatic.outputs.url }}) | View visual diffs and approve/reject changes |
             | [**Build Details**](${{ steps.chromatic.outputs.buildUrl }}) | See detailed build information |
             | [**Live Storybook**](${{ steps.chromatic.outputs.storybookUrl }}) | Browse the interactive component library |
+
+            ### 📊 Build Summary
+            - **Changes detected**: ${{ steps.extract-details.outputs.changes-count }}
+            - **Stories affected**: ${{ steps.extract-details.outputs.stories-count }}
 
             ---
             *This comment is automatically updated when visual tests run.*
