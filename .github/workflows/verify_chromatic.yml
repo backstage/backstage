@@ -56,34 +56,11 @@ jobs:
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: chpt_dab72dc0f97d55b
           storybookBuildDir: dist-storybook
-          onlyChanged: false
+          onlyChanged: true
           externals: |
             packages/ui/**/*.css
             packages/ui/css/**
             packages/ui/src/**/*.css
-
-      - name: Debug - Show changed files
-        if: github.event_name == 'pull_request'
-        run: |
-          echo "=== Changed files in this PR ==="
-          git diff --name-only HEAD~1 HEAD || echo "No previous commit to compare"
-          echo ""
-          echo "=== CSS files in packages/ui ==="
-          find packages/ui -name "*.css" -type f || echo "No CSS files found"
-          echo ""
-          echo "=== Recent changes to CSS files ==="
-          git log --oneline --name-only -10 -- "packages/ui/**/*.css" || echo "No recent CSS changes"
-          echo ""
-          echo "=== Git diff for CSS files ==="
-          git diff HEAD~1 HEAD -- "packages/ui/**/*.css" || echo "No CSS changes in diff"
-          echo ""
-          echo "=== Chromatic config check ==="
-          if [ -f "chromatic.config.js" ]; then
-            echo "chromatic.config.js exists"
-            cat chromatic.config.js
-          else
-            echo "No chromatic.config.js found"
-          fi
 
       - name: Post Chromatic Link in PR Comment
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
@@ -117,4 +94,25 @@ jobs:
             | `testCount` | `${{ steps.chromatic.outputs.testCount }}` | The number of tests on the build. |
 
             </details>
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post Debug Comment (if Chromatic failed)
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url == ''
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            ## 🚨 Chromatic Debug Info
+
+            The Chromatic workflow ran but didn't produce a URL. This could mean:
+            - Chromatic failed to run
+            - No changes were detected
+            - Configuration issue
+
+            **Debug Info:**
+            - Workflow triggered: ✅
+            - Chromatic URL: `${{ steps.chromatic.outputs.url }}`
+            - Exit Code: `${{ steps.chromatic.outputs.code }}`
+            - Changed files: See workflow logs above
+
+            Please check the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.
           repo-token: ${{ secrets.GITHUB_TOKEN }}
