@@ -57,7 +57,22 @@ jobs:
           projectToken: chpt_dab72dc0f97d55b
           storybookBuildDir: dist-storybook
           onlyChanged: true
-          externals: packages/ui/**/*.css
+          externals: |
+            packages/ui/**/*.css
+            packages/ui/css/**
+            packages/ui/src/**/*.css
+
+      - name: Debug - Show changed files
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "=== Changed files in this PR ==="
+          git diff --name-only HEAD~1 HEAD || echo "No previous commit to compare"
+          echo ""
+          echo "=== CSS files in packages/ui ==="
+          find packages/ui -name "*.css" -type f || echo "No CSS files found"
+          echo ""
+          echo "=== Recent changes to CSS files ==="
+          git log --oneline --name-only -10 -- "packages/ui/**/*.css" || echo "No recent CSS changes"
 
       - name: Post Chromatic Link in PR Comment
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
@@ -68,19 +83,12 @@ jobs:
 
             Your visual changes have been tested with Chromatic! Here are the results:
 
-            | 🔗 Link | Description |
-            |---------|-------------|
-            | [**Review Changes**](${{ steps.chromatic.outputs.url }}) | View visual diffs and approve/reject changes |
-            | [**Build Details**](${{ steps.chromatic.outputs.buildUrl }}) | See detailed build information |
-            | [**Live Storybook**](${{ steps.chromatic.outputs.storybookUrl }}) | Browse the interactive component library |
+            - [**Review Changes**](${{ steps.chromatic.outputs.url }}) - View visual diffs and approve/reject changes
+            - [**Build Details**](${{ steps.chromatic.outputs.buildUrl }}) - See detailed build information
+            - [**Live Storybook**](${{ steps.chromatic.outputs.storybookUrl }}) - Browse the interactive component library
 
-            ### 📊 Build Summary
-            - **Changes detected**: ${{ steps.chromatic.outputs.changeCount }}
-            - **Actual capture count**: ${{ steps.chromatic.outputs.actualCaptureCount }}
-
-            ---
-
-            ### 🔧 All Available Chromatic Outputs
+            <details>
+            <summary>🔧 <strong>All Available Chromatic Outputs</strong></summary>
 
             | Output | Value | Description |
             |--------|-------|-------------|
@@ -93,10 +101,9 @@ jobs:
             | `componentCount` | `${{ steps.chromatic.outputs.componentCount }}` | The number of components in the published Storybook. |
             | `errorCount` | `${{ steps.chromatic.outputs.errorCount }}` | The number of tests with error(s), including any inherited errors (e.g., due to TurboSnap). |
             | `inheritedCaptureCount` | `${{ steps.chromatic.outputs.inheritedCaptureCount }}` | The number of inherited (not captured) snapshots (e.g., due to TurboSnap). |
-            | `interactionTestFailuresCount` | `${{ steps.chromatic.outputs.interactionTestFailuresCount }}` | 	The number of stories with interaction test failures. |
-            | `specCount` | `${{ steps.chromatic.outputs.specCount }}` | 	The number of stories in the published Storybook. |
-            | `testCount` | `${{ steps.chromatic.outputs.testCount }}` |  The number of tests on the build. |
+            | `interactionTestFailuresCount` | `${{ steps.chromatic.outputs.interactionTestFailuresCount }}` | The number of stories with interaction test failures. |
+            | `specCount` | `${{ steps.chromatic.outputs.specCount }}` | The number of stories in the published Storybook. |
+            | `testCount` | `${{ steps.chromatic.outputs.testCount }}` | The number of tests on the build. |
 
-            ---
-            *This comment is automatically updated when visual tests run.*
+            </details>
           repo-token: ${{ secrets.GITHUB_TOKEN }}
