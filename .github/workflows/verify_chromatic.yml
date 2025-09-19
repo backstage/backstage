@@ -67,30 +67,8 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            ## 🎨 Visual Testing Results
+            ## 🎨 Visual Regression Testing
 
-            ${{ steps.chromatic.outputs.changeCount }} visual changes were found in this build.
-
-            - [**Review changes**](${{ steps.chromatic.outputs.buildUrl }}) - Please review the changes and approve or reject them.
-            - [**Live Storybook**](${{ steps.chromatic.outputs.storybookUrl }}) - Browse the interactive component library
-
-            <details>
-            <summary><strong>All Available Chromatic Outputs</strong></summary>
-
-            | Output | Value | Description |
-            |--------|-------|-------------|
-            | `url` | `${{ steps.chromatic.outputs.url }}` | An alias for the build URL. |
-            | `buildUrl` | `${{ steps.chromatic.outputs.buildUrl }}` | The build URL. |
-            | `storybookUrl` | `${{ steps.chromatic.outputs.storybookUrl }}` | The Storybook preview URL for your current branch / Pull Request. |
-            | `code` | `${{ steps.chromatic.outputs.code }}` | The exit code for the current run of the Chromatic CLI. |
-            | `actualCaptureCount` | `${{ steps.chromatic.outputs.actualCaptureCount }}` | The number of captured snapshots. |
-            | `changeCount` | `${{ steps.chromatic.outputs.changeCount }}` | The number of tests with visual changes, including any inherited changes (e.g., due to TurboSnap). |
-            | `componentCount` | `${{ steps.chromatic.outputs.componentCount }}` | The number of components in the published Storybook. |
-            | `errorCount` | `${{ steps.chromatic.outputs.errorCount }}` | The number of tests with error(s), including any inherited errors (e.g., due to TurboSnap). |
-            | `inheritedCaptureCount` | `${{ steps.chromatic.outputs.inheritedCaptureCount }}` | The number of inherited (not captured) snapshots (e.g., due to TurboSnap). |
-            | `interactionTestFailuresCount` | `${{ steps.chromatic.outputs.interactionTestFailuresCount }}` | The number of stories with interaction test failures. |
-            | `specCount` | `${{ steps.chromatic.outputs.specCount }}` | The number of stories in the published Storybook. |
-            | `testCount` | `${{ steps.chromatic.outputs.testCount }}` | The number of tests on the build. |
-
-            </details>
+            - **${{ steps.chromatic.outputs.changeCount }}** visual changes are waiting for review - [**Review changes in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})
+            - **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})
           repo-token: ${{ secrets.GITHUB_TOKEN }}
