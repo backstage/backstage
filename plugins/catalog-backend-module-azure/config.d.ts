@@ -61,16 +61,32 @@ export interface Config {
       azureBlob?:
         | {
             [name: string]: {
-              id: string;
+              /**
+               * (Required) The Azure Blob Storage container name.
+               */
               containerName: string;
+              /**
+               * (Required) The Azure Storage account name.
+               */
               accountName: string;
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
               schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
             };
           }
         | {
-            id: string;
+            /**
+             * (Required) The Azure Blob Storage container name.
+             */
             containerName: string;
+            /**
+             * (Required) The Azure Storage account name.
+             */
             accountName: string;
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
           };
     };
