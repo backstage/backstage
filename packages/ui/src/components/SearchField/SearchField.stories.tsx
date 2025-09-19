@@ -187,12 +187,14 @@ export const InHeader: Story = {
         customActions={
           <>
             <ButtonIcon
+              aria-label="Cactus icon button"
               icon={<RiCactusLine />}
               size="small"
               variant="secondary"
             />
             <SearchField {...args} size="small" />
             <ButtonIcon
+              aria-label="Cactus icon button"
               icon={<RiCactusLine />}
               size="small"
               variant="secondary"
@@ -222,12 +224,14 @@ export const StartCollapsedInHeader: Story = {
         customActions={
           <>
             <ButtonIcon
+              aria-label="Cactus icon button"
               icon={<RiCactusLine />}
               size="small"
               variant="secondary"
             />
             <SearchField {...args} size="small" />
             <ButtonIcon
+              aria-label="Cactus icon button"
               icon={<RiCactusLine />}
               size="small"
               variant="secondary"
@@ -246,12 +250,22 @@ export const StartCollapsedWithButtons: Story = {
   render: args => (
     <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: '600px' }}>
       <SearchField {...args} size="small" />
-      <ButtonIcon icon={<RiCactusLine />} size="small" variant="secondary" />
+      <ButtonIcon
+        aria-label="Cactus icon button"
+        icon={<RiCactusLine />}
+        size="small"
+        variant="secondary"
+      />
       <Button size="small" variant="secondary">
         Hello world
       </Button>
       <SearchField {...args} size="medium" />
-      <ButtonIcon icon={<RiCactusLine />} size="medium" variant="secondary" />
+      <ButtonIcon
+        aria-label="Cactus icon button"
+        icon={<RiCactusLine />}
+        size="medium"
+        variant="secondary"
+      />
       <Button size="medium" variant="secondary">
         Hello world
       </Button>
