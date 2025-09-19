@@ -56,7 +56,7 @@ jobs:
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: chpt_dab72dc0f97d55b
           storybookBuildDir: dist-storybook
-          onlyChanged: true
+          onlyChanged: false
           externals: |
             packages/ui/**/*.css
             packages/ui/css/**
@@ -73,6 +73,17 @@ jobs:
           echo ""
           echo "=== Recent changes to CSS files ==="
           git log --oneline --name-only -10 -- "packages/ui/**/*.css" || echo "No recent CSS changes"
+          echo ""
+          echo "=== Git diff for CSS files ==="
+          git diff HEAD~1 HEAD -- "packages/ui/**/*.css" || echo "No CSS changes in diff"
+          echo ""
+          echo "=== Chromatic config check ==="
+          if [ -f "chromatic.config.js" ]; then
+            echo "chromatic.config.js exists"
+            cat chromatic.config.js
+          else
+            echo "No chromatic.config.js found"
+          fi
 
       - name: Post Chromatic Link in PR Comment
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
