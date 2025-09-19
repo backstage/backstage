@@ -81,17 +81,20 @@ export interface Config {
       /**
        * The primary or secondary key for the Azure Storage Account.
        * Only required if connectionString or SAS token are not specified.
+       * @visibility secret
        */
       accountKey?: string;
 
       /**
        * A Shared Access Signature (SAS) token for limited access to resources.
+       * @visibility secret
        */
       sasToken?: string;
 
       /**
        * A full connection string for the Azure Storage Account.
        * This includes the account name, key, and endpoint details.
+       * @visibility secret
        */
       connectionString?: string;
 
@@ -103,12 +106,14 @@ export interface Config {
 
       /**
        * The host of the target that this matches on, e.g., "blob.core.windows.net".
+       * @visibility frontend
        */
       host: string;
 
       endpoint?: string;
       /**
        * Optional credential to use for Azure Active Directory authentication.
+       * @deepVisibility secret
        */
       aadCredential?: {
         /**
