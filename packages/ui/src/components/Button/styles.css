@@ -34,7 +34,7 @@
 }
 
 .bui-Button[data-variant='primary'] {
-  background-color: var(--bui-bg-solid);
+  background-color: green;
   color: var(--bui-fg-solid);
 
   &:hover {
