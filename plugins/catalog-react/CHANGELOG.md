@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.1
+
+### Patch Changes
+
+- 3c433e9: Correct translation key from "type" to "owner" for owner column in entity table to ensure the right translation is loaded.
+- Updated dependencies
+  - @backstage/core-components@0.18.1
+
 ## 1.21.0
 
 ### Minor Changes

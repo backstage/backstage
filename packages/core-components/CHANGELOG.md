@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.18.1
+
+### Patch Changes
+
+- c095909: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+
 ## 0.18.0
 
 ### Minor Changes

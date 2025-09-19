@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-graph
 
+## 0.5.1
+
+### Patch Changes
+
+- aed4792: Add missing API implementation for catalog graph plugin in NFS apps.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.1
+  - @backstage/core-components@0.18.1
+
 ## 0.5.0
 
 ### Minor Changes
