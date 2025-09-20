@@ -15,7 +15,6 @@ import { Dispatch } from 'react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
@@ -27,6 +26,7 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { ReactElement } from 'react';
@@ -205,7 +205,7 @@ export type FormFieldExtensionData<
 };
 
 // @alpha (undocumented)
-export const formFieldsApi: ExtensionDefinition<{
+export const formFieldsApi: OverridableExtensionDefinition<{
   config: {};
   configInput: {};
   output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
