@@ -128,6 +128,9 @@ services.
 
 The architecture of the Tech Radar installed into a Backstage app is very simple. You just need to add Tech Radar as a frontend plugin into your app, as shown in the following diagram.
 
+> [**NOTE**]  
+> The following diagram does not show the detailed contents of the frontend and backend containers in order to highlight the changes that pertain to the addition of the specified plugin.
+> 
 ![ui and tech radar plugin connected together](../assets/architecture-overview/simplified-standalone-plugin-architecture.jpeg)
 
 Once the plugin has been added, then you can view the Tech Radar information in the Backstage UI.
