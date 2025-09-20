@@ -59,7 +59,7 @@ Backstage includes the following set of core plugins:
 - Kubernetes
 - Search
 
-[Plugin architecture](plugin-architecture) provides greater detail about the architecture of the plugins themselves.
+[Plugin architecture](#plugin-architecture) provides greater detail about the architecture of the plugins themselves.
 
 ### Extension Overrides
 
@@ -87,7 +87,7 @@ It is up to you to decide how many different backends you want to deploy. You ca
 
 Plugins provide the actual features. They operate completely independently of each other. If plugins want to communicate with each other, they must do so over the wire. There can be no direct communication between plugins through code. Because of this constraint, each plugin can be considered to be its own microservice.
 
-[Plugin architecture](plugin-architecture) provides greater detail about the architecture of the plugins themselves.
+[Plugin architecture](#plugin-architecture) provides greater detail about the architecture of the plugins themselves.
 
 ### Services
 
