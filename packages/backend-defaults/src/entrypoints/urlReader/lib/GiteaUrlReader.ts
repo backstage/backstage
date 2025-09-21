@@ -78,10 +78,10 @@ export class GiteaUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
-    let response: Response;
     const blobUrl = getGiteaFileContentsUrl(this.integration.config, url);
 
     for (let retry = 0; retry < 3; ++retry) {
+      let response: Response;
       try {
         response = await fetch(blobUrl, {
           method: 'GET',
@@ -111,24 +111,27 @@ export class GiteaUrlReader implements UrlReaderService {
         } else if (encoding) {
           throw new Error(`Unknown encoding: ${encoding}`);
         }
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } else {
+        const message = `${url} could not be read as ${blobUrl}, ${response.status} ${response.statusText}`;
+        if (response.status === 404) {
+          throw new NotFoundError(message);
+        }
+
+        if (response.status === 304) {
+          throw new NotModifiedError();
+        }
+
+        if (response.status === 403) {
+          throw new AuthenticationError();
+        }
+
+        throw new Error(message);
       }
-      await new Promise(resolve => setTimeout(resolve, 500));
     }
-
-    const message = `${url} could not be read as ${blobUrl}, ${response.status} ${response.statusText}`;
-    if (response.status === 404) {
-      throw new NotFoundError(message);
-    }
-
-    if (response.status === 304) {
-      throw new NotModifiedError();
-    }
-
-    if (response.status === 403) {
-      throw new AuthenticationError();
-    }
-
-    throw new Error(message);
+    throw new NotFoundError(
+      `${url} could not be read as ${blobUrl} after 3 retries`,
+    );
   }
 
   async readTree(
