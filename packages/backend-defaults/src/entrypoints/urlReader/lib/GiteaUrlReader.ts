@@ -81,33 +81,38 @@ export class GiteaUrlReader implements UrlReaderService {
     let response: Response;
     const blobUrl = getGiteaFileContentsUrl(this.integration.config, url);
 
-    try {
-      response = await fetch(blobUrl, {
-        method: 'GET',
-        ...getGiteaRequestOptions(this.integration.config),
-        signal: options?.signal as any,
-      });
-    } catch (e) {
-      throw new Error(`Unable to read ${blobUrl}, ${e}`);
-    }
-
-    if (response.ok) {
-      // Gitea returns an object with the file contents encoded, not the file itself
-      const { encoding, content } = await response.json();
-
-      if (encoding === 'base64') {
-        return ReadUrlResponseFactory.fromReadable(
-          Readable.from(Buffer.from(content, 'base64')),
-          {
-            etag: response.headers.get('ETag') ?? undefined,
-            lastModifiedAt: parseLastModified(
-              response.headers.get('Last-Modified'),
-            ),
-          },
-        );
+    for (let retry = 0; retry < 3; ++retry) {
+      try {
+        response = await fetch(blobUrl, {
+          method: 'GET',
+          ...getGiteaRequestOptions(this.integration.config),
+          signal: options?.signal as any,
+        });
+      } catch (e) {
+        throw new Error(`Unable to read ${blobUrl}, ${e}`);
       }
 
-      throw new Error(`Unknown encoding: ${encoding}`);
+      if (response.ok) {
+        // Gitea returns an object with the file contents encoded, not the file itself
+        const { encoding, content } = await response.json();
+
+        // sometimes when a file was recently created Gitea returns an empty array instead of an object
+        // in this case encoding is undefined, and we do a retry.
+        if (encoding === 'base64') {
+          return ReadUrlResponseFactory.fromReadable(
+            Readable.from(Buffer.from(content, 'base64')),
+            {
+              etag: response.headers.get('ETag') ?? undefined,
+              lastModifiedAt: parseLastModified(
+                response.headers.get('Last-Modified'),
+              ),
+            },
+          );
+        } else if (encoding) {
+          throw new Error(`Unknown encoding: ${encoding}`);
+        }
+      }
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
 
     const message = `${url} could not be read as ${blobUrl}, ${response.status} ${response.statusText}`;
