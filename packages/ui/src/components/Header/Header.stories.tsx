@@ -57,14 +57,17 @@ const tabs: HeaderTab[] = [
   {
     id: 'overview',
     label: 'Overview',
+    href: '/overview',
   },
   {
     id: 'checks',
     label: 'Checks',
+    href: '/checks',
   },
   {
     id: 'tracks',
     label: 'Tracks',
+    href: '/tracks',
   },
   {
     id: 'campaigns',
@@ -82,14 +85,17 @@ const tabs2: HeaderTab[] = [
   {
     id: 'Banana',
     label: 'Banana',
+    href: '/banana',
   },
   {
     id: 'Apple',
     label: 'Apple',
+    href: '/apple',
   },
   {
     id: 'Orange',
     label: 'Orange',
+    href: '/orange',
   },
 ];
 
