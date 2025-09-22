@@ -21,12 +21,15 @@ import {
   ScaffolderDryRunResponse,
 } from '@backstage/plugin-scaffolder-react';
 import { scaffolderApi } from './scaffolderApi';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import {
   serializeDirectoryContents,
   deserializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { entitySchemaValidator } from '@backstage/catalog-model';
 
 export default async function generate(
   templateDirectory: string,
@@ -54,14 +57,25 @@ export default async function generate(
   console.log(`Generated project in ${path.resolve(outputDir)}`);
 }
 
+const validator = entitySchemaValidator();
+
 async function getDryRunOptions(
   templateDirectory: string,
   templatePath: string,
   options: { url: string; values: string },
 ): Promise<ScaffolderDryRunOptions> {
-  const templateJson: JsonValue = await readYamlFile(
+  const templateJson = await readYamlFile(
     path.join(templateDirectory, templatePath),
   );
+  const validatedEntity = validator(templateJson);
+  if (!validatedEntity) {
+    throw new Error(`Invalid entity at ${templatePath}`);
+  }
+  const isTemplateEntity = isTemplateEntityV1beta3(validatedEntity);
+  if (!isTemplateEntity) {
+    throw new Error(`Invalid template entity at ${templatePath}`);
+  }
+  const templateEntity = validatedEntity as TemplateEntityV1beta3;
   let dryRunData: JsonObject;
   if (options.values?.startsWith('{')) {
     dryRunData = JSON.parse(options.values);
@@ -82,7 +96,7 @@ async function getDryRunOptions(
     base64Content: file.content.toString('base64'),
   }));
   return {
-    template: templateJson,
+    template: templateEntity,
     values: dryRunData,
     directoryContents,
   };

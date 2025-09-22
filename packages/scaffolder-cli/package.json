@@ -41,7 +41,9 @@
     "watch": "./src"
   },
   "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",
     "@backstage/types": "workspace:^",
