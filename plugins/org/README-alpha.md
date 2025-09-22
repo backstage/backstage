@@ -48,9 +48,8 @@ And below is an example of how a user page looks with the user profile and owner
    ```yaml
    # app-config.yaml
    app:
-     experimental:
-       # Auto discovering all plugins extensions
-       packages: all
+     # Auto discovering all plugins extensions
+     packages: all
      extensions:
        # Enabling the org plugin cards
        - entity-card:org/group-profile
@@ -130,7 +129,7 @@ export default createFrontendModule({
       name: 'group-profile',
       // By default, this card will show up only for groups
       filter: 'kind:group'
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomGroupProfileEntityCard />),
     }),
@@ -182,7 +181,7 @@ export default createFrontendModule({
       name: 'members-list',
       // By default, this card will show up only for groups
       filter: 'kind:group'
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomMembersListEntityCard />),
     }),
@@ -234,7 +233,7 @@ export default createFrontendModule({
       name: 'ownership',
       // By default, this card will show up only for groups or users
       filter: 'kind:group,user'
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
     }),
@@ -286,7 +285,7 @@ export default createFrontendModule({
       name: 'user-profile',
       // By default, this card will show up only for groups or users
       filter: 'kind:user'
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
     }),

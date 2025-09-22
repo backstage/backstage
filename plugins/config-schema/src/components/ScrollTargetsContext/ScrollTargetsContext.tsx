@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
 
 class ScrollTargetsForwarder {
   private readonly listeners = new Map<string, () => void>();

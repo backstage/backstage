@@ -22,63 +22,85 @@ import {
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
 import { InternalBackstageCredentials } from './types';
+import { createHash } from 'crypto';
 
 export function createCredentialsWithServicePrincipal(
   sub: string,
   token?: string,
   accessRestrictions?: BackstagePrincipalAccessRestrictions,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
-  return Object.defineProperty(
-    {
-      $$type: '@backstage/BackstageCredentials',
-      version: 'v1',
-      principal: {
-        type: 'service',
-        subject: sub,
-        accessRestrictions,
-      },
-    },
-    'token',
-    {
+  const principal = createServicePrincipal(sub, accessRestrictions);
+  const result = {
+    $$type: '@backstage/BackstageCredentials',
+    version: 'v1',
+    principal,
+  } as const;
+  Object.defineProperties(result, {
+    token: {
       enumerable: false,
       configurable: true,
+      writable: true,
       value: token,
     },
-  );
+    toString: {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: () => `backstageCredentials{${principal}}`,
+    },
+  });
+  return result;
 }
 
 export function createCredentialsWithUserPrincipal(
   sub: string,
   token: string,
   expiresAt?: Date,
+  actor?: string,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
-  return Object.defineProperty(
-    {
-      $$type: '@backstage/BackstageCredentials',
-      version: 'v1',
-      expiresAt,
-      principal: {
-        type: 'user',
-        userEntityRef: sub,
-      },
-    },
-    'token',
-    {
+  const principal = createUserPrincipal(
+    sub,
+    actor ? createServicePrincipal(actor) : undefined,
+  );
+  const result = {
+    $$type: '@backstage/BackstageCredentials',
+    version: 'v1',
+    expiresAt,
+    principal,
+  } as const;
+  Object.defineProperties(result, {
+    token: {
       enumerable: false,
       configurable: true,
+      writable: true,
       value: token,
     },
-  );
+    toString: {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: () => `backstageCredentials{${principal}}`,
+    },
+  });
+  return result;
 }
 
 export function createCredentialsWithNonePrincipal(): InternalBackstageCredentials<BackstageNonePrincipal> {
-  return {
+  const principal = createNonePrincipal();
+  const result = {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
-    principal: {
-      type: 'none',
+    principal,
+  } as const;
+  Object.defineProperties(result, {
+    toString: {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: () => `backstageCredentials{${principal}}`,
     },
-  };
+  });
+  return result;
 }
 
 export function toInternalBackstageCredentials(
@@ -101,4 +123,75 @@ export function toInternalBackstageCredentials(
   }
 
   return internalCredentials;
+}
+
+function createServicePrincipal(
+  sub: string,
+  accessRestrictions?: BackstagePrincipalAccessRestrictions,
+): BackstageServicePrincipal {
+  const result = {
+    type: 'service',
+    subject: sub,
+    accessRestrictions,
+  } as const;
+  Object.defineProperties(result, {
+    toString: {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: () => {
+        let parts = sub;
+        if (accessRestrictions) {
+          const hash = createHash('sha256')
+            .update(JSON.stringify(accessRestrictions))
+            .digest('base64')
+            .replace(/=+$/, '');
+          parts += `,accessRestrictions=${hash}`;
+        }
+        return `servicePrincipal{${parts}}`;
+      },
+    },
+  });
+  return result;
+}
+
+function createUserPrincipal(
+  userEntityRef: string,
+  actor?: BackstageServicePrincipal,
+): BackstageUserPrincipal {
+  const result = {
+    type: 'user',
+    userEntityRef,
+    actor,
+  } as const;
+  Object.defineProperties(result, {
+    toString: {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: () => {
+        let parts = userEntityRef;
+        if (actor) {
+          parts += `,actor={${actor}}`;
+        }
+        return `userPrincipal{${parts}}`;
+      },
+    },
+  });
+  return result;
+}
+
+function createNonePrincipal(): BackstageNonePrincipal {
+  const result = {
+    type: 'none',
+  } as const;
+  Object.defineProperties(result, {
+    toString: {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: () => 'nonePrincipal',
+    },
+  });
+  return result;
 }

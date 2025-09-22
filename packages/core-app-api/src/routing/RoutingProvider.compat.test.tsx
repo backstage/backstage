@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, ReactElement } from 'react';
+import {
+  default as React,
+  PropsWithChildren,
+  ReactElement,
+  Suspense,
+} from 'react';
 import { render } from '@testing-library/react';
 import type {
   BackstagePlugin,
@@ -315,7 +320,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/blob/bar']}>
-          <React.Suspense fallback="loller">
+          <Suspense fallback="loller">
             <Routes>
               <Route path="foo/:id" element={<ExtensionPage3 />}>
                 <Route
@@ -333,7 +338,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
               routeRef={refPage2}
               params={{ id: 'other' }}
             />
-          </React.Suspense>
+          </Suspense>
         </MemoryRouter>
       </AppContextProvider>
     );

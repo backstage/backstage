@@ -54,13 +54,41 @@ export const catalogLocationsExtensionPoint =
  * @alpha
  */
 export interface CatalogProcessingExtensionPoint {
+  /**
+   * Adds entity processors. These are responsible for reading, parsing, and
+   * processing entities before they are persisted in the catalog.
+   *
+   * This function also can replace a Default processor if the provided processor
+   * matches the processor name.
+   *
+   * @param processors - One or more processors
+   */
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): void;
+
+  /**
+   * Adds or replaces entity providers. These are responsible for bootstrapping
+   * the list of entities out of original data sources. For example, there is
+   * one entity source for the config locations, and one for the database
+   * stored locations. If you ingest entities out of a third party system, you
+   * may want to implement that in terms of an entity provider as well.
+   *
+   * @param providers - One or more entity providers
+   */
   addEntityProvider(
     ...providers: Array<EntityProvider | Array<EntityProvider>>
   ): void;
+
+  /**
+   * Adds, or overwrites, a handler for placeholders (e.g. $file) in entity
+   * definition files.
+   *
+   * @param key - The key that identifies the placeholder, e.g. "file"
+   * @param resolver - The resolver that gets values for this placeholder
+   */
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
+
   setOnProcessingErrorHandler(
     handler: (event: {
       unprocessedEntity: Entity;

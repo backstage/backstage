@@ -8,6 +8,6 @@ documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/ha
 iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-harness-iacm'
 tags:
-  - infrastrucure-as-code
+  - infrastructure-as-code
   - resource-management
 addedDate: '2024-07-03'

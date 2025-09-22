@@ -92,6 +92,18 @@ describe('DefaultAwsCredentialsManager', () => {
     });
 
     stsMock
+      .on(GetCallerIdentityCommand)
+      .callsFake(async (_input, getClient) => {
+        const client = getClient();
+        const region = await client.config.region();
+        if (!region) {
+          throw new Error('Region is missing');
+        }
+        return {
+          Account: '123456789012',
+        };
+      });
+    stsMock
       .on(AssumeRoleCommand, {
         RoleArn: 'arn:aws:iam::111111111111:role/hello',
         RoleSessionName: 'backstage',
@@ -487,6 +499,22 @@ describe('DefaultAwsCredentialsManager', () => {
           region: 'us-east-1',
         },
       });
+    });
+
+    it('passes mainAccount region to fillInAccountId for account ID lookup during fallback', async () => {
+      const region = 'us-west-2';
+      const configWithRegion = new ConfigReader({
+        aws: {
+          mainAccount: {
+            region,
+          },
+        },
+      });
+      const provider =
+        DefaultAwsCredentialsManager.fromConfig(configWithRegion);
+      await provider.getCredentialProvider({ accountId: '123456789012' });
+
+      expect(await stsMock.call(0).thisValue.config.region()).toEqual(region);
     });
   });
 });

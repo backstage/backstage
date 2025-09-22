@@ -15,7 +15,6 @@
  */
 
 import { EmailCardAction } from './EmailCardAction';
-import React from 'react';
 import { GroupEntity } from '@backstage/catalog-model';
 
 /**

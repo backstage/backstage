@@ -25,7 +25,7 @@ import {
   within,
   act,
 } from '@testing-library/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TechDocsSearch } from './TechDocsSearch';
 
 const entityId = {

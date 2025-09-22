@@ -1,0 +1,163 @@
+name: '🪲 Report a bug'
+description: 'Report a bug that you have encountered'
+labels:
+  - type:bug
+  - needs:triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in each section completely, and [search in GitHub](https://github.com/backstage/backstage/search?type=Issues)
+        before reporting a new bug to avoid duplicates. Thank you!
+  # This field is managed by .common.yaml
+  - id: issue-labels
+    type: checkboxes
+    attributes:
+      label: '📜 Issue Labels'
+      options:
+        - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
+          required: true
+  # This field is managed by .common.yaml
+  - id: search-terms
+    type: textarea
+    attributes:
+      label: '🔎 Search Terms'
+      render: plain
+      description: |
+        What search terms did you use when trying to find similar issues?
+      placeholder: |
+        List of keywords you searched for before creating this issue. Write them down here so that others can find this issue more easily and help provide feedback.
+
+        e.g. "catalog github rate limited", "http root service configurer", "scaffolder template include", "entity card title"
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: '<br/>' # empty space
+  - type: markdown
+    attributes:
+      value: |
+        ## Defining the bug
+
+        Defining the bug accurately will help ensure that it is identified and fixed correctly.
+  # This field is managed by .common.yaml
+  - id: project-area
+    type: dropdown
+    attributes:
+      label: '🗃️ Project Area'
+      description: Which project area is this issue most closely related to? This will help find an owner for the issue faster.
+      options:
+        - Unknown
+        - Auditor
+        - Auth
+        - Catalog
+        - CLI Tooling
+        - Core Framework
+        - Design System
+        - Documentation
+        - Events System
+        - Home
+        - Kubernetes Plugin
+        - Management of this repository
+        - Microsite
+        - Notifications
+        - OpenAPI Tooling
+        - Permission Framework
+        - Search
+        - Software Templates
+        - TechDocs
+    validations:
+      required: true
+  # This field is managed by .common.yaml
+  - type: dropdown
+    id: integration
+    attributes:
+      label: '🔗 External Integration'
+      description: Is this issue related to an integration with any particular external system?
+      options:
+        - N/A
+        - AWS
+        - Azure
+        - Azure DevOps
+        - Bitbucket Cloud
+        - Bitbucket Server
+        - GCP
+        - Gerrit
+        - Gitea
+        - GitHub
+        - GitLab
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: '📝 Description & Context'
+      placeholder: |
+        Describe the observed behavior that you believe to be incorrect, as well as any additional context that might be useful in understanding the bug.
+
+        e.g. "When I navigate to the catalog index page, it loads without any issues. This might be related to https://xkcd.com/1172"
+  - type: textarea
+    id: expected-behavior
+    validations:
+      required: true
+    attributes:
+      label: '👍 Expected Behavior'
+      placeholder: |
+        Describe the behavior or result that you expected instead of the observed one.
+
+        e.g. "I expect the catalog index page to overheat my CPU"
+  - type: markdown
+    attributes:
+      value: '<br/>' # empty space
+  - type: markdown
+    attributes:
+      value: |
+        ## Reproducing the bug
+
+        Being able to easily reproduce the bug will significantly increase the likelihood that it can be identified and fixed. Please provide a repository where the bug can be reproduced, unless this is a critical bug that needs immediate attention.
+
+        If you are unable to provide a reproduction repository, please explain the reproduction steps in as much detail as possible, and include the output of `yarn backstage-cli info` if relevant.
+
+        If inadequate or no reproduction steps are provided, the bug report is likely to be labeled as needing reproduction steps before it can be progressed further.
+  - type: input
+    id: reproduction-repo
+    attributes:
+      label: '📦 Reproduction Repo'
+      description: A link to a GitHub repository where the issue can be reproduced
+      placeholder: https://github.com/ghost/my-repro-repo
+    validations:
+      required: false
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: '🥾 Reproduction steps'
+      description: 'How do you trigger this bug? Please walk us through it step by step.'
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'"
+    validations:
+      required: false
+  # This field is managed by .common.yaml
+  - id: read-code-of-conduct
+    type: checkboxes
+    attributes:
+      label: 'Have you read the Code of Conduct?'
+      options:
+        - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+          required: true
+  - type: dropdown
+    attributes:
+      label: Are you willing to submit PR?
+      description: This is absolutely not required, but we are happy to guide you in the contribution process.
+      options:
+        - Undecided
+        - Yes, and I have enough information to get started
+        - Yes, but I would like some more guidance
+        - No, but I'm happy to collaborate on a PR with someone else
+        - No, I don't have time to work on this right now
+    validations:
+      required: true

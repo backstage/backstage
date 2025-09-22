@@ -33,7 +33,7 @@ import {
   FrontendModule,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
-import React, { Children, ReactNode, isValidElement } from 'react';
+import { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
   convertLegacyRouteRef,
@@ -187,87 +187,84 @@ export function collectLegacyRoutes(
     return extensions;
   };
 
-  React.Children.forEach(
-    flatRoutesElement.props.children,
-    (route: ReactNode) => {
-      if (route === null) {
-        return;
-      }
-      // TODO(freben): Handle feature flag and permissions framework wrapper elements
-      if (!React.isValidElement(route)) {
-        throw new Error(
-          `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
-        );
-      }
-      if (route.type !== Route) {
-        throw new Error(
-          `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
-        );
-      }
-      const routeElement = route.props.element;
-      const path: string | undefined = route.props.path;
-      const plugin =
-        getComponentData<LegacyBackstagePlugin>(routeElement, 'core.plugin') ??
-        orphanRoutesPlugin;
-      const routeRef = getComponentData<RouteRef>(
-        routeElement,
-        'core.mountPoint',
+  Children.forEach(flatRoutesElement.props.children, (route: ReactNode) => {
+    if (route === null) {
+      return;
+    }
+    // TODO(freben): Handle feature flag and permissions framework wrapper elements
+    if (!isValidElement(route)) {
+      throw new Error(
+        `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
       );
-      if (path === undefined) {
-        throw new Error(
-          `Route element inside FlatRoutes had no path prop value given`,
-        );
-      }
-
-      const extensions = getPluginExtensions(plugin);
-      const pageExtensionName = extensions.length ? getUniqueName() : undefined;
-      const pageExtensionId = `page:${plugin.getId()}${
-        pageExtensionName ? `/${pageExtensionName}` : pageExtensionName
-      }`;
-
-      extensions.push(
-        PageBlueprint.makeWithOverrides({
-          name: pageExtensionName,
-          inputs: {
-            childRoutingShims: createExtensionInput([
-              coreExtensionData.routePath.optional(),
-              coreExtensionData.routeRef.optional(),
-            ]),
-          },
-          factory(originalFactory, { inputs: _inputs }) {
-            // todo(blam): why do we not use the inputs here?
-            return originalFactory({
-              defaultPath: normalizeRoutePath(path),
-              routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
-              loader: async () =>
-                compatWrapper(
-                  route.props.children ? (
-                    <Routes>
-                      <Route path="*" element={routeElement}>
-                        <Route path="*" element={route.props.children} />
-                      </Route>
-                    </Routes>
-                  ) : (
-                    routeElement
-                  ),
-                ),
-            });
-          },
-        }),
+    }
+    if (route.type !== Route) {
+      throw new Error(
+        `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
       );
+    }
+    const routeElement = route.props.element;
+    const path: string | undefined = route.props.path;
+    const plugin =
+      getComponentData<LegacyBackstagePlugin>(routeElement, 'core.plugin') ??
+      orphanRoutesPlugin;
+    const routeRef = getComponentData<RouteRef>(
+      routeElement,
+      'core.mountPoint',
+    );
+    if (path === undefined) {
+      throw new Error(
+        `Route element inside FlatRoutes had no path prop value given`,
+      );
+    }
 
-      visitRouteChildren({
-        children: route.props.children,
-        parentExtensionId: pageExtensionId,
-        context: {
-          pluginId: plugin.getId(),
-          extensions,
-          getUniqueName,
-          discoverPlugin: getPluginExtensions,
+    const extensions = getPluginExtensions(plugin);
+    const pageExtensionName = extensions.length ? getUniqueName() : undefined;
+    const pageExtensionId = `page:${plugin.getId()}${
+      pageExtensionName ? `/${pageExtensionName}` : pageExtensionName
+    }`;
+
+    extensions.push(
+      PageBlueprint.makeWithOverrides({
+        name: pageExtensionName,
+        inputs: {
+          childRoutingShims: createExtensionInput([
+            coreExtensionData.routePath.optional(),
+            coreExtensionData.routeRef.optional(),
+          ]),
         },
-      });
-    },
-  );
+        factory(originalFactory, { inputs: _inputs }) {
+          // todo(blam): why do we not use the inputs here?
+          return originalFactory({
+            path: normalizeRoutePath(path),
+            routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
+            loader: async () =>
+              compatWrapper(
+                route.props.children ? (
+                  <Routes>
+                    <Route path="*" element={routeElement}>
+                      <Route path="*" element={route.props.children} />
+                    </Route>
+                  </Routes>
+                ) : (
+                  routeElement
+                ),
+              ),
+          });
+        },
+      }),
+    );
+
+    visitRouteChildren({
+      children: route.props.children,
+      parentExtensionId: pageExtensionId,
+      context: {
+        pluginId: plugin.getId(),
+        extensions,
+        getUniqueName,
+        discoverPlugin: getPluginExtensions,
+      },
+    });
+  });
 
   if (entityPage) {
     collectEntityPageContents(entityPage, {
@@ -307,13 +304,13 @@ export function collectLegacyRoutes(
   for (const [plugin, extensions] of pluginExtensions) {
     output.push(
       createFrontendPlugin({
-        id: plugin.getId(),
+        pluginId: plugin.getId(),
         extensions: [
           ...extensions,
           ...Array.from(plugin.getApis()).map(factory =>
             ApiBlueprint.make({
               name: factory.api.id,
-              params: { factory },
+              params: defineParams => defineParams(factory),
             }),
           ),
         ],

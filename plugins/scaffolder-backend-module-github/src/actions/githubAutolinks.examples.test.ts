@@ -53,7 +53,7 @@ describe('github:autolinks:create', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any, any>;
+  let action: TemplateAction<any, any, any>;
   const input = yaml.parse(examples[0].example).steps[0].input;
   const mockContext = createMockActionContext({
     input,

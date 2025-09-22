@@ -96,3 +96,9 @@ export const templateFormRouteRef = createSubRouteRef({
   parent: rootRouteRef,
   path: '/template-form',
 });
+
+export const templatingExtensionsRouteRef = createSubRouteRef({
+  id: 'scaffolder/templating-extensions',
+  parent: rootRouteRef,
+  path: '/templating-extensions',
+});

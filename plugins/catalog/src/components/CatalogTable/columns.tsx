@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import {
   humanizeEntityRef,
   EntityRefLink,
@@ -24,6 +23,7 @@ import { CatalogTableRow } from './types';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { JsonArray } from '@backstage/types';
+import { EntityTableColumnTitle } from '@backstage/plugin-catalog-react/alpha';
 
 // The columnFactories symbol is not directly exported, but through the
 // CatalogTable.columns field.
@@ -42,7 +42,7 @@ export const columnFactories = Object.freeze({
     }
 
     return {
-      title: 'Name',
+      title: <EntityTableColumnTitle translationKey="name" />,
       field: 'resolved.entityRef',
       highlight: true,
       customSort({ entity: entity1 }, { entity: entity2 }) {
@@ -60,8 +60,20 @@ export const columnFactories = Object.freeze({
   },
   createSystemColumn(): TableColumn<CatalogTableRow> {
     return {
-      title: 'System',
+      title: <EntityTableColumnTitle translationKey="system" />,
       field: 'resolved.partOfSystemRelationTitle',
+      customFilterAndSearch: (query, row) => {
+        if (!row.resolved.partOfSystemRelations) {
+          return false;
+        }
+
+        const systemNames = row.resolved.partOfSystemRelations.map(
+          ref => ref.name,
+        ); // Extract system names from entityRefs
+
+        const searchText = systemNames.join(', ').toLocaleUpperCase('en-US');
+        return searchText.includes(query.toLocaleUpperCase('en-US'));
+      },
       render: ({ resolved }) => (
         <EntityRefLinks
           entityRefs={resolved.partOfSystemRelations}
@@ -72,7 +84,7 @@ export const columnFactories = Object.freeze({
   },
   createOwnerColumn(): TableColumn<CatalogTableRow> {
     return {
-      title: 'Owner',
+      title: <EntityTableColumnTitle translationKey="owner" />,
       field: 'resolved.ownedByRelationsTitle',
       render: ({ resolved }) => (
         <EntityRefLinks
@@ -84,7 +96,7 @@ export const columnFactories = Object.freeze({
   },
   createSpecTargetsColumn(): TableColumn<CatalogTableRow> {
     return {
-      title: 'Targets',
+      title: <EntityTableColumnTitle translationKey="targets" />,
       field: 'entity.spec.targets',
       customFilterAndSearch: (query, row) => {
         let targets: JsonArray = [];
@@ -121,7 +133,7 @@ export const columnFactories = Object.freeze({
     } = { hidden: false },
   ): TableColumn<CatalogTableRow> {
     return {
-      title: 'Type',
+      title: <EntityTableColumnTitle translationKey="type" />,
       field: 'entity.spec.type',
       hidden: options.hidden,
       width: 'auto',
@@ -129,13 +141,13 @@ export const columnFactories = Object.freeze({
   },
   createSpecLifecycleColumn(): TableColumn<CatalogTableRow> {
     return {
-      title: 'Lifecycle',
+      title: <EntityTableColumnTitle translationKey="lifecycle" />,
       field: 'entity.spec.lifecycle',
     };
   },
   createMetadataDescriptionColumn(): TableColumn<CatalogTableRow> {
     return {
-      title: 'Description',
+      title: <EntityTableColumnTitle translationKey="description" />,
       field: 'entity.metadata.description',
       render: ({ entity }) => (
         <OverflowTooltip
@@ -148,7 +160,7 @@ export const columnFactories = Object.freeze({
   },
   createTagsColumn(): TableColumn<CatalogTableRow> {
     return {
-      title: 'Tags',
+      title: <EntityTableColumnTitle translationKey="tags" />,
       field: 'entity.metadata.tags',
       cellStyle: {
         padding: '0px 16px 0px 20px',
@@ -174,7 +186,7 @@ export const columnFactories = Object.freeze({
     hidden?: boolean;
   }): TableColumn<CatalogTableRow> {
     return {
-      title: 'Title',
+      title: <EntityTableColumnTitle translationKey="title" />,
       field: 'entity.metadata.title',
       hidden: options?.hidden,
       searchable: true,
@@ -191,7 +203,9 @@ export const columnFactories = Object.freeze({
     }
 
     return {
-      title: options?.title || 'Label',
+      title: options?.title || (
+        <EntityTableColumnTitle translationKey="label" />
+      ),
       field: 'entity.metadata.labels',
       cellStyle: {
         padding: '0px 16px 0px 20px',
@@ -224,7 +238,7 @@ export const columnFactories = Object.freeze({
   },
   createNamespaceColumn(): TableColumn<CatalogTableRow> {
     return {
-      title: 'Namespace',
+      title: <EntityTableColumnTitle translationKey="namespace" />,
       field: 'entity.metadata.namespace',
       width: 'auto',
     };

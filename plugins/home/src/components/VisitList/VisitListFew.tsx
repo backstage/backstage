@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Typography from '@material-ui/core/Typography';
+import { homeTranslationRef } from '../../translation';
 
-export const VisitListFew = () => (
-  <>
-    <Typography variant="body2" color="textSecondary">
-      The more pages you visit, the more pages will appear here.
-    </Typography>
-  </>
-);
+export const VisitListFew = () => {
+  const { t } = useTranslationRef(homeTranslationRef);
+  return (
+    <>
+      <Typography variant="body2" color="textSecondary">
+        {t('visitList.few.title')}
+      </Typography>
+    </>
+  );
+};

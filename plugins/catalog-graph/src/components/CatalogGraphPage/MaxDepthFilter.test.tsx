@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
-import React from 'react';
 import { MaxDepthFilter } from './MaxDepthFilter';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<MaxDepthFilter/>', () => {
-  test('should display current value', () => {
-    render(<MaxDepthFilter value={5} onChange={() => {}} />);
+  test('should display current value', async () => {
+    await renderInTestApp(<MaxDepthFilter value={5} onChange={() => {}} />);
 
     expect(screen.getByLabelText('maxp')).toBeInTheDocument();
     expect(screen.getByLabelText('maxp')).toHaveValue(5);
   });
 
-  test('should display infinite if non finite', () => {
-    render(
+  test('should display infinite if non finite', async () => {
+    await renderInTestApp(
       <MaxDepthFilter value={Number.POSITIVE_INFINITY} onChange={() => {}} />,
     );
 
@@ -38,7 +38,7 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should clear max depth', async () => {
     const onChange = jest.fn();
-    render(<MaxDepthFilter value={10} onChange={onChange} />);
+    await renderInTestApp(<MaxDepthFilter value={10} onChange={onChange} />);
 
     expect(onChange).not.toHaveBeenCalled();
     await user.click(screen.getByLabelText('clear max depth'));
@@ -47,7 +47,7 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should set max depth to undefined if below one', async () => {
     const onChange = jest.fn();
-    render(<MaxDepthFilter value={1} onChange={onChange} />);
+    await renderInTestApp(<MaxDepthFilter value={1} onChange={onChange} />);
 
     await user.clear(screen.getByLabelText('maxp'));
     await user.type(screen.getByLabelText('maxp'), '0');
@@ -57,7 +57,7 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should select direction', async () => {
     let value = 5;
-    render(
+    await renderInTestApp(
       <MaxDepthFilter
         value={value}
         onChange={v => {

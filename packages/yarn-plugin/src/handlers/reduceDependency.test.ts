@@ -107,7 +107,7 @@ describe('reduceDependency', () => {
           ),
           project,
         ),
-      ).rejects.toThrow(/unexpected version selector/i);
+      ).rejects.toThrow(/invalid backstage: version range/i);
     },
   );
 
@@ -127,20 +127,31 @@ describe('reduceDependency', () => {
       );
     });
 
-    it('replaces the range with the corresponding npm package range', async () => {
-      await expect(
-        reduceDependency(
-          structUtils.makeDescriptor(
-            structUtils.makeIdent('backstage', 'core'),
-            'backstage:^',
-          ),
-          project,
-        ),
-      ).resolves.toEqual(
+    it('adds the current Backstage version as a parameter on the range', async () => {
+      const result = await reduceDependency(
         structUtils.makeDescriptor(
           structUtils.makeIdent('backstage', 'core'),
-          'npm:^6.7.8',
+          'backstage:^',
         ),
+        project,
+      );
+
+      await expect(
+        structUtils.parseRange(result.range).params?.backstage,
+      ).toEqual('1.23.45');
+    });
+
+    it('adds the appropriate npm package version based on the Backstage manifest as a parameter on the range', async () => {
+      const result = await reduceDependency(
+        structUtils.makeDescriptor(
+          structUtils.makeIdent('backstage', 'core'),
+          'backstage:^',
+        ),
+        project,
+      );
+
+      await expect(structUtils.parseRange(result.range).params?.npm).toEqual(
+        '6.7.8',
       );
     });
 

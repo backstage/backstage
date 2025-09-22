@@ -181,4 +181,14 @@ describe('templateEntityV1beta3Validator', () => {
     entity.spec.steps[0]['backstage:permissions'] = true as {};
     expect(() => validator(entity)).toThrow(/must be object/);
   });
+
+  it('accepts undefined lifecycle', async () => {
+    delete (entity as any).spec.lifecycle;
+    expect(validator(entity)).toBe(entity);
+  });
+
+  it('accepts valid lifecycle', async () => {
+    (entity as any).spec.lifecycle = 'production';
+    expect(validator(entity)).toBe(entity);
+  });
 });

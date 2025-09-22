@@ -31,7 +31,7 @@ This guide also assumes a basic understanding of working on a Linux based operat
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
 - A GNU-like build environment available at the command line.
   For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
-  On macOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
+  On macOS, you will want to run `xcode-select --install` to get the XCode command line build tooling in place.
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
 - Node.js [Active LTS Release](../overview/versioning-policy.md#nodejs-releases) installed using one of these
@@ -58,9 +58,9 @@ The Backstage app we'll be creating will only have demo data until we set up int
 
 :::
 
-To install the Backstage Standalone app, we will make use of `npx`. `npx` is a tool that comes preinstalled with Node.js and lets you run commands straight from `npm` or other registries. Before we jump in to running the command, let's chat about what it does.
+To install the Backstage Standalone app, we will make use of `npx`. `npx` is a tool that comes preinstalled with Node.js and lets you run commands straight from `npm` or other registries. Before we run the command, let's discuss what it does.
 
-This command will create a new directory with a Backstage app inside. The wizard will ask you for the name of the app. This name will be created as sub directory in your current working directory.
+This command will create a new directory with a Backstage app inside. The wizard will ask you for the name of the app. This name will be created as subdirectory in your current working directory.
 
 ![create app](../assets/getting-started/create-app-output.png)
 
@@ -89,8 +89,8 @@ app
 - **package.json**: Root package.json for the project. _Note: Be sure that you
   don't add any npm dependencies here as they probably should be installed in
   the intended workspace rather than in the root._
-- **packages/**: Lerna leaf packages or "workspaces". Everything here is going
-  to be a separate package, managed by lerna.
+- **packages/**: Yarn workspaces, everything here is going
+  to be a separate package, managed by Yarn.
 - **packages/app/**: A fully functioning Backstage frontend app that acts as a
   good starting point for you to get to know Backstage.
 - **packages/backend/**: We include a backend that helps power features such as
@@ -116,11 +116,11 @@ If this fails on the `yarn install` step, it's likely that you will need to inst
 
 ## 2. Run the Backstage app
 
-Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn dev` command. The `yarn dev` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
+Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
 
 ```bash
 cd my-backstage-app # your app name
-yarn dev
+yarn start
 ```
 
 ![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)

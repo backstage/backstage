@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ElementType, ReactNode } from 'react';
 import { TabProps } from '@material-ui/core/Tab';
 import {
   Header,
@@ -26,13 +26,15 @@ import {
   attachComponentData,
   useElementFilter,
 } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 /** @public */
 export type SettingsLayoutRouteProps = {
   path: string;
   title: string;
   children: JSX.Element;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+  tabProps?: TabProps<ElementType, { component?: ElementType }>;
 };
 
 export const LAYOUT_DATA_KEY = 'plugin.user-settings.settingsLayout';
@@ -48,7 +50,7 @@ attachComponentData(Route, 'core.gatherMountPoints', true);
 export type SettingsLayoutProps = {
   title?: string;
   subtitle?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -57,6 +59,7 @@ export type SettingsLayoutProps = {
 export const SettingsLayout = (props: SettingsLayoutProps) => {
   const { title, children } = props;
   const { isMobile } = useSidebarPinState();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   const routes = useElementFilter(children, elements =>
     elements
@@ -71,7 +74,7 @@ export const SettingsLayout = (props: SettingsLayoutProps) => {
 
   return (
     <Page themeId="home">
-      {!isMobile && <Header title={title ?? 'Settings'} />}
+      {!isMobile && <Header title={title ?? t('settingsLayout.title')} />}
       <RoutedTabs routes={routes} />
     </Page>
   );

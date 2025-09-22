@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { render, waitFor, screen, within } from '@testing-library/react';
+import { waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction } from '../../lib/types';
 import { DirectionFilter } from './DirectionFilter';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<DirectionFilter/>', () => {
-  test('should display current value', () => {
-    render(
+  test('should display current value', async () => {
+    await renderInTestApp(
       <DirectionFilter value={Direction.LEFT_RIGHT} onChange={() => {}} />,
     );
 
@@ -31,7 +31,7 @@ describe('<DirectionFilter/>', () => {
 
   test('should select direction', async () => {
     const onChange = jest.fn();
-    render(
+    await renderInTestApp(
       <DirectionFilter value={Direction.RIGHT_LEFT} onChange={onChange} />,
     );
 

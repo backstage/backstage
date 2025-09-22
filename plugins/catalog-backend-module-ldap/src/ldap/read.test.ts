@@ -210,6 +210,53 @@ describe('readLdapUsers', () => {
     );
   });
 
+  it('should allow skipping memberOf', async () => {
+    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(searchEntry({ memberOf: ['x', 'y', 'z'] }));
+    });
+
+    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          uid: ['uid-value'],
+          description: ['description-value'],
+          cn: ['cn-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          customDN: ['dn-value'],
+          customUUID: ['uuid-value'],
+        }),
+      );
+    });
+    const config: UserConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+
+        map: {
+          rdn: 'uid',
+          name: 'uid',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          memberOf: null,
+        },
+      },
+    ];
+
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'customDN',
+      uuidAttributeName: 'customUUID',
+    };
+
+    const { userMemberOf } = await readLdapUsers(client, config, vendorConfig);
+    expect(userMemberOf.size).toBe(0);
+  });
+
   it('transfers all attributes from Microsoft Active Directory', async () => {
     client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
@@ -729,6 +776,51 @@ describe('readLdapGroups', () => {
     );
   });
 
+  it('should allow skipping members', async () => {
+    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          cn: ['cn-value'],
+          description: ['description-value'],
+          tt: ['type-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          member: ['e', 'f', 'g'],
+          customDN: ['dn-value'],
+          customUUID: ['uuid-value'],
+        }),
+      );
+    });
+    const config: GroupConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        map: {
+          rdn: 'cn',
+          name: 'cn',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          type: 'tt',
+          memberOf: 'memberOf',
+          members: null,
+        },
+      },
+    ];
+
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'customDN',
+      uuidAttributeName: 'customUUID',
+    };
+
+    const { groupMember } = await readLdapGroups(client, config, vendorConfig);
+
+    expect(groupMember.size).toBe(0);
+  });
+
   it('can process a list of GroupConfigs', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
@@ -988,6 +1080,34 @@ describe('defaultUserTransformer', () => {
       },
     });
   });
+
+  it('throws and includes message when uid (metadata.name) is missing', async () => {
+    const config: UserConfig = {
+      dn: 'ddd',
+      options: {},
+      map: {
+        rdn: 'uid',
+        name: 'uid',
+        displayName: 'cn',
+        email: 'mail',
+        memberOf: 'memberOf',
+      },
+      set: {},
+    };
+
+    const entry = searchEntry({
+      description: ['description-value'],
+      cn: ['cn-value'],
+      mail: ['mail-value'],
+      memberOf: ['x', 'y', 'z'],
+    });
+
+    await expect(
+      defaultUserTransformer(DefaultLdapVendor, config, entry),
+    ).rejects.toThrow(
+      "User syncing failed: missing 'uid' attribute, consider applying a user filter to skip processing users with incomplete data.",
+    );
+  });
 });
 
 describe('defaultGroupTransformer', () => {
@@ -1072,6 +1192,38 @@ describe('defaultGroupTransformer', () => {
         profile: { displayName: 'cn-value', email: 'mail-value' },
       },
     });
+  });
+
+  it('throws and includes message when cn (metadata.name) is missing', async () => {
+    const config: GroupConfig = {
+      dn: 'ddd',
+      options: {},
+      map: {
+        rdn: 'cn',
+        name: 'cn',
+        displayName: 'cn',
+        email: 'mail',
+        description: 'description',
+        type: 'type',
+        members: 'members',
+        memberOf: 'memberOf',
+      },
+    };
+
+    const entry = searchEntry({
+      description: ['description-value'],
+      mail: ['mail-value'],
+      avatarUrl: ['avatarUrl-value'],
+      memberOf: ['x', 'y', 'z'],
+      entryDN: ['dn-value'],
+      entryUUID: ['uuid-value'],
+    });
+
+    await expect(
+      defaultGroupTransformer(DefaultLdapVendor, config, entry),
+    ).rejects.toThrow(
+      "Group syncing failed: missing 'cn' attribute, consider applying a group filter to skip processing groups with incomplete data.",
+    );
   });
 });
 

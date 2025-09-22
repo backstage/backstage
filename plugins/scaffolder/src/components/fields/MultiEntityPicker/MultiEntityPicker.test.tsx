@@ -24,12 +24,14 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import { fireEvent, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
 import { MultiEntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { scaffolderTranslationRef } from '../../../translation';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -43,7 +45,7 @@ describe('<MultiEntityPicker />', () => {
     makeEntity('Group', 'default', 'squad-b'),
   ];
   const onChange = jest.fn();
-  const schema = {};
+  const schema = { type: 'array', items: { type: 'string' } };
   const required = false;
   let uiSchema: MultiEntityPickerProps['uiSchema'];
   const rawErrors: string[] = [];
@@ -54,10 +56,10 @@ describe('<MultiEntityPicker />', () => {
   const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
   });
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -188,7 +190,7 @@ describe('<MultiEntityPicker />', () => {
       });
     });
 
-    it('search for entitities containing an specific key', async () => {
+    it('search for entities containing an specific key', async () => {
       const uiSchemaWithBoolean = {
         'ui:options': {
           catalogFilter: [
@@ -257,6 +259,71 @@ describe('<MultiEntityPicker />', () => {
           },
         ],
       });
+    });
+  });
+
+  describe('with existing form data', () => {
+    beforeEach(() => {
+      uiSchema = { 'ui:options': {} };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData: ['group:default/team-a'],
+      } as unknown as FieldProps;
+    });
+
+    it('preserves existing data on blur', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
+    });
+
+    it('preserves existing data on value create', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
+    });
+
+    it('preserves existing data on selecting an existing option', async () => {
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.mouseDown(input);
+      const optionA = screen.getByText('squad-b');
+      await userEvent.click(optionA as HTMLElement);
+
+      expect(onChange).toHaveBeenCalledWith([
+        'group:default/team-a',
+        'group:default/squad-b',
+      ]);
     });
   });
 
@@ -845,6 +912,181 @@ describe('<MultiEntityPicker />', () => {
         'user:default/user-a',
         'group:default/squad-b',
       ]);
+    });
+  });
+
+  describe('MultiEntityPicker description', () => {
+    const description = {
+      fromSchema: 'MultiEntityPicker description from schema',
+      fromUiSchema: 'MultiEntityPicker description from uiSchema',
+    } as { fromSchema: string; fromUiSchema: string; default?: string };
+
+    beforeEach(() => {
+      const RealWrapper = Wrapper;
+      Wrapper = ({ children }: { children?: ReactNode }) => {
+        const { t } = useTranslationRef(scaffolderTranslationRef);
+        description.default = t('fields.multiEntityPicker.description');
+        return <RealWrapper>{children}</RealWrapper>;
+      };
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+    });
+    it('presents default description', async () => {
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(getByText(description.default!)).toBeInTheDocument();
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents schema description', async () => {
+      props = {
+        onChange,
+        schema: {
+          ...schema,
+          description: description.fromSchema,
+        },
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(description.default!)).toBe(null);
+      expect(getByText(description.fromSchema)).toBeInTheDocument();
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents uiSchema description', async () => {
+      props = {
+        onChange,
+        schema: {
+          ...schema,
+          description: description.fromSchema,
+        },
+        required: true,
+        uiSchema: {
+          ...uiSchema,
+          'ui:description': description.fromUiSchema,
+        },
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(description.default!)).toBe(null);
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(getByText(description.fromUiSchema)).toBeInTheDocument();
+    });
+  });
+
+  describe('entity presentation', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+    });
+
+    it('renders and filters selection displayName', async () => {
+      catalogApi.getEntities.mockResolvedValue({
+        items: entities.map(item => ({
+          ...item,
+          spec: {
+            profile: { displayName: item.metadata.name.replace('-', ' ') },
+          },
+        })),
+      });
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team a' } });
+
+      expect(getByText('team a')).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 'squad b' } });
+
+      expect(getByText('squad b')).toBeInTheDocument();
+
+      fireEvent.blur(input);
+    });
+
+    it('renders and filters selection title', async () => {
+      catalogApi.getEntities.mockResolvedValue({
+        items: entities.map(item => ({
+          ...item,
+          metadata: {
+            ...item.metadata,
+            title: item.metadata.name.replace('-', ' ').toUpperCase(),
+          },
+        })),
+      });
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team a' } });
+
+      expect(getByText('TEAM A')).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 'squad b' } });
+
+      expect(getByText('SQUAD B')).toBeInTheDocument();
+
+      fireEvent.blur(input);
     });
   });
 });

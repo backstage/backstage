@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
@@ -34,6 +34,8 @@ import {
   IconComponent,
 } from '@backstage/core-plugin-api';
 import { ProviderSettingsAvatar } from './ProviderSettingsAvatar';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 const emptyProfile: ProfileInfo = {};
 
@@ -50,6 +52,7 @@ export const ProviderSettingsItem = (props: {
   const errorApi = useApi(errorApiRef);
   const [signedIn, setSignedIn] = useState(false);
   const [profile, setProfile] = useState<ProfileInfo>(emptyProfile);
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   useEffect(() => {
     let didCancel = false;
@@ -128,7 +131,11 @@ export const ProviderSettingsItem = (props: {
         <Tooltip
           placement="top"
           arrow
-          title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
+          title={
+            signedIn
+              ? t('providerSettingsItem.title.signOut', { title })
+              : t('providerSettingsItem.title.signIn', { title })
+          }
         >
           <Button
             variant="outlined"
@@ -138,7 +145,9 @@ export const ProviderSettingsItem = (props: {
               action.catch(error => errorApi.post(error));
             }}
           >
-            {signedIn ? `Sign out` : `Sign in`}
+            {signedIn
+              ? t('providerSettingsItem.buttonTitle.signOut')
+              : t('providerSettingsItem.buttonTitle.signIn')}
           </Button>
         </Tooltip>
       </ListItemSecondaryAction>

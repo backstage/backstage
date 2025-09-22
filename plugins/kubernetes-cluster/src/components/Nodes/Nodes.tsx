@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useNodes } from './useNodes';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   StructuredMetadataTable,

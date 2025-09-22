@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { EntityDisplayName, EntityDisplayNameProps } from './EntityDisplayName';
 import { wrapInTestApp } from '@backstage/test-utils';
 

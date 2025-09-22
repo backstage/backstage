@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import Button from '@material-ui/core/Button';
 import { useContext } from './Context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 export const Actions = () => {
   const { collapsed, setCollapsed, visits, numVisitsOpen, loading } =
@@ -25,7 +27,10 @@ export const Actions = () => {
     () => setCollapsed(prevCollapsed => !prevCollapsed),
     [setCollapsed],
   );
-  const label = collapsed ? 'View More' : 'View Less';
+  const { t } = useTranslationRef(homeTranslationRef);
+  const label = collapsed
+    ? t('visitedByType.action.viewMore')
+    : t('visitedByType.action.viewLess');
 
   if (!loading && visits.length <= numVisitsOpen) return <></>;
 

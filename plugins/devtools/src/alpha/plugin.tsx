@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  createApiFactory,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
@@ -35,8 +33,8 @@ import { rootRouteRef } from '../routes';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: devToolsApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -45,13 +43,12 @@ export const devToolsApi = ApiBlueprint.make({
       factory: ({ discoveryApi, fetchApi }) =>
         new DevToolsClient({ discoveryApi, fetchApi }),
     }),
-  },
 });
 
 /** @alpha */
 export const devToolsPage = PageBlueprint.make({
   params: {
-    defaultPath: '/devtools',
+    path: '/devtools',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('../components/DevToolsPage').then(m =>
@@ -71,7 +68,8 @@ export const devToolsNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'devtools',
+  pluginId: 'devtools',
+  info: { packageJson: () => import('../../package.json') },
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),
   },

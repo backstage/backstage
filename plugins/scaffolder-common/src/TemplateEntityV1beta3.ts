@@ -80,6 +80,10 @@ export interface TemplateEntityV1beta3 extends Entity {
      * The owner entityRef of the TemplateEntity
      */
     owner?: string;
+    /**
+     * Specifies the lifecycle phase of the TemplateEntity
+     */
+    lifecycle?: string;
   };
 }
 
@@ -137,6 +141,24 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
   if?: string | boolean;
   'backstage:permissions'?: TemplatePermissionsV1beta3;
 }
+
+/**
+ * The shape of each entry of parameters which gets rendered
+ * as a separate step in the wizard input
+ *
+ * @public
+ */
+export type TemplateParameterSchema = {
+  title: string;
+  description?: string;
+  presentation?: TemplatePresentationV1beta3;
+  steps: Array<{
+    title: string;
+    description?: string;
+    schema: JsonObject;
+  }>;
+  EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
+};
 
 /**
  * Parameter that is part of a Template Entity.

@@ -13,7 +13,7 @@ it also defines what authentication metadata about a Kubernetes cluster is retur
 
 ## Context
 
-Backstage includes by default some [Kubernetes Auth Providers](./authentication.md) to ease the authentication proccess to
+Backstage includes by default some [Kubernetes Auth Providers](./authentication.md) to ease the authentication process to
 kubernetes clusters, it includes:
 
 - `Server Side Providers` like `localKubectlProxy` or `serviceAccount` where the same set
@@ -182,7 +182,7 @@ Let's create a new file to house the Pinniped authentication strategy which will
 
 ```ts title="plugins/kubernetes-backend-module-pinniped/src/PinnipedStrategy.ts"
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   AuthMetadata,
   AuthenticationStrategy,
@@ -197,7 +197,7 @@ import { JsonObject } from '@backstage/types';
 export class PinnipedStrategy implements AuthenticationStrategy {
   private pinnipedHelper: PinnipedHelper;
 
-  constructor(private readonly logger: Logger) {
+  constructor(private readonly logger: LoggerService) {
     this.pinnipedHelper = new PinnipedHelper(logger);
   }
 
@@ -239,7 +239,7 @@ export class PinnipedStrategy implements AuthenticationStrategy {
 }
 ```
 
-The `PinnipedStrategy` implements the `AuthenticationStrategy` interface, it uses the PinnipedHelper class to exchange the clusterIdToken ( created by a custom Pinniped client-side `KubernetesAuthProvider` ) for a x509 certificate, certificate that will allow us to consume the kubernetes cluster. It also returns the audience value to the front-end through `presentAuthMetadata`.
+The `PinnipedStrategy` implements the `AuthenticationStrategy` interface, it uses the `PinnipedHelper` class to exchange the `clusterIdToken` ( created by a custom Pinniped client-side `KubernetesAuthProvider` ) for a x509 certificate, certificate that will allow us to consume the kubernetes cluster. It also returns the audience value to the front-end through `presentAuthMetadata`.
 
 > Notice that the PinnipedHelper class will help you only to exchange the token, It doesn't introduce a cache layer, something that your strategy could introduce.
 
@@ -250,12 +250,8 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  AuthenticationStrategy,
-  kubernetesAuthStrategyExtensionPoint,
-} from '@backstage/plugin-kubernetes-node';
+import { kubernetesAuthStrategyExtensionPoint } from '@backstage/plugin-kubernetes-node';
 import { PinnipedStrategy } from './PinnipedStrategy';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 export const kubernetesModulePinniped = createBackendModule({
   pluginId: 'kubernetes',
@@ -267,11 +263,7 @@ export const kubernetesModulePinniped = createBackendModule({
         authStrategy: kubernetesAuthStrategyExtensionPoint,
       },
       async init({ logger, authStrategy }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
-        const pinnipedStrategy: AuthenticationStrategy = new PinnipedStrategy(
-          winstonLogger,
-        );
-        authStrategy.addAuthStrategy('pinniped', pinnipedStrategy);
+        authStrategy.addAuthStrategy('pinniped', new PinnipedStrategy(logger));
       },
     });
   },
@@ -288,7 +280,6 @@ import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { CatalogClient } from '@backstage/catalog-client';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
 import { PinnipedStrategy } from '@internal/plugin-kubernetes-backend-module-pinniped';
 
@@ -296,9 +287,8 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
-  const winstonLogger = loggerToWinstonLogger(env.logger);
   const pinnipedStrategy: AuthenticationStrategy = new PinnipedStrategy(
-    winstonLogger,
+    env.logger,
   );
   const { router } = await KubernetesBuilder.createBuilder({
     logger: env.logger,

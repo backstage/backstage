@@ -18,7 +18,6 @@ import {
   StatusOK,
   StatusPending,
 } from '@backstage/core-components';
-import React from 'react';
 
 export const TaskStatusColumn = ({ status }: { status: string }) => {
   switch (status) {

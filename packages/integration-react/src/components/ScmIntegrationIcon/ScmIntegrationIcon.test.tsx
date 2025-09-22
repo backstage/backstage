@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { renderInTestApp } from '@backstage/test-utils';
-import React from 'react';
 import { ScmIntegrationIcon } from './ScmIntegrationIcon';
 
 describe('<ScmIntegrationIcon />', () => {

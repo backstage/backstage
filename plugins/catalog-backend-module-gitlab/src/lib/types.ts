@@ -184,11 +184,13 @@ export type GitlabProviderConfig = {
    * Defaults to `[\s\S]*`, which means to not filter anything
    */
   userPattern: RegExp;
+
   /**
-   * Filters found groups based on provided patter.
+   * Filters found groups based on provided patterns.
    * Defaults to `[\s\S]*`, which means to not filter anything
+   *
    */
-  groupPattern: RegExp;
+  groupPattern: RegExp | RegExp[];
 
   /**
    * If true, the provider will also add inherited (ascendant) users to the ingested groups.
@@ -248,6 +250,18 @@ export type GitlabProviderConfig = {
    * Defaults to `false`
    */
   includeUsersWithoutSeat?: boolean;
+
+  /**
+   * If true, the membership parameter is set to true in the GitLab API request.
+   * See: https://docs.gitlab.com/api/projects/#list-projects
+   */
+  membership?: boolean;
+
+  /**
+   * Optional comma separated list of topics to filter projects by, as specified in the GitLab API documentation:
+   * https://docs.gitlab.com/api/projects/#list-projects
+   */
+  topics?: string;
 };
 
 /**

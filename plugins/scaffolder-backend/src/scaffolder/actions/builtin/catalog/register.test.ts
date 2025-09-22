@@ -19,7 +19,7 @@ import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createCatalogRegisterAction } from './register';
 import { Entity } from '@backstage/catalog-model';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('catalog:register', () => {
@@ -31,20 +31,14 @@ describe('catalog:register', () => {
     }),
   );
 
-  const catalogClient = catalogServiceMock.mock();
+  const catalogMock = catalogServiceMock.mock();
 
   const action = createCatalogRegisterAction({
     integrations,
-    catalogClient,
-    auth: mockServices.auth(),
+    catalog: catalogMock,
   });
 
   const credentials = mockCredentials.user();
-
-  const token = mockCredentials.service.token({
-    onBehalfOf: credentials,
-    targetPluginId: 'catalog',
-  });
 
   const mockContext = createMockActionContext();
 
@@ -66,7 +60,7 @@ describe('catalog:register', () => {
   });
 
   it('should register location in catalog', async () => {
-    catalogClient.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -90,22 +84,22 @@ describe('catalog:register', () => {
       },
     });
 
-    expect(catalogClient.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       1,
       {
         type: 'url',
         target: 'http://foo/var',
       },
-      { token },
+      { credentials },
     );
-    expect(catalogClient.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       2,
       {
         dryRun: true,
         type: 'url',
         target: 'http://foo/var',
       },
-      { token },
+      { credentials },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -119,7 +113,7 @@ describe('catalog:register', () => {
   });
 
   it('should return entityRef with the Component entity and not the generated location', async () => {
-    catalogClient.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -170,7 +164,7 @@ describe('catalog:register', () => {
   });
 
   it('should return entityRef with the next non-generated entity if no Component kind can be found', async () => {
-    catalogClient.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -214,7 +208,7 @@ describe('catalog:register', () => {
   });
 
   it('should return entityRef with the first entity if no non-generated entities can be found', async () => {
-    catalogClient.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -250,8 +244,8 @@ describe('catalog:register', () => {
     );
   });
 
-  it('should not return entityRef if there are no entites', async () => {
-    catalogClient.addLocation
+  it('should not return entityRef if there are no entities', async () => {
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -273,7 +267,7 @@ describe('catalog:register', () => {
   });
 
   it('should ignore failures when dry running the location in the catalog if `optional` is set', async () => {
-    catalogClient.addLocation
+    catalogMock.addLocation
       .mockRejectedValueOnce(new Error('Not found'))
       .mockRejectedValueOnce(new Error('Not found'));
     await action.handler({
@@ -284,22 +278,22 @@ describe('catalog:register', () => {
       },
     });
 
-    expect(catalogClient.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       1,
       {
         type: 'url',
         target: 'http://foo/var',
       },
-      { token },
+      { credentials },
     );
-    expect(catalogClient.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       2,
       {
         dryRun: true,
         type: 'url',
         target: 'http://foo/var',
       },
-      { token },
+      { credentials },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -309,7 +303,7 @@ describe('catalog:register', () => {
   });
 
   it('should fetch entities when adding location in the catalog fails and `optional` is set', async () => {
-    catalogClient.addLocation
+    catalogMock.addLocation
       .mockRejectedValueOnce(new Error('Already registered'))
       .mockResolvedValueOnce({
         location: null as any,
@@ -331,22 +325,22 @@ describe('catalog:register', () => {
       },
     });
 
-    expect(catalogClient.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       1,
       {
         type: 'url',
         target: 'http://foo/var',
       },
-      { token },
+      { credentials },
     );
-    expect(catalogClient.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       2,
       {
         dryRun: true,
         type: 'url',
         target: 'http://foo/var',
       },
-      { token },
+      { credentials },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(

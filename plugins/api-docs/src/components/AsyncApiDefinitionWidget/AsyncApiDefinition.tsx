@@ -17,7 +17,6 @@
 import AsyncApi from '@asyncapi/react-component';
 import '@asyncapi/react-component/styles/default.css';
 import { makeStyles, alpha, darken } from '@material-ui/core/styles';
-import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
 
 /** @public */
@@ -126,8 +125,11 @@ const useStyles = makeStyles(theme => ({
     },
     '& .prose': {
       color: theme.palette.text.secondary,
-      '& h3': {
+      '& h3, code': {
         color: theme.palette.text.primary,
+      },
+      '& a': {
+        color: theme.palette.link,
       },
     },
     '& .bg-gray-100, .bg-gray-200': {

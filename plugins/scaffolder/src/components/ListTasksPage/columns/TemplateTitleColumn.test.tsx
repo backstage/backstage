@@ -16,7 +16,6 @@
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
-import React from 'react';
 import { TemplateTitleColumn } from './TemplateTitleColumn';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {

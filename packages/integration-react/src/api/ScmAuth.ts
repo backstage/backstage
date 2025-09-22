@@ -173,7 +173,7 @@ export class ScmAuth implements ScmAuthApi {
     const host = options?.host ?? 'gitlab.com';
     return new ScmAuth('gitlab', gitlabAuthApi, host, {
       default: ['read_user', 'read_api', 'read_repository'],
-      repoWrite: ['write_repository api'],
+      repoWrite: ['write_repository', 'api'],
     });
   }
 
@@ -239,6 +239,7 @@ export class ScmAuth implements ScmAuthApi {
       'pullrequest',
       'snippet',
       'issue',
+      'project',
     ];
     const repoWriteScopes = options?.scopeMapping?.repoWrite ?? [
       'pullrequest:write',

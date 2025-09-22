@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { VisitList } from './VisitList';
 import { renderInTestApp } from '@backstage/test-utils';
 

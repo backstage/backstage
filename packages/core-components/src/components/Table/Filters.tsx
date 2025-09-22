@@ -17,7 +17,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Select } from '../Select';
 import { SelectProps } from '../Select/Select';

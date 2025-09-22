@@ -15,10 +15,6 @@
  */
 
 import {
-  createLegacyAuthAdapters,
-  TokenManager,
-} from '@backstage/backend-common';
-import {
   CATALOG_FILTER_EXISTS,
   CatalogApi,
   CatalogClient,
@@ -47,22 +43,18 @@ import { defaultTechDocsCollatorDocumentTransformer } from './defaultTechDocsCol
 import {
   AuthService,
   DiscoveryService,
-  HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 
 /**
  * Options to configure the TechDocs collator factory
  *
- * @public
- * @deprecated This type is deprecated along with the {@link DefaultTechDocsCollatorFactory}.
+ * @internal
  */
 export type TechDocsCollatorFactoryOptions = {
   discovery: DiscoveryService;
   logger: LoggerService;
-  tokenManager?: TokenManager;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
   locationTemplate?: string;
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
@@ -83,8 +75,7 @@ type EntityInfo = {
  * A search collator factory responsible for gathering and transforming
  * TechDocs documents.
  *
- * @public
- * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/building-backends/migrating | new backend system} and install this collator via module instead (see {@link https://github.com/backstage/backstage/blob/nbs10/search-deprecate-create-router/plugins/search-backend-module-techdocs/README.md#installation | here} for more installation details).
+ * @internal
  */
 export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'techdocs';
@@ -117,12 +108,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     this.documentTransformer = options.documentTransformer ?? (() => ({}));
     this.entityFilterFunction = options.entityFilterFunction;
     this.customCatalogApiFilters = options.customCatalogApiFilters;
-
-    this.auth = createLegacyAuthAdapters({
-      auth: options.auth,
-      discovery: options.discovery,
-      tokenManager: options.tokenManager,
-    }).auth;
+    this.auth = options.auth;
   }
 
   static fromConfig(config: Config, options: TechDocsCollatorFactoryOptions) {

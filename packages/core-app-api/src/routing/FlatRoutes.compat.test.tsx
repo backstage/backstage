@@ -15,7 +15,7 @@
  */
 
 import tlr, { render, RenderResult } from '@testing-library/react';
-import React, { ReactNode } from 'react';
+import { default as React, ReactNode } from 'react';
 import { LocalStorageFeatureFlags } from '../apis';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { AppContext } from '../app';
@@ -59,7 +59,7 @@ describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
     const { MemoryRouter, TestApiProvider } = requireDeps();
     let rendered: RenderResult | undefined = undefined;
 
-    const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    const Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
         {children}
       </TestApiProvider>

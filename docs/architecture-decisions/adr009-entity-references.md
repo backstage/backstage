@@ -1,7 +1,6 @@
 ---
 id: adrs-adr009
 title: 'ADR009: Entity References'
-# prettier-ignore
 description: Architecture Decision Record (ADR) log on Entity References
 ---
 

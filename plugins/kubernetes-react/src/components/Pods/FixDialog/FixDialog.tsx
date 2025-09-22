@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -64,7 +64,7 @@ export interface FixDialogProps {
  *
  * @public
  */
-export const FixDialog: React.FC<FixDialogProps> = ({
+export const FixDialog: FC<FixDialogProps> = ({
   open,
   pod,
   error,

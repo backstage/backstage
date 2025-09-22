@@ -16,7 +16,6 @@
 
 import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 import { AppRootElementBlueprint } from '@backstage/frontend-plugin-api';
-import React from 'react';
 
 export const oauthRequestDialogAppRootElement = AppRootElementBlueprint.make({
   name: 'oauth-request-dialog',
@@ -42,7 +41,7 @@ export const alertDisplayAppRootElement =
     },
     factory: (originalFactory, { config }) => {
       return originalFactory({
-        element: () => <AlertDisplay {...config} />,
+        element: <AlertDisplay {...config} />,
       });
     },
   });

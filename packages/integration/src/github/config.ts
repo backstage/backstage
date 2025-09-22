@@ -92,7 +92,7 @@ export type GithubAppConfig = {
   /**
    * Webhook secret can be configured at https://github.com/organizations/$org/settings/apps/$AppName
    */
-  webhookSecret: string;
+  webhookSecret?: string;
   /**
    * Found at https://github.com/organizations/$org/settings/apps/$AppName
    */
@@ -128,7 +128,7 @@ export function readGithubIntegrationConfig(
     appId: c.getNumber('appId'),
     clientId: c.getString('clientId'),
     clientSecret: c.getString('clientSecret'),
-    webhookSecret: c.getString('webhookSecret'),
+    webhookSecret: c.getOptionalString('webhookSecret'),
     privateKey: c.getString('privateKey'),
     allowedInstallationOwners: c.getOptionalStringArray(
       'allowedInstallationOwners',

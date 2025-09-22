@@ -16,7 +16,7 @@
 
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import { ReactNode } from 'react';
 
 export type SubvalueCellClassKey = 'value' | 'subvalue';
 
@@ -34,8 +34,8 @@ const useSubvalueCellStyles = makeStyles(
 );
 
 type SubvalueCellProps = {
-  value: React.ReactNode;
-  subvalue: React.ReactNode;
+  value: ReactNode;
+  subvalue: ReactNode;
 };
 
 export function SubvalueCell(props: SubvalueCellProps) {

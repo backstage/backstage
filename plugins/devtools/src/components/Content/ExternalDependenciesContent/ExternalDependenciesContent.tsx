@@ -29,7 +29,6 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
 import { useExternalDependencies } from '../../../hooks';
 
 const useStyles = makeStyles((theme: Theme) =>

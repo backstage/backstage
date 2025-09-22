@@ -135,6 +135,7 @@ You can easily customize the TechDocs home page using TechDocs panel layout
 Modify your `App.tsx` as follows:
 
 ```tsx
+import { Fragment, PropsWithChildren } from 'react';
 import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
 //...
 
@@ -175,7 +176,7 @@ const techDocsTabsConfig = [
         filterPredicate: filterEntity,
         panelType: 'TechDocsIndexPage',
         title: 'All',
-        panelProps: { PageWrapper: React.Fragment, CustomHeader: React.Fragment, options: options },
+        panelProps: { PageWrapper: Fragment, CustomHeader: Fragment, options: options },
       },
     ],
   },
@@ -184,7 +185,7 @@ const docsFilter = {
   kind: ['Location', 'Resource', 'Component'],
   'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
 }
-const customPageWrapper = ({ children }: React.PropsWithChildren<{}>) =>
+const customPageWrapper = ({ children }: PropsWithChildren<{}>) =>
   (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)
 const AppRoutes = () => {
   <FlatRoutes>
@@ -212,7 +213,7 @@ maintain such a component in a new directory at
 For example, you can define the following Custom home page component:
 
 ```tsx
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { Content } from '@backstage/core-components';
 import {
@@ -232,7 +233,7 @@ import { EntityListDocsGrid } from '@backstage/plugin-techdocs';
 
 export type CustomTechDocsHomeProps = {
   groups?: Array<{
-    title: React.ReactNode;
+    title: ReactNode;
     filterPredicate: ((entity: Entity) => boolean) | string;
   }>;
 };
@@ -605,6 +606,25 @@ techdocs:
 
 This way, custom element like `<backstage-element attribute1="value"></backstage-element>` will be allowed in the result HTML.
 
+## How to allow additional URI protocols in TechDocs
+
+TechDocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) library to
+sanitize HTML and prevent XSS attacks.
+
+It's possible to allow additional URI protocols based on a list of protocols. To do
+this, add the allowed protocols in the `techdocs.sanitizer.additionalAllowedURIProtocols`
+and `additionalAllowedURIProtocols` configuration of your `app-config.yaml`.
+
+For example:
+
+```yaml
+techdocs:
+  sanitizer:
+    additionalAllowedURIProtocols: ["vscode"],
+```
+
+This way, links like `<a href="vscode://settings/">VSCode Settings<a>` will be allowed in the result HTML
+
 ## How to render PlantUML diagram in TechDocs
 
 PlantUML allows you to create diagrams from plain text language. Each diagram description begins with the keyword - (@startXYZ and @endXYZ, depending on the kind of diagram). For UML Diagrams, Keywords @startuml & @enduml should be used. Further details for all types of diagrams can be found at [PlantUML Language Reference Guide](https://plantuml.com/guide).
@@ -933,12 +953,41 @@ metadata:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
+  name: example-platform
+  title: Example Application Platform
+  namespace: default
+  description: This is the child entity
+  annotations:
+    backstage.io/techdocs-entity: system:default/example
+```
+
+### Deep linking into TechDocs
+
+The `backstage.io/techdocs-entity-path` annotation can be use to deep link into a specific page within the components TechDocs.
+This can be used in conjunction with `backstage.io/techdocs-entity` or standalone.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: example
+  namespace: default
+  title: Example
+  description: This is the parent entity
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
   name: example-platfrom
   title: Example Application Platform
   namespace: default
   description: This is the child entity
   annotations:
     backstage.io/techdocs-entity: system:default/example
+    backstage.io/techdocs-entity-path: /path/to/component/docs
 ```
 
 ## How to resolve broken links from moved or renamed pages in your documentation site

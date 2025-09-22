@@ -15,7 +15,7 @@
  */
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 import { BottomLinkProps } from '../../layout/BottomLink';
 import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';

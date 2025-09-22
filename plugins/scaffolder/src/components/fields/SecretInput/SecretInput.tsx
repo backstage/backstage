@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { ScaffolderRJSFFieldProps } from '@backstage/plugin-scaffolder-react';
 import {
   ScaffolderField,
@@ -27,12 +26,13 @@ export const SecretInput = (props: ScaffolderRJSFFieldProps) => {
     disabled,
     errors,
     required,
+    uiSchema,
   } = props;
 
   return (
     <ScaffolderField
       rawErrors={rawErrors}
-      rawDescription={description}
+      rawDescription={uiSchema['ui:description'] ?? description}
       disabled={disabled}
       errors={errors}
       required={required}

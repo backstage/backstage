@@ -31,7 +31,7 @@ import Autocomplete, {
   AutocompleteProps,
   AutocompleteRenderInputParams,
 } from '@material-ui/lab/Autocomplete';
-import React, { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { merge } from 'lodash';
 import classNames from 'classnames';
 

@@ -16,7 +16,6 @@
 
 import { render, screen } from '@testing-library/react';
 import { Schema } from 'jsonschema';
-import React from 'react';
 import { SchemaViewer } from './SchemaViewer';
 
 describe('SchemaViewer', () => {

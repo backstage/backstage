@@ -39,7 +39,7 @@ Use the following advanced settings:
 - `Session cookie name` = `AWSELBAuthSessionCookie`
 - `Session timeout` = `604800` seconds
 - `Scope` = `openid profile offline_access`
-- `Action on unauthenticated request` = `Autenticate (client reattempt)`
+- `Action on unauthenticated request` = `Authenticate (client reattempt)`
 
 Once you've saved the action, you should see an authentication flow be triggered against Entra ID when visiting Backstage address at `https://backstage.yourdomain.com`. The flow will not complete successfully as the Backstage app isn't yet configured properly.
 
@@ -55,15 +55,15 @@ When using ALB authentication Backstage will only be loaded once the user has su
 - add the following definition just before the app is created (`const app = createApp`):
 
 ```ts
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { UserIdentity } from '@backstage/core-components';
 import { SignInPageProps } from '@backstage/core-app-api';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
 const SampleSignInComponent: any = (props: SignInPageProps) => {
-  const [error, setError] = React.useState<string | undefined>();
+  const [error, setError] = useState<string | undefined>();
   const config = useApi(configApiRef);
-  React.useEffect(() => {
+  useEffect(() => {
     const shouldAuth = !!config.getOptionalConfig('auth.providers.awsalb');
     if (shouldAuth) {
       fetch(`${window.location.origin}/api/auth/awsalb/refresh`)

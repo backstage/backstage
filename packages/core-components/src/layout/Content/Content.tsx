@@ -16,7 +16,7 @@
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 /** @public */
 export type BackstageContentClassKey = 'root' | 'stretch' | 'noPadding';

@@ -137,13 +137,13 @@ describe('Git', () => {
     it('should call isomorphic-git with the correct arguments', async () => {
       const git = Git.fromAuth({});
       const dir = 'mockdirectory';
-      const message = 'Inital Commit';
+      const message = 'Initial Commit';
       const author = {
         name: 'author',
         email: 'test@backstage.io',
       };
       const committer = {
-        name: 'comitter',
+        name: 'committer',
         email: 'test@backstage.io',
       };
       const signingKey = 'test-signing-key';
@@ -414,7 +414,7 @@ describe('Git', () => {
         email: 'test@backstage.io',
       };
       const committer = {
-        name: 'comitter',
+        name: 'committer',
         email: 'test@backstage.io',
       };
       const theirs = 'master';

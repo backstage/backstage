@@ -54,6 +54,11 @@ export type AuthProviderInfo = {
    * Icon for the auth provider.
    */
   icon: IconComponent;
+
+  /**
+   * Optional user friendly messaage to display for the auth provider.
+   */
+  message?: string;
 };
 
 /**
@@ -468,4 +473,21 @@ export const vmwareCloudAuthApiRef: ApiRef<
     SessionApi
 > = createApiRef({
   id: 'core.auth.vmware-cloud',
+});
+
+/**
+ * Provides authentication towards OpenShift APIs and identities.
+ *
+ * @public
+ * @remarks
+ *
+ * See {@link https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/authentication_and_authorization/configuring-oauth-clients}
+ * on how to configure the OAuth clients and
+ * {@link https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html-single/authentication_and_authorization/index#tokens-scoping-about_configuring-internal-oauth}
+ * for available scopes.
+ */
+export const openshiftAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.openshift',
 });

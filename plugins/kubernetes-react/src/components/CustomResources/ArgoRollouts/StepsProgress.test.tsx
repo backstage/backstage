@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import pauseSteps from './__fixtures__/pause-steps';
 import setWeightSteps from './__fixtures__/setweight-steps';

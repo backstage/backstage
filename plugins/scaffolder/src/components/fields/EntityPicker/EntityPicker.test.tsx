@@ -22,12 +22,14 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { scaffolderTranslationRef } from '../../../translation';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -53,10 +55,10 @@ describe('<EntityPicker />', () => {
     getEntities: jest.fn(async () => ({ items: entities })),
   });
 
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -95,10 +97,13 @@ describe('<EntityPicker />', () => {
 
       expect(catalogApi.getEntities).toHaveBeenCalledWith({
         fields: [
+          'kind',
           'metadata.name',
           'metadata.namespace',
           'metadata.title',
-          'kind',
+          'metadata.description',
+          'spec.profile.displayName',
+          'spec.type',
         ],
         filter: undefined,
       });
@@ -230,7 +235,7 @@ describe('<EntityPicker />', () => {
       );
     });
 
-    it('search for entitities containing an specific key', async () => {
+    it('search for entities containing a specific key', async () => {
       const uiSchemaWithBoolean = {
         'ui:options': {
           catalogFilter: [
@@ -420,6 +425,82 @@ describe('<EntityPicker />', () => {
       fireEvent.blur(input);
 
       expect(onChange).toHaveBeenCalledWith('group:default/team-b');
+    });
+  });
+  describe('entity presentation', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+    });
+
+    it('renders selection displayName', async () => {
+      catalogApi.getEntities.mockResolvedValue({
+        items: entities.map(item => ({
+          ...item,
+          spec: {
+            profile: { displayName: item.metadata.name.replace('-', ' ') },
+          },
+        })),
+      });
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 't' } });
+
+      expect(getByText('team a')).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 's' } });
+
+      expect(getByText('squad b')).toBeInTheDocument();
+
+      fireEvent.blur(input);
+    });
+
+    it('renders selection title', async () => {
+      catalogApi.getEntities.mockResolvedValue({
+        items: entities.map(item => ({
+          ...item,
+          metadata: {
+            ...item.metadata,
+            title: item.metadata.name.replace('-', ' ').toUpperCase(),
+          },
+        })),
+      });
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 't' } });
+
+      expect(getByText('TEAM A')).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 's' } });
+
+      expect(getByText('SQUAD B')).toBeInTheDocument();
+
+      fireEvent.blur(input);
     });
   });
 
@@ -810,6 +891,130 @@ describe('<EntityPicker />', () => {
 
       // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  describe('EntityPicker description', () => {
+    const description = {
+      fromSchema: 'EntityPicker description from schema',
+      fromUiSchema: 'EntityPicker description from uiSchema',
+    } as { fromSchema: string; fromUiSchema: string; default?: string };
+
+    beforeEach(() => {
+      const RealWrapper = Wrapper;
+      Wrapper = ({ children }: { children?: ReactNode }) => {
+        const { t } = useTranslationRef(scaffolderTranslationRef);
+        description.default = t('fields.entityPicker.description');
+        return <RealWrapper>{children}</RealWrapper>;
+      };
+    });
+    it('presents default description', async () => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(getByText(description.default!)).toBeInTheDocument();
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents schema description', async () => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema: {
+          ...schema,
+          description: description.fromSchema,
+        },
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(description.default!)).toBe(null);
+      expect(getByText(description.fromSchema)).toBeInTheDocument();
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents uiSchema description', async () => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+        'ui:description': description.fromUiSchema,
+      };
+      props = {
+        onChange,
+        schema: {
+          ...schema,
+          description: description.fromSchema,
+        },
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(description.default!)).toBe(null);
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(getByText(description.fromUiSchema)).toBeInTheDocument();
     });
   });
 });

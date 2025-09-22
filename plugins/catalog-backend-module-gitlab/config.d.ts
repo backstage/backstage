@@ -34,10 +34,24 @@ export interface Config {
            */
           group?: string;
           /**
+           * If true, the provider will only ingest users that are part of the configured group.
+           */
+          restrictUsersToGroup?: boolean;
+          /**
            * (Optional) Default branch to read the catalog-info.yaml file.
            * If not set, 'master' will be used.
            */
           branch?: string;
+          /**
+           * If no `branch` is configured and there is no default branch defined at the project as well, this fallback is used
+           * to discover catalog files.
+           * Defaults to: `master`
+           */
+          fallbackBranch?: string;
+          /**
+           * Defaults to `catalog-info.yaml`
+           */
+          catalogFile?: string;
           /**
            * (Optional) The name used for the catalog file.
            * If not set, 'catalog-info.yaml' will be used.
@@ -58,7 +72,27 @@ export interface Config {
           /**
            * (Optional) RegExp for the Group Name Pattern
            */
-          groupPattern?: string;
+          groupPattern?: string | string[];
+          /**
+           * Specifies the types of group membership relations that should be included when ingesting data.
+           *
+           * The following values are valid:
+           * - 'DIRECT': Direct members of the group. This is the default relation and is always included.
+           * - 'INHERITED': Members inherited from parent (ascendant) groups.
+           * - 'DESCENDANTS': Members from child (descendant) groups.
+           * - 'SHARED_FROM_GROUPS': Members shared from other groups.
+           *
+           * See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
+           *
+           * If the `relations` array is provided in the app-config.yaml, it should contain any combination of the above values.
+           * The 'DIRECT' relation is automatically included and cannot be excluded, even if not specified.
+           */
+          relations?: string[];
+          /**
+           * Enable org ingestion
+           * Defaults to `false`
+           */
+          orgEnabled?: boolean;
           /**
            * (Optional) Skip forked repository
            */
@@ -72,6 +106,23 @@ export interface Config {
            * Should be in the format group/subgroup/repo, with no leading or trailing slashes.
            */
           excludeRepos?: string[];
+          /**
+           * If true, users without a seat will be included in the catalog.
+           * Group/Application Access Tokens are still filtered out but you might find service accounts or other users without a seat.
+           * Defaults to `false`
+           */
+          includeUsersWithoutSeat?: boolean;
+          /**
+           * (Optional) If true, limit by repositories that the current user is a member of.
+           * See: https://docs.gitlab.com/api/projects/#list-projects
+           */
+          membership?: boolean;
+
+          /**
+           * (Optional) List of topic names. Limit results to repositories that match all of given topics.
+           * See: https://docs.gitlab.com/api/projects/#list-projects
+           */
+          topics?: string;
         };
       };
     };

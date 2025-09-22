@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend",
-  "version": "0.5.4-next.2",
+  "version": "0.5.10",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "notifications",
@@ -26,6 +26,7 @@
   "types": "src/index.ts",
   "files": [
     "dist",
+    "config.d.ts",
     "migrations/**/*.{js,d.ts}"
   ],
   "scripts": {
@@ -39,7 +40,6 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -49,9 +49,11 @@
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
+    "@backstage/types": "workspace:^",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
+    "p-throttle": "^4.1.1",
     "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
@@ -68,5 +70,6 @@
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
     "supertest": "^7.0.0"
-  }
+  },
+  "configSchema": "config.d.ts"
 }

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { WarningPanel } from './WarningPanel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';

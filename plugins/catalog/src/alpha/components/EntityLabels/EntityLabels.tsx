@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { HeaderLabel } from '@backstage/core-components';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {

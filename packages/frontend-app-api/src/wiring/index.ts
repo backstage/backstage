@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export { createSpecializedApp } from './createSpecializedApp';
-export * from './types';
+export {
+  createSpecializedApp,
+  type CreateSpecializedAppOptions,
+} from './createSpecializedApp';
+export { type FrontendPluginInfoResolver } from './createPluginInfoAttacher';
+export { type AppError, type AppErrorTypes } from './createErrorCollector';

@@ -125,7 +125,7 @@ export class VisitsStorageApi implements VisitsApi {
 
   private async retrieveAll(): Promise<Array<Visit>> {
     const storageKey = await this.getStorageKey();
-    // Handles for case when snapshot is and is not referenced per storaged type used
+    // Handles for case when snapshot is and is not referenced per storage type used
     const snapshot = this.storageApi.snapshot<Array<Visit>>(storageKey);
     if (snapshot?.presence !== 'unknown') {
       return snapshot?.value ?? [];

@@ -24,6 +24,9 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     repos: {
@@ -32,11 +35,7 @@ const mockOctokit = {
   },
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:repository:webhook:create', () => {
@@ -52,10 +51,11 @@ describe('github:repository:webhook:create', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   const defaultWebhookSecret = 'aafdfdivierernfdk23f';
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubWebhookAction({
@@ -70,6 +70,14 @@ describe('github:repository:webhook:create', () => {
       repoUrl: 'github.com?repo=repo&owner=owner',
       webhookUrl: 'https://example.com/payload',
     },
+  });
+
+  it('should pass context logger to Octokit client', async () => {
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
   });
 
   it('should call the githubApi for creating repository Webhook', async () => {

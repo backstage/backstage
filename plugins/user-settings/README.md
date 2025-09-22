@@ -96,7 +96,6 @@ we have created in Backstage's example app.
 To change the layout altogether, create a custom page in `packages/app/src/components/user-settings/SettingsPage.tsx`:
 
 ```tsx
-import React from 'react';
 import {
   SettingsLayout,
   UserSettingsGeneral,

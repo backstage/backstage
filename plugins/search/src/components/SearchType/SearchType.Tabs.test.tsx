@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { mockApis, TestApiProvider } from '@backstage/test-utils';
-import { act, render } from '@testing-library/react';
+import { ReactNode } from 'react';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { act } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import {
   SearchContextProvider,
@@ -55,7 +59,7 @@ describe('SearchType.Tabs', () => {
     name: 'Expected Type',
   };
 
-  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const Wrapper = ({ children }: { children: ReactNode }) => {
     return (
       <TestApiProvider
         apis={[
@@ -69,7 +73,7 @@ describe('SearchType.Tabs', () => {
   };
 
   it('should render as expected', async () => {
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Tabs types={[expectedType]} />
       </Wrapper>,
@@ -85,7 +89,7 @@ describe('SearchType.Tabs', () => {
   });
 
   it('should set entire types array when a type is selected', async () => {
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Tabs types={[expectedType]} />
       </Wrapper>,
@@ -97,7 +101,7 @@ describe('SearchType.Tabs', () => {
   });
 
   it('should reset types array when all is selected', async () => {
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Tabs
           defaultValue={expectedType.value}
@@ -112,7 +116,7 @@ describe('SearchType.Tabs', () => {
   });
 
   it('should reset page cursor when a new type is selected', async () => {
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Tabs types={[expectedType]} />
       </Wrapper>,

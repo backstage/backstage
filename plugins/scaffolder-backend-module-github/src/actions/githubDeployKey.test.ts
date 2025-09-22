@@ -20,6 +20,9 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     actions: {
@@ -32,11 +35,7 @@ const mockOctokit = {
   },
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
@@ -52,7 +51,7 @@ describe('github:deployKey:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -66,9 +65,26 @@ describe('github:deployKey:create', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
+    octokitMock.mockImplementation(() => mockOctokit);
+
     action = createGithubDeployKeyAction({
       integrations,
     });
+  });
+
+  it('should pass context logger to Octokit client', async () => {
+    mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
+      data: {
+        key: publicKey,
+        key_id: 'keyid',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
   });
 
   it('should work happy path', async () => {

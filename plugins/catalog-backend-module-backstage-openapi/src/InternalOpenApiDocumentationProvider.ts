@@ -232,11 +232,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
             taskId,
             taskInstanceId: uuid.v4(),
           });
-          try {
-            await this.refresh(logger);
-          } catch (error) {
-            logger.error(`${this.getProviderName()} refresh failed`, error);
-          }
+          await this.refresh(logger);
         },
       });
     };
@@ -295,7 +291,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     // Overwrite baseConfig with options from config file.
     const mergedConfig = lodash.merge(baseConfig, configToMerge);
 
-    // Overwite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
+    // Overwrite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
     const documentationEntity = lodash.merge(
       mergedConfig,
       requiredConfig,

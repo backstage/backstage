@@ -18,7 +18,6 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
-import React from 'react';
 
 import { useIsPodExecTerminalEnabled } from './useIsPodExecTerminalEnabled';
 

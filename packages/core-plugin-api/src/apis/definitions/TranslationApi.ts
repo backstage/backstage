@@ -16,7 +16,8 @@
 
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { Expand, ExpandRecursive, Observable } from '@backstage/types';
-import { TranslationRef } from '../../translation';
+import { TranslationRef } from '../../translation/TranslationRef';
+import { JSX } from 'react';
 
 /**
  * Base translation options.
@@ -168,12 +169,12 @@ type ReplaceFormatsFromMessage<TMessage> =
  *
  * @ignore
  */
-type ReplaceOptionsFromFormats<TFormats extends {}> = {
+type ReplaceOptionsFromFormats<TFormats extends {}, TValueType> = {
   [Key in keyof TFormats]: TFormats[Key] extends keyof I18nextFormatMap
     ? I18nextFormatMap[TFormats[Key]]['type']
     : TFormats[Key] extends {}
-    ? Expand<ReplaceOptionsFromFormats<TFormats[Key]>>
-    : string;
+    ? Expand<ReplaceOptionsFromFormats<TFormats[Key], TValueType>>
+    : TValueType;
 };
 
 /**
@@ -259,14 +260,17 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
 type CollectOptions<
   TCount extends { count?: number },
   TFormats extends {},
+  TValueType,
 > = TCount &
   // count is special, omit it from the replacements
   (keyof Omit<TFormats, 'count'> extends never
     ? {}
     : (
-        | Expand<Omit<ReplaceOptionsFromFormats<TFormats>, 'count'>>
+        | Expand<Omit<ReplaceOptionsFromFormats<TFormats, TValueType>, 'count'>>
         | {
-            replace: Expand<Omit<ReplaceOptionsFromFormats<TFormats>, 'count'>>;
+            replace: Expand<
+              Omit<ReplaceOptionsFromFormats<TFormats, TValueType>, 'count'>
+            >;
           }
       ) & {
         formatParams?: Expand<ReplaceFormatParamsFromFormats<TFormats>>;
@@ -278,8 +282,8 @@ type CollectOptions<
  * @ignore
  */
 type OptionArgs<TOptions extends {}> = keyof TOptions extends never
-  ? [options?: BaseOptions]
-  : [options: BaseOptions & TOptions];
+  ? [options?: Expand<BaseOptions>]
+  : [options: Expand<BaseOptions & TOptions>];
 
 /**
  * @ignore
@@ -288,30 +292,53 @@ type TranslationFunctionOptions<
   TKeys extends keyof TMessages, // All normalized message keys to be considered, i.e. included nested ones
   TPluralKeys extends keyof TMessages, // All keys in the message map that are pluralized
   TMessages extends { [key in string]: string }, // Collapsed message map with normalized keys and union values
+  TValueType,
 > = OptionArgs<
   Expand<
     CollectOptions<
       TKeys & TPluralKeys extends never ? {} : { count: number },
       ExpandRecursive<
         UnionToIntersection<ReplaceFormatsFromMessage<TMessages[TKeys]>>
-      >
+      >,
+      TValueType
     >
   >
 >;
 
 /** @alpha */
-export interface TranslationFunction<
-  TMessages extends { [key in string]: string },
-> {
-  <TKey extends keyof CollapsedMessages<TMessages>>(
-    key: TKey,
-    ...[args]: TranslationFunctionOptions<
-      NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
-      PluralKeys<TMessages>,
-      CollapsedMessages<TMessages>
-    >
-  ): CollapsedMessages<TMessages>[TKey];
-}
+export type TranslationFunction<TMessages extends { [key in string]: string }> =
+  CollapsedMessages<TMessages> extends infer IMessages extends {
+    [key in string]: string;
+  }
+    ? {
+        /**
+         * A translation function that returns a string.
+         */
+        <TKey extends keyof IMessages>(
+          key: TKey,
+          ...[args]: TranslationFunctionOptions<
+            NestedMessageKeys<TKey, IMessages>,
+            PluralKeys<TMessages>,
+            IMessages,
+            string
+          >
+        ): IMessages[TKey];
+        /**
+         * A translation function where at least one JSX.Element has been
+         * provided as an interpolation value, and will therefore return a
+         * JSX.Element.
+         */
+        <TKey extends keyof IMessages>(
+          key: TKey,
+          ...[args]: TranslationFunctionOptions<
+            NestedMessageKeys<TKey, IMessages>,
+            PluralKeys<TMessages>,
+            IMessages,
+            string | JSX.Element
+          >
+        ): JSX.Element;
+      }
+    : never;
 
 /** @alpha */
 export type TranslationSnapshot<TMessages extends { [key in string]: string }> =

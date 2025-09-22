@@ -25,7 +25,7 @@ And then select `frontend-plugin`.
 This will create a new Backstage Plugin based on the ID that was provided. It
 will be built and added to the Backstage App automatically.
 
-> If the Backstage App is already running (with `yarn start` or `yarn dev`) you
+> If the Backstage App is already running (with `yarn start`) you
 > should be able to see the default page for your new plugin directly by
 > navigating to `http://localhost:3000/my-plugin`.
 

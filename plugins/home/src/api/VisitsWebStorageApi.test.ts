@@ -39,7 +39,7 @@ describe('VisitsWebStorageApi.create()', () => {
     jest.clearAllMocks();
   });
 
-  it('instantiates with only identitiyApi', () => {
+  it('instantiates with only identityApi', () => {
     const api = VisitsWebStorageApi.create({
       identityApi: mockIdentityApi,
       errorApi: mockErrorApi,

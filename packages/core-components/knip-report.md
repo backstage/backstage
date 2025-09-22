@@ -4,21 +4,21 @@
 
 | Name      | Location     | Severity |
 | :-------- | :----------- | :------- |
-| pluralize | package.json | error    |
+| pluralize | packages/core-components/package.json | error    |
 
 ## Unused devDependencies (3)
 
 | Name                    | Location     | Severity |
 | :---------------------- | :----------- | :------- |
-| @backstage/app-defaults | package.json | error    |
-| @types/google-protobuf  | package.json | error    |
-| cross-fetch             | package.json | error    |
+| @backstage/app-defaults | packages/core-components/package.json | error    |
+| @types/google-protobuf  | packages/core-components/package.json | error    |
+| cross-fetch             | packages/core-components/package.json | error    |
 
 ## Unlisted dependencies (3)
 
 | Name              | Location                                                | Severity |
 | :---------------- | :------------------------------------------------------ | :------- |
-| copy-to-clipboard | src/components/LogViewer/useLogViewerSelection.test.tsx | error    |
-| copy-to-clipboard | src/components/LogViewer/RealLogViewer.test.tsx         | error    |
-| csstype           | src/components/Lifecycle/Lifecycle.tsx                  | error    |
+| copy-to-clipboard | packages/core-components/src/components/LogViewer/useLogViewerSelection.test.tsx | error    |
+| copy-to-clipboard | packages/core-components/src/components/LogViewer/RealLogViewer.test.tsx         | error    |
+| csstype           | packages/core-components/src/components/Lifecycle/Lifecycle.tsx                  | error    |
 

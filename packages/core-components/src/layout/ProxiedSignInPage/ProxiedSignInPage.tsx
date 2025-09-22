@@ -19,7 +19,7 @@ import {
   SignInPageProps,
   useApi,
 } from '@backstage/core-plugin-api';
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ErrorPanel } from '../../components/ErrorPanel';
 import { Progress } from '../../components/Progress';

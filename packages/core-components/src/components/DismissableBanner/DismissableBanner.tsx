@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/esm/useObservable';
 import classNames from 'classnames';

@@ -50,7 +50,7 @@ jest.mock('@gitbeaker/rest', () => ({
 }));
 
 describe('createGitLabCommit', () => {
-  let instance: TemplateAction<any>;
+  let instance: TemplateAction<any, any, any>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
@@ -373,6 +373,77 @@ describe('createGitLabCommit', () => {
       expect(ctx.output).toHaveBeenCalledWith(
         'commitHash',
         'bb6bce457ed069a38ef8d16ef38602972c7735c5',
+      );
+    });
+  });
+
+  describe('error handling', () => {
+    it('throws appropriate error for create action when commit fails', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Create my new commit',
+        branchName: 'some-branch',
+        commitAction: 'create',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'foo.txt': 'Hello there!',
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      mockGitlabClient.Commits.create.mockRejectedValue(
+        new Error('Commit failed'),
+      );
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        'Committing the changes to some-branch failed. Please check that none of the files created by the template already exists. Error: Commit failed',
+      );
+    });
+
+    it('throws appropriate error for update action when commit fails', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Update my commit',
+        branchName: 'some-branch',
+        commitAction: 'update',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'foo.txt': 'Hello there!',
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      mockGitlabClient.Commits.create.mockRejectedValue(
+        new Error('Commit failed'),
+      );
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Committing the changes to some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
+      );
+    });
+
+    it('throws appropriate error for delete action when commit fails', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Delete my commit',
+        branchName: 'some-branch',
+        commitAction: 'delete',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'foo.txt': 'Hello there!',
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      mockGitlabClient.Commits.create.mockRejectedValue(
+        new Error('Commit failed'),
+      );
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Committing the changes to some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
       );
     });
   });

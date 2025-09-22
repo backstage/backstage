@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import ShareIcon from '@material-ui/icons/Share';
 import { DocsTableRow } from './types';
 import { FavoriteToggleIcon } from '@backstage/core-components';

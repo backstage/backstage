@@ -16,7 +16,6 @@
 
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-import React from 'react';
 import { RegisterExistingButton } from './RegisterExistingButton';
 import { usePermission } from '@backstage/plugin-permission-react';
 

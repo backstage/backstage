@@ -2,11 +2,8 @@
 id: plugins
 title: Frontend Plugins
 sidebar_label: Plugins
-# prettier-ignore
 description: Frontend plugins
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 ## Introduction
 
@@ -22,13 +19,13 @@ Frontend plugin instances are created with the `createFrontendPlugin` function, 
 // This creates a new extension, see "Extension Blueprints" documentation for more details
 const myPage = PageBlueprint.make({
   params: {
-    defaultPath: '/my-page',
+    path: '/my-page',
     loader: () => import('./MyPage').then(m => <m.MyPage />),
   },
 });
 
 export default createFrontendPlugin({
-  id: 'my-plugin',
+  pluginId: 'my-plugin',
   extensions: [myPage],
 });
 ```
@@ -52,6 +49,35 @@ These are the routes that the plugin exposes to the app. The `routes` option dec
 ### `featureFlags` option
 
 This is a list of feature flag declarations that your plugin provides to the app. This makes sure that the feature flags are correctly registered and can be toggled in the app. To read a feature flag you can use the feature flags [Utility API](../architecture/33-utility-apis.md), accessible via `featureFlagsApiRef`.
+
+### `info` option
+
+This options is used to provide loaders for different sources of information about the plugin that may be useful to users and admins. The two available loaders are `packageJson` and `manifest`, and a plugin can use either or both as needed. The resulting information is available via the `info()` method on the plugin instance once it is installed in an app, but it is up to each app to decide how to derive the information from the provided sources.
+
+The `info.packageJson` loader **MUST** be used by all plugins that are implemented within their own package, and it should load the `package.json` file for the plugin package. Typical usage looks like this:
+
+```ts
+export default createFrontendPlugin({
+  pluginId: 'my-plugin',
+  info: {
+    packageJson: () => import('../package.json'),
+  },
+  extensions: [...],
+});
+```
+
+The `info.manifest` loader is used to point to an opaque plugin manifest. This **MUST ONLY** be used by plugins that are intended for use within a single organization. Plugins that are published to an open package registry should **NOT** use this loader. The loader is useful for adding additional internal metadata associated with the plugin, and it is up to the Backstage app to decide how these manifests are parsed and used. The default manifest parser in an app created with `createApp` from `@backstage/frontend-defaults` is able to parse the default `catalog-info.yaml` format and built-in fields such as `metadata.links` and `spec.owner`.
+
+Typical usage looks like this:
+
+```ts
+export default createFrontendPlugin({
+  pluginId: '...',
+  info: {
+    manifest: () => import('../catalog-info.yaml'),
+  },
+});
+```
 
 ## Installing a Plugin in an App
 
@@ -79,7 +105,7 @@ export default plugin.withOverrides({
     // Override the catalog index page with a completely custom implementation
     PageBlueprint.make({
       params: {
-        defaultPath: '/catalog',
+        path: '/catalog',
         routeRef: plugin.routes.catalogIndex,
         loader: () => import('./CustomCatalogIndexPage').then(m => <m.Page />),
       },

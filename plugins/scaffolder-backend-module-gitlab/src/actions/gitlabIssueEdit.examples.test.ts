@@ -15,11 +15,11 @@
  */
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { editGitlabIssueAction } from './gitlabIssueEdit';
 import { examples } from './gitlabIssueEdit.examples';
 import yaml from 'yaml';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   Issues: {
@@ -46,15 +46,17 @@ describe('gitlab:issue:edit', () => {
     jest.useRealTimers();
   });
 
-  const config = new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'gitlab.com',
-          token: 'myIntegrationsToken',
-          apiBaseUrl: 'https://gitlab.com/api/v4',
-        },
-      ],
+  const config = mockServices.rootConfig({
+    data: {
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'myIntegrationsToken',
+            apiBaseUrl: 'https://gitlab.com/api/v4',
+          },
+        ],
+      },
     },
   });
   const integrations = ScmIntegrations.fromConfig(config);

@@ -22,7 +22,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Close from '@material-ui/icons/Close';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({

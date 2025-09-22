@@ -15,10 +15,6 @@
  */
 
 import {
-  cacheToPluginCacheManager,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
-import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
@@ -38,9 +34,9 @@ import {
   techdocsPreparerExtensionPoint,
   techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
-import { createRouter } from './service';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import * as winston from 'winston';
+import { createRouter } from './service/router';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.
@@ -129,11 +125,10 @@ export const techdocsPlugin = createBackendPlugin({
         auth,
         catalog,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         // Preparers are responsible for fetching source files for documentation.
         const preparers = await Preparers.fromConfig(config, {
           reader: urlReader,
-          logger: winstonLogger,
+          logger: logger,
         });
         for (const [protocol, preparer] of customPreparers.entries()) {
           preparers.register(protocol, preparer);
@@ -141,7 +136,7 @@ export const techdocsPlugin = createBackendPlugin({
 
         // Generators are used for generating documentation sites.
         const generators = await Generators.fromConfig(config, {
-          logger: winstonLogger,
+          logger: logger,
           customGenerator: customTechdocsGenerator,
         });
 
@@ -149,7 +144,7 @@ export const techdocsPlugin = createBackendPlugin({
         // 1. Publishing generated files to storage
         // 2. Fetching files from storage and passing them to TechDocs frontend.
         const publisher = await Publisher.fromConfig(config, {
-          logger: winstonLogger,
+          logger: logger,
           discovery: discovery,
           customPublisher: customTechdocsPublisher,
           publisherSettings,
@@ -158,11 +153,10 @@ export const techdocsPlugin = createBackendPlugin({
         // checks if the publisher is working and logs the result
         await publisher.getReadiness();
 
-        const cacheManager = cacheToPluginCacheManager(cache);
         http.use(
           await createRouter({
-            logger: winstonLogger,
-            cache: cacheManager,
+            logger: logger,
+            cache,
             docsBuildStrategy,
             buildLogTransport,
             preparers,

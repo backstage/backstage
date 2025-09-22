@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   V1ObjectMeta,
   V2HorizontalPodAutoscaler,
   V1Pod,

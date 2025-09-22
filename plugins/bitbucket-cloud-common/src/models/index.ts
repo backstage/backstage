@@ -36,7 +36,6 @@ export namespace Models {
     created_on?: string;
     display_name?: string;
     links?: AccountLinks;
-    username?: string;
     uuid?: string;
   }
 
@@ -67,6 +66,7 @@ export namespace Models {
    */
   export interface BaseCommit extends ModelObject {
     author?: Author;
+    committer?: Committer;
     date?: string;
     hash?: string;
     message?: string;
@@ -139,6 +139,9 @@ export namespace Models {
     MergeCommit: 'merge_commit',
     Squash: 'squash',
     FastForward: 'fast_forward',
+    SquashFastForward: 'squash_fast_forward',
+    RebaseFastForward: 'rebase_fast_forward',
+    RebaseMerge: 'rebase_merge',
   } as const;
 
   /**
@@ -194,6 +197,18 @@ export namespace Models {
     (typeof CommitFileAttributesEnum)[keyof typeof CommitFileAttributesEnum];
 
   /**
+   * The committer of a change in a repository
+   * @public
+   */
+  export interface Committer extends ModelObject {
+    /**
+     * The raw committer value from the repository. This may be the only value available if the committer does not match a user in Bitbucket.
+     */
+    raw?: string;
+    user?: Account;
+  }
+
+  /**
    * A link to a resource related to this object.
    * @public
    */
@@ -243,6 +258,28 @@ export namespace Models {
   }
 
   /**
+   * A paginated list of branches.
+   * @public
+   */
+  export interface PaginatedBranches extends Paginated<Branch> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Branch>;
+  }
+
+  /**
+   * A paginated list of projects
+   * @public
+   */
+  export interface PaginatedProjects extends Paginated<Project> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Project>;
+  }
+
+  /**
    * A paginated list of repositories.
    * @public
    */
@@ -254,17 +291,6 @@ export namespace Models {
   }
 
   /**
-   * A paginated list of projects.
-   * @public
-   */
-  export interface PaginatedProjects extends Paginated<Project> {
-    /**
-     * The values of the current page.
-     */
-    values?: Set<Project>;
-  }
-
-  /**
    * A paginated list of workspaces.
    * @public
    */
@@ -273,17 +299,6 @@ export namespace Models {
      * The values of the current page.
      */
     values?: Set<Workspace>;
-  }
-
-  /**
-   * A paginated list of branches.
-   * @public
-   */
-  export interface PaginatedBranches extends Paginated<Branch> {
-    /**
-     * The values of the current page.
-     */
-    values?: Set<Branch>;
   }
 
   /**
@@ -572,6 +587,17 @@ export namespace Models {
   export interface Workspace extends ModelObject {
     created_on?: string;
     /**
+     * Controls the rules for forking repositories within this workspace.
+     *
+     * * **allow_forks**: unrestricted forking
+     * * **internal_only**: prevents forking of private repositories outside the workspace or to public repositories
+     */
+    forking_mode?: WorkspaceForkingModeEnum;
+    /**
+     * Indicates whether the workspace enforces private content, or whether it allows public content.
+     */
+    is_privacy_enforced?: boolean;
+    /**
      * Indicates whether the workspace is publicly accessible, or whether it is
      * private to the members and consequently only visible to members.
      */
@@ -591,6 +617,28 @@ export namespace Models {
      */
     uuid?: string;
   }
+
+  /**
+   * Controls the rules for forking repositories within this workspace.
+   *
+   * * **allow_forks**: unrestricted forking
+   * * **internal_only**: prevents forking of private repositories outside the workspace or to public repositories
+   * @public
+   */
+  export const WorkspaceForkingModeEnum = {
+    AllowForks: 'allow_forks',
+    InternalOnly: 'internal_only',
+  } as const;
+
+  /**
+   * Controls the rules for forking repositories within this workspace.
+   *
+   * * **allow_forks**: unrestricted forking
+   * * **internal_only**: prevents forking of private repositories outside the workspace or to public repositories
+   * @public
+   */
+  export type WorkspaceForkingModeEnum =
+    (typeof WorkspaceForkingModeEnum)[keyof typeof WorkspaceForkingModeEnum];
 
   /**
    * @public

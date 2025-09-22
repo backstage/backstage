@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { capitalize } from 'lodash';
 import {

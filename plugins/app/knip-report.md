@@ -1,19 +1,18 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (4)
 
-| Name             | Location     | Severity |
-| :--------------- | :----------- | :------- |
-| @material-ui/lab | package.json | error    |
-| react-use        | package.json | error    |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| @backstage/version-bridge | plugins/app/package.json | error    |
+| @material-ui/lab          | plugins/app/package.json | error    |
+| react-use                 | plugins/app/package.json | error    |
+| zod                       | plugins/app/package.json | error    |
 
-## Unused devDependencies (5)
+## Unused devDependencies (2)
 
-| Name                           | Location     | Severity |
-| :----------------------------- | :----------- | :------- |
-| @backstage/frontend-test-utils | package.json | error    |
-| @testing-library/user-event    | package.json | error    |
-| @testing-library/react         | package.json | error    |
-| @backstage/dev-utils           | package.json | error    |
-| msw                            | package.json | error    |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| @backstage/dev-utils | plugins/app/package.json | error    |
+| msw                  | plugins/app/package.json | error    |
 

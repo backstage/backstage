@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useContext, useState } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 
 export interface ErrorContext {
   error?: string;
   setError: (message: string) => void;
 }
 
-export const KubernetesClusterErrorContext = React.createContext<ErrorContext>({
+export const KubernetesClusterErrorContext = createContext<ErrorContext>({
   setError: (_: string) => {},
 });
 
 export interface KubernetesClusterErrorProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const KubernetesClusterErrorProvider = ({

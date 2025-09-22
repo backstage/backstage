@@ -106,7 +106,7 @@ describe('createRouter', () => {
         expect.objectContaining({
           error: {
             name: 'Error',
-            message: `There was a problem performing the search query: ${error.message}`,
+            message: `There was a problem performing the search query`,
           },
         }),
       );
@@ -278,6 +278,8 @@ describe('createRouter', () => {
           permissions: mockPermissionEvaluator,
           discovery,
           logger,
+          auth: mockServices.auth(),
+          httpAuth: mockServices.httpAuth(),
         });
         app = express().use(router);
       });

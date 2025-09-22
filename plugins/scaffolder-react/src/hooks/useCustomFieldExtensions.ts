@@ -51,7 +51,7 @@ export const useCustomFieldExtensions = <
       }),
   );
 
-  // This should really be a different type moving foward, but we do this to keep type compatibility.
+  // This should really be a different type moving forward, but we do this to keep type compatibility.
   // should probably also move the defaults into the API eventually too, but that will come with the move
   // to the new frontend system.
   const blueprintsToLegacy: FieldExtensionOptions[] = blueprintFields?.map(

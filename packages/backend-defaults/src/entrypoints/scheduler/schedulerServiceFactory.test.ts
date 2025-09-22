@@ -15,12 +15,17 @@
  */
 
 import { coreServices } from '@backstage/backend-plugin-api';
-import { ServiceFactoryTester } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  ServiceFactoryTester,
+} from '@backstage/backend-test-utils';
 import { schedulerServiceFactory } from './schedulerServiceFactory';
 
 describe('schedulerFactory', () => {
   it('creates sidecar database features', async () => {
-    const tester = ServiceFactoryTester.from(schedulerServiceFactory);
+    const tester = ServiceFactoryTester.from(schedulerServiceFactory, {
+      dependencies: [mockServices.rootHttpRouter.factory()],
+    });
 
     const scheduler = await tester.getSubject();
     await scheduler.scheduleTask({

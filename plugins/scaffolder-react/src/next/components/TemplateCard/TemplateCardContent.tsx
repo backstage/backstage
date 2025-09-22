@@ -20,7 +20,6 @@ import type { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common'
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
 

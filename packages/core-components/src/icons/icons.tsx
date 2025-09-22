@@ -16,7 +16,7 @@
 
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
-import React, { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 
 /**
  * @public

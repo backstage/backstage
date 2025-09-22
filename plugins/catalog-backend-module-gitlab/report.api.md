@@ -111,7 +111,7 @@ export type GitlabProviderConfig = {
   catalogFile: string;
   projectPattern: RegExp;
   userPattern: RegExp;
-  groupPattern: RegExp;
+  groupPattern: RegExp | RegExp[];
   allowInherited?: boolean;
   relations?: string[];
   orgEnabled?: boolean;
@@ -120,6 +120,8 @@ export type GitlabProviderConfig = {
   includeArchivedRepos?: boolean;
   excludeRepos?: string[];
   includeUsersWithoutSeat?: boolean;
+  membership?: boolean;
+  topics?: string;
 };
 
 // @public

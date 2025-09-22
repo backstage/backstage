@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   useState,
   useCallback,
   useEffect,
@@ -178,6 +178,7 @@ export function EntityHeader(props: {
   UNSTABLE_contextMenuOptions?: {
     disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
   };
+  contextMenuItems?: React.JSX.Element[];
   /**
    * An array of relation types used to determine the parent entities in the hierarchy.
    * These relations are prioritized in the order provided, allowing for flexible
@@ -195,6 +196,7 @@ export function EntityHeader(props: {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
+    contextMenuItems,
     parentEntityRelations,
     title,
     subtitle,
@@ -281,6 +283,7 @@ export function EntityHeader(props: {
           <EntityContextMenu
             UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
             UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+            contextMenuItems={contextMenuItems}
             onInspectEntity={openInspectEntityDialog}
             onUnregisterEntity={openUnregisterEntityDialog}
           />

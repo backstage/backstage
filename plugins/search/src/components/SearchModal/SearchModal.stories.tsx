@@ -33,7 +33,7 @@ import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { rootRouteRef } from '../../plugin';
 import { SearchType } from '../SearchType';
 import { SearchModal } from './SearchModal';

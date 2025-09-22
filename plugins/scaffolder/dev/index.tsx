@@ -20,7 +20,6 @@ import {
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import { ScaffolderClient } from '../src';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderPage } from '../src/plugin';

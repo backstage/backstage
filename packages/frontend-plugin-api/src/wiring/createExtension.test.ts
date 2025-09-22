@@ -669,7 +669,7 @@ describe('createExtension', () => {
         },
       });
 
-      const overriden = testExtension.override({
+      const overridden = testExtension.override({
         config: {
           schema: {
             bar: z => z.string().default('hello'),
@@ -684,12 +684,12 @@ describe('createExtension', () => {
         },
       });
 
-      expect(createExtensionTester(overriden).get(stringDataRef)).toBe(
+      expect(createExtensionTester(overridden).get(stringDataRef)).toBe(
         'foo-boom-override-hello',
       );
 
       expect(
-        createExtensionTester(overriden, {
+        createExtensionTester(overridden, {
           config: { foo: 'hello', bar: 'world' },
         }).get(stringDataRef),
       ).toBe('foo-hello-override-world');
@@ -1078,7 +1078,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
+        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
       );
 
       // Mix forward and data override
@@ -1101,7 +1101,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
+        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
       );
 
       // Required input not provided
@@ -1124,7 +1124,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
+        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
       );
 
       // Wrong value provided
@@ -1153,7 +1153,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
+        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
       );
     });
   });

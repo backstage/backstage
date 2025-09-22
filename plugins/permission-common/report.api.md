@@ -83,7 +83,7 @@ export type EvaluatePermissionRequest = {
   resourceRef?: string;
 };
 
-// @public
+// @public @deprecated
 export type EvaluatePermissionRequestBatch =
   PermissionMessageBatch<EvaluatePermissionRequest>;
 

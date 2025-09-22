@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import Grid from '@material-ui/core/Grid';
-import React, { useMemo } from 'react';
+import { JSX, useMemo } from 'react';
 import { parseFilterExpression } from './parseFilterExpression';
 
 // Keeps track of what filter expression strings that we've seen duplicates of
@@ -69,7 +69,7 @@ export function buildFilterFn(
 // Handles the memoized parsing of filter expressions
 export function FilterWrapper(props: {
   entity: Entity;
-  element: React.JSX.Element;
+  element: JSX.Element;
   filterFunction?: (entity: Entity) => boolean;
   filterExpression?: string;
 }) {

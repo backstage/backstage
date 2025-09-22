@@ -23,9 +23,10 @@ import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
 import Edit from '@material-ui/icons/Edit';
 import MoreVert from '@material-ui/icons/MoreVert';
-import React, { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -49,7 +50,7 @@ export function TemplateWizardPageContextMenu(
     return null;
   }
 
-  const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+  const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -82,7 +83,7 @@ export function TemplateWizardPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
-          <MenuItem onClick={() => window.open(editUrl, '_blank')}>
+          <MenuItem component={Link} to={editUrl}>
             <ListItemIcon>
               <Edit fontSize="small" />
             </ListItemIcon>

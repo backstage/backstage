@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 import { HostDiscovery } from './HostDiscovery';
 
 describe('HostDiscovery', () => {
@@ -269,6 +270,285 @@ describe('HostDiscovery', () => {
     );
     await expect(discovery.getExternalBaseUrl('plugin/alpha')).resolves.toBe(
       'http://localhost:40/api/plugin%2Falpha',
+    );
+  });
+
+  it('accepts default endpoints with lower prio than config', async () => {
+    const discovery = HostDiscovery.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            baseUrl: 'http://localhost:40',
+            listen: { port: 80, host: 'localhost' },
+          },
+          discovery: {
+            endpoints: [
+              {
+                target: 'http://config.com/1',
+                plugins: ['a'],
+              },
+              {
+                target: { internal: 'http://config.com/1' },
+                plugins: ['b'],
+              },
+              {
+                target: { external: 'http://config.com/1' },
+                plugins: ['c'],
+              },
+              {
+                target: 'http://config.com/2',
+                plugins: ['d'],
+              },
+              {
+                target: { internal: 'http://config.com/2' },
+                plugins: ['e'],
+              },
+              {
+                target: { external: 'http://config.com/2' },
+                plugins: ['f'],
+              },
+              {
+                target: 'http://config.com/3',
+                plugins: ['g'],
+              },
+              {
+                target: { internal: 'http://config.com/3' },
+                plugins: ['h'],
+              },
+              {
+                target: { external: 'http://config.com/3' },
+                plugins: ['i'],
+              },
+            ],
+          },
+        },
+      }),
+      {
+        logger: mockServices.logger.mock(),
+        defaultEndpoints: [
+          {
+            target: 'http://default.com/1',
+            plugins: ['a', 'b', 'c'],
+          },
+          {
+            target: { internal: 'http://default.com/2' },
+            plugins: ['d', 'e', 'f'],
+          },
+          {
+            target: { external: 'http://default.com/3' },
+            plugins: ['g', 'h', 'i'],
+          },
+        ],
+      },
+    );
+
+    await expect(discovery.getBaseUrl('unknown')).resolves.toBe(
+      'http://localhost:80/api/unknown',
+    );
+    await expect(discovery.getExternalBaseUrl('unknown')).resolves.toBe(
+      'http://localhost:40/api/unknown',
+    );
+
+    await expect(discovery.getBaseUrl('a')).resolves.toBe(
+      'http://config.com/1',
+    );
+    await expect(discovery.getExternalBaseUrl('a')).resolves.toBe(
+      'http://config.com/1',
+    );
+
+    await expect(discovery.getBaseUrl('b')).resolves.toBe(
+      'http://config.com/1',
+    );
+    await expect(discovery.getExternalBaseUrl('b')).resolves.toBe(
+      'http://default.com/1',
+    );
+
+    await expect(discovery.getBaseUrl('c')).resolves.toBe(
+      'http://default.com/1',
+    );
+    await expect(discovery.getExternalBaseUrl('c')).resolves.toBe(
+      'http://config.com/1',
+    );
+
+    await expect(discovery.getBaseUrl('d')).resolves.toBe(
+      'http://config.com/2',
+    );
+    await expect(discovery.getExternalBaseUrl('d')).resolves.toBe(
+      'http://config.com/2',
+    );
+
+    await expect(discovery.getBaseUrl('e')).resolves.toBe(
+      'http://config.com/2',
+    );
+    await expect(discovery.getExternalBaseUrl('e')).resolves.toBe(
+      'http://localhost:40/api/e',
+    );
+
+    await expect(discovery.getBaseUrl('f')).resolves.toBe(
+      'http://default.com/2',
+    );
+    await expect(discovery.getExternalBaseUrl('f')).resolves.toBe(
+      'http://config.com/2',
+    );
+
+    await expect(discovery.getBaseUrl('g')).resolves.toBe(
+      'http://config.com/3',
+    );
+    await expect(discovery.getExternalBaseUrl('g')).resolves.toBe(
+      'http://config.com/3',
+    );
+
+    await expect(discovery.getBaseUrl('h')).resolves.toBe(
+      'http://config.com/3',
+    );
+    await expect(discovery.getExternalBaseUrl('h')).resolves.toBe(
+      'http://default.com/3',
+    );
+
+    await expect(discovery.getBaseUrl('i')).resolves.toBe(
+      'http://localhost:80/api/i',
+    );
+    await expect(discovery.getExternalBaseUrl('i')).resolves.toBe(
+      'http://config.com/3',
+    );
+  });
+
+  it('only accepts SRV URLs in the internal target', async () => {
+    expect(() =>
+      HostDiscovery.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost:40',
+              listen: { port: 80, host: 'localhost' },
+            },
+          },
+        }),
+        {
+          logger: mockServices.logger.mock(),
+          defaultEndpoints: [
+            {
+              target: { internal: 'http+srv://default.com/1' },
+              plugins: ['a'],
+            },
+          ],
+        },
+      ),
+    ).not.toThrow();
+
+    expect(() =>
+      HostDiscovery.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost:40',
+              listen: { port: 80, host: 'localhost' },
+            },
+            discovery: {
+              endpoints: [
+                {
+                  target: { internal: 'http+srv://default.com/1' },
+                  plugins: ['a'],
+                },
+              ],
+            },
+          },
+        }),
+      ),
+    ).not.toThrow();
+
+    expect(() =>
+      HostDiscovery.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost:40',
+              listen: { port: 80, host: 'localhost' },
+            },
+          },
+        }),
+        {
+          logger: mockServices.logger.mock(),
+          defaultEndpoints: [
+            {
+              target: 'http+srv://default.com/1',
+              plugins: ['a'],
+            },
+          ],
+        },
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"SRV resolver URLs cannot be used in the target for external endpoints"`,
+    );
+
+    expect(() =>
+      HostDiscovery.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost:40',
+              listen: { port: 80, host: 'localhost' },
+            },
+          },
+        }),
+        {
+          logger: mockServices.logger.mock(),
+          defaultEndpoints: [
+            {
+              target: { external: 'http+srv://default.com/1' },
+              plugins: ['a'],
+            },
+          ],
+        },
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"SRV resolver URLs cannot be used in the target for external endpoints"`,
+    );
+
+    expect(() =>
+      HostDiscovery.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost:40',
+              listen: { port: 80, host: 'localhost' },
+            },
+            discovery: {
+              endpoints: [
+                {
+                  target: 'http+srv://default.com/1',
+                  plugins: ['a'],
+                },
+              ],
+            },
+          },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"SRV resolver URLs cannot be used in the target for external endpoints"`,
+    );
+
+    expect(() =>
+      HostDiscovery.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost:40',
+              listen: { port: 80, host: 'localhost' },
+            },
+            discovery: {
+              endpoints: [
+                {
+                  target: { external: 'http+srv://default.com/1' },
+                  plugins: ['a'],
+                },
+              ],
+            },
+          },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"SRV resolver URLs cannot be used in the target for external endpoints"`,
     );
   });
 });

@@ -17,7 +17,7 @@
 import { BackstagePalette } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
-import React, { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import classNames from 'classnames';
 

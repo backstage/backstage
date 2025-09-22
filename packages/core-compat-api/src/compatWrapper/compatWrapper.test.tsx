@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  componentsApiRef,
-  coreComponentRefs,
+  swappableComponentsApiRef,
   coreExtensionData,
   createExtension,
   iconsApiRef,
   useRouteRef as useNewRouteRef,
   createRouteRef as createNewRouteRef,
   useApi,
+  NotFoundErrorPage,
+  ErrorDisplay,
+  Progress,
 } from '@backstage/frontend-plugin-api';
 import {
   createExtensionTester,
@@ -38,6 +39,32 @@ import {
 } from '@backstage/core-plugin-api';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
+
+jest.mock('./BackwardsCompatProvider', () => ({
+  BackwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
+    const OriginalComponent = jest.requireActual(
+      './BackwardsCompatProvider',
+    ).BackwardsCompatProvider;
+    return (
+      <OriginalComponent>
+        <div data-testid="backwards-compat-provider">{children}</div>
+      </OriginalComponent>
+    );
+  },
+}));
+
+jest.mock('./ForwardsCompatProvider', () => ({
+  ForwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
+    const OriginalComponent = jest.requireActual(
+      './ForwardsCompatProvider',
+    ).ForwardsCompatProvider;
+    return (
+      <OriginalComponent>
+        <div data-testid="forwards-compat-provider">{children}</div>
+      </OriginalComponent>
+    );
+  },
+}));
 
 describe('BackwardsCompatProvider', () => {
   it('should convert the app context', () => {
@@ -98,13 +125,19 @@ describe('BackwardsCompatProvider', () => {
 
 describe('ForwardsCompatProvider', () => {
   it('should convert the app context', async () => {
+    const defaultComponentRefs = {
+      progress: Progress.ref,
+      notFoundErrorPage: NotFoundErrorPage.ref,
+      errorDisplay: ErrorDisplay.ref,
+    };
+
     function Component() {
-      const components = useApi(componentsApiRef);
+      const components = useApi(swappableComponentsApiRef);
       const icons = useApi(iconsApiRef);
       return (
         <div data-testid="ctx">
           components:{' '}
-          {Object.entries(coreComponentRefs)
+          {Object.entries(defaultComponentRefs)
             .map(
               ([name, ref]) =>
                 `${name}=${Boolean(components.getComponent(ref))}`,
@@ -119,7 +152,7 @@ describe('ForwardsCompatProvider', () => {
     await renderInOldTestApp(compatWrapper(<Component />));
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "components: progress=true, notFoundErrorPage=true, errorBoundaryFallback=true
+      "components: progress=true, notFoundErrorPage=true, errorDisplay=true
       icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning, star, unstarred"
     `);
   });
@@ -137,5 +170,20 @@ describe('ForwardsCompatProvider', () => {
     });
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
+  });
+});
+
+describe('BidirectionalCompatProvider', () => {
+  it('should never render a ForwardsCompatWrapper when in the new system, with one backwards compat provider', () => {
+    renderInNewTestApp(
+      compatWrapper(
+        compatWrapper(compatWrapper(<div data-testid="test-content" />)),
+      ),
+    );
+
+    expect(screen.getByTestId('test-content')).toBeInTheDocument();
+
+    expect(screen.queryAllByTestId('forwards-compat-provider').length).toBe(0);
+    expect(screen.queryAllByTestId('backwards-compat-provider').length).toBe(1);
   });
 });

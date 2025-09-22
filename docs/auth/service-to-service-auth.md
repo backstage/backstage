@@ -1,14 +1,13 @@
 ---
 id: service-to-service-auth
 title: Service to Service Auth
-# prettier-ignore
 description: This section describes service to service authentication works, both internally within Backstage plugins and when external callers want to make requests.
 ---
 
 :::info
 This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
 [version 1.24](../releases/v1.24.0.md). If you are still on the old backend
-system, you may want to read [its own article](./service-to-service-auth--old.md)
+system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/auth/service-to-service-auth--old.md)
 instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
@@ -219,7 +218,7 @@ provider's documentation.
 
 The subject returned from the token verification will become part of the
 credentials object that the request recipient plugins get. All subjects will have the prefix
-`external:`, but you can also provide a custom subjectPrefix which will get appended before the
+`external:`, but you can also provide a custom `subjectPrefix` which will get appended before the
 subject returned from your JWKS service (ex. `external:custom-prefix:sub`).
 
 Callers must pass along tokens with requests in the `Authorization` header when

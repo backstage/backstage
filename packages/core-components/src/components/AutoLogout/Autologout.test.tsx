@@ -24,7 +24,6 @@ import {
   renderInTestApp,
   mockApis,
 } from '@backstage/test-utils';
-import React from 'react';
 
 import { AutoLogout } from './AutoLogout';
 import { cleanup } from '@testing-library/react';

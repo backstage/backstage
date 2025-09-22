@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import { createContext, useContext } from 'react';
 import {
   DetectedError,
   ResourceRef,
 } from '@backstage/plugin-kubernetes-common';
-import { TypeMeta } from '@kubernetes-models/base';
-import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta as V1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import type { TypeMeta } from '@kubernetes-models/base';
+import type { IIoK8sApimachineryPkgApisMetaV1ObjectMeta as V1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 
 /**
  * Context for detected errors
  *
  * @public
  */
-export const DetectedErrorsContext = React.createContext<DetectedError[]>([]);
+export const DetectedErrorsContext = createContext<DetectedError[]>([]);
 
 /**
  *

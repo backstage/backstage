@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityListProvider, useStarredEntities } from '../../hooks';
 import { catalogApiRef } from '../../api';

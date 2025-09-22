@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useApi, configApiRef, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorPage } from '@backstage/core-components';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';

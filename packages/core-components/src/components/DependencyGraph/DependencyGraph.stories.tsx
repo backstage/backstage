@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { DependencyGraph } from './DependencyGraph';
 import { DependencyGraphTypes as Types } from './types';
 

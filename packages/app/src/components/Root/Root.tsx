@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import HomeIcon from '@material-ui/icons/Home';
-import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
-import MapIcon from '@material-ui/icons/MyLocation';
-import LayersIcon from '@material-ui/icons/Layers';
-import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
-import MoneyIcon from '@material-ui/icons/MonetizationOn';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 import {
@@ -48,10 +43,11 @@ import {
 } from '@backstage/core-components';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import { SearchModal } from '../search/SearchModal';
-import Score from '@material-ui/icons/Score';
 import { useApp } from '@backstage/core-plugin-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
+import UpdateIcon from '@material-ui/icons/Update';
+import CategoryIcon from '@material-ui/icons/Category';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -93,7 +89,8 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home">
+        <SidebarItem icon={HomeIcon} to="home" text="Home" />
+        <SidebarItem icon={CategoryIcon} to="/" text="Catalog">
           <SidebarSubmenu title="Catalog">
             <SidebarSubmenuItem
               title="Domains"
@@ -149,26 +146,20 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
           to="docs"
           text="Docs"
         />
-        <SidebarItem icon={PlaylistPlayIcon} to="playlist" text="Playlists" />
-        <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
-          <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-          <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
           <SidebarItem
-            icon={MoneyIcon}
-            to="cost-insights"
-            text="Cost Insights"
+            icon={UpdateIcon}
+            to="catalog-unprocessed-entities"
+            text="Unprocessed Entities"
           />
-          <SidebarItem icon={Score} to="score-board" text="Score board" />
         </SidebarScrollWrapper>
-        <SidebarDivider />
-        <SidebarDivider />
-        <NotificationsSidebarItem />
       </SidebarGroup>
       <SidebarSpace />
+      <SidebarDivider />
+      <NotificationsSidebarItem />
       <SidebarDivider />
       <SidebarGroup
         label="Settings"

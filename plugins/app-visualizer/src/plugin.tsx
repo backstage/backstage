@@ -21,13 +21,12 @@ import {
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import VisualizerIcon from '@material-ui/icons/Visibility';
-import React from 'react';
 
 const rootRouteRef = createRouteRef();
 
 const appVisualizerPage = PageBlueprint.make({
   params: {
-    defaultPath: '/visualizer',
+    path: '/visualizer',
     routeRef: rootRouteRef,
     loader: () =>
       import('./components/AppVisualizerPage').then(m => (
@@ -46,6 +45,7 @@ export const appVisualizerNavItem = NavItemBlueprint.make({
 
 /** @public */
 export const visualizerPlugin = createFrontendPlugin({
-  id: 'app-visualizer',
+  pluginId: 'app-visualizer',
+  info: { packageJson: () => import('../package.json') },
   extensions: [appVisualizerPage, appVisualizerNavItem],
 });

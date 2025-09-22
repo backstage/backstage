@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import * as oneCronJobsFixture from '../../__fixtures__/1-cronjobs.json';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { CronJobDrawer } from './CronJobsDrawer';

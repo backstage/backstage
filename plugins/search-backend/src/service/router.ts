@@ -16,7 +16,6 @@
 
 import express from 'express';
 import { z } from 'zod';
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
@@ -39,7 +38,6 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
   const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>
@@ -57,8 +55,7 @@ const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
 });
 
 /**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export type RouterOptions = {
   engine: SearchEngine;
@@ -67,9 +64,8 @@ export type RouterOptions = {
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
   logger: LoggerService;
-  // TODO: Make "auth" and "httpAuth" required once we remove the usage of "tokenManager"
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
 };
 
 const defaultMaxPageLimit = 100;
@@ -77,8 +73,7 @@ const defaultMaxTermLength = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
@@ -90,14 +85,9 @@ export async function createRouter(
     permissions,
     config,
     logger,
-    discovery = HostDiscovery.fromConfig(config),
+    auth,
+    httpAuth,
   } = options;
-
-  // TODO: stop using this adapter when the "tokenManager" is removed
-  const { auth, httpAuth } = createLegacyAuthAdapters({
-    ...options,
-    discovery,
-  });
 
   const maxPageLimit =
     config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;
@@ -207,14 +197,17 @@ export async function createRouter(
 
       res.json(filterResultSet(toSearchResults(resultSet)));
     } catch (error) {
+      // Log the error message here, but don't expose it to the user in the response
+      logger.error(
+        `There was a problem performing the search query: ${error.message}`,
+      );
       if (error.name === 'MissingIndexError') {
         // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
         throw error;
       }
 
-      throw new Error(
-        `There was a problem performing the search query: ${error.message}`,
-      );
+      // If the error is not a MissingIndexError, we want to throw a generic error without the error message as it may leak internal information
+      throw new Error(`There was a problem performing the search query`);
     }
   });
 

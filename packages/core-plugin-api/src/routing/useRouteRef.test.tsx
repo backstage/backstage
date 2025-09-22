@@ -15,7 +15,7 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { useRouteRef } from './useRouteRef';
@@ -36,7 +36,7 @@ describe('v1 consumer', () => {
     const routeRef = createRouteRef({ id: 'ref1' });
 
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <MemoryRouter initialEntries={['/my-page']} children={children} />
       ),
     });
@@ -60,7 +60,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <Router
           location={history.location}
           navigator={history}
@@ -86,7 +86,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <Router
           location={history.location}
           navigator={history}
@@ -112,7 +112,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <Router
           location={history.location}
           navigator={history}
@@ -138,7 +138,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <Router
           location={history.location}
           navigator={history}

@@ -20,7 +20,7 @@ import {
   BackstagePlugin as LegacyBackstagePlugin,
 } from '@backstage/core-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import React from 'react';
+import { JSX, ReactNode, isValidElement, Children } from 'react';
 import {
   EntityCardBlueprint,
   EntityContentBlueprint,
@@ -30,7 +30,7 @@ import { normalizeRoutePath } from './normalizeRoutePath';
 const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
 const ENTITY_ROUTE_KEY = 'plugin.catalog.entityLayoutRoute';
 
-// Placeholder to make sure internal types here are consitent
+// Placeholder to make sure internal types here are consistent
 type Entity = { apiVersion: string; kind: string };
 
 type EntityFilter = (entity: Entity, ctx: { apis: ApiHolder }) => boolean;
@@ -73,7 +73,7 @@ function invertFilter(ifFunc?: EntityFilter): EntityFilter {
 }
 
 export function collectEntityPageContents(
-  entityPageElement: React.JSX.Element,
+  entityPageElement: JSX.Element,
   context: {
     discoverExtension(
       extension: ExtensionDefinition,
@@ -84,8 +84,8 @@ export function collectEntityPageContents(
   let cardCounter = 1;
   let routeCounter = 1;
 
-  function traverse(element: React.ReactNode, parentFilter?: EntityFilter) {
-    if (!React.isValidElement(element)) {
+  function traverse(element: ReactNode, parentFilter?: EntityFilter) {
+    if (!isValidElement(element)) {
       return;
     }
 
@@ -115,8 +115,8 @@ export function collectEntityPageContents(
               name,
               factory(originalFactory, { apis }) {
                 return originalFactory({
-                  defaultPath: normalizeRoutePath(pageNode.path),
-                  defaultTitle: pageNode.title,
+                  path: normalizeRoutePath(pageNode.path),
+                  title: pageNode.title,
                   filter: mergedIf && (entity => mergedIf(entity, { apis })),
                   loader: () => Promise.resolve(pageNode.children),
                 });
@@ -152,8 +152,8 @@ export function collectEntityPageContents(
       return;
     }
 
-    React.Children.forEach(
-      (element.props as { children?: React.ReactNode })?.children,
+    Children.forEach(
+      (element.props as { children?: ReactNode })?.children,
       child => {
         traverse(child, parentFilter);
       },
@@ -173,7 +173,7 @@ type EntityRoute = {
 
 type EntitySwitchCase = {
   if?: EntityFilter;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 type EntitySwitch = {
@@ -206,7 +206,7 @@ function wrapAsyncEntityFilter(
 }
 
 function maybeParseEntityPageNode(
-  element: React.JSX.Element,
+  element: JSX.Element,
 ): EntityRoute | EntitySwitch | undefined {
   if (getComponentData(element, ENTITY_ROUTE_KEY)) {
     const props = element.props as EntityRoute;
@@ -220,11 +220,11 @@ function maybeParseEntityPageNode(
   }
 
   const parentProps = element.props as {
-    children?: React.ReactNode;
+    children?: ReactNode;
     renderMultipleMatches?: 'first' | 'all';
   };
 
-  const children = React.Children.toArray(parentProps?.children);
+  const children = Children.toArray(parentProps?.children);
   if (!children.length) {
     return undefined;
   }

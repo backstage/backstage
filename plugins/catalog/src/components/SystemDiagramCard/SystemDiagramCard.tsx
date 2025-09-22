@@ -33,7 +33,6 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
-import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
 import {

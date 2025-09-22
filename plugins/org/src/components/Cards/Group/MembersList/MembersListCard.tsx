@@ -20,14 +20,18 @@ import {
   UserEntity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  useEntity,
+  EntityRefLink,
+} from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
-import React, { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
 import {
@@ -43,8 +47,9 @@ import {
   getAllDesendantMembersForGroupEntity,
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { EntityRelationAggregation } from '../../types';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { orgTranslationRef } from '../../../../translation';
 
 /** @public */
 export type MemberComponentClassKey = 'card' | 'avatar';
@@ -154,8 +159,9 @@ export const MembersListCard = (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
 }) => {
+  const { t } = useTranslationRef(orgTranslationRef);
   const {
-    memberDisplayTitle = 'Members',
+    memberDisplayTitle = t('membersListCard.title'),
     pageSize = 50,
     showAggregateMembersToggle,
     relationType = 'memberof',
@@ -175,8 +181,8 @@ export const MembersListCard = (props: {
 
   const groupNamespace = grpNamespace || DEFAULT_NAMESPACE;
 
-  const [page, setPage] = React.useState(1);
-  const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
+  const [page, setPage] = useState(1);
+  const pageChange = (_: ChangeEvent<unknown>, pageIndex: number) => {
     setPage(pageIndex);
   };
 
@@ -233,7 +239,13 @@ export const MembersListCard = (props: {
   }
 
   const nbPages = Math.ceil((members?.length || 0) / pageSize);
-  const paginationLabel = nbPages < 2 ? '' : `, page ${page} of ${nbPages}`;
+  const paginationLabel =
+    nbPages < 2
+      ? ''
+      : t('membersListCard.paginationLabel', {
+          page: String(page),
+          nbPages: String(nbPages),
+        });
 
   const pagination = (
     <Pagination
@@ -245,7 +257,7 @@ export const MembersListCard = (props: {
     />
   );
 
-  let memberList: React.JSX.Element;
+  let memberList: JSX.Element;
   if (members && members.length > 0) {
     memberList = (
       <Box className={classes.memberList}>
@@ -257,9 +269,7 @@ export const MembersListCard = (props: {
   } else {
     memberList = (
       <Box p={2}>
-        <Typography>
-          This group has no {memberDisplayTitle.toLocaleLowerCase()}.
-        </Typography>
+        <Typography>{t('membersListCard.noMembersDescription')}</Typography>
       </Box>
     );
   }
@@ -270,23 +280,29 @@ export const MembersListCard = (props: {
         title={`${memberDisplayTitle} (${
           members?.length || 0
         }${paginationLabel})`}
-        subheader={`of ${displayName}`}
+        subheader={t('membersListCard.subtitle', {
+          groupName: displayName,
+        })}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
         className={classes.root}
         cardClassName={classes.cardContent}
       >
         {showAggregateMembersToggle && (
           <>
-            Direct Members
+            {t('membersListCard.aggregateMembersToggle.directMembers')}
             <Switch
               color="primary"
               checked={showAggregateMembers}
               onChange={() => {
                 setShowAggregateMembers(!showAggregateMembers);
               }}
-              inputProps={{ 'aria-label': 'Users Type Switch' }}
+              inputProps={{
+                'aria-label': t(
+                  'membersListCard.aggregateMembersToggle.ariaLabel',
+                ),
+              }}
             />
-            Aggregated Members
+            {t('membersListCard.aggregateMembersToggle.aggregatedMembers')}
           </>
         )}
         {showAggregateMembers && loadingDescendantMembers ? (

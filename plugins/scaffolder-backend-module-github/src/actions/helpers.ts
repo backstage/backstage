@@ -44,6 +44,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   squashMergeCommitMessage: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK' | undefined,
   allowRebaseMerge: boolean,
   allowAutoMerge: boolean,
+  allowUpdateBranch: boolean,
   access: string | undefined,
   collaborators:
     | (
@@ -74,9 +75,10 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         includeClaimKeys?: string[];
       }
     | undefined,
-  customProperties: { [key: string]: string } | undefined,
+  customProperties: { [key: string]: string | string[] } | undefined,
   subscribe: boolean | undefined,
   logger: LoggerService,
+  autoInit?: boolean | undefined,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
   const user = await client.rest.users.getByUsername({
@@ -103,10 +105,12 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           squash_merge_commit_message: squashMergeCommitMessage,
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
+          allow_update_branch: allowUpdateBranch,
           homepage: homepage,
           has_projects: hasProjects,
           has_wiki: hasWiki,
           has_issues: hasIssues,
+          auto_init: autoInit,
           // Custom properties only available on org repos
           custom_properties: customProperties,
         })
@@ -121,10 +125,12 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           squash_merge_commit_message: squashMergeCommitMessage,
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
+          allow_update_branch: allowUpdateBranch,
           homepage: homepage,
           has_projects: hasProjects,
           has_wiki: hasWiki,
           has_issues: hasIssues,
+          auto_init: autoInit,
         });
 
   let newRepo;

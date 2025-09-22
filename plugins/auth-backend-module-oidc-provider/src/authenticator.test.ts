@@ -28,6 +28,7 @@ import { ConfigReader } from '@backstage/config';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
 import express from 'express';
+import { custom } from 'openid-client';
 
 describe('oidcAuthenticator', () => {
   let implementation: any;
@@ -167,6 +168,77 @@ describe('oidcAuthenticator', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('timeout configuration', () => {
+    const TEST_URL = new URL('https://test.com');
+
+    it('should use default timeout when no timeout is configured', async () => {
+      const { promise } = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        }),
+      });
+      const { client } = await promise;
+
+      const timeout = client[custom.http_options](TEST_URL, {}).timeout;
+
+      // Check if the HTTP timeout is set to the default value
+      expect(timeout).toBeDefined();
+      expect(timeout).toBe(10000);
+    });
+
+    it('should use configured timeout when provided in the config', async () => {
+      const { promise } = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+          timeout: {
+            seconds: 30,
+          },
+        }),
+      });
+      const { client } = await promise;
+
+      const timeout = client[custom.http_options](TEST_URL, {}).timeout;
+
+      // Check if the HTTP timeout is set to the configured value (30 seconds)
+      expect(timeout).toBeDefined();
+      expect(timeout).toBe(30000);
+    });
+
+    it('should handle invalid timeout configuration gracefully', async () => {
+      expect(() => {
+        oidcAuthenticator.initialize({
+          callbackUrl: 'https://backstage.test/callback',
+          config: new ConfigReader({
+            metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+            timeout: 123, // Invalid: should be a duration object
+          }),
+        });
+      }).toThrow();
+
+      expect(() => {
+        oidcAuthenticator.initialize({
+          callbackUrl: 'https://backstage.test/callback',
+          config: new ConfigReader({
+            metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+            timeout: {
+              invalid: 'value',
+            },
+          }),
+        });
+      }).toThrow();
+    });
   });
 
   describe('#start', () => {

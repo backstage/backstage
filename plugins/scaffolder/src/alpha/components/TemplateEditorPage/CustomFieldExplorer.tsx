@@ -21,7 +21,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import CodeMirror from '@uiw/react-codemirror';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import { TemplateEditorForm } from './TemplateEditorForm';

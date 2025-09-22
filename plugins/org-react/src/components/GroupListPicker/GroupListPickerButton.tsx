@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { MouseEvent } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type GroupListPickerButtonProps = {
-  handleClick: (event: React.MouseEvent<HTMLElement>) => void;
+  handleClick: (event: MouseEvent<HTMLElement>) => void;
   group: string | undefined;
 };
 

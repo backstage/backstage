@@ -47,7 +47,7 @@ Additional steps for the main line release
   - Check for mentions of "major" & "breaking" and if they are expected in the current release
   - Verify the version we are shipping is correct
 - Create Release Notes
-  - There exists a [release notes template](./release-notes-template.md) for creating the release notes. It can already be created after the last main line release to keep track of major changes during the month
+  - There exists a [release notes template](./.release-notes-template.md) for creating the release notes. It can already be created after the last main line release to keep track of major changes during the month
   - The content is picked by relevancy showcasing the work of the community during the month of the release
   - Mention newly added packages or features
   - Mention any security fixes

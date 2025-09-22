@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useLayoutEffect, useState, useMemo, useCallback } from 'react';
+import { useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import {
   SignInPageProps,
   useApi,
   useApiHolder,
   errorApiRef,
   IdentityApi,
+  useAnalytics,
 } from '@backstage/core-plugin-api';
 import {
   IdentityProviders,
@@ -92,6 +93,7 @@ export const useSignInProviders = (
   const errorApi = useApi(errorApiRef);
   const apiHolder = useApiHolder();
   const [loading, setLoading] = useState(true);
+  const analytics = useAnalytics();
 
   const { t } = useTranslationRef(coreComponentsTranslationRef);
   // User was redirected back to sign in page with error from auth redirect flow
@@ -108,18 +110,20 @@ export const useSignInProviders = (
 
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(
-    (identityApi: IdentityApi) => {
+    async (identityApi: IdentityApi) => {
       onSignInSuccess(
         IdentityApiSignOutProxy.from({
           identityApi,
           signOut: async () => {
             localStorage.removeItem(PROVIDER_STORAGE_KEY);
             await identityApi.signOut?.();
+            analytics.captureEvent('signOut', 'success');
           },
         }),
       );
+      analytics.captureEvent('signIn', 'success');
     },
-    [onSignInSuccess],
+    [onSignInSuccess, analytics],
   );
 
   // In this effect we check if the user has already selected an existing login

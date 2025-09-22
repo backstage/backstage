@@ -7,6 +7,7 @@ import { AllOfCriteria } from '@backstage/plugin-permission-common';
 import { AnyOfCriteria } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
@@ -38,7 +39,7 @@ export type ApplyConditionsRequest = {
 
 // @public
 export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
-  resourceRef: string;
+  resourceRef: string | string[];
   resourceType: string;
   conditions: PermissionCriteria<PermissionCondition>;
 }>;
@@ -49,8 +50,12 @@ export type ApplyConditionsResponse = {
 };
 
 // @public
-export type ApplyConditionsResponseEntry =
-  IdentifiedPermissionMessage<DefinitivePolicyDecision>;
+export type ApplyConditionsResponseEntry = IdentifiedPermissionMessage<
+  | DefinitivePolicyDecision
+  | {
+      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+    }
+>;
 
 // @public
 export type Condition<TRule> = TRule extends PermissionRule<
@@ -138,7 +143,7 @@ export function createConditionTransformer<
   TRules extends PermissionRule<any, TQuery, string>[],
 >(permissionRules: [...TRules]): ConditionTransformer<TQuery>;
 
-// @public
+// @public @deprecated
 export function createPermissionIntegrationRouter<
   TResourceType1 extends string,
   TResource1,
@@ -177,7 +182,7 @@ export function createPermissionIntegrationRouter<
   ): PermissionRuleset<TResource, TQuery, TResourceType>;
 };
 
-// @public
+// @public @deprecated
 export type CreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
   TResource,
@@ -266,7 +271,7 @@ export type MetadataResponse = MetadataResponse_2;
 // @public @deprecated
 export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;
 
-// @public
+// @public @deprecated
 export type PermissionIntegrationRouterOptions<
   TResourceType1 extends string = string,
   TResource1 = any,

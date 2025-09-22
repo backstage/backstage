@@ -78,11 +78,11 @@ Once you have more than a few software templates you may want to customize your
 accomplish this by creating `groups` and passing them to your `ScaffolderPage`
 like below
 
-```
+```tsx
 <ScaffolderPage
   groups={[
     {
-      title: "Recommended",
+      title: 'Recommended',
       filter: entity =>
         entity?.metadata?.tags?.includes('recommended') ?? false,
     },
@@ -96,6 +96,7 @@ top of the page above any other templates not filtered by this group or others.
 You can also further customize groups by passing in a `titleComponent` instead
 of a `title` which will be a component to use as the header instead of just the
 default `ContentHeader` with the `title` set as it's value.
+
 ![Grouped Templates](../../assets/software-templates/grouped-templates.png)
 
 There is also an option to hide some templates.

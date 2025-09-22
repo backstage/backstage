@@ -24,7 +24,10 @@ export const googleAuthenticator: OAuthAuthenticator<
 export namespace googleSignInResolvers {
   const emailMatchingUserEntityAnnotation: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 

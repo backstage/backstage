@@ -17,7 +17,6 @@
 import { AppThemeApi, appThemeApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import ObservableImpl from 'zen-observable';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 

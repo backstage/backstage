@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen, fireEvent, act } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { LinkButton } from './LinkButton';

@@ -16,7 +16,6 @@
 
 import { createDevApp } from '@backstage/dev-utils';
 import { Schema } from 'jsonschema';
-import React from 'react';
 import Observable from 'zen-observable';
 import { configSchemaApiRef } from '../src/api';
 import { ConfigSchemaResult } from '../src/api/types';

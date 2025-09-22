@@ -15,12 +15,12 @@
  */
 
 import { errorApiRef } from '@backstage/core-plugin-api';
-import { TestApiProvider } from '@backstage/test-utils';
-import { act, render, screen } from '@testing-library/react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
-import { AnalyzeResult, catalogImportApiRef } from '../../api/';
+import { ReactNode } from 'react';
 import { StepInitAnalyzeUrl } from './StepInitAnalyzeUrl';
+import { AnalyzeResult, catalogImportApiRef } from '../../api/CatalogImportApi';
 
 describe('<StepInitAnalyzeUrl />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
@@ -33,7 +33,7 @@ describe('<StepInitAnalyzeUrl />', () => {
     error$: jest.fn(),
   };
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogImportApiRef, catalogImportApi],
@@ -60,23 +60,24 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('renders without exploding', async () => {
-    render(<StepInitAnalyzeUrl onAnalysis={() => undefined} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={() => undefined} />
+      </Wrapper>,
+    );
 
     expect(screen.getByRole('textbox', { name: /URL/i })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: /URL/i })).toHaveValue('');
   });
 
   it('should use default analysis url', async () => {
-    render(
-      <StepInitAnalyzeUrl
-        onAnalysis={() => undefined}
-        analysisUrl="https://default"
-      />,
-      {
-        wrapper: Wrapper,
-      },
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl
+          onAnalysis={() => undefined}
+          analysisUrl="https://default"
+        />
+      </Wrapper>,
     );
 
     expect(screen.getByRole('textbox', { name: /URL/i })).toBeInTheDocument();
@@ -88,9 +89,11 @@ describe('<StepInitAnalyzeUrl />', () => {
   it('should not analyze without url', async () => {
     const onAnalysisFn = jest.fn();
 
-    render(<StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />
+      </Wrapper>,
+    );
 
     await act(async () => {
       try {
@@ -108,9 +111,11 @@ describe('<StepInitAnalyzeUrl />', () => {
   it('should not analyze invalid value', async () => {
     const onAnalysisFn = jest.fn();
 
-    render(<StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />
+      </Wrapper>,
+    );
 
     await act(async () => {
       await userEvent.type(
@@ -136,9 +141,11 @@ describe('<StepInitAnalyzeUrl />', () => {
       locations: [location],
     } as AnalyzeResult;
 
-    render(<StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />
+      </Wrapper>,
+    );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
       Promise.resolve(analyzeResult),
@@ -170,9 +177,11 @@ describe('<StepInitAnalyzeUrl />', () => {
       locations: [location, location],
     } as AnalyzeResult;
 
-    render(<StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />
+      </Wrapper>,
+    );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
       Promise.resolve(analyzeResult),
@@ -203,9 +212,11 @@ describe('<StepInitAnalyzeUrl />', () => {
       locations: [],
     } as AnalyzeResult;
 
-    render(<StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />
+      </Wrapper>,
+    );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
       Promise.resolve(analyzeResult),
@@ -244,9 +255,11 @@ describe('<StepInitAnalyzeUrl />', () => {
       ],
     } as AnalyzeResult;
 
-    render(<StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />
+      </Wrapper>,
+    );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
       Promise.resolve(analyzeResult),
@@ -279,9 +292,11 @@ describe('<StepInitAnalyzeUrl />', () => {
       generatedEntities: [],
     } as AnalyzeResult;
 
-    render(<StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />
+      </Wrapper>,
+    );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
       Promise.resolve(analyzeResult),
@@ -320,11 +335,10 @@ describe('<StepInitAnalyzeUrl />', () => {
       ],
     } as AnalyzeResult;
 
-    render(
-      <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} disablePullRequest />,
-      {
-        wrapper: Wrapper,
-      },
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} disablePullRequest />
+      </Wrapper>,
     );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
@@ -349,9 +363,11 @@ describe('<StepInitAnalyzeUrl />', () => {
   it('should report unknown type to the errorapi', async () => {
     const onAnalysisFn = jest.fn();
 
-    render(<StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />, {
-      wrapper: Wrapper,
-    });
+    await renderInTestApp(
+      <Wrapper>
+        <StepInitAnalyzeUrl onAnalysis={onAnalysisFn} />
+      </Wrapper>,
+    );
 
     catalogImportApi.analyzeUrl.mockReturnValueOnce(
       Promise.resolve({ type: 'unknown' } as any as AnalyzeResult),

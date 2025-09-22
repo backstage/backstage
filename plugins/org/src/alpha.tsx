@@ -19,7 +19,6 @@ import {
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-import React from 'react';
 import { catalogIndexRouteRef } from './routes';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
@@ -27,7 +26,8 @@ import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 const EntityGroupProfileCard = EntityCardBlueprint.make({
   name: 'group-profile',
   params: {
-    filter: 'kind:group',
+    type: 'info',
+    filter: { kind: 'group' },
     loader: async () =>
       import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(m =>
         compatWrapper(<m.GroupProfileCard />),
@@ -39,7 +39,7 @@ const EntityGroupProfileCard = EntityCardBlueprint.make({
 const EntityMembersListCard = EntityCardBlueprint.make({
   name: 'members-list',
   params: {
-    filter: 'kind:group',
+    filter: { kind: 'group' },
     loader: async () =>
       import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
         compatWrapper(<m.MembersListCard />),
@@ -51,7 +51,7 @@ const EntityMembersListCard = EntityCardBlueprint.make({
 const EntityOwnershipCard = EntityCardBlueprint.make({
   name: 'ownership',
   params: {
-    filter: 'kind:group,user',
+    filter: { kind: { $in: ['group', 'user'] } },
     loader: async () =>
       import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
         compatWrapper(<m.OwnershipCard />),
@@ -60,20 +60,36 @@ const EntityOwnershipCard = EntityCardBlueprint.make({
 });
 
 /** @alpha */
-const EntityUserProfileCard = EntityCardBlueprint.make({
+const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
   name: 'user-profile',
-  params: {
-    filter: 'kind:user',
-    loader: async () =>
-      import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
-        m => compatWrapper(<m.UserProfileCard />),
-      ),
+  config: {
+    schema: {
+      maxRelations: z => z.number().optional(),
+      hideIcons: z => z.boolean().default(false),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      type: 'info',
+      filter: { kind: 'user' },
+      loader: async () =>
+        import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
+          m =>
+            compatWrapper(
+              <m.UserProfileCard
+                maxRelations={config.maxRelations}
+                hideIcons={config.hideIcons}
+              />,
+            ),
+        ),
+    });
   },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'org',
+  pluginId: 'org',
+  info: { packageJson: () => import('../package.json') },
   extensions: [
     EntityGroupProfileCard,
     EntityMembersListCard,
@@ -84,3 +100,5 @@ export default createFrontendPlugin({
     catalogIndex: catalogIndexRouteRef,
   }),
 });
+
+export { orgTranslationRef } from './translation';

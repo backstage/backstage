@@ -14,19 +14,76 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import { ErrorPanel, InfoCard, Progress } from '@backstage/core-components';
 import { useNotificationsApi } from '../../hooks';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { notificationsApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { UserNotificationSettingsPanel } from './UserNotificationSettingsPanel';
+import { capitalize } from 'lodash';
+
+type FormatContextType = {
+  formatOriginName: (id: string) => string;
+  formatTopicName: (id: string) => string;
+};
+
+const NotificationFormatContext = createContext<FormatContextType | undefined>(
+  undefined,
+);
+
+export const useNotificationFormat = () => {
+  const context = useContext(NotificationFormatContext);
+  if (!context)
+    throw new Error(
+      'useNotificationFormat must be used within a NotificationFormatProvider',
+    );
+  return context;
+};
+
+type Props = {
+  children: React.ReactNode;
+  originMap: Record<string, string> | undefined;
+  topicMap: Record<string, string> | undefined;
+};
+
+export const NotificationFormatProvider = ({
+  children,
+  originMap,
+  topicMap,
+}: Props) => {
+  const formatName = (
+    id: string,
+    nameMap: Record<string, string> | undefined,
+  ) => {
+    if (nameMap && id in nameMap) {
+      return nameMap[id];
+    }
+    return capitalize(id.replaceAll(/[-_:]/g, ' '));
+  };
+
+  const formatOriginName = (originId: string) => {
+    return formatName(originId, originMap);
+  };
+
+  const formatTopicName = (topicId: string) => {
+    return formatName(topicId, topicMap);
+  };
+  return (
+    <NotificationFormatContext.Provider
+      value={{ formatOriginName, formatTopicName }}
+    >
+      {children}
+    </NotificationFormatContext.Provider>
+  );
+};
 
 /** @public */
 export const UserNotificationSettingsCard = (props: {
   originNames?: Record<string, string>;
+  topicNames?: Record<string, string>;
 }) => {
-  const [settings, setNotificationSettings] = React.useState<
+  const [settings, setNotificationSettings] = useState<
     NotificationSettings | undefined
   >(undefined);
 
@@ -52,11 +109,15 @@ export const UserNotificationSettingsCard = (props: {
       {loading && <Progress />}
       {error && <ErrorPanel title="Failed to load settings" error={error} />}
       {settings && (
-        <UserNotificationSettingsPanel
-          settings={settings}
-          onChange={onUpdate}
-          originNames={props.originNames}
-        />
+        <NotificationFormatProvider
+          originMap={props.originNames}
+          topicMap={props.topicNames}
+        >
+          <UserNotificationSettingsPanel
+            settings={settings}
+            onChange={onUpdate}
+          />
+        </NotificationFormatProvider>
       )}
     </InfoCard>
   );

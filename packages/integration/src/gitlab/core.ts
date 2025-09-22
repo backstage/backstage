@@ -40,8 +40,9 @@ import {
 export async function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<string> {
-  const projectID = await getProjectId(url, config);
+  const projectID = await getProjectId(url, config, token);
   return buildProjectUrl(url, projectID, config).toString();
 }
 
@@ -49,26 +50,24 @@ export async function getGitLabFileFetchUrl(
  * Gets the request options necessary to make requests to a given provider.
  *
  * @param config - The relevant provider config
+ * @param token - An optional auth token to use for communicating with GitLab. By default uses the integration token
  * @public
  */
 export function getGitLabRequestOptions(
   config: GitLabIntegrationConfig,
   token?: string,
 ): { headers: Record<string, string> } {
-  if (token) {
-    // If token comes from the user and starts with "gl", it's a private token (see https://docs.gitlab.com/ee/security/token_overview.html#token-prefixes)
-    return {
-      headers: token.startsWith('gl')
-        ? { 'PRIVATE-TOKEN': token }
-        : { Authorization: `Bearer ${token}` }, // Otherwise, it's a bearer token
-    };
+  const headers: Record<string, string> = {};
+
+  const accessToken = token || config.token;
+  if (accessToken) {
+    // OAuth, Personal, Project, and Group access tokens can all be passed via
+    // a bearer authorization header
+    // https://docs.gitlab.com/api/rest/authentication/#personalprojectgroup-access-tokens
+    headers.Authorization = `Bearer ${accessToken}`;
   }
 
-  // If token not provided, fetch the integration token
-  const { token: configToken = '' } = config;
-  return {
-    headers: { 'PRIVATE-TOKEN': configToken },
-  };
+  return { headers };
 }
 
 // Converts
@@ -112,6 +111,7 @@ export function buildProjectUrl(
 export async function getProjectId(
   target: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<number> {
   const url = new URL(target);
 
@@ -142,12 +142,18 @@ export async function getProjectId(
 
     const response = await fetch(
       repoIDLookup.toString(),
-      getGitLabRequestOptions(config),
+      getGitLabRequestOptions(config, token),
     );
 
     const data = await response.json();
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error(
+          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
+        );
+      }
+
       throw new Error(
         `GitLab Error '${data.error}', ${data.error_description}`,
       );

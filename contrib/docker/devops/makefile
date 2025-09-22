@@ -192,11 +192,11 @@ check: check-code check-docs check-type-dependencies check-styles
 
 # run development instance
 # BUG: the frontend seems to run on "$(backend_port)" (7007 default).
-#      The documentation states "This is going to start two things, 
+#      The documentation states "This is going to start two things,
 #      the frontend (:3000) and the backend (:7007)."
 #      However, the frontend seems to end up running on 7007.
 .PHONY: dev
-dev: build
+start: build
 	@docker run --rm -it \
 		--name $(docker_name_timestamp_prefix)-$@ \
 		-p $(frontend_port):$(frontend_host_port) \
@@ -206,12 +206,12 @@ dev: build
 		-w /app \
 		--entrypoint "" \
 		$(docker_tag) \
-		yarn dev
+		yarn start
 
-# convenience: dev alias
-.PHONY: start
-start: dev
+# convenience: start alias
+.PHONY: dev
+dev: start
 
-# convenience: dev alias
+# convenience: start alias
 .PHONY: run
-run: dev
+run: start

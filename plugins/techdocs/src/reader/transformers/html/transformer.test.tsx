@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 
 import { ConfigReader } from '@backstage/core-app-api';

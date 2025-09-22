@@ -1,7 +1,6 @@
 ---
 id: catalog-customization
 title: Catalog Customization
-# prettier-ignore
 description: How to add custom filters or interface elements to the Backstage software catalog
 ---
 
@@ -442,7 +441,6 @@ import {
   EntityTypePicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 
 export const CustomCatalogPage = () => {
   const orgName =

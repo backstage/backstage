@@ -65,7 +65,7 @@ describe('hasErrors', () => {
       otherThing: {},
       someName: {
         __errors: [
-          'Accepts alphanumeric values along with _(underscore) and -(hypen) as special characters',
+          'Accepts alphanumeric values along with _(underscore) and -(hyphen) as special characters',
         ],
         addError: jest.fn(),
       },

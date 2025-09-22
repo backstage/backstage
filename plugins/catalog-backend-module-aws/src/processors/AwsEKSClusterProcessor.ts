@@ -49,10 +49,10 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
       clusterEntityTransformer?: EksClusterEntityTransformer;
     },
   ): AwsEKSClusterProcessor {
-    const awsCredentaislManager =
+    const awsCredentialsManager =
       DefaultAwsCredentialsManager.fromConfig(configRoot);
     return new AwsEKSClusterProcessor({
-      credentialsManager: awsCredentaislManager,
+      credentialsManager: awsCredentialsManager,
       ...options,
     });
   }

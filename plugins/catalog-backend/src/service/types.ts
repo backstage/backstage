@@ -20,8 +20,6 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  * Holds the information required to create a new location in the catalog location store.
- *
- * @public
  */
 export interface LocationInput {
   type: string;
@@ -30,7 +28,6 @@ export interface LocationInput {
 
 /**
  * The location service manages entity locations.
- * @public
  */
 export interface LocationService {
   createLocation(
@@ -59,8 +56,6 @@ export interface LocationService {
 
 /**
  * Options for requesting a refresh of entities in the catalog.
- *
- * @public
  */
 export type RefreshOptions = {
   /** The reference to a single entity that should be refreshed */
@@ -70,8 +65,6 @@ export type RefreshOptions = {
 
 /**
  * A service that manages refreshes of entities in the catalog.
- *
- * @public
  */
 export interface RefreshService {
   /**
@@ -82,7 +75,6 @@ export interface RefreshService {
 
 /**
  * Interacts with the database to manage locations.
- * @public
  */
 export interface LocationStore {
   createLocation(location: LocationInput): Promise<Location>;

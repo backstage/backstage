@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { UserListFilterKind } from '../../types';
 import { EntityKindPicker } from '../EntityKindPicker';
 import { EntityLifecyclePicker } from '../EntityLifecyclePicker';

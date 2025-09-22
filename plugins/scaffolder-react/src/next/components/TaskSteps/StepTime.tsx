@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import useInterval from 'react-use/esm/useInterval';
 import { DateTime, Interval } from 'luxon';
 import humanizeDuration from 'humanize-duration';

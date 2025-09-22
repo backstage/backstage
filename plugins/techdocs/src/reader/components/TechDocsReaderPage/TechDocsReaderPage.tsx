@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-import React, { Children, ReactElement, ReactNode } from 'react';
-import { useOutlet } from 'react-router-dom';
-
+import {
+  Children,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
+import { useOutlet, useNavigate } from 'react-router-dom';
 import { Page } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   TECHDOCS_ADDONS_KEY,
   TECHDOCS_ADDONS_WRAPPER_KEY,
   TechDocsReaderPageProvider,
+  buildTechDocsURL,
 } from '@backstage/plugin-techdocs-react';
-
+import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import useAsync from 'react-use/esm/useAsync';
 import { TechDocsReaderPageRenderFunction } from '../../../types';
-
 import { TechDocsReaderPageContent } from '../TechDocsReaderPageContent';
 import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
 import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
@@ -34,9 +41,11 @@ import { rootDocsRouteRef } from '../../../routes';
 import {
   getComponentData,
   useRouteRefParams,
+  useApi,
+  useRouteRef,
 } from '@backstage/core-plugin-api';
-
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   createTheme,
   styled,
@@ -44,6 +53,7 @@ import {
   ThemeProvider,
   useTheme,
 } from '@material-ui/core/styles';
+import { Progress } from '@backstage/core-components';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -177,44 +187,106 @@ const StyledPage = styled(Page)({
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   const currentTheme = useTheme();
 
-  const readerPageTheme = createTheme({
-    ...currentTheme,
-    ...(props.overrideThemeOptions || {}),
-  });
+  const readerPageTheme = useMemo(
+    () =>
+      createTheme({
+        ...currentTheme,
+        ...(props.overrideThemeOptions || {}),
+      }),
+    [currentTheme, props.overrideThemeOptions],
+  );
+
   const { kind, name, namespace } = useRouteRefParams(rootDocsRouteRef);
   const { children, entityRef = { kind, name, namespace } } = props;
 
   const outlet = useOutlet();
 
-  if (!children) {
+  const catalogApi = useApi(catalogApiRef);
+  const navigate = useNavigate();
+  const viewTechdocLink = useRouteRef(rootDocsRouteRef);
+
+  const memoizedEntityRef = useMemo(
+    () => ({
+      kind: entityRef.kind,
+      name: entityRef.name,
+      namespace: entityRef.namespace,
+    }),
+    [entityRef.kind, entityRef.name, entityRef.namespace],
+  );
+
+  const externalEntityTechDocsUrl = useAsync(async () => {
+    try {
+      const catalogEntity = await catalogApi.getEntityByRef(memoizedEntityRef);
+
+      if (
+        catalogEntity?.metadata?.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+      ) {
+        return buildTechDocsURL(catalogEntity, viewTechdocLink);
+      }
+    } catch (error) {
+      // Ignore error and allow an attempt at loading the current entity's TechDocs when unable to fetch an external entity from the catalog.
+    }
+
+    return undefined;
+  }, [memoizedEntityRef, catalogApi, viewTechdocLink]);
+
+  const handleNavigation = useCallback(
+    (url: string) => {
+      navigate(url, { replace: true });
+    },
+    [navigate],
+  );
+
+  useEffect(() => {
+    if (!externalEntityTechDocsUrl.loading && externalEntityTechDocsUrl.value) {
+      handleNavigation(externalEntityTechDocsUrl.value);
+    }
+  }, [
+    externalEntityTechDocsUrl.loading,
+    externalEntityTechDocsUrl.value,
+    handleNavigation,
+  ]);
+
+  const page: ReactNode = useMemo(() => {
+    if (children) {
+      return null;
+    }
+
     const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
     const grandChildren = childrenList.flatMap<ReactElement>(
       child => (child as ReactElement)?.props?.children ?? [],
     );
 
-    const page: React.ReactNode = grandChildren.find(
+    return grandChildren.find(
       grandChild =>
         !getComponentData(grandChild, TECHDOCS_ADDONS_WRAPPER_KEY) &&
         !getComponentData(grandChild, TECHDOCS_ADDONS_KEY),
     );
+  }, [children, outlet]);
 
-    // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
+  if (externalEntityTechDocsUrl.loading || externalEntityTechDocsUrl.value) {
+    return <Progress />;
+  }
+
+  // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
+  if (!children) {
     return (
       <ThemeProvider theme={readerPageTheme}>
         <CookieAuthRefreshProvider pluginId="techdocs">
-          <TechDocsReaderPageProvider entityRef={entityRef}>
+          <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
             {(page as JSX.Element) || <TechDocsReaderLayout />}
           </TechDocsReaderPageProvider>
         </CookieAuthRefreshProvider>
       </ThemeProvider>
     );
   }
+
   // As explained above, a render function is configuration 3 and React element is 2
   return (
     <ThemeProvider theme={readerPageTheme}>
       <CookieAuthRefreshProvider pluginId="techdocs">
-        <TechDocsReaderPageProvider entityRef={entityRef}>
+        <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
           {({ metadata, entityMetadata, onReady }) => (
             <StyledPage
               themeId="documentation"
@@ -222,7 +294,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
             >
               {children instanceof Function
                 ? children({
-                    entityRef,
+                    entityRef: memoizedEntityRef,
                     techdocsMetadataValue: metadata.value,
                     entityMetadataValue: entityMetadata.value,
                     onReady,

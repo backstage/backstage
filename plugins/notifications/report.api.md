@@ -8,12 +8,12 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
-import { default as React_2 } from 'react';
+import * as React_2 from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableProps } from '@backstage/core-components';
 
@@ -102,6 +102,23 @@ export class NotificationsClient implements NotificationsApi {
 }
 
 // @public (undocumented)
+export type NotificationSnackbarProperties = {
+  enabled?: boolean;
+  autoHideDuration?: number | null;
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+  dense?: boolean;
+  maxSnack?: number;
+  snackStyle?: React_2.CSSProperties;
+  iconVariant?: Partial<Record<NotificationSeverity, React_2.ReactNode>>;
+  Components?: {
+    [key in NotificationSeverity]: React_2.JSXElementConstructor<any>;
+  };
+};
+
+// @public (undocumented)
 export const NotificationsPage: (
   props?: NotificationsPageProps,
 ) => JSX_2.Element;
@@ -126,17 +143,23 @@ export const notificationsPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const NotificationsSidebarItem: (props?: {
+export const NotificationsSidebarItem: (
+  props?: NotificationsSideBarItemProps,
+) => JSX_2.Element;
+
+// @public (undocumented)
+export type NotificationsSideBarItemProps = {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
   snackbarAutoHideDuration?: number | null;
+  snackbarProps?: NotificationSnackbarProperties;
   className?: string;
   icon?: IconComponent;
   text?: string;
   disableHighlight?: boolean;
   noTrack?: boolean;
-}) => React_2.JSX.Element;
+};
 
 // @public (undocumented)
 export const NotificationsTable: ({
@@ -152,7 +175,7 @@ export const NotificationsTable: ({
   page,
   pageSize,
   totalCount,
-}: NotificationsTableProps) => React_2.JSX.Element;
+}: NotificationsTableProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type NotificationsTableProps = Pick<
@@ -208,7 +231,8 @@ export function useNotificationsApi<T>(
 // @public (undocumented)
 export const UserNotificationSettingsCard: (props: {
   originNames?: Record<string, string>;
-}) => React_2.JSX.Element;
+  topicNames?: Record<string, string>;
+}) => JSX_2.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

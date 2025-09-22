@@ -21,8 +21,7 @@ import {
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
-import { apiEntityColumns } from './presets';
+import { getApiEntityColumns } from './presets';
 import {
   CodeSnippet,
   InfoCard,
@@ -33,6 +32,8 @@ import {
   TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { apiDocsTranslationRef } from '../../translation';
 
 /**
  * @public
@@ -43,10 +44,11 @@ export const ConsumedApisCard = (props: {
   columns?: TableColumn<ApiEntity>[];
   tableOptions?: TableOptions;
 }) => {
+  const { t } = useTranslationRef(apiDocsTranslationRef);
   const {
     variant = 'gridItem',
-    title = 'Consumed APIs',
-    columns = apiEntityColumns,
+    title = t('consumedApisCard.title'),
+    columns = getApiEntityColumns(t),
     tableOptions = {},
   } = props;
   const { entity } = useEntity();
@@ -67,7 +69,7 @@ export const ConsumedApisCard = (props: {
       <InfoCard variant={variant} title={title}>
         <WarningPanel
           severity="error"
-          title="Could not load APIs"
+          title={t('consumedApisCard.error.title')}
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
       </InfoCard>
@@ -81,15 +83,16 @@ export const ConsumedApisCard = (props: {
       emptyContent={
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">
-            This {entity.kind.toLocaleLowerCase('en-US')} does not consume any
-            APIs.
+            {t('consumedApisCard.emptyContent.title', {
+              entity: entity.kind.toLocaleLowerCase('en-US'),
+            })}
           </Typography>
           <Typography variant="body2">
             <Link
               to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional"
               externalLinkIcon
             >
-              Learn how to change this
+              {t('apisCardHelpLinkTitle')}
             </Link>
           </Typography>
         </div>

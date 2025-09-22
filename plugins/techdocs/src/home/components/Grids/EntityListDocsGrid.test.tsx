@@ -31,7 +31,6 @@ import {
   mockApis,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { rootDocsRouteRef } from '../../../routes';
 import { EntityListDocsGrid } from './EntityListDocsGrid';
 
@@ -78,7 +77,7 @@ describe('Entity List Docs Grid', () => {
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
   );
 
-  it('should render all entitites without filtering', async () => {
+  it('should render all entities without filtering', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
         <MockEntityListContextProvider value={{ entities: entities }}>

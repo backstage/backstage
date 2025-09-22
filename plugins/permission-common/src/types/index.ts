@@ -48,8 +48,8 @@ export type {
   BasicPermission,
   PermissionAttributes,
   Permission,
-  PermissionAuthorizer,
   PermissionBase,
   ResourcePermission,
   AuthorizeRequestOptions,
 } from './permission';
+export type { PermissionAuthorizer } from './deprecated';

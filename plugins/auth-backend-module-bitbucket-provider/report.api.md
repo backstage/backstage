@@ -24,11 +24,17 @@ export const bitbucketAuthenticator: OAuthAuthenticator<
 export namespace bitbucketSignInResolvers {
   const userIdMatchingUserEntityAnnotation: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
   const usernameMatchingUserEntityAnnotation: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

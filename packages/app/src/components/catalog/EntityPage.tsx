@@ -72,7 +72,7 @@ import {
 } from '@backstage/plugin-org';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
   TextSize,

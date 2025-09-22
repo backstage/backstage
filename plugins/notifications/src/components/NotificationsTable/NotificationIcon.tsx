@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { Notification } from '@backstage/plugin-notifications-common';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { useApp } from '@backstage/core-plugin-api';

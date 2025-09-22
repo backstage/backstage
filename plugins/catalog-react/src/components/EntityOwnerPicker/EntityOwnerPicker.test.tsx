@@ -16,7 +16,6 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import React from 'react';
 import {
   MockEntityListContextProvider,
   catalogApiMock,

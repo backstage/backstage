@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 import List, { ListProps } from '@material-ui/core/List';
 
@@ -30,6 +30,8 @@ import { useSearchResultListItemExtensions } from '../../extensions';
 
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResultState, SearchResultStateProps } from '../SearchResult';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 /**
  * Props for {@link SearchResultListLayout}
@@ -72,6 +74,7 @@ export type SearchResultListLayoutProps = ListProps & {
  * @public
  */
 export const SearchResultListLayout = (props: SearchResultListLayoutProps) => {
+  const { t } = useTranslationRef(searchReactTranslationRef);
   const {
     error,
     loading,
@@ -84,7 +87,7 @@ export const SearchResultListLayout = (props: SearchResultListLayoutProps) => {
     ),
     disableRenderingWithNoResults,
     noResultsComponent = disableRenderingWithNoResults ? null : (
-      <EmptyState missing="data" title="Sorry, no results were found" />
+      <EmptyState missing="data" title={t('noResultsDescription')} />
     ),
     ...rest
   } = props;

@@ -1,0 +1,10 @@
+---
+title: Firefly
+author: Firefly
+authorUrl: https://www.firefly.ai/
+category: Infrastructure
+description: A Backstage plugin for Firefly.ai that enables cloud infrastructure management, providing resource visibility, IaC coverage tracking, and automated asset cataloging.
+documentation: https://docs.firefly.ai/firefly-docs/integrations/backstage
+iconUrl: https://avatars.githubusercontent.com/u/100200663?s=400&v=4
+npmPackageName: '@fireflyai/backstage-plugin-firefly'
+addedDate: '2025-04-07'

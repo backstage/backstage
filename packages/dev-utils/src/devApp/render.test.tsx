@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { render } from '@testing-library/react';
 import { createDevApp } from './render';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';

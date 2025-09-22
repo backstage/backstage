@@ -37,52 +37,41 @@ export function createGithubAutolinksAction(options: {
 }) {
   const { integrations, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    keyPrefix: string;
-    urlTemplate: string;
-    isAlphanumeric?: boolean;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'github:autolinks:create',
     description: 'Create an autolink reference for a repository',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'keyPrefix', 'urlTemplate'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description:
               'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
-            type: 'string',
-          },
-          keyPrefix: {
-            title: 'Key Prefix',
+          }),
+        keyPrefix: z =>
+          z.string({
             description:
               'This prefix appended by certain characters will generate a link any time it is found in an issue, pull request, or commit.',
-            type: 'string',
-          },
-          urlTemplate: {
-            title: 'URL Template',
+          }),
+        urlTemplate: z =>
+          z.string({
             description:
               'The URL must contain `<num>` for the reference number. `<num>` matches different characters depending on the value of isAlphanumeric.',
-            type: 'string',
-          },
-          isAlphanumeric: {
-            title: 'Alphanumeric',
-            description:
-              'Whether this autolink reference matches alphanumeric characters. If `true`, the `<num>` parameter of the `url_template` matches alphanumeric characters `A-Z` (case insensitive), `0-9`, and `-`. If `false`, this autolink reference only matches numeric characters. Default: `true`',
-            type: 'boolean',
-            default: true,
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-        },
+          }),
+        isAlphanumeric: z =>
+          z
+            .boolean({
+              description:
+                'Whether this autolink reference matches alphanumeric characters. If `true`, the `<num>` parameter of the `url_template` matches alphanumeric characters `A-Z` (case insensitive), `0-9`, and `-`. If `false`, this autolink reference only matches numeric characters. Default: `true`',
+            })
+            .default(true)
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitHub',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -97,26 +86,33 @@ export function createGithubAutolinksAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          host,
-          owner,
-          repo,
-          credentialsProvider: githubCredentialsProvider,
-          token,
-        }),
-      );
-
-      await client.rest.repos.createAutolink({
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        host,
         owner,
         repo,
-        key_prefix: keyPrefix,
-        url_template: urlTemplate,
-        is_alphanumeric: isAlphanumeric,
+        credentialsProvider: githubCredentialsProvider,
+        token,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
       });
 
-      ctx.logger.info(`Autolink reference created successfully`);
+      await ctx.checkpoint({
+        key: `create.auto.link.${owner}.${repo}`,
+        fn: async () => {
+          await client.rest.repos.createAutolink({
+            owner,
+            repo,
+            key_prefix: keyPrefix,
+            url_template: urlTemplate,
+            is_alphanumeric: isAlphanumeric,
+          });
+
+          ctx.logger.info(`Autolink reference created successfully`);
+        },
+      });
     },
   });
 }

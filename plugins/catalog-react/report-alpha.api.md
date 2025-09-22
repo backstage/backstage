@@ -8,13 +8,28 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha
+export const CatalogFilterBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-filter';
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
 
 // @alpha (undocumented)
 export const catalogReactTranslationRef: TranslationRef<
@@ -71,6 +86,18 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'userListPicker.personalFilter.title': 'Personal';
     readonly 'userListPicker.personalFilter.ownedLabel': 'Owned';
     readonly 'userListPicker.personalFilter.starredLabel': 'Starred';
+    readonly 'entityTableColumnTitle.name': 'Name';
+    readonly 'entityTableColumnTitle.type': 'Type';
+    readonly 'entityTableColumnTitle.label': 'Label';
+    readonly 'entityTableColumnTitle.title': 'Title';
+    readonly 'entityTableColumnTitle.description': 'Description';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
+    readonly 'entityTableColumnTitle.system': 'System';
+    readonly 'entityTableColumnTitle.tags': 'Tags';
+    readonly 'entityTableColumnTitle.namespace': 'Namespace';
+    readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
+    readonly 'entityTableColumnTitle.owner': 'Owner';
+    readonly 'entityTableColumnTitle.targets': 'Targets';
   }
 >;
 
@@ -80,6 +107,7 @@ export function convertLegacyEntityCardExtension(
   overrides?: {
     name?: string;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+    type?: EntityCardType;
   },
 ): ExtensionDefinition;
 
@@ -89,45 +117,48 @@ export function convertLegacyEntityContentExtension(
   overrides?: {
     name?: string;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-    defaultPath?: string;
-    defaultTitle?: string;
+    path?: string;
+    title?: string;
+    defaultPath?: [Error: `Use the 'path' override instead`];
+    defaultTitle?: [Error: `Use the 'title' override instead`];
   },
 ): ExtensionDefinition;
 
 // @alpha
 export const defaultEntityContentGroups: {
+  overview: string;
   documentation: string;
   development: string;
   deployment: string;
+  operation: string;
   observability: string;
 };
 
 // @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<{
   kind: 'entity-card';
-  name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     type?: EntityCardType;
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         EntityCardType,
         'catalog.entity-card-type',
         {
@@ -168,41 +199,43 @@ export type EntityCardType = 'summary' | 'info' | 'content';
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
-  name: undefined;
   params: {
+    defaultPath?: [Error: `Use the 'path' param instead`];
+    path: string;
+    defaultTitle?: [Error: `Use the 'title' param instead`];
+    title: string;
+    defaultGroup?: [Error: `Use the 'group' param instead`];
+    group?: keyof typeof defaultEntityContentGroups | (string & {});
     loader: () => Promise<JSX.Element>;
-    defaultPath: string;
-    defaultTitle: string;
-    defaultGroup?: keyof typeof defaultEntityContentGroups | (string & {});
     routeRef?: RouteRef;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<string, 'core.routing.path', {}>
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
         'core.routing.ref',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
+    | ExtensionDataRef<
         string,
         'catalog.entity-content-group',
         {
@@ -249,30 +282,27 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
 // @alpha (undocumented)
 export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-content-layout';
-  name: undefined;
   params: {
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-    loader: () => Promise<
-      (props: EntityContentLayoutProps) => React_2.JSX.Element
-    >;
+    loader: () => Promise<(props: EntityContentLayoutProps) => JSX_2.Element>;
   };
   output:
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
-        (props: EntityContentLayoutProps) => React_2.JSX.Element,
+    | ExtensionDataRef<
+        (props: EntityContentLayoutProps) => React.JSX.Element,
         'catalog.entity-content-layout.component',
         {}
       >;
@@ -297,7 +327,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
       {}
     >;
     component: ConfigurableExtensionDataRef<
-      (props: EntityContentLayoutProps) => React_2.JSX.Element,
+      (props: EntityContentLayoutProps) => React.JSX.Element,
       'catalog.entity-content-layout.component',
       {}
     >;
@@ -309,31 +339,148 @@ export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
     type?: EntityCardType;
-    element: React_2.JSX.Element;
+    element: JSX_2.Element;
   }>;
 }
 
 // @alpha (undocumented)
+export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
+  kind: 'entity-context-menu-item';
+  params: EntityContextMenuItemParams;
+  output:
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export type EntityContextMenuItemParams = {
+  useProps: UseProps;
+  icon: JSX_2.Element;
+  filter?: EntityPredicate | ((entity: Entity) => boolean);
+};
+
+// @alpha (undocumented)
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
   kind: 'entity-header';
-  name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
   };
-  output: ConfigurableExtensionDataRef<
-    JSX_2.Element,
-    'core.reactElement',
-    {
-      optional: true;
-    }
-  >;
+  output:
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {
+          optional: true;
+        }
+      >;
   inputs: {};
-  config: {};
-  configInput: {};
+  config: {
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+  };
   dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export const EntityIconLinkBlueprint: ExtensionBlueprint<{
+  kind: 'entity-icon-link';
+  params: {
+    useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
+  };
+  output:
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        () => IconLinkVerticalProps,
+        'entity-icon-link-props',
+        {}
+      >;
+  inputs: {};
+  config: {
+    label: string | undefined;
+    title: string | undefined;
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+    label?: string | undefined;
+    title?: string | undefined;
+  };
+  dataRefs: {
+    useProps: ConfigurableExtensionDataRef<
+      () => IconLinkVerticalProps,
+      'entity-icon-link-props',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
       {}
     >;
   };
@@ -381,6 +528,40 @@ export type EntityPredicateValue =
       $contains: EntityPredicateExpression;
     };
 
+// @alpha (undocumented)
+export const EntityTableColumnTitle: ({
+  translationKey,
+}: EntityTableColumnTitleProps) =>
+  | 'Title'
+  | 'System'
+  | 'Domain'
+  | 'Lifecycle'
+  | 'Namespace'
+  | 'Owner'
+  | 'Tags'
+  | 'Type'
+  | 'Name'
+  | 'Description'
+  | 'Targets'
+  | 'Label';
+
+// @alpha (undocumented)
+export type EntityTableColumnTitleProps = {
+  translationKey:
+    | 'name'
+    | 'system'
+    | 'owner'
+    | 'type'
+    | 'lifecycle'
+    | 'namespace'
+    | 'description'
+    | 'tags'
+    | 'targets'
+    | 'title'
+    | 'label'
+    | 'domain';
+};
+
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
@@ -392,6 +573,19 @@ export function useEntityPermission(
   allowed: boolean;
   error?: Error;
 };
+
+// @alpha (undocumented)
+export type UseProps = () =>
+  | {
+      title: ReactNode;
+      href: string;
+      disabled?: boolean;
+    }
+  | {
+      title: ReactNode;
+      onClick: () => void | Promise<void>;
+      disabled?: boolean;
+    };
 
 // (No @packageDocumentation comment for this package)
 ```

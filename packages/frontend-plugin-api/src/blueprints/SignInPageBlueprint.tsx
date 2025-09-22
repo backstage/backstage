@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, lazy } from 'react';
+import { ComponentType, lazy } from 'react';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 import { SignInPageProps } from '@backstage/core-plugin-api';
 import { ExtensionBoundary } from '../components';
@@ -48,7 +48,7 @@ export const SignInPageBlueprint = createExtensionBlueprint({
     );
 
     yield componentDataRef(props => (
-      <ExtensionBoundary node={node} routable>
+      <ExtensionBoundary node={node}>
         <ExtensionComponent {...props} />
       </ExtensionBoundary>
     ));

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -100,7 +99,6 @@ describe('TemplateEditorToolbarTemplatesMenu', () => {
               name: 'Publish',
               action: 'publish:github',
               input: {
-                allowedHosts: ['github.com'],
                 description: 'This is ${{ parameters.component_id }}',
                 repoUrl: '${{ parameters.repoUrl }}',
               },
@@ -206,7 +204,6 @@ describe('TemplateEditorToolbarTemplatesMenu', () => {
               name: 'Publish',
               action: 'publish:github',
               input: {
-                allowedHosts: ['github.com'],
                 description: 'This is ${{ parameters.component_id }}',
                 repoUrl: '${{ parameters.repoUrl }}',
               },

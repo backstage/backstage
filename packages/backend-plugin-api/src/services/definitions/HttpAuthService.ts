@@ -93,7 +93,7 @@ export interface HttpAuthService {
        *
        * Normally you do not have to specify this option, because the default
        * behavior is to extract the credentials from the request that
-       * corresponded to the given respnse.
+       * corresponded to the given response.
        */
       credentials?: BackstageCredentials;
     },

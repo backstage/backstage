@@ -4,6 +4,8 @@ title: Proxying
 description: Documentation on Proxying
 ---
 
+This page describes how to configure and use the built-in HTTP proxy functionality in your Backstage backend.
+
 ## Overview
 
 The Backstage backend comes packaged with a basic HTTP proxy, that can aid in
@@ -41,6 +43,7 @@ Example:
 ```yaml
 # in app-config.yaml
 proxy:
+  reviveConsumedRequestBodies: true
   endpoints:
     /simple-example: http://simple.example.com:8080
     '/larger-example/v1':
@@ -120,6 +123,12 @@ third parties.
 
 The same logic applies to headers that are sent from the target back to the
 frontend.
+
+### Passing POST-request body
+
+To fix the issue with missing request body passed by proxy to the target, set `proxy.reviveConsumedRequestBodies: true`, so the `fixRequestBody` handler of [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware?tab=readme-ov-file#intercept-and-manipulate-requests) will be used.
+
+In that case, mind setting the `Content-Type` header to either `application/json` or `application/x-www-form-urlencoded`.
 
 ### Proxy Extension Endpoint
 

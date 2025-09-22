@@ -39,7 +39,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
@@ -148,15 +148,18 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                   values={async () => {
                     // Return a list of entities which are documented.
                     const { items } = await catalogApi.getEntities({
-                      fields: ['metadata.name'],
+                      fields: ['metadata.name', 'metadata.title'],
                       filter: {
                         'metadata.annotations.backstage.io/techdocs-ref':
                           CATALOG_FILTER_EXISTS,
                       },
                     });
 
-                    const names = items.map(entity => entity.metadata.name);
-                    names.sort();
+                    const names = items.map(entity => ({
+                      value: entity.metadata.name,
+                      label: entity.metadata.title ?? entity.metadata.name,
+                    }));
+                    names.sort((a, b) => a.label.localeCompare(b.label));
                     return names;
                   }}
                 />

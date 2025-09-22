@@ -18,27 +18,29 @@ import { InfoCard } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { useUserProfile } from '../useUserProfileInfo';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 const Contents = () => {
   const { backstageIdentity } = useUserProfile();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   if (!backstageIdentity) {
-    return <Typography>No Backstage Identity</Typography>;
+    return <Typography>{t('identityCard.noIdentityTitle')}</Typography>;
   }
 
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <Typography variant="subtitle1" gutterBottom>
-          User Entity:{' '}
+          {t('identityCard.userEntity')}:{' '}
           <EntityRefLinks entityRefs={[backstageIdentity.userEntityRef]} />
         </Typography>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="subtitle1">
-          Ownership Entities:{' '}
+          {t('identityCard.ownershipEntities')}:{' '}
           <EntityRefLinks entityRefs={backstageIdentity.ownershipEntityRefs} />
         </Typography>
       </Grid>
@@ -47,8 +49,12 @@ const Contents = () => {
 };
 
 /** @public */
-export const UserSettingsIdentityCard = () => (
-  <InfoCard title="Backstage Identity">
-    <Contents />
-  </InfoCard>
-);
+export const UserSettingsIdentityCard = () => {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+
+  return (
+    <InfoCard title={t('identityCard.title')}>
+      <Contents />
+    </InfoCard>
+  );
+};

@@ -27,7 +27,6 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import React from 'react';
 import { MembersListCard } from './MembersListCard';
 import {
   groupA,

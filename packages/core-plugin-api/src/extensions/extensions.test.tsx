@@ -16,7 +16,6 @@
 
 import { withLogCollector } from '@backstage/test-utils';
 import { act, render, screen } from '@testing-library/react';
-import React from 'react';
 import { useAnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp, ErrorBoundaryFallbackProps } from '../app';
 import { createPlugin } from '../plugin';

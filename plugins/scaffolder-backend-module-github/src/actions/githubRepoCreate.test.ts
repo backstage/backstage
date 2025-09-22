@@ -35,6 +35,9 @@ import { entityRefToName } from './gitHelpers';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     users: {
@@ -62,11 +65,7 @@ const mockOctokit = {
   request: jest.fn(),
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:repo:create', () => {
@@ -81,7 +80,7 @@ describe('github:repo:create', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -93,6 +92,7 @@ describe('github:repo:create', () => {
   });
 
   beforeEach(() => {
+    octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubRepoCreateAction({
@@ -109,6 +109,20 @@ describe('github:repo:create', () => {
   });
 
   afterEach(jest.resetAllMocks);
+
+  it('should pass context logger to Octokit client', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should call the githubApis with the correct values for createInOrg', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
@@ -137,7 +151,13 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
       visibility: 'private',
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -159,7 +179,14 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
       visibility: 'public',
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -182,7 +209,12 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
       visibility: 'private',
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -206,10 +238,14 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
       visibility: 'private',
-      has_wiki: true,
-      has_projects: true,
-      has_issues: true,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -233,10 +269,13 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
       visibility: 'private',
-      has_wiki: false,
-      has_projects: false,
-      has_issues: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -245,7 +284,7 @@ describe('github:repo:create', () => {
         ...mockContext.input,
         customProperties: {
           foo: 'bar',
-          foo2: 'bar2',
+          foo2: ['bar2', 'bar3'],
         },
       },
     });
@@ -262,11 +301,74 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: 'https://example.com',
       visibility: 'private',
-      custom_properties: {
-        foo: 'bar',
-        foo2: 'bar2',
+      auto_init: undefined,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        autoInit: true,
       },
+    });
+
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
+      visibility: 'private',
+      auto_init: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        autoInit: false,
+      },
+    });
+
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
+      visibility: 'private',
+      auto_init: false,
     });
   });
 
@@ -293,6 +395,12 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -315,6 +423,12 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -338,6 +452,11 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -362,9 +481,12 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      has_wiki: true,
-      has_projects: true,
-      has_issues: true,
+      allow_update_branch: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
+      auto_init: undefined,
     });
 
     await action.handler({
@@ -389,9 +511,12 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      has_wiki: false,
-      has_projects: false,
-      has_issues: false,
+      allow_update_branch: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
+      auto_init: undefined,
     });
 
     // Custom properties on user repos should be ignored
@@ -401,7 +526,7 @@ describe('github:repo:create', () => {
         ...mockContext.input,
         customProperties: {
           foo: 'bar',
-          foo2: 'bar2',
+          foo2: ['bar2', 'bar3'],
         },
       },
     });
@@ -419,6 +544,68 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: 'https://example.com',
+      auto_init: undefined,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        autoInit: true,
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      allow_update_branch: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: undefined,
+      auto_init: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        autoInit: false,
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      allow_update_branch: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: undefined,
+      auto_init: false,
     });
   });
 

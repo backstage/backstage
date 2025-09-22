@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  PropsWithChildren,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import { PropsWithChildren, useState, useEffect, useCallback } from 'react';
 
 import { create } from 'jss';
 import StylesProvider from '@material-ui/styles/StylesProvider';

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -87,7 +86,7 @@ describe('DocsSynchronizer', () => {
     docsSynchronizer = new DocsSynchronizer({
       publisher,
       config: new ConfigReader({}),
-      logger: loggerToWinstonLogger(mockServices.logger.mock()),
+      logger: mockServices.logger.mock(),
       buildLogTransport: mockBuildLogTransport,
       scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
       cache,
@@ -343,7 +342,7 @@ describe('DocsSynchronizer', () => {
         config: new ConfigReader({
           techdocs: { legacyUseCaseSensitiveTripletPaths: true },
         }),
-        logger: loggerToWinstonLogger(mockServices.logger.mock()),
+        logger: mockServices.logger.mock(),
         buildLogTransport: new winston.transports.Stream({
           stream: new PassThrough(),
         }),

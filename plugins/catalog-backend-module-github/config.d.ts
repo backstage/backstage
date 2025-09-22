@@ -62,15 +62,24 @@ export interface Config {
              */
             host?: string;
             /**
-             * (Required) Name of your organization account/workspace.
+             * (Required, unless `app` is set) Name of your organization account/workspace.
              */
-            organization: string;
+            organization?: string;
+            /**
+             * (Required, unless `organization` is set) ID of your GitHub App.
+             */
+            app?: number;
             /**
              * (Optional) Path where to look for `catalog-info.yaml` files.
              * You can use wildcards - `*` or `**` - to search the path and/or the filename
              * Default: `/catalog-info.yaml`.
              */
             catalogPath?: string;
+            /**
+             * (Optional) Whether to validate locations that exist before emitting them.
+             * Default: `false`.
+             */
+            validateLocationsExist?: boolean;
             /**
              * (Optional) Filter configuration.
              */
@@ -112,6 +121,11 @@ export interface Config {
                * (Optional) GitHub repository visibility filter.
                */
               visibility?: Array<'private' | 'internal' | 'public'>;
+              /**
+               * (Optional) Whether to include archived repositories.
+               * Default: `false`.
+               */
+              allowArchived?: boolean;
             };
             /**
              * (Optional) TaskScheduleDefinition for the refresh.
@@ -126,9 +140,13 @@ export interface Config {
                */
               host?: string;
               /**
-               * (Required) Name of your organization account/workspace.
+               * (Required, unless `app` is set) Name of your organization account/workspace.
                */
-              organization: string;
+              organization?: string;
+              /**
+               * (Required, unless `organization` is set) ID of your GitHub App.
+               */
+              app?: number;
               /**
                * (Optional) Path where to look for `catalog-info.yaml` files.
                * You can use wildcards - `*` or `**` - to search the path and/or the filename
@@ -181,6 +199,11 @@ export interface Config {
                  * (Optional) GitHub repository visibility filter.
                  */
                 visibility?: Array<'private' | 'internal' | 'public'>;
+                /**
+                 * (Optional) Whether to include archived repositories.
+                 * Default: `false`.
+                 */
+                allowArchived?: boolean;
               };
               /**
                * (Optional) TaskScheduleDefinition for the refresh.

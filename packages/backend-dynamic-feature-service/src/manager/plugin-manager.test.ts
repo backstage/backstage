@@ -30,13 +30,10 @@ import {
   BackendDynamicPlugin,
   BaseDynamicPlugin,
   DynamicPlugin,
-  LegacyBackendPluginInstaller,
   NewBackendPluginInstaller,
-  LegacyPluginEnvironment,
 } from './types';
 import { ScannedPluginManifest, ScannedPluginPackage } from '../scanner/types';
 import { randomUUID } from 'crypto';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createSpecializedBackend } from '@backstage/backend-app-api';
 import { ConfigSources } from '@backstage/config-loader';
 import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
@@ -550,49 +547,6 @@ describe('backend-dynamic-feature-service', () => {
               ),
             },
           ]);
-        },
-      },
-      {
-        name: 'should successfully load a legacy backend plugin',
-        packageManifest: {
-          name: 'backend-dynamic-plugin-test',
-          version: '0.0.0',
-          backstage: {
-            role: 'backend-plugin',
-          },
-          main: 'dist/index.cjs.js',
-        },
-        indexFile: {
-          relativePath: ['dist', 'index.cjs.js'],
-          content:
-            'exports.dynamicPluginInstaller={ kind: "legacy", scaffolder: (env)=>[] }',
-        },
-        expectedLogs(location) {
-          return {
-            infos: [
-              {
-                message: `loaded dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
-              },
-            ],
-          };
-        },
-        checkLoadedPlugins(plugins) {
-          expect(plugins).toMatchObject([
-            {
-              name: 'backend-dynamic-plugin-test',
-              version: '0.0.0',
-              role: 'backend-plugin',
-              platform: 'node',
-              installer: {
-                kind: 'legacy',
-              },
-            },
-          ]);
-          const installer = (plugins[0] as BackendDynamicPlugin)
-            .installer as LegacyBackendPluginInstaller;
-          expect(installer.scaffolder!({} as LegacyPluginEnvironment)).toEqual<
-            TemplateAction<any>[]
-          >([]);
         },
       },
       {

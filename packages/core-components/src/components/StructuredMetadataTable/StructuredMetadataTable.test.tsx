@@ -16,7 +16,6 @@
 
 import { render, within } from '@testing-library/react';
 import { startCase } from 'lodash';
-import React from 'react';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
 
 describe('<StructuredMetadataTable />', () => {

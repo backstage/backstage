@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { DocsTableRow } from './types';

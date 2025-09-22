@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { EmptyState } from './EmptyState';
 import Button from '@material-ui/core/Button';
 import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';

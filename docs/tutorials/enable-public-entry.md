@@ -32,7 +32,6 @@ With that, Backstage's cli and backend will detect public entry point and serve 
 2. This file is the public entry point for your application, and it should only contain what unauthenticated users should see:
 
    ```tsx title="in packages/app/src/index-public-experimental.tsx"
-   import React from 'react';
    import ReactDOM from 'react-dom/client';
    import { createApp } from '@backstage/app-defaults';
    import { AppRouter } from '@backstage/core-app-api';

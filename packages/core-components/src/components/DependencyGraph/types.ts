@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 
 /**
  * Types for the {@link DependencyGraph} component.
@@ -46,6 +46,10 @@ export namespace DependencyGraphTypes {
      * Label assigned and rendered with the Edge
      */
     label?: string;
+    /**
+     * Distance to a root entity
+     */
+    distance?: number;
   };
 
   /**
@@ -62,7 +66,7 @@ export namespace DependencyGraphTypes {
    */
   export type RenderLabelFunction<T = {}> = (
     props: RenderLabelProps<T>,
-  ) => React.ReactNode;
+  ) => ReactNode;
 
   /**
    * Node of {@link DependencyGraph}
@@ -87,7 +91,7 @@ export namespace DependencyGraphTypes {
    */
   export type RenderNodeFunction<T = {}> = (
     props: RenderNodeProps<T>,
-  ) => React.ReactNode;
+  ) => ReactNode;
 
   /**
    * Graph direction

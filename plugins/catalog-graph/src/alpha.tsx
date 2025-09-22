@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createFrontendPlugin,
   PageBlueprint,
@@ -76,7 +75,7 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config }) {
     return originalFactory({
-      defaultPath: '/catalog-graph',
+      path: '/catalog-graph',
       routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
       loader: () =>
         import('./components/CatalogGraphPage').then(m =>
@@ -87,7 +86,8 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
 });
 
 export default createFrontendPlugin({
-  id: 'catalog-graph',
+  pluginId: 'catalog-graph',
+  info: { packageJson: () => import('../package.json') },
   routes: {
     catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),
   },
@@ -96,3 +96,5 @@ export default createFrontendPlugin({
   },
   extensions: [CatalogGraphPage, CatalogGraphEntityCard],
 });
+
+export { catalogGraphTranslationRef } from './translation';

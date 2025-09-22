@@ -1,0 +1,9 @@
+---
+title: Renovate Hoster
+author: secustor
+authorUrl: https://github.com/secustor
+category: Quality
+description: This plugin enables you to host Renovate CLI yourself inside of Backstage and extract data from it.
+documentation: https://github.com/secustor/backstage-plugins/tree/main/plugins/renovate
+npmPackageName: '@backstage/backstage-plugin-renovate'
+addedDate: '2025-03-31'

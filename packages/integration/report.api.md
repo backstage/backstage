@@ -137,6 +137,7 @@ export interface AzureCredentialsManager {
 // @public
 export type AzureDevOpsCredential =
   | AzureClientSecretCredential
+  | AzureManagedIdentityClientAssertionCredential
   | AzureManagedIdentityCredential
   | PersonalAccessTokenCredential;
 
@@ -144,11 +145,13 @@ export type AzureDevOpsCredential =
 export type AzureDevOpsCredentialKind =
   | 'PersonalAccessToken'
   | 'ClientSecret'
-  | 'ManagedIdentity';
+  | 'ManagedIdentity'
+  | 'ManagedIdentityClientAssertion';
 
 // @public
 export type AzureDevOpsCredentialLike = Omit<
   Partial<AzureClientSecretCredential> &
+    Partial<AzureManagedIdentityClientAssertionCredential> &
     Partial<AzureManagedIdentityCredential> &
     Partial<PersonalAccessTokenCredential>,
   'kind'
@@ -205,9 +208,18 @@ export type AzureIntegrationConfig = {
 };
 
 // @public
+export type AzureManagedIdentityClientAssertionCredential =
+  AzureCredentialBase & {
+    kind: 'ManagedIdentityClientAssertion';
+    tenantId: string;
+    clientId: string;
+    managedIdentityClientId: 'system-assigned' | string;
+  };
+
+// @public
 export type AzureManagedIdentityCredential = AzureCredentialBase & {
   kind: 'ManagedIdentity';
-  clientId: string;
+  clientId: 'system-assigned' | string;
 };
 
 // @public
@@ -396,6 +408,7 @@ export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
   cloneUrl?: string;
+  disableEditUrl?: boolean;
   gitilesBaseUrl: string;
   username?: string;
   password?: string;
@@ -567,9 +580,15 @@ export function getGitHubRequestOptions(
 };
 
 // @public
+export function getGitilesAuthenticationUrl(
+  config: GerritIntegrationConfig,
+): string;
+
+// @public
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<string>;
 
 // @public
@@ -642,7 +661,7 @@ export type GiteaIntegrationConfig = {
 export type GithubAppConfig = {
   appId: number;
   privateKey: string;
-  webhookSecret: string;
+  webhookSecret?: string;
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];
@@ -650,7 +669,7 @@ export type GithubAppConfig = {
 
 // @public
 export class GithubAppCredentialsMux {
-  constructor(config: GithubIntegrationConfig);
+  constructor(config: GithubIntegrationConfig, appIds?: number[]);
   // (undocumented)
   getAllInstallations(): Promise<
     RestEndpointMethodTypes['apps']['listInstallations']['response']['data']

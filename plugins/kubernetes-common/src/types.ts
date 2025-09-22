@@ -15,7 +15,7 @@
  */
 
 import type { JsonObject, JsonValue } from '@backstage/types';
-import {
+import type {
   PodStatus,
   V1ConfigMap,
   V1CronJob,
@@ -72,7 +72,7 @@ export interface ClusterAttributes {
    */
   name: string;
   /**
-   * Human-readable name for the cluster, to be dispayed in UIs.
+   * Human-readable name for the cluster, to be displayed in UIs.
    */
   title?: string;
   /**

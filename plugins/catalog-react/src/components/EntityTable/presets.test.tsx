@@ -22,7 +22,6 @@ import {
 } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor, screen } from '@testing-library/react';
-import React from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityTable } from './EntityTable';
 import { componentEntityColumns, systemEntityColumns } from './presets';

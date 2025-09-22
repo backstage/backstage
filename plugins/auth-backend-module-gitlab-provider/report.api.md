@@ -24,7 +24,10 @@ export const gitlabAuthenticator: OAuthAuthenticator<
 export namespace gitlabSignInResolvers {
   const usernameMatchingUserEntityName: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

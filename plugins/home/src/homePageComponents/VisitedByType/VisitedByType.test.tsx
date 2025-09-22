@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { VisitedByType } from './VisitedByType';
 import { Context, defaultContextValue } from './Context';
 import { renderInTestApp } from '@backstage/test-utils';

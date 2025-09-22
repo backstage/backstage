@@ -25,7 +25,6 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import CheckIcon from '@material-ui/icons/Check';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DownloadIcon from '@material-ui/icons/GetApp';
-import React from 'react';
 import { useDryRun } from '../DryRunContext';
 import { downloadBlob } from '../../../../lib/download';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -119,7 +118,7 @@ async function downloadDirectoryContents(
   directoryContents: {
     path: string;
     base64Content: string;
-    executable: boolean;
+    executable?: boolean;
   }[],
   name: string,
 ) {

@@ -22,7 +22,7 @@ import { getDockerImageForName } from '../util/getDockerImageForName';
  *
  * @public
  */
-export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'MEMCACHED_1';
+export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'VALKEY_8' | 'MEMCACHED_1';
 
 export type TestCacheProperties = {
   name: string;
@@ -57,5 +57,12 @@ export const allCaches: Record<TestCacheId, TestCacheProperties> =
     MEMORY: {
       name: 'In-memory',
       store: 'memory',
+    },
+    VALKEY_8: {
+      name: 'Valkey 8.x',
+      store: 'valkey',
+      dockerImageName: getDockerImageForName('valkey/valkey:8'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_CACHE_VALKEY8_CONNECTION_STRING',
     },
   });

@@ -26,7 +26,7 @@ export {
 } from './module';
 /**
  *
- * TODO(djamaile): GithubMultiOrgEntityProvider should be mirgated over to this module.
+ * TODO(djamaile): GithubMultiOrgEntityProvider should be migrated over to this module.
  * Afterwards, mark it as deprecated in catalog-backend-module-github and export them there from this module.
  */
 export {

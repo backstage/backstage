@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import throttle from 'lodash/throttle';
 import {
   Content,
@@ -68,19 +68,17 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
     markAsReadOnLinkOpen,
   } = props ?? {};
 
-  const [refresh, setRefresh] = React.useState(false);
+  const [refresh, setRefresh] = useState(false);
   const { lastSignal } = useSignal('notifications');
-  const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
-  const [saved, setSaved] = React.useState<boolean | undefined>(undefined);
-  const [pageNumber, setPageNumber] = React.useState(0);
-  const [pageSize, setPageSize] = React.useState(5);
-  const [containsText, setContainsText] = React.useState<string>();
-  const [createdAfter, setCreatedAfter] = React.useState<string>('all');
-  const [sorting, setSorting] = React.useState<SortBy>(
-    SortByOptions.newest.sortBy,
-  );
-  const [severity, setSeverity] = React.useState<NotificationSeverity>('low');
-  const [topic, setTopic] = React.useState<string>();
+  const [unreadOnly, setUnreadOnly] = useState<boolean | undefined>(true);
+  const [saved, setSaved] = useState<boolean | undefined>(undefined);
+  const [pageNumber, setPageNumber] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [containsText, setContainsText] = useState<string>();
+  const [createdAfter, setCreatedAfter] = useState<string>('all');
+  const [sorting, setSorting] = useState<SortBy>(SortByOptions.newest.sortBy);
+  const [severity, setSeverity] = useState<NotificationSeverity>('low');
+  const [topic, setTopic] = useState<string>();
 
   const { error, value, retry, loading } = useNotificationsApi<
     [GetNotificationsResponse, NotificationStatus, GetTopicsResponse]
@@ -127,7 +125,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
     ],
   );
 
-  const throttledSetRefresh = React.useMemo(
+  const throttledSetRefresh = useMemo(
     () => throttle(setRefresh, ThrottleDelayMs),
     [setRefresh],
   );

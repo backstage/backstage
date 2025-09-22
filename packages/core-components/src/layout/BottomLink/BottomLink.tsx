@@ -19,7 +19,7 @@ import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
-import React from 'react';
+import { MouseEvent } from 'react';
 import { Link } from '../../components/Link';
 
 /** @public */
@@ -46,7 +46,7 @@ const useStyles = makeStyles(
 export type BottomLinkProps = {
   link: string;
   title: string;
-  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
 /**

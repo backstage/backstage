@@ -5,7 +5,7 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { Schema } from 'jsonschema';

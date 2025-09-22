@@ -17,10 +17,7 @@ import {
   NotificationRecipients,
   NotificationService,
 } from '@backstage/plugin-notifications-node';
-import {
-  NotificationPayload,
-  NotificationSeverity,
-} from '@backstage/plugin-notifications-common';
+import { NotificationPayload } from '@backstage/plugin-notifications-common';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { examples } from './sendNotification.examples';
 
@@ -31,73 +28,42 @@ export function createSendNotificationAction(options: {
   notifications: NotificationService;
 }) {
   const { notifications } = options;
-  return createTemplateAction<{
-    recipients: string;
-    entityRefs?: string[];
-    title: string;
-    info?: string;
-    link?: string;
-    severity?: NotificationSeverity;
-    scope?: string;
-    optional?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'notification:send',
     description: 'Sends a notification using NotificationService',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['recipients', 'title'],
-        properties: {
-          recipients: {
-            title: 'Recipient',
-            enum: ['broadcast', 'entity'],
-            description:
+        recipients: z =>
+          z
+            .enum(['broadcast', 'entity'])
+            .describe(
               'The recipient of the notification, either broadcast or entity. If using entity, also entityRef must be provided',
-            type: 'string',
-          },
-          entityRefs: {
-            title: 'Entity references',
-            description:
+            ),
+        entityRefs: z =>
+          z
+            .array(z.string())
+            .optional()
+            .describe(
               'The entity references to send the notification to, required if using recipient of entity',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          title: {
-            title: 'Title',
-            description: 'Notification title',
-            type: 'string',
-          },
-          info: {
-            title: 'Description',
-            description: 'Notification description',
-            type: 'string',
-          },
-          link: {
-            title: 'Link',
-            description: 'Notification link',
-            type: 'string',
-          },
-          severity: {
-            title: 'Severity',
-            type: 'string',
-            description: `Notification severity`,
-            enum: ['low', 'normal', 'high', 'critical'],
-          },
-          scope: {
-            title: 'Scope',
-            description: 'Notification scope',
-            type: 'string',
-          },
-          optional: {
-            title: 'Optional',
-            description:
+            ),
+        title: z => z.string().describe('Notification title'),
+        info: z => z.string().optional().describe('Notification description'),
+        link: z => z.string().optional().describe('Notification link'),
+        severity: z =>
+          z
+            .enum(['low', 'normal', 'high', 'critical'])
+            .optional()
+            .describe('Notification severity'),
+        scope: z => z.string().optional().describe('Notification scope'),
+        topic: z => z.string().optional().describe('Notification topic'),
+        optional: z =>
+          z
+            .boolean()
+            .optional()
+            .describe(
               'Do not fail the action if the notification sending fails',
-            type: 'boolean',
-          },
-        },
+            ),
       },
     },
     async handler(ctx) {
@@ -108,6 +74,7 @@ export function createSendNotificationAction(options: {
         info,
         link,
         severity,
+        topic,
         scope,
         optional,
       } = ctx.input;
@@ -129,13 +96,19 @@ export function createSendNotificationAction(options: {
         description: info,
         link,
         severity,
+        topic,
         scope,
       };
 
       try {
-        await notifications.send({
-          recipients: notificationRecipients,
-          payload,
+        await ctx.checkpoint({
+          key: `send.notification.${payload.title}`,
+          fn: async () => {
+            await notifications.send({
+              recipients: notificationRecipients,
+              payload,
+            });
+          },
         });
       } catch (e) {
         ctx.logger.error(`Failed to send notification: ${e}`);

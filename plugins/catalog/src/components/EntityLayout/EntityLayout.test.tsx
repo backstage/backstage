@@ -38,7 +38,6 @@ import {
   TestApiRegistry,
 } from '@backstage/test-utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import React from 'react';
 import { EntityLayout } from './EntityLayout';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 import { Route, Routes } from 'react-router-dom';

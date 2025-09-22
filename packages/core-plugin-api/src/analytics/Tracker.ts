@@ -20,7 +20,7 @@ import {
   AnalyticsEventAttributes,
   AnalyticsTracker,
 } from '../apis';
-import { AnalyticsContextValue } from './';
+import { AnalyticsContextValue } from './types';
 
 type TempGlobalEvents = {
   /**

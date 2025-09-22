@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -63,6 +63,18 @@ export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
 }
 
 /**
+ * Props for the {@link FavoriteToggle} component.
+ *
+ * @public
+ */
+export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
+  id: string;
+  title: string;
+  isFavorite: boolean;
+  onToggle: (value: boolean) => void;
+};
+
+/**
  * Toggle encapsulating logic for marking something as favorite,
  * primarily used in various instances of entity lists and cards but can be used elsewhere.
  *
@@ -70,14 +82,7 @@ export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
  *
  * @public
  */
-export function FavoriteToggle(
-  props: ComponentProps<typeof IconButton> & {
-    id: string;
-    title: string;
-    isFavorite: boolean;
-    onToggle: (value: boolean) => void;
-  },
-) {
+export function FavoriteToggle(props: FavoriteToggleProps) {
   const {
     id,
     title,

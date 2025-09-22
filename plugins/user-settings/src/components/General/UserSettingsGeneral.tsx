@@ -15,7 +15,6 @@
  */
 
 import Grid from '@material-ui/core/Grid';
-import React from 'react';
 import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';

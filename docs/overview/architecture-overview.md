@@ -6,20 +6,11 @@ description: Documentation on Architecture overview
 
 ## Terminology
 
-Backstage is constructed out of three parts. We separate Backstage in this way
-because we see three groups of contributors that work with Backstage in three
-different ways.
+Backstage is organized into three main components, each catering to different groups of contributors who interact with Backstage in distinct ways.
 
-- Core - Base functionality built by core developers in the open source project.
-- App - The app is an instance of a Backstage app that is deployed and tweaked.
-  The app ties together core functionality with additional plugins. The app is
-  built and maintained by app developers, usually a productivity team within a
-  company.
-- Plugins - Additional functionality to make your Backstage app useful for your
-  company. Plugins can be specific to a company or open sourced and reusable. At
-  Spotify we have over 100 plugins built by over 50 different teams. It has been
-  very powerful to get contributions from various infrastructure teams added
-  into a single unified developer experience.
+- Core - This includes the base functionality developed by core developers within the open-source project.
+- App - The app represents a deployed instance of a Backstage application, customized and maintained by app developers, typically a productivity team within an organization. It integrates core functionalities with additional plugins.
+- Plugins - These provide additional functionalities to enhance the usefulness of your Backstage app. Plugins can be company-specific or open-sourced and reusable. At Spotify, we have over 100 plugins created by more than 50 different teams, significantly enriching the unified developer experience by incorporating contributions from various infrastructure teams.
 
 ## Overview
 
@@ -276,14 +267,14 @@ require a database to work with.
 The Backstage backend and its built-in plugins are based on the
 [Knex](http://knexjs.org/) library, and set up a separate logical database per
 plugin. This gives great isolation and lets them perform migrations and evolve
-separate from each other.
+separately from each other.
 
-The Knex library supports a multitude of databases, but Backstage is at the time
-of writing tested primarily against two of them: SQLite, which is mainly used as
+The Knex library supports a multitude of databases, but Backstage at this time
+of writing is tested primarily against two of them: SQLite, which is mainly used as
 an in-memory mock/test database, and PostgreSQL, which is the preferred
 production database. Other databases such as the MySQL variants are reported to
 work but
-[aren't tested as fully](https://github.com/backstage/backstage/issues/2460)
+[aren't fully tested](https://github.com/backstage/backstage/issues/2460)
 yet.
 
 ## Cache
@@ -293,8 +284,8 @@ stores as a means of improving performance or reliability. Similar to how
 databases are supported, plugins receive logically separated cache connections,
 which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
 
-At this time of writing, Backstage can be configured to use one of three cache
-stores: memory, which is mainly used for local testing, memcache or Redis,
+At this time of writing, Backstage can be configured to use one of five cache
+stores: memory, which is mainly used for local testing, memcache, redis, valkey or infinispan,
 which are cache stores better suited for production deployment. The right cache
 store for your Backstage instance will depend on your own run-time constraints
 and those required of the plugins you're running.
@@ -323,6 +314,40 @@ backend:
   cache:
     store: redis
     connection: redis://user:pass@cache.example.com:6379
+```
+
+### Use Infinispan for cache
+
+#### Minimal configuration
+
+- defaults, no `authentication`, expects cache named `cache` and host `127.0.0.1:11222`)
+
+```yaml
+backend:
+  cache:
+    store: infinispan
+```
+
+#### Extended configuration
+
+- Unlike Redis, Infinispan will **not** create the cache for you. It's expected you've configured the cache in your infinispan server prior to configuration here.
+- A full list of configuration items are available: https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html including support for backup clusters.
+
+```yaml
+backend:
+  cache:
+    store: infinispan
+    infinispan:
+      servers:
+        - host: 127.0.0.1
+          port: 11222
+      cacheName: backstage-cache
+      mediaType: application/json
+      authentication:
+        enabled: true
+        userName: yourusername
+        password: yourpassword
+        saslMechanism: PLAIN
 ```
 
 Contributions supporting other cache stores are welcome!

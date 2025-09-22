@@ -22,25 +22,26 @@ import {
 } from '@backstage/core-plugin-api';
 import {
   AnyRouteRefParams,
-  ComponentRef,
-  ComponentsApi,
-  CoreErrorBoundaryFallbackProps,
-  CoreNotFoundErrorPageProps,
-  CoreProgressProps,
+  SwappableComponentRef,
+  SwappableComponentsApi,
+  ErrorDisplayProps,
+  NotFoundErrorPageProps,
+  ProgressProps,
   ExternalRouteRef,
   IconComponent,
   IconsApi,
   RouteFunc,
   RouteRef,
   RouteResolutionApi,
-  RouteResolutionApiResolveOptions,
   SubRouteRef,
-  componentsApiRef,
-  coreComponentRefs,
+  swappableComponentsApiRef,
   iconsApiRef,
   routeResolutionApiRef,
+  Progress,
+  NotFoundErrorPage,
+  ErrorDisplay,
 } from '@backstage/frontend-plugin-api';
-import React, { ComponentType, useMemo } from 'react';
+import { ComponentType, useMemo } from 'react';
 import { ReactNode } from 'react';
 import { toLegacyPlugin } from './BackwardsCompatProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -50,14 +51,14 @@ import { useVersionedContext } from '@backstage/version-bridge';
 import { type RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
-class CompatComponentsApi implements ComponentsApi {
-  readonly #Progress: ComponentType<CoreProgressProps>;
-  readonly #NotFoundErrorPage: ComponentType<CoreNotFoundErrorPageProps>;
-  readonly #ErrorBoundaryFallback: ComponentType<CoreErrorBoundaryFallbackProps>;
+class CompatComponentsApi implements SwappableComponentsApi {
+  readonly #Progress: ComponentType<ProgressProps>;
+  readonly #NotFoundErrorPage: ComponentType<NotFoundErrorPageProps>;
+  readonly #ErrorBoundaryFallback: ComponentType<ErrorDisplayProps>;
 
   constructor(app: AppContext) {
     const components = app.getComponents();
-    const ErrorBoundaryFallback = (props: CoreErrorBoundaryFallbackProps) => (
+    const ErrorBoundaryFallback = (props: ErrorDisplayProps) => (
       <components.ErrorBoundaryFallback
         {...props}
         plugin={props.plugin && toLegacyPlugin(props.plugin)}
@@ -68,14 +69,21 @@ class CompatComponentsApi implements ComponentsApi {
     this.#ErrorBoundaryFallback = ErrorBoundaryFallback;
   }
 
-  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T> {
+  getComponent<
+    TInnerComponentProps extends {},
+    TExternalComponentProps extends {} = TInnerComponentProps,
+  >(
+    ref: SwappableComponentRef<TInnerComponentProps, TExternalComponentProps>,
+  ): (props: TInnerComponentProps) => JSX.Element | null {
     switch (ref.id) {
-      case coreComponentRefs.progress.id:
-        return this.#Progress as ComponentType<any>;
-      case coreComponentRefs.notFoundErrorPage.id:
-        return this.#NotFoundErrorPage as ComponentType<any>;
-      case coreComponentRefs.errorBoundaryFallback.id:
-        return this.#ErrorBoundaryFallback as ComponentType<any>;
+      case Progress.ref.id:
+        return this.#Progress as (props: object) => JSX.Element | null;
+      case NotFoundErrorPage.ref.id:
+        return this.#NotFoundErrorPage as (props: object) => JSX.Element | null;
+      case ErrorDisplay.ref.id:
+        return this.#ErrorBoundaryFallback as (
+          props: object,
+        ) => JSX.Element | null;
       default:
         throw new Error(
           `No backwards compatible component is available for ref '${ref.id}'`,
@@ -112,7 +120,7 @@ class CompatRouteResolutionApi implements RouteResolutionApi {
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions | undefined,
+    options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     const legacyRef = convertLegacyRouteRef(anyRouteRef as RouteRef<TParams>);
     return this.#routeResolver.resolve(legacyRef, options?.sourcePath ?? '/');
@@ -120,7 +128,7 @@ class CompatRouteResolutionApi implements RouteResolutionApi {
 }
 
 class ForwardsCompatApis implements ApiHolder {
-  readonly #componentsApi: ComponentsApi;
+  readonly #componentsApi: SwappableComponentsApi;
   readonly #iconsApi: IconsApi;
   readonly #routeResolutionApi: RouteResolutionApi;
 
@@ -131,7 +139,7 @@ class ForwardsCompatApis implements ApiHolder {
   }
 
   get<T>(ref: ApiRef<any>): T | undefined {
-    if (ref.id === componentsApiRef.id) {
+    if (ref.id === swappableComponentsApiRef.id) {
       return this.#componentsApi as T;
     } else if (ref.id === iconsApiRef.id) {
       return this.#iconsApi as T;

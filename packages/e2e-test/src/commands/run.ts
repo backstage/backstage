@@ -61,7 +61,7 @@ export async function run(opts: OptionValues) {
 
   print('Creating a Backstage Plugin');
   const pluginId = 'test';
-  await createPlugin({ appDir, pluginId, select: 'plugin' });
+  await createPlugin({ appDir, pluginId, select: 'frontend-plugin' });
 
   print('Creating a Backstage Backend Plugin');
   await createPlugin({ appDir, pluginId, select: 'backend-plugin' });
@@ -221,7 +221,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
  */
 async function pinYarnVersion(dir: string) {
   const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc.yml'), 'utf8');
-  const yarnRcLines = yarnRc.split('\n');
+  const yarnRcLines = yarnRc.split(/\r?\n/);
   const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarnPath:'));
   if (!yarnPathLine) {
     throw new Error(`Unable to find 'yarnPath' in ${yarnRc}`);
@@ -379,7 +379,7 @@ async function createPlugin(options: {
 }) {
   const { appDir, pluginId, select } = options;
   const child = spawnPiped(
-    ['yarn', 'new', '--select', select, '--option', `id=${pluginId}`],
+    ['yarn', 'new', '--select', select, '--option', `pluginId=${pluginId}`],
     {
       cwd: appDir,
     },
@@ -434,7 +434,6 @@ async function switchToReact17(appDir: string) {
   await fs.writeFile(
     resolvePath(appDir, 'packages/app/src/index.tsx'),
     `import '@backstage/cli/asset-types';
-import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 

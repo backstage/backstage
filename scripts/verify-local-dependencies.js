@@ -77,6 +77,7 @@ const roleRules = [
       '@backstage/core-compat-api',
       '@backstage/dev-utils',
       '@backstage/frontend-defaults',
+      '@backstage/frontend-dynamic-feature-loader',
       '@backstage/frontend-app-api',
       '@backstage/frontend-test-utils',
       '@backstage/test-utils',

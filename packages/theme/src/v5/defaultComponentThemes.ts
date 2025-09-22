@@ -162,6 +162,10 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
         '&:focus': {
           color: 'inherit',
         },
+        // Targets the arrow when the label is focused
+        '&:focus svg': {
+          opacity: 0.5,
+        },
         // Bold font for highlighting selected column
         '&.Mui-active': {
           fontWeight: 'bold',
@@ -264,5 +268,15 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
   },
   MuiPaper: {
     styleOverrides: { root: { backgroundImage: 'unset' } },
+  },
+  MuiMenuItem: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        // Fixes a bug with MUI 4 that's fixed in MUI 5
+        '&:focus': {
+          backgroundColor: theme.palette.action.focus,
+        },
+      }),
+    },
   },
 };

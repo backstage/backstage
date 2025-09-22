@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createElement } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createApp } from '../../../frontend-defaults/src/createApp';
 import { screen } from '@testing-library/react';
@@ -46,7 +46,9 @@ function createTestAppRoot({
 }) {
   return createApp({
     features: [...features],
-    configLoader: async () => ({ config: mockApis.config({ data: config }) }),
+    advanced: {
+      configLoader: async () => ({ config: mockApis.config({ data: config }) }),
+    },
   }).createRoot();
 }
 
@@ -60,7 +62,7 @@ describe('createFrontendFeatureLoader', () => {
         );
         return [
           createFrontendPlugin({
-            id: `${pluginIdPrefix}-1`,
+            pluginId: `${pluginIdPrefix}-1`,
             extensions: [
               createExtension({
                 name: '1',
@@ -76,7 +78,7 @@ describe('createFrontendFeatureLoader', () => {
             ],
           }) as FrontendFeature | FrontendFeatureLoader,
           createFrontendPlugin({
-            id: `${pluginIdPrefix}-2`,
+            pluginId: `${pluginIdPrefix}-2`,
             extensions: [
               createExtension({
                 name: '2',
@@ -92,7 +94,7 @@ describe('createFrontendFeatureLoader', () => {
             ],
           }) as FrontendFeature | FrontendFeatureLoader,
           createFrontendPlugin({
-            id: `${pluginIdPrefix}-output`,
+            pluginId: `${pluginIdPrefix}-output`,
             extensions: [
               createExtension({
                 name: 'output',
@@ -104,7 +106,7 @@ describe('createFrontendFeatureLoader', () => {
                 factory({ inputs }) {
                   return [
                     coreExtensionData.reactElement(
-                      React.createElement('span', {}, [
+                      createElement('span', {}, [
                         `Names: ${inputs.names
                           .map(n => n.get(nameExtensionDataRef))
                           .join(', ')}`,
@@ -166,7 +168,7 @@ describe('createFrontendFeatureLoader', () => {
         async loader(_) {
           return [
             createFrontendPlugin({
-              id: 'plugin-0',
+              pluginId: 'plugin-0',
               extensions: [
                 createExtension({
                   name: '0',
@@ -184,7 +186,7 @@ describe('createFrontendFeatureLoader', () => {
             createFrontendFeatureLoader({
               async *loader(__) {
                 yield createFrontendPlugin({
-                  id: 'plugin-1',
+                  pluginId: 'plugin-1',
                   extensions: [
                     createExtension({
                       name: '1',
@@ -202,7 +204,7 @@ describe('createFrontendFeatureLoader', () => {
                 yield createFrontendFeatureLoader({
                   loader: async ___ => [
                     createFrontendPlugin({
-                      id: 'plugin-2',
+                      pluginId: 'plugin-2',
                       extensions: [
                         createExtension({
                           name: '2',
@@ -222,7 +224,7 @@ describe('createFrontendFeatureLoader', () => {
               },
             }),
             createFrontendPlugin({
-              id: 'plugin-output',
+              pluginId: 'plugin-output',
               extensions: [
                 createExtension({
                   name: 'output',
@@ -234,7 +236,7 @@ describe('createFrontendFeatureLoader', () => {
                   factory({ inputs }) {
                     return [
                       coreExtensionData.reactElement(
-                        React.createElement('span', {}, [
+                        createElement('span', {}, [
                           `Names: ${inputs.names
                             .map(n => n.get(nameExtensionDataRef))
                             .join(', ')}`,
@@ -278,7 +280,7 @@ describe('createFrontendFeatureLoader', () => {
           [
             nestedFeatureLoaderHolder.loader,
             createFrontendPlugin({
-              id: 'plugin',
+              pluginId: 'plugin',
               extensions: [
                 createExtension({
                   name: 'output',
@@ -288,7 +290,7 @@ describe('createFrontendFeatureLoader', () => {
                   factory() {
                     return [
                       coreExtensionData.reactElement(
-                        React.createElement('span', {}, [`My Content`]),
+                        createElement('span', {}, [`My Content`]),
                       ),
                     ];
                   },
@@ -319,7 +321,7 @@ describe('createFrontendFeatureLoader', () => {
 
   it('should support multiple output formats', async () => {
     const feature = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
     });
     const dynamicFeature = Promise.resolve({ default: feature });
 
@@ -411,7 +413,7 @@ describe('createFrontendFeatureLoader', () => {
 
   it('should limit feature loading recursion', async () => {
     const plugin = createFrontendPlugin({
-      id: 'plugin',
+      pluginId: 'plugin',
       extensions: [
         createExtension({
           name: 'output',
@@ -421,7 +423,7 @@ describe('createFrontendFeatureLoader', () => {
           factory() {
             return [
               coreExtensionData.reactElement(
-                React.createElement('span', {}, [`My Content`]),
+                createElement('span', {}, [`My Content`]),
               ),
             ];
           },

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -46,7 +46,7 @@ type ClusterSummaryProps = {
   clusterName: string;
   totalNumberOfPods: number;
   numberOfPodsWithErrors: number;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const ClusterSummary = ({
@@ -110,7 +110,7 @@ const ClusterSummary = ({
 export type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

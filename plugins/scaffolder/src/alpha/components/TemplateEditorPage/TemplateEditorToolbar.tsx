@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -30,13 +30,15 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import DescriptionIcon from '@material-ui/icons/Description';
+import FunctionsIcon from '@material-ui/icons/Functions';
 
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 
 import { ActionPageContent } from '../../../components/ActionsPage/ActionsPage';
 import { scaffolderTranslationRef } from '../../../translation';
-import { CustomFieldPlaygroud } from './CustomFieldPlaygroud';
+import { CustomFieldPlayground } from './CustomFieldPlayground';
+import { TemplatingExtensionsPageContent } from '../../../components/TemplatingExtensionsPage/TemplatingExtensionsPage';
 
 const useStyles = makeStyles(
   theme => ({
@@ -83,6 +85,7 @@ export function TemplateEditorToolbar(props: {
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [showFieldsDrawer, setShowFieldsDrawer] = useState(false);
   const [showActionsDrawer, setShowActionsDrawer] = useState(false);
+  const [showExtensionsDrawer, setShowExtensionsDrawer] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
 
   return (
@@ -106,6 +109,15 @@ export function TemplateEditorToolbar(props: {
               <DescriptionIcon />
             </Button>
           </Tooltip>
+          <Tooltip
+            title={t(
+              'templateEditorToolbar.templatingExtensionsDocumentationTooltip',
+            )}
+          >
+            <Button onClick={() => setShowExtensionsDrawer(true)}>
+              <FunctionsIcon />
+            </Button>
+          </Tooltip>
           <Button onClick={() => setShowPublishModal(true)}>
             {t('templateEditorToolbar.addToCatalogButton')}
           </Button>
@@ -116,7 +128,7 @@ export function TemplateEditorToolbar(props: {
           open={showFieldsDrawer}
           onClose={() => setShowFieldsDrawer(false)}
         >
-          <CustomFieldPlaygroud fieldExtensions={fieldExtensions} />
+          <CustomFieldPlayground fieldExtensions={fieldExtensions} />
         </Drawer>
         <Drawer
           classes={{ paper: classes.paper }}
@@ -125,6 +137,14 @@ export function TemplateEditorToolbar(props: {
           onClose={() => setShowActionsDrawer(false)}
         >
           <ActionPageContent />
+        </Drawer>
+        <Drawer
+          classes={{ paper: classes.paper }}
+          anchor="right"
+          open={showExtensionsDrawer}
+          onClose={() => setShowExtensionsDrawer(false)}
+        >
+          <TemplatingExtensionsPageContent />
         </Drawer>
         <Dialog
           onClose={() => setShowPublishModal(false)}

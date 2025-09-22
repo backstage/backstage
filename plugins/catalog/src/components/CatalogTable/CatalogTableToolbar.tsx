@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactElement } from 'react';
 import { EntitySearchBar } from '@backstage/plugin-catalog-react';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -41,7 +41,7 @@ const useToolbarStyles = makeStyles(
 );
 
 export function CatalogTableToolbar(props: {
-  title?: string | React.ReactElement<any>;
+  title?: string | ReactElement<any>;
 }) {
   const styles = useToolbarStyles();
   return (

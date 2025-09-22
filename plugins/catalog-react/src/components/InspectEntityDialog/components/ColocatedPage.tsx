@@ -27,7 +27,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
 import { EntityRefLink } from '../../EntityRefLink';

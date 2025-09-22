@@ -25,20 +25,12 @@ import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { defaultAuthProviderFactories } from '../providers';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
-import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { NotFoundError } from '@backstage/errors';
-import { CatalogApi } from '@backstage/catalog-client';
-import {
-  bindOidcRouter,
-  KeyStores,
-  TokenFactory,
-  UserInfoDatabaseHandler,
-} from '../identity';
+import { KeyStores } from '../identity/KeyStores';
+import { TokenFactory } from '../identity/TokenFactory';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
@@ -48,30 +40,22 @@ import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
+import { OidcRouter } from './OidcRouter';
+import { OidcDatabase } from '../database/OidcDatabase';
 
-/**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- */
-export interface RouterOptions {
+interface RouterOptions {
   logger: LoggerService;
   database: DatabaseService;
   config: RootConfigService;
   discovery: DiscoveryService;
-  tokenManager?: TokenManager;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
-  disableDefaultProviderFactories?: boolean;
-  catalogApi?: CatalogApi;
+  catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
+  httpAuth: HttpAuthService;
 }
 
-/**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -79,28 +63,33 @@ export async function createRouter(
     logger,
     config,
     discovery,
-    database,
+    database: db,
     tokenFactoryAlgorithm,
     providerFactories = {},
+    httpAuth,
   } = options;
-
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const router = Router();
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
   const backstageTokenExpiration = readBackstageTokenExpiration(config);
-  const authDb = AuthDatabase.create(database);
+  const database = AuthDatabase.create(db);
 
   const keyStore = await KeyStores.fromConfig(config, {
     logger,
-    database: authDb,
+    database,
   });
 
-  const userInfoDatabaseHandler = new UserInfoDatabaseHandler(
-    await authDb.get(),
-  );
+  const userInfo = await UserInfoDatabase.create({
+    database,
+  });
+
+  const omitClaimsFromToken = config.getOptionalBoolean(
+    'auth.omitIdentityTokenOwnershipClaim',
+  )
+    ? ['ent']
+    : [];
 
   let tokenIssuer: TokenIssuer;
   if (keyStore instanceof StaticKeyStore) {
@@ -109,6 +98,7 @@ export async function createRouter(
         logger: logger.child({ component: 'token-factory' }),
         issuer: authUrl,
         sessionExpirationSeconds: backstageTokenExpiration,
+        omitClaimsFromToken,
       },
       keyStore as StaticKeyStore,
     );
@@ -121,7 +111,7 @@ export async function createRouter(
       algorithm:
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
-      userInfoDatabaseHandler,
+      omitClaimsFromToken,
     });
   }
 
@@ -138,7 +128,7 @@ export async function createRouter(
         cookie: { secure: enforceCookieSSL ? 'auto' : false },
         store: new KnexSessionStore({
           createtable: false,
-          knex: await authDb.get(),
+          knex: await database.get(),
         }),
       }),
     );
@@ -151,29 +141,31 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const providers = options.disableDefaultProviderFactories
-    ? providerFactories
-    : {
-        ...defaultAuthProviderFactories,
-        ...providerFactories,
-      };
-
   bindProviderRouters(router, {
-    providers,
+    providers: providerFactories,
     appUrl,
     baseUrl: authUrl,
     tokenIssuer,
     ...options,
-    auth,
-    httpAuth,
+    auth: options.auth,
+    userInfo,
   });
 
-  bindOidcRouter(router, {
-    auth,
+  const oidc = await OidcDatabase.create({ database });
+
+  const oidcRouter = OidcRouter.create({
+    auth: options.auth,
     tokenIssuer,
     baseUrl: authUrl,
-    userInfoDatabaseHandler,
+    appUrl,
+    userInfo,
+    oidc,
+    logger,
+    httpAuth,
+    config,
   });
+
+  router.use(oidcRouter.getRouter());
 
   // Gives a more helpful error message than a plain 404
   router.use('/:provider/', req => {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -236,7 +235,10 @@ describe('SearchFilter.hooks', () => {
 
   describe('useAsyncFilterValues', () => {
     it('should immediately return given values when provided', () => {
-      const givenValues = ['value1', 'value2'];
+      const givenValues = [
+        { value: 'value1', label: 'value 1' },
+        { value: 'value2', label: 'value 2' },
+      ];
       const { result } = renderHook(() =>
         useAsyncFilterValues(undefined, '', givenValues),
       );
@@ -246,7 +248,10 @@ describe('SearchFilter.hooks', () => {
     });
 
     it('should return resolved values of provided async function', async () => {
-      const expectedValues = ['value1', 'value2'];
+      const expectedValues = [
+        { value: 'value1', label: 'value 1' },
+        { value: 'value2', label: 'value 2' },
+      ];
       const asyncFn = () => Promise.resolve(expectedValues);
       const { result } = renderHook(() =>
         useAsyncFilterValues(asyncFn, '', undefined, 1000),
@@ -263,7 +268,10 @@ describe('SearchFilter.hooks', () => {
     });
 
     it('should debounce method invocation', async () => {
-      const expectedValues = ['value1', 'value2'];
+      const expectedValues = [
+        { value: 'value1', label: 'value 1' },
+        { value: 'value2', label: 'value 2' },
+      ];
       const asyncFn = jest.fn().mockResolvedValue(expectedValues);
       renderHook(() => useAsyncFilterValues(asyncFn, '', undefined, 1000));
 
@@ -308,7 +316,10 @@ describe('SearchFilter.hooks', () => {
     });
 
     it('should not call provided method more than once when re-rendered with same input', async () => {
-      const expectedValues = ['value1', 'value2'];
+      const expectedValues = [
+        { value: 'value1', label: 'value 1' },
+        { value: 'value2', label: 'value 2' },
+      ];
       const asyncFn = jest.fn().mockResolvedValue(expectedValues);
       const { rerender } = renderHook(
         (props: { inputValue: string } = { inputValue: '' }) =>

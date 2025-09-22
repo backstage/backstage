@@ -28,7 +28,6 @@ import fs from 'fs-extra';
 import { validate as validateJsonSchema } from 'jsonschema';
 import nunjucks from 'nunjucks';
 import path from 'path';
-import { PassThrough } from 'stream';
 import * as winston from 'winston';
 import {
   SecureTemplater,
@@ -40,6 +39,7 @@ import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 
 import type {
   AuditorService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
@@ -55,18 +55,21 @@ import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import createDefaultFilters from '../../lib/templating/filters';
+import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
 import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
-import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 import { convertFiltersToRecord } from '../../util/templating';
+import {
+  CheckpointState,
+  CheckpointContext,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
-  logger: winston.Logger;
+  logger: LoggerService;
   auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
@@ -92,16 +95,6 @@ type TemplateContext = {
   };
 };
 
-type CheckpointState =
-  | {
-      status: 'failed';
-      reason: string;
-    }
-  | {
-      status: 'success';
-      value: JsonValue;
-    };
-
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
 };
@@ -113,7 +106,7 @@ const createStepLogger = ({
 }: {
   task: TaskContext;
   step: TaskStep;
-  rootLogger: winston.Logger;
+  rootLogger: LoggerService;
 }) => {
   const taskLogger = WinstonLogger.create({
     level: process.env.LOG_LEVEL || 'info',
@@ -126,22 +119,7 @@ const createStepLogger = ({
 
   taskLogger.addRedactions(Object.values(task.secrets ?? {}));
 
-  // This stream logger should be deprecated. We're going to replace it with
-  // just using the logger directly, as all those logs get written to step logs
-  // using the stepLogStream above.
-  // Initially this stream used to be the only way to write to the client logs, but that
-  // has changed over time, there's not really a need for this anymore.
-  // You can just create a simple wrapper like the below in your action to write to the main logger.
-  // This way we also get redactions for free.
-  const streamLogger = new PassThrough();
-  streamLogger.on('data', async data => {
-    const message = data.toString().trim();
-    if (message?.length > 1) {
-      taskLogger.info(message);
-    }
-  });
-
-  return { taskLogger, streamLogger };
+  return { taskLogger };
 };
 
 const isActionAuthorized = createConditionAuthorizer(
@@ -268,7 +246,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
       const action: TemplateAction<JsonObject> =
         this.options.actionRegistry.get(step.action);
-      const { taskLogger, streamLogger } = createStepLogger({
+      const { taskLogger } = createStepLogger({
         task,
         step,
         rootLogger: this.options.logger,
@@ -315,7 +293,12 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       const resolvedEach =
-        step.each && this.render(step.each, context, renderTemplate);
+        step.each &&
+        this.render(
+          step.each,
+          { ...context, secrets: task.secrets ?? {} },
+          renderTemplate,
+        );
 
       if (step.each && !resolvedEach) {
         throw new InputError(
@@ -393,14 +376,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             id: await task.getWorkspaceName(),
           },
           secrets: task.secrets ?? {},
-          // TODO(blam): move to LoggerService and away from Winston
-          logger: loggerToWinstonLogger(taskLogger),
-          logStream: streamLogger,
+          logger: taskLogger,
           workspacePath,
-          async checkpoint<T extends JsonValue | void>(opts: {
-            key?: string;
-            fn: () => Promise<T> | T;
-          }) {
+          async checkpoint<T extends JsonValue | void>(
+            opts: CheckpointContext<T>,
+          ) {
             const { key: checkpointKey, fn } = opts;
             const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
 
@@ -409,9 +389,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
               if (prevTaskState) {
                 const prevState = (
-                  prevTaskState.state?.checkpoints as {
-                    [key: string]: CheckpointState;
-                  }
+                  prevTaskState.state?.checkpoints as CheckpointState
                 )?.[key];
 
                 if (prevState && prevState.status === 'success') {
@@ -460,6 +438,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           isDryRun: task.isDryRun,
           signal: task.cancelSignal,
           getInitiatorCredentials: () => task.getInitiatorCredentials(),
+          step: {
+            id: step.id,
+            name: step.name,
+          },
         });
       }
 
@@ -634,6 +616,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'ok' });
       taskDuration.record(endTime(), {
+        template,
         result: 'ok',
       });
     }
@@ -652,6 +635,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'failed' });
       taskDuration.record(endTime(), {
+        template,
         result: 'failed',
       });
     }
@@ -670,6 +654,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'cancelled' });
       taskDuration.record(endTime(), {
+        template,
         result: 'cancelled',
       });
     }
@@ -714,6 +699,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'ok' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'ok',
       });
     }
@@ -728,6 +715,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'cancelled' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'cancelled',
       });
     }
@@ -742,6 +731,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'failed' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'failed',
       });
     }
@@ -755,6 +746,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'skipped' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'skipped',
       });
     }

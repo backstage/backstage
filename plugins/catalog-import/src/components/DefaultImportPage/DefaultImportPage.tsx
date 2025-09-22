@@ -22,10 +22,12 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Grid from '@material-ui/core/Grid';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
-import React from 'react';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+
+import { catalogImportTranslationRef } from '../../translation';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
 
@@ -35,12 +37,11 @@ import { ImportStepper } from '../ImportStepper';
  * @public
  */
 export const DefaultImportPage = () => {
+  const { t } = useTranslationRef(catalogImportTranslationRef);
   const theme = useTheme();
   const configApi = useApi(configApiRef);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
-
-  const supportTitle = `Start tracking your component in ${appTitle} by adding it to the software catalog.`;
 
   const contentItems = [
     <Grid key={0} item xs={12} md={4} lg={6} xl={8}>
@@ -54,10 +55,14 @@ export const DefaultImportPage = () => {
 
   return (
     <Page themeId="home">
-      <Header title="Register an existing component" />
+      <Header title={t('defaultImportPage.headerTitle')} />
       <Content>
-        <ContentHeader title={`Start tracking your component in ${appTitle}`}>
-          <SupportButton>{supportTitle}</SupportButton>
+        <ContentHeader
+          title={t('defaultImportPage.contentHeaderTitle', { appTitle })}
+        >
+          <SupportButton>
+            {t('defaultImportPage.supportTitle', { appTitle })}
+          </SupportButton>
         </ContentHeader>
 
         <Grid container spacing={2}>

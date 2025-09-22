@@ -22,13 +22,11 @@ import {
   NavItemBlueprint,
   PageBlueprint,
   ApiBlueprint,
-  createApiFactory,
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import React from 'react';
 import { rootRouteRef } from '../routes';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
@@ -48,7 +46,7 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
     );
     return originalFactory({
       routeRef: convertLegacyRouteRef(rootRouteRef),
-      defaultPath: '/create',
+      path: '/create',
       loader: () =>
         import('../components/Router/Router').then(m =>
           compatWrapper(
@@ -75,8 +73,8 @@ export const repoUrlPickerFormField = FormFieldBlueprint.make({
 });
 
 export const scaffolderApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: scaffolderApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -92,5 +90,4 @@ export const scaffolderApi = ApiBlueprint.make({
           identityApi,
         }),
     }),
-  },
 });

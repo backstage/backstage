@@ -22,6 +22,7 @@ import { ForwardedError } from '@backstage/errors';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
+  catalogServiceRef,
   EntityProvider,
   LocationAnalyzer,
   PlaceholderResolver,
@@ -35,13 +36,16 @@ import {
   catalogModelExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
+  CatalogPermissionRuleInput,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
-import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
+import { CatalogBuilder } from './CatalogBuilder';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { createGetCatalogEntityAction } from '../actions/createGetCatalogEntityAction';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -232,11 +236,12 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.rootLifecycle,
         scheduler: coreServices.scheduler,
-        discovery: coreServices.discovery,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
         events: eventsServiceRef,
+        catalog: catalogServiceRef,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         logger,
@@ -248,9 +253,10 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter,
         lifecycle,
         scheduler,
-        discovery,
         auth,
         httpAuth,
+        catalog,
+        actionsRegistry,
         auditor,
         events,
       }) {
@@ -262,7 +268,6 @@ export const catalogPlugin = createBackendPlugin({
           database,
           scheduler,
           logger,
-          discovery,
           auth,
           httpAuth,
           auditor,
@@ -315,6 +320,11 @@ export const catalogPlugin = createBackendPlugin({
         }
 
         httpRouter.use(router);
+
+        createGetCatalogEntityAction({
+          catalog,
+          actionsRegistry,
+        });
       },
     });
   },

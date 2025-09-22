@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  CompoundEntityRef,
-  DEFAULT_NAMESPACE,
-  Entity,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import React, { forwardRef } from 'react';
-import { entityRouteRef } from '../../routes';
+import { ReactNode, forwardRef } from 'react';
+import { entityRouteParams, entityRouteRef } from '../../routes';
 import { EntityDisplayName } from '../EntityDisplayName';
 
 /**
@@ -37,7 +32,7 @@ export type EntityRefLinkProps = {
   defaultNamespace?: string;
   /** @deprecated This option should no longer be used; presentation is requested through the {@link entityPresentationApiRef} instead */
   title?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   hideIcon?: boolean;
   disableTooltip?: boolean;
 } & Omit<LinkProps, 'to'>;
@@ -88,33 +83,7 @@ function useEntityRoute(
 ): string {
   const entityRoute = useRouteRef(entityRouteRef);
 
-  let kind;
-  let namespace;
-  let name;
-
-  if (typeof entityRef === 'string') {
-    const parsed = parseEntityRef(entityRef);
-    kind = parsed.kind;
-    namespace = parsed.namespace;
-    name = parsed.name;
-  } else if ('metadata' in entityRef) {
-    kind = entityRef.kind;
-    namespace = entityRef.metadata.namespace;
-    name = entityRef.metadata.name;
-  } else {
-    kind = entityRef.kind;
-    namespace = entityRef.namespace;
-    name = entityRef.name;
-  }
-
-  kind = kind.toLocaleLowerCase('en-US');
-  namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
-
-  const routeParams = {
-    kind: encodeURIComponent(kind),
-    namespace: encodeURIComponent(namespace),
-    name: encodeURIComponent(name),
-  };
+  const routeParams = entityRouteParams(entityRef, { encodeParams: true });
 
   return entityRoute(routeParams);
 }

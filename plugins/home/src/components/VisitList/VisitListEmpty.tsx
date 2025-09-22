@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Typography from '@material-ui/core/Typography';
+import { homeTranslationRef } from '../../translation';
 
-export const VisitListEmpty = () => (
-  <>
-    <Typography variant="body2" color="textSecondary">
-      There are no visits to show yet.
-    </Typography>
-    <Typography variant="body2" color="textSecondary">
-      Once you start using Backstage, your visits will appear here as a quick
-      link to carry on where you left off.
-    </Typography>
-  </>
-);
+export const VisitListEmpty = () => {
+  const { t } = useTranslationRef(homeTranslationRef);
+  return (
+    <>
+      <Typography variant="body2" color="textSecondary">
+        {t('visitList.empty.title')}
+      </Typography>
+      <Typography variant="body2" color="textSecondary">
+        {t('visitList.empty.description')}
+      </Typography>
+    </>
+  );
+};

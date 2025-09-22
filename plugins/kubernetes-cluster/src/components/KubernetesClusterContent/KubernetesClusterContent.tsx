@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { ApiResources } from '../ApiResources/ApiResources';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';

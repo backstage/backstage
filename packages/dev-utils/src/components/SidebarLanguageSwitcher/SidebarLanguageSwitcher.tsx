@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
 import TranslateIcon from '@material-ui/icons/Translate';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -47,7 +47,7 @@ export const SidebarLanguageSwitcher = () => {
     setAnchorEl(undefined);
   };
 
-  const handleOpen = (event: React.MouseEvent) => {
+  const handleOpen = (event: MouseEvent) => {
     setAnchorEl(event.currentTarget);
   };
 

@@ -283,4 +283,22 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Create a pull request with assignees',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'publish:github:pull-request',
+          name: 'Create a pull request with reviewers',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            branchName: 'new-app',
+            title: 'Create my new app',
+            description: 'This PR is really good',
+            assignees: ['foobar'],
+          },
+        },
+      ],
+    }),
+  },
 ];

@@ -15,7 +15,6 @@
  */
 
 import { render } from '@testing-library/react';
-import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { useRouteRefParams } from './useRouteRefParams';
 import { createRouteRef } from './RouteRef';

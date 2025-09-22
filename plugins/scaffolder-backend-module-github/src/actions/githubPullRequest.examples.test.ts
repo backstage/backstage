@@ -32,6 +32,9 @@ const mockOctokit = {
     pulls: {
       requestReviewers: jest.fn(),
     },
+    issues: {
+      addAssignees: jest.fn(),
+    },
   },
 };
 
@@ -54,13 +57,14 @@ describe('publish:github:pull-request examples', () => {
   });
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext();
   let fakeClient: {
     createPullRequest: jest.Mock;
     rest: {
       pulls: { requestReviewers: jest.Mock };
+      issues: { addAssignees: jest.Mock };
     };
   };
   const mockDir = createMockDirectory();
@@ -89,6 +93,9 @@ describe('publish:github:pull-request examples', () => {
       rest: {
         pulls: {
           requestReviewers: jest.fn(async (_: any) => ({ data: {} })),
+        },
+        issues: {
+          addAssignees: jest.fn(async (_: any) => ({ data: {} })),
         },
       },
     };
@@ -706,6 +713,52 @@ describe('publish:github:pull-request examples', () => {
       pull_number: 123,
       reviewers: ['foobar'],
       team_reviewers: ['team-foo'],
+    });
+
+    expect(mockContext.output).toHaveBeenCalledTimes(3);
+    expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://github.com/myorg/myrepo/pull/123',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('pullRequestNumber', 123);
+  });
+
+  it('Create a pull request with assignees', async () => {
+    const input = yaml.parse(examples[14].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      workspacePath,
+      input,
+    });
+
+    expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      title: 'Create my new app',
+      body: 'This PR is really good',
+      head: 'new-app',
+      draft: undefined,
+      changes: [
+        {
+          commit: 'Create my new app',
+          files: {
+            'file.txt': {
+              content: Buffer.from('Hello there!').toString('base64'),
+              encoding: 'base64',
+              mode: '100644',
+            },
+          },
+        },
+      ],
+    });
+
+    expect(fakeClient.rest.issues.addAssignees).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      issue_number: 123,
+      assignees: ['foobar'],
     });
 
     expect(mockContext.output).toHaveBeenCalledTimes(3);

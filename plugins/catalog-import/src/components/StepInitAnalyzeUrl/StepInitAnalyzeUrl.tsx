@@ -15,12 +15,15 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
+
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
+import { catalogImportTranslationRef } from '../../translation';
 import { NextButton } from '../Buttons';
 import { asInputRef } from '../helpers';
 import { ImportFlows, PrepareResult } from '../useImportState';
@@ -55,6 +58,7 @@ export interface StepInitAnalyzeUrlProps {
  * @public
  */
 export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
+  const { t } = useTranslationRef(catalogImportTranslationRef);
   const {
     onAnalysis,
     analysisUrl = '',
@@ -95,7 +99,7 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
             ) {
               onAnalysis('no-location', url, analysisResult);
             } else {
-              setError("Couldn't generate entities for your repository");
+              setError(t('stepInitAnalyzeUrl.error.repository'));
               setSubmitted(false);
             }
             break;
@@ -108,16 +112,16 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
             } else if (analysisResult.locations.length > 1) {
               onAnalysis('multiple-locations', url, analysisResult);
             } else {
-              setError('There are no entities at this location');
+              setError(t('stepInitAnalyzeUrl.error.locations'));
               setSubmitted(false);
             }
             break;
           }
 
           default: {
-            const err = `Received unknown analysis result of type ${
-              (analysisResult as any).type
-            }. Please contact the support team.`;
+            const err = t('stepInitAnalyzeUrl.error.default', {
+              type: (analysisResult as any).type,
+            });
             setError(err);
             setSubmitted(false);
 
@@ -126,11 +130,11 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
           }
         }
       } catch (e: any) {
-        setError(e?.data?.error?.message ?? e.message);
+        setError(e?.body?.error?.message ?? e.message);
         setSubmitted(false);
       }
     },
-    [catalogImportApi, disablePullRequest, errorApi, onAnalysis],
+    [catalogImportApi, disablePullRequest, errorApi, onAnalysis, t],
   );
 
   return (
@@ -143,7 +147,7 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
               httpsValidator: (value: any) =>
                 (typeof value === 'string' &&
                   value.match(/^http[s]?:\/\//) !== null) ||
-                'Must start with http:// or https://.',
+                t('stepInitAnalyzeUrl.error.url'),
             },
           }),
         )}
@@ -151,26 +155,23 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
         id="url"
         label="URL"
         placeholder={exampleLocationUrl}
-        helperText="Enter the full path to your entity file to start tracking your component"
+        helperText={t('stepInitAnalyzeUrl.urlHelperText')}
         margin="normal"
         variant="outlined"
         error={Boolean(errors.url)}
         required
       />
-
       {errors.url && (
         <FormHelperText error>{errors.url.message}</FormHelperText>
       )}
-
       {error && <FormHelperText error>{error}</FormHelperText>}
-
       <Grid container spacing={0}>
         <NextButton
           disabled={Boolean(errors.url) || !watch('url')}
           loading={submitted}
           type="submit"
         >
-          Analyze
+          {t('stepInitAnalyzeUrl.nextButtonText')}
         </NextButton>
       </Grid>
     </form>

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import MuiStepper from '@material-ui/core/Stepper';
 import MuiStep from '@material-ui/core/Step';
 import MuiStepButton from '@material-ui/core/StepButton';

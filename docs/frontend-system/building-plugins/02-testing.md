@@ -2,19 +2,10 @@
 id: testing
 title: Frontend System Testing Plugins
 sidebar_label: Testing
-# prettier-ignore
 description: Testing plugins in the frontend system
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 # Testing Frontend Plugins
-
-:::note Note
-
-The new frontend system is in alpha, and some plugins do not yet fully implement it.
-
-:::
 
 Utilities for testing frontend features and components are available in `@backstage/frontend-test-utils`.
 
@@ -25,7 +16,6 @@ A component can be used for more than one extension, and it should be tested ind
 Use the `renderInTestApp` helper to render a given component inside a Backstage test app:
 
 ```tsx
-import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
 import { EntityDetails } from './plugin';
@@ -44,7 +34,6 @@ describe('Entity details component', () => {
 To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component you can use the `TestApiProvider` to override individual API implementations. In the snippet below, we wrap the component within a `TestApiProvider` in order to mock the catalog client API:
 
 ```tsx
-import React from 'react';
 import { screen } from '@testing-library/react';
 import {
   renderInTestApp,
@@ -103,7 +92,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should render a the index page', async () => {
+  it('should render the index page', async () => {
     await renderInTestApp(
       createExtensionTester(indexPageExtension).reactElement(),
     );
@@ -158,7 +147,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension, detailsPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should accepts a custom title via config', async () => {
+  it('should accept a custom title via config', async () => {
     const tester = createExtensionTester(indexPageExtension, {
       // Extension configuration for the index page
       config: { title: 'Custom page' },

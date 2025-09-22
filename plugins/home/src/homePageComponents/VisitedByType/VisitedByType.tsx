@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { VisitList } from '../../components/VisitList';
 import { useContext } from './Context';
 

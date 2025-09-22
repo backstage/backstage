@@ -30,5 +30,6 @@ export type GerritProviderConfig = {
   query: string;
   id: string;
   branch?: string;
+  catalogPath?: string;
   schedule?: SchedulerServiceTaskScheduleDefinition;
 };

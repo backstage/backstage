@@ -17,6 +17,7 @@ If you need help, just jump into our [Discord chatroom](https://discord.gg/backs
 - [Accessibility](#accessibility)
 - [Get Started!](#get-started)
 - [Coding Guidelines](#coding-guidelines)
+- [Documentation Guidelines](#documentation-guidelines)
 - [Package Scripts](#package-scripts)
 - [Local configuration](#local-configuration)
 - [Creating Changesets](#creating-changesets)
@@ -68,7 +69,7 @@ yarn tsc      # does a first run of type generation and checks
 Open a terminal window and start the web app by using the following command from the project root. Make sure you have run the above mentioned commands first.
 
 ```bash
-yarn dev
+yarn start
 ```
 
 This is going to start two things, the frontend (:3000) and the backend (:7007).
@@ -116,6 +117,20 @@ If there are any updates in `markdown` file please make sure to run `yarn run li
 ### Editor
 
 The Backstage development environment does not require any specific editor, but it is intended to be used with one that has built-in linting and type-checking. The development server does not include any checks by default, but they can be enabled using the `--check` flag. Note that using the flag may consume more system resources and slow things down.
+
+## Documentation Guidelines
+
+Contributing to the docs is one of the best ways to start getting involved with Backstage. The documentation site is often the first stop for anyone using or exploring Backstage, so even small improvements can have a big impact!
+
+To help your changes get reviewed and merged smoothly, please keep the following in mind:
+
+- Try to group related updates into a single pull request. For example, if you notice missing admonitions or outdated information in a section, feel free to update all of it together. This makes it easier for maintainers to review your contribution in context.
+
+- We really appreciate contributions that improve clarity or fix outdated information. That said, we generally don’t accept changes that are purely stylistic (e.g., rewording a sentence just to tweak the tone or phrasing). If something is **unclear**, **confusing**, or **factually inaccurate**, those are great opportunities to help!
+
+Ready to get started? You can find all the documentation files in the [docs](docs) directory! If you have any questions or need help, feel free to reach out in the [Backstage Discord Docs Channel](https://discord.com/channels/687207715902193673/687994765559463940)
+
+Thank you in advance for your contributions! We really appreciate it. 🙏
 
 ## Package Scripts
 
@@ -373,7 +388,7 @@ Once you've submitted a Pull Request (PR) the various bots will come out and do 
 - adding labels to help make reviewing PRs easier
 - checking for missing changesets or confirming them
 - checking for commits for their DCO (Developer Certificate of Origin)
-- kick of the various CI builds
+- kick off the various CI builds
 
 Once these steps are completed, it's just a matter of being patient. As the reviewers have time, they will begin reviewing your PR. When the review process begins, there may be a few layers to this, but the general rule is that you need approval from one of the core maintainers and one from the specific area impacted by your PR. You may also have someone from the community review your changes. This can really help speed things up as they may catch some early items making the review for the maintainers simpler. Once you have the two (2) approvals, it's ready to be merged, a task that is also performed by the maintainers.
 

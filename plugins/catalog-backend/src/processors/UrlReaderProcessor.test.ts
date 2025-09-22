@@ -18,8 +18,8 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { HttpResponse, http } from 'msw';
 import {
   CatalogProcessorCache,
   CatalogProcessorEntityResult,
@@ -30,8 +30,6 @@ import {
 import { defaultEntityDataParser } from '../util/parse';
 import { UrlReaderProcessor } from './UrlReaderProcessor';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { mockApis } from '@backstage/test-utils';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
@@ -63,13 +61,15 @@ describe('UrlReaderProcessor', () => {
     };
 
     server.use(
-      rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
-        res(
-          ctx.set({ ETag: 'my-etag' }),
-          ctx.json({
+      http.get(`${mockApiOrigin}/component.yaml`, () =>
+        HttpResponse.json(
+          {
             kind: 'component',
             metadata: { name: 'mock-url-entity' },
-          }),
+          },
+          {
+            headers: { ETag: 'my-etag' },
+          },
         ),
       ),
     );
@@ -117,8 +117,8 @@ describe('UrlReaderProcessor', () => {
       }),
     });
     server.use(
-      rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
-        res(ctx.status(304)),
+      http.get(`${mockApiOrigin}/component.yaml`, () =>
+        HttpResponse.json(null, { status: 304 }),
       ),
     );
     const spec = {
@@ -173,8 +173,8 @@ describe('UrlReaderProcessor', () => {
     };
 
     server.use(
-      rest.get(`${mockApiOrigin}/component-notfound.yaml`, (_, res, ctx) => {
-        return res(ctx.status(404));
+      http.get(`${mockApiOrigin}/component-notfound.yaml`, () => {
+        return HttpResponse.json(null, { status: 404 });
       }),
     );
 
@@ -191,11 +191,11 @@ describe('UrlReaderProcessor', () => {
     expect(generated.location).toBe(spec);
     expect(generated.error.name).toBe('NotFoundError');
     expect(generated.error.message).toBe(
-      `Unable to read url, NotFoundError: could not read ${mockApiOrigin}/component-notfound.yaml, 404 Not Found`,
+      `Unable to read url, no matching files found for ${mockApiOrigin}/component-notfound.yaml`,
     );
   });
 
-  it('uses search when there are globs', async () => {
+  it("uses reader' search method", async () => {
     const logger = mockServices.logger.mock();
 
     const reader = mockServices.urlReader.mock({
@@ -203,38 +203,6 @@ describe('UrlReaderProcessor', () => {
     });
 
     const processor = new UrlReaderProcessor({ reader, logger });
-
-    const emit = jest.fn();
-
-    await processor.readLocation(
-      { type: 'url', target: 'https://github.com/a/b/blob/x/**/b.yaml' },
-      false,
-      emit,
-      defaultEntityDataParser,
-      mockCache,
-    );
-
-    expect(reader.search).toHaveBeenCalledTimes(1);
-  });
-
-  it('uses search when catalog.useUrlReadersSearch flag is set to true', async () => {
-    const logger = mockServices.logger.mock();
-
-    const reader: jest.Mocked<UrlReaderService> = {
-      readUrl: jest.fn(),
-      readTree: jest.fn(),
-      search: jest.fn().mockImplementation(async () => []),
-    };
-
-    const config = mockApis.config({
-      data: {
-        catalog: {
-          useUrlReadersSearch: true,
-        },
-      },
-    });
-
-    const processor = new UrlReaderProcessor({ reader, logger, config });
 
     const emit = jest.fn();
 

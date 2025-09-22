@@ -20,15 +20,16 @@ import {
 } from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { createGithubSignatureValidator } from '../http/createGithubSignatureValidator';
+import { octokitProviderServiceRef } from '../util/octokitProviderService';
 
 /**
  * Module for the events-backend plugin,
  * registering an HTTP POST ingress with request validator
  * which verifies the webhook signature based on a secret.
  *
- * @alpha
+ * @public
  */
-export const eventsModuleGithubWebhook = createBackendModule({
+export default createBackendModule({
   pluginId: 'events',
   moduleId: 'github-webhook',
   register(env) {
@@ -36,12 +37,19 @@ export const eventsModuleGithubWebhook = createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         events: eventsExtensionPoint,
+        octokitProvider: octokitProviderServiceRef,
       },
-      async init({ config, events }) {
-        events.addHttpPostIngress({
-          topic: 'github',
-          validator: createGithubSignatureValidator(config),
-        });
+      async init({ config, events, octokitProvider }) {
+        const validator = createGithubSignatureValidator(
+          config,
+          octokitProvider,
+        );
+        if (validator) {
+          events.addHttpPostIngress({
+            topic: 'github',
+            validator,
+          });
+        }
       },
     });
   },

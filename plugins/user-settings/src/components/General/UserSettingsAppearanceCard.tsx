@@ -16,17 +16,19 @@
 
 import { InfoCard, useSidebarPinState } from '@backstage/core-components';
 import List from '@material-ui/core/List';
-import React from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 import { UserSettingsLanguageToggle } from './UserSettingsLanguageToggle';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 /** @public */
 export const UserSettingsAppearanceCard = () => {
   const { isMobile } = useSidebarPinState();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   return (
-    <InfoCard title="Appearance" variant="gridItem">
+    <InfoCard title={t('appearanceCard.title')} variant="gridItem">
       <List dense>
         <UserSettingsThemeToggle />
         <UserSettingsLanguageToggle />

@@ -5,7 +5,7 @@ description: How to get started with the permission framework as an integrator
 ---
 
 :::info
-This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./getting-started--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/permissions/getting-started--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 Backstage integrators control permissions by writing a policy. In general terms, a policy is simply an async function which receives a request to authorize a specific action for a user and (optional) resource, and returns a decision on whether to authorize that permission. Integrators can implement their own policies from scratch, or adopt reusable policies written by others.
@@ -103,10 +103,10 @@ Now lets test end to end that the permissions framework is setup and configured 
      enabled: true
    ```
 
-2. Now run `yarn dev`, Backstage should load up in your browser
+2. Now run `yarn start`, Backstage should load up in your browser
 3. You should see that you have entities in your Catalog, pretty simple
 4. Let's change this line in our Test Permission Policy `return { result: AuthorizeResult.ALLOW };` to be `return { result: AuthorizeResult.DENY };`
-5. Run `yarn dev` once again, Backstage should load up in your browser
+5. Run `yarn start` once again, Backstage should load up in your browser
 6. This time you should not see any entities in your Catalog, if you do then something went wrong along the way and you'll need to review the steps above
 7. Revert the change we made in step 4 so that the line looks like this: `return { result: AuthorizeResult.ALLOW };`
 

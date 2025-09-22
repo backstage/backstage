@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { FC } from 'react';
 
 import {
   DismissableBanner,
@@ -41,7 +41,7 @@ export interface PodLogsProps {
  *
  * @public
  */
-export const PodLogs: React.FC<PodLogsProps> = ({
+export const PodLogs: FC<PodLogsProps> = ({
   containerScope,
   previous,
 }: PodLogsProps) => {

@@ -26,7 +26,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   scaffolderApiRef,
   ScaffolderTask,
@@ -38,7 +38,12 @@ import {
   TaskStatusColumn,
   TemplateTitleColumn,
 } from './columns';
-import { actionsRouteRef, editRouteRef, rootRouteRef } from '../../routes';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  rootRouteRef,
+  templatingExtensionsRouteRef,
+} from '../../routes';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -86,14 +91,22 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
 
   if (error) {
     return (
-      <>
-        <ErrorPanel error={error} />
-        <EmptyState
-          missing="info"
-          title={t('listTaskPage.content.emptyState.title')}
-          description={t('listTaskPage.content.emptyState.description')}
-        />
-      </>
+      <CatalogFilterLayout>
+        <CatalogFilterLayout.Filters>
+          <OwnerListPicker
+            filter={ownerFilter}
+            onSelectOwner={id => setOwnerFilter(id)}
+          />
+        </CatalogFilterLayout.Filters>
+        <CatalogFilterLayout.Content>
+          <ErrorPanel error={error} />
+          <EmptyState
+            missing="info"
+            title={t('listTaskPage.content.emptyState.title')}
+            description={t('listTaskPage.content.emptyState.description')}
+          />
+        </CatalogFilterLayout.Content>
+      </CatalogFilterLayout>
     );
   }
 
@@ -164,6 +177,7 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
   const actionsLink = useRouteRef(actionsRouteRef);
   const createLink = useRouteRef(rootRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const templatingExtensionsLink = useRouteRef(templatingExtensionsRouteRef);
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked:
@@ -179,6 +193,7 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
       props?.contextMenu?.create !== false
         ? () => navigate(createLink())
         : undefined,
+    onTemplatingExtensionsClicked: () => navigate(templatingExtensionsLink()),
   };
   return (
     <Page themeId="home">

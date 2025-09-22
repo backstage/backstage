@@ -1,0 +1,10 @@
+---
+title: Hetzner Cloud
+author: Gluo NV
+authorUrl: https://github.com/gluobe
+category: Infrastructure
+description: Integrate Hetzner Cloud resources into Backstage.
+documentation: https://github.com/gluobe/hetzner-backstage-plugin/blob/main/README.md
+iconUrl: https://avatars.githubusercontent.com/u/18439789?s=200&v=4
+npmPackageName: '@gluo-nv/backstage-plugin-hetzner'
+addedDate: '2025-06-03'

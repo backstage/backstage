@@ -21,7 +21,6 @@ import {
   TestApiRegistry,
 } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { Workflow } from './Workflow';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi, scaffolderApiRef } from '../../../api';
@@ -109,7 +108,7 @@ describe('<Workflow />', () => {
       </ApiProvider>,
     );
 
-    // Test template title is overriden
+    // Test template title is overridden
     expect(getByRole('heading', { level: 2 }).innerHTML).toBe(
       'Different title than template',
     );

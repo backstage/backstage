@@ -19,8 +19,8 @@ const { default: JestRuntime } = require('jest-runtime');
 const scriptTransformCache = new Map();
 
 module.exports = class CachingJestRuntime extends JestRuntime {
-  constructor(config, ...restAgs) {
-    super(config, ...restAgs);
+  constructor(config, ...restArgs) {
+    super(config, ...restArgs);
     this.allowLoadAsEsm = config.extensionsToTreatAsEsm.includes('.mts');
   }
 

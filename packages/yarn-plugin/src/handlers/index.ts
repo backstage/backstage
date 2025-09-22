@@ -16,3 +16,5 @@
 
 export { beforeWorkspacePacking } from './beforeWorkspacePacking';
 export { reduceDependency } from './reduceDependency';
+export { afterWorkspaceDependencyAddition } from './afterWorkspaceDependencyAddition';
+export { afterWorkspaceDependencyReplacement } from './afterWorkspaceDependencyReplacement';

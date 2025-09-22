@@ -29,7 +29,11 @@ import { isEmpty } from 'lodash';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { PluginScanner } from '../scanner/plugin-scanner';
-import { ConfigSchema, loadConfigSchema } from '@backstage/config-loader';
+import {
+  ConfigSchema,
+  loadConfigSchema,
+  mergeConfigSchemas,
+} from '@backstage/config-loader';
 import { dynamicPluginsFeatureLoader } from '../features';
 
 /**
@@ -153,7 +157,7 @@ async function gatherDynamicPluginsSchemas(
   packages: ScannedPluginPackage[],
   logger: LoggerService,
   schemaLocator: (pluginPackage: ScannedPluginPackage) => string = () =>
-    path.join('dist', 'configSchema.json'),
+    path.join('dist', '.config-schema.json'),
 ): Promise<{ [context: string]: JsonObject }> {
   const allSchemas: { [context: string]: JsonObject } = {};
 
@@ -169,13 +173,19 @@ async function gatherDynamicPluginsSchemas(
       continue;
     }
 
-    const serialized = await fs.readJson(schemaLocation);
+    let serialized = await fs.readJson(schemaLocation);
     if (!serialized) {
       continue;
     }
 
     if (isEmpty(serialized)) {
       continue;
+    }
+
+    if (serialized?.backstageConfigSchemaVersion === 1) {
+      serialized = mergeConfigSchemas(
+        (serialized?.schemas as JsonObject[]).map(_ => _.value as any),
+      );
     }
 
     if (!serialized?.$schema || serialized?.type !== 'object') {

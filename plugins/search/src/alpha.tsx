@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
@@ -33,7 +31,6 @@ import {
   useApi,
   discoveryApiRef,
   fetchApiRef,
-  createApiFactory,
 } from '@backstage/core-plugin-api';
 
 import {
@@ -79,14 +76,13 @@ import {
 
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: searchApiRef,
       deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
         new SearchClient({ discoveryApi, fetchApi }),
     }),
-  },
 });
 
 const useSearchPageStyles = makeStyles((theme: Theme) => ({
@@ -119,7 +115,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
-      defaultPath: '/search',
+      path: '/search',
       routeRef: convertLegacyRouteRef(rootRouteRef),
       loader: async () => {
         const getResultItemComponent = (result: SearchResult) => {
@@ -280,9 +276,13 @@ export const searchNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'search',
+  pluginId: 'search',
+  info: { packageJson: () => import('../package.json') },
   extensions: [searchApi, searchPage, searchNavItem],
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
   }),
 });
+
+/** @alpha */
+export { searchTranslationRef } from './translation';

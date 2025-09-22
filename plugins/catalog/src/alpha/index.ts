@@ -16,5 +16,4 @@
 
 export { default } from './plugin';
 
-export * from './blueprints';
 export * from './translation';

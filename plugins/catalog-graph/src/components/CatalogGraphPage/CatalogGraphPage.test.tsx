@@ -29,7 +29,6 @@ import {
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { CatalogGraphPage } from './CatalogGraphPage';
 import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
 

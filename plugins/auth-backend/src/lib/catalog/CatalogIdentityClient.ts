@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  AuthService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   CompoundEntityRef,
   parseEntityRef,
@@ -29,38 +24,17 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
 
 /**
  * A catalog client tailored for reading out identity data from the catalog.
- *
- * @public
- * @deprecated Use the provided `AuthResolverContext` instead, see https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers
  */
 export class CatalogIdentityClient {
-  private readonly catalogApi: CatalogApi;
+  private readonly catalog: CatalogService;
   private readonly auth: AuthService;
 
-  constructor(options: {
-    catalogApi: CatalogApi;
-    tokenManager?: TokenManager;
-    discovery: DiscoveryService;
-    auth?: AuthService;
-    httpAuth?: HttpAuthService;
-  }) {
-    this.catalogApi = options.catalogApi;
-
-    const { auth } = createLegacyAuthAdapters({
-      auth: options.auth,
-      httpAuth: options.httpAuth,
-      discovery: options.discovery,
-      tokenManager: options.tokenManager,
-    });
-
-    this.auth = auth;
+  constructor(options: { catalog: CatalogService; auth: AuthService }) {
+    this.catalog = options.catalog;
+    this.auth = options.auth;
   }
 
   /**
@@ -78,12 +52,10 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-
-    const { items } = await this.catalogApi.getEntities({ filter }, { token });
+    const { items } = await this.catalog.getEntities(
+      { filter },
+      { credentials: await this.auth.getOwnServiceCredentials() },
+    );
 
     if (items.length !== 1) {
       if (items.length > 1) {
@@ -129,13 +101,11 @@ export class CatalogIdentityClient {
       'metadata.name': ref.name,
     }));
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-
-    const entities = await this.catalogApi
-      .getEntities({ filter }, { token })
+    const entities = await this.catalog
+      .getEntities(
+        { filter },
+        { credentials: await this.auth.getOwnServiceCredentials() },
+      )
       .then(r => r.items);
 
     if (entityRefs.length !== entities.length) {

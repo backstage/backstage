@@ -13,55 +13,83 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createCliPlugin } from '../../wiring/factory';
 import { Command } from 'commander';
 import { lazy } from '../../lib/lazy';
 
-export function registerPackageCommands(command: Command) {
-  command
-    .command('lint [directories...]')
-    .option(
-      '--format <format>',
-      'Lint report output format',
-      'eslint-formatter-friendly',
-    )
-    .option(
-      '--output-file <path>',
-      'Write the lint report to a file instead of stdout',
-    )
-    .option('--fix', 'Attempt to automatically fix violations')
-    .option(
-      '--max-warnings <number>',
-      'Fail if more than this number of warnings. -1 allows warnings. (default: 0)',
-    )
-    .description('Lint a package')
-    .action(lazy(() => import('./commands/package/lint'), 'default'));
+export function registerPackageLintCommand(command: Command) {
+  command.arguments('[directories...]');
+  command.option('--fix', 'Attempt to automatically fix violations');
+  command.option(
+    '--format <format>',
+    'Lint report output format',
+    'eslint-formatter-friendly',
+  );
+  command.option(
+    '--output-file <path>',
+    'Write the lint report to a file instead of stdout',
+  );
+  command.option(
+    '--max-warnings <number>',
+    'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
+  );
+  command.description('Lint a package');
+  command.action(lazy(() => import('./commands/package/lint'), 'default'));
 }
 
-export function registerRepoCommands(command: Command) {
-  command
-    .command('lint')
-    .description('Lint all packages in the project')
-    .option(
-      '--format <format>',
-      'Lint report output format',
-      'eslint-formatter-friendly',
-    )
-    .option(
-      '--output-file <path>',
-      'Write the lint report to a file instead of stdout',
-    )
-    .option(
-      '--since <ref>',
-      'Only lint packages that changed since the specified ref',
-    )
-    .option(
-      '--successCache',
-      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
-    )
-    .option(
-      '--successCacheDir <path>',
-      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
-    )
-    .option('--fix', 'Attempt to automatically fix violations')
-    .action(lazy(() => import('./commands/repo/lint'), 'command'));
-}
+export default createCliPlugin({
+  pluginId: 'lint',
+  init: async reg => {
+    reg.addCommand({
+      path: ['package', 'lint'],
+      description: 'Lint a package',
+      execute: async ({ args }) => {
+        const command = new Command();
+        registerPackageLintCommand(command);
+
+        await command.parseAsync(args, { from: 'user' });
+      },
+    });
+
+    reg.addCommand({
+      path: ['repo', 'lint'],
+      description: 'Lint a repository',
+      execute: async ({ args }) => {
+        const command = new Command();
+
+        registerPackageLintCommand(command.command('package').command('lint'));
+
+        command.option('--fix', 'Attempt to automatically fix violations');
+        command.option(
+          '--format <format>',
+          'Lint report output format',
+          'eslint-formatter-friendly',
+        );
+        command.option(
+          '--output-file <path>',
+          'Write the lint report to a file instead of stdout',
+        );
+        command.option(
+          '--successCache',
+          'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+        );
+        command.option(
+          '--successCacheDir <path>',
+          'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
+        );
+        command.option(
+          '--since <ref>',
+          'Only lint packages that changed since the specified ref',
+        );
+        command.option(
+          '--max-warnings <number>',
+          'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
+        );
+        command.description('Lint a repository');
+        command.action(lazy(() => import('./commands/repo/lint'), 'command'));
+
+        await command.parseAsync(args, { from: 'user' });
+      },
+    });
+  },
+});

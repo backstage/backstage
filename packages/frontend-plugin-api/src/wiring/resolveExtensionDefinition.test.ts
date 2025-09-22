@@ -113,6 +113,7 @@ describe('ResolveExtensionId', () => {
       kind: TKind;
       name: TName;
       output: any;
+      params: never;
     }>;
     const id1: 'k:ns' = {} as ResolveExtensionId<
       NamedExtension<'k', undefined>,

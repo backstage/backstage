@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, {
+import {
+  JSX,
+  cloneElement,
   Children,
   Fragment,
   ReactElement,
@@ -60,7 +62,7 @@ function selectChildren(
 }
 
 /** @public */
-export interface ConvertLegacyAppOptions {
+export interface ConvertLegacyAppRootOptions {
   /**
    * By providing an entity page element here it will be split up and converted
    * into individual extensions for the catalog plugin in the new frontend
@@ -78,13 +80,13 @@ export interface ConvertLegacyAppOptions {
    * page content provided both via the old structure and the new plugins. Any
    * duplicate content needs to be removed from the old structure.
    */
-  entityPage?: React.JSX.Element;
+  entityPage?: JSX.Element;
 }
 
 /** @public */
-export function convertLegacyApp(
-  rootElement: React.JSX.Element,
-  options: ConvertLegacyAppOptions = {},
+export function convertLegacyAppRoot(
+  rootElement: JSX.Element,
+  options: ConvertLegacyAppRootOptions = {},
 ): (FrontendPlugin | FrontendModule)[] {
   if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
     return collectLegacyRoutes(rootElement, options?.entityPage);
@@ -141,7 +143,7 @@ export function convertLegacyApp(
       return [
         coreExtensionData.reactElement(
           compatWrapper(
-            React.cloneElement(
+            cloneElement(
               rootEl,
               undefined,
               inputs.content.get(coreExtensionData.reactElement),
@@ -169,3 +171,17 @@ export function convertLegacyApp(
     }),
   ];
 }
+
+/**
+ * @public
+ * @deprecated
+ * Use `convertLegacyAppRoot` instead.
+ */
+export const convertLegacyApp = convertLegacyAppRoot;
+
+/**
+ * @public
+ * @deprecated
+ * Use `ConvertLegacyAppRootOptions` instead.
+ */
+export type ConvertLegacyAppOptions = ConvertLegacyAppRootOptions;

@@ -22,7 +22,6 @@ import {
   useEntity,
 } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
-import React from 'react';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import {
   CatalogApi,

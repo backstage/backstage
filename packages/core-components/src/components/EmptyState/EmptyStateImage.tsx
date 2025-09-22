@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import missingAnnotation from './assets/missingAnnotation.svg';
 import noInformation from './assets/noInformation.svg';
 import createComponent from './assets/createComponent.svg';

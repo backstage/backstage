@@ -40,9 +40,15 @@ export class GitlabEventRouter extends SubTopicEventRouter {
   }
 
   protected determineSubTopic(params: EventParams): string | undefined {
-    if ('event_name' in (params.eventPayload as object)) {
-      const payload = params.eventPayload as { event_name: string };
-      return payload.event_name;
+    if (
+      'object_kind' in (params.eventPayload as object) ||
+      'event_name' in (params.eventPayload as object)
+    ) {
+      const payload = params.eventPayload as {
+        event_name?: string;
+        object_kind?: string;
+      };
+      return payload.object_kind || payload.event_name;
     }
 
     return undefined;

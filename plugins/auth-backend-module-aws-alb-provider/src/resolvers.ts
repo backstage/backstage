@@ -19,6 +19,8 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AwsAlbResult } from './types';
+import { z } from 'zod';
+
 /**
  * Available sign-in resolvers for the AWS ALB auth provider.
  *
@@ -27,19 +29,37 @@ import { AwsAlbResult } from './types';
 export namespace awsAlbSignInResolvers {
   export const emailMatchingUserEntityProfileEmail =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (info: SignInInfo<AwsAlbResult>, ctx) => {
           if (!info.result.fullProfile.emails) {
             throw new Error(
               'Login failed, user profile does not contain an email',
             );
           }
-          return ctx.signInWithCatalogUser({
-            filter: {
-              kind: ['User'],
-              'spec.profile.email': info.result.fullProfile.emails[0].value,
+
+          return ctx.signInWithCatalogUser(
+            {
+              filter: {
+                kind: ['User'],
+                'spec.profile.email': info.result.fullProfile.emails[0].value,
+              },
             },
-          });
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? {
+                      entityRef: {
+                        name: info.result.fullProfile.emails[0].value,
+                      },
+                    }
+                  : undefined,
+            },
+          );
         };
       },
     });

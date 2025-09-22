@@ -148,6 +148,8 @@ describe('readProviderConfigs', () => {
         id: 'customProviderId',
         target: 'https://graph.microsoft.com/v1.0',
         tenantId: 'tenantId',
+        userPath: 'users',
+        groupPath: 'groups',
       },
     ];
     expect(actual).toEqual(expected);
@@ -169,12 +171,14 @@ describe('readProviderConfigs', () => {
                 expand: 'manager',
                 filter: 'accountEnabled eq true',
                 select: ['id', 'displayName', 'department'],
+                path: '/groups/{groupId}/members',
               },
               group: {
                 expand: 'member',
                 filter: 'securityEnabled eq false',
                 select: ['id', 'displayName', 'description'],
                 includeSubGroups: true,
+                path: '/groups/{groupId}/members',
               },
               schedule: {
                 frequency: 'PT30M',
@@ -200,9 +204,11 @@ describe('readProviderConfigs', () => {
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
         userSelect: ['id', 'displayName', 'department'],
+        userPath: '/groups/{groupId}/members',
         groupExpand: 'member',
         groupSelect: ['id', 'displayName', 'description'],
         groupFilter: 'securityEnabled eq false',
+        groupPath: '/groups/{groupId}/members',
         groupIncludeSubGroups: true,
         schedule: {
           frequency: { minutes: 30 },

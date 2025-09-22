@@ -18,20 +18,13 @@ import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
-import { BitbucketServerProject, BitbucketServerRepository } from './types';
-import pThrottle from 'p-throttle';
-
-// 1 per second
-const throttle = pThrottle({
-  limit: 1,
-  interval: 1000,
-});
-
-const throttledFetch = throttle(
-  async (url: RequestInfo, options?: RequestInit) => {
-    return await fetch(url, options);
-  },
-);
+import {
+  BitbucketServerDefaultBranch,
+  BitbucketServerRepository,
+} from './index';
+import { BitbucketServerProject } from './types';
+import { NotFoundError } from '@backstage/errors';
+import { ResponseError } from '@backstage/errors';
 
 /**
  * A client for interacting with a Bitbucket Server instance
@@ -77,8 +70,11 @@ export class BitbucketServerClient {
     repo: string;
     path: string;
   }): Promise<Response> {
-    return throttledFetch(
-      `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
+    const normalizedPath = options.path.startsWith('/')
+      ? options.path.substring(1)
+      : options.path;
+    return fetch(
+      `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/raw/${normalizedPath}`,
       getBitbucketServerRequestOptions(this.config),
     );
   }
@@ -88,11 +84,39 @@ export class BitbucketServerClient {
     repo: string;
   }): Promise<BitbucketServerRepository> {
     const request = `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}`;
-    const response = await throttledFetch(
+    const response = await fetch(
       request,
       getBitbucketServerRequestOptions(this.config),
     );
-    return response.json();
+    if (response.ok) {
+      return response.json();
+    }
+    if (response.status === 404) {
+      throw new NotFoundError(
+        `Repository '${options.repo}' in project '${options.projectKey}' does not exist.`,
+      );
+    }
+    throw await ResponseError.fromResponse(response);
+  }
+
+  async getDefaultBranch(options: {
+    projectKey: string;
+    repo: string;
+  }): Promise<BitbucketServerDefaultBranch> {
+    const request = `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/default-branch`;
+    const response = await fetch(
+      request,
+      getBitbucketServerRequestOptions(this.config),
+    );
+    if (response.ok) {
+      return response.json();
+    }
+    if (response.status === 404) {
+      throw new NotFoundError(
+        `Your Bitbucket Server version no longer supports the default branch endpoint or '${options.repo}' in '${options.projectKey}' does not exist.`,
+      );
+    }
+    throw await ResponseError.fromResponse(response);
   }
 
   resolvePath(options: { projectKey: string; repo: string; path: string }): {
@@ -129,17 +153,16 @@ export class BitbucketServerClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return throttledFetch(
-      req,
-      getBitbucketServerRequestOptions(this.config),
-    ).then((response: Response) => {
-      if (!response.ok) {
-        throw new Error(
-          `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
-        );
-      }
-      return response;
-    });
+    return fetch(req, getBitbucketServerRequestOptions(this.config)).then(
+      (response: Response) => {
+        if (!response.ok) {
+          throw new Error(
+            `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
+          );
+        }
+        return response;
+      },
+    );
   }
 }
 

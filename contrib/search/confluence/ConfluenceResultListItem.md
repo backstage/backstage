@@ -1,7 +1,6 @@
 ConfluenceResultListItem.tsx reference
 
 ```tsx
-import React from 'react';
 import { Link } from '@backstage/core-components';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import {

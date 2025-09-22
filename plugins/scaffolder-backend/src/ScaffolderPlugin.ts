@@ -19,7 +19,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { TaskBroker, TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
@@ -56,6 +56,7 @@ import {
   convertFiltersToRecord,
   convertGlobalsToRecord,
 } from './util/templating';
+import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * Scaffolder plugin
@@ -82,7 +83,7 @@ export const scaffolderPlugin = createBackendPlugin({
       },
     });
 
-    const additionalTemplateFilters: CreatedTemplateFilter[] = [];
+    const additionalTemplateFilters: CreatedTemplateFilter<any, any>[] = [];
     const additionalTemplateGlobals: CreatedTemplateGlobal[] = [];
 
     env.registerExtensionPoint(scaffolderTemplatingExtensionPoint, {
@@ -134,12 +135,12 @@ export const scaffolderPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         database: coreServices.database,
         auth: coreServices.auth,
-        discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
-        catalogClient: catalogServiceRef,
+        catalog: catalogServiceRef,
         events: eventsServiceRef,
+        actionsRegistry: actionsServiceRef,
       },
       async init({
         logger,
@@ -148,13 +149,13 @@ export const scaffolderPlugin = createBackendPlugin({
         reader,
         database,
         auth,
-        discovery,
         httpRouter,
         httpAuth,
-        catalogClient,
+        catalog,
         permissions,
         events,
         auditor,
+        actionsRegistry,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -193,8 +194,8 @@ export const scaffolderPlugin = createBackendPlugin({
           createDebugLogAction(),
           createWaitAction(),
           // todo(blam): maybe these should be a -catalog module?
-          createCatalogRegisterAction({ catalogClient, integrations, auth }),
-          createFetchCatalogEntityAction({ catalogClient, auth }),
+          createCatalogRegisterAction({ catalog, integrations }),
+          createFetchCatalogEntityAction({ catalog }),
           createCatalogWriteAction(),
           createFilesystemDeleteAction(),
           createFilesystemRenameAction(),
@@ -208,11 +209,10 @@ export const scaffolderPlugin = createBackendPlugin({
         );
 
         const router = await createRouter({
-          logger: log,
+          logger,
           config,
           database,
-          catalogClient,
-          reader,
+          catalog,
           lifecycle,
           actions,
           taskBroker,
@@ -220,12 +220,12 @@ export const scaffolderPlugin = createBackendPlugin({
           additionalTemplateGlobals,
           auth,
           httpAuth,
-          discovery,
           permissions,
           autocompleteHandlers,
           additionalWorkspaceProviders,
           events,
           auditor,
+          actionsRegistry,
         });
         httpRouter.use(router);
       },

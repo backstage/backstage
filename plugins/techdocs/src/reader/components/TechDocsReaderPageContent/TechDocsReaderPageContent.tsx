@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -62,6 +62,11 @@ export type TechDocsReaderPageContentProps = {
    */
   entityRef?: CompoundEntityRef;
   /**
+   * Path in the docs to render by default. This should be used when rendering docs for an entity that specifies the
+   * "backstage.io/techdocs-entity-path" annotation for deep linking into another entities docs.
+   */
+  defaultPath?: string;
+  /**
    * Show or hide the search bar, defaults to true.
    */
   withSearch?: boolean;
@@ -93,7 +98,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       setShadowRoot,
     } = useTechDocsReaderPage();
     const { state } = useTechDocsReader();
-    const dom = useTechDocsReaderDom(entityRef);
+    const dom = useTechDocsReaderDom(entityRef, props.defaultPath);
     const path = window.location.pathname;
     const hash = window.location.hash;
     const isStyleLoading = useShadowDomStylesLoading(dom);

@@ -357,7 +357,7 @@ Initializing the dynamic feature is just a case of mapping the `DynamicFrontendF
 
 ```ts
 import { processManifest, getModule } from '@scalprum/core';
-// a ID of the module withing module federation container, can be customized, depends on the build
+// a ID of the module within module federation container, can be customized, depends on the build
 const DEFAULT_MODULE_NAME = 'pluginEntry';
 
 async function loadScalprumFeature({ manifestLocation, name }) {
@@ -680,7 +680,7 @@ const dynamicPluginPlugin = new DynamicRemotePlugin({
     version: plugin.version || '0.0.0',
     exposedModules: {
       // path to the default export of the frontend plugin entry point
-      // the path should be sourced from the "main" attribute withing package.json
+      // the path should be sourced from the "main" attribute within package.json
       pluginEntry: './src/index.ts',
     },
   },

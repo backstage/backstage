@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals",
-  "version": "0.0.17-next.2",
+  "version": "0.0.23",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "signals",
@@ -51,6 +51,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",

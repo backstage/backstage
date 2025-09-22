@@ -17,26 +17,36 @@
 import { CatalogAuthResolverContext } from './CatalogAuthResolverContext';
 import { mockServices } from '@backstage/backend-test-utils';
 import { TokenIssuer } from '../../identity/types';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { NotFoundError } from '@backstage/errors';
+import { UserInfoDatabase } from '../../database/UserInfoDatabase';
 
 describe('CatalogAuthResolverContext', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  const catalogApi = catalogServiceMock();
-  jest.spyOn(catalogApi, 'getEntities');
+  const catalog = catalogServiceMock();
+  jest.spyOn(catalog, 'getEntities');
+
+  const mockUserInfo = {
+    addUserInfo: jest.fn().mockResolvedValue(undefined),
+    getUserInfo: jest.fn().mockResolvedValue({
+      claims: {
+        sub: 'user:default/user',
+        ent: ['user:default/user'],
+      },
+    }),
+  } as unknown as jest.Mocked<UserInfoDatabase>;
 
   it('adds kind to filter when missing', async () => {
+    const auth = mockServices.auth();
     const context = CatalogAuthResolverContext.create({
       logger: mockServices.logger.mock(),
-      catalogApi,
+      catalog,
       tokenIssuer: {} as TokenIssuer,
-      discovery: {} as DiscoveryService,
-      auth: mockServices.auth(),
-      httpAuth: mockServices.httpAuth(),
+      auth,
+      userInfo: mockUserInfo,
     });
 
     await expect(
@@ -44,11 +54,11 @@ describe('CatalogAuthResolverContext', () => {
         filter: [{}, { kind: 'group' }, { KIND: 'USER' }],
       }),
     ).rejects.toThrow(NotFoundError);
-    expect(catalogApi.getEntities).toHaveBeenCalledWith(
+    expect(catalog.getEntities).toHaveBeenCalledWith(
       {
         filter: [{ kind: 'user' }, { kind: 'group' }, { KIND: 'USER' }],
       },
-      { token: 'mock-service-token:{"sub":"plugin:test","target":"catalog"}' },
+      { credentials: await auth.getOwnServiceCredentials() },
     );
   });
 });

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
@@ -92,11 +92,11 @@ export const NotificationsTable = ({
   const alertApi = useApi(alertApiRef);
   const confirm = useConfirm();
 
-  const [selectedNotifications, setSelectedNotifications] = React.useState(
+  const [selectedNotifications, setSelectedNotifications] = useState(
     new Set<Notification['id']>(),
   );
 
-  const onNotificationsSelectChange = React.useCallback(
+  const onNotificationsSelectChange = useCallback(
     (ids: Notification['id'][], checked: boolean) => {
       let newSelect: Set<Notification['id']>;
       if (checked) {
@@ -110,7 +110,7 @@ export const NotificationsTable = ({
     [selectedNotifications, setSelectedNotifications],
   );
 
-  const onSwitchReadStatus = React.useCallback(
+  const onSwitchReadStatus = useCallback(
     (ids: Notification['id'][], newStatus: boolean) => {
       notificationsApi
         .updateNotifications({
@@ -122,7 +122,7 @@ export const NotificationsTable = ({
     [notificationsApi, onUpdate],
   );
 
-  const onSwitchSavedStatus = React.useCallback(
+  const onSwitchSavedStatus = useCallback(
     (ids: Notification['id'][], newStatus: boolean) => {
       notificationsApi
         .updateNotifications({
@@ -134,7 +134,7 @@ export const NotificationsTable = ({
     [notificationsApi, onUpdate],
   );
 
-  const onMarkAllRead = React.useCallback(() => {
+  const onMarkAllRead = useCallback(() => {
     confirm({
       title: 'Are you sure?',
       description: (
@@ -167,12 +167,12 @@ export const NotificationsTable = ({
       });
   }, [alertApi, confirm, notificationsApi, onUpdate]);
 
-  const throttledContainsTextHandler = React.useMemo(
+  const throttledContainsTextHandler = useMemo(
     () => throttle(setContainsText, ThrottleDelayMs),
     [setContainsText],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const allShownIds = new Set(notifications.map(n => n.id));
     const intersect = [...selectedNotifications].filter(id =>
       allShownIds.has(id),
@@ -182,7 +182,7 @@ export const NotificationsTable = ({
     }
   }, [notifications, selectedNotifications]);
 
-  const compactColumns = React.useMemo((): TableColumn<Notification>[] => {
+  const compactColumns = useMemo((): TableColumn<Notification>[] => {
     const showToolbar = notifications.length > 0;
     return [
       {

@@ -17,7 +17,6 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import CloudIcon from '@material-ui/icons/Cloud';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { IconLink } from './IconLink';
 
 describe('IconLink', () => {

@@ -5,14 +5,90 @@
 ```ts
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
-import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/core-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+export const catalogImportTranslationRef: TranslationRef<
+  'catalog-import',
+  {
+    readonly 'buttons.back': 'Back';
+    readonly 'defaultImportPage.headerTitle': 'Register an existing component';
+    readonly 'defaultImportPage.contentHeaderTitle': 'Start tracking your component in {{appTitle}}';
+    readonly 'defaultImportPage.supportTitle': 'Start tracking your component in {{appTitle}} by adding it to the software catalog.';
+    readonly 'importInfoCard.title': 'Register an existing component';
+    readonly 'importInfoCard.deepLinkTitle': 'Learn more about the Software Catalog';
+    readonly 'importInfoCard.linkDescription': 'Enter the URL to your source code repository to add it to {{appTitle}}.';
+    readonly 'importInfoCard.fileLinkTitle': 'Link to an existing entity file';
+    readonly 'importInfoCard.examplePrefix': 'Example: ';
+    readonly 'importInfoCard.fileLinkDescription': 'The wizard analyzes the file, previews the entities, and adds them to the {{appTitle}} catalog.';
+    readonly 'importInfoCard.exampleDescription': 'The wizard discovers all {{catalogFilename}} files in the repository, previews the entities, and adds them to the {{appTitle}} catalog.';
+    readonly 'importInfoCard.preparePullRequestDescription': 'If no entities are found, the wizard will prepare a Pull Request that adds an example {{catalogFilename}} and prepares the {{appTitle}} catalog to load all entities as soon as the Pull Request is merged.';
+    readonly 'importInfoCard.githubIntegration.label': 'GitHub only';
+    readonly 'importInfoCard.githubIntegration.title': 'Link to a repository';
+    readonly 'importStepper.finish.title': 'Finish';
+    readonly 'importStepper.noLocation.title': 'Create Pull Request';
+    readonly 'importStepper.noLocation.createPr.ownerLabel': 'Entity Owner';
+    readonly 'importStepper.noLocation.createPr.detailsTitle': 'Pull Request Details';
+    readonly 'importStepper.noLocation.createPr.titleLabel': 'Pull Request Title';
+    readonly 'importStepper.noLocation.createPr.titlePlaceholder': 'Add Backstage catalog entity descriptor files';
+    readonly 'importStepper.noLocation.createPr.bodyLabel': 'Pull Request Body';
+    readonly 'importStepper.noLocation.createPr.bodyPlaceholder': 'A describing text with Markdown support';
+    readonly 'importStepper.noLocation.createPr.configurationTitle': 'Entity Configuration';
+    readonly 'importStepper.noLocation.createPr.componentNameLabel': 'Name of the created component';
+    readonly 'importStepper.noLocation.createPr.componentNamePlaceholder': 'my-component';
+    readonly 'importStepper.noLocation.createPr.ownerLoadingText': 'Loading groups…';
+    readonly 'importStepper.noLocation.createPr.ownerHelperText': 'Select an owner from the list or enter a reference to a Group or a User';
+    readonly 'importStepper.noLocation.createPr.ownerErrorHelperText': 'required value';
+    readonly 'importStepper.noLocation.createPr.ownerPlaceholder': 'my-group';
+    readonly 'importStepper.noLocation.createPr.codeownersHelperText': 'WARNING: This may fail if no CODEOWNERS file is found at the target location.';
+    readonly 'importStepper.singleLocation.title': 'Select Locations';
+    readonly 'importStepper.singleLocation.description': 'Discovered Locations: 1';
+    readonly 'importStepper.multipleLocations.title': 'Select Locations';
+    readonly 'importStepper.multipleLocations.description': 'Discovered Locations: {{length, number}}';
+    readonly 'importStepper.analyze.title': 'Select URL';
+    readonly 'importStepper.prepare.title': 'Import Actions';
+    readonly 'importStepper.prepare.description': 'Optional';
+    readonly 'importStepper.review.title': 'Review';
+    readonly 'stepFinishImportLocation.repository.title': 'The following Pull Request has been opened: ';
+    readonly 'stepFinishImportLocation.repository.description': 'Your entities will be imported as soon as the Pull Request is merged.';
+    readonly 'stepFinishImportLocation.backButtonText': 'Register another';
+    readonly 'stepFinishImportLocation.locations.new': 'The following entities have been added to the catalog:';
+    readonly 'stepFinishImportLocation.locations.backButtonText': 'Register another';
+    readonly 'stepFinishImportLocation.locations.existing': 'A refresh was triggered for the following locations:';
+    readonly 'stepFinishImportLocation.locations.viewButtonText': 'View Component';
+    readonly 'stepInitAnalyzeUrl.error.default': 'Received unknown analysis result of type {{type}}. Please contact the support team.';
+    readonly 'stepInitAnalyzeUrl.error.url': 'Must start with http:// or https://.';
+    readonly 'stepInitAnalyzeUrl.error.repository': "Couldn't generate entities for your repository";
+    readonly 'stepInitAnalyzeUrl.error.locations': 'There are no entities at this location';
+    readonly 'stepInitAnalyzeUrl.urlHelperText': 'Enter the full path to your entity file to start tracking your component';
+    readonly 'stepInitAnalyzeUrl.nextButtonText': 'Analyze';
+    readonly 'stepPrepareCreatePullRequest.description': 'You entered a link to a {{integrationType}} repository but a {{catalogFilename}} could not be found. Use this form to open a Pull Request that creates one.';
+    readonly 'stepPrepareCreatePullRequest.nextButtonText': 'Create PR';
+    readonly 'stepPrepareCreatePullRequest.previewPr.title': 'Preview Pull Request';
+    readonly 'stepPrepareCreatePullRequest.previewPr.subheader': 'Create a new Pull Request';
+    readonly 'stepPrepareCreatePullRequest.previewCatalogInfo.title': 'Preview Entities';
+    readonly 'stepPrepareSelectLocations.locations.description': 'Select one or more locations that are present in your git repository:';
+    readonly 'stepPrepareSelectLocations.locations.selectAll': 'Select All';
+    readonly 'stepPrepareSelectLocations.nextButtonText': 'Review';
+    readonly 'stepPrepareSelectLocations.existingLocations.description': 'These locations already exist in the catalog:';
+    readonly 'stepReviewLocation.refresh': 'Refresh';
+    readonly 'stepReviewLocation.import': 'Import';
+    readonly 'stepReviewLocation.catalog.new': 'The following entities will be added to the catalog:';
+    readonly 'stepReviewLocation.catalog.exists': 'The following locations already exist in the catalog:';
+    readonly 'stepReviewLocation.prepareResult.title': 'The following Pull Request has been opened: ';
+    readonly 'stepReviewLocation.prepareResult.description': 'You can already import the location and {{appTitle}} will fetch the entities as soon as the Pull Request is merged.';
+  }
+>;
+
+// @alpha (undocumented)
+const _default: OverridableFrontendPlugin<
   {
     importPage: RouteRef<undefined>;
   },
@@ -23,15 +99,15 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'page:catalog-import': ExtensionDefinition<{
       kind: 'page';
@@ -43,13 +119,9 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -58,7 +130,8 @@ const _default: FrontendPlugin<
           >;
       inputs: {};
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };

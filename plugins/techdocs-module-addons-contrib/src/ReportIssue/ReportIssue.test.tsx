@@ -16,11 +16,11 @@
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
-import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { ReportIssue } from '../plugin';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 const byUrl = jest.fn();
 
@@ -51,6 +51,15 @@ describe('ReportIssue', () => {
     toString: () => 'his ',
     containsNode: () => true,
   } as unknown as Selection;
+
+  const entityPresentationApiMock = {
+    forEntity: jest.fn(),
+  };
+  entityPresentationApiMock.forEntity.mockReturnValue({
+    snapshot: {
+      primaryTitle: 'Test Entity',
+    },
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -93,7 +102,10 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [entityPresentationApiRef, entityPresentationApiMock],
+        ])
         .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
@@ -116,7 +128,7 @@ describe('ReportIssue', () => {
 
   it('renders gitlab link without exploding', async () => {
     byUrl.mockReturnValue({ type: 'gitlab' });
-    const { shadowRoot, getByText } =
+    const { shadowRoot, getByText, queryByTestId } =
       await TechDocsAddonTester.buildAddonsInTechDocs([
         <ReportIssue debounceTime={0} />,
       ])
@@ -151,7 +163,10 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [entityPresentationApiRef, entityPresentationApiMock],
+        ])
         .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
@@ -164,6 +179,8 @@ describe('ReportIssue', () => {
     fireSelectionChangeEvent(window);
 
     await waitFor(() => {
+      expect(queryByTestId('report-issue-addon')).toBeInTheDocument();
+
       const link = getByText('Open new Gitlab issue');
       expect(link).toHaveAttribute(
         'href',
@@ -180,7 +197,7 @@ describe('ReportIssue', () => {
       body: options.selection.toString().trim(),
     });
 
-    const { shadowRoot, getByText } =
+    const { shadowRoot, getByText, queryByTestId } =
       await TechDocsAddonTester.buildAddonsInTechDocs([
         <ReportIssue debounceTime={0} templateBuilder={templateBuilder} />,
       ])
@@ -215,6 +232,60 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [entityPresentationApiRef, entityPresentationApiMock],
+        ])
+        .renderWithEffects();
+
+    (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
+      () => selection;
+
+    await waitFor(() => {
+      expect(getByText('Edit page')).toBeInTheDocument();
+    });
+
+    fireSelectionChangeEvent(window);
+
+    await waitFor(() => {
+      expect(queryByTestId('report-issue-addon')).toBeInTheDocument();
+
+      const link = getByText('Open new Gitlab issue');
+      expect(link).toHaveAttribute(
+        'href',
+        'https://gitlab.com/backstage/backstage/issues/new?issue[title]=Custom&issue[description]=his',
+      );
+    });
+  });
+
+  it('does not render report issue link for unsupported repository type', async () => {
+    byUrl.mockReturnValue({ type: 'gerrit', resource: 'gerrit.example.com' });
+
+    const { shadowRoot, getByText, queryByTestId } =
+      await TechDocsAddonTester.buildAddonsInTechDocs([
+        <ReportIssue debounceTime={0} />,
+      ])
+        .withDom(
+          <html lang="en">
+            <head />
+            <body>
+              <div data-md-component="content">
+                <div data-md-component="main">
+                  <div className="md-content">
+                    <article>
+                      <a
+                        title="Edit this page"
+                        href="https://gerrit.example.com/admin/repos/edit/repo/my/repo/branch/refs/heads/master/file/docs/README.md"
+                      >
+                        Edit page
+                      </a>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </body>
+          </html>,
+        )
         .withApis([[scmIntegrationsApiRef, { byUrl }]])
         .renderWithEffects();
 
@@ -228,11 +299,7 @@ describe('ReportIssue', () => {
     fireSelectionChangeEvent(window);
 
     await waitFor(() => {
-      const link = getByText('Open new Gitlab issue');
-      expect(link).toHaveAttribute(
-        'href',
-        'https://gitlab.com/backstage/backstage/issues/new?issue[title]=Custom&issue[description]=his',
-      );
+      expect(queryByTestId('report-issue-addon')).not.toBeInTheDocument();
     });
   });
 });

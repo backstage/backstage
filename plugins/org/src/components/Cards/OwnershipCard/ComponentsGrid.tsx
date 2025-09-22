@@ -26,38 +26,46 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
 import { useGetEntities } from './useGetEntities';
 import { EntityRelationAggregation } from '../types';
 
-const useStyles = makeStyles(theme =>
-  createStyles({
-    card: {
-      border: `1px solid ${theme.palette.divider}`,
-      boxShadow: theme.shadows[2],
-      borderRadius: '4px',
-      padding: theme.spacing(2),
-      transition: `${theme.transitions.duration.standard}ms`,
-      '&:hover': {
-        boxShadow: theme.shadows[4],
+/** @public */
+export type ComponentsGridClassKey =
+  | 'card'
+  | 'bold'
+  | 'smallFont'
+  | 'entityTypeBox';
+
+const useStyles = makeStyles(
+  theme =>
+    createStyles({
+      card: {
+        border: `1px solid ${theme.palette.divider}`,
+        boxShadow: theme.shadows[2],
+        borderRadius: '4px',
+        padding: theme.spacing(2),
+        transition: `${theme.transitions.duration.standard}ms`,
+        '&:hover': {
+          boxShadow: theme.shadows[4],
+        },
+        height: '100%',
       },
-      height: '100%',
-    },
-    bold: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    smallFont: {
-      fontSize: theme.typography.body2.fontSize,
-    },
-    entityTypeBox: {
-      background: (props: { type: string }) =>
-        theme.getPageTheme({ themeId: props.type }).backgroundImage,
-      color: (props: { type: string }) =>
-        theme.getPageTheme({ themeId: props.type }).fontColor,
-    },
-  }),
+      bold: {
+        fontWeight: theme.typography.fontWeightBold,
+      },
+      smallFont: {
+        fontSize: theme.typography.body2.fontSize,
+      },
+      entityTypeBox: {
+        background: (props: { type: string }) =>
+          theme.getPageTheme({ themeId: props.type }).backgroundImage,
+        color: (props: { type: string }) =>
+          theme.getPageTheme({ themeId: props.type }).fontColor,
+      },
+    }),
+  { name: 'PluginOrgComponentsGrid' },
 );
 
 const EntityCountTile = ({
@@ -127,6 +135,7 @@ export const ComponentsGrid = ({
   entityLimit?: number;
 }) => {
   const catalogLink = useRouteRef(catalogIndexRouteRef);
+
   if (!relationsType && !relationAggregation) {
     throw new Error(
       'The relationAggregation property must be set as an EntityRelationAggregation type.',
@@ -153,7 +162,7 @@ export const ComponentsGrid = ({
             counter={c.counter}
             kind={c.kind}
             type={c.type}
-            url={catalogLink && `${catalogLink()}/?${c.queryParams}`}
+            url={catalogLink && `${catalogLink()}?${c.queryParams}`}
           />
         </Grid>
       ))}

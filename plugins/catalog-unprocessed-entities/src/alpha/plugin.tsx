@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  createApiFactory,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
@@ -38,8 +36,8 @@ import { rootRouteRef } from '../routes';
 
 /** @alpha */
 export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: catalogUnprocessedEntitiesApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -48,13 +46,12 @@ export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
       factory: ({ discoveryApi, fetchApi }) =>
         new CatalogUnprocessedEntitiesClient(discoveryApi, fetchApi),
     }),
-  },
 });
 
 /** @alpha */
 export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
   params: {
-    defaultPath: '/catalog-unprocessed-entities',
+    path: '/catalog-unprocessed-entities',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('../components/UnprocessedEntities').then(m =>
@@ -74,7 +71,8 @@ export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'catalog-unprocessed-entities',
+  pluginId: 'catalog-unprocessed-entities',
+  info: { packageJson: () => import('../../package.json') },
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),
   },

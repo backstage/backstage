@@ -30,6 +30,11 @@ export interface Config {
        */
       batchSize?: number;
       /**
+       * Defines the name of the field in each document that will be used to identify documents during a batch upload.
+       * If not provided, a custom ID will be generated for each document.
+       */
+      batchKeyField?: string;
+      /**
        * Options for configuring highlight settings
        * See https://www.elastic.co/guide/en/elasticsearch/reference/7.17/highlighting.html
        */
@@ -46,6 +51,26 @@ export interface Config {
          * Delimiter string used to concatenate fragments. Defaults to " ... ".
          */
         fragmentDelimiter?: string;
+      };
+      queryOptions?: {
+        /**
+         * Fuzziness allows you to define the maximum Levenshtein distance for fuzzy queries,
+         * which determines how many single-character edits (insertions, deletions, substitutions)
+         * are allowed for a term to be considered a match.
+         *
+         * - 'AUTO': Automatically determines the fuzziness level based on the length of the term.
+         *           This is the default and widely accepted standard.
+         * - number: Specifies a fixed fuzziness level. For example, a value of 1 allows for one edit.
+         *
+         * Example:
+         * - For a term "apple" with fuzziness set to 1, queries like "aple" or "apply" would match.
+         */
+
+        fuzziness?: 'AUTO' | number;
+        /**
+         * Minimum number of characters that must match exactly at the beginning of the qeury. Defaults to 0.
+         */
+        prefixLength?: number;
       };
 
       /** Elasticsearch specific index template bodies */

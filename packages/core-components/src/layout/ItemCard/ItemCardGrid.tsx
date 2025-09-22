@@ -20,7 +20,7 @@ import {
   Theme,
   WithStyles,
 } from '@material-ui/core/styles';
-import React from 'react';
+import { ReactNode } from 'react';
 
 /** @public */
 export type ItemCardGridClassKey = 'root';
@@ -42,7 +42,7 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
   /**
    * The Card items of the grid.
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

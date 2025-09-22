@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   UnifiedThemeProvider,
   themes as builtinThemes,
@@ -25,7 +24,6 @@ import {
   createExtensionInput,
   ThemeBlueprint,
   ApiBlueprint,
-  createApiFactory,
   appThemeApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -42,14 +40,16 @@ export const AppThemeApi = ApiBlueprint.makeWithOverrides({
     }),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory({
-      factory: createApiFactory(
-        appThemeApiRef,
-        AppThemeSelector.createWithStorage(
-          inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
-        ),
-      ),
-    });
+    return originalFactory(defineParams =>
+      defineParams({
+        api: appThemeApiRef,
+        deps: {},
+        factory: () =>
+          AppThemeSelector.createWithStorage(
+            inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
+          ),
+      }),
+    );
   },
 });
 

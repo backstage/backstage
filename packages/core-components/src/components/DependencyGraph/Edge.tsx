@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useRef, useLayoutEffect, useMemo } from 'react';
 import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -86,9 +86,9 @@ export function Edge<EdgeData>({
   const labelProps: Types.DependencyEdge<EdgeData> = edge;
   const classes = useStyles();
 
-  const labelRef = React.useRef<SVGGElement>(null);
+  const labelRef = useRef<SVGGElement>(null);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     // set the label width to the actual rendered width to properly layout graph
     if (labelRef.current) {
       let { height: renderedHeight, width: renderedWidth } =
@@ -108,7 +108,7 @@ export function Edge<EdgeData>({
 
   let path: string = '';
 
-  const createPath = React.useMemo(
+  const createPath = useMemo(
     () =>
       d3Shape
         .line<EdgePoint>()

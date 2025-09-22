@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MyGroupsPicker } from './MyGroupsPicker';
@@ -36,6 +35,9 @@ import {
 import userEvent from '@testing-library/user-event';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { ComponentType, PropsWithChildren, ReactNode } from 'react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { scaffolderTranslationRef } from '../../../translation';
 
 const mockIdentityApi = mockApis.identity({
   userEntityRef: 'user:default/bob',
@@ -100,6 +102,7 @@ describe('<MyGroupsPicker />', () => {
       onChange,
       schema,
       required,
+      uiSchema: {},
     } as unknown as FieldProps<string>;
 
     await renderInTestApp(
@@ -176,6 +179,7 @@ describe('<MyGroupsPicker />', () => {
       onChange,
       schema,
       required,
+      uiSchema: {},
     } as unknown as FieldProps<string>;
 
     const { queryByText, getByRole } = await renderInTestApp(
@@ -237,6 +241,7 @@ describe('<MyGroupsPicker />', () => {
       onChange,
       schema,
       required,
+      uiSchema: {},
     } as unknown as FieldProps<string>;
 
     const { getByRole } = await renderInTestApp(
@@ -300,6 +305,7 @@ describe('<MyGroupsPicker />', () => {
       onChange,
       schema,
       required,
+      uiSchema: {},
       formData: 'group:default/group1',
     } as unknown as FieldProps<string>;
 
@@ -327,5 +333,100 @@ describe('<MyGroupsPicker />', () => {
     const inputFieldValue = inputField?.querySelector('input')?.value;
 
     expect(inputFieldValue).toEqual(userGroups[0].metadata.title);
+  });
+
+  describe('MyGroupsPicker description', () => {
+    const description = {
+      fromSchema: 'MyGroupsPicker description from schema',
+      fromUiSchema: 'MyGroupsPicker description from uiSchema',
+    } as { fromSchema: string; fromUiSchema: string; default?: string };
+
+    let Wrapper: ComponentType<PropsWithChildren<{}>>;
+
+    beforeEach(() => {
+      Wrapper = ({ children }: { children?: ReactNode }) => {
+        const { t } = useTranslationRef(scaffolderTranslationRef);
+        description.default = t('fields.myGroupsPicker.description');
+        return (
+          <TestApiProvider
+            apis={[
+              [identityApiRef, mockIdentityApi],
+              [catalogApiRef, catalogApi],
+              [errorApiRef, mockErrorApi],
+              [
+                entityPresentationApiRef,
+                DefaultEntityPresentationApi.create({ catalogApi }),
+              ],
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        );
+      };
+    });
+    it('presents default description', async () => {
+      const props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema: {},
+        formData: 'group:default/group1',
+      } as unknown as FieldProps<string>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <MyGroupsPicker {...props} />
+        </Wrapper>,
+      );
+      expect(getByText(description.default!)).toBeInTheDocument();
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents schema description', async () => {
+      const props = {
+        onChange,
+        schema: {
+          ...schema,
+          description: description.fromSchema,
+        },
+        required: true,
+        uiSchema: {},
+        formData: 'group:default/group1',
+      } as unknown as FieldProps<string>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <MyGroupsPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(description.default!)).toBe(null);
+      expect(getByText(description.fromSchema)).toBeInTheDocument();
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents uiSchema description', async () => {
+      const props = {
+        onChange,
+        schema: {
+          ...schema,
+          description: description.fromSchema,
+        },
+        required: true,
+        uiSchema: {
+          'ui:description': description.fromUiSchema,
+        },
+        formData: 'group:default/group1',
+      } as unknown as FieldProps<string>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <MyGroupsPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(description.default!)).toBe(null);
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(getByText(description.fromUiSchema)).toBeInTheDocument();
+    });
   });
 });

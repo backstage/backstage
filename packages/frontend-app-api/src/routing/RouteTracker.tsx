@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
 import {
   useAnalytics,
@@ -63,7 +63,7 @@ const getExtensionContext = (
       return acc;
     }, {});
 
-    const plugin = routeObject.appNode?.spec.source;
+    const plugin = routeObject.appNode?.spec.plugin;
     const extension = routeObject.appNode?.spec.extension;
 
     return {

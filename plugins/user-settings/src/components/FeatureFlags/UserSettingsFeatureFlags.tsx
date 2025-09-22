@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import List from '@material-ui/core/List';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
@@ -31,6 +31,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { InfoCard } from '@backstage/core-components';
 import ClearIcon from '@material-ui/icons/Clear';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 export const sortFlags = (
   flags: FeatureFlag[],
@@ -44,7 +46,7 @@ export const sortFlags = (
 /** @public */
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
-  const inputRef = React.useRef<HTMLElement>();
+  const inputRef = useRef<HTMLElement>();
 
   const initialFeatureFlags = featureFlagsApi.getRegisteredFlags();
   const initialFeatureFlagsSorted = sortFlags(
@@ -59,6 +61,7 @@ export const UserSettingsFeatureFlags = () => {
 
   const [state, setState] = useState<Record<string, boolean>>(initialFlagState);
   const [filterInput, setFilterInput] = useState<string>('');
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   const toggleFlag = useCallback(
     (flagName: string) => {
@@ -96,22 +99,22 @@ export const UserSettingsFeatureFlags = () => {
   const Header = () => (
     <Grid container style={{ justifyContent: 'space-between' }}>
       <Grid item xs={6} md={8}>
-        <Typography variant="h5">Feature Flags</Typography>
+        <Typography variant="h5">{t('featureFlags.title')}</Typography>
         <Typography variant="subtitle1">
-          Please refresh the page when toggling feature flags
+          {t('featureFlags.description')}
         </Typography>
       </Grid>
       {featureFlags.length >= 10 && (
         <Grid item xs={6} md={4}>
           <TextField
-            label="Filter"
+            label={t('featureFlags.filterTitle')}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
             inputRef={ref => ref && ref.focus()}
             InputProps={{
               ...(filterInput.length && {
                 endAdornment: (
                   <IconButton
-                    aria-label="Clear filter"
+                    aria-label={t('featureFlags.clearFilter')}
                     onClick={clearFilterInput}
                     edge="end"
                   >

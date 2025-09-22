@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Suspense } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { useApp } from '@backstage/core-plugin-api';
 
 /** @public */

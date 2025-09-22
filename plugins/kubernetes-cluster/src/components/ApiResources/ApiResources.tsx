@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { useApiResources } from './useApiResources';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Table, TableColumn } from '@backstage/core-components';
-import { IAPIGroup } from '@kubernetes-models/apimachinery/apis/meta/v1';
+import type { IAPIGroup } from '@kubernetes-models/apimachinery/apis/meta/v1';
 import { useKubernetesClusterError } from '../KubernetesClusterErrorContext/KubernetesClusterErrorContext';
 import { makeStyles } from '@material-ui/core/styles';
 

@@ -4,5 +4,5 @@
 
 | Name  | Location     | Severity |
 | :---- | :----------- | :------- |
-| luxon | package.json | error    |
+| luxon | plugins/catalog-backend-module-gerrit/package.json | error    |
 

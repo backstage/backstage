@@ -20,7 +20,6 @@ import HomeIcon from '@material-ui/icons/Home';
 import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import { fireEvent } from '@testing-library/react';
-import React from 'react';
 import { SidebarItem } from './Items';
 import { MobileSidebarContext } from './MobileSidebarContext';
 import { SidebarPage } from './Page';

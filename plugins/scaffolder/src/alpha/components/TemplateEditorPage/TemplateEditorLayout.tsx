@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { WithStyles, withStyles } from '@material-ui/core/styles';
+import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export const TemplateEditorLayout = withStyles(
   theme => ({
@@ -36,7 +39,7 @@ export const TemplateEditorLayout = withStyles(
       "browser editor preview"
       "results results results"
     `,
-        gridTemplateColumns: '1fr 3fr 2fr',
+        gridTemplateColumns: '1fr 5fr',
         gridTemplateRows: 'auto 1fr auto',
       },
     },
@@ -73,12 +76,15 @@ export const TemplateEditorLayoutBrowser = withStyles(
 ));
 
 export const TemplateEditorLayoutFiles = withStyles(
-  {
+  theme => ({
     root: {
       gridArea: 'editor',
       overflow: 'auto',
+      [theme.breakpoints.up('md')]: {
+        height: '100%',
+      },
     },
-  },
+  }),
   { name: 'ScaffolderTemplateEditorLayoutFiles' },
 )(({ children, classes }: PropsWithChildren<WithStyles>) => (
   <section className={classes.root}>{children}</section>
@@ -91,7 +97,7 @@ export const TemplateEditorLayoutPreview = withStyles(
       position: 'relative',
       backgroundColor: theme.palette.background.default,
       [theme.breakpoints.up('md')]: {
-        borderLeft: `1px solid ${theme.palette.divider}`,
+        height: '100%',
       },
     },
     scroll: {
@@ -124,3 +130,50 @@ export const TemplateEditorLayoutConsole = withStyles(
 )(({ children, classes }: PropsWithChildren<WithStyles>) => (
   <section className={classes.root}>{children}</section>
 ));
+
+export const TemplateEditorPanelResizeHandle = withStyles(
+  {
+    root: {
+      width: 8,
+      cursor: 'col-resize',
+      background: 'rgba(0,0,0,0.04)',
+    },
+  },
+  { name: 'ScaffolderTemplateEditorPanelResizeHandle' },
+)(({ classes }: { classes: WithStyles['classes'] }) => (
+  <PanelResizeHandle className={classes.root} />
+));
+
+export function TemplateEditorPanels({
+  files,
+  preview,
+  autoSaveId = 'template-editor-panels',
+}: {
+  files: ReactNode;
+  preview: ReactNode;
+  autoSaveId?: string;
+}) {
+  const theme = useTheme();
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
+
+  if (isMdUp) {
+    return (
+      <PanelGroup direction="horizontal" autoSaveId={autoSaveId}>
+        <Panel minSize={15} defaultSize={50}>
+          {files}
+        </Panel>
+        <TemplateEditorPanelResizeHandle />
+        <Panel minSize={15} defaultSize={50}>
+          {preview}
+        </Panel>
+      </PanelGroup>
+    );
+  }
+  // Stack as rows for small screens, just render children in a plain block
+  return (
+    <>
+      {files}
+      {preview}
+    </>
+  );
+}

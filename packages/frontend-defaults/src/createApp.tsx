@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { JSX, ReactNode } from 'react';
+import { JSX, lazy, ReactNode, Suspense } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
@@ -22,6 +22,7 @@ import {
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
+import { Progress } from '@backstage/core-components';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -30,30 +31,12 @@ import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
   createSpecializedApp,
+  FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
 import { resolveAsyncFeatures } from './resolution';
-
-/**
- * A source of dynamically loaded frontend features.
- *
- * @public
- * @deprecated Use the {@link @backstage/frontend-plugin-api#createFrontendFeatureLoader} function instead.
- */
-export interface CreateAppFeatureLoader {
-  /**
-   * Returns name of this loader. suitable for showing to users.
-   */
-  getLoaderName(): string;
-
-  /**
-   * Loads a number of features dynamically.
-   */
-  load(options: { config: ConfigApi }): Promise<{
-    features: FrontendFeature[];
-  }>;
-}
+import { maybeCreateErrorPage } from './maybeCreateErrorPage';
 
 /**
  * Options for {@link createApp}.
@@ -61,23 +44,63 @@ export interface CreateAppFeatureLoader {
  * @public
  */
 export interface CreateAppOptions {
-  features?: (
-    | FrontendFeature
-    | FrontendFeatureLoader
-    | CreateAppFeatureLoader
-  )[];
-  configLoader?: () => Promise<{ config: ConfigApi }>;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   /**
-   * The component to render while loading the app (waiting for config, features, etc)
-   *
-   * Is the text "Loading..." by default.
-   * If set to "null" then no loading fallback component is rendered.   *
+   * The list of features to load.
    */
-  loadingComponent?: ReactNode;
-  extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
+  features?: (FrontendFeature | FrontendFeatureLoader)[];
+
+  /**
+   * Allows for the binding of plugins' external route refs within the app.
+   */
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+
+  /**
+   * Advanced, more rarely used options.
+   */
+  advanced?: {
+    /**
+     * If set to true, the system will silently accept and move on if
+     * encountering config for extensions that do not exist. The default is to
+     * reject such config to help catch simple mistakes.
+     *
+     * This flag can be useful in some scenarios where you have a dynamic set of
+     * extensions enabled at different times, but also increases the risk of
+     * accidentally missing e.g. simple typos in your config.
+     */
+    allowUnknownExtensionConfig?: boolean;
+
+    /**
+     * Sets a custom config loader, replacing the builtin one.
+     *
+     * This can be used e.g. if you have the need to source config out of custom
+     * storages.
+     */
+    configLoader?: () => Promise<{ config: ConfigApi }>;
+
+    /**
+     * Applies one or more middleware on every extension, as they are added to
+     * the application.
+     *
+     * This is an advanced use case for modifying extension data on the fly as
+     * it gets emitted by extensions being instantiated.
+     */
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+
+    /**
+     * The element to render while loading the app (waiting for config, features, etc).
+     *
+     * This is the `<Progress />` component from `@backstage/core-components` by default.
+     * If set to `null` then no loading fallback element is rendered at all.
+     */
+    loadingElement?: ReactNode;
+
+    /**
+     * Allows for customizing how plugin info is retrieved.
+     */
+    pluginInfoResolver?: FrontendPluginInfoResolver;
+  };
 }
 
 /**
@@ -88,14 +111,14 @@ export interface CreateAppOptions {
 export function createApp(options?: CreateAppOptions): {
   createRoot(): JSX.Element;
 } {
-  let suspenseFallback = options?.loadingComponent;
+  let suspenseFallback = options?.advanced?.loadingElement;
   if (suspenseFallback === undefined) {
-    suspenseFallback = 'Loading...';
+    suspenseFallback = <Progress />;
   }
 
   async function appLoader() {
     const config =
-      (await options?.configLoader?.().then(c => c.config)) ??
+      (await options?.advanced?.configLoader?.().then(c => c.config)) ??
       ConfigReader.fromConfigs(
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
@@ -108,11 +131,16 @@ export function createApp(options?: CreateAppOptions): {
     });
 
     const app = createSpecializedApp({
-      config,
       features: [appPlugin, ...loadedFeatures],
+      config,
       bindRoutes: options?.bindRoutes,
-      extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
+      advanced: options?.advanced,
     });
+
+    const errorPage = maybeCreateErrorPage(app);
+    if (errorPage) {
+      return { default: () => errorPage };
+    }
 
     const rootEl = app.tree.root.instance!.getData(
       coreExtensionData.reactElement,
@@ -121,13 +149,14 @@ export function createApp(options?: CreateAppOptions): {
     return { default: () => rootEl };
   }
 
+  const LazyApp = lazy(appLoader);
+
   return {
     createRoot() {
-      const LazyApp = React.lazy(appLoader);
       return (
-        <React.Suspense fallback={suspenseFallback}>
+        <Suspense fallback={suspenseFallback}>
           <LazyApp />
-        </React.Suspense>
+        </Suspense>
       );
     },
   };

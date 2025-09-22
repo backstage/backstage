@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react';
+import { cloneElement, ReactElement } from 'react';
 
 // Shadow DOM support for the simple and complete DOM testing utilities
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
@@ -39,10 +39,12 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
 import {
+  catalogApiRef,
   EntityPresentationApi,
   entityPresentationApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -235,8 +237,19 @@ export class TechDocsAddonTester {
       }),
     };
 
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name: 'docs' },
+        },
+      ],
+    });
+
     const apis: TechdocsAddonTesterApis<any[]> = [
       [fetchApiRef, fetchApi],
+      [catalogApiRef, catalogApi],
       [entityPresentationApiRef, entityPresentationApi],
       [discoveryApiRef, discoveryApi],
       [techdocsApiRef, techdocsApi],
@@ -282,7 +295,7 @@ export class TechDocsAddonTester {
             >
               <TechDocsAddons>
                 {this.addons.map((addon, index) =>
-                  React.cloneElement(addon, { key: index }),
+                  cloneElement(addon, { key: index }),
                 )}
               </TechDocsAddons>
             </Route>

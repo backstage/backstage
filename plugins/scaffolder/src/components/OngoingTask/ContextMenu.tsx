@@ -21,19 +21,15 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
 import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import { useAsync } from '@react-hookz/web';
 import Cancel from '@material-ui/icons/Cancel';
 import Repeat from '@material-ui/icons/Repeat';
 import Replay from '@material-ui/icons/Replay';
 import Toc from '@material-ui/icons/Toc';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import MoreVert from '@material-ui/icons/MoreVert';
-import React, { useState } from 'react';
-import { useAnalytics, useApi } from '@backstage/core-plugin-api';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import { SyntheticEvent, useState } from 'react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
-  taskCancelPermission,
   taskReadPermission,
   taskCreatePermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -51,6 +47,8 @@ type ContextMenuProps = {
   onToggleLogs?: (state: boolean) => void;
   onToggleButtonBar?: (state: boolean) => void;
   taskId?: string;
+  isCancelButtonDisabled: boolean;
+  onCancel: () => void;
 };
 
 const useStyles = makeStyles<Theme, { fontColor: string }>(() => ({
@@ -75,24 +73,12 @@ export const ContextMenu = (props: ContextMenuProps) => {
   const { getPageTheme } = useTheme();
   const pageTheme = getPageTheme({ themeId: 'website' });
   const classes = useStyles({ fontColor: pageTheme.fontColor });
-  const scaffolderApi = useApi(scaffolderApiRef);
-  const analytics = useAnalytics();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const [{ status: cancelStatus }, { execute: cancel }] = useAsync(async () => {
-    if (taskId) {
-      analytics.captureEvent('cancelled', 'Template has been cancelled');
-      await scaffolderApi.cancelTask(taskId);
-    }
-  });
-
-  const { allowed: canCancelTask } = usePermission({
-    permission: taskCancelPermission,
-  });
-
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
+    resourceRef: taskId,
   });
 
   const { allowed: canCreateTask } = usePermission({
@@ -108,7 +94,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
         aria-label="more"
         aria-controls="long-menu"
         aria-haspopup="true"
-        onClick={(event: React.SyntheticEvent<HTMLButtonElement>) => {
+        onClick={(event: SyntheticEvent<HTMLButtonElement>) => {
           setAnchorEl(event.currentTarget);
         }}
         data-testid="menu-button"
@@ -171,12 +157,8 @@ export const ContextMenu = (props: ContextMenuProps) => {
             </MenuItem>
           )}
           <MenuItem
-            onClick={cancel}
-            disabled={
-              !cancelEnabled ||
-              cancelStatus !== 'not-executed' ||
-              !canCancelTask
-            }
+            onClick={props.onCancel}
+            disabled={props.isCancelButtonDisabled}
             data-testid="cancel-task"
           >
             <ListItemIcon>

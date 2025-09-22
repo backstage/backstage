@@ -17,7 +17,7 @@
 import { WidgetProps } from '@rjsf/utils';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import TextField from '@material-ui/core/TextField';
-import React, { useMemo, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
 
 /**
@@ -50,7 +50,7 @@ export const SecretWidget = (
     [setSecrets, name],
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
     onChange(Array(newValue.length).fill('*').join(''));

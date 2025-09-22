@@ -52,7 +52,7 @@ describe('authModuleBitbucketProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('bitbucket-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/bitbucket/handler',
       script: false,
       secure: false,
@@ -73,6 +73,7 @@ describe('authModuleBitbucketProvider', () => {
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({
       env: 'development',
       nonce: decodeURIComponent(nonceCookie.value),
+      scope: 'account',
     });
   });
 });
