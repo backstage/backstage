@@ -119,10 +119,10 @@ export type CatalogEnvironment = {
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
   permissionsRegistry?: PermissionsRegistryService;
-  scheduler?: SchedulerService;
+  scheduler: SchedulerService;
   auth: AuthService;
   httpAuth: HttpAuthService;
-  auditor?: AuditorService;
+  auditor: AuditorService;
 };
 
 /**

@@ -59,7 +59,7 @@ const stableStringifyArray = (arr: any[]) => {
 // is just one.
 export class DefaultCatalogProcessingEngine {
   private readonly config: Config;
-  private readonly scheduler?: SchedulerService;
+  private readonly scheduler: SchedulerService;
   private readonly logger: LoggerService;
   private readonly knex: Knex;
   private readonly processingDatabase: ProcessingDatabase;
@@ -79,7 +79,7 @@ export class DefaultCatalogProcessingEngine {
 
   constructor(options: {
     config: Config;
-    scheduler?: SchedulerService;
+    scheduler: SchedulerService;
     logger: LoggerService;
     knex: Knex;
     processingDatabase: ProcessingDatabase;
@@ -370,25 +370,17 @@ export class DefaultCatalogProcessingEngine {
       }
     };
 
-    if (this.scheduler) {
-      const abortController = new AbortController();
+    const abortController = new AbortController();
+    this.scheduler.scheduleTask({
+      id: 'catalog_orphan_cleanup',
+      frequency: { milliseconds: this.orphanCleanupIntervalMs },
+      timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
+      fn: runOnce,
+      signal: abortController.signal,
+    });
 
-      this.scheduler.scheduleTask({
-        id: 'catalog_orphan_cleanup',
-        frequency: { milliseconds: this.orphanCleanupIntervalMs },
-        timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
-        fn: runOnce,
-        signal: abortController.signal,
-      });
-
-      return () => {
-        abortController.abort();
-      };
-    }
-
-    const intervalKey = setInterval(runOnce, this.orphanCleanupIntervalMs);
     return () => {
-      clearInterval(intervalKey);
+      abortController.abort();
     };
   }
 }

@@ -296,6 +296,7 @@ class TestHarness {
       knex: options.db,
       orchestrator,
       stitcher,
+      scheduler: mockServices.scheduler(),
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 50,
       onProcessingError: event => {
