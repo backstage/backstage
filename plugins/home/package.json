@@ -83,6 +83,8 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-defaults": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",

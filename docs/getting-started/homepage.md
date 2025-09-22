@@ -24,7 +24,83 @@ Before we begin, make sure
 
 Now, let's get started by installing the home plugin and creating a simple homepage for your Backstage app.
 
-### Setup homepage
+## Setup Methods
+
+There are two ways to set up the home plugin, depending on which frontend system your Backstage app uses:
+
+1. **New Frontend System (Recommended)** - For apps using the new plugin system with extensions and blueprints
+2. **Legacy Frontend System** - For existing apps using the legacy plugin architecture
+
+### New Frontend System Setup
+
+If your Backstage app uses the [new frontend system](../frontend-system/index.md), follow these steps:
+
+#### 1. Install the plugin
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/app add @backstage/plugin-home
+```
+
+#### 2. Add the plugin to your app configuration
+
+Update your `packages/app/src/app.tsx` to include the home plugin:
+
+```tsx title="packages/app/src/app.tsx"
+import homePlugin from '@backstage/plugin-home/alpha';
+
+const app = createApp({
+  features: [
+    // ... other plugins
+    homePlugin,
+  ],
+});
+```
+
+#### 3. Configure the homepage as your root route
+
+By default, the homepage will be available at `/home`. To make it your app's landing page at `/`, add this configuration to your `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:home:
+        config:
+          path: /
+```
+
+The plugin will automatically add a "Home" navigation item to your sidebar and provide a basic homepage layout.
+
+#### 4. Optional: Enable visit tracking
+
+Visit tracking is an optional feature that allows users to see their recently visited and most visited pages on the homepage. This feature is **disabled by default** to give you control over what data is collected and stored.
+
+Visit tracking requires a storage implementation to persist user data:
+
+- **With UserSettings storage** (recommended): If you have the [UserSettings plugin](https://backstage.io/docs/features/software-catalog/external-integrations/#user-settings) configured with persistent storage, visit data will be stored there and synchronized across devices.
+- **Fallback to local storage**: If no persistent storage is available, the plugin will automatically fall back to browser local storage, which stores data locally per device.
+
+To enable visit tracking, add this configuration to your `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - api:home/visits: true
+    - app-root-element:home/visit-listener: true
+```
+
+#### 5. Customizing your homepage
+
+The New Frontend System provides powerful customization options:
+
+**Custom Homepage Layouts**: Use the `HomepageBlueprint` to create custom homepage layouts with your own design and widget arrangements.
+
+**Adding Homepage Widgets**: Register custom widgets using the `HomepageWidgetBlueprint` from the `@backstage/plugin-home-react/alpha` package.
+
+For detailed instructions on creating custom layouts, registering widgets, and advanced configuration options, see the [Home plugin documentation](https://github.com/backstage/backstage/tree/master/plugins/home#readme).
+
+### Legacy Frontend System Setup
+
+If your Backstage app uses the legacy frontend system, follow these steps:
 
 #### 1. Install the plugin
 

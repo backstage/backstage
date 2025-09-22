@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
+/**
+ * The home plugin for Backstage's new frontend system.
+ *
+ * @remarks
+ * This package provides the new frontend system implementation of the home plugin,
+ * which offers customizable home pages with widget support and optional visit tracking.
+ *
+ * @packageDocumentation
+ */
+
 import {
   coreExtensionData,
-  createExtensionDataRef,
   createExtensionInput,
   PageBlueprint,
+  NavItemBlueprint,
   createFrontendPlugin,
   createRouteRef,
   AppRootElementBlueprint,
   identityApiRef,
   storageApiRef,
+  errorApiRef,
   ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { VisitListener } from './components/';
-import { visitsApiRef, VisitsStorageApi } from './api';
+import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
+import { titleExtensionDataRef } from '@backstage/plugin-home-react/alpha';
+import HomeIcon from '@material-ui/icons/Home';
 
 const rootRouteRef = createRouteRef();
-
-/**
- * @alpha
- */
-export const titleExtensionDataRef = createExtensionDataRef<string>().with({
-  id: 'title',
-});
 
 const homePage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -68,6 +74,7 @@ const homePage = PageBlueprint.makeWithOverrides({
 
 const visitListenerAppRootElement = AppRootElementBlueprint.make({
   name: 'visit-listener',
+  disabled: true,
   params: {
     element: <VisitListener />,
   },
@@ -75,28 +82,58 @@ const visitListenerAppRootElement = AppRootElementBlueprint.make({
 
 const visitsApi = ApiBlueprint.make({
   name: 'visits',
+  disabled: true,
   params: defineParams =>
     defineParams({
       api: visitsApiRef,
       deps: {
         storageApi: storageApiRef,
         identityApi: identityApiRef,
+        errorApi: errorApiRef,
       },
-      factory: ({ storageApi, identityApi }) =>
-        VisitsStorageApi.create({ storageApi, identityApi }),
+      factory: ({ storageApi, identityApi, errorApi }) => {
+        // Smart fallback: use custom storage API if available, otherwise localStorage
+        if (storageApi) {
+          return VisitsStorageApi.create({ storageApi, identityApi });
+        }
+        return VisitsWebStorageApi.create({ identityApi, errorApi });
+      },
     }),
 });
 
+const homeNavItem = NavItemBlueprint.make({
+  params: {
+    title: 'Home',
+    routeRef: rootRouteRef,
+    icon: HomeIcon,
+  },
+});
+
 /**
+ * Home plugin for the new frontend system.
+ *
+ * Provides core homepage functionality with optional visit tracking extensions.
+ * Visit tracking extensions are disabled by default and can be enabled via app-config.yaml.
+ *
  * @alpha
  */
 export default createFrontendPlugin({
   pluginId: 'home',
   info: { packageJson: () => import('../package.json') },
-  extensions: [homePage, visitsApi, visitListenerAppRootElement],
+  extensions: [homePage, homeNavItem, visitsApi, visitListenerAppRootElement],
   routes: {
     root: rootRouteRef,
   },
 });
 
 export { homeTranslationRef } from './translation';
+export {
+  HomepageBlueprint,
+  type HomepageBlueprintParams,
+  type HomepageTemplateProps,
+  type HomepageGridProps,
+} from './alpha/HomepageBlueprint';
+export {
+  type LayoutConfiguration,
+  type Breakpoint,
+} from './components/CustomHomepage/types';
