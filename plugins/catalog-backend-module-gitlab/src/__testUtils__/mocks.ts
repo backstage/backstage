@@ -909,6 +909,28 @@ export const config_groupPatterns_duplicate_match = {
   },
 };
 
+export const config_prefer_id_over_namespacedPath = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          preferIdOverNamespacedPath: true,
+        },
+      },
+    },
+  },
+};
+
 /**
  * GitLab API responses
  */
