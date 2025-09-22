@@ -18,9 +18,8 @@ import { createApp } from '@backstage/frontend-defaults';
 import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
-import homePlugin, {
-  titleExtensionDataRef,
-} from '@backstage/plugin-home/alpha';
+import homePlugin from '@backstage/plugin-home/alpha';
+import { titleExtensionDataRef } from '@backstage/plugin-home-react/alpha';
 
 import {
   coreExtensionData,

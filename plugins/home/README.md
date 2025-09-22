@@ -4,7 +4,7 @@ The Home plugin introduces a system for composing a Home Page for Backstage in o
 
 For App Integrators, the system is designed to be composable to give total freedom in designing a Home Page that suits the needs of the organization. From the perspective of a Component Developer who wishes to contribute with building blocks to be included in Home Pages, there's a convenient interface for bundling the different parts and exporting them with both error boundary and lazy loading handled under the surface.
 
-## Getting started
+## Installation
 
 If you have a standalone app (you didn't clone this repo), then do
 
@@ -12,6 +12,144 @@ If you have a standalone app (you didn't clone this repo), then do
 # From your Backstage root directory
 yarn --cwd packages/app add @backstage/plugin-home
 ```
+
+## Getting started
+
+The home plugin supports both the new frontend system and the legacy system.
+
+### New Frontend System
+
+If you're using Backstage's new frontend system, add the plugin to your app:
+
+```ts
+// packages/app/src/App.tsx
+import homePlugin from '@backstage/plugin-home/alpha';
+
+const app = createApp({
+  features: [
+    // ... other plugins
+    homePlugin,
+    // ... other plugins
+  ],
+});
+```
+
+The plugin will automatically provide:
+
+- A homepage at `/home` with customizable widget grid
+- A "Home" navigation item in the sidebar
+
+#### Creating Custom Homepage Layouts
+
+Use the `HomepageBlueprint` to create custom homepage layouts:
+
+```ts
+import { HomepageBlueprint } from '@backstage/plugin-home/alpha';
+import { Content, Header, Page } from '@backstage/core-components';
+
+const myHomePage = HomepageBlueprint.make({
+  params: {
+    title: 'My Custom Home',
+    render: ({ grid }) => (
+      <Page themeId="home">
+        <Header title="Welcome" />
+        <Content>{grid}</Content>
+      </Page>
+    ),
+  },
+});
+```
+
+#### Visit Tracking (Optional)
+
+Visit tracking is an **optional feature** that must be explicitly enabled. When enabled, it provides intelligent storage fallbacks:
+
+**Enabling Visit Tracking:**
+
+Add the following to your `app-config.yaml`:
+
+```yaml
+app:
+  extensions:
+    # Enable visit tracking API (disabled by default)
+    - api:home/visits: true
+    # Enable visit listener (disabled by default)
+    - app-root-element:home/visit-listener: true
+```
+
+**Storage Strategy (when enabled):**
+
+1. **Custom Storage API**: If you have `storageApiRef` configured (like database-backed `UserSettingsStorage`), visit data uses your custom storage
+2. **Browser Local Storage Fallback**: If no custom storage is configured, automatically falls back to browser local storage
+
+**Note**: Visit tracking extensions are disabled by default to give users control over data collection and storage.
+
+## Creating Homepage Widgets
+
+Homepage widgets are React components that can be added to customizable home pages. The **key difference** between the new frontend system and legacy system is how these widget components are **registered and exported**:
+
+- **New Frontend System**: Use `HomepageWidgetBlueprint` to register widgets as extensions
+- **Legacy System**: Use `createCardExtension` to export widgets as card components
+
+### New Frontend System
+
+Create widgets using the `HomepageWidgetBlueprint`:
+
+```ts
+import { HomepageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
+
+const myWidget = HomepageWidgetBlueprint.make({
+  name: 'my-widget',
+  params: {
+    name: 'MyWidget',
+    title: 'My Custom Widget',
+    description: 'A custom widget for the homepage',
+    components: () =>
+      import('./MyWidgetComponent').then(m => ({
+        Content: m.Content,
+      })),
+    layout: {
+      height: { minRows: 4 },
+      width: { minColumns: 3 },
+    },
+    settings: {
+      schema: {
+        title: 'Widget Settings',
+        type: 'object',
+        properties: {
+          color: {
+            title: 'Color',
+            type: 'string',
+            default: 'blue',
+            enum: ['blue', 'red', 'green'],
+          },
+        },
+      },
+    },
+  },
+});
+```
+
+> **Example**: See [dev/index.tsx](dev/index.tsx) for a comprehensive example of creating multiple homepage widgets and layouts using the new frontend system.
+
+### Legacy System - Widget Registration
+
+In the legacy system, use the `createCardExtension` helper to create homepage widgets:
+
+```tsx
+import { createCardExtension } from '@backstage/plugin-home-react';
+
+export const MyWidget = homePlugin.provide(
+  createCardExtension<{ defaultCategory?: 'programming' | 'any' }>({
+    title: 'My Custom Widget',
+    components: () => import('./homePageComponents/MyWidget'),
+  }),
+);
+```
+
+The `createCardExtension` provides error boundary and lazy loading, and accepts generics for custom props that App Integrators can configure.
+
+## Legacy System Setup
 
 ### Setting up the Home Page
 
@@ -40,28 +178,13 @@ import { homePage } from './components/home/HomePage';
 // ...
 ```
 
-### Creating Components
+### Creating Components (Legacy)
 
-The Home Page can be composed with regular React components, so there's no magic in creating components to be used for composition 🪄 🎩 . However, in order to assure that your component fits into a diverse set of Home Pages, there's an extension creator for this purpose, that creates a Card-based layout, for consistency between components (read more about extensions [here](https://backstage.io/docs/plugins/composability#extensions)). The extension creator requires two fields: `title` and `components`. The `components` field is expected to be an asynchronous import that should at least contain a `Content` field. Additionally, you can optionally provide `settings`, `actions` and `contextProvider` as well. These parts will be combined to create a card, where the `content`, `actions` and `settings` will be wrapped within the `contextProvider` in order to be able to access to context and effectively communicate with one another.
+In the legacy system, homepage components can be regular React components or wrapped with `createCardExtension` for additional features like error boundaries and lazy loading. Components created with `createCardExtension` are exported as card components that can be composed into homepage layouts.
 
-Finally, the `createCardExtension` also accepts a generic, such that Component Developers can indicate to App Integrators what custom props their component will accept, such as the example below where the default category of the random jokes can be set.
+### Composing a Home Page (Legacy)
 
-```tsx
-import { createCardExtension } from '@backstage/plugin-home-react';
-
-export const RandomJokeHomePageComponent = homePlugin.provide(
-  createCardExtension<{ defaultCategory?: 'programming' | 'any' }>({
-    title: 'Random Joke',
-    components: () => import('./homePageComponents/RandomJoke'),
-  }),
-);
-```
-
-In summary: it is not necessary to use the `createCardExtension` extension creator to register a home page component, although it is convenient since it provides error boundary and lazy loading, and it also may hook into other functionality in the future.
-
-### Composing a Home Page
-
-Composing a Home Page is no different from creating a regular React Component, i.e. the App Integrator is free to include whatever content they like. However, there are components developed with the Home Page in mind, as described in the previous section. If created by the `createCardExtension` extension creator, they are rendered like so
+In the legacy system, composing a Home Page is done by creating regular React components. Components created with `createCardExtension` are rendered like so:
 
 ```tsx
 import Grid from '@material-ui/core/Grid';
@@ -293,7 +416,7 @@ export const apis: AnyApiFactory[] = [
       VisitsStorageApi.create({ storageApi, identityApi }),
   }),
 
-  // Or a localStorage data implementation, relies on WebStorage implementation of storageApi
+  // Or a local storage data implementation, relies on WebStorage implementation of storageApi
   createApiFactory({
     api: visitsApiRef,
     deps: {

@@ -7,16 +7,24 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { CSSProperties } from 'react';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @public
+export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+// @alpha
 const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
@@ -47,6 +55,27 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         element: JSX.Element;
+      };
+    }>;
+    'nav-item:home': OverridableExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
       };
     }>;
     'page:home': OverridableExtensionDefinition<{
@@ -102,7 +131,64 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha
+export const HomepageBlueprint: ExtensionBlueprint<{
+  kind: 'home-page';
+  params: HomepageBlueprintParams;
+  output:
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
+        string,
+        'title',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {
+    widgets: ExtensionInput<
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {
+        singleton: false;
+        optional: false;
+      }
+    >;
+  };
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
+// @alpha
+export interface HomepageBlueprintParams {
+  grid?: Omit<HomepageGridProps, 'children'>;
+  render?: (props: HomepageTemplateProps) => ReactElement;
+  title?: string;
+}
+
+// @public
+export type HomepageGridProps = {
+  children?: ReactNode;
+  config?: LayoutConfiguration[];
+  title?: string;
+  rowHeight?: number;
+  breakpoints?: Record<Breakpoint, number>;
+  cols?: Record<Breakpoint, number>;
+  containerPadding?: [number, number] | Record<Breakpoint, [number, number]>;
+  containerMargin?: [number, number] | Record<Breakpoint, [number, number]>;
+  maxRows?: number;
+  style?: CSSProperties;
+  compactType?: 'vertical' | 'horizontal' | null;
+  allowOverlap?: boolean;
+  preventCollision?: boolean;
+};
+
+// @alpha
+export interface HomepageTemplateProps {
+  grid: ReactElement;
+  widgets: ReactNode[];
+}
+
+// @alpha
 export const homeTranslationRef: TranslationRef<
   'home',
   {
@@ -135,12 +221,17 @@ export const homeTranslationRef: TranslationRef<
   }
 >;
 
-// @alpha (undocumented)
-export const titleExtensionDataRef: ConfigurableExtensionDataRef<
-  string,
-  'title',
-  {}
->;
+// @public
+export type LayoutConfiguration = {
+  component: ReactElement | string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  movable?: boolean;
+  deletable?: boolean;
+  resizable?: boolean;
+};
 
 // (No @packageDocumentation comment for this package)
 ```
