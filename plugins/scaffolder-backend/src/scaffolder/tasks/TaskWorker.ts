@@ -31,6 +31,7 @@ import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
+import { DistributedActionRegistry } from '../actions/DistributedActionRegistry.ts';
 
 const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
@@ -60,6 +61,7 @@ export type TaskWorkerOptions = {
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
+  distributedActionRegistry?: DistributedActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: LoggerService;
@@ -117,6 +119,7 @@ export class TaskWorker {
       auditor,
       config,
       actionRegistry,
+      distributedActionRegistry,
       integrations,
       workingDirectory,
       additionalTemplateFilters,
@@ -128,6 +131,7 @@ export class TaskWorker {
 
     const workflowRunner = new NunjucksWorkflowRunner({
       actionRegistry,
+      distributedActionRegistry,
       integrations,
       logger,
       auditor,

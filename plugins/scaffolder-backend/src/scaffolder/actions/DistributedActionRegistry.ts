@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export * from './builtin';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
-export { TemplateActionRegistry } from './TemplateActionRegistry';
-export { type DistributedActionRegistry } from './DistributedActionRegistry';
+/**
+ * DistributedActionRegistry is responsible for aggregating both built-in and
+ * remotely registered actions into a single registry that can be used by the
+ * Scaffolder.
+ * @public
+ */
+export interface DistributedActionRegistry {
+  list(): Promise<Map<string, TemplateAction<any, any, any>>>;
+}

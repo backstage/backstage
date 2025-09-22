@@ -61,13 +61,15 @@ import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { convertFiltersToRecord } from '../../util/templating';
 import {
-  CheckpointState,
   CheckpointContext,
+  CheckpointState,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { DistributedActionRegistry } from '../actions/DistributedActionRegistry.ts';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
   actionRegistry: TemplateActionRegistry;
+  distributedActionRegistry?: DistributedActionRegistry;
   integrations: ScmIntegrations;
   logger: LoggerService;
   auditor?: AuditorService;
@@ -244,8 +246,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         await stepTrack.skipFalsy();
         return;
       }
-      const action: TemplateAction<JsonObject> =
-        this.options.actionRegistry.get(step.action);
+      const action: TemplateAction<JsonObject> | undefined = this.options
+        .distributedActionRegistry
+        ? (await this.options.distributedActionRegistry.list()).get(step.action)
+        : this.options.actionRegistry.get(step.action);
+      if (!action) {
+        throw new Error(`Action ${step.action} not found`);
+      }
+
       const { taskLogger } = createStepLogger({
         task,
         step,

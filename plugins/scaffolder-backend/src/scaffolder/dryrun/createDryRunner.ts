@@ -44,6 +44,7 @@ import { v4 as uuid } from 'uuid';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
+import { DistributedActionRegistry } from '../actions/DistributedActionRegistry.ts';
 
 interface DryRunInput {
   spec: TaskSpec;
@@ -75,6 +76,7 @@ export type TemplateTesterCreateOptions = {
   auditor?: AuditorService;
   integrations: ScmIntegrations;
   actionRegistry: TemplateActionRegistry;
+  distributedActionRegistry?: DistributedActionRegistry;
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
