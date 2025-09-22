@@ -15,6 +15,7 @@
  */
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  * DistributedActionRegistry is responsible for aggregating both built-in and
@@ -23,5 +24,7 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
  * @public
  */
 export interface DistributedActionRegistry {
-  list(): Promise<Map<string, TemplateAction<any, any, any>>>;
+  list(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<Map<string, TemplateAction<any, any, any>>>;
 }

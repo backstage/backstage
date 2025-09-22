@@ -15,7 +15,10 @@
  */
 
 import { TemplateActionRegistry } from './TemplateActionRegistry';
-import { AuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Schema } from 'jsonschema';
@@ -38,7 +41,9 @@ export class DefaultDistributedActionRegistry
     private readonly auth: AuthService,
   ) {}
 
-  async list(): Promise<Map<string, TemplateAction<any, any, any>>> {
+  async list(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<Map<string, TemplateAction<any, any, any>>> {
     const ret = new Map<string, TemplateAction<any, any, any>>();
 
     const builtinActions = this.registry.list();
@@ -50,7 +55,8 @@ export class DefaultDistributedActionRegistry
     }
 
     const { actions } = await this.actionsRegistry.list({
-      credentials: await this.auth.getOwnServiceCredentials(),
+      credentials:
+        options?.credentials ?? (await this.auth.getOwnServiceCredentials()),
     });
 
     const distributedActions: TemplateAction<any, any, any>[] = actions.map(

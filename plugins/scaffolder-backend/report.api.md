@@ -399,7 +399,9 @@ export type DatabaseTaskStoreOptions = {
 // @public
 export interface DistributedActionRegistry {
   // (undocumented)
-  list(): Promise<Map<string, TemplateAction<any, any, any>>>;
+  list(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<Map<string, TemplateAction<any, any, any>>>;
 }
 
 // @public

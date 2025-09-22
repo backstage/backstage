@@ -446,10 +446,13 @@ export async function createRouter(
         eventId: 'action-fetch',
         request: req,
       });
+      const credentials = await httpAuth.credentials(req, {
+        allow: ['user', 'service'],
+      });
 
       try {
         const list = Array.from(
-          (await distributedActionRegistry.list()).values(),
+          (await distributedActionRegistry.list({ credentials })).values(),
         );
         const actionsList = list
           .map(action => {
