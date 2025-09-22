@@ -279,7 +279,60 @@ export class AwsS3Publish implements PublisherBase {
       };
     }
   }
+  private async uploadFileWithRetry(
+    params: PutObjectCommandInput,
+    maxRetries: number = 3,
+  ): Promise<void> {
+    // Optimise multipart upload configuration
+    const uploadConfig = {
+      partSize: 10 * 1024 * 1024,
+      queueSize: 3,
+    };
 
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      let upload: Upload | undefined;
+      try {
+        if (typeof params.Body === 'string' && fs.existsSync(params.Body)) {
+          params.Body = fs.createReadStream(params.Body);
+        }
+
+        upload = new Upload({
+          client: this.storageClient,
+          params,
+          ...uploadConfig,
+        });
+
+        await upload.done();
+        return;
+      } catch (error) {
+        this.logger.warn(
+          `Upload Attempt ${attempt}/${maxRetries} failed for ${params.Key}: ${error}`,
+        );
+
+        // Clean Up failed multipart upload
+        if (upload) {
+          try {
+            await upload.abort();
+            this.logger.debug(`Aborted multipart upload for ${params.Key}`);
+          } catch (abortError) {
+            this.logger.debug(
+              `Failed to abort multipart upload: ${abortError}`,
+            );
+          }
+        }
+        if (attempt === maxRetries) {
+          throw new Error(
+            `Failed to upload ${params.Key} after ${maxRetries} attempts`,
+          );
+        }
+        // Exponential backoff before retrying
+        const baseDelay = Math.pow(2, attempt) * 1000;
+        const jitter = Math.random() * 1000;
+        const delay = Math.min(baseDelay + jitter, 10000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
   /**
    * Upload all the files from the generated `directory` to the S3 bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
@@ -323,27 +376,21 @@ export class AwsS3Publish implements PublisherBase {
       await bulkStorageOperation(
         async absoluteFilePath => {
           const relativeFilePath = path.relative(directory, absoluteFilePath);
-          const fileStream = fs.createReadStream(absoluteFilePath);
-
+          const s3Key = getCloudPathForLocalPath(
+            entity,
+            relativeFilePath,
+            useLegacyPathCasing,
+            bucketRootPath,
+          );
           const params: PutObjectCommandInput = {
             Bucket: this.bucketName,
-            Key: getCloudPathForLocalPath(
-              entity,
-              relativeFilePath,
-              useLegacyPathCasing,
-              bucketRootPath,
-            ),
-            Body: fileStream,
+            Key: s3Key,
+            Body: absoluteFilePath,
             ...(sse && { ServerSideEncryption: sse }),
           };
 
-          objects.push(params.Key!);
-
-          const upload = new Upload({
-            client: this.storageClient,
-            params,
-          });
-          return upload.done();
+          objects.push(s3Key);
+          return await this.uploadFileWithRetry(params);
         },
         absoluteFilesToUpload,
         { concurrencyLimit: 10 },
