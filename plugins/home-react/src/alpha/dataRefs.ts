@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTranslationRef } from '@backstage/frontend-plugin-api';
+
+import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
 
 /**
- * Translation reference for the home-react plugin.
- * Contains localized text strings for home page components and settings modals.
+ * Title data supplied to the home page extension when composing via the new frontend system.
  *
  * @alpha
  */
-export const homeReactTranslationRef = createTranslationRef({
-  id: 'home-react',
-  messages: {
-    settingsModal: {
-      title: 'Settings',
-      closeButtonTitle: 'Close',
-    },
-    cardExtension: {
-      settingsButtonTitle: 'Settings',
-    },
-  },
+export const titleExtensionDataRef = createExtensionDataRef<string>().with({
+  id: 'title',
 });
