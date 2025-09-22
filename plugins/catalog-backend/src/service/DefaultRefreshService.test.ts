@@ -121,6 +121,7 @@ describe('DefaultRefreshService', () => {
       processingDatabase: db,
       knex: knex,
       stitcher: stitcher,
+      scheduler: mockServices.scheduler(),
       orchestrator: {
         async process(request: EntityProcessingRequest) {
           const entityRef = stringifyEntityRef(request.entity);
