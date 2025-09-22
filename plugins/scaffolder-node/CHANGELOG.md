@@ -1,5 +1,293 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-common@1.7.1
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-common@1.7.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.7.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.11.0-next.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.1
+
+## 0.10.0
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/integration@1.17.1
+  - @backstage/plugin-scaffolder-common@1.6.0
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.10.0-next.2
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.6.0-next.1
+
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.9.0
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The legacy methods to define `createTemplateActions` have been replaced with the new native `zod` approaches for defining input and output schemas.
+
+  You can migrate actions that look like the following with the below examples:
+
+  ```ts
+  // really old legacy json schema
+  createTemplateAction<{ repoUrl: string }, { repoOutput: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object'
+        required: ['repoUrl']
+        properties: {
+          repoUrl: {
+            type: 'string',
+            description: 'repository url description'
+          }
+        }
+      }
+    }
+  });
+
+  // old zod method
+  createTemplateAction({
+    id: 'test'
+    schema: {
+      input: {
+        repoUrl: z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // new method:
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: z => z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // or for more complex zod types like unions
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z => z.object({
+        repoUrl: z.string({ description: 'repository url description' })
+      })
+    }
+  })
+  ```
+
+  This breaking change also means that `logStream` has been removed entirely from `ActionsContext`, and that the `logger` is now just a `LoggerService` implementation instead. There is no replacement for the `logStream`, if you wish to still keep using a `logStream` we recommend that you create your own stream that writes to `ctx.logger` instead.
+
+### Patch Changes
+
+- e89d7b6: Use `LoggerService` instead of `Logger`. This is a non-breaking change, as the `LoggerService` is a subset of the `Logger` interface.
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The legacy methods to define `createTemplateActions` have been replaced with the new native `zod` approaches for defining input and output schemas.
+
+  You can migrate actions that look like the following with the below examples:
+
+  ```ts
+  // really old legacy json schema
+  createTemplateAction<{ repoUrl: string }, { repoOutput: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object'
+        required: ['repoUrl']
+        properties: {
+          repoUrl: {
+            type: 'string',
+            description: 'repository url description'
+          }
+        }
+      }
+    }
+  });
+
+  // old zod method
+  createTemplateAction({
+    id: 'test'
+    schema: {
+      input: {
+        repoUrl: z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // new method:
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: z => z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // or for more complex zod types like unions
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z => z.object({
+        repoUrl: z.string({ description: 'repository url description' })
+      })
+    }
+  })
+  ```
+
+  This breaking change also means that `logStream` has been removed entirely from `ActionsContext`, and that the `logger` is now just a `LoggerService` implementation instead. There is no replacement for the `logStream`, if you wish to still keep using a `logStream` we recommend that you create your own stream that writes to `ctx.logger` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- e89d7b6: Use `LoggerService` instead of `Logger`. This is a non-breaking change, as the `LoggerService` is a subset of the `Logger` interface.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.3-next.0
+
+### Patch Changes
+
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- 16e2e9c: trim leading and trailing slashes from parseRepoUrl query parameters
+- 72d019d: Removed various typos
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
 ## 0.8.2-next.3
 
 ### Patch Changes

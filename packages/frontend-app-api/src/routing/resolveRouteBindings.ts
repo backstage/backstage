@@ -20,6 +20,7 @@ import {
   ExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { RouteRefsById } from './collectRouteIds';
+import { ErrorCollector } from '../wiring/createErrorCollector';
 import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -80,6 +81,7 @@ export function resolveRouteBindings(
   bindRoutes: ((context: { bind: CreateAppRouteBinder }) => void) | undefined,
   config: Config,
   routesById: RouteRefsById,
+  collector: ErrorCollector,
 ): Map<ExternalRouteRef, RouteRef | SubRouteRef> {
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
   const disabledExternalRefs = new Set<ExternalRouteRef>();
@@ -93,7 +95,12 @@ export function resolveRouteBindings(
       for (const [key, value] of Object.entries(targetRoutes)) {
         const externalRoute = externalRoutes[key];
         if (!externalRoute) {
-          throw new Error(`Key ${key} is not an existing external route`);
+          collector.report({
+            code: 'ROUTE_NOT_FOUND',
+            message: `Key ${key} is not an existing external route`,
+            context: { routeId: String(key) },
+          });
+          continue;
         }
         if (value) {
           result.set(externalRoute, value);
@@ -112,16 +119,22 @@ export function resolveRouteBindings(
   if (bindings) {
     for (const [externalRefId, targetRefId] of Object.entries(bindings)) {
       if (!isValidTargetRefId(targetRefId)) {
-        throw new Error(
-          `Invalid config at app.routes.bindings['${externalRefId}'], value must be a non-empty string or false`,
-        );
+        collector.report({
+          code: 'ROUTE_BINDING_INVALID_VALUE',
+          message: `Invalid config at app.routes.bindings['${externalRefId}'], value must be a non-empty string or false`,
+          context: { routeId: externalRefId },
+        });
+        continue;
       }
 
       const externalRef = routesById.externalRoutes.get(externalRefId);
       if (!externalRef) {
-        throw new Error(
-          `Invalid config at app.routes.bindings, '${externalRefId}' is not a valid external route`,
-        );
+        collector.report({
+          code: 'ROUTE_NOT_FOUND',
+          message: `Invalid config at app.routes.bindings, '${externalRefId}' is not a valid external route`,
+          context: { routeId: externalRefId },
+        });
+        continue;
       }
 
       // Skip if binding was already defined in code
@@ -134,9 +147,14 @@ export function resolveRouteBindings(
       } else {
         const targetRef = routesById.routes.get(targetRefId);
         if (!targetRef) {
-          throw new Error(
-            `Invalid config at app.routes.bindings['${externalRefId}'], '${targetRefId}' is not a valid route`,
-          );
+          collector.report({
+            code: 'ROUTE_NOT_FOUND',
+            message: `Invalid config at app.routes.bindings['${externalRefId}'], '${String(
+              targetRefId,
+            )}' is not a valid route`,
+            context: { routeId: String(targetRefId) },
+          });
+          continue;
         }
 
         result.set(externalRef, targetRef);

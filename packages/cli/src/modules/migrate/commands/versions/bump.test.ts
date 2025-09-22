@@ -772,6 +772,7 @@ describe('bump', () => {
           res(
             ctx.status(200),
             ctx.json({
+              releaseVersion: '1.0.0',
               packages: [],
             }),
           ),
@@ -797,7 +798,7 @@ describe('bump', () => {
       'bumping @backstage-extra/custom in b to ^1.1.0',
       'bumping @backstage-extra/custom-two in b to ^2.0.0',
       'bumping @backstage/theme in b to ^2.0.0',
-      'Skipping backstage.json update as custom pattern is used',
+      'Your project is now at version 1.0.0, which has been written to backstage.json',
       'Running yarn install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',

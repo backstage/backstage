@@ -431,6 +431,7 @@ export const TechDocsReaderPageContent: (
 // @public
 export type TechDocsReaderPageContentProps = {
   entityRef?: CompoundEntityRef;
+  defaultPath?: string;
   withSearch?: boolean;
   searchResultUrlMapper?: (url: string) => string;
   onReady?: () => void;

@@ -18,6 +18,7 @@ import {
   AuditorService,
   AuthService,
   BackstageCredentials,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -28,38 +29,28 @@ import {
   TaskBrokerDispatchOptions,
   TaskCompletionState,
   TaskContext,
+  TaskFilters,
   TaskSecrets,
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
-import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import {
-  JsonObject,
-  JsonValue,
-  Observable,
-  createDeferred,
-} from '@backstage/types';
-import { Logger } from 'winston';
+  CheckpointState,
+  WorkspaceProvider,
+  UpdateTaskCheckpointOptions,
+} from '@backstage/plugin-scaffolder-node/alpha';
+import { JsonObject, Observable, createDeferred } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
 import { InternalTaskSecrets, TaskStore } from './types';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 type TaskState = {
-  checkpoints: {
-    [key: string]:
-      | {
-          status: 'failed';
-          reason: string;
-        }
-      | {
-          status: 'success';
-          value: JsonValue;
-        };
-  };
+  checkpoints: CheckpointState;
 };
 /**
  * TaskManager
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export class TaskManager implements TaskContext {
@@ -71,7 +62,7 @@ export class TaskManager implements TaskContext {
     task: CurrentClaimedTask,
     storage: TaskStore,
     abortSignal: AbortSignal,
-    logger: Logger,
+    logger: LoggerService,
     auth?: AuthService,
     config?: Config,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
@@ -100,10 +91,14 @@ export class TaskManager implements TaskContext {
     private readonly task: CurrentClaimedTask,
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly workspaceService: WorkspaceService,
     private readonly auth?: AuthService,
   ) {}
+
+  get taskId() {
+    return this.task.taskId;
+  }
 
   get spec() {
     return this.task.spec;
@@ -152,20 +147,9 @@ export class TaskManager implements TaskContext {
     return this.storage.getTaskState?.({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void> {
+  async updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void> {
     const { key, ...value } = options;
+
     if (this.task.state) {
       (this.task.state as TaskState).checkpoints[key] = value;
     } else {
@@ -269,7 +253,7 @@ export interface CurrentClaimedTask {
 export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly config?: Config,
     private readonly auth?: AuthService,
     private readonly additionalWorkspaceProviders?: Record<
@@ -291,6 +275,7 @@ export class StorageTaskBroker implements TaskBroker {
       offset?: number;
     };
     order?: { order: 'asc' | 'desc'; field: string }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }> {
     if (!this.storage.list) {
       throw new Error(

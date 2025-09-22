@@ -28,3 +28,4 @@ export {
   type EntityContextMenuItemParams,
   type UseProps,
 } from './EntityContextMenuItemBlueprint';
+export { EntityIconLinkBlueprint } from './EntityIconLinkBlueprint';

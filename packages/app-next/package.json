@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.23-next.3",
+  "version": "0.0.27",
   "backstage": {
     "role": "frontend"
   },
@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
-    "@backstage/canon": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -50,6 +49,7 @@
     "@backstage/plugin-api-docs": "workspace:^",
     "@backstage/plugin-app": "workspace:^",
     "@backstage/plugin-app-visualizer": "workspace:^",
+    "@backstage/plugin-auth": "workspace:^",
     "@backstage/plugin-auth-react": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
@@ -74,6 +74,7 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",

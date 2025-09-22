@@ -19,7 +19,15 @@ import type {
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
 import { z } from 'zod';
-import { NoInfer } from './integration/util';
+
+/**
+ * Prevent use of type parameter from contributing to type inference.
+ *
+ * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
+ *
+ * @ignore
+ */
+export type NoInfer<T> = T extends infer S ? S : never;
 
 /**
  * A conditional rule that can be provided in an

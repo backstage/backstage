@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.38-next.3",
+  "version": "0.0.42",
   "backstage": {
     "role": "backend"
   },
@@ -37,6 +37,7 @@
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^",
+    "@backstage/plugin-auth-backend-module-openshift-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^",
@@ -47,6 +48,7 @@
     "@backstage/plugin-events-backend": "workspace:^",
     "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
+    "@backstage/plugin-mcp-actions-backend": "workspace:^",
     "@backstage/plugin-notifications-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
@@ -63,7 +65,7 @@
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
-    "@opentelemetry/auto-instrumentations-node": "^0.54.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.61.0",
     "@opentelemetry/exporter-prometheus": "^0.54.0",
     "@opentelemetry/sdk-node": "^0.54.0",
     "example-app": "link:../app"

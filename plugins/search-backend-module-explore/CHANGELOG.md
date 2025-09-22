@@ -1,5 +1,110 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.3.7
+
+### Patch Changes
+
+- 9a93520: Deprecate and mark explore collator as moved
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-search-backend-node@1.3.15
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-search-backend-node@1.3.15-next.0
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- 9a93520: Deprecate and mark explore collator as moved
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/config@1.3.3
+  - @backstage/plugin-search-backend-node@1.3.14
+  - @backstage/plugin-search-common@1.2.19
+
+## 0.3.5
+
+### Patch Changes
+
+- 3b8fac1: Updated dependency `@backstage-community/plugin-explore-common` to `^0.5.0`.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.14
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.14-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/config@1.3.3
+  - @backstage/plugin-search-common@1.2.19
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-search-backend-node@1.3.13
+  - @backstage/plugin-search-common@1.2.19
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.13-next.0
+  - @backstage/plugin-search-common@1.2.19-next.0
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.12
+  - @backstage/plugin-search-common@1.2.18
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.12-next.1
+  - @backstage/plugin-search-common@1.2.18
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-search-backend-node@1.3.12-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.11
+  - @backstage/plugin-search-common@1.2.18
+
 ## 0.3.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,231 @@
 # @backstage/plugin-search
 
+## 1.4.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/plugin-search-react@1.9.4
+
+## 1.4.30-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+  - @backstage/core-compat-api@0.5.2-next.2
+
+## 1.4.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+  - @backstage/plugin-search-react@1.9.4-next.0
+
+## 1.4.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-search-react@1.9.3
+
+## 1.4.29
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-catalog-react@1.20.0
+
+## 1.4.29-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/plugin-search-react@1.9.3-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.19
+
+## 1.4.29-next.1
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/plugin-search-react@1.9.3-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.19
+
+## 1.4.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-search-react@1.9.2
+
+## 1.4.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-search-react@1.9.2
+
+## 1.4.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-search-common@1.2.19-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/plugin-search-react@1.9.2-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 1.4.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/plugin-search-react@1.9.2-next.0
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+
+## 1.4.27
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/plugin-search-react@1.9.1
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+
+## 1.4.27-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/plugin-search-react@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+
+## 1.4.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-search-react@1.9.1-next.0
+
+## 1.4.27-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+  - @backstage/plugin-search-react@1.9.1-next.0
+
+## 1.4.26
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- fa48594: search plugin support i18n
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-components@0.17.2
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-search-react@1.9.0
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+
 ## 1.4.26-next.3
 
 ### Patch Changes

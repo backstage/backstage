@@ -1,5 +1,46 @@
 # @backstage/config-loader
 
+## 1.10.3
+
+### Patch Changes
+
+- a73f495: Allow using `BACKSTAGE_ENV` for loading environment specific config files
+- Updated dependencies
+  - @backstage/types@1.2.2
+
+## 1.10.3-next.0
+
+### Patch Changes
+
+- a73f495: Allow using `BACKSTAGE_ENV` for loading environment specific config files
+
+## 1.10.2
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 1.10.2-next.0
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
+## 1.10.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 1.10.1-next.0
 
 ### Patch Changes

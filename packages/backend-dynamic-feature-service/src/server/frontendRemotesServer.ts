@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import { dynamicPluginsServiceRef } from '@backstage/backend-dynamic-feature-service';
-import { spec } from '../schema/openapi';
+import { dynamicPluginsServiceRef } from '../manager/plugin-manager';
+import { spec } from '../schema/openapi/generated';
 import { ManifestFileName } from '@module-federation/sdk';
 import { RemoteInfo } from '../schema/openapi/generated/models';
 import { JsonObject } from '@backstage/types';

@@ -19,6 +19,7 @@ export function createSendNotificationAction(options: {
     link?: string | undefined;
     severity?: 'normal' | 'high' | 'low' | 'critical' | undefined;
     scope?: string | undefined;
+    topic?: string | undefined;
     optional?: boolean | undefined;
   },
   {

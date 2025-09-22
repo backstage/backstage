@@ -41,16 +41,6 @@ describe('collectConfigSchemas', () => {
     mockDir.clear();
   });
 
-  it('should not find any schemas without packages', async () => {
-    mockDir.setContent({
-      'lerna.json': JSON.stringify({
-        packages: ['packages/*'],
-      }),
-    });
-
-    await expect(collectConfigSchemas([], [])).resolves.toEqual([]);
-  });
-
   it('should find schema in a local package', async () => {
     mockDir.setContent({
       node_modules: {

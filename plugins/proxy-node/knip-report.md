@@ -4,6 +4,6 @@
 
 | Name                          | Location     | Severity |
 | :---------------------------- | :----------- | :------- |
-| @backstage/backend-test-utils | package.json | error    |
-| @backstage/config             | package.json | error    |
+| @backstage/backend-test-utils | plugins/proxy-node/package.json | error    |
+| @backstage/config             | plugins/proxy-node/package.json | error    |
 

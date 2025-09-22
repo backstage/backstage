@@ -4,11 +4,11 @@
 
 | Name                      | Location     | Severity |
 | :------------------------ | :----------- | :------- |
-| @backstage/plugin-catalog | package.json | error    |
+| @backstage/plugin-catalog | plugins/techdocs-addons-test-utils/package.json | error    |
 
 ## Unused devDependencies (1)
 
 | Name                 | Location     | Severity |
 | :------------------- | :----------- | :------- |
-| @testing-library/dom | package.json | error    |
+| @testing-library/dom | plugins/techdocs-addons-test-utils/package.json | error    |
 

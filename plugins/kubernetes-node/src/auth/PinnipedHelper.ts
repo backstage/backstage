@@ -15,9 +15,9 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import * as https from 'https';
 import fetch, { RequestInit } from 'node-fetch';
+import { ClusterDetails } from '../types/types';
 
 /**
  *

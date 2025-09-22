@@ -25,6 +25,7 @@ export const searchReactTranslationRef = createTranslationRef({
     searchBar: {
       title: 'Search',
       placeholder: 'Search in {{org}}',
+      clearButtonTitle: 'Clear',
     },
     searchFilter: {
       allOptionTitle: 'All',

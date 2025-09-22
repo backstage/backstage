@@ -2,7 +2,6 @@
 id: software-catalog-overview
 title: Backstage Software Catalog
 sidebar_label: Overview
-# prettier-ignore
 description: The Backstage Software Catalog
 ---
 

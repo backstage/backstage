@@ -2,7 +2,6 @@
 id: discovery
 title: Azure DevOps Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from repositories in an Azure DevOps organization
 ---
 

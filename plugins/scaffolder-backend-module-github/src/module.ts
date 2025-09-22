@@ -27,6 +27,7 @@ import {
   createGithubDeployKeyAction,
   createGithubEnvironmentAction,
   createGithubIssuesLabelAction,
+  createGithubIssuesCreateAction,
   createGithubRepoCreateAction,
   createGithubRepoPushAction,
   createGithubWebhookAction,
@@ -39,8 +40,8 @@ import {
   DefaultGithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { CatalogClient } from '@backstage/catalog-client';
 import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 /**
  * @public
@@ -54,17 +55,13 @@ export const githubModule = createBackendModule({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
         config: coreServices.rootConfig,
-        discovery: coreServices.discovery,
-        auth: coreServices.auth,
+        catalog: catalogServiceRef,
         autocomplete: scaffolderAutocompleteExtensionPoint,
       },
-      async init({ scaffolder, config, discovery, auth, autocomplete }) {
+      async init({ scaffolder, config, autocomplete, catalog }) {
         const integrations = ScmIntegrations.fromConfig(config);
         const githubCredentialsProvider =
           DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-        const catalogClient = new CatalogClient({
-          discoveryApi: discovery,
-        });
 
         scaffolder.addActions(
           createGithubActionsDispatchAction({
@@ -80,10 +77,13 @@ export const githubModule = createBackendModule({
           }),
           createGithubEnvironmentAction({
             integrations,
-            catalogClient,
-            auth,
+            catalog,
           }),
           createGithubIssuesLabelAction({
+            integrations,
+            githubCredentialsProvider,
+          }),
+          createGithubIssuesCreateAction({
             integrations,
             githubCredentialsProvider,
           }),

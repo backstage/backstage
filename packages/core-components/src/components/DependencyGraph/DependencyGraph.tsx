@@ -16,11 +16,11 @@
 
 import {
   SVGProps,
-  useState,
-  useRef,
-  useMemo,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
 import * as d3Zoom from 'd3-zoom';
 import * as d3Selection from 'd3-selection';
@@ -31,6 +31,25 @@ import { DependencyGraphTypes as Types } from './types';
 import { Node } from './Node';
 import { Edge, GraphEdge } from './Edge';
 import { ARROW_MARKER_ID } from './constants';
+import IconButton from '@material-ui/core/IconButton';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import { FullScreen, useFullScreenHandle } from 'react-full-screen';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { coreComponentsTranslationRef } from '../../translation';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    overflow: 'hidden',
+    minHeight: '100%',
+    minWidth: '100%',
+  },
+  fullscreen: {
+    backgroundColor: theme.palette.background.paper,
+  },
+}));
 
 /**
  * Properties of {@link DependencyGraph}
@@ -181,9 +200,18 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    * Default: 'grow'
    */
   fit?: 'grow' | 'contain';
+  /**
+   * Controls if user can toggle fullscreen mode
+   *
+   * @remarks
+   *
+   * Default: true
+   */
+  allowFullscreen?: boolean;
 }
 
 const WORKSPACE_ID = 'workspace';
+const DEPENDENCY_GRAPH_SVG = 'dependency-graph';
 
 /**
  * Graph component used to visualize relations between entities
@@ -216,11 +244,15 @@ export function DependencyGraph<NodeData, EdgeData>(
     curve = 'curveMonotoneX',
     showArrowHeads = false,
     fit = 'grow',
+    allowFullscreen = true,
     ...svgProps
   } = props;
   const theme = useTheme();
   const [containerWidth, setContainerWidth] = useState<number>(100);
   const [containerHeight, setContainerHeight] = useState<number>(100);
+  const fullScreenHandle = useFullScreenHandle();
+  const styles = useStyles();
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const graph = useRef<dagre.graphlib.Graph<Types.DependencyNode<NodeData>>>(
     new dagre.graphlib.Graph(),
@@ -242,11 +274,17 @@ export function DependencyGraph<NodeData, EdgeData>(
 
   const containerRef = useMemo(
     () =>
-      debounce((node: SVGSVGElement) => {
-        if (!node) {
+      debounce((root: HTMLDivElement) => {
+        if (!root) {
           return;
         }
         // Set up zooming + panning
+        const node: SVGSVGElement = root.querySelector(
+          `svg#${DEPENDENCY_GRAPH_SVG}`,
+        ) as SVGSVGElement;
+        if (!node) {
+          return;
+        }
         const container = d3Selection.select<SVGSVGElement, null>(node);
         const workspace = d3Selection.select(node.getElementById(WORKSPACE_ID));
 
@@ -282,7 +320,7 @@ export function DependencyGraph<NodeData, EdgeData>(
         }
 
         const { width: newContainerWidth, height: newContainerHeight } =
-          node.getBoundingClientRect();
+          root.getBoundingClientRect();
         if (containerWidth !== newContainerWidth) {
           setContainerWidth(newContainerWidth);
         }
@@ -406,68 +444,94 @@ export function DependencyGraph<NodeData, EdgeData>(
   }
 
   return (
-    <svg
-      ref={containerRef}
-      {...svgProps}
-      width="100%"
-      height={scalableHeight}
-      viewBox={`0 0 ${maxWidth} ${maxHeight}`}
-    >
-      <defs>
-        <marker
-          id={ARROW_MARKER_ID}
-          viewBox="0 0 24 24"
-          markerWidth="14"
-          markerHeight="14"
-          refX="16"
-          refY="12"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path
-            fill={theme.palette.textSubtle}
-            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
-          />
-        </marker>
-        {defs}
-      </defs>
-      <g id={WORKSPACE_ID}>
+    <div ref={containerRef} className={styles.root}>
+      <FullScreen
+        handle={fullScreenHandle}
+        className={fullScreenHandle.active ? styles.fullscreen : styles.root}
+      >
+        {allowFullscreen && (
+          <Tooltip title={t('dependencyGraph.fullscreenTooltip')}>
+            <IconButton
+              style={{ float: 'right' }}
+              onClick={
+                fullScreenHandle.active
+                  ? fullScreenHandle.exit
+                  : fullScreenHandle.enter
+              }
+            >
+              {fullScreenHandle.active ? (
+                <FullscreenExitIcon />
+              ) : (
+                <FullscreenIcon />
+              )}
+            </IconButton>
+          </Tooltip>
+        )}
+
         <svg
-          width={graphWidth}
-          height={graphHeight}
-          y={maxHeight / 2 - graphHeight / 2}
-          x={maxWidth / 2 - graphWidth / 2}
-          viewBox={`0 0 ${graphWidth} ${graphHeight}`}
+          {...svgProps}
+          width="100%"
+          height={scalableHeight}
+          viewBox={`0 0 ${maxWidth} ${maxHeight}`}
+          id={DEPENDENCY_GRAPH_SVG}
         >
-          {graphEdges.map(e => {
-            const edge = graph.current.edge(e) as GraphEdge<EdgeData>;
-            if (!edge) return null;
-            return (
-              <Edge
-                key={`${e.v}-${e.w}`}
-                id={e}
-                setEdge={setEdge}
-                render={renderLabel}
-                edge={edge}
-                curve={curve}
-                showArrowHeads={showArrowHeads}
+          <defs>
+            <marker
+              id={ARROW_MARKER_ID}
+              viewBox="0 0 24 24"
+              markerWidth="14"
+              markerHeight="14"
+              refX="16"
+              refY="12"
+              orient="auto"
+              markerUnits="strokeWidth"
+            >
+              <path
+                fill={theme.palette.textSubtle}
+                d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
               />
-            );
-          })}
-          {graphNodes.map((id: string) => {
-            const node = graph.current.node(id);
-            if (!node) return null;
-            return (
-              <Node
-                key={id}
-                setNode={setNode}
-                render={renderNode}
-                node={node}
-              />
-            );
-          })}
+            </marker>
+            {defs}
+          </defs>
+          <g id={WORKSPACE_ID}>
+            <svg
+              width={graphWidth}
+              height={graphHeight}
+              y={maxHeight / 2 - graphHeight / 2}
+              x={maxWidth / 2 - graphWidth / 2}
+              viewBox={`0 0 ${graphWidth} ${graphHeight}`}
+            >
+              {graphEdges.map(e => {
+                const edge = graph.current.edge(e) as GraphEdge<EdgeData>;
+                if (!edge) return null;
+                return (
+                  <Edge
+                    key={`${e.v}-${e.w}`}
+                    id={e}
+                    setEdge={setEdge}
+                    render={renderLabel}
+                    edge={edge}
+                    curve={curve}
+                    showArrowHeads={showArrowHeads}
+                  />
+                );
+              })}
+              {graphNodes.map((id: string) => {
+                const node = graph.current.node(id);
+                if (!node) return null;
+                return (
+                  <Node
+                    key={id}
+                    setNode={setNode}
+                    render={renderNode}
+                    node={node}
+                  />
+                );
+              })}
+            </svg>
+          </g>
         </svg>
-      </g>
-    </svg>
+      </FullScreen>
+    </div>
   );
 }

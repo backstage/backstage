@@ -1,5 +1,266 @@
 # @backstage/plugin-user-settings
 
+## 0.8.26
+
+### Patch Changes
+
+- 320a9ac: Add the OpenShift authenticator provider to the default `user-settings` providers page.
+- b713b54: Tool-tip text correction for the Theme selection in settings page
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/core-app-api@1.19.0
+
+## 0.8.26-next.2
+
+### Patch Changes
+
+- b713b54: Tool-tip text correction for the Theme selection in settings page
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+  - @backstage/core-compat-api@0.5.2-next.2
+
+## 0.8.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+
+## 0.8.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.15
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.25
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/theme@0.6.8
+
+## 0.8.25-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.15
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.15
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.8.24
+
+### Patch Changes
+
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.8.24-next.2
+
+### Patch Changes
+
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-app-api@1.18.0-next.1
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+
+## 0.8.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/core-app-api@1.17.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-signals-react@0.0.15-next.0
+
+## 0.8.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.14
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.23
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- ab6d3dd: Add some translation to user-setting plugin
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.14
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.23-next.1
+
+### Patch Changes
+
+- ab6d3dd: Add some translation to user-setting plugin
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.23-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
+## 0.8.22
+
+### Patch Changes
+
+- a7bfdb6: plugin-user-settingsgs support i18n
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 5b04b14: Uppercase language name in language select
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.8.22-next.3
 
 ### Patch Changes

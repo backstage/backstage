@@ -30,9 +30,8 @@ import {
   PermissionCriteria,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule, PermissionRuleset } from '../types';
+import { NoInfer, PermissionRule, PermissionRuleset } from '../types';
 import {
-  NoInfer,
   createGetRule,
   isAndCriteria,
   isNotCriteria,

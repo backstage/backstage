@@ -59,6 +59,7 @@ function setupFakeServer(
     page: number;
     include_subgroups: boolean;
     archived: boolean;
+    simple?: boolean;
   }) => {
     data: GitLabProject[];
     nextPage?: number;
@@ -72,16 +73,18 @@ function setupFakeServer(
         assertion(req);
       }
 
-      if (req.headers.get('private-token') !== 'test-token') {
+      if (req.headers.get('authorization') !== 'Bearer test-token') {
         return res(ctx.status(401), ctx.json({}));
       }
       const page = req.url.searchParams.get('page');
       const include_subgroups = req.url.searchParams.get('include_subgroups');
       const archived = req.url.searchParams.get('archived');
+      const simple = req.url.searchParams.get('simple');
       const response = listProjectsCallback({
         page: parseInt(page!, 10),
         include_subgroups: include_subgroups === 'true',
         archived: archived === 'true',
+        simple: simple === 'true',
       });
 
       // Filter the fake results based on the `last_activity_after` parameter
@@ -104,8 +107,11 @@ function setupFakeServer(
     rest.head(
       `${API_URL}/projects/:project_path/repository/files/:file_path`,
       (req, res, ctx) => {
-        if (req.headers.get('private-token') !== 'test-token') {
-          return res(ctx.status(401), ctx.json({}));
+        if (req.headers.get('authorization') !== 'Bearer test-token') {
+          return res(
+            ctx.status(401),
+            ctx.json({ message: '401 Unauthorized' }),
+          );
         }
         const ref = req.url.searchParams.get('ref');
 
@@ -467,6 +473,110 @@ describe('GitlabDiscoveryProcessor', () => {
         result2.push(e);
       });
       expect(result2).toHaveLength(1);
+    });
+
+    it('sets simple=true when skipForkedRepos is false', async () => {
+      const processor = getProcessor({
+        options: { skipForkedRepos: false },
+      });
+      setupFakeServer(
+        PROJECTS_URL,
+        _ => {
+          return {
+            data: [
+              {
+                id: 1,
+                archived: false,
+                default_branch: 'main',
+                last_activity_at: '2021-08-05T11:03:05.774Z',
+                web_url: 'https://gitlab.fake/1',
+                path_with_namespace: '1',
+              },
+            ],
+          };
+        },
+        request => {
+          // Verify that simple=true is set in the request
+          expect(request.url.searchParams.get('simple')).toBe('true');
+        },
+      );
+
+      const result: any[] = [];
+      await processor.readLocation(PROJECT_LOCATION, false, e => {
+        result.push(e);
+      });
+      expect(result).toHaveLength(1);
+    });
+
+    it('does not set simple when skipForkedRepos is true', async () => {
+      const processor = getProcessor({
+        options: { skipForkedRepos: true },
+      });
+      setupFakeServer(
+        PROJECTS_URL,
+        _ => {
+          return {
+            data: [
+              {
+                id: 1,
+                archived: false,
+                default_branch: 'main',
+                last_activity_at: '2021-08-05T11:03:05.774Z',
+                web_url: 'https://gitlab.fake/1',
+                path_with_namespace: '1',
+                // Include forked_from_project to test fork filtering
+                forked_from_project: {
+                  id: 100,
+                  name: 'original-project',
+                },
+              },
+            ],
+          };
+        },
+        request => {
+          // Verify that simple parameter is not set
+          expect(request.url.searchParams.get('simple')).toBeNull();
+        },
+      );
+
+      const result: any[] = [];
+      await processor.readLocation(PROJECT_LOCATION, false, e => {
+        result.push(e);
+      });
+      // Should be empty because forked repo is skipped
+      expect(result).toHaveLength(0);
+    });
+
+    it('sets default parameters correctly (archived=false, simple=true)', async () => {
+      const processor = getProcessor(); // Uses defaults: skipForkedRepos=false, includeArchivedRepos=false
+      setupFakeServer(
+        PROJECTS_URL,
+        _ => {
+          return {
+            data: [
+              {
+                id: 1,
+                archived: false,
+                default_branch: 'main',
+                last_activity_at: '2021-08-05T11:03:05.774Z',
+                web_url: 'https://gitlab.fake/1',
+                path_with_namespace: '1',
+              },
+            ],
+          };
+        },
+        request => {
+          // Verify default parameters: archived=false and simple=true
+          expect(request.url.searchParams.get('archived')).toBe('false');
+          expect(request.url.searchParams.get('simple')).toBe('true');
+        },
+      );
+
+      const result: any[] = [];
+      await processor.readLocation(PROJECT_LOCATION, false, e => {
+        result.push(e);
+      });
+      expect(result).toHaveLength(1);
     });
   });
 

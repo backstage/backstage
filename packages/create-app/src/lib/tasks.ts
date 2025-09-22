@@ -85,6 +85,7 @@ export class Task {
  * @param templateDir - location containing template files
  * @param destinationDir - location to save templated project
  * @param context - template parameters
+ * @param excludedDirs - template files to exclude
  */
 export async function templatingTask(
   templateDir: string,
@@ -96,10 +97,9 @@ export async function templatingTask(
   });
 
   for (const file of files) {
-    const destinationFile = resolvePath(
-      destinationDir,
-      relativePath(templateDir, file),
-    );
+    const filePath = relativePath(templateDir, file);
+
+    const destinationFile = resolvePath(destinationDir, filePath);
     await fs.ensureDir(dirname(destinationFile));
 
     if (file.endsWith('.hbs')) {

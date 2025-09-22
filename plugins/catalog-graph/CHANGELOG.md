@@ -1,5 +1,230 @@
 # @backstage/plugin-catalog-graph
 
+## 0.5.0
+
+### Minor Changes
+
+- ae6b606: Support custom relations by using an API to define known relations and which to show by default
+  Fixes "simplified" bug (#30121) which caused graphs not to be simplified
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+
+## 0.4.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+  - @backstage/core-compat-api@0.5.2-next.2
+
+## 0.4.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+
+## 0.4.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/types@1.2.1
+
+## 0.4.22
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- 8b1bf6e: Updated README instructions for the new frontend system
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/catalog-client@1.11.0
+
+## 0.4.22-next.3
+
+### Patch Changes
+
+- 8b1bf6e: Updated README instructions for the new frontend system
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/core-compat-api@0.5.0-next.3
+  - @backstage/core-components@0.17.5-next.2
+
+## 0.4.22-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+
+## 0.4.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+
+## 0.4.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.4.21
+
+### Patch Changes
+
+- fe1a2f4: Catalog graph plugin support i18n
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.4.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 0.4.21-next.0
+
+### Patch Changes
+
+- fe1a2f4: Catalog graph plugin support i18n
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+
+## 0.4.20
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/types@1.2.1
+
+## 0.4.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+
+## 0.4.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/types@1.2.1
+
+## 0.4.20-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
+## 0.4.19
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 72d019d: Removed various typos
+- 1307f00: Fix rendering of missing relations
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/types@1.2.1
+
 ## 0.4.19-next.3
 
 ### Patch Changes

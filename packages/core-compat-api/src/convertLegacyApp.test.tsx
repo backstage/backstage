@@ -15,16 +15,16 @@
  */
 
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
-import { PuppetDbPage } from '@backstage-community/plugin-puppetdb';
-import { StackstormPage } from '@backstage-community/plugin-stackstorm';
-import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import { ReactNode } from 'react';
 import { Route } from 'react-router-dom';
-import { convertLegacyApp } from './convertLegacyApp';
+import { convertLegacyAppRoot } from './convertLegacyApp';
 import {
   createApiFactory,
+  createApiRef,
   createComponentExtension,
   createPlugin,
+  createRoutableExtension,
+  createRouteRef,
 } from '@backstage/core-plugin-api';
 import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
@@ -34,9 +34,35 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const Root = ({ children }: { children: ReactNode }) => <>{children}</>;
 
+const exampleApiRef = createApiRef<string>({
+  id: 'plugin.example.service',
+});
+const examplePlugin1 = createPlugin({
+  id: 'example-1',
+  apis: [createApiFactory(exampleApiRef, 'example-api-1')],
+});
+const ExamplePage1 = examplePlugin1.provide(
+  createRoutableExtension({
+    name: 'ExamplePage1',
+    mountPoint: createRouteRef({ id: 'example-1' }),
+    component: () => Promise.resolve(() => <div>Example Page 1</div>),
+  }),
+);
+
+const examplePlugin2 = createPlugin({
+  id: 'example-2',
+});
+const ExamplePage2 = examplePlugin2.provide(
+  createRoutableExtension({
+    name: 'ExamplePage2',
+    mountPoint: createRouteRef({ id: 'example-2' }),
+    component: () => Promise.resolve(() => <div>Example Page 2</div>),
+  }),
+);
+
 describe('convertLegacyApp', () => {
   it('should find and extract root and routes', () => {
-    const collected = convertLegacyApp(
+    const collected = convertLegacyAppRoot(
       <>
         <div />
         <span />
@@ -44,10 +70,9 @@ describe('convertLegacyApp', () => {
           <div />
           <Root>
             <FlatRoutes>
-              <Route path="/score-board" element={<ScoreBoardPage />} />
-              <Route path="/stackstorm" element={<StackstormPage />} />
-              <Route path="/puppetdb" element={<PuppetDbPage />} />
-              <Route path="/puppetdb" element={<PuppetDbPage />} />
+              <Route path="/example-1" element={<ExamplePage1 />} />
+              <Route path="/example-2" element={<ExamplePage2 />} />
+              <Route path="/example-2" element={<ExamplePage2 />} />
             </FlatRoutes>
           </Root>
         </AppRouter>
@@ -66,56 +91,35 @@ describe('convertLegacyApp', () => {
       })),
     ).toEqual([
       {
-        id: 'score-card',
+        id: 'example-1',
         extensions: [
           {
-            id: 'page:score-card',
+            id: 'page:example-1',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: {},
           },
           {
-            id: 'api:score-card/plugin.scoringdata.service',
+            id: 'api:example-1/plugin.example.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
       },
       {
-        id: 'stackstorm',
+        id: 'example-2',
         extensions: [
           {
-            id: 'page:stackstorm',
+            id: 'page:example-2',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: {},
           },
           {
-            id: 'api:stackstorm/plugin.stackstorm.service',
-            attachTo: { id: 'root', input: 'apis' },
-            disabled: false,
-          },
-        ],
-      },
-      {
-        id: 'puppetDb',
-        extensions: [
-          {
-            id: 'page:puppetDb',
+            id: 'page:example-2/1',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: {},
-          },
-          {
-            id: 'page:puppetDb/1',
-            attachTo: { id: 'app/routes', input: 'routes' },
-            disabled: false,
-            defaultConfig: {},
-          },
-          {
-            id: 'api:puppetDb/plugin.puppetdb.service',
-            attachTo: { id: 'root', input: 'apis' },
-            disabled: false,
           },
         ],
       },
@@ -138,12 +142,11 @@ describe('convertLegacyApp', () => {
   });
 
   it('should find and extract just routes', () => {
-    const collected = convertLegacyApp(
+    const collected = convertLegacyAppRoot(
       <FlatRoutes>
-        <Route path="/score-board" element={<ScoreBoardPage />} />
-        <Route path="/stackstorm" element={<StackstormPage />} />
-        <Route path="/puppetdb" element={<PuppetDbPage />} />
-        <Route path="/puppetdb" element={<PuppetDbPage />} />
+        <Route path="/example-1" element={<ExamplePage1 />} />
+        <Route path="/example-2" element={<ExamplePage2 />} />
+        <Route path="/example-2" element={<ExamplePage2 />} />
       </FlatRoutes>,
     );
 
@@ -159,13 +162,10 @@ describe('convertLegacyApp', () => {
       })),
     ).toEqual([
       expect.objectContaining({
-        id: 'score-card',
+        id: 'example-1',
       }),
       expect.objectContaining({
-        id: 'stackstorm',
-      }),
-      expect.objectContaining({
-        id: 'puppetDb',
+        id: 'example-2',
       }),
     ]);
   });
@@ -222,7 +222,7 @@ describe('convertLegacyApp', () => {
       </EntitySwitch>
     );
 
-    const converted = convertLegacyApp(
+    const converted = convertLegacyAppRoot(
       <FlatRoutes>
         <Route path="/test" element={<div>test</div>} />
       </FlatRoutes>,
@@ -232,31 +232,32 @@ describe('convertLegacyApp', () => {
     const catalogOverride = catalogPlugin.withOverrides({
       extensions: [
         catalogPlugin.getExtension('api:catalog').override({
-          params: {
-            factory: createApiFactory(
-              catalogApiRef,
-              catalogApiMock({
-                entities: [
-                  {
-                    apiVersion: 'backstage.io/v1alpha1',
-                    kind: 'test',
-                    metadata: {
-                      name: 'x',
+          params: defineParams =>
+            defineParams({
+              api: catalogApiRef,
+              deps: {},
+              factory: () =>
+                catalogApiMock({
+                  entities: [
+                    {
+                      apiVersion: 'backstage.io/v1alpha1',
+                      kind: 'test',
+                      metadata: {
+                        name: 'x',
+                      },
+                      spec: {},
                     },
-                    spec: {},
-                  },
-                  {
-                    apiVersion: 'backstage.io/v1alpha1',
-                    kind: 'other',
-                    metadata: {
-                      name: 'x',
+                    {
+                      apiVersion: 'backstage.io/v1alpha1',
+                      kind: 'other',
+                      metadata: {
+                        name: 'x',
+                      },
+                      spec: {},
                     },
-                    spec: {},
-                  },
-                ],
-              }),
-            ),
-          },
+                  ],
+                }),
+            }),
         }),
       ],
     });

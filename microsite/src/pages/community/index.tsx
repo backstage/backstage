@@ -5,6 +5,8 @@ import { BannerSectionGrid } from '@site/src/components/bannerSection/bannerSect
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
 import React from 'react';
+import ThemedImage from '@theme/ThemedImage';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import { ContentBlock } from '../../components/contentBlock/contentBlock';
 import communityStyles from './community.module.scss';
@@ -83,47 +85,47 @@ const Community = () => {
     {
       name: 'Frontside Software',
       url: 'https://frontside.com/backstage/',
-      logo: 'img/partner-logo-frontside.png',
+      logo: 'img/partner-logo-frontside',
     },
     {
       name: 'RedHat',
       url: 'https://developers.redhat.com/rhdh',
-      logo: 'img/partner-logo-redhat.png',
+      logo: 'img/partner-logo-redhat',
     },
     {
       name: 'Roadie',
       url: 'https://roadie.io/',
-      logo: 'img/partner-logo-roadie.png',
+      logo: 'img/partner-logo-roadie',
     },
     {
       name: 'solo.io',
       url: 'https://www.solo.io/spotlight/',
-      logo: 'img/partner-logo-solo.png',
+      logo: 'img/partner-logo-solo',
     },
     {
       name: 'ThoughtWorks',
       url: 'https://www.thoughtworks.com/about-us/partnerships/technology/backstage-by-spotify',
-      logo: 'img/partner-logo-thoughtworks.png',
+      logo: 'img/partner-logo-thoughtworks',
     },
     {
       name: 'VMWare',
       url: 'https://tanzu.vmware.com/developer-portal',
-      logo: 'img/partner-logo-tanzubybroadcom.png',
+      logo: 'img/partner-logo-tanzubybroadcom',
     },
     {
       name: 'StatusNeo',
       url: 'https://statusneo.com/backstage',
-      logo: 'img/partner-logo-statusneo.png',
+      logo: 'img/partner-logo-statusneo',
     },
     {
       name: 'Alauda',
       url: 'https://www.alauda.io/community/169249',
-      logo: 'img/partner-logo-alauda.png',
+      logo: 'img/partner-logo-alauda',
     },
     {
       name: 'Liatrio',
       url: 'https://www.liatrio.com/service-offerings/backstage',
-      logo: 'img/partner-logo-liatrio.png',
+      logo: 'img/partner-logo-liatrio',
     },
   ];
   //#endregion
@@ -233,7 +235,13 @@ const Community = () => {
             {partners.map(({ name, url, logo }, index) => (
               <div key={index}>
                 <Link to={url}>
-                  <img src={`${siteConfig.baseUrl}${logo}`} alt={name} />
+                  <ThemedImage
+                    alt={name}
+                    sources={{
+                      light: useBaseUrl(`${siteConfig.baseUrl}${logo}-blk.png`),
+                      dark: useBaseUrl(`${siteConfig.baseUrl}${logo}.png`),
+                    }}
+                  />
                 </Link>
               </div>
             ))}

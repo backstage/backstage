@@ -16,6 +16,10 @@
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { SerializedError } from '@backstage/errors';
+import type {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -462,6 +466,21 @@ export type QueryEntitiesResponse = {
 };
 
 /**
+ * Stream entities request for {@link CatalogClient.streamEntities}.
+ *
+ * @public
+ */
+export type StreamEntitiesRequest = Omit<
+  QueryEntitiesInitialRequest,
+  'limit' | 'offset'
+> & {
+  /**
+   * The number of entities to fetch in each page. Defaults to 500.
+   */
+  pageSize?: number;
+};
+
+/**
  * A client for interacting with the Backstage software catalog through its API.
  *
  * @public
@@ -677,4 +696,29 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<ValidateEntityResponse>;
+
+  /**
+   * Validate a given location.
+   *
+   * @param location - Request parameters
+   * @param options - Additional options
+   */
+  analyzeLocation(
+    location: AnalyzeLocationRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<AnalyzeLocationResponse>;
+
+  /**
+   * Asynchronously streams entities from the catalog. Uses `queryEntities`
+   * to fetch entities in batches, and yields them one page at a time.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity[]>;
 }

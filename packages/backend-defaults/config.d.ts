@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HumanDuration } from '@backstage/types';
+import { HumanDuration, JsonObject } from '@backstage/types';
 
 export interface Config {
   app: {
@@ -119,6 +119,16 @@ export interface Config {
         high?: 'debug' | 'info' | 'warn' | 'error';
         critical?: 'debug' | 'info' | 'warn' | 'error';
       };
+    };
+
+    /**
+     * Options used by the default actions service.
+     */
+    actions?: {
+      /**
+       * List of plugin sources to load actions from.
+       */
+      pluginSources?: string[];
     };
 
     /**
@@ -740,6 +750,201 @@ export interface Config {
           connection: string;
           /** An optional default TTL (in milliseconds). */
           defaultTtl?: number | HumanDuration | string;
+        }
+      | {
+          /**
+           * Infinispan cache store configuration.
+           * @see https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html
+           */
+          store: 'infinispan';
+
+          /**
+           * An optional default TTL (in milliseconds).
+           */
+          defaultTtl?: number | HumanDuration | string;
+
+          /**
+           * Configuration for the Infinispan cache store.
+           */
+          infinispan?: {
+            /**
+             * Version of client/server protocol.
+             * @default '2.9' is the latest version.
+             */
+            version?: '2.9' | '2.5' | '2.2';
+
+            /**
+             * Infinispan Cache Name if not provided default is `cache` recommended to set this.
+             */
+            cacheName?: string;
+
+            /**
+             * Optional number of retries for operation.
+             * Defaults to 3.
+             */
+            maxRetries?: number;
+
+            /**
+             * Optional flag to controls whether the client deals with topology updates or not.
+             * @default true
+             */
+            topologyUpdates?: boolean;
+
+            /**
+             * Media type of the cache contents.
+             * @default 'text/plain'
+             */
+            mediaType?: 'text/plain' | 'application/json';
+
+            /**
+             * Optional data format configuration.
+             * If not provided, defaults to text/plain for both key and value.
+             */
+            dataFormat?: {
+              /**
+               * Type of the key in the cache.
+               * @default 'text/plain'
+               */
+              keyType?: 'text/plain' | 'application/json';
+              /**
+               * Type of the value in the cache.
+               * @default 'text/plain'
+               */
+              valueType?: 'text/plain' | 'application/json';
+            };
+            /**
+             * Infinispan server host and port configuration.
+             * If this is an array, the client will connect to all servers in the list based on TOPOLOGY_AWARE routing.
+             * If this is a single object, it will be used as the default server.
+             */
+            servers?:
+              | Array<{
+                  /**
+                   * Infinispan server host.
+                   */
+                  host: string;
+                  /**
+                   * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                   */
+                  port?: number;
+                }>
+              | {
+                  /**
+                   * Infinispan server host. Defaults to `127.0.0.1`.
+                   */
+                  host?: string;
+                  /**
+                   * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                   */
+                  port?: number;
+                };
+            authentication?: {
+              /**
+               * Enable authentication. Defaults to `false`.
+               */
+              enabled?: boolean;
+              /**
+               * Select the SASL mechanism to use. Can be one of PLAIN, DIGEST-MD5, SCRAM-SHA-1, SCRAM-SHA-256, SCRAM-SHA-384, SCRAM-SHA-512, EXTERNAL, OAUTHBEARER
+               */
+              saslMechanism?: string;
+              /**
+               * userName for authentication.
+               */
+              userName?: string;
+              /**
+               * Password for authentication.
+               * @visibility secret
+               */
+              password?: string;
+              /**
+               * The OAuth token. Required by the OAUTHBEARER mechanism.
+               * @visibility secret
+               */
+              token?: string;
+              /**
+               * The SASL authorization ID.
+               */
+              authzid?: string;
+            };
+
+            /**
+             * TLS/SSL configuration.
+             */
+            ssl?: {
+              /**
+               * Enable ssl connection. Defaults to `false`.
+               * @default false
+               */
+              enabled?: boolean;
+
+              /**
+               * Optional field with secure protocol in use.
+               * @default TLSv1_2_method
+               */
+              secureProtocol?: string;
+
+              /**
+               * Optional paths of trusted SSL certificates.
+               */
+              trustCerts?: Array<string>;
+
+              clientAuth?: {
+                /**
+                 * Optional path to client authentication key
+                 */
+                key?: string;
+                /**
+                 * Optional password for client key
+                 */
+                passphrase?: string;
+                /**
+                 * Optional client certificate
+                 */
+                cert?: string;
+              };
+
+              /**
+               * Optional SNI host name.
+               */
+              sniHostName?: string;
+
+              /**
+               * Optional crypto store configuration.
+               */
+              cryptoStore?: {
+                /** Optional crypto store path. */
+                path?: string;
+                /** Optional password for crypto store. */
+                passphrase?: string;
+              };
+            };
+
+            /**
+             * Optional additional clusters for cross-site failovers.
+             * Array.<Cluster>
+             */
+            clusters?: Array<{
+              /**
+               * Optional Cluster name
+               */
+              name?: string;
+
+              /**
+               * Cluster servers details.
+               * Array.<ServerAddress>
+               */
+              servers: Array<{
+                /**
+                 * Infinispan cluster server host.
+                 */
+                host: string;
+                /**
+                 * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                 */
+                port?: number;
+              }>;
+            }>;
+          };
         };
 
     cors?: {
@@ -779,6 +984,152 @@ export interface Config {
        */
       headers?: { [name: string]: string };
     };
+
+    /**
+     * Options to configure the default RootLoggerService.
+     */
+    logger?: {
+      /**
+       * Configures the global log level for messages.
+       *
+       * This can also be configured using the LOG_LEVEL environment variable, which
+       * takes precedence over this configuration.
+       *
+       * Defaults to 'info'.
+       */
+      level?: 'debug' | 'info' | 'warn' | 'error';
+
+      /**
+       * Additional metadata to include with every log entry.
+       */
+      meta?: JsonObject;
+
+      /**
+       * List of logger overrides.
+       *
+       * Can be used to configure a different level for logs matching certain criterias.
+       * For example, it can be used to ignore 'info' logs of given plugins.
+       *
+       * @example
+       *
+       * ```yaml
+       * logger:
+       *   level: info
+       *   overrides:
+       *     # For catalog and auth plugins, messages less important than 'warn' will be ignored.
+       *     - matchers:
+       *         plugin: [catalog, auth]
+       *       level: warn
+       *     # Ignore all messages that starts with 'Forget'
+       *     - matchers:
+       *         message: '/^Forget/'
+       *       level: warn
+       * ```
+       */
+      overrides?: Array<{
+        /**
+         * Conditions that must be met to override the log level.
+         *
+         * A matcher can be:
+         *
+         * - A string (exact match or regex pattern delimited by slashes, e.g. `/pattern/`)
+         * - A non-string value (compared by strict equality)
+         * - An array of matchers (returns true if any matcher matches)
+         */
+        matchers: JsonObject;
+
+        /**
+         * Log level to use for matched entries.
+         */
+        level: 'debug' | 'info' | 'warn' | 'error';
+      }>;
+    };
+
+    /**
+     * Rate limiting options. Defining this as `true` will enable rate limiting with default values.
+     */
+    rateLimit?:
+      | true
+      | {
+          store?:
+            | {
+                type: 'redis';
+                connection: string;
+              }
+            | {
+                type: 'memory';
+              };
+          /**
+           * Enable/disable global rate limiting. If this is disabled, plugin specific rate limiting must be
+           * used.
+           */
+          global?: boolean;
+          /**
+           * Time frame in milliseconds or as human duration for which requests are checked/remembered.
+           * Defaults to one minute.
+           */
+          window?: string | HumanDuration;
+          /**
+           * The maximum number of connections to allow during the `window` before rate limiting the client.
+           * Defaults to 5.
+           */
+          incomingRequestLimit?: number;
+          /**
+           * Whether to pass requests in case of store failure.
+           * Defaults to false.
+           */
+          passOnStoreError?: boolean;
+          /**
+           * List of allowed IP addresses that are not rate limited.
+           * Defaults to [127.0.0.1, 0:0:0:0:0:0:0:1, ::1].
+           */
+          ipAllowList?: string[];
+          /**
+           * Skip rate limiting for requests that have been successful.
+           * Defaults to false.
+           */
+          skipSuccessfulRequests?: boolean;
+          /**
+           * Skip rate limiting for requests that have failed.
+           * Defaults to false.
+           */
+          skipFailedRequests?: boolean;
+          /** Plugin specific rate limiting configuration */
+          plugin?: {
+            [pluginId: string]: {
+              /**
+               * Time frame in milliseconds or as human duration for which requests are checked/remembered.
+               * Defaults to one minute.
+               */
+              window?: string | HumanDuration;
+              /**
+               * The maximum number of connections to allow during the `window` before rate limiting the client.
+               * Defaults to 5.
+               */
+              incomingRequestLimit?: number;
+              /**
+               * Whether to pass requests in case of store failure.
+               * Defaults to false.
+               */
+              passOnStoreError?: boolean;
+              /**
+               * List of allowed IP addresses that are not rate limited.
+               * Defaults to [127.0.0.1, 0:0:0:0:0:0:0:1, ::1].
+               */
+              ipAllowList?: string[];
+              /**
+               * Skip rate limiting for requests that have been successful.
+               * Defaults to false.
+               */
+              skipSuccessfulRequests?: boolean;
+              /**
+               * Skip rate limiting for requests that have failed.
+               * Defaults to false.
+               */
+              skipFailedRequests?: boolean;
+            };
+          };
+        };
 
     /**
      * Configuration related to URL reading, used for example for reading catalog info

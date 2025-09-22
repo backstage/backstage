@@ -4,6 +4,12 @@
 
 | Name     | Location     | Severity |
 | :------- | :----------- | :------- |
-| passport | package.json | error    |
-| express  | package.json | error    |
+| passport | plugins/auth-backend-module-okta-provider/package.json | error    |
+| express  | plugins/auth-backend-module-okta-provider/package.json | error    |
+
+## Unlisted dependencies (1)
+
+| Name            | Location       | Severity |
+| :-------------- | :------------- | :------- |
+| passport-oauth2 | plugins/auth-backend-module-okta-provider/src/types.d.ts | error    |
 

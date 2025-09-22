@@ -5,16 +5,17 @@
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
   },
@@ -25,7 +26,7 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -49,9 +50,9 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -70,7 +71,8 @@ const _default: FrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -85,7 +87,7 @@ export const settingsNavItem: ExtensionDefinition<{
   name: undefined;
   config: {};
   configInput: {};
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       title: string;
       icon: IconComponent;
@@ -121,7 +123,7 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'languageToggle.select': 'Select language {{language}}';
     readonly 'languageToggle.title': 'Language';
     readonly 'languageToggle.description': 'Change the language';
-    readonly 'themeToggle.select': 'Select theme {{theme}}';
+    readonly 'themeToggle.select': 'Select {{theme}}';
     readonly 'themeToggle.title': 'Theme';
     readonly 'themeToggle.description': 'Change the theme mode';
     readonly 'themeToggle.names.auto': 'Auto';
@@ -154,6 +156,8 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'defaultSettingsPage.tabsTitle.general': 'General';
     readonly 'settingsLayout.title': 'Settings';
     readonly sidebarTitle: 'Settings';
+    readonly 'profileCard.title': 'Profile';
+    readonly 'appearanceCard.title': 'Appearance';
   }
 >;
 

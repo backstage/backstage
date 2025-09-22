@@ -1,7 +1,6 @@
 ---
 id: what-is-backstage
 title: What is Backstage?
-# prettier-ignore
 description: Backstage is an open source framework for building developer portals. Powered by a centralized software catalog, Backstage restores order to your microservices and infrastructure
 ---
 

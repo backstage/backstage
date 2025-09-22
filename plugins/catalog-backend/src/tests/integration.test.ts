@@ -205,7 +205,7 @@ class TestHarness {
   readonly #db: Knex;
 
   static async create(options: {
-    disableRelationsCompatibility?: boolean;
+    enableRelationsCompatibility?: boolean;
     logger?: LoggerService;
     db: Knex;
     permissions?: PermissionEvaluator;
@@ -283,7 +283,7 @@ class TestHarness {
       database: options.db,
       logger,
       stitcher,
-      disableRelationsCompatibility: options?.disableRelationsCompatibility,
+      enableRelationsCompatibility: options?.enableRelationsCompatibility,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
@@ -863,7 +863,6 @@ describe('Catalog Backend Integration', () => {
   it('should return valid responses in raw JSON mode', async () => {
     const harness = await TestHarness.create({
       db: await databases.init('SQLITE_3'),
-      disableRelationsCompatibility: true,
     });
 
     const entityA = {

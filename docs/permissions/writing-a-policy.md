@@ -92,6 +92,13 @@ import {
   catalogEntityDeletePermission,
 } from '@backstage/plugin-catalog-common/alpha';
 /* highlight-add-end */
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  /* highlight-add-next-line */
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+
 
 class CustomPermissionPolicy implements PermissionPolicy {
   /* highlight-remove-next-line */
@@ -143,8 +150,8 @@ import {
   PolicyDecision,
   /* highlight-remove-next-line */
   isPermission,
-  isResourcePermission,
   /* highlight-add-next-line */
+  isResourcePermission,
 } from '@backstage/plugin-permission-common';
 import {
   catalogConditions,
@@ -155,6 +162,11 @@ import {
   catalogEntityDeletePermission,
 } from '@backstage/plugin-catalog-common/alpha';
 /* highlight-remove-end */
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
 
 class CustomPermissionPolicy implements PermissionPolicy {
   async handle(

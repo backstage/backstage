@@ -25,7 +25,6 @@ import {
 } from '@backstage/plugin-auth-node';
 import { AnyJWK, KeyStore, TokenIssuer } from './types';
 import { JsonValue } from '@backstage/types';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
 import { issueUserToken } from './issueUserToken';
 
 /**
@@ -92,7 +91,6 @@ type Options = {
    * A list of claims to omit from issued tokens and only store in the user info database
    */
   omitClaimsFromToken?: string[];
-  userInfoDatabaseHandler: UserInfoDatabaseHandler;
 };
 
 /**
@@ -116,7 +114,6 @@ export class TokenFactory implements TokenIssuer {
   private readonly keyDurationSeconds: number;
   private readonly algorithm: string;
   private readonly omitClaimsFromToken?: string[];
-  private readonly userInfoDatabaseHandler: UserInfoDatabaseHandler;
 
   private keyExpiry?: Date;
   private privateKeyPromise?: Promise<JWK>;
@@ -128,10 +125,11 @@ export class TokenFactory implements TokenIssuer {
     this.keyDurationSeconds = options.keyDurationSeconds;
     this.algorithm = options.algorithm ?? 'ES256';
     this.omitClaimsFromToken = options.omitClaimsFromToken;
-    this.userInfoDatabaseHandler = options.userInfoDatabaseHandler;
   }
 
-  async issueToken(params: TokenParams): Promise<BackstageSignInResult> {
+  async issueToken(
+    params: TokenParams & { claims: { ent: string[] } },
+  ): Promise<BackstageSignInResult> {
     const key = await this.getKey();
 
     return issueUserToken({
@@ -141,7 +139,6 @@ export class TokenFactory implements TokenIssuer {
       logger: this.logger,
       omitClaimsFromToken: this.omitClaimsFromToken,
       params,
-      userInfoDatabaseHandler: this.userInfoDatabaseHandler,
     });
   }
 

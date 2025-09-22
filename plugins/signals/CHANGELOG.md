@@ -1,5 +1,178 @@
 # @backstage/plugin-signals
 
+## 0.0.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+
+## 0.0.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+
+## 0.0.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.0.22
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- 121899a: **BREAKING ALPHA**: The `app-root-element` extension now only accepts `JSX.Element` in its `element` param, meaning overrides need to be updated.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/theme@0.6.8
+
+## 0.0.22-next.2
+
+### Patch Changes
+
+- 121899a: **BREAKING ALPHA**: The `app-root-element` extension now only accepts `JSX.Element` in its `element` param, meaning overrides need to be updated.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.0.22-next.1
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.0.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.0.21
+
+### Patch Changes
+
+- d52d67f: Added a New Frontend System App Root Element for the `<SignalsDisplay />` component
+- Updated dependencies
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.0.21-next.2
+
+### Patch Changes
+
+- d52d67f: Added a New Frontend System App Root Element for the `<SignalsDisplay />` component
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.0.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-signals-react@0.0.15-next.0
+
+## 0.0.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.14
+
+## 0.0.20
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.14
+
+## 0.0.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.13
+
+## 0.0.20-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+
+## 0.0.19
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/types@1.2.1
+
 ## 0.0.19-next.1
 
 ### Patch Changes

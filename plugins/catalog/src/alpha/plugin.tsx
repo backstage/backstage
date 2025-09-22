@@ -33,12 +33,14 @@ import filters from './filters';
 import navItems from './navItems';
 import entityCards from './entityCards';
 import entityContents from './entityContents';
+import entityIconLinks from './entityIconLinks';
 import searchResultItems from './searchResultItems';
 import contextMenuItems from './contextMenuItems';
 
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog',
+  info: { packageJson: () => import('../../package.json') },
   routes: convertLegacyRouteRefs({
     catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,
@@ -56,6 +58,7 @@ export default createFrontendPlugin({
     ...navItems,
     ...entityCards,
     ...entityContents,
+    ...entityIconLinks,
     ...contextMenuItems,
     ...searchResultItems,
   ],

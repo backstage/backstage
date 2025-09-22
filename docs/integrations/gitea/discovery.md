@@ -30,7 +30,7 @@ backend.add(import('@backstage/plugin-catalog-backend-module-gitea'));
 
 ## Configuration
 
-To use the discovery processor, you'll need a Gitea integration
+To use the discovery provider, you'll need a Gitea integration
 [set up](locations.md). Then you can add any number of providers.
 
 ```yaml

@@ -1,5 +1,107 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.4
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-auth-backend@0.25.4-next.0
+
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.3
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.4.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.3-next.0
+  - @backstage/plugin-auth-node@0.6.6-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/config@1.3.3
+  - @backstage/types@1.2.1
+
+## 0.4.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-auth-backend@0.25.2
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.5
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-backend@0.25.2-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-backend@0.25.1
+
+## 0.4.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-backend@0.25.1-next.1
+
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-auth-backend@0.25.1-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.0
+
+## 0.4.3
+
+### Patch Changes
+
+- 5cc1f7f: Introduce `dangerouslyAllowSignInWithoutUserInCatalog` auth resolver config.
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.0
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
 ## 0.4.3-next.2
 
 ### Patch Changes

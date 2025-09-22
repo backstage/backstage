@@ -38,8 +38,11 @@ export interface Config {
        * Allow entities of these particular kinds.
        *
        * E.g. ["Component", "API", "Template", "Location"]
+       *
+       * You can also specify the type of the entity by using an object with `kind` and optional `spec.type` properties.
+       * E.g. [{ kind: "Component", 'spec.type': "service" }]
        */
-      allow: Array<string>;
+      allow: Array<string | { kind: string; 'spec.type'?: string }>;
       /**
        * Limit this rule to a specific location
        *
@@ -139,14 +142,14 @@ export interface Config {
     }>;
 
     /**
-     * Disables the compatibility layer for relations in returned entities that
+     * Enables the compatibility layer for relations in returned entities that
      * ensures that all relations objects have both `target` and `targetRef`.
      *
-     * Enabling this option significantly reduces the memory usage of the
-     * catalog, and slightly increases performance, but may break consumers that
+     * Enabling this option significantly increases the memory usage of the
+     * catalog, and slightly reduces performance, but may avoid breaking consumers that
      * rely on the existence of `target` in the relations objects.
      */
-    disableRelationsCompatibility?: boolean;
+    enableRelationsCompatibility?: boolean;
 
     /**
      * Disables the default backstage processors.
@@ -160,19 +163,19 @@ export interface Config {
     /**
      * The strategy to use for entities that are orphaned, i.e. no longer have
      * any other entities or providers referencing them. The default value is
-     * "keep".
+     * "delete".
      */
     orphanStrategy?: 'keep' | 'delete';
 
     /**
      * The strategy to use for entities that are referenced by providers that are orphaned,
      * i.e. entities with no providers currently configured in the catalog. The default value is
-     * "keep".
+     * "delete".
      */
     orphanProviderStrategy?: 'keep' | 'delete';
 
     /**
-     * The strategy to use when stitching together the final entities.
+     * The strategy to use when stitching together the final entities. The default mode is "deferred".
      */
     stitchingStrategy?:
       | {
@@ -220,17 +223,41 @@ export interface Config {
     processingInterval?: HumanDuration | false;
 
     /**
-     * Defines if the UrlReaderProcessor should always call the search method of the
-     * different UrlReaders.
-     *
-     * If set to false, the UrlReaderProcessor will use the legacy behavior that tries to
-     * parse a Git URL and calls search if there's wildcard patterns and readUrl otherwise.
-     *
-     * If set to true, the UrlReaderProcessor always call the search method and lets each UrlReader
-     * determine if it's a search pattern or not.
-     *
-     * This flag is temporary and will be enabled by default in future releases.
+     * Catalog provide specific configuration.
+     * Additional configuration for providers are specified in the catalog
+     * modules.
      */
-    useUrlReadersSearch?: boolean;
+    providers?: {
+      /**
+       * Name is the provider ID, e.g. "bitbucketServer"
+       */
+      [name: string]: {
+        /**
+         * Whether the provider is enabled or not. Defaults to true.
+         */
+        enabled?: boolean;
+      };
+    };
+    /**
+     * Configuration for entity processors. Additional configuration for
+     * processors are specified in the catalog modules.
+     */
+    processors?: {
+      /**
+       * Name is the processor ID, e.g. "catalog-processor"
+       */
+      [name: string]: {
+        /**
+         * Whether the processor is enabled or not. Defaults to true.
+         */
+        enabled?: boolean;
+        /**
+         * The priority of the processor, which is used to determine the order in which
+         * processors are run. The default priority is 20, and lower value means
+         * that the processor runs earlier.
+         */
+        priority?: number;
+      };
+    };
   };
 }

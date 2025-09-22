@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend",
-  "version": "0.5.6-next.2",
+  "version": "0.5.10",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "notifications",
@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",

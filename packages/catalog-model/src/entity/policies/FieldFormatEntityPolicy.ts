@@ -161,7 +161,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
       optional(
         `links.${i}.icon`,
         links[i]?.icon,
-        KubernetesValidatorFunctions.isValidObjectName,
+        CommonValidatorFunctions.isNonEmptyString,
       );
     }
 

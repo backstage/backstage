@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.10.0-next.3",
+  "version": "0.12.1",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -39,6 +39,7 @@
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -102,6 +103,9 @@
       "userInfo": [
         "src/entrypoints/userInfo/index.ts"
       ],
+      "alpha": [
+        "src/alpha/index.ts"
+      ],
       "package.json": [
         "package.json"
       ]
@@ -152,7 +156,7 @@
     "@types/express": "^4.17.6",
     "archiver": "^7.0.0",
     "base64-stream": "^1.0.0",
-    "better-sqlite3": "^11.0.0",
+    "better-sqlite3": "^12.0.0",
     "compression": "^1.7.4",
     "concat-stream": "^2.0.0",
     "cookie": "^0.7.0",
@@ -160,9 +164,11 @@
     "cron": "^3.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "express-rate-limit": "^7.5.0",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",
+    "infinispan": "^0.12.0",
     "is-glob": "^4.0.3",
     "jose": "^5.0.0",
     "keyv": "^5.2.1",
@@ -179,6 +185,7 @@
     "pg": "^8.11.3",
     "pg-connection-string": "^2.3.0",
     "pg-format": "^1.0.4",
+    "rate-limit-redis": "^4.2.0",
     "raw-body": "^2.4.1",
     "selfsigned": "^2.0.0",
     "tar": "^6.1.12",
@@ -188,7 +195,8 @@
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",
     "yn": "^4.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.20.4"
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",

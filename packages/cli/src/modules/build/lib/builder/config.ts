@@ -25,7 +25,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import esbuild from 'rollup-plugin-esbuild';
-import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 import yaml from '@rollup/plugin-yaml';
@@ -40,7 +39,6 @@ import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
 import { paths } from '../../../../lib/paths';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { svgrTemplate } from '../../../../lib/svgrTemplate';
 import { readEntryPoints } from '../../../../lib/entryPoints';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
@@ -260,10 +258,6 @@ export async function makeRollupConfigs(
         }),
         json(),
         yaml(),
-        svgr({
-          include: /\.icon\.svg$/,
-          template: svgrTemplate,
-        }),
         esbuild({
           target: 'ES2022',
           minify: options.minify,

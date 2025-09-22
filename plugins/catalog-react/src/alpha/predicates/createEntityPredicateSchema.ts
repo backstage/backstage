@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityPredicate, EntityPredicateValue } from '.';
+import { EntityPredicate, EntityPredicateValue } from './types';
 import type { z as zImpl, ZodType } from 'zod';
 
 /** @internal */

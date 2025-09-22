@@ -25,7 +25,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
-import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import {
   getProcessorFiltersFromConfig,
   Notification,
@@ -39,6 +39,7 @@ import {
   createStreamTransport,
 } from './transports';
 import { UserEntity } from '@backstage/catalog-model';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { compact } from 'lodash';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { NotificationTemplateRenderer } from '../extensions';
@@ -51,6 +52,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly transportConfig: Config;
   private readonly sender: string;
   private readonly replyTo?: string;
+  private readonly sesConfig?: Config;
   private readonly cacheTtl: number;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
@@ -62,7 +64,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   constructor(
     private readonly logger: LoggerService,
     private readonly config: Config,
-    private readonly catalog: CatalogApi,
+    private readonly catalog: CatalogService,
     private readonly auth: AuthService,
     private readonly cache?: CacheService,
     private readonly templateRenderer?: NotificationTemplateRenderer,
@@ -75,6 +77,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       emailProcessorConfig.getOptionalConfig('broadcastConfig');
     this.sender = emailProcessorConfig.getString('sender');
     this.replyTo = emailProcessorConfig.getOptionalString('replyTo');
+    this.sesConfig = emailProcessorConfig.getOptionalConfig('sesConfig');
     this.concurrencyLimit =
       emailProcessorConfig.getOptionalNumber('concurrencyLimit') ?? 2;
     this.throttleInterval = emailProcessorConfig.has('throttleInterval')
@@ -152,10 +155,6 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
         return cached;
       }
 
-      const { token } = await this.auth.getPluginRequestToken({
-        onBehalfOf: await this.auth.getOwnServiceCredentials(),
-        targetPluginId: 'catalog',
-      });
       const entities = await this.catalog.getEntities(
         {
           filter: [
@@ -163,7 +162,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
           ],
           fields: ['spec.profile.email'],
         },
-        { token },
+        { credentials: await this.auth.getOwnServiceCredentials() },
       );
       const ret = compact([
         ...new Set(
@@ -188,11 +187,9 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return cached;
     }
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
+    const entity = await this.catalog.getEntityByRef(entityRef, {
+      credentials: await this.auth.getOwnServiceCredentials(),
     });
-    const entity = await this.catalog.getEntityByRef(entityRef, { token });
     const ret: string[] = [];
     if (entity) {
       const userEntity = entity as UserEntity;
@@ -297,6 +294,24 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     return contentParts.join('\n\n');
   }
 
+  private async getSesOptions() {
+    if (!this.sesConfig) {
+      return undefined;
+    }
+    const ses: Record<string, string> = {};
+    const sourceArn = this.sesConfig.getOptionalString('sourceArn');
+    const fromArn = this.sesConfig.getOptionalString('fromArn');
+    const configurationSetName = this.sesConfig.getOptionalString(
+      'configurationSetName',
+    );
+
+    if (sourceArn) ses.SourceArn = sourceArn;
+    if (fromArn) ses.FromArn = fromArn;
+    if (configurationSetName) ses.ConfigurationSetName = configurationSetName;
+
+    return Object.keys(ses).length > 0 ? ses : undefined;
+  }
+
   private async sendPlainEmail(notification: Notification, emails: string[]) {
     const mailOptions = {
       from: this.sender,
@@ -304,6 +319,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: this.getHtmlContent(notification),
       text: this.getTextContent(notification),
       replyTo: this.replyTo,
+      ses: await this.getSesOptions(),
     };
 
     await this.sendMails(mailOptions, emails);
@@ -321,6 +337,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: await this.templateRenderer?.getHtml?.(notification),
       text: await this.templateRenderer?.getText?.(notification),
       replyTo: this.replyTo,
+      ses: await this.getSesOptions(),
     };
 
     await this.sendMails(mailOptions, emails);

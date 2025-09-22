@@ -18,6 +18,7 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
+  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -29,7 +30,7 @@ import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/rou
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
-import { FrontendFeature } from '../wiring';
+import { ErrorCollector } from '../wiring/createErrorCollector';
 
 /** @internal */
 export interface RouteRefsById {
@@ -38,7 +39,10 @@ export interface RouteRefsById {
 }
 
 /** @internal */
-export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
+export function collectRouteIds(
+  features: FrontendFeature[],
+  collector: ErrorCollector,
+): RouteRefsById {
   const routesById = new Map<string, RouteRef | SubRouteRef>();
   const externalRoutesById = new Map<string, ExternalRouteRef>();
 
@@ -50,7 +54,12 @@ export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
     for (const [name, ref] of Object.entries(feature.routes)) {
       const refId = `${feature.id}.${name}`;
       if (routesById.has(refId)) {
-        throw new Error(`Unexpected duplicate route '${refId}'`);
+        collector.report({
+          code: 'ROUTE_DUPLICATE',
+          message: `Duplicate route id '${refId}' encountered while collecting routes`,
+          context: { routeId: refId },
+        });
+        continue;
       }
 
       if (isRouteRef(ref)) {
@@ -65,7 +74,12 @@ export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
     for (const [name, ref] of Object.entries(feature.externalRoutes)) {
       const refId = `${feature.id}.${name}`;
       if (externalRoutesById.has(refId)) {
-        throw new Error(`Unexpected duplicate external route '${refId}'`);
+        collector.report({
+          code: 'ROUTE_DUPLICATE',
+          message: `Duplicate external route id '${refId}' encountered while collecting routes`,
+          context: { routeId: refId },
+        });
+        continue;
       }
 
       const internalRef = toInternalExternalRouteRef(ref);

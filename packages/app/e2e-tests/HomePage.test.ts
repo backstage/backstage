@@ -35,7 +35,7 @@ test('Should not throw `ResizeObserver loop completed with undelivered notificat
   ).not.toBeVisible();
 });
 
-test('Should resize widgets vertically and horizontally', async ({ page }) => {
+test('Should render some home page widgets', async ({ page }) => {
   await page.goto('/');
 
   const enterButton = page.getByRole('button', { name: 'Enter' });
@@ -43,32 +43,6 @@ test('Should resize widgets vertically and horizontally', async ({ page }) => {
   await enterButton.click();
 
   await page.goto('/home');
-  await expect(page.getByText('Backstage Example App')).toBeVisible();
-
-  // Start editing mode
-  await page.getByRole('button', { name: /Edit/ }).click();
-  await expect(page.getByRole('button', { name: /Save/ })).toBeVisible();
-
-  // Resize the last installed widget
-  const widgetElement = await page.locator('.react-grid-item:nth-child(3)');
-  const defaultWidgetBox = { x: 1, y: 1, width: 1, height: 1 };
-  const widgetBoxBefore =
-    (await widgetElement.boundingBox()) ?? defaultWidgetBox;
-  const widgetResizeHandle = await widgetElement.locator(
-    '.react-resizable-handle',
-  );
-  await widgetResizeHandle.hover();
-  await page.mouse.down();
-  await page.mouse.move(widgetBoxBefore.width / 2, widgetBoxBefore.height / 2);
-  await page.mouse.up();
-  const widgetBoxAfter =
-    (await widgetElement.boundingBox()) ?? defaultWidgetBox;
-
-  // Ensure that both height and width was reduced
-  expect(widgetBoxAfter.width).toBeLessThan(widgetBoxBefore.width);
-  expect(widgetBoxAfter.height).toBeLessThan(widgetBoxBefore.height);
-
-  // Exit editing mode
-  await page.getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByRole('button', { name: /Edit/ })).toBeVisible();
+  await expect(page.getByText('Top Visited')).toBeVisible();
+  await expect(page.getByText('Recently Visited')).toBeVisible();
 });

@@ -1,10 +1,11 @@
 {
   "name": "@backstage/plugin-auth-node",
-  "version": "0.6.3-next.2",
+  "version": "0.6.7",
   "backstage": {
     "role": "node-library",
     "pluginId": "auth",
     "pluginPackages": [
+      "@backstage/plugin-auth",
       "@backstage/plugin-auth-backend",
       "@backstage/plugin-auth-node",
       "@backstage/plugin-auth-react"

@@ -2,19 +2,10 @@
 id: testing
 title: Frontend System Testing Plugins
 sidebar_label: Testing
-# prettier-ignore
 description: Testing plugins in the frontend system
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 # Testing Frontend Plugins
-
-:::note Note
-
-The new frontend system is in alpha, and some plugins do not yet fully implement it.
-
-:::
 
 Utilities for testing frontend features and components are available in `@backstage/frontend-test-utils`.
 
@@ -101,7 +92,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should render a the index page', async () => {
+  it('should render the index page', async () => {
     await renderInTestApp(
       createExtensionTester(indexPageExtension).reactElement(),
     );
@@ -156,7 +147,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension, detailsPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should accepts a custom title via config', async () => {
+  it('should accept a custom title via config', async () => {
     const tester = createExtensionTester(indexPageExtension, {
       // Extension configuration for the index page
       config: { title: 'Custom page' },

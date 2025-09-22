@@ -197,6 +197,7 @@ export type AuthProviderInfo = {
   id: string;
   title: string;
   icon: IconComponent;
+  message?: string;
 };
 
 // @public
@@ -602,6 +603,11 @@ export const oneloginAuthApiRef: ApiRef<
 export type OpenIdConnectApi = {
   getIdToken(options?: AuthRequestOptions): Promise<string>;
 };
+
+// @public
+export const openshiftAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+>;
 
 // @public @deprecated
 export type OptionalParams<

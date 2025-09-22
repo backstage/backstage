@@ -42,6 +42,9 @@ import { version as coreComponents } from '../../../../packages/core-components/
 import { version as corePluginApi } from '../../../../packages/core-plugin-api/package.json';
 import { version as devUtils } from '../../../../packages/dev-utils/package.json';
 import { version as errors } from '../../../../packages/errors/package.json';
+import { version as frontendDefaults } from '../../../../packages/frontend-defaults/package.json';
+import { version as frontendPluginApi } from '../../../../packages/frontend-plugin-api/package.json';
+import { version as frontendTestUtils } from '../../../../packages/frontend-test-utils/package.json';
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
@@ -49,6 +52,7 @@ import { version as authBackend } from '../../../../plugins/auth-backend/package
 import { version as authBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
 import { version as catalogNode } from '../../../../plugins/catalog-node/package.json';
 import { version as theme } from '../../../../packages/theme/package.json';
+import { version as types } from '../../../../packages/types/package.json';
 import { version as backendDefaults } from '../../../../packages/backend-defaults/package.json';
 
 export const packageVersions: Record<string, string> = {
@@ -63,8 +67,12 @@ export const packageVersions: Record<string, string> = {
   '@backstage/core-plugin-api': corePluginApi,
   '@backstage/dev-utils': devUtils,
   '@backstage/errors': errors,
+  '@backstage/frontend-defaults': frontendDefaults,
+  '@backstage/frontend-plugin-api': frontendPluginApi,
+  '@backstage/frontend-test-utils': frontendTestUtils,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
+  '@backstage/types': types,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
   '@backstage/plugin-scaffolder-node-test-utils': scaffolderNodeTestUtils,
   '@backstage/plugin-auth-backend': authBackend,

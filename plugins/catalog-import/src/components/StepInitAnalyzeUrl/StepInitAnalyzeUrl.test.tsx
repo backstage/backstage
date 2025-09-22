@@ -19,8 +19,8 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ReactNode } from 'react';
-import { AnalyzeResult, catalogImportApiRef } from '../../api/';
 import { StepInitAnalyzeUrl } from './StepInitAnalyzeUrl';
+import { AnalyzeResult, catalogImportApiRef } from '../../api/CatalogImportApi';
 
 describe('<StepInitAnalyzeUrl />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {

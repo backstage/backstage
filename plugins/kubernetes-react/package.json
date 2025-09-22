@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-react",
-  "version": "0.5.7-next.1",
+  "version": "0.5.11",
   "description": "Web library for the kubernetes-react plugin",
   "backstage": {
     "role": "web-library",
@@ -66,15 +66,15 @@
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
+    "@xterm/addon-attach": "^0.11.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
     "cronstrue": "^2.32.0",
     "js-yaml": "^4.1.0",
     "kubernetes-models": "^4.3.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "react-use": "^17.4.0",
-    "xterm": "^5.3.0",
-    "xterm-addon-attach": "^0.9.0",
-    "xterm-addon-fit": "^0.8.0"
+    "react-use": "^17.4.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -36,64 +36,29 @@ export function createGithubBranchProtectionAction(options: {
 }) {
   const { integrations } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    branch?: string;
-    enforceAdmins?: boolean;
-    requiredApprovingReviewCount?: number;
-    requireCodeOwnerReviews?: boolean;
-    dismissStaleReviews?: boolean;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
-        }
-      | undefined;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredStatusCheckContexts?: string[];
-    requireBranchesToBeUpToDate?: boolean;
-    requiredConversationResolution?: boolean;
-    requireLastPushApproval?: boolean;
-    requiredCommitSigning?: boolean;
-    requiredLinearHistory?: boolean;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'github:branch-protection:create',
     description: 'Configures Branch Protection',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          branch: {
-            title: 'Branch name',
-            description: `The branch to protect. Defaults to the repository's default branch`,
-            type: 'string',
-          },
-          enforceAdmins: inputProps.protectEnforceAdmins,
-          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-          dismissStaleReviews: inputProps.dismissStaleReviews,
-          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-          restrictions: inputProps.restrictions,
-          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-          requiredConversationResolution:
-            inputProps.requiredConversationResolution,
-          requireLastPushApproval: inputProps.requireLastPushApproval,
-          requiredCommitSigning: inputProps.requiredCommitSigning,
-          requiredLinearHistory: inputProps.requiredLinearHistory,
-          token: inputProps.token,
-        },
+        repoUrl: inputProps.repoUrl,
+        branch: inputProps.branch,
+        enforceAdmins: inputProps.protectEnforceAdmins,
+        requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+        requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+        dismissStaleReviews: inputProps.dismissStaleReviews,
+        bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+        restrictions: inputProps.restrictions,
+        requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+        requiredConversationResolution:
+          inputProps.requiredConversationResolution,
+        requireLastPushApproval: inputProps.requireLastPushApproval,
+        requiredCommitSigning: inputProps.requiredCommitSigning,
+        requiredLinearHistory: inputProps.requiredLinearHistory,
+        blockCreations: inputProps.blockCreations,
+        token: inputProps.token,
       },
     },
     async handler(ctx) {
@@ -112,6 +77,7 @@ export function createGithubBranchProtectionAction(options: {
         requireLastPushApproval = false,
         requiredCommitSigning = false,
         requiredLinearHistory = false,
+        blockCreations,
         token: providedToken,
       } = ctx.input;
 
@@ -165,6 +131,7 @@ export function createGithubBranchProtectionAction(options: {
             dismissStaleReviews,
             requiredCommitSigning,
             requiredLinearHistory,
+            blockCreations,
           });
         },
       });

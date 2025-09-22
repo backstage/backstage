@@ -63,7 +63,7 @@ const getExtensionContext = (
       return acc;
     }, {});
 
-    const plugin = routeObject.appNode?.spec.source;
+    const plugin = routeObject.appNode?.spec.plugin;
     const extension = routeObject.appNode?.spec.extension;
 
     return {

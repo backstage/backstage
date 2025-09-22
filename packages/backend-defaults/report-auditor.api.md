@@ -8,6 +8,7 @@ import type { AuditorServiceCreateEventOptions } from '@backstage/backend-plugin
 import type { AuditorServiceEvent } from '@backstage/backend-plugin-api';
 import type { AuditorServiceEventSeverityLevel } from '@backstage/backend-plugin-api';
 import type { AuthService } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import type { Format } from 'logform';
 import type { HttpAuthService } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
@@ -58,7 +59,7 @@ export type AuditorEventStatus =
     }
   | {
       status: 'failed';
-      error: string;
+      error: Error;
     };
 
 // @public
@@ -95,6 +96,7 @@ export class WinstonRootAuditorService {
   // (undocumented)
   forPlugin(deps: {
     auth: AuthService;
+    config: Config;
     httpAuth: HttpAuthService;
     plugin: PluginMetadataService;
   }): AuditorService;
