@@ -344,17 +344,17 @@ export class GitLabClient {
    * General existence check.
    * @see {@link https://docs.gitlab.com/api/repository_files/#get-file-from-repository | GitLab Repository Files API}
    *
-   * @param projectPath - The path to the project, either the numeric ID or the namespaced path.
+   * @param project - The path to the project, either the numeric ID or the namespaced path.
    * @param branch - The branch used to search
    * @param filePath - The path to the file
    */
   async hasFile(
-    projectPath: string,
+    project: string,
     branch: string,
     filePath: string,
   ): Promise<boolean> {
     const endpoint: string = `/projects/${encodeURIComponent(
-      projectPath,
+      project,
     )}/repository/files/${encodeURIComponent(filePath)}`;
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     request.searchParams.append('ref', branch);
