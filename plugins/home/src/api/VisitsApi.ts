@@ -128,7 +128,12 @@ export interface VisitsApi {
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
 }
 
-/** @public */
+/**
+ * API reference for the visits tracking service.
+ * Provides functionality to track and retrieve user page visit history.
+ *
+ * @public
+ */
 export const visitsApiRef = createApiRef<VisitsApi>({
   id: 'homepage.visits',
 });

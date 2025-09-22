@@ -16,6 +16,9 @@
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
+ * Translation reference for the home plugin.
+ * Contains localized text strings for home page components and widgets.
+ *
  * @alpha
  */
 export const homeTranslationRef = createTranslationRef({

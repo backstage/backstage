@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
+import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
+
 /**
- * React components and utilities for the home plugin's new frontend system.
+ * Title data supplied to the home page extension when composing via the new frontend system.
  *
- * @remarks
- * This package provides React components, blueprints, and utilities for building
- * customizable home pages with the new Backstage frontend system.
- *
- * @packageDocumentation
+ * @alpha
  */
-export { homeReactTranslationRef } from './translation';
-export { titleExtensionDataRef } from './alpha/dataRefs';
-export {
-  CustomHomepageWidgetBlueprint,
-  type CustomHomepageWidgetBlueprintParams,
-} from './alpha/blueprints/CustomHomepageWidgetBlueprint';
-export type { ComponentParts, CardLayout, CardSettings } from './extensions';
+export const titleExtensionDataRef = createExtensionDataRef<string>().with({
+  id: 'title',
+});
