@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { parseSyml } from '@yarnpkg/parsers';
 import crypto from 'node:crypto';
+import { parseSyml } from '@yarnpkg/parsers';
 import fs from 'fs-extra';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
@@ -178,9 +178,9 @@ export class Lockfile {
    */
   diff(otherLockfile: Lockfile): LockfileDiff {
     const diff = {
-      added: new Array<{ name: string; range: string }>(),
-      changed: new Array<{ name: string; range: string }>(),
-      removed: new Array<{ name: string; range: string }>(),
+      added: [] as { name: string; range: string }[],
+      changed: [] as { name: string; range: string }[],
+      removed: [] as { name: string; range: string }[],
     };
 
     // Keeps track of packages that only exist in this lockfile
@@ -262,7 +262,7 @@ export class Lockfile {
 
       // TODO(Rugvip): This uses the same simplified lookup as createSimplifiedDependencyGraph()
       //               we could match version queries to make the resulting tree a bit smaller.
-      const deps = new Array<string>();
+      const deps: string[] = [];
       for (const entry of entries) {
         // We're not being particular about stable ordering here. If the lockfile ordering changes, so will likely hash.
         hash.update(entry.version);

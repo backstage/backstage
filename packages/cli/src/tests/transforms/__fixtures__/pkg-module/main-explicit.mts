@@ -17,14 +17,14 @@
 // @ts-nocheck
 
 import * as depCommonJs from 'dep-commonjs';
-import * as depModule from 'dep-module';
 import * as depDefault from 'dep-default';
-import { value as namedA } from './a-named-explicit';
-import { value as namedB } from './b-named';
-import cNamed from './c-named';
+import * as depModule from 'dep-module';
 import defaultA from './a-default-explicit';
+import { value as namedA } from './a-named-explicit';
 import defaultB from './b-default';
+import { value as namedB } from './b-named';
 import cDefault from './c-default';
+import cNamed from './c-named';
 
 const { default: defaultC } = cDefault;
 const { value: namedC } = cNamed;

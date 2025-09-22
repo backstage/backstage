@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { ChildProcess } from 'node:child_process';
 import { serializeError } from '@backstage/errors';
-import { ChildProcess } from 'child_process';
 
 interface RequestMeta {
   generation: number;

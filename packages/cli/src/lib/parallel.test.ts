@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import os from 'os';
+import os from 'node:os';
 import {
-  parseParallelismOption,
   getEnvironmentParallelism,
+  parseParallelismOption,
   runParallelWorkers,
   runWorkerQueueThreads,
   runWorkerThreads,
@@ -67,9 +67,9 @@ describe('getEnvironmentParallelism', () => {
 
 describe('runParallelWorkers', () => {
   it('executes work in parallel', async () => {
-    const started = new Array<number>();
-    const done = new Array<number>();
-    const waiting = new Array<() => void>();
+    const started: number[] = [];
+    const done: number[] = [];
+    const waiting: (() => void)[] = [];
 
     const work = runParallelWorkers({
       items: [0, 1, 2, 3, 4],
@@ -106,9 +106,9 @@ describe('runParallelWorkers', () => {
   });
 
   it('executes work sequentially', async () => {
-    const started = new Array<number>();
-    const done = new Array<number>();
-    const waiting = new Array<() => void>();
+    const started: number[] = [];
+    const done: number[] = [];
+    const waiting: (() => void)[] = [];
 
     const work = runParallelWorkers({
       items: [0, 1, 2, 3, 4],
@@ -196,7 +196,7 @@ describe('runWorkerThreads', () => {
   });
 
   it('should send messages', async () => {
-    const messages = new Array<string>();
+    const messages: string[] = [];
 
     await runWorkerThreads({
       threadCount: 2,

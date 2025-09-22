@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { paths } from '../util';
 import fs from 'fs-extra';
+import { paths } from '../util';
 
 /**
  * Returns try if the current project is a monorepo.
@@ -27,7 +27,7 @@ export async function isMonoRepo(): Promise<boolean> {
   try {
     const pkg = await fs.readJson(rootPackageJsonPath);
     return Boolean(pkg?.workspaces?.packages);
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }

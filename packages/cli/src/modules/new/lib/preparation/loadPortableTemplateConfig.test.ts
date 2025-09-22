@@ -15,11 +15,11 @@
  */
 
 import { realpathSync } from 'node:fs';
-import { loadPortableTemplateConfig } from './loadPortableTemplateConfig';
-import { defaultTemplates } from '../defaultTemplates';
-import { createMockDirectory } from '@backstage/backend-test-utils';
-import { TEMPLATE_FILE_NAME } from '../types';
 import { basename } from 'node:path';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { defaultTemplates } from '../defaultTemplates';
+import { TEMPLATE_FILE_NAME } from '../types';
+import { loadPortableTemplateConfig } from './loadPortableTemplateConfig';
 
 describe('loadPortableTemplateConfig', () => {
   const mockDir = createMockDirectory();
@@ -268,7 +268,7 @@ describe('loadPortableTemplateConfig', () => {
         packagePath: mockDir.resolve('package.json'),
       }),
     ).rejects.toThrow(
-      `Failed to load template definition '.\/invalid'; caused by Error: ENOENT`,
+      `Failed to load template definition './invalid'; caused by Error: ENOENT`,
     );
   });
 

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { OptionValues } from 'commander';
-import { paths } from '../../../../lib/paths';
+import type { OptionValues } from 'commander';
 import { ESLint } from 'eslint';
+import fs from 'fs-extra';
+import { paths } from '../../../../lib/paths';
 
 export default async (directories: string[], opts: OptionValues) => {
   const eslint = new ESLint({

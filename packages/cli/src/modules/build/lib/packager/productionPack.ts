@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { posix as posixPath, resolve as resolvePath } from 'node:path';
+import type { BackstagePackageJson } from '@backstage/cli-node';
 import fs from 'fs-extra';
 import npmPackList from 'npm-packlist';
-import { resolve as resolvePath, posix as posixPath } from 'path';
-import { BackstagePackageJson } from '@backstage/cli-node';
+import type { Project } from 'ts-morph';
 import { readEntryPoints } from '../../../../lib/entryPoints';
 import { getEntryPointDefaultFeatureType } from '../../../../lib/typeDistProject';
-import { Project } from 'ts-morph';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';

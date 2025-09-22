@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Command } from 'commander';
+import type { Command } from 'commander';
 
 export function createScriptOptionsParser(
   anyCmd: Command,

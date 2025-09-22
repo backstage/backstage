@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export type {
-  PackageRoleInfo,
-  PackagePlatform,
-  PackageOutputType,
-  PackageRole,
-} from './types';
 export { PackageRoles } from './PackageRoles';
+export type {
+  PackageOutputType,
+  PackagePlatform,
+  PackageRole,
+  PackageRoleInfo,
+} from './types';

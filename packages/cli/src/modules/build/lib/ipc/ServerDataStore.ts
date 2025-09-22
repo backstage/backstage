@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IpcServer } from './IpcServer';
+import type { IpcServer } from './IpcServer';
 
 interface StorageItem {
   generation: number;

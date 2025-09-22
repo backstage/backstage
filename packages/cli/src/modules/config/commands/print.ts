@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
+import { type AppConfig, ConfigReader } from '@backstage/config';
+import type { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
+import type { OptionValues } from 'commander';
 import { stringify as stringifyYaml } from 'yaml';
-import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../lib/config';
-import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
 
 export default async (opts: OptionValues) => {
   const { schema, appConfigs } = await loadCliConfig({

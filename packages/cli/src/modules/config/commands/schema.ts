@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { JSONSchema7 as JSONSchema } from 'json-schema';
+import { mergeConfigSchemas } from '@backstage/config-loader';
+import type { JsonObject } from '@backstage/types';
+import type { OptionValues } from 'commander';
+import type { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../lib/config';
-import { JsonObject } from '@backstage/types';
-import { mergeConfigSchemas } from '@backstage/config-loader';
 
 export default async (opts: OptionValues) => {
   const { schema } = await loadCliConfig({

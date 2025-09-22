@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { dirname, resolve as resolvePath } from 'path';
-
-import { paths } from '../../../../lib/paths';
-import { PortableTemplate, PortableTemplateInput } from '../types';
-import { ForwardedError, InputError } from '@backstage/errors';
+import { dirname, resolve as resolvePath } from 'node:path';
 import { isMonoRepo as getIsMonoRepo } from '@backstage/cli-node';
+import { ForwardedError, InputError } from '@backstage/errors';
+import fs from 'fs-extra';
+import { paths } from '../../../../lib/paths';
+import type { PortableTemplate, PortableTemplateInput } from '../types';
 import { PortableTemplater } from './PortableTemplater';
 
 export async function writeTemplateContents(
@@ -101,7 +100,7 @@ export function injectPackageJsonInput(
 ) {
   const pkgJson = JSON.parse(content);
 
-  const toAdd = new Array<[name: string, value: unknown]>();
+  const toAdd: [name: string, value: unknown][] = [];
 
   if (pkgJson.version) {
     pkgJson.version = input.version;

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
-import { PackageGraph } from './PackageGraph';
-import { Lockfile } from './Lockfile';
 import { GitUtils } from '../git';
+import { Lockfile } from './Lockfile';
+import { PackageGraph } from './PackageGraph';
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');

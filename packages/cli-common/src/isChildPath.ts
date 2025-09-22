@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { relative, isAbsolute } from 'path';
+import { isAbsolute, relative } from 'node:path';
 
 /**
  * Checks if path is the same as or a child path of base.

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import { getPackages, Package } from '@manypkg/get-packages';
-import { paths } from '../util';
-import { PackageRole } from '../roles';
+import path from 'node:path';
+import type { JsonValue } from '@backstage/types';
+import { getPackages, type Package } from '@manypkg/get-packages';
 import { GitUtils } from '../git';
+import type { PackageRole } from '../roles';
+import { paths } from '../util';
 import { Lockfile } from './Lockfile';
-import { JsonValue } from '@backstage/types';
 
 /**
  * A list of the feature types we want to extract from the project
@@ -334,7 +334,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     );
     const packageDirs = Array.from(dirMap.keys());
 
-    const result = new Array<PackageGraphNode>();
+    const result: PackageGraphNode[] = [];
     let searchIndex = 0;
 
     changedFiles.sort();
@@ -391,7 +391,10 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
         for (const [name, dependencies] of otherGraph) {
           const node = graph.get(name);
           if (node) {
-            dependencies.forEach(d => node.add(d));
+            // NOTE: Is this correct?
+            dependencies.forEach(d => {
+              node.add(d);
+            });
           } else {
             graph.set(name, dependencies);
           }

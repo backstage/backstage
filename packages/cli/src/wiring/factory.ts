@@ -15,7 +15,11 @@
  */
 
 import { describeParentCallSite } from './describeParentCallSite';
-import { BackstageCommand, CliPlugin, OpaqueCliPlugin } from './types';
+import {
+  type BackstageCommand,
+  type CliPlugin,
+  OpaqueCliPlugin,
+} from './types';
 
 export function createCliPlugin(options: {
   pluginId: string;

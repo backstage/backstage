@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExternalOption } from 'rollup';
+import type { ExternalOption } from 'rollup';
 import { makeRollupConfigs } from './config';
 import { Output } from './types';
 

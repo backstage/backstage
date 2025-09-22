@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const http = require('http');
-const https = require('https');
+const http = require('node:http');
+const https = require('node:https');
 
 const errorMessage = 'Network requests are not allowed in tests';
 

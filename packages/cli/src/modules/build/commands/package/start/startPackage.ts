@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PackageRole } from '@backstage/cli-node';
+import type { PackageRole } from '@backstage/cli-node';
 import { startBackend, startBackendPlugin } from './startBackend';
 import { startFrontend } from './startFrontend';
 

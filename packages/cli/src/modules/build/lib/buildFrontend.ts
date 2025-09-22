@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path';
+import type { BackstagePackageJson } from '@backstage/cli-node';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
-import { buildBundle, getModuleFederationOptions } from './bundler';
 import { getEnvironmentParallelism } from '../../../lib/parallel';
 import { loadCliConfig } from '../../config/lib/config';
-import { BackstagePackageJson } from '@backstage/cli-node';
+import { buildBundle, getModuleFederationOptions } from './bundler';
 
 interface BuildAppOptions {
   targetDir: string;

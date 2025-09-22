@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { join as joinPath } from 'path';
-import { PortableTemplateInputRoleParams } from '../types';
+import { join as joinPath } from 'node:path';
+import type { PortableTemplateInputRoleParams } from '../types';
 
 export type ResolvePackageParamsOptions = {
   roleParams: PortableTemplateInputRoleParams;

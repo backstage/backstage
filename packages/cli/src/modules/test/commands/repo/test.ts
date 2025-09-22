@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import crypto from 'node:crypto';
-import yargs from 'yargs';
-import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
-import { relative as relativePath } from 'path';
-import { Command, OptionValues } from 'commander';
+import os from 'node:os';
+import { relative as relativePath } from 'node:path';
+import { isChildPath } from '@backstage/cli-common';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
+import type { Command, OptionValues } from 'commander';
+import { yargsOptions as jestYargsOptions, run as runJest } from 'jest-cli';
+import yargs from 'yargs';
+import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 import { paths } from '../../../../lib/paths';
 import { runCheck, runPlain } from '../../../../lib/run';
-import { isChildPath } from '@backstage/cli-common';
-import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
 type JestProject = {
   displayName: string;
@@ -253,7 +253,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     return packageGraph;
   }
 
-  let selectedProjects: string[] | undefined = undefined;
+  let selectedProjects: string[] | undefined;
   if (opts.since && !hasFlags('--selectProjects')) {
     const graph = await getPackageGraph();
     const changedPackages = await graph.listChangedPackages({
@@ -322,7 +322,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
     // Shared state for the bridge
     const projectHashes = new Map<string, string>();
-    const outputSuccessCache = new Array<string>();
+    const outputSuccessCache: string[] = [];
 
     // Set up a bridge with the @backstage/cli/config/jest configuration file. These methods
     // are picked up by the config script itself, as well as the custom result processor.

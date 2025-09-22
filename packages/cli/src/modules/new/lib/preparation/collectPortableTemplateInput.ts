@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import inquirer, { DistinctQuestion } from 'inquirer';
-import { getCodeownersFilePath, parseOwnerIds } from '../codeowners';
+import inquirer, { type DistinctQuestion } from 'inquirer';
 import { paths } from '../../../../lib/paths';
-import {
+import { getCodeownersFilePath, parseOwnerIds } from '../codeowners';
+import type {
+  PortableTemplate,
   PortableTemplateConfig,
   PortableTemplateInput,
   PortableTemplateInputRoleParams,
   PortableTemplateParams,
   PortableTemplateRole,
 } from '../types';
-import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
 
 type CollectTemplateParamsOptions = {
@@ -70,9 +70,8 @@ export async function collectPortableTemplateInput(
     }
   }
 
-  const promptAnswers = await inquirer.prompt<PortableTemplateParams>(
-    needsAnswer,
-  );
+  const promptAnswers =
+    await inquirer.prompt<PortableTemplateParams>(needsAnswer);
 
   const answers = {
     ...prefilledAnswers,

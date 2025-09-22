@@ -39,8 +39,8 @@ export default async (opts: ArgOptions) => {
 
   const prefilledParams = parseParams(rawArgOptions);
 
-  let pluginInfix: string | undefined = undefined;
-  let packagePrefix: string | undefined = undefined;
+  let pluginInfix: string | undefined;
+  let packagePrefix: string | undefined;
   if (scope) {
     packagePrefix = scope.includes('/') ? `@${scope}` : `@${scope}/`;
     pluginInfix = scope.includes('backstage') ? 'plugin-' : 'backstage-plugin-';

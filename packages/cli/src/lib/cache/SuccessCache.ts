@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
+import fs from 'fs-extra';
 import { paths } from '../paths';
 
 const DEFAULT_CACHE_BASE_PATH = 'node_modules/.cache/backstage-cli';

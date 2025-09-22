@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCliPlugin } from '../../wiring/factory';
+
+import { NotImplementedError } from '@backstage/errors';
 import { Command } from 'commander';
 import { lazy } from '../../lib/lazy';
-import { NotImplementedError } from '@backstage/errors';
+import { createCliPlugin } from '../../wiring/factory';
 
 export default createCliPlugin({
   pluginId: 'new',

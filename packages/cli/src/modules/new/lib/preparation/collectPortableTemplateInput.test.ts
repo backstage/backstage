@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import inquirer from 'inquirer';
-import { PortableTemplateConfig } from '../types';
-import { collectPortableTemplateInput } from './collectPortableTemplateInput';
 import { withLogCollector } from '@backstage/test-utils';
+import inquirer from 'inquirer';
+import type { PortableTemplateConfig } from '../types';
+import { collectPortableTemplateInput } from './collectPortableTemplateInput';
 
 describe('collectTemplateParams', () => {
   const baseOptions = {

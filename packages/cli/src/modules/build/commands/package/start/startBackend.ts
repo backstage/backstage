@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
 import { paths } from '../../../../../lib/paths';
 import { runBackend } from '../../../lib/runner';
 

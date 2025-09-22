@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import yn from 'yn';
+import { resolve as resolvePath } from 'node:path';
+import { type Configuration, type MultiStats, rspack } from '@rspack/core';
+import chalk from 'chalk';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
-import { rspack, Configuration, MultiStats } from '@rspack/core';
 import {
   measureFileSizesBeforeBuild,
   printFileSizesAfterBuild,
 } from 'react-dev-utils/FileSizeReporter';
 import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
+import yn from 'yn';
 import { createConfig } from './config';
-import { BuildOptions } from './types';
-import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
-import chalk from 'chalk';
 import { createDetectedModulesEntryPoint } from './packageDetection';
+import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
+import type { BuildOptions } from './types';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -169,7 +169,7 @@ async function build(
         if (err.message) {
           const { errors } = formatWebpackMessages({
             errors: [err.message],
-            warnings: new Array<string>(),
+            warnings: [] as string[],
             _showErrors: true,
             _showWarnings: true,
           });

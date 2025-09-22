@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { startPackage } from './startPackage';
-import { resolveLinkedWorkspace } from './resolveLinkedWorkspace';
-import { findRoleFromCommand } from '../../../../../lib/role';
+import type { OptionValues } from 'commander';
 import { paths } from '../../../../../lib/paths';
+import { findRoleFromCommand } from '../../../../../lib/role';
+import { resolveLinkedWorkspace } from './resolveLinkedWorkspace';
+import { startPackage } from './startPackage';
 
 export async function command(opts: OptionValues): Promise<void> {
   await startPackage({

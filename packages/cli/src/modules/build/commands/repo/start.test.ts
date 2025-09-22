@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { posix } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { findTargetPackages } from './start';
-import { posix } from 'path';
 import { paths } from '../../../../lib/paths';
+import { findTargetPackages } from './start';
 
 const mocks = {
   app: {

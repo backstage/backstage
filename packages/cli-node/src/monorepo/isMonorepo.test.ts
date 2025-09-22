@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { isMonoRepo } from './isMonoRepo';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { isMonoRepo } from './isMonoRepo';
 
 const mockDir = createMockDirectory();
 

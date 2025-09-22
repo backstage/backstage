@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import {
+import type {
   NormalizedOutputOptions,
   OutputAsset,
   OutputChunk,
   PluginContext,
 } from 'rollup';
-
 import { forwardFileImports } from './plugins';
-import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const context = {
   meta: {
@@ -137,7 +136,7 @@ describe('forwardFileImports', () => {
           dir: mockDir.resolve('dev/dist'),
         } as NormalizedOutputOptions,
         {
-          ['index.js']: {
+          'index.js': {
             type: 'chunk',
             facadeModuleId: mockDir.resolve('dev/src/index.ts'),
           } as OutputChunk,
@@ -153,9 +152,9 @@ describe('forwardFileImports', () => {
         } as NormalizedOutputOptions,
         {
           // output assets should not cause a write
-          ['index.js']: { type: 'asset' } as OutputAsset,
+          'index.js': { type: 'asset' } as OutputAsset,
           // missing facadeModuleId should not cause a write either
-          ['index2.js']: { type: 'chunk' } as OutputChunk,
+          'index2.js': { type: 'chunk' } as OutputChunk,
         },
         true,
       );
@@ -168,7 +167,7 @@ describe('forwardFileImports', () => {
           dir: mockDir.resolve('dev/dist'),
         } as NormalizedOutputOptions,
         {
-          ['index.js']: {
+          'index.js': {
             type: 'chunk',
             facadeModuleId: mockDir.resolve('dev/src/index.ts'),
           } as OutputChunk,
@@ -184,7 +183,7 @@ describe('forwardFileImports', () => {
           file: mockDir.resolve('dev/dist/my-output.js'),
         } as NormalizedOutputOptions,
         {
-          ['index.js']: {
+          'index.js': {
             type: 'chunk',
             facadeModuleId: mockDir.resolve('dev/src/index.ts'),
           } as OutputChunk,

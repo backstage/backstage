@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { FSWatcher, watch } from 'chokidar';
-import type { ChildProcess } from 'child_process';
-import { ctrlc } from 'ctrlc-windows';
-import { IpcServer, ServerDataStore } from '../ipc';
-import debounce from 'lodash/debounce';
-import { fileURLToPath } from 'url';
-import { isAbsolute as isAbsolutePath } from 'path';
-import { paths } from '../../../../lib/paths';
+import type { ChildProcess } from 'node:child_process';
+import { isAbsolute as isAbsolutePath } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { type FSWatcher, watch } from 'chokidar';
 import spawn from 'cross-spawn';
+import { ctrlc } from 'ctrlc-windows';
+import debounce from 'lodash/debounce';
+import { paths } from '../../../../lib/paths';
+import { IpcServer, ServerDataStore } from '../ipc';
 
 const loaderArgs = [
   '--enable-source-maps',
@@ -59,8 +59,8 @@ export async function runBackend(options: RunBackendOptions) {
   let exiting = false;
   let firstStart = true;
   let child: ChildProcess | undefined;
-  let watcher: FSWatcher | undefined = undefined;
-  let shutdownPromise: Promise<void> | undefined = undefined;
+  let watcher: FSWatcher | undefined;
+  let shutdownPromise: Promise<void> | undefined;
 
   const watchedPaths = new Set<string>();
 
@@ -79,7 +79,7 @@ export async function runBackend(options: RunBackendOptions) {
 
     if (child && !child.killed && child.exitCode === null) {
       // We always wait for the existing process to exit, to make sure we don't get IPC conflicts
-      shutdownPromise = new Promise(resolve => child!.once('exit', resolve));
+      shutdownPromise = new Promise(resolve => child?.once('exit', resolve));
       if (process.platform === 'win32' && child.pid) {
         ctrlc(child.pid);
       } else {
@@ -94,7 +94,7 @@ export async function runBackend(options: RunBackendOptions) {
       return;
     }
 
-    const optionArgs = new Array<string>();
+    const optionArgs: string[] = [];
     if (options.inspectEnabled) {
       const inspect =
         typeof options.inspectEnabled === 'string'
@@ -174,8 +174,8 @@ export async function runBackend(options: RunBackendOptions) {
       // Forward signals to child and wait for it to exit if still running
       if (child && child.exitCode === null) {
         await new Promise(resolve => {
-          child!.on('close', resolve);
-          child!.kill(signal);
+          child?.on('close', resolve);
+          child?.kill(signal);
         });
       }
 

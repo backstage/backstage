@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import {
   dirname,
-  resolve as resolvePath,
   relative as relativePath,
-} from 'path';
-import { createFilter } from 'rollup-pluginutils';
-import {
-  Plugin,
+  resolve as resolvePath,
+} from 'node:path';
+import fs from 'fs-extra';
+import type {
+  HasModuleSideEffects,
   InputOptions,
   OutputChunk,
-  HasModuleSideEffects,
+  Plugin,
 } from 'rollup';
+import { createFilter } from 'rollup-pluginutils';
 
 type ForwardFileImportsOptions = {
   include: Array<string | RegExp> | string | RegExp | null;

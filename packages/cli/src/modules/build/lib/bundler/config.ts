@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-import { BundlingOptions, ModuleFederationOptions } from './types';
-import { resolve as resolvePath } from 'path';
-import { rspack, Configuration } from '@rspack/core';
-
-import { BundlingPaths } from './paths';
-import { Config } from '@backstage/config';
-import ESLintRspackPlugin from 'eslint-rspack-plugin';
-import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
+import { resolve as resolvePath } from 'node:path';
+import type { Config } from '@backstage/config';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
-import { paths as cliPaths } from '../../../../lib/paths';
+import { type Configuration, rspack } from '@rspack/core';
+import ESLintRspackPlugin from 'eslint-rspack-plugin';
 import fs from 'fs-extra';
-import { optimization as optimizationConfig } from './optimization';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import pickBy from 'lodash/pickBy';
-import { runPlain } from '../../../../lib/run';
-import { transforms } from './transforms';
-import { version } from '../../../../lib/version';
+import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
+import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import yn from 'yn';
+import { paths as cliPaths } from '../../../../lib/paths';
+import { runPlain } from '../../../../lib/run';
+import { version } from '../../../../lib/version';
+import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
 import { hasReactDomClient } from './hasReactDomClient';
 import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
-import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
+import { optimization as optimizationConfig } from './optimization';
+import type { BundlingPaths } from './paths';
+import { transforms } from './transforms';
+import type { BundlingOptions, ModuleFederationOptions } from './types';
 
 export function resolveBaseUrl(
   config: Config,
@@ -79,14 +78,14 @@ async function readBuildInfo() {
   let commit: string | undefined;
   try {
     commit = await runPlain('git', 'rev-parse', 'HEAD');
-  } catch (error) {
+  } catch (_error) {
     // ignore, see below
   }
 
   let gitVersion: string | undefined;
   try {
     gitVersion = await runPlain('git', 'describe', '--always');
-  } catch (error) {
+  } catch (_error) {
     // ignore, see below
   }
 

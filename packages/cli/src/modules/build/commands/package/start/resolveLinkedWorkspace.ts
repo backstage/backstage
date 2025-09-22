@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path/posix';
 import { ForwardedError } from '@backstage/errors';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path/posix';
 
 export async function resolveLinkedWorkspace(
   linkPath: string | undefined,

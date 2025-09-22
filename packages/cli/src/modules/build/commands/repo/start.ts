@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { relative as relativePath } from 'node:path';
 import {
-  BackstagePackage,
+  type BackstagePackage,
   PackageGraph,
-  PackageRole,
+  type PackageRole,
 } from '@backstage/cli-node';
-import { relative as relativePath } from 'path';
+import { parseArgs } from 'util';
 import { paths } from '../../../../lib/paths';
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
-import { parseArgs } from 'util';
 
 const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'frontend',
@@ -65,7 +65,7 @@ export async function findTargetPackages(
   namesOrPaths: string[],
   pluginIds: string[],
 ) {
-  const targetPackages = new Array<BackstagePackage>();
+  const targetPackages: BackstagePackage[] = [];
 
   const packages = await PackageGraph.listTargetPackages();
 

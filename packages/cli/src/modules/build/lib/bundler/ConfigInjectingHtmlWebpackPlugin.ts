@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppConfig } from '@backstage/config';
+import type { AppConfig } from '@backstage/config';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 export class ConfigInjectingHtmlWebpackPlugin extends HtmlWebpackPlugin {

@@ -15,14 +15,14 @@
  */
 
 import * as depCommonJs from 'dep-commonjs';
-import * as depModule from 'dep-module';
 import * as depDefault from 'dep-default';
-import { value as namedA } from './a-named';
-import { value as namedB } from './b-named.mts';
-import { value as namedC } from './c-named.cts';
+import * as depModule from 'dep-module';
 import defaultA from './a-default';
+import { value as namedA } from './a-named';
 import defaultB from './b-default.mts';
+import { value as namedB } from './b-named.mts';
 import cDefault from './c-default.cts';
+import { value as namedC } from './c-named.cts';
 
 // @ts-expect-error Default exports from CommonJS are not well supported
 const { default: defaultC } = cDefault;

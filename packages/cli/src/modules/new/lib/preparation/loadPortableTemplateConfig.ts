@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { dirname, isAbsolute, resolve as resolvePath } from 'node:path';
+import { ForwardedError } from '@backstage/errors';
 import fs from 'fs-extra';
-import { resolve as resolvePath, dirname, isAbsolute } from 'node:path';
-import { paths } from '../../../../lib/paths';
-import { defaultTemplates } from '../defaultTemplates';
-import {
-  PortableTemplateConfig,
-  PortableTemplatePointer,
-  TEMPLATE_FILE_NAME,
-} from '../types';
 import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
-import { ForwardedError } from '@backstage/errors';
+import { paths } from '../../../../lib/paths';
+import { defaultTemplates } from '../defaultTemplates';
+import {
+  type PortableTemplateConfig,
+  type PortableTemplatePointer,
+  TEMPLATE_FILE_NAME,
+} from '../types';
 
 const defaults = {
   license: 'Apache-2.0',

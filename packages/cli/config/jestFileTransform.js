@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const path = require('path');
+const path = require('node:path');
 
 module.exports = {
-  process(src, filename) {
+  process(_src, filename) {
     const assetFilename = JSON.stringify(path.basename(filename));
 
     if (filename.match(/\.icon\.svg$/)) {

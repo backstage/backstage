@@ -15,14 +15,14 @@
  */
 
 import {
-  SpawnOptions,
-  spawn,
-  ChildProcess,
+  type ChildProcess,
   execFile as execFileCb,
-} from 'child_process';
-import { ExitCodeError } from './errors';
-import { promisify } from 'util';
+  type SpawnOptions,
+  spawn,
+} from 'node:child_process';
 import { assertError, ForwardedError } from '@backstage/errors';
+import { promisify } from 'util';
+import { ExitCodeError } from './errors';
 
 export const execFile = promisify(execFileCb);
 
@@ -92,7 +92,7 @@ export async function runCheck(cmd: string, ...args: string[]) {
   try {
     await execFile(cmd, args, { shell: true });
     return true;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }

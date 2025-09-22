@@ -15,8 +15,8 @@
  */
 
 /* eslint-disable no-restricted-syntax */
-import { resolve as resolvePath } from 'path';
-import { findPaths, findRootPath, findOwnDir, findOwnRootDir } from './paths';
+import { resolve as resolvePath } from 'node:path';
+import { findOwnDir, findOwnRootDir, findPaths, findRootPath } from './paths';
 
 describe('paths', () => {
   afterEach(() => {

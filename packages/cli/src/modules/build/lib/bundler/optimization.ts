@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { BundlingOptions } from './types';
 import {
-  SwcJsMinimizerRspackPlugin,
   LightningCssMinimizerRspackPlugin,
-  RspackOptionsNormalized,
+  type RspackOptionsNormalized,
+  SwcJsMinimizerRspackPlugin,
 } from '@rspack/core';
+import type { BundlingOptions } from './types';
 
 export const optimization = (
   options: BundlingOptions,

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { AppConfig } from '@backstage/config';
-import chalk from 'chalk';
-import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
-import openBrowser from 'react-dev-utils/openBrowser';
+import { resolve as resolvePath } from 'node:path';
+import type { AppConfig } from '@backstage/config';
 import { rspack } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import openBrowser from 'react-dev-utils/openBrowser';
 
 import { paths as libPaths } from '../../../../lib/paths';
 import { loadCliConfig } from '../../../config/lib/config';
 import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
-import { ServeOptions } from './types';
+import type { ServeOptions } from './types';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -55,7 +55,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     resolvePath(options.targetDir ?? libPaths.targetDir, 'package.json'),
   );
 
-  let devServer: RspackDevServer | undefined = undefined;
+  let devServer: RspackDevServer | undefined;
 
   let latestFrontendAppConfigs: AppConfig[] = [];
 
@@ -222,7 +222,8 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     compiler,
   );
 
-  await new Promise<void>(async (resolve, reject) => {
+  // NOTE: Is this correct?
+  await new Promise<void>((resolve, reject) => {
     if (devServer) {
       devServer.startCallback((err?: Error) => {
         if (err) {

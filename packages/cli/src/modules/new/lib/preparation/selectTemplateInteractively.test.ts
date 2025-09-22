@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { PortableTemplateConfig } from '../types';
-import inquirer from 'inquirer';
 import { withLogCollector } from '@backstage/test-utils';
+import inquirer from 'inquirer';
+import type { PortableTemplateConfig } from '../types';
 import { selectTemplateInteractively } from './selectTemplateInteractively';
 
 describe('selectTemplateInteractively', () => {

@@ -13,13 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { resolve as resolvePath } from 'node:path';
 import {
-  BackstagePackageFeatureType,
+  type BackstagePackageFeatureType,
+  type PackageRole,
   packageFeatureType,
-  PackageRole,
 } from '@backstage/cli-node';
-import { resolve as resolvePath } from 'path';
-import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
+import {
+  Project,
+  type SourceFile,
+  SyntaxKind,
+  type Type,
+  type ts,
+} from 'ts-morph';
 import { paths } from './paths';
 
 export const createTypeDistProject = async () => {

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path';
+import type { BackstagePackageJson } from '@backstage/cli-node';
 import { readJson } from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { paths } from '../../../../../lib/paths';
 import {
   getModuleFederationOptions,
   serveBundle,
 } from '../../../../build/lib/bundler';
-import { paths } from '../../../../../lib/paths';
-import { BackstagePackageJson } from '@backstage/cli-node';
 import { hasReactDomClient } from '../../../../build/lib/bundler/hasReactDomClient';
 
 interface StartAppOptions {

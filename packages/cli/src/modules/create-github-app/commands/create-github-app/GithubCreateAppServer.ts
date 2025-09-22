@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import crypto from 'crypto';
-import openBrowser from 'react-dev-utils/openBrowser';
+import crypto from 'node:crypto';
 import { request } from '@octokit/request';
-import express, { Express, Request, Response } from 'express';
+import express, { type Express, type Request, type Response } from 'express';
+import openBrowser from 'react-dev-utils/openBrowser';
 
 const FORM_PAGE = `
 <html>
@@ -65,7 +65,7 @@ export class GithubCreateAppServer {
     const webhookId = crypto
       .randomBytes(15)
       .toString('base64')
-      .replace(/[\+\/]/g, '');
+      .replace(/[+/]/g, '');
 
     this.webhookUrl = `https://smee.io/${webhookId}`;
   }
@@ -138,7 +138,7 @@ export class GithubCreateAppServer {
       },
     };
 
-    const manifestJson = JSON.stringify(manifest).replace(/\"/g, '&quot;');
+    const manifestJson = JSON.stringify(manifest).replace(/"/g, '&quot;');
 
     let body = FORM_PAGE;
     body = body.replace('MANIFEST_JSON', manifestJson);

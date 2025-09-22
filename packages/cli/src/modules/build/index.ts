@@ -15,8 +15,8 @@
  */
 
 import { Command, Option } from 'commander';
-import { createCliPlugin } from '../../wiring/factory';
 import { lazy } from '../../lib/lazy';
+import { createCliPlugin } from '../../wiring/factory';
 import { configOption } from '../config';
 
 export function registerPackageCommands(command: Command) {
@@ -40,7 +40,7 @@ export function registerPackageCommands(command: Command) {
       '--config <path>',
       'Config files to load instead of app-config.yaml. Applies to app packages only.',
       (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
-      Array<string>(),
+      [] as string[],
     )
     .action(lazy(() => import('./commands/package/build'), 'command'));
 }
@@ -75,7 +75,7 @@ export const buildPlugin = createCliPlugin({
             '--config <path>',
             'Config files to load instead of app-config.yaml. Applies to app packages only.',
             (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
-            Array<string>(),
+            [] as string[],
           )
           .action(lazy(() => import('./commands/package/build'), 'command'));
         await defaultCommand.parseAsync(args, { from: 'user' });
@@ -158,7 +158,7 @@ export const buildPlugin = createCliPlugin({
             '--plugin <pluginId>',
             'Start the dev entry-point for any matching plugin package in the repo',
             (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
-            Array<string>(),
+            [] as string[],
           )
           .option(...configOption)
           .option(

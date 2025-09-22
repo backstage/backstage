@@ -15,15 +15,19 @@
  */
 
 import {
-  BackstagePackage,
-  BackstagePackageJson,
+  posix,
+  relative as relativePath,
+  resolve as resolvePath,
+} from 'node:path';
+import {
+  type BackstagePackage,
+  type BackstagePackageJson,
   PackageGraph,
-  PackageRole,
+  type PackageRole,
   PackageRoles,
 } from '@backstage/cli-node';
-import { OptionValues } from 'commander';
+import type { OptionValues } from 'commander';
 import fs from 'fs-extra';
-import { resolve as resolvePath, posix, relative as relativePath } from 'path';
 import { paths } from '../../../../lib/paths';
 import { publishPreflightCheck } from '../../lib/publishing';
 
