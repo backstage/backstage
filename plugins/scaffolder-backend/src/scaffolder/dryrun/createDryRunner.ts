@@ -44,7 +44,7 @@ import { v4 as uuid } from 'uuid';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
-import { DistributedActionRegistry } from '../actions/DistributedActionRegistry.ts';
+import { DefaultDistributedActionRegistry } from '../actions/DefaultDistributedActionRegistry.ts';
 
 interface DryRunInput {
   spec: TaskSpec;
@@ -76,7 +76,7 @@ export type TemplateTesterCreateOptions = {
   auditor?: AuditorService;
   integrations: ScmIntegrations;
   actionRegistry: TemplateActionRegistry;
-  distributedActionRegistry?: DistributedActionRegistry;
+  distributedActionRegistry: DefaultDistributedActionRegistry;
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
@@ -95,9 +95,9 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
   return async function dryRun(input: DryRunInput): Promise<DryRunResult> {
     let contentPromise;
 
-    const workflowRunner = new NunjucksWorkflowRunner({
-      ...options,
-      actionRegistry: new DecoratedActionsRegistry(options.actionRegistry, [
+    const decoratedActionRegistry = new DecoratedActionsRegistry(
+      options.actionRegistry,
+      [
         createTemplateAction({
           id: 'dry-run:extract',
           supportsDryRun: true,
@@ -106,7 +106,12 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
             await contentPromise.catch(() => {});
           },
         }),
-      ]),
+      ],
+    );
+
+    const workflowRunner = new NunjucksWorkflowRunner({
+      ...options,
+      actionRegistry: decoratedActionRegistry,
     });
 
     // Extracting contentsPath and dryRunId from the baseUrl

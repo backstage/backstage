@@ -246,13 +246,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         await stepTrack.skipFalsy();
         return;
       }
-      const action: TemplateAction<JsonObject> | undefined = this.options
-        .distributedActionRegistry
-        ? (await this.options.distributedActionRegistry.list()).get(step.action)
-        : this.options.actionRegistry.get(step.action);
-      if (!action) {
-        throw new Error(`Action ${step.action} not found`);
-      }
+      const action: TemplateAction<JsonObject> =
+        (await this.options.distributedActionRegistry?.list())?.get(
+          step.action,
+        ) ?? this.options.actionRegistry.get(step.action);
 
       const { taskLogger } = createStepLogger({
         task,

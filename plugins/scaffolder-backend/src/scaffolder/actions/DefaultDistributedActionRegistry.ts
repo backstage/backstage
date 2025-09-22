@@ -36,7 +36,7 @@ export class DefaultDistributedActionRegistry
   implements DistributedActionRegistry
 {
   constructor(
-    private readonly registry: TemplateActionRegistry,
+    private registry: TemplateActionRegistry,
     private readonly actionsRegistry: ActionsService,
     private readonly auth: AuthService,
   ) {}
