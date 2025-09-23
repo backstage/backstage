@@ -358,13 +358,13 @@ describe('useFacetsEntities', () => {
             },
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'component',
-              metadata: { name: 'a-component', namespace: 'spiders' },
+              kind: 'group',
+              metadata: { name: 'spiderman', namespace: 'namespace' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'group',
-              metadata: { name: 'spiderman', namespace: 'namespace' },
+              kind: 'component',
+              metadata: { name: 'a-component', namespace: 'spiders' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
