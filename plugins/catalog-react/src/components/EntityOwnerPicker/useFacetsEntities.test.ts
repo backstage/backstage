@@ -17,6 +17,8 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFacetsEntities } from './useFacetsEntities';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 
 const mockCatalogApi = catalogApiMock.mock();
 
@@ -87,7 +89,7 @@ describe('useFacetsEntities', () => {
     });
   });
 
-  it(`should return the owners sorted by kind, namespace and name`, async () => {
+  it(`should return the owners sorted by namespace, presentation title, and kind`, async () => {
     const entityRefs = [
       'group:namespace/team-b',
       'user:default/c',
@@ -116,6 +118,21 @@ describe('useFacetsEntities', () => {
             },
             {
               apiVersion: 'backstage.io/v1beta1',
+              kind: 'user',
+              metadata: { name: 'a', namespace: 'default' },
+            },
+            {
+              apiVersion: 'backstage.io/v1beta1',
+              kind: 'user',
+              metadata: { name: 'b', namespace: 'default' },
+            },
+            {
+              apiVersion: 'backstage.io/v1beta1',
+              kind: 'user',
+              metadata: { name: 'c', namespace: 'default' },
+            },
+            {
+              apiVersion: 'backstage.io/v1beta1',
               kind: 'group',
               metadata: { name: 'd', namespace: 'default' },
             },
@@ -129,29 +146,72 @@ describe('useFacetsEntities', () => {
               kind: 'group',
               metadata: { name: 'team-b', namespace: 'namespace' },
             },
+          ],
+        },
+        loading: false,
+      });
+    });
+  });
+
+  it(`should sort owners by displayName/title when available (Presentation API)`, async () => {
+    const entityRefs = [
+      'group:default/g-id',
+      'group:default/a-id',
+      'group:default/z-id',
+    ];
+
+    mockCatalogApi.getEntityFacets.mockResolvedValue(
+      facetsFromEntityRefs(entityRefs),
+    );
+
+    const byRef: Record<string, Entity> = {
+      'group:default/g-id': {
+        apiVersion: '1',
+        kind: 'Group',
+        metadata: { name: 'g-id', namespace: 'default', title: undefined },
+        spec: { profile: { displayName: 'Bravo' } },
+      },
+      'group:default/a-id': {
+        apiVersion: '1',
+        kind: 'Group',
+        metadata: { name: 'a-id', namespace: 'default', title: 'Alpha' },
+      },
+      'group:default/z-id': {
+        apiVersion: '1',
+        kind: 'Group',
+        metadata: { name: 'z-id', namespace: 'default' },
+        spec: { profile: { displayName: 'Zulu' } },
+      },
+    };
+    mockCatalogApi.getEntityByRef.mockImplementation(async entityRef => {
+      const refString =
+        typeof entityRef === 'string'
+          ? entityRef
+          : stringifyEntityRef(entityRef);
+      return byRef[refString];
+    });
+
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    result.current[1]({ text: '' });
+
+    await waitFor(() => {
+      expect(result.current[0]).toEqual({
+        value: {
+          items: [
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'user',
-              metadata: {
-                name: 'a',
-                namespace: 'default',
-              },
+              kind: 'group',
+              metadata: { name: 'a-id', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'user',
-              metadata: {
-                name: 'b',
-                namespace: 'default',
-              },
+              kind: 'group',
+              metadata: { name: 'g-id', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'user',
-              metadata: {
-                name: 'c',
-                namespace: 'default',
-              },
+              kind: 'group',
+              metadata: { name: 'z-id', namespace: 'default' },
             },
           ],
         },

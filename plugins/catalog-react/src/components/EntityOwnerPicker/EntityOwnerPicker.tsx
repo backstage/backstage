@@ -33,10 +33,9 @@ import { EntityOwnerFilter } from '../../filters';
 import { useDebouncedEffect } from '@react-hookz/web';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupIcon from '@material-ui/icons/Group';
-import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
 import { useFetchEntities } from './useFetchEntities';
 import { withStyles } from '@material-ui/core/styles';
-import { useEntityPresentation } from '../../apis';
+import { useEntityPresentation, defaultEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
@@ -87,7 +86,9 @@ export type EntityOwnerPickerProps = {
 function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
   const classes = useStyles();
   const isGroup = props.entity.kind.toLocaleLowerCase('en-US') === 'group';
-  const { primaryTitle: title } = useEntityPresentation(props.entity);
+  const { primaryTitle: title } = useEntityPresentation(
+    stringifyEntityRef(props.entity),
+  );
   return (
     <Box className={classes.fullWidth}>
       <FixedWidthFormControlLabel
@@ -191,7 +192,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           return o === v;
         }}
         getOptionLabel={o => {
-          const entity =
+          const entityOrRef =
             typeof o === 'string'
               ? cache.getEntity(o) ||
                 parseEntityRef(o, {
@@ -199,7 +200,10 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
                   defaultNamespace: 'default',
                 })
               : o;
-          return humanizeEntity(entity, humanizeEntityRef(entity));
+          return defaultEntityPresentation(entityOrRef, {
+            defaultKind: 'group',
+            defaultNamespace: 'default',
+          }).primaryTitle;
         }}
         onChange={(_: object, owners) => {
           setText('');

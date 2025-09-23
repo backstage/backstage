@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useApiHolder } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import { useState } from 'react';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import type { EntityPresentationApi } from '../../apis';
+import {
+  entityPresentationApiRef,
+  defaultEntityPresentation,
+} from '../../apis';
 
 type FacetsCursor = {
   start: number;
@@ -43,6 +52,8 @@ type FacetsInitialRequest = {
  */
 export function useFacetsEntities({ enabled }: { enabled: boolean }) {
   const catalogApi = useApi(catalogApiRef);
+  const apis = useApiHolder();
+  const entityPresentationApi = apis.get(entityPresentationApiRef);
 
   const [facetsPromise] = useState(async () => {
     if (!enabled) {
@@ -52,8 +63,8 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
 
     return catalogApi
       .getEntityFacets({ facets: [facet] })
-      .then(response =>
-        response.facets[facet]
+      .then(async response => {
+        const entityRefs = response.facets[facet]
           .map(e => e.value)
           .map(ref => {
             const { kind, name, namespace } = parseEntityRef(ref);
@@ -61,18 +72,29 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
               apiVersion: 'backstage.io/v1beta1',
               kind,
               metadata: { name, namespace },
-            };
-          })
-          .sort(
-            (a, b) =>
-              a.kind.localeCompare(b.kind, 'en-US') ||
-              a.metadata.namespace.localeCompare(
-                b.metadata.namespace,
-                'en-US',
-              ) ||
-              a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
-          ),
-      )
+            } as Entity;
+          });
+
+        // Fetch full entities to get titles and display names for proper sorting
+        const fullEntities = await Promise.all(
+          entityRefs.map(async entity => {
+            try {
+              const fullEntity = await catalogApi.getEntityByRef(
+                stringifyEntityRef(entity),
+              );
+              return fullEntity || entity;
+            } catch {
+              return entity;
+            }
+          }),
+        );
+
+        return await sortEntitiesByPresentation(
+          fullEntities,
+          entityPresentationApi,
+        );
+      })
+      .then(entities => entities)
       .catch(() => []);
   });
 
@@ -153,4 +175,33 @@ function filterEntity(text: string, entity: Entity) {
     entity.metadata.namespace?.includes(normalizedText) ||
     entity.metadata.name.includes(normalizedText)
   );
+}
+
+async function sortEntitiesByPresentation(
+  entities: Entity[],
+  presentationApi?: EntityPresentationApi,
+): Promise<Entity[]> {
+  const keys = await Promise.all(
+    entities.map(async e => {
+      const namespaceKey = e.metadata.namespace || '';
+      const snapshot = presentationApi
+        ? await presentationApi
+            .forEntity(e)
+            .promise.catch(() => defaultEntityPresentation(e))
+        : defaultEntityPresentation(e);
+      const titleKey = snapshot.primaryTitle;
+
+      const kindKey = e.kind;
+      return { e, namespaceKey, titleKey, kindKey };
+    }),
+  );
+
+  keys.sort(
+    (a, b) =>
+      a.namespaceKey.localeCompare(b.namespaceKey, 'en-US') ||
+      a.titleKey.localeCompare(b.titleKey, 'en-US') ||
+      a.kindKey.localeCompare(b.kindKey, 'en-US'),
+  );
+
+  return keys.map(k => k.e);
 }
