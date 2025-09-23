@@ -25,6 +25,7 @@ const mockCatalogApi = catalogApiMock.mock();
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
   useApi: () => mockCatalogApi,
+  useApiHolder: () => ({ get: () => undefined }),
 }));
 
 describe('useFacetsEntities', () => {
