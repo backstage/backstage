@@ -177,13 +177,13 @@ export interface TaskContext {
  * @public
  */
 export interface TaskBroker {
-  cancel?(taskId: string): Promise<void>;
+  cancel(taskId: string): Promise<void>;
 
-  retry?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
+  retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 
   claim(): Promise<TaskContext>;
 
-  recoverTasks?(): Promise<void>;
+  recoverTasks(): Promise<void>;
 
   dispatch(
     options: TaskBrokerDispatchOptions,
@@ -198,7 +198,7 @@ export interface TaskBroker {
 
   get(taskId: string): Promise<SerializedTask>;
 
-  list?(options?: {
+  list(options?: {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
@@ -209,13 +209,5 @@ export interface TaskBroker {
     };
     order?: { order: 'asc' | 'desc'; field: string }[];
     permissionFilters?: PermissionCriteria<TaskFilters>;
-  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
-
-  /**
-   * @deprecated Make sure to pass `createdBy` and `status` in the `filters` parameter instead
-   */
-  list?(options: {
-    createdBy?: string;
-    status?: TaskStatus;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 }
