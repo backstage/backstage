@@ -18,7 +18,7 @@ import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes, Outlet } from 'react-router-dom';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
-import { GroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 type SubRoute = {
   group?: string;
@@ -79,7 +79,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
 type EntityTabsProps = {
   routes: SubRoute[];
-  groupDefinitions: GroupDefinitions;
+  groupDefinitions: EntityContentGroupDefinitions;
   showIcons?: boolean;
 };
 

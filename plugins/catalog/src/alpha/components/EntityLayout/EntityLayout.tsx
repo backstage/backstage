@@ -40,7 +40,7 @@ import {
 import { catalogTranslationRef } from '../../translation';
 import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
-import { GroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 export type EntityLayoutRouteProps = {
   path: string;
@@ -79,7 +79,7 @@ export interface EntityLayoutProps {
    * It adds breadcrumbs in the Entity page to enhance user navigation and context awareness.
    */
   parentEntityRelations?: string[];
-  groupDefinitions: GroupDefinitions;
+  groupDefinitions: EntityContentGroupDefinitions;
   showIcons?: boolean;
 }
 
