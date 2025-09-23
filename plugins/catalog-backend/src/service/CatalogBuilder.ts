@@ -112,6 +112,8 @@ import {
   CatalogPermissionRuleInput,
 } from '@backstage/plugin-catalog-node/alpha';
 
+const SANITIZE_CONFIG_NAME_REGEX = /[^a-z0-9\-_]/gi;
+
 export type CatalogEnvironment = {
   logger: LoggerService;
   database: DatabaseService;
@@ -691,9 +693,12 @@ export class CatalogBuilder {
     filteredProcessors.sort((a, b) => {
       const getProcessorPriority = (processor: CatalogProcessor) => {
         try {
+          const safeProcessorName = processor
+            .getProcessorName()
+            .replaceAll(SANITIZE_CONFIG_NAME_REGEX, '.');
           return (
             config.getOptionalNumber(
-              `catalog.processorOptions.${processor.getProcessorName()}.priority`,
+              `catalog.processorOptions.${safeProcessorName}.priority`,
             ) ??
             processor.getPriority?.() ??
             20
@@ -714,12 +719,16 @@ export class CatalogBuilder {
 
   private filterProcessors(processors: CatalogProcessor[]) {
     const { config } = this.env;
-    return processors.filter(
-      p =>
+    return processors.filter(p => {
+      const safeProcessorName = p
+        .getProcessorName()
+        .replaceAll(SANITIZE_CONFIG_NAME_REGEX, '.');
+      return (
         config.getOptionalBoolean(
-          `catalog.processorOptions.${p.getProcessorName()}.disabled`,
-        ) !== true,
-    );
+          `catalog.processorOptions.${safeProcessorName}.disabled`,
+        ) !== true
+      );
+    });
   }
 
   // TODO(Rugvip): These old processors are removed, for a while we'll be throwing
@@ -834,12 +843,16 @@ export class CatalogBuilder {
 
   private filterProviders(providers: EntityProvider[]) {
     const { config } = this.env;
-    return providers.filter(
-      p =>
+    return providers.filter(p => {
+      const safeProviderName = p
+        .getProviderName()
+        .replaceAll(SANITIZE_CONFIG_NAME_REGEX, '.');
+      return (
         config.getOptionalBoolean(
-          `catalog.providerOptions.${p.getProviderName()}.disabled`,
-        ) !== true,
-    );
+          `catalog.providerOptions.${safeProviderName}.disabled`,
+        ) !== true
+      );
+    });
   }
 
   private static getDefaultProcessingInterval(
