@@ -39,11 +39,9 @@ Extensions are the building blocks that build out both the visual and non-visual
 
 #### User Interface
 
-The UI is one of the extensions in the frontend. It is a thin, client-side wrapper around a set of plugins. It provides some
-core UI components and libraries for shared activities such as config
-management. [[live demo](https://demo.backstage.io/catalog)]
+The UI is one of the extensions in the frontend. It is a thin, client-side wrapper around a set of plugins. It provides some core UI components and libraries for shared activities such as config management. [[live demo](https://demo.backstage.io/catalog)]
 
-[UI with different components highlighted](../assets/architecture-overview/core-vs-plugin-components-highlighted.png)
+![UI with different components highlighted](../assets/architecture-overview/core-vs-plugin-components-highlighted.png)
 
 Each plugin typically makes itself available in the UI on a dedicated URL. For example, the Service Catalog plugin is registered with the UI on `/catalog`.
 
@@ -121,14 +119,11 @@ Architecturally, plugins can take three forms:
 
 #### Standalone plugins
 
-Standalone plugins run entirely in the browser.
-[The Tech Radar plugin](https://demo.backstage.io/tech-radar), for example,
-simply renders hard-coded information. It doesn't make any API requests to other
-services.
+Standalone plugins run entirely in the browser. [The Tech Radar plugin](https://demo.backstage.io/tech-radar), for example, simply renders hard-coded information. It doesn't make any API requests to other services.
 
 The architecture of the Tech Radar installed into a Backstage app is very simple. You just need to add Tech Radar as a frontend plugin into your app, as shown in the following diagram.
 
-> [**NOTE**]  
+> **NOTE:**  
 > The following diagram does not show the detailed contents of the frontend and backend containers in order to highlight the changes that pertain to the addition of the specified plugin.
 > 
 ![ui and tech radar plugin connected together](../assets/architecture-overview/simplified-standalone-plugin-architecture.jpeg)
@@ -139,151 +134,77 @@ Once the plugin has been added, then you can view the Tech Radar information in 
 
 #### Service backed plugins
 
-Service backed plugins make API requests to a service which is within the
-purview of the organization running Backstage.
+Service backed plugins make API requests to a service which is within the purview of the organization running Backstage.
 
-The Lighthouse plugin, for example, makes requests to the
-[lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service).
-The `lighthouse-audit-service` is a microservice which runs a copy of Google's
-[Lighthouse library](https://github.com/GoogleChrome/lighthouse/) and stores the
-results in a PostgreSQL database.
+The Lighthouse plugin, for example, makes requests to the [lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service). The `lighthouse-audit-service` is a microservice which runs a copy of Google's [Lighthouse library](https://github.com/GoogleChrome/lighthouse/) and stores the results in a PostgreSQL database.
 
-The Lighthouse plugin is added to the frontend. The lighthouse-audit-service container is already publicly available in Docker
-Hub and can be downloaded and run with
+The Lighthouse plugin is added to the frontend. The lighthouse-audit-service container is already publicly available in Docker Hub and can be downloaded and run with
 
 ```bash
 docker run spotify/lighthouse-audit-service:latest
 ```
 
-> [**NOTE**]  
+> **NOTE:**  
 > The following diagram does not show the detailed contents of the frontend and backend containers in order to highlight the changes that pertain to the addition of the specified plugin.
 
 ![lighthouse plugin backed to microservice and database](../assets/architecture-overview/simplified-service-based-plugin-architecture.jpeg)
 
-The software catalog in Backstage is another example of a service backed plugin.
-It retrieves a list of services, or "entities", from the Backstage Backend
-service and renders them in a table for the user.
+The software catalog in Backstage is another example of a service backed plugin. It retrieves a list of services, or "entities", from the Backstage Backend service and renders them in a table for the user.
 
 ### Third-party backed plugins
 
-Third-party backed plugins are similar to service backed plugins. The main
-difference is that the service which backs the plugin is hosted outside of the
-ecosystem of the company hosting Backstage.
+Third-party backed plugins are similar to service backed plugins. The main difference is that the service which backs the plugin is hosted outside of the ecosystem of the company hosting Backstage.
 
-The CircleCI plugin is an example of a third-party backed plugin. CircleCI is a
-SaaS service which can be used without any knowledge of Backstage. It has an API
-which a Backstage plugin consumes to display content.
+The CircleCI plugin is an example of a third-party backed plugin. CircleCI is a SaaS service which can be used without any knowledge of Backstage. It has an API which a Backstage plugin consumes to display content.
 
-Requests going to CircleCI from the user's browser are passed through a proxy
-service that Backstage provides. Without this, the requests would be blocked by
-Cross Origin Resource Sharing policies which prevent a browser page served at
-[https://example.com](https://example.com) from serving resources hosted at
-https://circleci.com.
+Requests going to CircleCI from the user's browser are passed through a proxy service that Backstage provides. Without this, the requests would be blocked by Cross Origin Resource Sharing policies which prevent a browser page served at [https://example.com](https://example.com) from serving resources hosted at https://circleci.com.
 
-> [**NOTE**]  
+> **NOTE:** 
 > The following diagram does not show the detailed contents of the frontend and backend containers in order to highlight the changes that pertain to the addition of the specified plugin.
 
 ![CircleCI plugin talking to proxy talking to SaaS Circle CI](../assets/architecture-overview/simplified-third-party-plugin-architecture.jpeg)
 
 ## Package Architecture
 
-Backstage relies heavily on NPM packages, both for distribution of libraries,
-and structuring of code within projects. While the way you structure your
-Backstage project is up to you, there is a set of established patterns that we
-encourage you to follow. These patterns can help set up a sound project
-structure as well as provide familiarity between different Backstage projects.
+Backstage relies heavily on NPM packages, both for distribution of libraries, and structuring of code within projects. While the way you structure your Backstage project is up to you, there is a set of established patterns that we encourage you to follow. These patterns can help set up a sound project structure as well as provide familiarity between different Backstage projects.
 
-The following diagram shows an overview of the package architecture of
-Backstage. It takes the point of view of an individual plugin and all of the
-packages that it may contain, indicated by the thicker border and italic text.
-Surrounding the plugin are different package groups which are the different
-possible interface points of the plugin. Note that not all library package lists
-are complete as packages have been omitted for brevity.
+The following diagram shows an overview of the package architecture of Backstage. It takes the point of view of an individual plugin and all of the packages that it may contain, indicated by the thicker border and italic text. Surrounding the plugin are different package groups which are the different possible interface points of the plugin. Note that not all library package lists are complete as packages have been omitted for brevity.
 
 ![Package architecture](../assets/architecture-overview/package-architecture.drawio.svg)
 
 ### Overview
 
-The arrows in the diagram above indicate a runtime dependency on the code of the
-target package. This strict dependency graph only applies to runtime
-`dependencies`, and there may be `devDependencies` that break the rules of this
-table for the purpose of testing. While there are some arrows that show a
-dependency on a collection of frontend, backend and isomorphic packages, those
-still have to abide by important compatibility rules shown in the bottom left.
+The arrows in the diagram above indicate a runtime dependency on the code of the target package. This strict dependency graph only applies to runtime
+`dependencies`, and there may be `devDependencies` that break the rules of this table for the purpose of testing. While there are some arrows that show a dependency on a collection of frontend, backend and isomorphic packages, those still have to abide by important compatibility rules shown in the bottom left.
 
-The `app` and `backend` packages are the entry points of a Backstage project.
-The `app` package is the frontend application that brings together a collection
-of frontend plugins and customizes them to fit an organization, while the
-`backend` package is the backend service that powers the Backstage application.
-Worth noting is that there can be more than one instance of each of these
-packages within a project. Particularly the `backend` packages can benefit from
-being split up into smaller deployment units that each serve their own purpose
-with a smaller collection of plugins.
+The `app` and `backend` packages are the entry points of a Backstage project. The `app` package is the frontend application that brings together a collection of frontend plugins and customizes them to fit an organization, while the `backend` package is the backend service that powers the Backstage application. Worth noting is that there can be more than one instance of each of these packages within a project. Particularly the `backend` packages can benefit from being split up into smaller deployment units that each serve their own purpose with a smaller collection of plugins.
 
 ### Plugin Packages
 
-A typical plugin consists of up to five packages, two frontend ones, two
-backend, and one isomorphic package. All packages within the plugin must share a
-common prefix, typically of the form `@<scope>/plugin-<plugin-id>`, but
-alternatives like `backstage-plugin-<plugin-id>` or
-`@<scope>/backstage-plugin-<plugin-id>` are also valid. Along with this prefix,
-each of the packages have their own unique suffix that denotes their role. In
-addition to these five plugin packages it's also possible for a plugin to have
-additional frontend and backend modules that can be installed to enable optional
-features. For a full list of suffixes and their roles, see the
-[Plugin Package Structure ADR](../architecture-decisions/adr011-plugin-package-structure.md).
+A typical plugin consists of up to five packages, two frontend ones, two backend, and one isomorphic package. All packages within the plugin must share a common prefix, typically of the form `@<scope>/plugin-<plugin-id>`, but alternatives like `backstage-plugin-<plugin-id>` or `@<scope>/backstage-plugin-<plugin-id>` are also valid. Along with this prefix, each of the packages have their own unique suffix that denotes their role. In addition to these five plugin packages it's also possible for a plugin to have
+additional frontend and backend modules that can be installed to enable optional features. For a full list of suffixes and their roles, see the [Plugin Package Structure ADR](../architecture-decisions/adr011-plugin-package-structure.md).
 
-The `-react`, `-common`, and `-node` plugin packages together form the external
-library of a plugin. The plugin library enables other plugins to build on top of
-and extend a plugin, and likewise allows the plugin to depend on and extend
-other plugins. Because of this, it is preferable that plugin library packages
-allow duplicate installations of themselves, as you may end up with a mix of
-versions being installed as dependencies of various plugins. It is also
-forbidden for plugins to directly import non-library packages from other
-plugins, all communication between plugins must be handled through libraries and
-the application itself.
+The `-react`, `-common`, and `-node` plugin packages together form the external library of a plugin. The plugin library enables other plugins to build on top of and extend a plugin, and likewise allows the plugin to depend on and extend other plugins. Because of this, it is preferable that plugin library packages allow duplicate installations of themselves, as you may end up with a mix of versions being installed as dependencies of various plugins. It is also forbidden for plugins to directly import non-library packages from other plugins, all communication between plugins must be handled through libraries and the application itself.
 
 ### Frontend Packages
 
-The frontend packages are grouped into two main groups. The first one is
-"Frontend App Core", which is the set of packages that are only used by the
-`app` package itself. These packages help build up the core structure of the app
-as well as provide a foundation for the plugin libraries to rely upon.
+The frontend packages are grouped into two main groups. The first one is "Frontend App Core", which is the set of packages that are only used by the `app` package itself. These packages help build up the core structure of the app as well as provide a foundation for the plugin libraries to rely upon.
 
-The second group is the rest of the shared packages, further divided into
-"Frontend Plugin Core" and "Frontend Libraries". The core packages are
-considered particularly stable and form the core of the frontend framework.
-Their most important role is to form the boundary around each plugin and provide
-a set of tools that helps you combine a collection of plugins into a running
-application. The rest of the frontend packages are more traditional libraries
-that serve as building blocks to create plugins.
+The second group is the rest of the shared packages, further divided into "Frontend Plugin Core" and "Frontend Libraries". The core packages are considered particularly stable and form the core of the frontend framework. Their most important role is to form the boundary around each plugin and provide a set of tools that helps you combine a collection of plugins into a running application. The rest of the frontend packages are more traditional libraries that serve as building blocks to create plugins.
 
 ### Backend Packages
 
-The backend library packages do not currently share a similar plugin
-architecture as the frontend packages. They are instead simply a collection of
-building blocks and patterns that help you build backend services. This is
-however likely to change in the future.
+The backend library packages do not currently share a similar plugin architecture as the frontend packages. They are instead simply a collection of building blocks and patterns that help you build backend services. This is however likely to change in the future.
 
 ### Common Packages
 
-The common packages are the packages effectively depended on by all other pages.
-This is a much smaller set of packages but they are also very pervasive. Because
-the common packages are isomorphic and must execute both in the frontend and
-backend, they are never allowed to depend on any of the frontend or backend
-packages.
+The common packages are the packages effectively depended on by all other pages. This is a much smaller set of packages but they are also very pervasive. Because the common packages are isomorphic and must execute both in the frontend and backend, they are never allowed to depend on any of the frontend or backend packages.
 
-The Backstage CLI is in a category of its own and is depended on by virtually
-all other packages. It's not a library in itself though, and must always be a
-development dependency only.
+The Backstage CLI is in a category of its own and is depended on by virtually all other packages. It's not a library in itself though, and must always be a development dependency only.
 
 ### Deciding where you place your code
 
-It can sometimes be difficult to decide where to place your plugin code. For example
-should it go directly in the `-backend` plugin package or in the `-node` package?
-As a general guideline you should try to keep the exposure of your code as low
-as possible. If it doesn't need to be public API, it's best to avoid. If you don't
-need it to be used by other plugins, then keep it directly in the plugin packages.
+It can sometimes be difficult to decide where to place your plugin code. For example, should it go directly in the `-backend` plugin package or in the `-node` package? As a general guideline you should try to keep the exposure of your code as low as possible. If it doesn't need to be public API, it's best to avoid. If you don't need it to be used by other plugins, then keep it directly in the plugin packages.
 
 Below is a chart to help you decide where to place your code.
 
@@ -291,34 +212,17 @@ Below is a chart to help you decide where to place your code.
 
 ## Databases
 
-As we have seen, both the `lighthouse-audit-service` and `catalog-backend`
-require a database to work with.
+As we have seen, both the `lighthouse-audit-service` and `catalog-backend` require a database to work with.
 
-The Backstage backend and its built-in plugins are based on the
-[Knex](http://knexjs.org/) library, and set up a separate logical database per
-plugin. This gives great isolation and lets them perform migrations and evolve
-separately from each other.
+The Backstage backend and its built-in plugins are based on the [Knex](http://knexjs.org/) library, and set up a separate logical database per plugin. This gives great isolation and lets them perform migrations and evolve separately from each other.
 
-The Knex library supports a multitude of databases, but Backstage at this time
-of writing is tested primarily against two of them: SQLite, which is mainly used as
-an in-memory mock/test database, and PostgreSQL, which is the preferred
-production database. Other databases such as the MySQL variants are reported to
-work but
-[aren't fully tested](https://github.com/backstage/backstage/issues/2460)
-yet.
+The Knex library supports a multitude of databases, but Backstage at this time of writing is tested primarily against two of them: SQLite, which is mainly used as an in-memory mock/test database, and PostgreSQL, which is the preferred production database. Other databases such as the MySQL variants are reported to work but [aren't fully tested](https://github.com/backstage/backstage/issues/2460) yet.
 
 ## Cache
 
-The Backstage backend and its built-in plugins are also able to leverage cache
-stores as a means of improving performance or reliability. Similar to how
-databases are supported, plugins receive logically separated cache connections,
-which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
+The Backstage backend and its built-in plugins are also able to leverage cache stores as a means of improving performance or reliability. Similar to how databases are supported, plugins receive logically separated cache connections, which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
 
-At this time of writing, Backstage can be configured to use one of five cache
-stores: memory, which is mainly used for local testing, memcache, redis, valkey or infinispan,
-which are cache stores better suited for production deployment. The right cache
-store for your Backstage instance will depend on your own run-time constraints
-and those required of the plugins you're running.
+At this time of writing, Backstage can be configured to use one of five cache stores: memory, which is mainly used for local testing, memcache, redis, valkey or infinispan, which are cache stores better suited for production deployment. The right cache store for your Backstage instance will depend on your own run-time constraints and those required of the plugins you're running.
 
 ### Use memory for cache
 
