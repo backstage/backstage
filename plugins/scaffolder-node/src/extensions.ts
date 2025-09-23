@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { TemplateAction } from './actions';
 
 /**
- * The scaffolder-node module for `@backstage/plugin-scaffolder-backend`.
+ * Extension point for managing scaffolder actions.
  *
- * @packageDocumentation
+ * @public
  */
+export interface ScaffolderActionsExtensionPoint {
+  addActions(...actions: TemplateAction<any, any, any>[]): void;
+}
 
-export * from './actions';
-export * from './tasks';
-export * from './files';
-export * from './types';
-export * from './extensions';
+/**
+ * Extension point for managing scaffolder actions.
+ *
+ * @public
+ */
+export const scaffolderActionsExtensionPoint =
+  createExtensionPoint<ScaffolderActionsExtensionPoint>({
+    id: 'scaffolder.actions',
+  });
