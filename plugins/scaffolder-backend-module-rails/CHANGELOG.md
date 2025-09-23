@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.5.14-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.5.13
 
 ### Patch Changes

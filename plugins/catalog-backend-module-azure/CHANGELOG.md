@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.10-next.0
+
+### Patch Changes
+
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.19.0
+
 ## 0.3.9
 
 ### Patch Changes
