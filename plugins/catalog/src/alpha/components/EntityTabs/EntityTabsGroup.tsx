@@ -164,14 +164,14 @@ function resolveIcon(
   if (!showIcons) {
     return undefined;
   }
-  const itemIcon = icon;
-  if (typeof itemIcon === 'string') {
-    const Icon = iconsApi.getIcon(itemIcon);
+  if (typeof icon === 'string') {
+    const Icon = iconsApi.getIcon(icon);
     if (Icon) {
       return <Icon />;
     }
+    return undefined;
   }
-  return itemIcon;
+  return icon;
 }
 
 const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {

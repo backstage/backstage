@@ -19,7 +19,7 @@ import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
 import { EntityTabsGroup } from './EntityTabsGroup';
-import { GroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 /** @public */
 export type HeaderTabsClassKey =
@@ -74,7 +74,7 @@ type TabGroup = {
 
 type EntityTabsListProps = {
   tabs: Tab[];
-  groupDefinitions: GroupDefinitions;
+  groupDefinitions: EntityContentGroupDefinitions;
   showIcons?: boolean;
   selectedIndex?: number;
 };
