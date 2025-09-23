@@ -23,9 +23,10 @@ interface TechDocsLiveReloadProps {
 }
 
 /**
- * Livereload addon for Techdocs
+ * LiveReload addon for Techdocs CLI.
  *
- * XXX(GabDug): Remove debug console.log
+ * Support mkdocs built-in livereload, in a TechDocs CLI preview environment.
+ * See https://github.com/backstage/backstage/issues/30514 for more details.
  */
 export const TechDocsLiveReload = ({
   enabled = true,
@@ -33,25 +34,28 @@ export const TechDocsLiveReload = ({
   const body = useShadowRootElements<HTMLBodyElement>(['body']);
   const reqRef = useRef<XMLHttpRequest | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const LIVE_RELOAD_ELEMENT = 'live-reload';
+  const LIVE_RELOAD_ATTR_EPOCH = 'live-reload-epoch';
+  const LIVE_RELOAD_ATTR_REQUEST_ID = 'live-reload-request-id';
+  const CLI_LIVERELOAD_PATH = '/.livereload';
 
   useEffect(() => {
     if (!enabled || !body[0]) {
       return undefined;
     }
 
-    // XXX(GabDug): Constant / well known element name
-    const liveReloadElement = body[0].querySelector('live-reload');
+    const liveReloadElement = body[0].querySelector(LIVE_RELOAD_ELEMENT);
 
     if (!liveReloadElement) {
       return undefined;
     }
 
     const epoch = parseInt(
-      liveReloadElement.getAttribute('live-reload-epoch') || '0',
+      liveReloadElement.getAttribute(LIVE_RELOAD_ATTR_EPOCH) || '0',
       10,
     );
     const requestId = parseInt(
-      liveReloadElement.getAttribute('live-reload-request-id') || '0',
+      liveReloadElement.getAttribute(LIVE_RELOAD_ATTR_REQUEST_ID) || '0',
       10,
     );
 
@@ -59,25 +63,12 @@ export const TechDocsLiveReload = ({
       return undefined;
     }
 
-    // XXX(GabDug): Move to TechdocsStorageApi?
-    const livereloadUrl = `http://localhost:3000/.livereload`;
+    const livereloadUrl = CLI_LIVERELOAD_PATH;
 
     const poll = () => {
       reqRef.current = new XMLHttpRequest();
-      reqRef.current.onloadend = function () {
-        // eslint-disable-next-line no-console
-        console.log(
-          '[Livereload] Response:',
-          this.responseText,
-          'Status:',
-          this.status,
-        );
+      reqRef.current.onloadend = function handleLoadEnd(this: XMLHttpRequest) {
         if (parseFloat(this.responseText) > epoch) {
-          // eslint-disable-next-line no-console
-          console.error(
-            'DEBUG: LiveReloadAddon reloadContent. Reloading page.',
-          );
-          // XXX(GabDug): Reload the TechdocsContent
           window.location.reload();
         } else {
           timeoutRef.current = setTimeout(poll, this.status === 200 ? 0 : 3000);
@@ -116,12 +107,12 @@ export const TechDocsLiveReload = ({
       poll();
     }
 
-    window.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       stop();
-      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [body, enabled]);

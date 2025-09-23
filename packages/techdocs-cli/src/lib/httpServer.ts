@@ -18,35 +18,10 @@ import serveHandler from 'serve-handler';
 import http from 'http';
 import httpProxy from 'http-proxy';
 import { createLogger } from './utility';
-
-/**
- * Extracts livereload parameters from mkdocs HTML and injects them as custom elements.
- * This function processes the HTML to add livereload support for the frontend addon.
- *
- * XXX(GabDug): Remove debug console.log
- */
-function injectLivereloadParameters(html: string): string {
-  // Extract livereload parameters from mkdocs HTML
-  // XXX(GabDug): Test performance against very long docs
-  // XXX(GabDug): Optimize, the script we read is always at the end of the body
-  const livereloadMatch = html.match(/livereload\((\d+),\s*(\d+)\);/);
-
-  if (livereloadMatch) {
-    const [, epoch, requestId] = livereloadMatch;
-
-    // Inject live-reload element in the body
-    const liveReloadTag = `<live-reload live-reload-epoch="${epoch}" live-reload-request-id="${requestId}"></live-reload>`;
-    const bodyEndIndex = html.indexOf('</body>');
-
-    if (bodyEndIndex !== -1) {
-      return (
-        html.slice(0, bodyEndIndex) + liveReloadTag + html.slice(bodyEndIndex)
-      );
-    }
-  }
-
-  return html;
-}
+import {
+  proxyHtmlWithLivereloadInjection,
+  proxyMkdocsLivereload,
+} from './livereload';
 
 export default class HTTPServer {
   private readonly proxyEndpoint: string;
@@ -88,8 +63,8 @@ export default class HTTPServer {
       const proxyHandler = this.createProxy();
       const server = http.createServer(
         (request: http.IncomingMessage, response: http.ServerResponse) => {
-          // This endpoind is used by the frontend to issue a cookie for the user.
-          // But the MkDocs server doesn't expose it as a the Backestage backend does.
+          // This endpoint is used by the frontend to issue a cookie for the user.
+          // But the MkDocs server doesn't expose it as a the Backstage backend does.
           // So we need to fake it here to prevent 404 errors.
           if (request.url === '/api/techdocs/.backstage/auth/v1/cookie') {
             const oneHourInMilliseconds = 60 * 60 * 1000;
@@ -102,66 +77,14 @@ export default class HTTPServer {
 
           if (request.url?.startsWith(this.proxyEndpoint)) {
             // Handle HTML files with livereload parameter injection
-            if (
-              request.url?.endsWith('index.html') ||
-              request.url?.endsWith('.html')
-            ) {
-              // Create a separate proxy for HTML files with selfHandleResponse
-              const htmlProxy = httpProxy.createProxyServer({
-                target: this.mkdocsTargetAddress,
-                selfHandleResponse: true, // This allows us to handle the response ourselves
+            if (request.url?.endsWith('.html')) {
+              proxyHtmlWithLivereloadInjection({
+                request,
+                response,
+                mkdocsTargetAddress: this.mkdocsTargetAddress,
+                proxyEndpoint: this.proxyEndpoint,
+                onError: (error: Error) => reject(error),
               });
-
-              htmlProxy.on('error', (error: Error) => {
-                reject(error);
-              });
-
-              // Set up response interception for HTML files
-              htmlProxy.on('proxyRes', (proxyRes, _req, res) => {
-                const contentType = proxyRes.headers['content-type'];
-                if (
-                  contentType &&
-                  typeof contentType === 'string' &&
-                  contentType.includes('text/html')
-                ) {
-                  let body = '';
-                  proxyRes.on('data', chunk => {
-                    body += chunk.toString();
-                  });
-                  proxyRes.on('end', () => {
-                    const modifiedHtml = injectLivereloadParameters(body);
-                    // Copy all headers from the original response, except Content-Length
-                    Object.keys(proxyRes.headers).forEach(key => {
-                      if (key.toLowerCase() !== 'content-length') {
-                        res.setHeader(key, proxyRes.headers[key]!);
-                      }
-                    });
-                    // Add CORS headers
-                    res.setHeader('Access-Control-Allow-Origin', '*');
-                    res.setHeader(
-                      'Access-Control-Allow-Methods',
-                      'GET, OPTIONS',
-                    );
-                    res.end(modifiedHtml);
-                  });
-                } else {
-                  // For non-HTML responses, copy headers and pipe the response
-                  Object.keys(proxyRes.headers).forEach(key => {
-                    res.setHeader(key, proxyRes.headers[key]!);
-                  });
-                  res.setHeader('Access-Control-Allow-Origin', '*');
-                  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-                  proxyRes.pipe(res);
-                }
-              });
-
-              const forwardPath =
-                request.url?.replace(
-                  new RegExp(`^${this.proxyEndpoint}`, 'i'),
-                  '',
-                ) || '';
-              request.url = forwardPath;
-              htmlProxy.web(request, response);
               return;
             }
 
@@ -187,26 +110,14 @@ export default class HTTPServer {
             return;
           }
 
-          // This endpoint is used by the frontend to pass livereload parameters to the mkdocs server.
+          // This endpoint is used by the frontend to pass livereload requests to the mkdocs server.
           if (request.url?.startsWith('/.livereload')) {
-            // Proxy livereload requests to the mkdocs server
-            // Transform /.livereload to /livereload for mkdocs server
-            const livereloadPath = request.url.replace(
-              '/.livereload',
-              '/livereload',
-            );
-            const [proxy, _forwardPath] = proxyHandler(request);
-
-            proxy.on('error', (error: Error) => {
-              reject(error);
+            proxyMkdocsLivereload({
+              request,
+              response,
+              mkdocsTargetAddress: this.mkdocsTargetAddress,
+              onError: (error: Error) => reject(error),
             });
-
-            response.setHeader('Access-Control-Allow-Origin', '*');
-            response.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-            response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-            request.url = livereloadPath;
-            proxy.web(request, response);
             return;
           }
 
