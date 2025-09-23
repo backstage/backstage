@@ -79,22 +79,8 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
             } as Entity;
           });
 
-        // Fetch full entities to get titles and display names for proper sorting
-        const fullEntities = await Promise.all(
-          entityRefs.map(async entity => {
-            try {
-              const fullEntity = await catalogApi.getEntityByRef(
-                stringifyEntityRef(entity),
-              );
-              return fullEntity || entity;
-            } catch {
-              return entity;
-            }
-          }),
-        );
-
         return await sortEntitiesByPresentation(
-          fullEntities,
+          entityRefs,
           entityPresentationApi,
         );
       })
@@ -188,9 +174,10 @@ async function sortEntitiesByPresentation(
   const keys = await Promise.all(
     entities.map(async e => {
       const namespaceKey = e.metadata.namespace || '';
+      const entityRef = stringifyEntityRef(e);
       const snapshot = presentationApi
         ? await presentationApi
-            .forEntity(e)
+            .forEntity(entityRef)
             .promise.catch(() => defaultEntityPresentation(e))
         : defaultEntityPresentation(e);
       const titleKey = snapshot.primaryTitle;
