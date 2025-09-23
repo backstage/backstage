@@ -708,7 +708,7 @@ app:
     - page:catalog/entity:
         config:
           # Show icons next to group and tab titles
-          showIcons: true
+          showNavItemIcons: true
 
           # Optionally override default groups and their icons
           groups:
@@ -726,7 +726,7 @@ app:
 Notes:
 
 - Icons for groups and tabs are resolved via the app's IconsApi. When using a string icon id (for example `"dashboard"`), ensure that the corresponding icon bundles are enabled/installed in your app (see the [IconBundleBlueprint documentation](../../reference/frontend-plugin-api.iconbundleblueprint.md)).
-- Group icons are only rendered if `showIcons` is set to `true`.
+- Group icons are only rendered if `showNavItemIcons` is set to `true`.
 
 ### Overriding or disabling a tab's group (per extension)
 
@@ -741,7 +741,7 @@ app:
         config:
           # Move this tab to a custom group you defined above
           group: custom
-          # Show an icon for this entity content page but only if `showIcons` is enabled for the `page:catalog/entity` extension
+          # Show an icon for this entity content page but only if `showNavItemIcons` is enabled for the `page:catalog/entity` extension
           icon: my-icon
 
     # Disassociate from any group and show as a standalone tab
@@ -754,5 +754,5 @@ app:
 
 Entity content extensions can also declare an `icon` parameter. When provided as a string, the icon id is looked up via the IconsApi. For the icon to render:
 
-- The entity page must have `showIcons: true` (see configuration above).
+- The entity page must have `showNavItemIcons: true` (see configuration above).
 - The icon id must be available in the app's enabled icon bundles.

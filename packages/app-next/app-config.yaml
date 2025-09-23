@@ -47,7 +47,7 @@ app:
     # Pages
     - page:catalog/entity:
         config:
-          showIcons: true
+          showNavItemIcons: true
           groups:
             # placing a tab at the beginning
             - overview:

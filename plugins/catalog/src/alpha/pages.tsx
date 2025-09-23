@@ -110,7 +110,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             ),
           )
           .optional(),
-      showIcons: z => z.boolean().optional().default(false),
+      showNavItemIcons: z => z.boolean().optional().default(false),
     },
   },
   factory(originalFactory, { config, inputs }) {
@@ -170,7 +170,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                 header={header}
                 contextMenuItems={filteredMenuItems}
                 groupDefinitions={groupDefinitions}
-                showIcons={config.showIcons}
+                showNavItemIcons={config.showNavItemIcons}
               >
                 {inputs.contents.map(output => (
                   <EntityLayout.Route
