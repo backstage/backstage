@@ -236,6 +236,44 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       ]);
     });
 
+    it('should send to user entity with deprecated type', async () => {
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+        },
+        payload: {
+          title: 'test notification',
+          metadata: {
+            attr: 1,
+          },
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          created: expect.any(String),
+          id: expect.any(String),
+          origin: 'external:test-service',
+          payload: {
+            severity: 'normal',
+            title: 'test notification',
+            metadata: {
+              attr: 1,
+            },
+          },
+          user: 'user:default/mock',
+        },
+      ]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(1);
+    });
+
     it('should send to user entity', async () => {
       const response = await sendNotification({
         recipients: {

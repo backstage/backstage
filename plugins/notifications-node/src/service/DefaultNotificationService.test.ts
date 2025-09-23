@@ -70,6 +70,28 @@ describe('DefaultNotificationService', () => {
       await expect(service.send(body)).resolves.toBeUndefined();
     });
 
+    it('should create notification with deprecated type', async () => {
+      const body: NotificationSendOptions = {
+        recipients: { type: 'entity', entityRef: ['user:default/john.doe'] },
+        payload: testNotification,
+      };
+
+      server.use(
+        rest.post('http://example.com', async (req, res, ctx) => {
+          const json = await req.json();
+          expect(json).toEqual(body);
+          expect(req.headers.get('Authorization')).toBe(
+            mockCredentials.service.header({
+              onBehalfOf: await auth.getOwnServiceCredentials(),
+              targetPluginId: 'notifications',
+            }),
+          );
+          return res(ctx.status(200));
+        }),
+      );
+      await expect(service.send(body)).resolves.toBeUndefined();
+    });
+
     it('should throw error if failing', async () => {
       const body: NotificationSendOptions = {
         recipients: { type: 'entities', entityRefs: ['user:default/john.doe'] },

@@ -192,6 +192,79 @@ describe('SlackNotificationProcessor', () => {
   });
 
   describe('when a user notification is sent directly', () => {
+    it('should send a notification to a user with deprecated type', async () => {
+      const slack = new WebClient();
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/jane.doe',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: ['user:default/mock'] },
+          payload: { title: 'notification' },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledWith({
+        channel: 'U12345678',
+        text: 'notification',
+        attachments: [
+          {
+            color: '#00A699',
+            blocks: [
+              {
+                type: 'section',
+                text: {
+                  text: 'No description provided',
+                  type: 'mrkdwn',
+                },
+                accessory: {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View More',
+                  },
+                  action_id: 'button-action',
+                },
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    type: 'plain_text',
+                    text: 'Severity: normal',
+                    emoji: true,
+                  },
+                  {
+                    type: 'plain_text',
+                    text: 'Topic: N/A',
+                    emoji: true,
+                  },
+                ],
+              },
+            ],
+            fallback: 'notification',
+          },
+        ],
+      });
+    });
+
     it('should send a notification to a user', async () => {
       const slack = new WebClient();
 
