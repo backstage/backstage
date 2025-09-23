@@ -589,21 +589,11 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       project.default_branch ??
       this.config.fallbackBranch;
 
-    // Find file with namespaced path (most use-cases)
-    let hasFile = await client.hasFile(
-      project.path_with_namespace ?? '',
+    const hasFile = await client.hasFile(
+      project.id.toString(),
       project_branch,
       this.config.catalogFile,
     );
-
-    // Find file with project id if namespace failed
-    if (!hasFile) {
-      hasFile = await client.hasFile(
-        project.id.toString(),
-        project_branch,
-        this.config.catalogFile,
-      );
-    }
 
     return hasFile;
   }
