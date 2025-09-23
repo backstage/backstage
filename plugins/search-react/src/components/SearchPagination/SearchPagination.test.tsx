@@ -197,6 +197,9 @@ describe('SearchPagination', () => {
       expect.objectContaining({
         pageLimit: 10,
       }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
   });
 
@@ -229,6 +232,9 @@ describe('SearchPagination', () => {
       expect.objectContaining({
         pageCursor: 'Mg==', // page: 2
       }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
 
     await userEvent.click(screen.getByLabelText('Previous page'));
@@ -239,6 +245,9 @@ describe('SearchPagination', () => {
       expect.objectContaining({
         pageCursor: 'MQ==', // page: 1
       }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
   });
 
@@ -271,6 +280,9 @@ describe('SearchPagination', () => {
         pageCursor: undefined,
         pageLimit: 10,
       }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
   });
 });
