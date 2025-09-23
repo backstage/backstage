@@ -2,17 +2,21 @@ import type { StorybookConfig } from '@storybook/react-vite';
 
 import { join, dirname, posix } from 'path';
 
-// This set of stories are the ones that we publish to backstage.io.
-const backstageCoreStories = [
-  'packages/ui',
-  'packages/core-components',
-  'packages/app',
-  'plugins/org',
-  'plugins/search',
-  'plugins/search-react',
-  'plugins/home',
-  'plugins/catalog-react',
-];
+const isChromatic = process.env.STORYBOOK_STORY_SET === 'chromatic';
+
+// All stories for full development
+const allStories = isChromatic
+  ? ['packages/ui']
+  : [
+      'packages/ui',
+      'packages/core-components',
+      'packages/app',
+      'plugins/org',
+      'plugins/search',
+      'plugins/search-react',
+      'plugins/home',
+      'plugins/catalog-react',
+    ];
 
 const rootPath = '../';
 const storiesSrcMdx = 'src/**/*.mdx';
@@ -21,7 +25,7 @@ const storiesSrcGlob = 'src/**/*.stories.@(js|jsx|mjs|ts|tsx)';
 const getStoriesPath = (element: string, pattern: string) =>
   posix.join(rootPath, element, pattern);
 
-const stories = backstageCoreStories.flatMap(element => [
+const stories = allStories.flatMap(element => [
   getStoriesPath(element, storiesSrcMdx),
   getStoriesPath(element, storiesSrcGlob),
 ]);
@@ -37,6 +41,7 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-themes'),
     getAbsolutePath('@storybook/addon-docs'),
+    getAbsolutePath('@storybook/addon-a11y'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),

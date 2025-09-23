@@ -251,6 +251,12 @@ export interface Config {
          * Whether the processor is enabled or not. Defaults to true.
          */
         enabled?: boolean;
+        /**
+         * The priority of the processor, which is used to determine the order in which
+         * processors are run. The default priority is 20, and lower value means
+         * that the processor runs earlier.
+         */
+        priority?: number;
       };
     };
   };

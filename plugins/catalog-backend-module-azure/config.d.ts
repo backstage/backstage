@@ -55,6 +55,40 @@ export interface Config {
           schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
         };
       };
+      /**
+       * AzureBlobEntityProvider configuration
+       */
+      azureBlob?:
+        | {
+            [name: string]: {
+              /**
+               * (Required) The Azure Blob Storage container name.
+               */
+              containerName: string;
+              /**
+               * (Required) The Azure Storage account name.
+               */
+              accountName: string;
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            };
+          }
+        | {
+            /**
+             * (Required) The Azure Blob Storage container name.
+             */
+            containerName: string;
+            /**
+             * (Required) The Azure Storage account name.
+             */
+            accountName: string;
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+          };
     };
   };
 }

@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/integration@1.18.0
+  - @backstage/core-components@0.18.0
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/integration-react@1.2.10
+
 ## 0.13.5-next.2
 
 ### Patch Changes

@@ -30,10 +30,11 @@ export class WithPagination<
   constructor(
     private readonly createUrl: (options: PaginationOptions) => URL,
     private readonly fetch: (url: URL) => Promise<TPage>,
+    private readonly pagelen?: number,
   ) {}
 
   getPage(options?: PaginationOptions): Promise<TPage> {
-    const opts = { page: 1, pagelen: 100, ...options };
+    const opts = { page: 1, pagelen: this.pagelen ?? 100, ...options };
     const url = this.createUrl(opts);
     return this.fetch(url);
   }
@@ -41,7 +42,7 @@ export class WithPagination<
   async *iteratePages(
     options?: PaginationOptions,
   ): AsyncGenerator<TPage, void> {
-    const opts = { page: 1, pagelen: 100, ...options };
+    const opts = { page: 1, pagelen: this.pagelen ?? 100, ...options };
     let url: URL | undefined = this.createUrl(opts);
     let res;
     do {
@@ -52,7 +53,7 @@ export class WithPagination<
   }
 
   async *iterateResults(options?: PaginationOptions) {
-    const opts = { page: 1, pagelen: 100, ...options };
+    const opts = { page: 1, pagelen: this.pagelen ?? 100, ...options };
     let url: URL | undefined = this.createUrl(opts);
     let res;
     do {

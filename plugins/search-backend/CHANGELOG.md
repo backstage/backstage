@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend
 
+## 2.0.6
+
+### Patch Changes
+
+- 0efcc97: Updated generated schemas
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/types@1.2.2
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/plugin-search-backend-node@1.3.15
+
 ## 2.0.6-next.0
 
 ### Patch Changes

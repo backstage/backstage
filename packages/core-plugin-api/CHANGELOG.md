@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.11.0
+
+### Minor Changes
+
+- 5114627: Make `openshiftAuthApiRef` available in `@backstage/core-plugin-api`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.2
+
 ## 1.10.9
 
 ### Patch Changes

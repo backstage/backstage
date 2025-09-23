@@ -727,7 +727,32 @@ export class CatalogBuilder {
 
     this.checkMissingExternalProcessors(processors);
 
-    return this.filterProcessors(processors);
+    const filteredProcessors = this.filterProcessors(processors);
+
+    // Lastly sort the processors by priority. Config can override the
+    // priority of a processor to allow control of 3rd party processors.
+    filteredProcessors.sort((a, b) => {
+      const getProcessorPriority = (processor: CatalogProcessor) => {
+        try {
+          return (
+            config.getOptionalNumber(
+              `catalog.processors.${processor.getProcessorName()}.priority`,
+            ) ??
+            processor.getPriority?.() ??
+            20
+          );
+        } catch (_) {
+          // In case the processor config is not an object, just return default priority
+          return 20;
+        }
+      };
+
+      const aPriority = getProcessorPriority(a);
+      const bPriority = getProcessorPriority(b);
+      return aPriority - bPriority;
+    });
+
+    return filteredProcessors;
   }
 
   private filterProcessors(processors: CatalogProcessor[]) {

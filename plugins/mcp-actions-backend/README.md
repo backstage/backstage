@@ -103,6 +103,31 @@ node -p 'require("crypto").randomBytes(24).toString("base64")'
 
 Set the `MCP_TOKEN` environment variable with this token, and configure your MCP client to use it in the [Authorization header](#configuring-mcp-clients)
 
+#### Experimental: Dynamic Client Registration
+
+> [!CAUTION]
+> This is highly experimental, proceed with caution.
+
+You can configure the `auth-backend` and install the `auth` frontend plugin in order to enable [Dynamic Client Registration](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization#dynamic-client-registration) with MCP Clients.
+
+This means that there is no token required in your MCP settings, and a token will be given to a client that requests a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup that requires your approval will be opened in your Backstage instance, which is powered by the `auth` plugin.
+
+You will need to add the `@backstage/plugin-auth` package to your `app` `package.json`, and enable the following config in `app-config.yaml`:
+
+```yaml
+auth:
+  experimentalDynamicClientRegistration:
+    # enable the feature
+    enabled: true
+
+    # this is optional and will default to *, but you can limit the callback URLs which are valid for added security
+    allowedRedirectUriPatterns:
+      - cursor://*
+```
+
+> [!NOTE]
+> The `@backstage/plugin-auth` package is currently only available in the new frontend system.
+
 ## Configuring MCP Clients
 
 The MCP server supports both Server-Sent Events (SSE) and Streamable HTTP protocols.

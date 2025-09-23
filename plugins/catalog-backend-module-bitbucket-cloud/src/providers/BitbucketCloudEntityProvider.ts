@@ -409,7 +409,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     ].join(',');
 
     const searchResults = this.client
-      .searchCode(workspace, query, { fields })
+      .searchCode(workspace, query, { fields }, this.config.pagelen)
       .iterateResults();
 
     const result: IngestionTarget[] = [];

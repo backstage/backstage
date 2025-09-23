@@ -211,7 +211,7 @@ argument of `createBackend`.
 
 ## Removing `@backstage/backend-common`
 
-The `@backstage/backend-common` package has been deprecated as part of moving to the new backend system, an you will need to replace existing usage of it. All exports from the package have been marked as deprecated in the last few releases of the package, and each export has its own deprecation message that explains how to replace that particular export.
+The `@backstage/backend-common` package has been deprecated as part of moving to the new backend system, and you will need to replace existing usage of it. All exports from the package have been marked as deprecated in the last few releases of the package, and each export has its own deprecation message that explains how to replace that particular export.
 
 These are the deprecation messages for the most common replacements:
 

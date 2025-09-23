@@ -117,7 +117,7 @@ export const Tabs = (props: TabsProps) => {
         }
       }
     }
-    return undefined;
+    return null;
   })();
 
   if (!children) return null;

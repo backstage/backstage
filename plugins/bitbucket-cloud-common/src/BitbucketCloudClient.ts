@@ -40,6 +40,7 @@ export class BitbucketCloudClient {
     workspace: string,
     query: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
+    pagelen?: number,
   ): WithPagination<Models.SearchResultPage, Models.SearchCodeSearchResult> {
     const workspaceEnc = encodeURIComponent(workspace);
     return new WithPagination(
@@ -50,6 +51,7 @@ export class BitbucketCloudClient {
           search_query: query,
         }),
       url => this.getTypeMapped(url),
+      pagelen,
     );
   }
 

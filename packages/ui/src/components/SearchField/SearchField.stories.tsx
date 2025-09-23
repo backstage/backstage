@@ -23,6 +23,8 @@ import { FieldLabel } from '../FieldLabel';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiCactusLine } from '@remixicon/react';
 import { Button } from '../Button';
+import { Header } from '../Header';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Backstage UI/SearchField',
@@ -170,6 +172,77 @@ export const StartCollapsed: Story = {
   ),
 };
 
+export const InHeader: Story = {
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  render: args => (
+    <>
+      <Header
+        title="Title"
+        customActions={
+          <>
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+            <SearchField {...args} size="small" />
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+          </>
+        }
+      />
+    </>
+  ),
+};
+
+export const StartCollapsedInHeader: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  render: args => (
+    <>
+      <Header
+        title="Title"
+        customActions={
+          <>
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+            <SearchField {...args} size="small" />
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+          </>
+        }
+      />
+    </>
+  ),
+};
+
 export const StartCollapsedWithButtons: Story = {
   args: {
     ...StartCollapsed.args,
@@ -177,12 +250,22 @@ export const StartCollapsedWithButtons: Story = {
   render: args => (
     <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: '600px' }}>
       <SearchField {...args} size="small" />
-      <ButtonIcon icon={<RiCactusLine />} size="small" variant="secondary" />
+      <ButtonIcon
+        aria-label="Cactus icon button"
+        icon={<RiCactusLine />}
+        size="small"
+        variant="secondary"
+      />
       <Button size="small" variant="secondary">
         Hello world
       </Button>
       <SearchField {...args} size="medium" />
-      <ButtonIcon icon={<RiCactusLine />} size="medium" variant="secondary" />
+      <ButtonIcon
+        aria-label="Cactus icon button"
+        icon={<RiCactusLine />}
+        size="medium"
+        variant="secondary"
+      />
       <Button size="medium" variant="secondary">
         Hello world
       </Button>

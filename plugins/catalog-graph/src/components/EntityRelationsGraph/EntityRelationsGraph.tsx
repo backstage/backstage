@@ -158,6 +158,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
           renderLabel={renderLabel || DefaultRenderLabel}
           direction={direction}
           className={classes.graph}
+          fit="contain"
           paddingX={theme.spacing(4)}
           paddingY={theme.spacing(4)}
           labelPosition={DependencyGraphTypes.LabelPosition.RIGHT}

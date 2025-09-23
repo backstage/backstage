@@ -1,5 +1,13 @@
 # @backstage/config-loader
 
+## 1.10.3
+
+### Patch Changes
+
+- a73f495: Allow using `BACKSTAGE_ENV` for loading environment specific config files
+- Updated dependencies
+  - @backstage/types@1.2.2
+
 ## 1.10.3-next.0
 
 ### Patch Changes

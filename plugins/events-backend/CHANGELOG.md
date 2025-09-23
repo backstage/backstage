@@ -1,5 +1,16 @@
 # @backstage/plugin-events-backend
 
+## 0.5.6
+
+### Patch Changes
+
+- 0efcc97: Updated generated schemas
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/types@1.2.2
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+
 ## 0.5.6-next.0
 
 ### Patch Changes

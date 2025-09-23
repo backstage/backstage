@@ -5,6 +5,7 @@ import { apis } from './support/apis';
 import type { Decorator, Preview } from '@storybook/react-vite';
 import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
+import { allModes } from './modes';
 
 // Default Backstage theme CSS (from packages/ui)
 import '../packages/ui/src/css/styles.css';
@@ -89,6 +90,16 @@ const preview: Preview = {
 
     docs: {
       codePanel: true,
+    },
+
+    chromatic: {
+      modes: {
+        'light backstage': allModes['light backstage'],
+        // TODO: Enable these modes when we have more Chromatic snapshots.
+        // 'dark backstage': allModes['dark backstage'],
+        // 'light spotify': allModes['light spotify'],
+        // 'dark spotify': allModes['dark spotify'],
+      },
     },
   },
   decorators: [
