@@ -119,7 +119,7 @@
 
 .bui-InputAction {
   position: absolute;
-  right: var(--bui-space-3);
+  right: var(--bui-space-1);
   top: 50%;
   transform: translateY(-50%);
   color: var(--bui-fg-primary);
