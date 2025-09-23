@@ -109,7 +109,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -156,7 +156,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -200,7 +200,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -231,7 +231,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -364,7 +364,7 @@ describe('NotificationsEmailProcessor', () => {
         },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -390,7 +390,7 @@ describe('NotificationsEmailProcessor', () => {
         },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -428,7 +428,7 @@ describe('NotificationsEmailProcessor', () => {
         },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -484,7 +484,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );

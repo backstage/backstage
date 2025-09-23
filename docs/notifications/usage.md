@@ -112,7 +112,7 @@ steps:
     name: Notify
     action: notification:send
     input:
-      recipients: entity
+      recipients: entities
       entityRefs:
         - component:default/backstage
       title: 'Template executed'
@@ -246,7 +246,7 @@ When sending a notification:
 
 ```ts
 notificationService.send({
-  recipients: { type: 'entity', entityRef: 'group/default:team-a' },
+  recipients: { type: 'entities', entityRefs: ['group/default:team-a'] },
   payload: {
     title: 'Notification',
     description: 'Description'

@@ -62,7 +62,57 @@ describe('notification:send', () => {
     });
     await action.handler(ctx);
     expect(notificationService.send).toHaveBeenCalledWith({
-      recipients: { type: 'entity', entityRef: ['user:default/john.doe'] },
+      recipients: {
+        type: 'entities',
+        entityRefs: ['user:default/john.doe'],
+        excludedEntityRefs: [],
+      },
+      payload: {
+        title: 'Test notification',
+      },
+    });
+  });
+
+  it('should exclude entity references', async () => {
+    const ctx = Object.assign({}, mockContext, {
+      input: {
+        recipients: 'entity',
+        entityRefs: ['user:default/john.doe'],
+        excludedEntityRefs: ['user:default/jane.doe'],
+        title: 'Test notification',
+      },
+      user: { ref: 'user:default/jane.doe' },
+    });
+    await action.handler(ctx);
+    expect(notificationService.send).toHaveBeenCalledWith({
+      recipients: {
+        type: 'entities',
+        entityRefs: ['user:default/john.doe'],
+        excludedEntityRefs: ['user:default/jane.doe'],
+      },
+      payload: {
+        title: 'Test notification',
+      },
+    });
+  });
+
+  it('should exclude current user', async () => {
+    const ctx = Object.assign({}, mockContext, {
+      input: {
+        recipients: 'entity',
+        entityRefs: ['user:default/john.doe'],
+        title: 'Test notification',
+        excludeCurrentUser: true,
+      },
+      user: { ref: 'user:default/jane.doe' },
+    });
+    await action.handler(ctx);
+    expect(notificationService.send).toHaveBeenCalledWith({
+      recipients: {
+        type: 'entities',
+        entityRefs: ['user:default/john.doe'],
+        excludedEntityRefs: ['user:default/jane.doe'],
+      },
       payload: {
         title: 'Test notification',
       },

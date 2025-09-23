@@ -143,7 +143,7 @@ describe('SlackNotificationProcessor', () => {
     })[0];
 
     await processor.processOptions({
-      recipients: { type: 'entity', entityRef: 'group:default/mock' },
+      recipients: { type: 'entities', entityRefs: ['group:default/mock'] },
       payload: { title: 'notification' },
     });
 
@@ -216,7 +216,7 @@ describe('SlackNotificationProcessor', () => {
           },
         },
         {
-          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
           payload: { title: 'notification' },
         },
       );
@@ -291,7 +291,7 @@ describe('SlackNotificationProcessor', () => {
           },
         },
         {
-          recipients: { type: 'entity', entityRef: 'group:default/group' },
+          recipients: { type: 'entities', entityRefs: ['group:default/group'] },
           payload: { title: 'notification' },
         },
       );
@@ -408,8 +408,8 @@ describe('SlackNotificationProcessor', () => {
 
       await processor.processOptions({
         recipients: {
-          type: 'entity',
-          entityRef: 'group:default/mock-without-slack-annotation',
+          type: 'entities',
+          entityRefs: ['group:default/mock-without-slack-annotation'],
         },
         payload: { title: 'notification' },
       });
@@ -442,8 +442,8 @@ describe('SlackNotificationProcessor', () => {
         },
         {
           recipients: {
-            type: 'entity',
-            entityRef: 'user:default/mock-without-slack-annotation',
+            type: 'entities',
+            entityRefs: ['user:default/mock-without-slack-annotation'],
           },
           payload: { title: 'notification' },
         },
@@ -481,8 +481,8 @@ describe('SlackNotificationProcessor', () => {
         },
         {
           recipients: {
-            type: 'entity',
-            entityRef: 'user:default/mock-without-slack-annotation',
+            type: 'entities',
+            entityRefs: ['user:default/mock-without-slack-annotation'],
           },
           payload: { title: 'notification' },
         },
@@ -526,8 +526,8 @@ describe('SlackNotificationProcessor', () => {
         },
         {
           recipients: {
-            type: 'entity',
-            entityRef: 'user:default/mock-without-slack-annotation',
+            type: 'entities',
+            entityRefs: ['user:default/mock-without-slack-annotation'],
           },
           payload: { title: 'notification' },
         },
@@ -610,7 +610,7 @@ describe('SlackNotificationProcessor', () => {
           },
         },
         {
-          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
           payload: {
             title: 'notification',
             description:
@@ -649,7 +649,7 @@ describe('SlackNotificationProcessor', () => {
           },
         },
         {
-          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
           payload: {
             title: 'notification',
             description: 'Hello world',

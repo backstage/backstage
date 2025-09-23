@@ -716,11 +716,20 @@ export async function createRouter(
         origin,
       );
       notifications.push(broadcast);
-    } else if (recipients.type === 'entity') {
-      const entityRefs = [recipients.entityRef].flat();
-      const excludedEntityRefs = recipients.excludeEntityRef
-        ? [recipients.excludeEntityRef].flat()
-        : undefined;
+    } else if (recipients.type === 'entity' || recipients.type === 'entities') {
+      const entityRefs =
+        recipients.type === 'entity'
+          ? [recipients.entityRef].flat()
+          : recipients.entityRefs;
+      let excludedEntityRefs: string[] = [];
+      if (recipients.type === 'entities') {
+        excludedEntityRefs = recipients.excludedEntityRefs ?? [];
+      } else if (recipients.type === 'entity') {
+        excludedEntityRefs = recipients.excludeEntityRef
+          ? [recipients.excludeEntityRef].flat()
+          : [];
+      }
+
       try {
         const { userEntityRefs } =
           await usedRecipientResolver.resolveNotificationRecipients({

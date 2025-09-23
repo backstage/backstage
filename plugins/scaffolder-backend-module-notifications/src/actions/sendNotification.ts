@@ -36,9 +36,9 @@ export function createSendNotificationAction(options: {
       input: {
         recipients: z =>
           z
-            .enum(['broadcast', 'entity'])
+            .enum(['broadcast', 'entity', 'entities'])
             .describe(
-              'The recipient of the notification, either broadcast or entity. If using entity, also entityRef must be provided',
+              'The recipient of the notification, either broadcast or entity. If using entity or entities, also entityRefs must be provided. Support for "entity" is deprecated and will be removed in a future release, please use "entities" instead.',
             ),
         entityRefs: z =>
           z
@@ -46,6 +46,20 @@ export function createSendNotificationAction(options: {
             .optional()
             .describe(
               'The entity references to send the notification to, required if using recipient of entity',
+            ),
+        excludedEntityRefs: z =>
+          z
+            .array(z.string())
+            .optional()
+            .describe(
+              'Entity references to exclude from the recipients after resolving',
+            ),
+        excludeCurrentUser: z =>
+          z
+            .boolean()
+            .optional()
+            .describe(
+              'Exclude the current user from the recipients, only applicable when recipients is entity and entityRefs is not provided',
             ),
         title: z => z.string().describe('Notification title'),
         info: z => z.string().optional().describe('Notification description'),
@@ -70,6 +84,8 @@ export function createSendNotificationAction(options: {
       const {
         recipients,
         entityRefs,
+        excludedEntityRefs,
+        excludeCurrentUser,
         title,
         info,
         link,
@@ -80,17 +96,29 @@ export function createSendNotificationAction(options: {
       } = ctx.input;
 
       ctx.logger.info(`Sending notification to ${recipients}`);
-      if (recipients === 'entity' && !entityRefs) {
+      if (
+        (recipients === 'entity' || recipients === 'entities') &&
+        !entityRefs
+      ) {
         if (optional !== true) {
           throw new Error('Entity references must be provided');
         }
         return;
       }
 
+      const excluded = excludedEntityRefs ? [...excludedEntityRefs] : [];
+      if (excludeCurrentUser === true && ctx.user?.ref) {
+        excluded.push(ctx.user.ref);
+      }
+
       const notificationRecipients: NotificationRecipients =
         recipients === 'broadcast'
           ? { type: 'broadcast' }
-          : { type: 'entity', entityRef: entityRefs! };
+          : {
+              type: 'entities',
+              entityRefs: entityRefs!,
+              excludedEntityRefs: excluded,
+            };
       const payload: NotificationPayload = {
         title,
         description: info,

@@ -50,7 +50,7 @@ describe('DefaultNotificationService', () => {
   describe('getNotifications', () => {
     it('should create notification', async () => {
       const body: NotificationSendOptions = {
-        recipients: { type: 'entity', entityRef: ['user:default/john.doe'] },
+        recipients: { type: 'entities', entityRefs: ['user:default/john.doe'] },
         payload: testNotification,
       };
 
@@ -72,7 +72,7 @@ describe('DefaultNotificationService', () => {
 
     it('should throw error if failing', async () => {
       const body: NotificationSendOptions = {
-        recipients: { type: 'entity', entityRef: ['user:default/john.doe'] },
+        recipients: { type: 'entities', entityRefs: ['user:default/john.doe'] },
         payload: testNotification,
       };
 

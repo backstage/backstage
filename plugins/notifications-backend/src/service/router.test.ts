@@ -239,8 +239,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should send to user entity', async () => {
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['user:default/mock'],
+          type: 'entities',
+          entityRefs: ['user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -277,8 +277,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should send to group entity', async () => {
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['group:default/mock'],
+          type: 'entities',
+          entityRefs: ['group:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -309,8 +309,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should only send one notification per user', async () => {
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['group:default/mock', 'user:default/mock'],
+          type: 'entities',
+          entityRefs: ['group:default/mock', 'user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -359,8 +359,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['user:default/mock'],
+          type: 'entities',
+          entityRefs: ['user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -400,8 +400,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['user:default/mock'],
+          type: 'entities',
+          entityRefs: ['user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -439,8 +439,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['user:default/mock'],
+          type: 'entities',
+          entityRefs: ['user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -550,8 +550,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       });
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['system:default/mock'],
+          type: 'entities',
+          entityRefs: ['system:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -585,8 +585,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       });
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['system:default/mock'],
+          type: 'entities',
+          entityRefs: ['system:default/mock'],
         },
         payload: {
           title: 'test notification',
