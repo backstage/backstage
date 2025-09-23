@@ -316,6 +316,15 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
+export type EntityContentGroupDefinitions = Record<
+  string,
+  {
+    title: string;
+    icon?: string | ReactElement;
+  }
+>;
+
+// @alpha (undocumented)
 export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-content-layout';
   params: {
@@ -597,15 +606,6 @@ export type EntityTableColumnTitleProps = {
     | 'label'
     | 'domain';
 };
-
-// @alpha (undocumented)
-export type GroupDefinitions = Record<
-  string,
-  {
-    title: string;
-    icon?: string | ReactElement;
-  }
->;
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

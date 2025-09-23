@@ -32,7 +32,7 @@ import {
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
   EntityHeaderBlueprint,
-  GroupDefinitions,
+  EntityContentGroupDefinitions,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
@@ -147,7 +147,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const groupDefinitions =
           config.groups?.reduce(
             (rest, group) => ({ ...rest, ...group }),
-            {} as GroupDefinitions,
+            {} as EntityContentGroupDefinitions,
           ) ?? defaultEntityContentGroupDefinitions;
 
         const Component = () => {

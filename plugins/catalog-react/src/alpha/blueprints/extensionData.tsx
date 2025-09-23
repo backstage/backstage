@@ -42,7 +42,7 @@ export const entityFilterExpressionDataRef =
   });
 
 /** @alpha */
-export type GroupDefinitions = Record<
+export type EntityContentGroupDefinitions = Record<
   string,
   {
     title: string;
@@ -73,7 +73,7 @@ export const defaultEntityContentGroupDefinitions = {
   observability: {
     title: 'Observability',
   },
-} satisfies GroupDefinitions;
+} satisfies EntityContentGroupDefinitions;
 
 /**
  * @alpha
