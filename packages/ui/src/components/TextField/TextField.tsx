@@ -37,7 +37,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       description,
       isRequired,
       enableVisibility,
-      isClearable,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       placeholder,
@@ -60,28 +59,8 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
 
-    // Manage value for clearable behavior, supporting both controlled and uncontrolled usage
-    const {
-      value: controlledValue,
-      defaultValue,
-      onChange,
-      isDisabled,
-    } = rest as any;
-    const [uncontrolledValue, setUncontrolledValue] = useState<string>(
-      defaultValue ?? '',
-    );
-    const effectiveValue =
-      controlledValue !== undefined ? controlledValue : uncontrolledValue;
-    const handleChange = (value: string) => {
-      if (controlledValue === undefined) setUncontrolledValue(value);
-      onChange?.(value);
-    };
-
     // Manage secret visibility toggle
     const [isVisible, setIsVisible] = useState(false);
-    const showClear = Boolean(
-      isClearable && effectiveValue && effectiveValue.length > 0,
-    );
     const showSecretToggle = Boolean(enableVisibility);
 
     return (
@@ -91,8 +70,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         {...rest}
-        value={effectiveValue}
-        onChange={handleChange}
         ref={ref}
       >
         <FieldLabel
@@ -113,33 +90,15 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
               {icon}
             </div>
           )}
-          {(showClear || showSecretToggle) && (
+          {showSecretToggle && (
             <div className={classNames.inputAction}>
-              {showSecretToggle && (
-                <ButtonIcon
-                  data-size={dataAttributes['data-size']}
-                  aria-label={isVisible ? 'Hide value' : 'Show value'}
-                  variant={'tertiary'}
-                  isDisabled={isDisabled}
-                  onPress={() => setIsVisible(v => !v)}
-                  icon={<Icon name={isVisible ? 'eye' : 'eye-off'} />}
-                />
-              )}
-              {showClear && (
-                <ButtonIcon
-                  data-size={dataAttributes['data-size']}
-                  aria-label="Clear input"
-                  variant={'tertiary'}
-                  isDisabled={isDisabled}
-                  onPress={() => {
-                    if (controlledValue === undefined) {
-                      setUncontrolledValue('');
-                    }
-                    onChange?.('');
-                  }}
-                  icon={<Icon name="close" />}
-                />
-              )}
+              <ButtonIcon
+                data-size={dataAttributes['data-size']}
+                aria-label={isVisible ? 'Hide value' : 'Show value'}
+                variant={'tertiary'}
+                onPress={() => setIsVisible(v => !v)}
+                icon={<Icon name={isVisible ? 'eye' : 'eye-off'} />}
+              />
             </div>
           )}
           <Input
