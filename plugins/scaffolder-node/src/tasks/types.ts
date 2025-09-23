@@ -33,6 +33,8 @@ export type TaskSecrets = Record<string, string> & {
  * The status of each step of the Task
  *
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type TaskStatus =
   | 'cancelled'
@@ -46,6 +48,8 @@ export type TaskStatus =
  * The state of a completed task.
  *
  * @public
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export type TaskCompletionState = 'failed' | 'completed';
 
@@ -53,6 +57,8 @@ export type TaskCompletionState = 'failed' | 'completed';
  * SerializedTask
  *
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type SerializedTask = {
   id: string;
@@ -69,6 +75,8 @@ export type SerializedTask = {
  * TaskEventType
  *
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
@@ -76,6 +84,8 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
  * SerializedTaskEvent
  *
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type SerializedTaskEvent = {
   id: number;
@@ -94,6 +104,8 @@ export type SerializedTaskEvent = {
  * The result of {@link TaskBroker.dispatch}
  *
  * @public
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export type TaskBrokerDispatchResult = {
   taskId: string;
@@ -104,6 +116,8 @@ export type TaskBrokerDispatchResult = {
  * Currently a spec and optional secrets
  *
  * @public
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
@@ -114,6 +128,8 @@ export type TaskBrokerDispatchOptions = {
 /**
  * TaskFilter
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type TaskFilter = {
   key: string;
@@ -123,6 +139,8 @@ export type TaskFilter = {
 /**
  * TaskFilters
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type TaskFilters =
   | { anyOf: TaskFilter[] }
@@ -131,9 +149,12 @@ export type TaskFilters =
   | TaskFilter;
 
 /**
- * Task
+ * TaskContext
  *
  * @public
+ *
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export interface TaskContext {
   taskId?: string;
@@ -175,6 +196,8 @@ export interface TaskContext {
  * TaskBroker
  *
  * @public
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export interface TaskBroker {
   cancel(taskId: string): Promise<void>;

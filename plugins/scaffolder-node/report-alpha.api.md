@@ -147,7 +147,7 @@ export interface ScaffolderAutocompleteExtensionPoint {
 // @alpha
 export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
 
-// @alpha
+// @alpha @deprecated
 export interface ScaffolderTaskBrokerExtensionPoint {
   // (undocumented)
   setTaskBroker(taskBroker: TaskBroker): void;
