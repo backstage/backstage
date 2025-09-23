@@ -146,15 +146,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
                     `ISO duration (e.g., 'PT30S'), or duration object (e.g., {seconds: 30}). ` +
                     `Falling back to number parsing.`,
                 );
-                // Fallback to reading as number if duration parsing fails
-                const fallbackValue = serverConfig.getOptionalNumber(key);
-                if (fallbackValue === undefined && typeof value === 'string') {
-                  logger.error(
-                    `backend.server.${key} value '${value}' could not be parsed as either ` +
-                      `a duration or a number. This setting will be ignored.`,
-                  );
-                }
-                return fallbackValue;
+                return undefined;
               }
             };
 
