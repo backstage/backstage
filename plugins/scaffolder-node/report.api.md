@@ -6,6 +6,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 import { Expand } from '@backstage/types';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -305,6 +306,15 @@ export const parseRepoUrl: (
   workspace?: string;
   project?: string;
 };
+
+// @public
+export interface ScaffolderActionsExtensionPoint {
+  // (undocumented)
+  addActions(...actions: TemplateAction<any, any, any>[]): void;
+}
+
+// @public
+export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
 
 // @public (undocumented)
 export interface SerializedFile {
