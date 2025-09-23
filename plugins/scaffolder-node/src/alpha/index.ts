@@ -53,6 +53,7 @@ export const scaffolderActionsExtensionPoint =
  * Extension point for replacing the scaffolder task broker.
  *
  * @alpha
+ * @deprecated this extension point is planned to be removed, please reach out to us in an issue if you're using this extension point and your use cases.
  */
 export interface ScaffolderTaskBrokerExtensionPoint {
   setTaskBroker(taskBroker: TaskBroker): void;
