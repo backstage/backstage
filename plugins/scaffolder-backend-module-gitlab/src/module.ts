@@ -18,10 +18,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  scaffolderActionsExtensionPoint,
-  scaffolderAutocompleteExtensionPoint,
-} from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderAutocompleteExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGitlabGroupEnsureExistsAction,
   createGitlabIssueAction,
@@ -36,6 +33,7 @@ import {
 } from './actions';
 import { createGitlabProjectMigrateAction } from './actions/gitlabProjectMigrate';
 import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 
 /**
  * @public

@@ -105,11 +105,9 @@ export interface Config {
       endpointSuffix?: string;
 
       /**
-       * The host of the target that this matches on, e.g., "blob.core.windows.net".
+       * Optional endpoint URL for custom domain. Uses default if not provided.
        * @visibility frontend
        */
-      host: string;
-
       endpoint?: string;
       /**
        * Optional credential to use for Azure Active Directory authentication.

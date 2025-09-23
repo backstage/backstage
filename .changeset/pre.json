@@ -205,5 +205,33 @@
     "@backstage/plugin-user-settings-backend": "0.3.6",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "brave-teeth-reply",
+    "brown-falcons-own",
+    "calm-trains-tie",
+    "clever-papers-watch",
+    "cold-coats-show",
+    "cool-baboons-count",
+    "create-app-1758639549",
+    "eager-toes-start",
+    "fast-heads-brake",
+    "fast-queens-guess",
+    "five-olives-bet",
+    "hungry-crews-fetch",
+    "itchy-falcons-leave",
+    "kind-places-reply",
+    "legal-eagles-jog",
+    "nice-readers-judge",
+    "public-sites-admire",
+    "rare-states-pay",
+    "ready-poems-change",
+    "ready-pots-arrive",
+    "red-times-bet",
+    "salty-words-wash",
+    "short-aliens-invite",
+    "solid-bikes-leave",
+    "tame-hairs-smash",
+    "tender-cups-tap",
+    "wet-spiders-wait"
+  ]
 }
