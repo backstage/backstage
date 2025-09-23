@@ -80,7 +80,7 @@ export interface EntityLayoutProps {
    */
   parentEntityRelations?: string[];
   groupDefinitions: EntityContentGroupDefinitions;
-  showIcons?: boolean;
+  showNavItemIcons?: boolean;
 }
 
 /**
@@ -109,7 +109,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     NotFoundComponent,
     parentEntityRelations,
     groupDefinitions,
-    showIcons,
+    showNavItemIcons,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
@@ -165,7 +165,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         <EntityTabs
           routes={routes}
           groupDefinitions={groupDefinitions}
-          showIcons={showIcons}
+          showIcons={showNavItemIcons}
         />
       )}
 

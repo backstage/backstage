@@ -1061,7 +1061,7 @@ const _default: OverridableFrontendPlugin<
               }
             >[]
           | undefined;
-        showIcons: boolean;
+        showNavItemIcons: boolean;
       } & {
         path: string | undefined;
       };
@@ -1075,7 +1075,7 @@ const _default: OverridableFrontendPlugin<
               }
             >[]
           | undefined;
-        showIcons?: boolean | undefined;
+        showNavItemIcons?: boolean | undefined;
       } & {
         path?: string | undefined;
       };
