@@ -1035,8 +1035,7 @@ const _default: OverridableFrontendPlugin<
               }
             >[]
           | undefined;
-        showIcons: boolean;
-      } & {
+        showNavItemIcons: boolean;
         path: string | undefined;
       };
       configInput: {
@@ -1049,8 +1048,7 @@ const _default: OverridableFrontendPlugin<
               }
             >[]
           | undefined;
-        showIcons?: boolean | undefined;
-      } & {
+        showNavItemIcons?: boolean | undefined;
         path?: string | undefined;
       };
       output:
