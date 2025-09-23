@@ -356,7 +356,7 @@ export type SerializedTaskEvent = {
 // @public
 export interface TaskBroker {
   // (undocumented)
-  cancel?(taskId: string): Promise<void>;
+  cancel(taskId: string): Promise<void>;
   // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
@@ -370,7 +370,7 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
-  list?(options?: {
+  list(options?: {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
@@ -388,15 +388,10 @@ export interface TaskBroker {
     tasks: SerializedTask[];
     totalTasks?: number;
   }>;
-  // @deprecated (undocumented)
-  list?(options: { createdBy?: string; status?: TaskStatus }): Promise<{
-    tasks: SerializedTask[];
-    totalTasks?: number;
-  }>;
   // (undocumented)
-  recoverTasks?(): Promise<void>;
+  recoverTasks(): Promise<void>;
   // (undocumented)
-  retry?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
+  retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
