@@ -240,6 +240,7 @@ export type ActionsPageProps = {
     editor?: boolean;
     tasks?: boolean;
     create?: boolean;
+    templatingExtensions?: boolean;
   };
 };
 
@@ -265,7 +266,10 @@ export const ActionsPage = (props: ActionsPageProps) => {
       props?.contextMenu?.create !== false
         ? () => navigate(createLink())
         : undefined,
-    onTemplatingExtensionsClicked: () => navigate(templatingExtensionsLink()),
+    onTemplatingExtensionsClicked:
+      props?.contextMenu?.templatingExtensions !== false
+        ? () => navigate(templatingExtensionsLink())
+        : undefined,
   };
 
   return (
