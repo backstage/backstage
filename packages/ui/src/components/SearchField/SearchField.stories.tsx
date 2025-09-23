@@ -51,6 +51,7 @@ export const Default: Story = {
     style: {
       maxWidth: '300px',
     },
+    'aria-label': 'Search',
   },
 };
 
@@ -192,7 +193,7 @@ export const InHeader: Story = {
               size="small"
               variant="secondary"
             />
-            <SearchField {...args} size="small" />
+            <SearchField aria-label="Search" {...args} size="small" />
             <ButtonIcon
               aria-label="Cactus icon button"
               icon={<RiCactusLine />}
@@ -271,4 +272,25 @@ export const StartCollapsedWithButtons: Story = {
       </Button>
     </Flex>
   ),
+};
+
+export const StartCollapsedWithOnChange: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  render: args => {
+    const handleChange = (value: string) => {
+      console.log('Search value:', value);
+    };
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} onChange={handleChange} size="small" />
+      </Flex>
+    );
+  },
 };
