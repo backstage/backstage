@@ -271,7 +271,11 @@ export function createWaitAction(options?: {
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
-  distributedActionRegistry?: DistributedActionRegistry;
+  distributedActions?: {
+    list(options?: {
+      credentials?: BackstageCredentials;
+    }): Promise<Map<string, TemplateAction<any, any, any>>>;
+  };
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: LoggerService;
@@ -395,14 +399,6 @@ export type DatabaseTaskStoreOptions = {
   database: DatabaseService | Knex;
   events?: EventsService;
 };
-
-// @public
-export interface DistributedActionRegistry {
-  // (undocumented)
-  list(options?: {
-    credentials?: BackstageCredentials;
-  }): Promise<Map<string, TemplateAction<any, any, any>>>;
-}
 
 // @public
 const scaffolderPlugin: BackendFeature;

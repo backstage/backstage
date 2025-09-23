@@ -26,7 +26,7 @@ import {
   resolveSafeChildPath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { validate } from 'jsonschema';
+import { Schema, validate } from 'jsonschema';
 import {
   CompoundEntityRef,
   Entity,
@@ -131,7 +131,7 @@ import {
   scaffolderTemplateRules,
 } from './rules';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
-import { DefaultDistributedActionRegistry } from '../scaffolder/actions/DefaultDistributedActionRegistry';
+import { isPlainObject } from 'lodash';
 
 /**
  * RouterOptions
@@ -271,11 +271,66 @@ export async function createRouter(
   }
 
   const actionRegistry = new TemplateActionRegistry();
-  const distributedActionRegistry = new DefaultDistributedActionRegistry(
-    actionRegistry,
-    actionsRegistry,
-    auth,
-  );
+  const distributedActions = {
+    list: async (opts?: {
+      credentials?: BackstageCredentials;
+    }): Promise<Map<string, TemplateAction<any, any, any>>> => {
+      const ret = new Map<string, TemplateAction<any, any, any>>();
+
+      const builtinActions = actionRegistry.list();
+      for (const action of builtinActions) {
+        if (ret.has(action.id)) {
+          throw new Error(`Duplicate action id '${action.id}' found`);
+        }
+        ret.set(action.id, action);
+      }
+
+      const { actions: distActions } = await actionsRegistry.list({
+        credentials:
+          opts?.credentials ?? (await auth.getOwnServiceCredentials()),
+      });
+
+      const converted: TemplateAction<any, any, any>[] = distActions.map(
+        action => ({
+          id: action.id,
+          description: action.description,
+          examples: [],
+          supportsDryRun:
+            action.attributes?.readOnly === true &&
+            action.attributes?.destructive === false,
+          handler: async ctx => {
+            const { output } = await actionsRegistry.invoke({
+              id: action.id,
+              input: ctx.input,
+              credentials: await ctx.getInitiatorCredentials(),
+            });
+
+            if (isPlainObject(output)) {
+              for (const [key, value] of Object.entries(output as JsonObject)) {
+                ctx.output(key as keyof typeof output, value);
+              }
+            }
+          },
+          schema: {
+            input: action.schema.input as Schema,
+            output: action.schema.output as Schema,
+          },
+        }),
+      );
+
+      for (const action of converted) {
+        if (ret.has(action.id)) {
+          logger.warn(
+            `Duplicate action id '${action.id}' found from actions registry. The built-in action will be used.`,
+          );
+          continue;
+        }
+        ret.set(action.id, action);
+      }
+
+      return ret;
+    },
+  };
 
   const templateExtensions = {
     additionalTemplateFilters: convertFiltersToRecord(
@@ -295,7 +350,7 @@ export async function createRouter(
     const worker = await TaskWorker.create({
       taskBroker,
       actionRegistry,
-      distributedActionRegistry,
+      distributedActions,
       integrations,
       logger,
       auditor,
@@ -330,7 +385,7 @@ export async function createRouter(
   const dryRunner = createDryRunner({
     actionRegistry,
     integrations,
-    distributedActionRegistry,
+    distributedActions,
     logger,
     auditor,
     workingDirectory,
@@ -452,7 +507,7 @@ export async function createRouter(
 
       try {
         const list = Array.from(
-          (await distributedActionRegistry.list({ credentials })).values(),
+          (await distributedActions.list({ credentials })).values(),
         );
         const actionsList = list
           .map(action => {

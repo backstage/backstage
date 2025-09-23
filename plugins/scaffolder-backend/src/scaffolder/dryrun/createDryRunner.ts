@@ -33,6 +33,7 @@ import {
   SerializedFile,
   serializeDirectoryContents,
   TaskSecrets,
+  TemplateAction,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
@@ -44,7 +45,6 @@ import { v4 as uuid } from 'uuid';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
-import { DefaultDistributedActionRegistry } from '../actions/DefaultDistributedActionRegistry.ts';
 
 interface DryRunInput {
   spec: TaskSpec;
@@ -76,7 +76,11 @@ export type TemplateTesterCreateOptions = {
   auditor?: AuditorService;
   integrations: ScmIntegrations;
   actionRegistry: TemplateActionRegistry;
-  distributedActionRegistry: DefaultDistributedActionRegistry;
+  distributedActions?: {
+    list(options?: {
+      credentials?: BackstageCredentials;
+    }): Promise<Map<string, TemplateAction<any, any, any>>>;
+  };
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;

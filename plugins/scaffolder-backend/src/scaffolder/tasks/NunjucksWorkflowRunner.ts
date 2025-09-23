@@ -42,6 +42,7 @@ import type {
   LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
 import {
   AuthorizeResult,
@@ -64,12 +65,15 @@ import {
   CheckpointContext,
   CheckpointState,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { DistributedActionRegistry } from '../actions/DistributedActionRegistry.ts';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
   actionRegistry: TemplateActionRegistry;
-  distributedActionRegistry?: DistributedActionRegistry;
+  distributedActions?: {
+    list(options?: {
+      credentials?: BackstageCredentials;
+    }): Promise<Map<string, TemplateAction<any, any, any>>>;
+  };
   integrations: ScmIntegrations;
   logger: LoggerService;
   auditor?: AuditorService;
@@ -247,9 +251,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         return;
       }
       const action: TemplateAction<JsonObject> =
-        (await this.options.distributedActionRegistry?.list())?.get(
-          step.action,
-        ) ?? this.options.actionRegistry.get(step.action);
+        (await this.options.distributedActions?.list())?.get(step.action) ??
+        this.options.actionRegistry.get(step.action);
 
       const { taskLogger } = createStepLogger({
         task,

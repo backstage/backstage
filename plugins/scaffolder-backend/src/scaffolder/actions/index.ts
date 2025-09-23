@@ -17,4 +17,3 @@
 export * from './builtin';
 
 export { TemplateActionRegistry } from './TemplateActionRegistry';
-export { type DistributedActionRegistry } from './DistributedActionRegistry';

@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuditorService,
+  BackstageCredentials,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { assertError, InputError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   TaskBroker,
   TaskContext,
+  TemplateAction,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
@@ -31,7 +36,6 @@ import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
-import { DistributedActionRegistry } from '../actions/DistributedActionRegistry.ts';
 
 const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
@@ -61,7 +65,11 @@ export type TaskWorkerOptions = {
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
-  distributedActionRegistry?: DistributedActionRegistry;
+  distributedActions?: {
+    list(options?: {
+      credentials?: BackstageCredentials;
+    }): Promise<Map<string, TemplateAction<any, any, any>>>;
+  };
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: LoggerService;
@@ -119,7 +127,7 @@ export class TaskWorker {
       auditor,
       config,
       actionRegistry,
-      distributedActionRegistry,
+      distributedActions,
       integrations,
       workingDirectory,
       additionalTemplateFilters,
@@ -131,7 +139,7 @@ export class TaskWorker {
 
     const workflowRunner = new NunjucksWorkflowRunner({
       actionRegistry,
-      distributedActionRegistry,
+      distributedActions,
       integrations,
       logger,
       auditor,
