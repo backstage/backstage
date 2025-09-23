@@ -16,7 +16,9 @@ app:
   baseUrl: http://localhost:3000
 
 backend:
-  listen: 0.0.0.0:7007
+  listen:
+    port: 7007
+    host: 0.0.0.0
   baseUrl: http://localhost:7007
 
 organization:
