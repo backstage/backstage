@@ -693,13 +693,13 @@ export class CatalogBuilder {
         try {
           return (
             config.getOptionalNumber(
-              `catalog.processorOptions.${processor.getProcessorName()}.priority`,
+              `catalog.processors.${processor.getProcessorName()}.priority`,
             ) ??
             processor.getPriority?.() ??
             20
           );
         } catch (_) {
-          // In case the processor config throws, just return default priority
+          // In case the processor config is not an object, just return default priority
           return 20;
         }
       };
@@ -714,12 +714,22 @@ export class CatalogBuilder {
 
   private filterProcessors(processors: CatalogProcessor[]) {
     const { config } = this.env;
-    return processors.filter(
-      p =>
-        config.getOptionalBoolean(
-          `catalog.processorOptions.${p.getProcessorName()}.disabled`,
-        ) !== true,
-    );
+    const processorsConfig = config.getOptionalConfig('catalog.processors');
+    if (!processorsConfig) {
+      return processors;
+    }
+
+    return processors.filter(p => {
+      try {
+        const processorConfig = processorsConfig.getOptionalConfig(
+          p.getProcessorName(),
+        );
+        return processorConfig?.getOptionalBoolean('enabled') ?? true;
+      } catch (_) {
+        // In case the processor config is not an object, just include the processor
+        return true;
+      }
+    });
   }
 
   // TODO(Rugvip): These old processors are removed, for a while we'll be throwing
@@ -834,12 +844,22 @@ export class CatalogBuilder {
 
   private filterProviders(providers: EntityProvider[]) {
     const { config } = this.env;
-    return providers.filter(
-      p =>
-        config.getOptionalBoolean(
-          `catalog.providerOptions.${p.getProviderName()}.disabled`,
-        ) !== true,
-    );
+    const providersConfig = config.getOptionalConfig('catalog.providers');
+    if (!providersConfig) {
+      return providers;
+    }
+
+    return providers.filter(p => {
+      try {
+        const providerConfig = providersConfig.getOptionalConfig(
+          p.getProviderName(),
+        );
+        return providerConfig?.getOptionalBoolean('enabled') ?? true;
+      } catch (_) {
+        // In case the provider config is not an object, just include the provider
+        return true;
+      }
+    });
   }
 
   private static getDefaultProcessingInterval(

@@ -223,36 +223,38 @@ export interface Config {
     processingInterval?: HumanDuration | false;
 
     /**
-     * Provider-specific additional configuration options.
+     * Catalog provide specific configuration.
+     * Additional configuration for providers are specified in the catalog
+     * modules.
      */
-    providerOptions?: {
+    providers?: {
       /**
-       * Key is the provider name, value is an object with additional configuration
+       * Name is the provider ID, e.g. "bitbucketServer"
        */
       [name: string]: {
         /**
-         * Determines whether this provider is disabled or not. If not specified,
-         * defaults to false.
+         * Whether the provider is enabled or not. Defaults to true.
          */
-        disabled?: boolean;
+        enabled?: boolean;
       };
     };
-
     /**
-     * Processor-specific additional configuration options.
+     * Configuration for entity processors. Additional configuration for
+     * processors are specified in the catalog modules.
      */
-    processorOptions?: {
+    processors?: {
       /**
-       * Key is the processor name, value is an object with additional configuration
+       * Name is the processor ID, e.g. "catalog-processor"
        */
       [name: string]: {
         /**
-         * Determines whether this processor is disabled or not. If not specified,
-         * defaults to false.
+         * Whether the processor is enabled or not. Defaults to true.
          */
-        disabled?: boolean;
+        enabled?: boolean;
         /**
-         * The default priority is 20, and lower value means that the processor runs earlier.
+         * The priority of the processor, which is used to determine the order in which
+         * processors are run. The default priority is 20, and lower value means
+         * that the processor runs earlier.
          */
         priority?: number;
       };
