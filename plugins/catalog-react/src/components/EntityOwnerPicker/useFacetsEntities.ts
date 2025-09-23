@@ -64,7 +64,11 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
     return catalogApi
       .getEntityFacets({ facets: [facet] })
       .then(async response => {
-        const entityRefs = response.facets[facet]
+        const buckets = response.facets[facet] ?? [];
+        if (!buckets.length) {
+          return [] as Entity[];
+        }
+        const entityRefs = buckets
           .map(e => e.value)
           .map(ref => {
             const { kind, name, namespace } = parseEntityRef(ref);
