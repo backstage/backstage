@@ -16,7 +16,7 @@
 
 import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
-import { Button as RAButton } from 'react-aria-components';
+import { Button as RAButton, Focusable } from 'react-aria-components';
 import type { ButtonProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 
@@ -30,6 +30,7 @@ export const Button = forwardRef(
       iconEnd,
       children,
       className,
+      isDisabled,
       ...rest
     } = props;
 
@@ -38,17 +39,28 @@ export const Button = forwardRef(
       variant,
     });
 
-    return (
+    const btn = (
       <RAButton
         className={clsx(classNames.root, className)}
         ref={ref}
         {...dataAttributes}
         {...rest}
+        isDisabled={!!isDisabled}
       >
         {iconStart}
         {children}
         {iconEnd}
       </RAButton>
+    );
+
+    return isDisabled ? (
+      <Focusable>
+        <span role="button" tabIndex={0} style={{ display: 'inline-flex' }}>
+          {btn}
+        </span>
+      </Focusable>
+    ) : (
+      btn
     );
   },
 );
