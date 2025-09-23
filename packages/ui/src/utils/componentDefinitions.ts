@@ -286,6 +286,7 @@ export const componentDefinitions = {
       inputWrapper: 'bui-InputWrapper',
       input: 'bui-Input',
       inputIcon: 'bui-InputIcon',
+      inputAction: 'bui-InputAction',
     },
     dataAttributes: {
       invalid: [true, false] as const,

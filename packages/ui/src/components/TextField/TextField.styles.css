@@ -116,3 +116,26 @@
     border: 1px solid var(--bui-border-disabled);
   }
 }
+
+.bui-InputAction {
+  position: absolute;
+  right: var(--bui-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--bui-fg-primary);
+  flex-shrink: 0;
+  /* To animate the icon when the input is collapsed */
+  transition: right 0.2s ease-in-out;
+
+  &[data-size='small'],
+  &[data-size='small'] svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &[data-size='medium'],
+  &[data-size='medium'] svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}

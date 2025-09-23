@@ -38,4 +38,14 @@ export interface TextFieldProps
    * Text to display in the input when it has no value
    */
   placeholder?: string;
+
+  /**
+   * Displays icon to toggle between showing and hiding the input value
+   */
+  enableVisibility?: boolean;
+
+  /**
+   * Displays a clear button when there is content in the input
+   */
+  isClearable?: boolean;
 }
