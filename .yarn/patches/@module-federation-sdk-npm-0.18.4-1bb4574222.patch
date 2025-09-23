@@ -1,0 +1,19 @@
+diff --git a/dist/src/constant.d.ts b/dist/src/constant.d.ts
+index 8e864170c857cca5c4fe83ac0a40465c13694c53..bfe0ae9677f620c7d36ecd4f2a3183cd9d2dc227 100644
+--- a/dist/src/constant.d.ts
++++ b/dist/src/constant.d.ts
+@@ -4,11 +4,11 @@
+ export declare const BROWSER_LOG_KEY = "FEDERATION_DEBUG";
+ export declare const NameTransformSymbol: {
+-    AT: string;
+-    HYPHEN: string;
+-    SLASH: string;
++    readonly AT: unique symbol;
++    readonly HYPHEN: unique symbol;
++    readonly SLASH: unique symbol;
+ };
+ export declare const NameTransformMap: {
+     [NameTransformSymbol.AT]: string;
+     [NameTransformSymbol.HYPHEN]: string;
+     [NameTransformSymbol.SLASH]: string;
+ };

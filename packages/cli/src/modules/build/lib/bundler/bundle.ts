@@ -56,7 +56,7 @@ export async function buildBundle(options: BuildOptions) {
 
   const configs: Configuration[] = [];
 
-  if (options.moduleFederation?.mode === 'remote') {
+  if (options.moduleFederationRemote) {
     // Package detection is disabled for remote bundles
     configs.push(await createConfig(paths, commonConfigOptions));
   } else {
