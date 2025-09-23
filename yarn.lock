@@ -6703,6 +6703,7 @@ __metadata:
     "@elastic/elasticsearch-mock": "npm:^1.0.0"
     "@opensearch-project/opensearch": "npm:^2.2.1"
     "@short.io/opensearch-mock": "npm:^0.4.0"
+    "@types/aws4": "npm:^1.5.1"
     aws4: "npm:^1.12.0"
     elastic-builder: "npm:^2.16.0"
     lodash: "npm:^4.17.21"
@@ -19486,6 +19487,15 @@ __metadata:
   version: 8.10.150
   resolution: "@types/aws-lambda@npm:8.10.150"
   checksum: 10/d837ae0b94fb16c7cfec3711126f0e7fb109fc3e6d14d994d083d2039c4f2bc52a75f256ee31a8010f023ce78ddcf3746ad43d552592a0f56720167f6d3111be
+  languageName: node
+  linkType: hard
+
+"@types/aws4@npm:^1.5.1":
+  version: 1.11.6
+  resolution: "@types/aws4@npm:1.11.6"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/7b75159338526f27ce55530bba7addd82152acf5db743728f8006a23cfab730f33e4d2bb788cc279a36947a5ef25d23ed0c2484639f2ffaf04e8d3d27911da3a
   languageName: node
   linkType: hard
 
