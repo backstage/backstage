@@ -185,5 +185,8 @@ type-docs
 docs.json
 tsconfig.typedoc.tmp.json
 
+# Temporary test outputs
+**/dry-run-output/*
+
 # Storybook
 dist-storybook/
