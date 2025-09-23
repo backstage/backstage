@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-graph
 
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 87b5e6e: Add missing API implementation for catalog graph plugin in NFS apps.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/types@1.2.2
+
 ## 0.5.0
 
 ### Minor Changes
