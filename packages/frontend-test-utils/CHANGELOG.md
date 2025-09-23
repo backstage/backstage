@@ -1,5 +1,50 @@
 # @backstage/frontend-test-utils
 
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/plugin-app@0.3.1-next.0
+  - @backstage/config@1.3.3
+  - @backstage/frontend-app-api@0.13.1-next.0
+  - @backstage/test-utils@1.7.11
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.6
+
+### Patch Changes
+
+- 6516c3d: Internal update to use and throw app errors.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/plugin-app@0.3.0
+  - @backstage/frontend-app-api@0.13.0
+  - @backstage/types@1.2.2
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/frontend-app-api@0.12.1-next.0
+  - @backstage/plugin-app@0.2.1-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- df7bd3b: Updated import of the `FrontendFeature` type.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/frontend-app-api@0.12.0
+  - @backstage/plugin-app@0.2.0
+  - @backstage/test-utils@1.7.11
+
 ## 0.3.5-next.2
 
 ### Patch Changes

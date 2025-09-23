@@ -264,24 +264,30 @@ export async function createConfig(
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            ...(isRemote && { import: false }),
           },
           'react-dom': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            ...(isRemote && { import: false }),
           },
           // React Router
           'react-router': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            ...(isRemote && { import: false }),
           },
           'react-router-dom': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
+            ...(isRemote && { import: false }),
           },
           // MUI v4
+          // not setting import: false for MUI packages as this
+          // will break once Backstage moves to BUI
           '@material-ui/core/styles': {
             singleton: true,
             requiredVersion: '*',
@@ -293,6 +299,8 @@ export async function createConfig(
             eager: !isRemote,
           },
           // MUI v5
+          // not setting import: false for MUI packages as this
+          // will break once Backstage moves to BUI
           '@mui/material/styles/': {
             singleton: true,
             requiredVersion: '*',
@@ -422,10 +430,10 @@ export async function createConfig(
       path: paths.targetDist,
       publicPath:
         options.moduleFederation?.mode === 'remote' ? 'auto' : `${publicPath}/`,
-      filename: isDev ? '[name].js' : 'static/[name].[fullhash:8].js',
+      filename: isDev ? '[name].js' : 'static/[name].[contenthash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
-        : 'static/[name].[chunkhash:8].chunk.js',
+        : 'static/[name].[contenthash:8].chunk.js',
       ...(isDev
         ? {
             devtoolModuleFilenameTemplate: (info: any) =>

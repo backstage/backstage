@@ -1,5 +1,31 @@
 # @backstage/integration
 
+## 1.18.1-next.0
+
+### Patch Changes
+
+- d772b51: remove host from azure blob storage integration type
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 1.18.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
+### Patch Changes
+
+- 56897d7: Fixes issue with Github credentials provider which fails to match organization name if using allowedInstallationOwners
+
+## 1.18.0-next.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
 ## 1.17.1
 
 ### Patch Changes

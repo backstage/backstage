@@ -75,11 +75,6 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     const finalType = config.type ?? type;
     if (finalType) {
       yield entityCardTypeDataRef(finalType);
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `DEPRECATION WARNING: Not providing type for entity cards is deprecated. Missing from '${node.spec.id}'`,
-      );
     }
   },
 });

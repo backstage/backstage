@@ -186,4 +186,122 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20250909120000_oidc_client_registration.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(
+        knex,
+        '20250909120000_oidc_client_registration.js',
+      );
+      await migrateUpOnce(knex);
+
+      await knex
+        .insert({
+          client_id: 'test-client-id',
+          client_secret: 'test-client-secret',
+          client_name: 'Test Client',
+          response_types: JSON.stringify(['code']),
+          grant_types: JSON.stringify(['authorization_code']),
+          redirect_uris: JSON.stringify(['https://example.com/callback']),
+          scope: 'openid profile',
+          metadata: JSON.stringify({ description: 'Test client' }),
+        })
+        .into('oidc_clients');
+
+      await expect(
+        knex('oidc_clients').where('client_id', 'test-client-id').first(),
+      ).resolves.toEqual({
+        client_id: 'test-client-id',
+        client_secret: 'test-client-secret',
+        client_name: 'Test Client',
+        response_types: JSON.stringify(['code']),
+        grant_types: JSON.stringify(['authorization_code']),
+        redirect_uris: JSON.stringify(['https://example.com/callback']),
+        scope: 'openid profile',
+        metadata: JSON.stringify({ description: 'Test client' }),
+      });
+
+      await knex
+        .insert({
+          id: 'test-session-id',
+          client_id: 'test-client-id',
+          user_entity_ref: 'user:default/test-user',
+          redirect_uri: 'https://example.com/callback',
+          scope: 'openid',
+          state: 'test-state',
+          response_type: 'code',
+          code_challenge: 'test-challenge',
+          code_challenge_method: 'S256',
+          nonce: 'test-nonce',
+          status: 'pending',
+          expires_at: new Date(Date.now() + 3600000),
+        })
+        .into('oauth_authorization_sessions');
+
+      await expect(
+        knex('oauth_authorization_sessions')
+          .where('id', 'test-session-id')
+          .first(),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          id: 'test-session-id',
+          client_id: 'test-client-id',
+          user_entity_ref: 'user:default/test-user',
+          redirect_uri: 'https://example.com/callback',
+          scope: 'openid',
+          state: 'test-state',
+          response_type: 'code',
+          code_challenge: 'test-challenge',
+          code_challenge_method: 'S256',
+          nonce: 'test-nonce',
+          status: 'pending',
+        }),
+      );
+
+      await knex
+        .insert({
+          code: 'test-auth-code',
+          session_id: 'test-session-id',
+          expires_at: new Date(Date.now() + 600000),
+          used: false,
+        })
+        .into('oidc_authorization_codes');
+
+      await expect(
+        knex('oidc_authorization_codes')
+          .where('code', 'test-auth-code')
+          .first(),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          code: 'test-auth-code',
+          session_id: 'test-session-id',
+        }),
+      );
+
+      await knex('oauth_authorization_sessions')
+        .where('id', 'test-session-id')
+        .del();
+
+      await expect(
+        knex('oidc_authorization_codes').where('session_id', 'test-session-id'),
+      ).resolves.toHaveLength(0);
+
+      await migrateDownOnce(knex);
+
+      const tables = [
+        'oidc_clients',
+        'oauth_authorization_sessions',
+        'oidc_authorization_codes',
+      ];
+
+      for (const table of tables) {
+        await expect(knex.schema.hasTable(table)).resolves.toBe(false);
+      }
+
+      await knex.destroy();
+    },
+  );
 });

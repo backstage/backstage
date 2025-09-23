@@ -121,7 +121,7 @@ Migrate it to the following:
 import { createApp } from '@backstage/frontend-defaults';
 import { convertLegacyAppOptions } from '@backstage/core-compat-api';
 
-const convertedOptionsFeatures = convertLegacyAppOptions({
+const convertedOptionsModule = convertLegacyAppOptions({
   /* legacy options such as apis, icons, plugins, components, themes and featureFlags */
   apis,
   icons: {
@@ -152,7 +152,7 @@ const convertedOptionsFeatures = convertLegacyAppOptions({
 const app = createApp({
   features: [
     // ...
-    ...convertedOptionsFeatures,
+    convertedOptionsModule,
   ],
 });
 ```
@@ -175,7 +175,7 @@ import {
 const app = createApp({
   features: [
     // ...
-    ...convertedOptionsFeatures,
+    convertedOptionsModule,
   ],
   // highlight-add-start
   bindRoutes({ bind }) {
@@ -904,20 +904,16 @@ import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
 
 const app = createApp({
   /* highlight-remove-next-line */
-  features: [...convertedOptionsFeatures, ...convertedRootFeatures],
+  features: [convertedOptionsModule, ...convertedRootFeatures],
   /* highlight-add-next-line */
-  features: [
-    catalogPlugin,
-    ...convertedOptionsFeatures,
-    ...convertedRootFeatures,
-  ],
+  features: [catalogPlugin, convertedOptionsModule, ...convertedRootFeatures],
 });
 ```
 
 If you are not using the default `<CatalogIndexPage />` you can install your custom catalog page as an override for now instead, and fully migrate it to the new system later.
 
 ```tsx title="in packages/app/src/App.tsx"
-/* highlight-remove-start */
+/* highlight-add-start */
 const catalogPluginOverride = catalogPlugin.withOverrides({
   extensions: [
     catalogPlugin.getExtension('page:catalog').override({
@@ -932,19 +928,15 @@ const catalogPluginOverride = catalogPlugin.withOverrides({
     }),
   ],
 });
-/* highlight-remove-end */
+/* highlight-add-end */
 
 const app = createApp({
-  /* highlight-remove-next-line */
   features: [
+    /* highlight-remove-next-line */
     catalogPlugin,
-    ...convertedOptionsFeatures,
-    ...convertedRootFeatures,
-  ],
-  /* highlight-add-next-line */
-  features: [
+    /* highlight-add-next-line */
     catalogPluginOverride,
-    ...convertedOptionsFeatures,
+    convertedOptionsModule,
     ...convertedRootFeatures,
   ],
 });

@@ -1,5 +1,62 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.10
+
+### Patch Changes
+
+- a95cebd: Internal refactoring for better type support
+- 7e7ed57: A new extension point was added that can be used to modify how the users receiving notifications
+  are resolved. The interface passed to the extension point should only return complete user entity references
+  based on the notification target references and the excluded entity references. Note that the inputs are lists
+  of entity references that can be any entity kind, not just user entities.
+
+  Using this extension point will override the default behavior of resolving users with the
+  `DefaultNotificationRecipientResolver`.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-node@0.2.19
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-signals-node@0.1.24
+
+## 0.5.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.1
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/plugin-notifications-node@0.2.19-next.1
+
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-signals-node@0.1.24-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+  - @backstage/plugin-notifications-node@0.2.19-next.0
+
+## 0.5.9
+
+### Patch Changes
+
+- 9152ba8: Add an optional generic object `metadata` field to `NotificationPayload`. Metadata can be used to store additional unstructured data for the notification and are available to use by processors.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-notifications-common@0.1.0
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-notifications-node@0.2.18
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+  - @backstage/plugin-signals-node@0.1.23
+
 ## 0.5.9-next.0
 
 ### Patch Changes

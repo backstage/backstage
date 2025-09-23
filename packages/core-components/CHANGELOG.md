@@ -1,5 +1,55 @@
 # @backstage/core-components
 
+## 0.18.2-next.0
+
+### Patch Changes
+
+- d493126: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.0
+
+### Minor Changes
+
+- b9a87f4: Add optional `distance` property to `DependencyEdge` to reflect the distance to a root.
+
+### Patch Changes
+
+- 1ad3d94: Dependency graph can now be opened in full screen mode
+- e409bec: Fixes for rendering initials in the avatar component.
+- ae7d426: update about card links style for pretty display with other language
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+
+## 0.17.6-next.1
+
+### Patch Changes
+
+- 1ad3d94: Dependency graph can now be opened in full screen mode
+- ae7d426: update about card links style for pretty display with other language
+
+## 0.17.6-next.0
+
+### Patch Changes
+
+- e409bec: Fixes for rendering initials in the avatar component.
+
+## 0.17.5
+
+### Patch Changes
+
+- 1de1186: Added missing space for alert display component
+- 77467bb: Updated dependency `linkifyjs` to `4.3.2`.
+- 5563605: Added `FavoriteToggleProps`.
+- Updated dependencies
+  - @backstage/theme@0.6.8
+
 ## 0.17.5-next.2
 
 ### Patch Changes

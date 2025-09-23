@@ -305,7 +305,11 @@ export namespace mockServices {
       ) => ServiceMock<PermissionsRegistryService>;
   }
   // (undocumented)
-  export function rootConfig(options?: rootConfig.Options): RootConfigService;
+  export function rootConfig(
+    options?: rootConfig.Options,
+  ): RootConfigService & {
+    update(options: { data: JsonObject }): void;
+  };
   // (undocumented)
   export namespace rootConfig {
     // (undocumented)

@@ -372,6 +372,7 @@ describe('createApp', () => {
           <api:app/bitbucket-server-auth out=[core.api.factory] />
           <api:app/atlassian-auth out=[core.api.factory] />
           <api:app/vmware-cloud-auth out=[core.api.factory] />
+          <api:app/openshift-auth out=[core.api.factory] />
           <api:app/permission out=[core.api.factory] />
           <api:app/scm-auth out=[core.api.factory] />
           <api:app/scm-integrations out=[core.api.factory] />

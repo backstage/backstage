@@ -143,4 +143,35 @@ describe('Transformers > Html > Sanitizer Custom Elements', () => {
     expect(elements).toHaveLength(1);
     expect(elements[0].hasAttribute('dominant-baseline')).toBe(true);
   });
+
+  it('removes javascript: hrefs while preserving link text', async () => {
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+    const dirtyDom = document.createElement('html');
+    const dirtyHTML = `
+      <body>
+        <!-- eslint-disable-next-line no-script-url -->
+        <a id="s1" href="javascript:alert(1)">JS 1</a>
+        <a id="s2" href=" javascript:alert(2)">JS 2 (leading space)</a>
+        <a id="s3" href="\n\tjavascript:alert(3)">JS 3 (whitespace)</a>
+        <!-- eslint-disable-next-line no-script-url -->
+        <a id="s4" href="JaVaScRiPt:alert(4)">JS 4 (mixed case)</a>
+        <a id="s5" href="javascript&#x3A;alert(5)">JS 5 (entity-encoded colon)</a>
+      </body>`;
+    dirtyDom.innerHTML = dirtyHTML;
+    const clearDom = await result.current(dirtyDom); // calling html transformer
+    const elements = Array.from(
+      clearDom.querySelectorAll<HTMLAnchorElement>('body > a'),
+    );
+    expect(elements).toHaveLength(5);
+    for (const el of elements) {
+      // DOMPurify strips the dangerous href attribute
+      expect(el.getAttribute('href')).toBeNull();
+    }
+    // link text remains
+    expect(clearDom.textContent).toContain('JS 1');
+    expect(clearDom.textContent).toContain('JS 2 (leading space)');
+    expect(clearDom.textContent).toContain('JS 3 (whitespace)');
+    expect(clearDom.textContent).toContain('JS 4 (mixed case)');
+    expect(clearDom.textContent).toContain('JS 5 (entity-encoded colon)');
+  });
 });

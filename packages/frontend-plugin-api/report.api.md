@@ -69,6 +69,7 @@ import { OAuthScope } from '@backstage/core-plugin-api';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { openshiftAuthApiRef } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -691,7 +692,7 @@ export interface CreateFrontendFeatureLoaderOptions {
 // @public
 export function createFrontendModule<
   TId extends string,
-  TExtensions extends readonly ExtensionDefinition[] = [],
+  TExtensions extends readonly ExtensionDefinition[],
 >(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule;
 
 // @public (undocumented)
@@ -710,13 +711,13 @@ export interface CreateFrontendModuleOptions<
 // @public
 export function createFrontendPlugin<
   TId extends string,
+  TExtensions extends readonly ExtensionDefinition[],
   TRoutes extends {
     [name in string]: RouteRef | SubRouteRef;
   } = {},
   TExternalRoutes extends {
     [name in string]: ExternalRouteRef;
   } = {},
-  TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
 ): OverridableFrontendPlugin<
@@ -1517,6 +1518,8 @@ export { oktaAuthApiRef };
 export { oneloginAuthApiRef };
 
 export { OpenIdConnectApi };
+
+export { openshiftAuthApiRef };
 
 // @public
 export interface OverridableFrontendPlugin<

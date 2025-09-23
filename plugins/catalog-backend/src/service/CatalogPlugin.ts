@@ -271,9 +271,8 @@ export const catalogPlugin = createBackendPlugin({
           auth,
           httpAuth,
           auditor,
+          events,
         });
-
-        builder.setEventBroker(events);
 
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({

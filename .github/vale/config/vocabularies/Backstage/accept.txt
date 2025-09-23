@@ -38,6 +38,7 @@ Bitrise
 Blackbox
 bool
 boolean
+breakpoint
 Brex
 broadcasted
 bugfixes
@@ -77,6 +78,7 @@ Config
 configmaps
 configs
 configurability
+configurer
 conformant
 const
 cookiecutter
@@ -145,6 +147,7 @@ Expedia
 facto
 failover
 Fargate
+faqs
 featureful
 Figma
 firehydrant
@@ -246,6 +249,8 @@ lockdown
 lockfile
 lockfiles
 lookbehind
+lookup
+lookups
 lowercased
 lunr
 Luxon
@@ -459,6 +464,7 @@ subfolders
 subheader
 subheaders
 subkey
+subpage
 subpath
 subroutes
 substring

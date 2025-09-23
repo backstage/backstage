@@ -24,6 +24,8 @@ import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { version } from '@backstage/plugin-mcp-actions-backend/package.json';
 import { NotFoundError } from '@backstage/errors';
 
+import { handleErrors } from './handleErrors';
+
 export class McpService {
   constructor(private readonly actions: ActionsService) {}
 
@@ -65,32 +67,34 @@ export class McpService {
     });
 
     server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
-      const { actions } = await this.actions.list({ credentials });
-      const action = actions.find(a => a.name === params.name);
+      return handleErrors(async () => {
+        const { actions } = await this.actions.list({ credentials });
+        const action = actions.find(a => a.name === params.name);
 
-      if (!action) {
-        throw new NotFoundError(`Action "${params.name}" not found`);
-      }
+        if (!action) {
+          throw new NotFoundError(`Action "${params.name}" not found`);
+        }
 
-      const { output } = await this.actions.invoke({
-        id: action.id,
-        input: params.arguments as JsonObject,
-        credentials,
+        const { output } = await this.actions.invoke({
+          id: action.id,
+          input: params.arguments as JsonObject,
+          credentials,
+        });
+
+        return {
+          // todo(blam): unfortunately structuredContent is not supported by most clients yet.
+          // so the validation for the output happens in the default actions registry
+          // and we return it as json text instead for now.
+          content: [
+            {
+              type: 'text',
+              text: ['```json', JSON.stringify(output, null, 2), '```'].join(
+                '\n',
+              ),
+            },
+          ],
+        };
       });
-
-      return {
-        // todo(blam): unfortunately structuredContent is not supported by most clients yet.
-        // so the validation for the output happens in the default actions registry
-        // and we return it as json text instead for now.
-        content: [
-          {
-            type: 'text',
-            text: ['```json', JSON.stringify(output, null, 2), '```'].join(
-              '\n',
-            ),
-          },
-        ],
-      };
     });
 
     return server;
