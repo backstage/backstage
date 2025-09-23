@@ -26,7 +26,7 @@ import {
   resolveSafeChildPath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { Schema } from 'jsonschema';
+import { validate } from 'jsonschema';
 import {
   CompoundEntityRef,
   Entity,
@@ -41,10 +41,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { EventsService } from '@backstage/plugin-events-node';
 
 import {
-  createConditionAuthorizer,
-  createPermissionIntegrationRouter,
-  createConditionTransformer,
   ConditionTransformer,
+  createConditionAuthorizer,
+  createConditionTransformer,
+  createPermissionIntegrationRouter,
 } from '@backstage/plugin-permission-node';
 import {
   TaskSpec,
@@ -53,11 +53,11 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   RESOURCE_TYPE_SCAFFOLDER_TASK,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
-  scaffolderTaskPermissions,
   scaffolderPermissions,
+  scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
@@ -67,6 +67,7 @@ import {
 } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   TaskBroker,
+  TaskFilters,
   TaskStatus,
   TemplateAction,
   TemplateFilter,
@@ -80,15 +81,14 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject } from '@backstage/types';
 import express from 'express';
-import { validate } from 'jsonschema';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import {
   DatabaseTaskStore,
+  DefaultTemplateActionRegistry,
   TaskWorker,
-  TemplateActionRegistry,
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
@@ -115,25 +115,22 @@ import {
 } from '../util/templating';
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import {
-  ScaffolderPermissionRuleInput,
-  TaskPermissionRuleInput,
-  isTaskPermissionRuleInput,
   ActionPermissionRuleInput,
   isActionPermissionRuleInput,
+  isTaskPermissionRuleInput,
   isTemplatePermissionRuleInput,
+  ScaffolderPermissionRuleInput,
+  TaskPermissionRuleInput,
   TemplatePermissionRuleInput,
 } from './permissions';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 
 import {
   scaffolderActionRules,
-  scaffolderTemplateRules,
   scaffolderTaskRules,
+  scaffolderTemplateRules,
 } from './rules';
-
-import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
-import { isPlainObject } from 'lodash';
 
 /**
  * RouterOptions
@@ -272,7 +269,11 @@ export async function createRouter(
     taskBroker = options.taskBroker;
   }
 
-  const actionRegistry = new TemplateActionRegistry();
+  const actionRegistry = new DefaultTemplateActionRegistry(
+    actionsRegistry,
+    auth,
+    logger,
+  );
 
   const templateExtensions = {
     additionalTemplateFilters: convertFiltersToRecord(
@@ -306,46 +307,8 @@ export async function createRouter(
     workers.push(worker);
   }
 
-  // TODO(blam): it's a little unfortunate that you have to restart the scaffolder
-  // backend in order to pick these up. We should really just make `ActionsRegistry.get()` async
-  // and then we can move this logic into the there instead.
-  // But we can't make those changes until next major.
-  // Alternatively, we could look at setting up a periodic task that refreshes the actions registry, but
-  // not feeling that it's worth the complexity.
-  const { actions: distributedActions } = await actionsRegistry.list({
-    credentials: await auth.getOwnServiceCredentials(),
-  });
-
   for (const action of actions) {
     actionRegistry.register(action);
-  }
-
-  for (const action of distributedActions) {
-    actionRegistry.register({
-      id: action.id,
-      description: action.description,
-      examples: [],
-      supportsDryRun:
-        action.attributes?.readOnly === true &&
-        action.attributes?.destructive === false,
-      handler: async ctx => {
-        const { output } = await actionsRegistry.invoke({
-          id: action.id,
-          input: ctx.input,
-          credentials: await ctx.getInitiatorCredentials(),
-        });
-
-        if (isPlainObject(output)) {
-          for (const [key, value] of Object.entries(output as JsonObject)) {
-            ctx.output(key as keyof typeof output, value);
-          }
-        }
-      },
-      schema: {
-        input: action.schema.input as Schema,
-        output: action.schema.output as Schema,
-      },
-    });
   }
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
@@ -479,16 +442,20 @@ export async function createRouter(
         eventId: 'action-fetch',
         request: req,
       });
+      const credentials = await httpAuth.credentials(req);
 
       try {
-        const actionsList = actionRegistry.list().map(action => {
-          return {
-            id: action.id,
-            description: action.description,
-            examples: action.examples,
-            schema: action.schema,
-          };
-        });
+        const list = await actionRegistry.list({ credentials });
+        const actionsList = Array.from(list.values())
+          .map(action => {
+            return {
+              id: action.id,
+              description: action.description,
+              examples: action.examples,
+              schema: action.schema,
+            };
+          })
+          .sort((a, b) => a.id.localeCompare(b.id));
 
         await auditorEvent?.success();
 
