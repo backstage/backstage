@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.18.2-next.0
+
+### Patch Changes
+
+- d493126: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/version-bridge@1.0.11
+
 ## 0.18.0
 
 ### Minor Changes

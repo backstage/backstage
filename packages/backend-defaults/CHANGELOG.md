@@ -1,5 +1,35 @@
 # @backstage/backend-defaults
 
+## 0.13.0-next.0
+
+### Minor Changes
+
+- 2d3e2b2: implement support for direct url for AzureBlobStorageUrlReader search function
+- 8b91238: Adds support for configuring server-level HTTP options through the
+  `app-config.yaml` file under the `backend.server` key. Supported options
+  include `headersTimeout`, `keepAliveTimeout`, `requestTimeout`, `timeout`,
+  `maxHeadersCount`, and `maxRequestsPerSocket`.
+
+  These are passed directly to the underlying Node.js HTTP server.
+  If omitted, Node.js defaults are used.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/backend-app-api@1.2.7
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/cli-node@0.2.14
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.17
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.15
+
 ## 0.12.1
 
 ### Patch Changes

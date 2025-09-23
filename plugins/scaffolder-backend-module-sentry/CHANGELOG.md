@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.2.14-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
 ## 0.2.13
 
 ### Patch Changes
