@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
+import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
+import { EntityNamePicker as Component } from '../../components/fields/EntityNamePicker/EntityNamePicker';
+import {
+  EntityNamePickerFieldSchema,
+  entityNamePickerValidation,
+} from '../../components';
 
-/**
- * @public
- */
-export const EntityNamePickerFieldSchema = makeFieldSchema({
-  output: z => z.string(),
+export const EntityNamePicker = createFormField({
+  component: Component,
+  name: 'EntityNamePicker',
+  validation: entityNamePickerValidation,
+  schema: EntityNamePickerFieldSchema,
 });
-
-export const EntityNamePickerSchema = EntityNamePickerFieldSchema.schema;
-
-export type EntityNamePickerProps = typeof EntityNamePickerFieldSchema.TProps;
