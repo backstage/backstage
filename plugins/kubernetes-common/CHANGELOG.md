@@ -1,5 +1,12 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
 ## 0.9.7-next.0
 
 ### Patch Changes
