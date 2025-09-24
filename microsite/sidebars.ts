@@ -18,11 +18,8 @@ const searchSidebar = tryToLoadCustomSidebar(
 export default {
   docs: {
     Overview: [
-      'overview/what-is-backstage',
+      'overview/technical-overview',
       'overview/architecture-overview',
-      'overview/background',
-      'overview/vision',
-      'overview/roadmap',
       'overview/threat-model',
       'overview/versioning-policy',
     ],
