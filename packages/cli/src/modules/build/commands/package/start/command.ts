@@ -23,6 +23,7 @@ import { paths } from '../../../../../lib/paths';
 export async function command(opts: OptionValues): Promise<void> {
   await startPackage({
     role: await findRoleFromCommand(opts),
+    entryDir: opts.entryDir,
     targetDir: paths.targetDir,
     configPaths: opts.config as string[],
     checksEnabled: Boolean(opts.check),

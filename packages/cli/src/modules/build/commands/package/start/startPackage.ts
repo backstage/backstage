@@ -20,6 +20,7 @@ import { startFrontend } from './startFrontend';
 
 export async function startPackage(options: {
   role: PackageRole;
+  entryDir: string;
   targetDir: string;
   configPaths: string[];
   checksEnabled: boolean;
@@ -45,8 +46,8 @@ export async function startPackage(options: {
     case 'frontend-plugin':
     case 'frontend-plugin-module':
       return startFrontend({
-        entry: 'dev/index',
         ...options,
+        entry: `${options.entryDir ?? 'dev'}/index`,
       });
     case 'frontend-dynamic-container' as PackageRole: // experimental
       return startFrontend({
