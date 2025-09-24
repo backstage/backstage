@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { Input, TextField as AriaTextField } from 'react-aria-components';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 
-import type { TextFieldProps } from './types';
+import type { PasswordFieldProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { Icon } from '../Icon';
+import { ButtonIcon } from '../ButtonIcon';
 
 /** @public */
-export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
+export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
   (props, ref) => {
     const {
       className,
@@ -32,8 +34,11 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       size = 'small',
       label,
       secondaryLabel,
+      tertiaryLabel,
       description,
       isRequired,
+      tone,
+      message,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       placeholder,
@@ -43,18 +48,21 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
         console.warn(
-          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+          'PasswordField requires either a visible label, aria-label, or aria-labelledby for accessibility',
         );
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const { classNames, dataAttributes } = useStyles('TextField', {
+    const { classNames, dataAttributes } = useStyles('PasswordField', {
       size,
     });
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
+
+    // Manage secret visibility toggle
+    const [isVisible, setIsVisible] = useState(false);
 
     return (
       <AriaTextField
@@ -83,10 +91,20 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
               {icon}
             </div>
           )}
+          <div className={classNames.inputAction}>
+            <ButtonIcon
+              data-size={dataAttributes['data-size']}
+              aria-label={isVisible ? 'Hide value' : 'Show value'}
+              variant={'tertiary'}
+              onPress={() => setIsVisible(v => !v)}
+              icon={<Icon name={isVisible ? 'eye' : 'eye-off'} />}
+            />
+          </div>
           <Input
             className={classNames.input}
             {...(icon && { 'data-icon': true })}
             placeholder={placeholder}
+            type={isVisible ? 'text' : 'password'}
           />
         </div>
         <FieldError />
@@ -95,4 +113,4 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
   },
 );
 
-TextField.displayName = 'TextField';
+PasswordField.displayName = 'PasswordField';

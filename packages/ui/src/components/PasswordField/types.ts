@@ -20,7 +20,7 @@ import type { Breakpoint } from '../../types';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
-export interface TextFieldProps
+export interface PasswordFieldProps
   extends AriaTextFieldProps,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   /**
@@ -29,7 +29,7 @@ export interface TextFieldProps
   icon?: ReactNode;
 
   /**
-   * The size of the text field
+   * The size of the password field
    * @defaultValue 'medium'
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
@@ -38,4 +38,19 @@ export interface TextFieldProps
    * Text to display in the input when it has no value
    */
   placeholder?: string;
+
+  /**
+   * A tertiary label to display on the right side of the field label
+   */
+  tertiaryLabel?: string;
+
+  /**
+   * The visual tone of the message below the field, if any
+   */
+  tone?: 'positive' | 'critical' | 'neutral' | 'caution';
+
+  /**
+   * A message to display below the field, such as validation feedback
+   */
+  message?: string;
 }

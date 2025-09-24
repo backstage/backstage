@@ -10431,6 +10431,14 @@
   display: flex;
 }
 
+.bui-PasswordField {
+  font-family: var(--bui-font-regular);
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 100%;
+  display: flex;
+}
+
 .bui-InputWrapper {
   position: relative;
 

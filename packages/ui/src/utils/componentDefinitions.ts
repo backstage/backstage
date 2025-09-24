@@ -293,6 +293,19 @@ export const componentDefinitions = {
       disabled: [true, false] as const,
     },
   },
+  PasswordField: {
+    classNames: {
+      root: 'bui-PasswordField',
+      inputWrapper: 'bui-InputWrapper',
+      input: 'bui-Input',
+      inputIcon: 'bui-InputIcon',
+      inputAction: 'bui-InputAction',
+    },
+    dataAttributes: {
+      invalid: [true, false] as const,
+      disabled: [true, false] as const,
+    },
+  },
   Tooltip: {
     classNames: {
       tooltip: 'bui-Tooltip',
