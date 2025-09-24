@@ -103,8 +103,8 @@ const _default: OverridableFrontendPlugin<
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         title?: string | undefined;
         relations?: string[] | undefined;
-        maxDepth?: number | undefined;
         kinds?: string[] | undefined;
+        maxDepth?: number | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
@@ -176,8 +176,8 @@ const _default: OverridableFrontendPlugin<
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         relations?: string[] | undefined;
         rootEntityRefs?: string[] | undefined;
-        maxDepth?: number | undefined;
         kinds?: string[] | undefined;
+        maxDepth?: number | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
