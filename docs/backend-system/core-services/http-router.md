@@ -136,7 +136,11 @@ import {
 } from '@backstage/backend-defaults/httpRouter';
 import PromiseRouter from 'express-promise-router';
 import { Handler } from 'express';
-import { createServiceFactory } from '@backstage/backend-plugin-api';
+import { 
+  createServiceFactory, 
+  coreServices, 
+  HttpRouterServiceAuthPolicy 
+} from '@backstage/backend-plugin-api';
 
 const backend = createBackend();
 
