@@ -81,7 +81,11 @@ export type WinstonRootAuditorServiceOptions = {
  * ```
  */
 export class WinstonRootAuditorService {
-  private constructor(private readonly winstonLogger: WinstonLogger) {}
+  private readonly winstonLogger: WinstonLogger;
+
+  private constructor(winstonLogger: WinstonLogger) {
+    this.winstonLogger = winstonLogger;
+  }
 
   /**
    * Creates a {@link WinstonRootAuditorService} instance.

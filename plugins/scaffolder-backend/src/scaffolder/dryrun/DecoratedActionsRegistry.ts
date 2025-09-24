@@ -19,11 +19,14 @@ import { TemplateActionRegistry } from '../actions';
 
 /** @internal */
 export class DecoratedActionsRegistry extends TemplateActionRegistry {
+  private readonly innerRegistry: TemplateActionRegistry;
+
   constructor(
-    private readonly innerRegistry: TemplateActionRegistry,
+    innerRegistry: TemplateActionRegistry,
     extraActions: Array<TemplateAction>,
   ) {
     super();
+    this.innerRegistry = innerRegistry;
     for (const action of extraActions) {
       this.register(action);
     }

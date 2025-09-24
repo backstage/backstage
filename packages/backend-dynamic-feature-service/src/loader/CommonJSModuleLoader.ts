@@ -36,8 +36,10 @@ export type CommonJSModuleLoaderOptions = {
  */
 export class CommonJSModuleLoader implements ModuleLoader {
   private module: any;
+  public readonly options: CommonJSModuleLoaderOptions;
 
-  constructor(public readonly options: CommonJSModuleLoaderOptions) {
+  constructor(options: CommonJSModuleLoaderOptions) {
+    this.options = options;
     this.module = require('node:module');
   }
 

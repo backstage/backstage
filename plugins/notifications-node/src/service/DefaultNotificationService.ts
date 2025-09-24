@@ -49,10 +49,13 @@ export type NotificationSendOptions = {
 
 /** @public */
 export class DefaultNotificationService implements NotificationService {
-  private constructor(
-    private readonly discovery: DiscoveryService,
-    private readonly auth: AuthService,
-  ) {}
+  private readonly discovery: DiscoveryService;
+  private readonly auth: AuthService;
+
+  private constructor(discovery: DiscoveryService, auth: AuthService) {
+    this.discovery = discovery;
+    this.auth = auth;
+  }
 
   static create(
     options: NotificationServiceOptions,

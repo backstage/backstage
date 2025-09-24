@@ -78,13 +78,22 @@ export class CookieScopeManager {
     );
   }
 
+  private readonly scopeTransform: (
+    requested: Iterable<string>,
+    granted: Iterable<string>,
+  ) => string;
+  private readonly cookieManager?: OAuthCookieManager;
+
   private constructor(
-    private readonly scopeTransform: (
+    scopeTransform: (
       requested: Iterable<string>,
       granted: Iterable<string>,
     ) => string,
-    private readonly cookieManager?: OAuthCookieManager,
-  ) {}
+    cookieManager?: OAuthCookieManager,
+  ) {
+    this.scopeTransform = scopeTransform;
+    this.cookieManager = cookieManager;
+  }
 
   async start(
     req: express.Request,

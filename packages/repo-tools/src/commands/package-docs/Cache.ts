@@ -41,12 +41,19 @@ const cacheEntrySchema = z.object({
 export class PackageDocsCache {
   // A map of package directory to package hash.
   private keyCache: Map<string, string>;
+  private readonly lockfile: Lockfile;
+  // A map of package directory to cache entry.
+  private readonly cache: Map<string, CacheEntry>;
+  private readonly baseDirectory: string;
+
   constructor(
-    private readonly lockfile: Lockfile,
-    // A map of package directory to cache entry.
-    private readonly cache: Map<string, CacheEntry>,
-    private readonly baseDirectory: string,
+    lockfile: Lockfile,
+    cache: Map<string, CacheEntry>,
+    baseDirectory: string,
   ) {
+    this.lockfile = lockfile;
+    this.cache = cache;
+    this.baseDirectory = baseDirectory;
     this.keyCache = new Map();
   }
   static async loadAsync(baseDirectory: string, lockfile: Lockfile) {

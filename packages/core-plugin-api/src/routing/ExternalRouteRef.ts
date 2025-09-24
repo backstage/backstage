@@ -34,12 +34,22 @@ export class ExternalRouteRefImpl<
   declare $$routeRefType: 'external';
   readonly [routeRefType] = 'external';
 
+  private readonly id: string;
+  readonly params: ParamKeys<Params>;
+  readonly optional: Optional;
+  readonly defaultTarget: string | undefined;
+
   constructor(
-    private readonly id: string,
-    readonly params: ParamKeys<Params>,
-    readonly optional: Optional,
-    readonly defaultTarget: string | undefined,
-  ) {}
+    id: string,
+    params: ParamKeys<Params>,
+    optional: Optional,
+    defaultTarget: string | undefined,
+  ) {
+    this.id = id;
+    this.params = params;
+    this.optional = optional;
+    this.defaultTarget = defaultTarget;
+  }
 
   toString() {
     return `routeRef{type=external,id=${this.id}}`;

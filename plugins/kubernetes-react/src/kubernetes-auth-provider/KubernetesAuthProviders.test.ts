@@ -19,7 +19,11 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthProviders } from './KubernetesAuthProviders';
 
 class MockAuthApi implements OAuthApi, OpenIdConnectApi {
-  constructor(private readonly token: string) {}
+  private readonly token: string;
+
+  constructor(token: string) {
+    this.token = token;
+  }
 
   getAccessToken = jest.fn(async () => {
     return this.token;

@@ -46,14 +46,25 @@ export class TaskWorker {
   #workerState: TaskApiTasksResponse['workerState'] = {
     status: 'idle',
   };
+  private readonly taskId: string;
+  private readonly fn: SchedulerServiceTaskFunction;
+  private readonly knex: Knex;
+  private readonly logger: LoggerService;
+  private readonly workCheckFrequency: Duration;
 
   constructor(
-    private readonly taskId: string,
-    private readonly fn: SchedulerServiceTaskFunction,
-    private readonly knex: Knex,
-    private readonly logger: LoggerService,
-    private readonly workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
-  ) {}
+    taskId: string,
+    fn: SchedulerServiceTaskFunction,
+    knex: Knex,
+    logger: LoggerService,
+    workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
+  ) {
+    this.taskId = taskId;
+    this.fn = fn;
+    this.knex = knex;
+    this.logger = logger;
+    this.workCheckFrequency = workCheckFrequency;
+  }
 
   async start(settings: TaskSettingsV2, options: { signal: AbortSignal }) {
     try {

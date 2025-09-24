@@ -36,10 +36,13 @@ const showDirectoryPicker = (window as any).showDirectoryPicker as
   | undefined;
 
 class WebFileAccess implements TemplateFileAccess {
-  constructor(
-    readonly path: string,
-    private readonly handle: WritableFileHandle,
-  ) {}
+  readonly path: string;
+  private readonly handle: WritableFileHandle;
+
+  constructor(path: string, handle: WritableFileHandle) {
+    this.path = path;
+    this.handle = handle;
+  }
 
   file(): Promise<File> {
     return this.handle.getFile();
@@ -54,7 +57,11 @@ class WebFileAccess implements TemplateFileAccess {
 
 /** @internal */
 export class WebDirectoryAccess implements TemplateDirectoryAccess {
-  constructor(private readonly handle: IterableDirectoryHandle) {}
+  private readonly handle: IterableDirectoryHandle;
+
+  constructor(handle: IterableDirectoryHandle) {
+    this.handle = handle;
+  }
 
   async listFiles(): Promise<TemplateFileAccess[]> {
     const content = [];

@@ -133,10 +133,16 @@ export class Lockfile {
     return new Lockfile(packages, data);
   }
 
+  private readonly packages: Map<string, LockfileQueryEntry[]>;
+  private readonly data: LockfileData;
+
   private constructor(
-    private readonly packages: Map<string, LockfileQueryEntry[]>,
-    private readonly data: LockfileData,
-  ) {}
+    packages: Map<string, LockfileQueryEntry[]>,
+    data: LockfileData,
+  ) {
+    this.packages = packages;
+    this.data = data;
+  }
 
   /** Returns the name of all packages available in the lockfile */
   get(name: string): LockfileQueryEntry[] | undefined {

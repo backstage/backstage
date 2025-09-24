@@ -310,7 +310,7 @@ describe('GitlabUrlReader', () => {
                   'content-disposition',
                   'attachment; filename="mock-main-sha123abc.zip"',
                 ),
-                ctx.body(archiveBuffer),
+                ctx.body(new Uint8Array(archiveBuffer)),
               ),
           ),
           rest.get(
@@ -388,7 +388,7 @@ describe('GitlabUrlReader', () => {
                   'content-disposition',
                   'attachment; filename="mock-main-sha123abc.zip"',
                 ),
-                ctx.body(archiveBuffer),
+                ctx.body(new Uint8Array(archiveBuffer)),
               ),
           ),
         );
@@ -437,7 +437,7 @@ describe('GitlabUrlReader', () => {
                 'content-disposition',
                 'attachment; filename="mock-main-sha123abc.zip"',
               ),
-              ctx.body(archiveBuffer),
+              ctx.body(new Uint8Array(archiveBuffer)),
             ),
         ),
       );
@@ -632,7 +632,7 @@ describe('GitlabUrlReader', () => {
                 'content-disposition',
                 `attachment; filename="${filename}"`,
               ),
-              ctx.body(body),
+              ctx.body(new Uint8Array(body)),
             );
           },
         ),

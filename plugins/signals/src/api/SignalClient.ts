@@ -55,12 +55,22 @@ export class SignalClient implements SignalApi {
     );
   }
 
+  private identity: IdentityApi;
+  private discoveryApi: DiscoveryApi;
+  private connectTimeout: number;
+  private reconnectTimeout: number;
+
   private constructor(
-    private identity: IdentityApi,
-    private discoveryApi: DiscoveryApi,
-    private connectTimeout: number,
-    private reconnectTimeout: number,
-  ) {}
+    identity: IdentityApi,
+    discoveryApi: DiscoveryApi,
+    connectTimeout: number,
+    reconnectTimeout: number,
+  ) {
+    this.identity = identity;
+    this.discoveryApi = discoveryApi;
+    this.connectTimeout = connectTimeout;
+    this.reconnectTimeout = reconnectTimeout;
+  }
 
   subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,

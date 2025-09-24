@@ -28,14 +28,28 @@ import { DateTime } from 'luxon';
 import matcher from 'matcher';
 
 export class OidcService {
+  private readonly auth: AuthService;
+  private readonly tokenIssuer: TokenIssuer;
+  private readonly baseUrl: string;
+  private readonly userInfo: UserInfoDatabase;
+  private readonly oidc: OidcDatabase;
+  private readonly config: RootConfigService;
+
   private constructor(
-    private readonly auth: AuthService,
-    private readonly tokenIssuer: TokenIssuer,
-    private readonly baseUrl: string,
-    private readonly userInfo: UserInfoDatabase,
-    private readonly oidc: OidcDatabase,
-    private readonly config: RootConfigService,
-  ) {}
+    auth: AuthService,
+    tokenIssuer: TokenIssuer,
+    baseUrl: string,
+    userInfo: UserInfoDatabase,
+    oidc: OidcDatabase,
+    config: RootConfigService,
+  ) {
+    this.auth = auth;
+    this.tokenIssuer = tokenIssuer;
+    this.baseUrl = baseUrl;
+    this.userInfo = userInfo;
+    this.oidc = oidc;
+    this.config = config;
+  }
 
   static create(options: {
     auth: AuthService;

@@ -115,11 +115,13 @@ function deduplicateFeatures(
 // Helps delay callers from reaching out to the API before the app tree has been materialized
 class AppTreeApiProxy implements AppTreeApi {
   #routeInfo?: RouteInfo;
+  private readonly tree: AppTree;
+  private readonly appBasePath: string;
 
-  constructor(
-    private readonly tree: AppTree,
-    private readonly appBasePath: string,
-  ) {}
+  constructor(tree: AppTree, appBasePath: string) {
+    this.tree = tree;
+    this.appBasePath = appBasePath;
+  }
 
   private checkIfInitialized() {
     if (!this.#routeInfo) {
@@ -163,13 +165,16 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
   #delegate: RouteResolutionApi | undefined;
   #routeObjects: BackstageRouteObject[] | undefined;
 
+  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly appBasePath: string;
+
   constructor(
-    private readonly routeBindings: Map<
-      ExternalRouteRef,
-      RouteRef | SubRouteRef
-    >,
-    private readonly appBasePath: string,
-  ) {}
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    appBasePath: string,
+  ) {
+    this.routeBindings = routeBindings;
+    this.appBasePath = appBasePath;
+  }
 
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:

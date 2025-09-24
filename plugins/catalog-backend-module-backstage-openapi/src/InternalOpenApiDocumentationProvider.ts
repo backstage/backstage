@@ -171,14 +171,22 @@ const formatDefinition = (
 export class InternalOpenApiDocumentationProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly scheduleFn: () => Promise<void>;
+  public readonly config: Config;
+  public readonly discovery: DiscoveryService;
+  public readonly logger: LoggerService;
+  public readonly auth: AuthService;
 
   constructor(
-    public readonly config: Config,
-    public readonly discovery: DiscoveryService,
-    public readonly logger: LoggerService,
-    public readonly auth: AuthService,
+    config: Config,
+    discovery: DiscoveryService,
+    logger: LoggerService,
+    auth: AuthService,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
+    this.config = config;
+    this.discovery = discovery;
+    this.logger = logger;
+    this.auth = auth;
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 

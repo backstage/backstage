@@ -47,10 +47,13 @@ export class ProcessorOutputCollector {
   private readonly refreshKeys = new Array<RefreshKeyData>();
   private done = false;
 
-  constructor(
-    private readonly logger: LoggerService,
-    private readonly parentEntity: Entity,
-  ) {}
+  private readonly logger: LoggerService;
+  private readonly parentEntity: Entity;
+
+  constructor(logger: LoggerService, parentEntity: Entity) {
+    this.logger = logger;
+    this.parentEntity = parentEntity;
+  }
 
   generic(): (i: CatalogProcessorResult) => void {
     return i => this.receive(this.logger, i);

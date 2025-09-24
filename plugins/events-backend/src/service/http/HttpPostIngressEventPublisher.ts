@@ -65,16 +65,30 @@ export class HttpPostIngressEventPublisher {
     );
   }
 
+  private readonly events: EventsService;
+  private readonly logger: LoggerService;
+  private readonly ingresses: {
+    [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
+  };
+  private readonly bodyParsers: {
+    [contentType: string]: HttpBodyParser;
+  };
+
   private constructor(
-    private readonly events: EventsService,
-    private readonly logger: LoggerService,
-    private readonly ingresses: {
+    events: EventsService,
+    logger: LoggerService,
+    ingresses: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
     },
-    private readonly bodyParsers: {
+    bodyParsers: {
       [contentType: string]: HttpBodyParser;
     },
-  ) {}
+  ) {
+    this.events = events;
+    this.logger = logger;
+    this.ingresses = ingresses;
+    this.bodyParsers = bodyParsers;
+  }
 
   bind(router: express.Router): void {
     router.use('/http', this.createRouter(this.ingresses));

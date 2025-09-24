@@ -291,7 +291,7 @@ describe.skip('GerritUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=web-refs/heads/master.tar.gz',
               ),
-              ctx.body(repoArchiveBuffer),
+              ctx.body(new Uint8Array(repoArchiveBuffer)),
             ),
         ),
         rest.get(
@@ -304,7 +304,7 @@ describe.skip('GerritUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=web-refs/heads/master-docs.tar.gz',
               ),
-              ctx.body(repoArchiveDocsBuffer),
+              ctx.body(new Uint8Array(repoArchiveDocsBuffer)),
             ),
         ),
         rest.get(
@@ -317,7 +317,7 @@ describe.skip('GerritUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=web-refs/heads/master.tar.gz',
               ),
-              ctx.body(repoArchiveBuffer),
+              ctx.body(new Uint8Array(repoArchiveBuffer)),
             ),
         ),
       );
@@ -330,7 +330,10 @@ describe.skip('GerritUrlReader', () => {
     it('reads the wanted files correctly using gitiles.', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
         }),
       );
 
@@ -353,7 +356,10 @@ describe.skip('GerritUrlReader', () => {
     it('throws NotModifiedError for matching etags.', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
         }),
       );
 
@@ -389,7 +395,10 @@ describe.skip('GerritUrlReader', () => {
     it('should returns wanted files with a subpath using gitiles', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
         }),
       );
 
@@ -462,7 +471,7 @@ describe.skip('GerritUrlReader', () => {
                 ctx.status(200),
                 ctx.set('Content-Type', 'application/json'),
                 ctx.set('content-disposition', 'attachment'),
-                ctx.body(treeRecursiveResponse),
+                ctx.body(new Uint8Array(treeRecursiveResponse)),
               );
             }
 
@@ -522,7 +531,10 @@ describe.skip('GerritUrlReader', () => {
     it('reads the wanted files correctly using gitiles.', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
         }),
       );
 
@@ -549,7 +561,10 @@ describe.skip('GerritUrlReader', () => {
     it('throws NotModifiedError for matching etags.', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
         }),
       );
 

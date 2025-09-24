@@ -22,8 +22,11 @@ const logger = mockServices.logger.mock();
 
 class StaticTokenCredential implements TokenCredential {
   private count: number = 0;
+  private expiryInMs: number;
 
-  constructor(private expiryInMs: number) {}
+  constructor(expiryInMs: number) {
+    this.expiryInMs = expiryInMs;
+  }
 
   getToken(): Promise<AccessToken | null> {
     this.count++;

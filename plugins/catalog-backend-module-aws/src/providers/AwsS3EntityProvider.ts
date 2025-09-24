@@ -105,13 +105,20 @@ export class AwsS3EntityProvider implements EntityProvider {
     });
   }
 
+  private readonly config: AwsS3Config;
+  private readonly integration: AwsS3Integration;
+  private readonly awsCredentialsManager: AwsCredentialsManager;
+
   private constructor(
-    private readonly config: AwsS3Config,
-    private readonly integration: AwsS3Integration,
-    private readonly awsCredentialsManager: AwsCredentialsManager,
+    config: AwsS3Config,
+    integration: AwsS3Integration,
+    awsCredentialsManager: AwsCredentialsManager,
     logger: LoggerService,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
+    this.config = config;
+    this.integration = integration;
+    this.awsCredentialsManager = awsCredentialsManager;
     this.logger = logger.child({
       target: this.getProviderName(),
     });

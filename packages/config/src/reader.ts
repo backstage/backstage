@@ -139,12 +139,22 @@ export class ConfigReader implements Config {
     );
   }
 
+  private readonly data: JsonObject | undefined;
+  private readonly context: string;
+  private readonly fallback?: ConfigReader;
+  private readonly prefix: string;
+
   constructor(
-    private readonly data: JsonObject | undefined,
-    private readonly context: string = 'mock-config',
-    private readonly fallback?: ConfigReader,
-    private readonly prefix: string = '',
-  ) {}
+    data: JsonObject | undefined,
+    context: string = 'mock-config',
+    fallback?: ConfigReader,
+    prefix: string = '',
+  ) {
+    this.data = data;
+    this.context = context;
+    this.fallback = fallback;
+    this.prefix = prefix;
+  }
 
   /** {@inheritdoc Config.has} */
   has(key: string): boolean {

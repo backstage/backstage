@@ -271,7 +271,7 @@ describe('BitbucketCloudUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-12ab34cd56ef.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -399,7 +399,7 @@ describe('BitbucketCloudUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-12ab34cd56ef.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(

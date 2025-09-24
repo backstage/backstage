@@ -30,10 +30,16 @@ import {
 } from '@backstage/backend-plugin-api';
 
 export class AuthorizedLocationService implements LocationService {
+  private readonly locationService: LocationService;
+  private readonly permissionApi: PermissionsService;
+
   constructor(
-    private readonly locationService: LocationService,
-    private readonly permissionApi: PermissionsService,
-  ) {}
+    locationService: LocationService,
+    permissionApi: PermissionsService,
+  ) {
+    this.locationService = locationService;
+    this.permissionApi = permissionApi;
+  }
 
   async createLocation(
     spec: LocationInput,

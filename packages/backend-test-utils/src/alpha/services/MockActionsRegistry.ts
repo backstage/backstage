@@ -65,7 +65,11 @@ import {
 export class MockActionsRegistry
   implements ActionsRegistryService, ActionsService
 {
-  private constructor(private readonly logger: LoggerService) {}
+  private readonly logger: LoggerService;
+
+  private constructor(logger: LoggerService) {
+    this.logger = logger;
+  }
 
   static create(opts: { logger: LoggerService }) {
     return new MockActionsRegistry(opts.logger);

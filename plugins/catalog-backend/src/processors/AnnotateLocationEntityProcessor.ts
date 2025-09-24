@@ -34,11 +34,13 @@ import {
 const commitHashRegExp = /\b[0-9a-f]{40,}\b/;
 /** @public */
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
-  constructor(
-    private readonly options: {
-      integrations: ScmIntegrationRegistry;
-    },
-  ) {}
+  private readonly options: {
+    integrations: ScmIntegrationRegistry;
+  };
+
+  constructor(options: { integrations: ScmIntegrationRegistry }) {
+    this.options = options;
+  }
 
   getProcessorName(): string {
     return 'AnnotateLocationEntityProcessor';

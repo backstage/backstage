@@ -61,14 +61,27 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly allowlistEmailAddresses?: string[];
   private readonly denylistEmailAddresses?: string[];
 
+  private readonly logger: LoggerService;
+  private readonly config: Config;
+  private readonly catalog: CatalogService;
+  private readonly auth: AuthService;
+  private readonly cache?: CacheService;
+  private readonly templateRenderer?: NotificationTemplateRenderer;
+
   constructor(
-    private readonly logger: LoggerService,
-    private readonly config: Config,
-    private readonly catalog: CatalogService,
-    private readonly auth: AuthService,
-    private readonly cache?: CacheService,
-    private readonly templateRenderer?: NotificationTemplateRenderer,
+    logger: LoggerService,
+    config: Config,
+    catalog: CatalogService,
+    auth: AuthService,
+    cache?: CacheService,
+    templateRenderer?: NotificationTemplateRenderer,
   ) {
+    this.logger = logger;
+    this.config = config;
+    this.catalog = catalog;
+    this.auth = auth;
+    this.cache = cache;
+    this.templateRenderer = templateRenderer;
     const emailProcessorConfig = config.getConfig(
       'notifications.processors.email',
     );

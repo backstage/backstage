@@ -44,12 +44,15 @@ export class KafkaConsumingEventPublisher {
     );
   }
 
+  private readonly events: EventsService;
+
   private constructor(
     kafkaClient: Kafka,
     logger: LoggerService,
-    private readonly events: EventsService,
+    events: EventsService,
     config: KafkaConsumerConfig,
   ) {
+    this.events = events;
     this.kafkaConsumer = kafkaClient.consumer(config.consumerConfig);
     this.consumerSubscribeTopics = config.consumerSubscribeTopics;
     this.backstageTopic = config.backstageTopic;

@@ -215,7 +215,7 @@ describe('HarnessUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.zip',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),

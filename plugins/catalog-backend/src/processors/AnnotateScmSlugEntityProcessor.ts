@@ -31,12 +31,17 @@ const AZURE_ACTIONS_ANNOTATION = 'dev.azure.com/project-repo';
 
 /** @public */
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
-  constructor(
-    private readonly opts: {
-      scmIntegrationRegistry: ScmIntegrationRegistry;
-      kinds?: string[];
-    },
-  ) {}
+  private readonly opts: {
+    scmIntegrationRegistry: ScmIntegrationRegistry;
+    kinds?: string[];
+  };
+
+  constructor(opts: {
+    scmIntegrationRegistry: ScmIntegrationRegistry;
+    kinds?: string[];
+  }) {
+    this.opts = opts;
+  }
 
   getProcessorName(): string {
     return 'AnnotateScmSlugEntityProcessor';

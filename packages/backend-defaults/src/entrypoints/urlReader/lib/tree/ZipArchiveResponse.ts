@@ -32,14 +32,24 @@ import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
  */
 export class ZipArchiveResponse implements UrlReaderServiceReadTreeResponse {
   private read = false;
+  private readonly stream: Readable;
+  private readonly subPath: string;
+  private readonly workDir: string;
+  public readonly etag: string;
+  private readonly filter?: (path: string, info: { size: number }) => boolean;
 
   constructor(
-    private readonly stream: Readable,
-    private readonly subPath: string,
-    private readonly workDir: string,
-    public readonly etag: string,
-    private readonly filter?: (path: string, info: { size: number }) => boolean,
+    stream: Readable,
+    subPath: string,
+    workDir: string,
+    etag: string,
+    filter?: (path: string, info: { size: number }) => boolean,
   ) {
+    this.stream = stream;
+    this.subPath = subPath;
+    this.workDir = workDir;
+    this.etag = etag;
+    this.filter = filter;
     if (subPath) {
       if (!subPath.endsWith('/')) {
         this.subPath += '/';

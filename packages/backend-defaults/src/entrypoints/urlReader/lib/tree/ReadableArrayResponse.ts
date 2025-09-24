@@ -35,12 +35,13 @@ const pipeline = promisify(pipelineCb);
  */
 export class ReadableArrayResponse implements UrlReaderServiceReadTreeResponse {
   private read = false;
+  private readonly stream: FromReadableArrayOptions;
+  private readonly workDir: string;
+  public readonly etag: string;
 
-  constructor(
-    private readonly stream: FromReadableArrayOptions,
-    private readonly workDir: string,
-    public readonly etag: string,
-  ) {
+  constructor(stream: FromReadableArrayOptions, workDir: string, etag: string) {
+    this.stream = stream;
+    this.workDir = workDir;
     this.etag = etag;
   }
 

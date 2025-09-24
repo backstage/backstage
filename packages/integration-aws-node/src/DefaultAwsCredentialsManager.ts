@@ -199,14 +199,22 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
     );
   }
 
+  private readonly accountCredentialProviders: Map<
+    string,
+    AwsCredentialProvider
+  >;
+  private readonly accountDefaults: AwsIntegrationDefaultAccountConfig;
+  private readonly mainAccountCredentialProvider: AwsCredentialProvider;
+
   private constructor(
-    private readonly accountCredentialProviders: Map<
-      string,
-      AwsCredentialProvider
-    >,
-    private readonly accountDefaults: AwsIntegrationDefaultAccountConfig,
-    private readonly mainAccountCredentialProvider: AwsCredentialProvider,
-  ) {}
+    accountCredentialProviders: Map<string, AwsCredentialProvider>,
+    accountDefaults: AwsIntegrationDefaultAccountConfig,
+    mainAccountCredentialProvider: AwsCredentialProvider,
+  ) {
+    this.accountCredentialProviders = accountCredentialProviders;
+    this.accountDefaults = accountDefaults;
+    this.mainAccountCredentialProvider = mainAccountCredentialProvider;
+  }
 
   /**
    * Returns an {@link AwsCredentialProvider} for a given AWS account.

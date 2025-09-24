@@ -41,7 +41,11 @@ export type PlaceholderProcessorOptions = {
  * @public
  */
 export class PlaceholderProcessor implements CatalogProcessor {
-  constructor(private readonly options: PlaceholderProcessorOptions) {}
+  private readonly options: PlaceholderProcessorOptions;
+
+  constructor(options: PlaceholderProcessorOptions) {
+    this.options = options;
+  }
 
   getProcessorName(): string {
     return 'PlaceholderProcessor';

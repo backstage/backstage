@@ -30,7 +30,11 @@ export class JwksClient {
   #keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
   #keyStoreUpdated: number = 0;
 
-  constructor(private readonly getEndpoint: () => Promise<URL>) {}
+  private readonly getEndpoint: () => Promise<URL>;
+
+  constructor(getEndpoint: () => Promise<URL>) {
+    this.getEndpoint = getEndpoint;
+  }
 
   get getKey() {
     if (!this.#keyStore) {

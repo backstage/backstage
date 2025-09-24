@@ -323,7 +323,7 @@ describe('Integration Test', () => {
         foo: 'Foo',
       },
       translations: {
-        de: () => Promise.resolve({ default: { foo: 'Bar' } }),
+        de: () => Promise.resolve({ default: { foo: 'Bar' } as any }),
       },
     });
 
