@@ -75,7 +75,6 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
           : 'external:';
         return {
           subject: `${prefix}${sub}`,
-          allAccessRestrictions: context.allAccessRestrictions,
         };
       }
     } catch {
