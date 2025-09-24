@@ -20,15 +20,25 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const mockCatalogApi = catalogApiMock.mock();
 
+const mockEntityPresentationApi = {
+  forEntity: jest.fn().mockReturnValue({
+    promise: Promise.resolve({ primaryTitle: 'Mock Title' }),
+  }),
+};
+
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: () => mockCatalogApi,
-  useApiHolder: () => ({ get: () => undefined }),
+  useApi: (apiRef: any) => {
+    if (apiRef?.id === 'catalog-react.entity-presentation') {
+      return mockEntityPresentationApi;
+    }
+    return mockCatalogApi;
+  },
 }));
 
 describe('useFacetsEntities', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   const facetsFromEntityRefs = (entityRefs: string[]) => ({

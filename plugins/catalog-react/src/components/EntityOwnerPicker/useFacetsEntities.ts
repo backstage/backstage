@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi, useApiHolder } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import { useState } from 'react';
@@ -52,8 +52,7 @@ type FacetsInitialRequest = {
  */
 export function useFacetsEntities({ enabled }: { enabled: boolean }) {
   const catalogApi = useApi(catalogApiRef);
-  const apis = useApiHolder();
-  const entityPresentationApi = apis.get(entityPresentationApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
 
   const [facetsPromise] = useState(async () => {
     if (!enabled) {
@@ -169,17 +168,15 @@ function filterEntity(text: string, entity: Entity) {
 
 async function sortEntitiesByPresentation(
   entities: Entity[],
-  presentationApi?: EntityPresentationApi,
+  presentationApi: EntityPresentationApi,
 ): Promise<Entity[]> {
   const keys = await Promise.all(
     entities.map(async e => {
       const namespaceKey = e.metadata.namespace || '';
       const entityRef = stringifyEntityRef(e);
-      const snapshot = presentationApi
-        ? await presentationApi
-            .forEntity(entityRef)
-            .promise.catch(() => defaultEntityPresentation(e))
-        : defaultEntityPresentation(e);
+      const snapshot = await presentationApi
+        .forEntity(entityRef)
+        .promise.catch(() => defaultEntityPresentation(e));
       const titleKey = snapshot.primaryTitle;
 
       const kindKey = e.kind;
