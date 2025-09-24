@@ -354,6 +354,76 @@ describe('ExternalTokenHandler', () => {
 
     expect(verifyMock).toHaveBeenCalledWith(customToken, { context: 'a' });
   });
+  it('should fail if custom handler has same type as builtin handlers', async () => {
+    const logger = mockServices.logger.mock();
+    const customStaticHandler: ExternalTokenHandler<unknown> =
+      createExternalTokenHandler({
+        type: 'static',
+        initialize: jest.fn().mockResolvedValue(undefined),
+        verifyToken: jest.fn().mockResolvedValue({
+          subject: 'custom-static-subject',
+        }),
+      });
+
+    const createHandler = () =>
+      ExternalAuthTokenHandler.create({
+        ownPluginId: 'catalog',
+        logger,
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              auth: {
+                externalAccess: [
+                  {
+                    type: 'static',
+                    options: {
+                      token: 'mytoken',
+                      subject: 'static-subject',
+                    },
+                    accessRestrictions: [
+                      { plugin: 'catalog', permission: 'catalog.entity.read' },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        }),
+        externalTokenHandlers: [customStaticHandler],
+      });
+
+    expect(createHandler).toThrowErrorMatchingInlineSnapshot(
+      `"Duplicate external token handler type 'static', each handler must have a unique type"`,
+    );
+  });
+  it('should fail if 2 custom handlers have the same type', async () => {
+    const createHandler = () =>
+      ExternalAuthTokenHandler.create({
+        ownPluginId: 'catalog',
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig(),
+        externalTokenHandlers: [
+          createExternalTokenHandler({
+            type: 'internal-custom',
+            initialize: jest.fn().mockResolvedValue(undefined),
+            verifyToken: jest.fn().mockResolvedValue({
+              subject: 'sub',
+            }),
+          }),
+          createExternalTokenHandler({
+            type: 'internal-custom',
+            initialize: jest.fn().mockResolvedValue(undefined),
+            verifyToken: jest.fn().mockResolvedValue({
+              subject: 'sub',
+            }),
+          }),
+        ],
+      });
+
+    expect(createHandler).toThrowErrorMatchingInlineSnapshot(
+      `"Duplicate external token handler type 'internal-custom', each handler must have a unique type"`,
+    );
+  });
   it('should fail if config contains types not declared', async () => {
     const createHandler = () =>
       ExternalAuthTokenHandler.create({

@@ -42,11 +42,11 @@ export const externalTokenHandlersServiceRef = createServiceRef<
   multiton: true,
 });
 
-const defaultHandlers: ExternalTokenHandler<unknown>[] = [
-  staticTokenHandler,
-  legacyTokenHandler,
-  jwksTokenHandler,
-];
+const defaultHandlers: Record<string, ExternalTokenHandler<unknown>> = {
+  static: staticTokenHandler,
+  legacy: legacyTokenHandler,
+  jwks: jwksTokenHandler,
+};
 
 type ContextMapEntry<T> = {
   context: T;
@@ -70,20 +70,35 @@ export class ExternalAuthTokenHandler {
     const {
       ownPluginId,
       config,
-      externalTokenHandlers: customHandlers,
+      externalTokenHandlers: customHandlers = [],
       logger,
     } = options;
 
-    const handlersTypes = [...defaultHandlers, ...(customHandlers ?? [])];
+    const handlersTypes = customHandlers.reduce<
+      Record<string, ExternalTokenHandler<unknown>>
+    >(
+      (acc, handler) => {
+        if (acc[handler.type]) {
+          throw new Error(
+            `Duplicate external token handler type '${handler.type}', each handler must have a unique type`,
+          );
+        }
+        acc[handler.type] = handler;
+        return acc;
+      },
+      { ...defaultHandlers },
+    );
 
     const handlerConfigs = config.getOptionalConfigArray(NEW_CONFIG_KEY) ?? [];
     const contexts: ContextMapEntry<unknown>[] = handlerConfigs.map(
       handlerConfig => {
         const type = handlerConfig.getString('type');
 
-        const handler = handlersTypes.find(h => h.type === type);
+        const handler = handlersTypes[type];
         if (!handler) {
-          const valid = handlersTypes.map(h => `'${h.type}'`).join(', ');
+          const valid = Object.keys(handlersTypes)
+            .map(h => `'${h}'`)
+            .join(', ');
           throw new Error(
             `Unknown type '${type}' in ${NEW_CONFIG_KEY}, expected one of ${valid}`,
           );
