@@ -30,7 +30,7 @@ export function toChatPostMessageArgs(options: {
   const args: ChatPostMessageArguments = {
     channel,
     text: payload.title,
-    ...(username && { username }),
+    username,
     attachments: [
       {
         color: getColor(payload.severity),
