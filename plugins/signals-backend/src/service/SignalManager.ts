@@ -197,6 +197,8 @@ export class SignalManager {
       users = Array.isArray(recipients.entityRef)
         ? recipients.entityRef
         : [recipients.entityRef];
+    } else if (recipients.type === 'users') {
+      users = recipients.entityRefs;
     }
 
     // Actual websocket message sending

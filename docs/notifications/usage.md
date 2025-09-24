@@ -192,7 +192,19 @@ export const myPlugin = createBackendPlugin({
 To send the signal using the service, you can use the `publish` method.
 
 ```ts
-signals.publish<MySignalType>({ user: 'user', data: 'test' });
+// For single users, use the 'users' type with an array of entityRefs
+signals.publish<MySignalType>({
+  recipients: { type: 'users', entityRefs: ['user:default/janedoe'] },
+  channel: 'my-plugin',
+  message: { data: 'hello world' },
+});
+
+// For broadcasting to all online users, use the 'broadcast' type
+signals.publish<MySignalType>({
+  recipients: { type: 'broadcast' },
+  channel: 'my-plugin',
+  message: { data: 'hello world' },
+});
 ```
 
 ## Consuming Notifications
