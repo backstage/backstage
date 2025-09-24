@@ -134,6 +134,7 @@ import {
   createAuthIntegrationRouter,
   createRateLimitMiddleware,
 } from '@backstage/backend-defaults/httpRouter';
+import PromiseRouter from 'express-promise-router';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 
 const backend = createBackend();
