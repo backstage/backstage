@@ -111,6 +111,7 @@ import {
   catalogEntityPermissionResourceRef,
   CatalogPermissionRuleInput,
 } from '@backstage/plugin-catalog-node/alpha';
+import { filterAndSortProcessors, filterProviders } from './util';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -525,11 +526,12 @@ export class CatalogBuilder {
 
     const locationStore = new DefaultLocationStore(dbClient);
     const configLocationProvider = new ConfigLocationEntityProvider(config);
-    const entityProviders = this.filterProviders(
+    const entityProviders = filterProviders(
       lodash.uniqBy(
         [...this.entityProviders, locationStore, configLocationProvider],
         provider => provider.getProviderName(),
       ),
+      config,
     );
 
     const processingEngine = new DefaultCatalogProcessingEngine({
@@ -684,42 +686,7 @@ export class CatalogBuilder {
 
     this.checkMissingExternalProcessors(processors);
 
-    const filteredProcessors = this.filterProcessors(processors);
-
-    // Lastly sort the processors by priority. Config can override the
-    // priority of a processor to allow control of 3rd party processors.
-    filteredProcessors.sort((a, b) => {
-      const getProcessorPriority = (processor: CatalogProcessor) => {
-        try {
-          return (
-            config.getOptionalNumber(
-              `catalog.processorOptions.${processor.getProcessorName()}.priority`,
-            ) ??
-            processor.getPriority?.() ??
-            20
-          );
-        } catch (_) {
-          // In case the processor config throws, just return default priority
-          return 20;
-        }
-      };
-
-      const aPriority = getProcessorPriority(a);
-      const bPriority = getProcessorPriority(b);
-      return aPriority - bPriority;
-    });
-
-    return filteredProcessors;
-  }
-
-  private filterProcessors(processors: CatalogProcessor[]) {
-    const { config } = this.env;
-    return processors.filter(
-      p =>
-        config.getOptionalBoolean(
-          `catalog.processorOptions.${p.getProcessorName()}.disabled`,
-        ) !== true,
-    );
+    return filterAndSortProcessors(processors, config);
   }
 
   // TODO(Rugvip): These old processors are removed, for a while we'll be throwing
@@ -829,16 +796,6 @@ export class CatalogBuilder {
       'microsoft-graph-org',
       'MicrosoftGraphOrgReaderProcessor',
       'https://backstage.io/docs/integrations/azure/org',
-    );
-  }
-
-  private filterProviders(providers: EntityProvider[]) {
-    const { config } = this.env;
-    return providers.filter(
-      p =>
-        config.getOptionalBoolean(
-          `catalog.providerOptions.${p.getProviderName()}.disabled`,
-        ) !== true,
     );
   }
 
