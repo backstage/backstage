@@ -77,7 +77,7 @@ The architectural diagram provides an overview of the different building blocks,
 
 ### Backend
 
-This is the [backend instance](../backend-system/02-backends.md) itself, which you can think of as the unit of deployment. It does not have any functionality in and of itself, but is simply responsible for wiring things together.
+This is the [backend instance](../backend-system/architecture/02-backends.md) itself, which you can think of as the unit of deployment. It does not have any functionality in and of itself, but is simply responsible for wiring things together.
 
 It is up to you to decide how many different backends you want to deploy. You can have all features in a single one, or split things out into multiple smaller deployments, depending on your need to scale and isolate individual features.
 
