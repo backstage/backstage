@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { entityNamePickerValidation } from './validation';
+export { EntityNamePickerFieldSchema } from './schema';

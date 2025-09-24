@@ -17,6 +17,9 @@
 import { FieldValidation } from '@rjsf/utils';
 import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
 
+/**
+ * @public
+ */
 export const entityNamePickerValidation = (
   value: string,
   validation: FieldValidation,

@@ -16,6 +16,9 @@
 import { z as zod } from 'zod';
 import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
+/**
+ * @public
+ */
 export const entityQueryFilterExpressionSchema = zod.record(
   zod
     .string()
@@ -23,6 +26,9 @@ export const entityQueryFilterExpressionSchema = zod.record(
     .or(zod.array(zod.string())),
 );
 
+/**
+ * @public
+ */
 export const MultiEntityPickerFieldSchema = makeFieldSchema({
   output: z => z.array(z.string()),
   uiOptions: z =>
@@ -54,6 +60,7 @@ export const MultiEntityPickerFieldSchema = makeFieldSchema({
 /**
  * The input props that can be specified under `ui:options` for the
  * `EntityPicker` field extension.
+ * @public
  */
 export type MultiEntityPickerUiOptions = NonNullable<
   (typeof MultiEntityPickerFieldSchema.TProps.uiSchema)['ui:options']
