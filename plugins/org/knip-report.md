@@ -4,5 +4,5 @@
 
 | Name                                | Location     | Severity |
 | :---------------------------------- | :----------- | :------- |
-| @backstage/plugin-permission-common | package.json | error    |
+| @backstage/plugin-permission-common | plugins/org/package.json | error    |
 

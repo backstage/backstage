@@ -15,7 +15,13 @@ import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps as LinkProps_2 } from 'react-aria-components';
-import { Menu as Menu_2 } from '@base-ui-components/react/menu';
+import type { ListBoxItemProps } from 'react-aria-components';
+import type { ListBoxProps } from 'react-aria-components';
+import type { MenuItemProps as MenuItemProps_2 } from 'react-aria-components';
+import type { MenuProps as MenuProps_2 } from 'react-aria-components';
+import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-components';
+import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-components';
+import type { PopoverProps } from 'react-aria-components';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
@@ -26,6 +32,8 @@ import { RowProps } from 'react-aria-components';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
+import type { SeparatorProps } from 'react-aria-components';
+import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { TableBodyProps } from 'react-aria-components';
 import { TableHeaderProps } from 'react-aria-components';
@@ -34,6 +42,9 @@ import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
 import type { TabProps as TabProps_2 } from 'react-aria-components';
 import { TabsProps as TabsProps_2 } from 'react-aria-components';
+import type { TagGroupProps as TagGroupProps_2 } from 'react-aria-components';
+import type { TagListProps } from 'react-aria-components';
+import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
@@ -208,16 +219,31 @@ export const Card: ForwardRefExoticComponent<
 >;
 
 // @public
+export const CardBody: ForwardRefExoticComponent<
+  CardBodyProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
 export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   children?: React.ReactNode;
 }
 
 // @public
+export const CardFooter: ForwardRefExoticComponent<
+  CardFooterProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
 export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   children?: React.ReactNode;
 }
+
+// @public
+export const CardHeader: ForwardRefExoticComponent<
+  CardHeaderProps & RefAttributes<HTMLDivElement>
+>;
 
 // @public
 export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -437,10 +463,6 @@ export const componentDefinitions: {
       readonly toolbarControls: 'bui-HeaderToolbarControls';
       readonly toolbarIcon: 'bui-HeaderToolbarIcon';
       readonly toolbarName: 'bui-HeaderToolbarName';
-      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
-      readonly breadcrumb: 'bui-HeaderBreadcrumb';
-      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
-      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
       readonly tabsWrapper: 'bui-HeaderTabsWrapper';
     };
   };
@@ -448,15 +470,9 @@ export const componentDefinitions: {
     readonly classNames: {
       readonly root: 'bui-HeaderPage';
       readonly content: 'bui-HeaderPageContent';
+      readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
       readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
       readonly controls: 'bui-HeaderPageControls';
-      readonly sticky: 'bui-HeaderPageSticky';
-      readonly stickyWrapper: 'bui-HeaderPageStickyWrapper';
-      readonly stickyContent: 'bui-HeaderPageStickyContent';
-      readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
-      readonly breadcrumb: 'bui-HeaderPageBreadcrumb';
-      readonly breadcrumbLink: 'bui-HeaderPageBreadcrumbLink';
-      readonly breadcrumbSeparator: 'bui-HeaderPageBreadcrumbSeparator';
     };
   };
   readonly Heading: {
@@ -492,21 +508,21 @@ export const componentDefinitions: {
   };
   readonly Menu: {
     readonly classNames: {
-      readonly trigger: 'bui-MenuTrigger';
-      readonly backdrop: 'bui-MenuBackdrop';
-      readonly positioner: 'bui-MenuPositioner';
-      readonly popup: 'bui-MenuPopup';
-      readonly arrow: 'bui-MenuArrow';
+      readonly root: 'bui-Menu';
+      readonly popover: 'bui-MenuPopover';
+      readonly content: 'bui-MenuContent';
+      readonly section: 'bui-MenuSection';
+      readonly sectionHeader: 'bui-MenuSectionHeader';
       readonly item: 'bui-MenuItem';
-      readonly group: 'bui-MenuGroup';
-      readonly groupLabel: 'bui-MenuGroupLabel';
-      readonly radioGroup: 'bui-MenuRadioGroup';
-      readonly radioItem: 'bui-MenuRadioItem';
-      readonly radioItemIndicator: 'bui-MenuRadioItemIndicator';
-      readonly checkboxItem: 'bui-MenuCheckboxItem';
-      readonly checkboxItemIndicator: 'bui-MenuCheckboxItemIndicator';
-      readonly submenuTrigger: 'bui-MenuSubmenuTrigger';
+      readonly itemListBox: 'bui-MenuItemListBox';
+      readonly itemListBoxCheck: 'bui-MenuItemListBoxCheck';
+      readonly itemContent: 'bui-MenuItemContent';
+      readonly itemArrow: 'bui-MenuItemArrow';
       readonly separator: 'bui-MenuSeparator';
+      readonly searchField: 'bui-MenuSearchField';
+      readonly searchFieldInput: 'bui-MenuSearchFieldInput';
+      readonly searchFieldClear: 'bui-MenuSearchFieldClear';
+      readonly emptyState: 'bui-MenuEmptyState';
     };
   };
   readonly Popover: {
@@ -593,6 +609,15 @@ export const componentDefinitions: {
       readonly tabActive: 'bui-TabActive';
       readonly tabHovered: 'bui-TabHovered';
       readonly panel: 'bui-TabPanel';
+    };
+  };
+  readonly TagGroup: {
+    readonly classNames: {
+      readonly group: 'bui-TagGroup';
+      readonly list: 'bui-TagList';
+      readonly tag: 'bui-Tag';
+      readonly tagIcon: 'bui-TagIcon';
+      readonly tagRemoveButton: 'bui-TagRemoveButton';
     };
   };
   readonly Text: {
@@ -972,16 +997,6 @@ export interface GridProps extends SpaceProps {
 export const Header: (props: HeaderProps) => JSX_2.Element;
 
 // @public
-export interface HeaderMenuItem {
-  // (undocumented)
-  label: string;
-  // (undocumented)
-  onClick?: () => void;
-  // (undocumented)
-  value: string;
-}
-
-// @public
 export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
 
 // @public
@@ -999,8 +1014,6 @@ export interface HeaderPageProps {
   // (undocumented)
   customActions?: React.ReactNode;
   // (undocumented)
-  menuItems?: HeaderMenuItem[];
-  // (undocumented)
   tabs?: HeaderTab[];
   // (undocumented)
   title?: string;
@@ -1012,8 +1025,6 @@ export interface HeaderProps {
   customActions?: React.ReactNode;
   // (undocumented)
   icon?: React.ReactNode;
-  // (undocumented)
-  menuItems?: HeaderMenuItem[];
   // (undocumented)
   onTabSelectionChange?: TabsProps_2['onSelectionChange'];
   // (undocumented)
@@ -1242,52 +1253,107 @@ export const marginPropDefs: (spacingValues: string[]) => {
 export type MarginProps = GetPropDefTypes<typeof marginPropDefs>;
 
 // @public (undocumented)
-export const Menu: MenuComponent;
+export const Menu: (props: MenuProps<object>) => JSX_2.Element;
 
 // @public (undocumented)
-export type MenuComboboxOption = {
-  label: string;
-  value: string;
-  disabled?: boolean;
-};
+export const MenuAutocomplete: (
+  props: MenuAutocompleteProps<object>,
+) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuComboboxProps extends ComponentProps<'div'> {
+export const MenuAutocompleteListbox: (
+  props: MenuAutocompleteListBoxProps<object>,
+) => JSX_2.Element;
+
+// @public (undocumented)
+export interface MenuAutocompleteListBoxProps<T>
+  extends ListBoxProps<T>,
+    Omit<ListBoxProps<T>, 'children'> {
   // (undocumented)
-  closeParentOnEsc?: boolean;
+  placeholder?: string;
   // (undocumented)
-  multiselect?: boolean;
-  // (undocumented)
-  onValueChange?: (value: string[]) => void;
-  // (undocumented)
-  options: MenuComboboxOption[];
-  // (undocumented)
-  value?: string[];
+  placement?: PopoverProps['placement'];
 }
 
 // @public (undocumented)
-export type MenuComponent = {
-  Root: typeof Menu_2.Root;
-  Trigger: typeof Menu_2.Trigger;
-  Portal: typeof Menu_2.Portal;
-  Backdrop: typeof Menu_2.Backdrop;
-  Positioner: typeof Menu_2.Positioner;
-  Popup: typeof Menu_2.Popup;
-  Arrow: typeof Menu_2.Arrow;
-  Item: typeof Menu_2.Item;
-  Group: typeof Menu_2.Group;
-  GroupLabel: typeof Menu_2.GroupLabel;
-  RadioGroup: typeof Menu_2.RadioGroup;
-  RadioItem: typeof Menu_2.RadioItem;
-  RadioItemIndicator: typeof Menu_2.RadioItemIndicator;
-  CheckboxItem: typeof Menu_2.CheckboxItem;
-  CheckboxItemIndicator: typeof Menu_2.CheckboxItemIndicator;
-  SubmenuTrigger: typeof Menu_2.SubmenuTrigger;
-  Separator: typeof Menu_2.Separator;
-  Combobox: ForwardRefExoticComponent<
-    MenuComboboxProps & RefAttributes<HTMLDivElement>
-  >;
-};
+export interface MenuAutocompleteProps<T>
+  extends MenuProps_2<T>,
+    Omit<MenuProps_2<T>, 'children'> {
+  // (undocumented)
+  placeholder?: string;
+  // (undocumented)
+  placement?: PopoverProps['placement'];
+}
+
+// @public (undocumented)
+export const MenuItem: (props: MenuItemProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface MenuItemProps
+  extends MenuItemProps_2,
+    Omit<MenuItemProps_2, 'children'> {
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  color?: 'primary' | 'danger';
+  // (undocumented)
+  iconStart?: React.ReactNode;
+}
+
+// @public (undocumented)
+export const MenuListBox: (props: MenuListBoxProps<object>) => JSX_2.Element;
+
+// @public (undocumented)
+export const MenuListBoxItem: (props: MenuListBoxItemProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface MenuListBoxItemProps
+  extends ListBoxItemProps,
+    Omit<ListBoxItemProps, 'children'> {
+  // (undocumented)
+  children: React.ReactNode;
+}
+
+// @public (undocumented)
+export interface MenuListBoxProps<T>
+  extends ListBoxProps<T>,
+    Omit<ListBoxProps<T>, 'children'> {
+  // (undocumented)
+  placement?: PopoverProps['placement'];
+}
+
+// @public (undocumented)
+export interface MenuProps<T>
+  extends MenuProps_2<T>,
+    Omit<MenuProps_2<T>, 'children'> {
+  // (undocumented)
+  placement?: PopoverProps['placement'];
+}
+
+// @public (undocumented)
+export const MenuSection: (props: MenuSectionProps<object>) => JSX_2.Element;
+
+// @public (undocumented)
+export interface MenuSectionProps<T>
+  extends MenuSectionProps_2<T>,
+    Omit<MenuSectionProps_2<T>, 'children'> {
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export const MenuSeparator: (props: MenuSeparatorProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface MenuSeparatorProps extends SeparatorProps {}
+
+// @public (undocumented)
+export const MenuTrigger: (props: MenuTriggerProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface MenuTriggerProps extends MenuTriggerProps_2 {}
 
 // @public (undocumented)
 export type NonStylingPropDef = {
@@ -1559,6 +1625,12 @@ export type StylingPropDef = {
 };
 
 // @public (undocumented)
+export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
+
+// @public (undocumented)
 export const Switch: ForwardRefExoticComponent<
   SwitchProps & RefAttributes<HTMLLabelElement>
 >;
@@ -1636,6 +1708,28 @@ export const Tabs: (props: TabsProps) => JSX_2.Element | null;
 
 // @public
 export interface TabsProps extends TabsProps_2 {}
+
+// @public
+export const Tag: (props: TagProps) => JSX_2.Element;
+
+// @public
+export const TagGroup: <T extends object>({
+  items,
+  children,
+  renderEmptyState,
+  ...props
+}: TagGroupProps<T>) => JSX_2.Element;
+
+// @public
+export interface TagGroupProps<T>
+  extends Omit<TagGroupProps_2, 'children'>,
+    Pick<TagListProps<T>, 'items' | 'children' | 'renderEmptyState'> {}
+
+// @public
+export interface TagProps extends TagProps_2 {
+  icon?: React.ReactNode;
+  size?: 'small' | 'medium';
+}
 
 // @public (undocumented)
 const Text_2: {

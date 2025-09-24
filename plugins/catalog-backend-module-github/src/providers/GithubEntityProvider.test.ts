@@ -35,6 +35,7 @@ import {
   RepositoryEvent,
   RepositoryRenamedEvent,
 } from '@octokit/webhooks-types';
+import type { PartialDeep } from 'type-fest';
 
 jest.mock('../lib/github', () => {
   return {
@@ -673,7 +674,8 @@ describe('GithubEntityProvider', () => {
           topics: [],
           html_url: `https://github.com/${organization}/test-repo`,
           url: `https://github.com/${organization}/test-repo`,
-        } as Partial<PushEvent['repository']>;
+          owner: { login: 'test-org' },
+        } as PartialDeep<PushEvent['repository']>;
 
         const catalogCommit = {
           added: [] as string[],
@@ -1003,7 +1005,10 @@ describe('GithubEntityProvider', () => {
           topics: [],
           archived: action === 'archived',
           private: action !== 'publicized',
-        } as Partial<RepositoryEvent['repository']>;
+          owner: {
+            login: 'test-org',
+          },
+        } as PartialDeep<RepositoryEvent['repository']>;
 
         const event = {
           action,

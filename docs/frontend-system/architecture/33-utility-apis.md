@@ -5,10 +5,6 @@ sidebar_label: Utility APIs
 description: Utility APIs
 ---
 
-:::note Note
-The new frontend system is in alpha and is only supported by a small number of plugins.
-:::
-
 ## Overview
 
 Utility APIs are pieces of standalone functionality, interfaces that can be requested by plugins to use. They are defined by a TypeScript interface as well as a reference (an "API ref") used to access its implementation. They can be provided both by plugins and the core framework, and are themselves [extensions](../architecture/20-extensions.md) that can have inputs, be replaced, and be declaratively configured in your app-config.

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TextField, Input, Form } from 'react-aria-components';
 import { FieldError } from './FieldError';
 
 const meta = {
-  title: 'Forms/FieldError',
+  title: 'Backstage UI/FieldError',
   component: FieldError,
 } satisfies Meta<typeof FieldError>;
 

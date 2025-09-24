@@ -90,6 +90,35 @@ also write a _custom processor_ to convert between the existing system and
 Backstage's descriptor format. This is documented in
 [External Integrations](external-integrations.md).
 
+### Processor configuration
+
+You can configure processors under the `catalog.processorOptions` key. You can define
+options for each processor by its name. With the processor options you can disable
+a processor or set its priority.
+
+```yaml
+catalog:
+  processorOptions:
+    processorName:
+      disabled: false # Defaults to false
+      priority: 100
+```
+
+The priority is a number defining the order in which processors are executed. The lower the number,
+the higher the priority. The default priority is `20`.
+
+## Provider configuration
+
+It's possible to also disable entity providers using the config. You can configure providers
+under the `catalog.providerOptions` key. The key is the provider name.
+
+```yaml
+catalog:
+  providerOptions:
+    providerName:
+      disabled: true
+```
+
 ## Catalog Rules
 
 By default, the catalog will only allow the ingestion of entities with the kind

@@ -152,7 +152,10 @@ export interface MockDirectoryContentOptions {
 }
 
 // @public
-export function mockErrorHandler(): ErrorRequestHandler<
+export function mockErrorHandler(
+  _options?: {},
+  ..._args: never[]
+): ErrorRequestHandler<
   ParamsDictionary,
   any,
   any,
@@ -302,7 +305,11 @@ export namespace mockServices {
       ) => ServiceMock<PermissionsRegistryService>;
   }
   // (undocumented)
-  export function rootConfig(options?: rootConfig.Options): RootConfigService;
+  export function rootConfig(
+    options?: rootConfig.Options,
+  ): RootConfigService & {
+    update(options: { data: JsonObject }): void;
+  };
   // (undocumented)
   export namespace rootConfig {
     // (undocumented)
@@ -363,9 +370,15 @@ export namespace mockServices {
       ) => ServiceMock<RootLoggerService>;
   }
   // (undocumented)
+  export function scheduler(): SchedulerService;
+  // (undocumented)
   export namespace scheduler {
     const // (undocumented)
-      factory: () => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
+      factory: (options?: {
+        skipTaskRunOnStartup?: boolean;
+        includeManualTasksOnStartup?: boolean;
+        includeInitialDelayedTasksOnStartup?: boolean;
+      }) => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,

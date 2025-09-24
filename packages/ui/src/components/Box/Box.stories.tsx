@@ -15,12 +15,12 @@
  */
 
 import { ReactNode } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Box } from './Box';
 import { Flex } from '../Flex';
 
 const meta = {
-  title: 'Layout/Box',
+  title: 'Backstage UI/Box',
   component: Box,
   argTypes: {
     as: {

@@ -199,6 +199,8 @@ catalog:
         - allow: [Template]
 
 scaffolder:
+  auditor:
+    taskParameterMaxLength: 256
   # Use to customize default commit author info used when new components are created
   defaultAuthor:
     name: Scaffolder
@@ -207,6 +209,11 @@ scaffolder:
   defaultCommitMessage: 'Initial commit'
 
 auth:
+  experimentalDynamicClientRegistration:
+    enabled: true
+    allowedRedirectUriPatterns:
+      - cursor://*
+
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
   # the auth-backend.
   #

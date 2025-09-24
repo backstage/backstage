@@ -32,8 +32,14 @@ export default defineConfig({
     ? []
     : [
         {
-          command: 'yarn start',
+          command: 'yarn start app',
           port: 3000,
+          reuseExistingServer: true,
+          timeout: 60_000,
+        },
+        {
+          command: 'yarn start backend',
+          port: 7007,
           reuseExistingServer: true,
           timeout: 60_000,
         },

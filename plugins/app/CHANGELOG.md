@@ -1,5 +1,107 @@
 # @backstage/plugin-app
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/integration-react@1.2.11-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.36
+
+## 0.3.0
+
+### Minor Changes
+
+- 99790db: Add implementation of OpenShift authentication provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/integration-react@1.2.10
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/integration-react@1.2.10-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- fda1bbc: **BREAKING**: The `componentsApi` implementation has been removed from the plugin and replaced with the new `SwappableComponentsApi` instead.
+
+  If you were overriding the `componentsApi` implementation, you can now use the new `SwappableComponentsApi` instead.
+
+  ```ts
+  // old
+  appPlugin.getExtension('api:app/components').override(...)
+
+  // new
+  appPlugin.getExtension('api:app/swappable-components').override(...)
+  ```
+
+- 29786f6: Updated the `app/nav` extension to use the new `NavContentBlueprint`, and removed support for extensions created with the now removed `NavLogoBlueprint`.
+- 121899a: **BREAKING**: The `app-root-element` extension now only accepts `JSX.Element` in its `element` param, meaning overrides need to be updated.
+
+### Patch Changes
+
+- 91cbdf4: Log a warning when `SwappableComponent` extensions are installed outside of using the `app` plugin
+- fda1bbc: Default implementations of core components are now provided by this package.
+
+  A backwards compatible `componentsApi` implementation is also provided from this package which uses the `SwappableComponentsApi` as the implementation. This backwards compatible wrapper will be removed in the future.
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- a08f95f: Added a new module for implementing public sign-in apps, exported as `appModulePublicSignIn` via the `/alpha` sub-path export. This replaces the `createPublicSignInApp` export from `@backstage/frontend-defaults`, which is now deprecated.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- 93b5e38: The default implementation of the Analytics API now collects and instantiates analytics implementations exposed via `AnalyticsImplementationBlueprint` extensions. If no such extensions are discovered, the API continues to do nothing with analytics events fired within Backstage. If multiple such extensions are discovered, every discovered implementation automatically receives analytics events.
+- 9831f4e: Adjusted the dialog API types to have more sensible defaults
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/theme@0.6.8
+
+## 0.2.0-next.2
+
+### Minor Changes
+
+- fda1bbc: **BREAKING**: The `componentsApi` implementation has been removed from the plugin and replaced with the new `SwappableComponentsApi` instead.
+
+  If you were overriding the `componentsApi` implementation, you can now use the new `SwappableComponentsApi` instead.
+
+  ```ts
+  // old
+  appPlugin.getExtension('api:app/components').override(...)
+
+  // new
+  appPlugin.getExtension('api:app/swappable-components').override(...)
+  ```
+
+### Patch Changes
+
+- 91cbdf4: Log a warning when `SwappableComponent` extensions are installed outside of using the `app` plugin
+- fda1bbc: Default implementations of core components are now provided by this package.
+
+  A backwards compatible `componentsApi` implementation is also provided from this package which uses the `SwappableComponentsApi` as the implementation. This backwards compatible wrapper will be removed in the future.
+
+- 9831f4e: Adjusted the dialog API types to have more sensible defaults
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/core-components@0.17.5-next.2
+
 ## 0.2.0-next.1
 
 ### Minor Changes

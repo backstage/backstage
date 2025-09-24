@@ -26,6 +26,10 @@ import {
 } from '@backstage/catalog-client';
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
+import {
   CatalogService,
   CatalogServiceRequestOptions,
   catalogServiceRef,
@@ -201,6 +205,16 @@ export class ReadWriteSplitCatalogService implements CatalogService {
     return this.#catalogWrite.validateEntity(
       entity,
       locationRef,
+      await this.#getOptions(options),
+    );
+  }
+
+  async analyzeLocation(
+    location: AnalyzeLocationRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<AnalyzeLocationResponse> {
+    return this.#catalogWrite.analyzeLocation(
+      location,
       await this.#getOptions(options),
     );
   }

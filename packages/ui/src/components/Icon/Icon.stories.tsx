@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { Icon } from './Icon';
 import { IconProvider } from './provider';
 import { icons } from './icons';
 
 const meta = {
-  title: 'Components/Icon',
+  title: 'Backstage UI/Icon',
   component: Icon,
   argTypes: {
     name: {

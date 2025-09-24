@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RadioGroup, Radio } from './RadioGroup';
 
 const meta = {
-  title: 'Forms/RadioGroup',
+  title: 'Backstage UI/RadioGroup',
   component: RadioGroup,
 } satisfies Meta<typeof RadioGroup>;
 

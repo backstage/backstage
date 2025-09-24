@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ButtonIcon } from './ButtonIcon';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Icon } from '../Icon';
 
 const meta = {
-  title: 'Components/ButtonIcon',
+  title: 'Backstage UI/ButtonIcon',
   component: ButtonIcon,
   argTypes: {
     size: {

@@ -15,12 +15,13 @@
  */
 
 import {
-  createServiceFactory,
   coreServices,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { transports, format } from 'winston';
-import { WinstonLogger } from '../rootLogger/WinstonLogger';
+import { format, transports } from 'winston';
 import { createConfigSecretEnumerator } from '../rootConfig/createConfigSecretEnumerator';
+import { WinstonLogger } from '../rootLogger/WinstonLogger';
+import { getRootLoggerConfig } from './config';
 
 /**
  * Root-level logging.
@@ -37,11 +38,14 @@ export const rootLoggerServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
   },
   async factory({ config }) {
+    const rootLoggerConfig = getRootLoggerConfig(config);
+
     const logger = WinstonLogger.create({
       meta: {
         service: 'backstage',
+        ...rootLoggerConfig.meta,
       },
-      level: process.env.LOG_LEVEL || 'info',
+      level: process.env.LOG_LEVEL || rootLoggerConfig.level || 'info',
       format:
         process.env.NODE_ENV === 'production'
           ? format.json()
@@ -52,6 +56,11 @@ export const rootLoggerServiceFactory = createServiceFactory({
     const secretEnumerator = await createConfigSecretEnumerator({ logger });
     logger.addRedactions(secretEnumerator(config));
     config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
+
+    logger.setLevelOverrides(rootLoggerConfig.overrides ?? []);
+    config.subscribe?.(() =>
+      logger.setLevelOverrides(getRootLoggerConfig(config).overrides ?? []),
+    );
 
     return logger;
   },

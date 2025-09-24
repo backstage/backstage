@@ -1,5 +1,41 @@
 # @backstage/plugin-catalog-backend-module-logs
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.1.1-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-events-node@0.4.15
+
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.1.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.2-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.1
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
 ## 0.1.13-next.0
 
 ### Patch Changes

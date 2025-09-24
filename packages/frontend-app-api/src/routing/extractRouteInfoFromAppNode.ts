@@ -17,11 +17,18 @@
 import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 import { AppNode } from '@backstage/frontend-plugin-api';
-import { toLegacyPlugin } from './toLegacyPlugin';
 import {
   createExactRouteAliasResolver,
   RouteAliasResolver,
 } from './RouteAliasResolver';
+
+/** @internal */
+export type RouteInfo = {
+  routePaths: Map<RouteRef, string>;
+  routeParents: Map<RouteRef, RouteRef | undefined>;
+  routeObjects: BackstageRouteObject[];
+  routeAliasResolver: RouteAliasResolver;
+};
 
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
@@ -32,7 +39,6 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   path: '*',
   element: 'match-all', // These elements aren't used, so we add in a bit of debug information
   routeRefs: new Set(),
-  plugins: new Set(),
 };
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
@@ -47,12 +53,7 @@ export function joinPaths(...paths: string[]): string {
 export function extractRouteInfoFromAppNode(
   node: AppNode,
   routeAliasResolver: RouteAliasResolver,
-): {
-  routePaths: Map<RouteRef, string>;
-  routeParents: Map<RouteRef, RouteRef | undefined>;
-  routeObjects: BackstageRouteObject[];
-  routeAliasResolver: RouteAliasResolver;
-} {
+): RouteInfo {
   // This tracks the route path for each route ref, the value is the route path relative to the parent ref
   const routePaths = new Map<RouteRef, string>();
   // This tracks the parents of each route ref. To find the full path of any route ref you traverse
@@ -100,7 +101,6 @@ export function extractRouteInfoFromAppNode(
         routeRefs: new Set<RouteRef>(),
         caseSensitive: false,
         children: [MATCH_ALL_ROUTE],
-        plugins: new Set(),
         appNode: current,
       };
       parentChildren.push(currentObj);
@@ -141,9 +141,6 @@ export function extractRouteInfoFromAppNode(
 
       routeParents.set(routeRef, newParentRef);
       currentObj?.routeRefs.add(routeRef);
-      if (current.spec.plugin) {
-        currentObj?.plugins.add(toLegacyPlugin(current.spec.plugin));
-      }
     }
 
     for (const children of current.edges.attachments.values()) {

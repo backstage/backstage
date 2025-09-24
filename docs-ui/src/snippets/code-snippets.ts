@@ -15,7 +15,7 @@ export const customTheme = `:root {
   }
 }
 
-[data-theme='dark'] {
+[data-theme-mode='dark'] {
   --bui-font-regular: system-ui;
   --bui-font-weight-regular: 400;
   --bui-font-weight-bold: 600;

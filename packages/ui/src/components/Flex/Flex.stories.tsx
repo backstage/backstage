@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Flex } from './Flex';
 import { Text } from '../Text';
 
 const meta = {
-  title: 'Layout/Flex',
+  title: 'Backstage UI/Flex',
   component: Flex,
   argTypes: {
     align: {

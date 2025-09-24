@@ -611,6 +611,11 @@ export type OpenIdConnectApi = {
   getIdToken(options?: AuthRequestOptions): Promise<string>;
 };
 
+// @public
+export const openshiftAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+>;
+
 // @public @deprecated
 export type OptionalParams<
   Params extends {

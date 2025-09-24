@@ -23,18 +23,18 @@
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "15.3.4",
     "@remixicon/react": "^4.6.0",
-    "@storybook/react": "^8.6.8",
+    "@storybook/react": "^8.6.12",
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
     "html-react-parser": "^5.2.5",
     "motion": "^12.4.1",
-    "next": "15.3.4",
+    "next": "15.4.7",
     "next-mdx-remote-client": "^2.1.2",
     "prop-types": "^15.8.1",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "shiki": "^1.26.1",
-    "storybook": "^8.6.8"
+    "storybook": "^8.6.12"
   },
   "devDependencies": {
     "@types/mdx": "^2.0.13",

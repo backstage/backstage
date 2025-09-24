@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Placement } from '@react-types/overlays';
 import { TooltipTrigger, Tooltip } from './Tooltip';
 import { Button } from '../Button/Button';
 
 const meta = {
-  title: 'Components/Tooltip',
+  title: 'Backstage UI/Tooltip',
   component: TooltipTrigger,
   parameters: { layout: 'centered' },
   argTypes: {
@@ -41,7 +41,7 @@ const meta = {
       control: { type: 'number' },
     },
   },
-  render: ({ tooltip, isOpen, isDisabled, placement, delay, closeDelay }) => (
+  render: ({ children, isOpen, isDisabled, placement, delay, closeDelay }) => (
     <TooltipTrigger
       isOpen={isOpen}
       isDisabled={isDisabled}
@@ -49,11 +49,11 @@ const meta = {
       closeDelay={closeDelay}
     >
       <Button>Button</Button>
-      <Tooltip placement={placement}>{tooltip ?? 'I am a tooltip'}</Tooltip>
+      <Tooltip placement={placement}>{children ?? 'I am a tooltip'}</Tooltip>
     </TooltipTrigger>
   ),
 } as Meta<{
-  tooltip?: string;
+  children?: string;
   isOpen?: boolean;
   isDisabled?: boolean;
   placement?: Placement;
@@ -66,7 +66,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    tooltip: 'I am a tooltip',
+    children: 'I am a tooltip',
   },
 };
 
@@ -102,14 +102,14 @@ export const OrthogonalPlacements: Story = {
     ...Default.args,
     isOpen: true,
   },
-  render: ({ isOpen, tooltip }) => {
+  render: ({ isOpen, children }) => {
     return (
       <TooltipTrigger isOpen={isOpen}>
         <Button>Button</Button>
-        <Tooltip placement="top">{tooltip}</Tooltip>
-        <Tooltip placement="right">{tooltip}</Tooltip>
-        <Tooltip placement="bottom">{tooltip}</Tooltip>
-        <Tooltip placement="left">{tooltip}</Tooltip>
+        <Tooltip placement="top">{children}</Tooltip>
+        <Tooltip placement="right">{children}</Tooltip>
+        <Tooltip placement="bottom">{children}</Tooltip>
+        <Tooltip placement="left">{children}</Tooltip>
       </TooltipTrigger>
     );
   },
@@ -119,7 +119,7 @@ export const WithLongText: Story = {
   args: {
     ...Default.args,
     isOpen: true,
-    tooltip:
+    children:
       'I am a tooltip with a very long text. orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
   },
 };

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Checkbox } from './Checkbox';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 
 const meta = {
-  title: 'Components/Checkbox',
+  title: 'Backstage UI/Checkbox',
   component: Checkbox,
 } satisfies Meta<typeof Checkbox>;
 

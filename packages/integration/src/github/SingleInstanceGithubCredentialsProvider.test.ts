@@ -231,6 +231,42 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     expect(token).toEqual(undefined);
   });
 
+  it('should not fail to issue tokens for an organization when there is a case mismatch in the organization name', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: {
+        etag: '123',
+      },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'selected',
+          account: {
+            login: 'backstage',
+          },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+      data: {
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        token: 'secret_token',
+        repository_selection: 'selected',
+      },
+    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
+      data: [{ name: 'some-repo' }],
+    } as unknown as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+
+    const { token, headers } = await github.getCredentials({
+      url: 'https://github.com/Backstage',
+    });
+    const expectedToken = 'secret_token';
+    expect(headers).toEqual({ Authorization: `Bearer ${expectedToken}` });
+    expect(token).toEqual('secret_token');
+  });
+
   it('should not fail to issue tokens for an organization when the app is installed for a single repo', async () => {
     octokit.apps.listInstallations.mockResolvedValue({
       headers: {

@@ -70,6 +70,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
       className={clsx(classNames.root, className)}
       {...dataAttributes}
       ref={ref}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
       {...rest}
     >
       <FieldLabel

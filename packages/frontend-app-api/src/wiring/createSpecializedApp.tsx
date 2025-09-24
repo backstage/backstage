@@ -52,7 +52,10 @@ import {
   toInternalExtension,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
-import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
+import {
+  extractRouteInfoFromAppNode,
+  RouteInfo,
+} from '../routing/extractRouteInfoFromAppNode';
 
 import { CreateAppRouteBinder } from '../routing';
 import { RouteResolver } from '../routing/RouteResolver';
@@ -74,13 +77,17 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { RouteInfo } from './types';
 import { matchRoutes } from 'react-router-dom';
 import {
   createPluginInfoAttacher,
   FrontendPluginInfoResolver,
 } from './createPluginInfoAttacher';
 import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
+import {
+  AppError,
+  createErrorCollector,
+  ErrorCollector,
+} from './createErrorCollector';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -180,7 +187,10 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
     return this.#delegate.resolve(anyRouteRef, options);
   }
 
-  initialize(routeInfo: RouteInfo) {
+  initialize(
+    routeInfo: RouteInfo,
+    routeRefsById: Map<string, RouteRef | SubRouteRef>,
+  ) {
     this.#delegate = new RouteResolver(
       routeInfo.routePaths,
       routeInfo.routeParents,
@@ -188,6 +198,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
       this.routeBindings,
       this.appBasePath,
       routeInfo.routeAliasResolver,
+      routeRefsById,
     );
     this.#routeObjects = routeInfo.routeObjects;
 
@@ -278,11 +289,14 @@ export type CreateSpecializedAppOptions = {
 export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   apis: ApiHolder;
   tree: AppTree;
+  errors?: AppError[];
 } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
     createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
   );
+
+  const collector = createErrorCollector();
 
   const tree = resolveAppTree(
     'root',
@@ -293,18 +307,18 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
-      allowUnknownExtensionConfig:
-        options?.advanced?.allowUnknownExtensionConfig,
+      collector,
     }),
+    collector,
   );
 
-  const factories = createApiFactories({ tree });
+  const factories = createApiFactories({ tree, collector });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
 
-  const routeRefsById = collectRouteIds(features);
+  const routeRefsById = collectRouteIds(features, collector);
   const routeResolutionApi = new RouteResolutionApiProxy(
-    resolveRouteBindings(options?.bindRoutes, config, routeRefsById),
+    resolveRouteBindings(options?.bindRoutes, config, routeRefsById, collector),
     appBasePath,
   );
 
@@ -347,6 +361,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   instantiateAppNodeTree(
     tree.root,
     apis,
+    collector,
     mergeExtensionFactoryMiddleware(
       options?.advanced?.extensionFactoryMiddleware,
     ),
@@ -357,25 +372,35 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
     createRouteAliasResolver(routeRefsById),
   );
 
-  routeResolutionApi.initialize(routeInfo);
+  routeResolutionApi.initialize(routeInfo, routeRefsById.routes);
   appTreeApi.initialize(routeInfo);
 
-  return { apis, tree };
+  return { apis, tree, errors: collector.collectErrors() };
 }
 
-function createApiFactories(options: { tree: AppTree }): AnyApiFactory[] {
+function createApiFactories(options: {
+  tree: AppTree;
+  collector: ErrorCollector;
+}): AnyApiFactory[] {
   const emptyApiHolder = ApiRegistry.from([]);
   const factories = new Array<AnyApiFactory>();
 
   for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
-    instantiateAppNodeTree(apiNode, emptyApiHolder);
-    const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
-    if (!apiFactory) {
-      throw new Error(
-        `No API factory found in for extension ${apiNode.spec.id}`,
-      );
+    if (!instantiateAppNodeTree(apiNode, emptyApiHolder, options.collector)) {
+      continue;
     }
-    factories.push(apiFactory);
+    const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
+    if (apiFactory) {
+      factories.push(apiFactory);
+    } else {
+      options.collector.report({
+        code: 'API_EXTENSION_INVALID',
+        message: `API extension '${apiNode.spec.id}' did not output an API factory`,
+        context: {
+          node: apiNode,
+        },
+      });
+    }
   }
 
   return factories;

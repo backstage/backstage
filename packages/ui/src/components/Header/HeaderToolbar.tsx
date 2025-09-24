@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,10 @@
 import { Link, RouterProvider } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useRef } from 'react';
-import { RiMore2Line, RiShapesLine } from '@remixicon/react';
+import { RiShapesLine } from '@remixicon/react';
 import type { HeaderToolbarProps } from './types';
-import { ButtonIcon } from '../ButtonIcon';
-import { Menu } from '../Menu';
 import { Text } from '../Text';
 import { useNavigate, useHref } from 'react-router-dom';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 /**
  * A component that renders a toolbar.
@@ -34,7 +28,7 @@ gsap.registerPlugin(ScrollTrigger);
  * @internal
  */
 export const HeaderToolbar = (props: HeaderToolbarProps) => {
-  const { icon, title, titleLink, menuItems, customActions, hasTabs } = props;
+  const { icon, title, titleLink, customActions, hasTabs } = props;
   const { classNames } = useStyles('Header');
   let navigate = useNavigate();
 
@@ -67,34 +61,6 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
           </div>
           <div className={classNames.toolbarControls} ref={toolbarControlsRef}>
             {customActions}
-            {menuItems && (
-              <Menu.Root>
-                <Menu.Trigger
-                  render={props => (
-                    <ButtonIcon
-                      size="small"
-                      icon={<RiMore2Line />}
-                      variant="tertiary"
-                      {...props}
-                    />
-                  )}
-                />
-                <Menu.Portal>
-                  <Menu.Positioner sideOffset={4} align="end">
-                    <Menu.Popup>
-                      {menuItems.map(option => (
-                        <Menu.Item
-                          key={option.value}
-                          onClick={() => option.onClick?.()}
-                        >
-                          {option.label}
-                        </Menu.Item>
-                      ))}
-                    </Menu.Popup>
-                  </Menu.Positioner>
-                </Menu.Portal>
-              </Menu.Root>
-            )}
           </div>
         </div>
       </div>

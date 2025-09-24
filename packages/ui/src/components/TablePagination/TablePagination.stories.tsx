@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { useArgs } from '@storybook/preview-api';
-import type { Meta, StoryObj } from '@storybook/react';
+// TODO: Bring useArgs() back when we update Storybook to 9
+// import { useArgs } from 'storybook/preview-api';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TablePagination } from './TablePagination';
 
 const meta = {
-  title: 'Components/TablePagination',
+  title: 'Backstage UI/TablePagination',
   component: TablePagination,
   argTypes: {
     offset: { control: 'number' },
@@ -41,17 +42,17 @@ export const Default: Story = {
     rowCount: 100,
   },
   render: args => {
-    const [{}, updateArgs] = useArgs();
+    // const [{}, updateArgs] = useArgs();
 
     return (
       <TablePagination
         {...args}
-        setOffset={value => {
-          updateArgs({ offset: value });
-        }}
-        setPageSize={value => {
-          updateArgs({ pageSize: value });
-        }}
+        // setOffset={value => {
+        //   updateArgs({ offset: value });
+        // }}
+        // setPageSize={value => {
+        //   updateArgs({ pageSize: value });
+        // }}
       />
     );
   },

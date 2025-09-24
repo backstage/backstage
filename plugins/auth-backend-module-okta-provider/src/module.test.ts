@@ -53,7 +53,7 @@ describe('authModuleOktaProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('okta-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/okta/handler',
       script: false,
       secure: false,

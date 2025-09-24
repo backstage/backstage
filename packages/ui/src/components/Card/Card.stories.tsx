@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Card, CardHeader, CardBody, CardFooter } from './Card';
 import { IconNames, Text } from '../..';
 
@@ -25,7 +25,7 @@ export interface ListItem {
 }
 
 const meta = {
-  title: 'Components/Card',
+  title: 'Backstage UI/Card',
   component: Card,
   subcomponents: { CardHeader, CardBody, CardFooter },
 } satisfies Meta<typeof Card>;

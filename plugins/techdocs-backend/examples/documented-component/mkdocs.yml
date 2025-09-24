@@ -7,6 +7,7 @@ nav:
   - Subpage: sub-page.md
   - 'Code Sample': code/code-sample.md
   - Extensions: extensions.md
+  - 'Inner Component Docs': inner-component-docs/index.md
 
 plugins:
   - techdocs-core

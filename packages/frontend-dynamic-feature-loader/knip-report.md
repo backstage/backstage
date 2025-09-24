@@ -4,5 +4,5 @@
 
 | Name              | Location     | Severity |
 | :---------------- | :----------- | :------- |
-| @backstage/config | package.json | error    |
+| @backstage/config | packages/frontend-dynamic-feature-loader/package.json | error    |
 
