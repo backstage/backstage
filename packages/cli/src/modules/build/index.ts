@@ -138,8 +138,8 @@ export const buildPlugin = createCliPlugin({
             'Link an external workspace for module resolution',
           )
           .option(
-            '--entry-dir <path>',
-            'Path to the directory containing the entry point file',
+            '--entrypoint <path>',
+            'Entry directory path (uses index file) or entry file path (without extension). Defaults to "dev"',
           )
           .action(lazy(() => import('./commands/package/start'), 'command'));
 
