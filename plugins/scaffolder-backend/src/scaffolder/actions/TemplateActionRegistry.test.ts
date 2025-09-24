@@ -23,17 +23,14 @@ import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha'
 describe('DefaultTemplateActionRegistry', () => {
   let registry: DefaultTemplateActionRegistry;
   let mockActionsService: ReturnType<typeof actionsRegistryServiceMock>;
-  let mockAuthService: ReturnType<typeof mockServices.auth>;
   let mockLogger: ReturnType<typeof mockServices.logger.mock>;
 
   beforeEach(() => {
     mockActionsService = actionsRegistryServiceMock();
-    mockAuthService = mockServices.auth();
     mockLogger = mockServices.logger.mock();
 
     registry = new DefaultTemplateActionRegistry(
       mockActionsService,
-      mockAuthService,
       mockLogger,
     );
   });
@@ -80,7 +77,9 @@ describe('DefaultTemplateActionRegistry', () => {
       });
 
       registry.register(action);
-      const result = await registry.get('test-action');
+      const result = await registry.get('test-action', {
+        credentials: mockCredentials.user(),
+      });
 
       expect(result).toBe(action);
     });
@@ -101,7 +100,9 @@ describe('DefaultTemplateActionRegistry', () => {
         action: async () => ({ output: {} }),
       });
 
-      const result = await registry.get('test:service-action');
+      const result = await registry.get('test:service-action', {
+        credentials: mockCredentials.user(),
+      });
 
       expect(result.id).toBe('test:service-action');
       expect(result.description).toBe('Service action');
@@ -109,28 +110,26 @@ describe('DefaultTemplateActionRegistry', () => {
     });
 
     it('should throw NotFoundError when action is not found', async () => {
-      await expect(registry.get('non-existent-action')).rejects.toThrow(
-        NotFoundError,
-      );
-      await expect(registry.get('non-existent-action')).rejects.toThrow(
+      await expect(
+        registry.get('non-existent-action', {
+          credentials: mockCredentials.user(),
+        }),
+      ).rejects.toThrow(NotFoundError);
+      await expect(
+        registry.get('non-existent-action', {
+          credentials: mockCredentials.user(),
+        }),
+      ).rejects.toThrow(
         "Template action with ID 'non-existent-action' is not registered",
       );
-    });
-
-    it('should use own service credentials when getting action', async () => {
-      const spy = jest.spyOn(mockActionsService, 'list');
-
-      await expect(registry.get('non-existent')).rejects.toThrow();
-
-      expect(spy).toHaveBeenCalledWith({
-        credentials: await mockAuthService.getOwnServiceCredentials(),
-      });
     });
   });
 
   describe('list', () => {
     it('should return empty map when no actions are registered', async () => {
-      const result = await registry.list();
+      const result = await registry.list({
+        credentials: mockCredentials.user(),
+      });
 
       expect(result).toBeInstanceOf(Map);
       expect(result.size).toBe(0);
@@ -152,7 +151,9 @@ describe('DefaultTemplateActionRegistry', () => {
       registry.register(action1);
       registry.register(action2);
 
-      const result = await registry.list();
+      const result = await registry.list({
+        credentials: mockCredentials.user(),
+      });
 
       expect(result.size).toBe(2);
       expect(result.get('action-1')).toBe(action1);
@@ -175,7 +176,9 @@ describe('DefaultTemplateActionRegistry', () => {
         action: async () => ({ output: {} }),
       });
 
-      const result = await registry.list();
+      const result = await registry.list({
+        credentials: mockCredentials.user(),
+      });
 
       expect(result.size).toBe(1);
       const action = result.get('test:service-action');
@@ -204,31 +207,14 @@ describe('DefaultTemplateActionRegistry', () => {
       });
 
       registry.register(localAction);
-      const result = await registry.list();
+      const result = await registry.list({
+        credentials: mockCredentials.user(),
+      });
 
       expect(result.get('test:same-id')).toBe(localAction);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         "Template action with ID 'test:same-id' has already been registered, skipping action provided by actions service",
       );
-    });
-
-    it('should use provided credentials when listing actions', async () => {
-      const credentials = mockCredentials.user();
-      const spy = jest.spyOn(mockActionsService, 'list');
-
-      await registry.list({ credentials });
-
-      expect(spy).toHaveBeenCalledWith({ credentials });
-    });
-
-    it('should use own service credentials when no credentials provided', async () => {
-      const spy = jest.spyOn(mockActionsService, 'list');
-
-      await registry.list();
-
-      expect(spy).toHaveBeenCalledWith({
-        credentials: await mockAuthService.getOwnServiceCredentials(),
-      });
     });
 
     it('should set supportsDryRun to false for destructive actions', async () => {
@@ -247,7 +233,9 @@ describe('DefaultTemplateActionRegistry', () => {
         action: async () => ({ output: {} }),
       });
 
-      const result = await registry.list();
+      const result = await registry.list({
+        credentials: mockCredentials.user(),
+      });
       const action = result.get('test:destructive-action');
 
       expect(action!.supportsDryRun).toBe(false);
@@ -269,7 +257,9 @@ describe('DefaultTemplateActionRegistry', () => {
         action: async () => ({ output: {} }),
       });
 
-      const result = await registry.list();
+      const result = await registry.list({
+        credentials: mockCredentials.user(),
+      });
       const action = result.get('test:non-readonly-action');
 
       expect(action!.supportsDryRun).toBe(false);

@@ -110,7 +110,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     actionRegistry = new DefaultTemplateActionRegistry(
       actionsRegistryServiceMock(),
-      mockServices.auth(),
       mockServices.logger.mock(),
     );
     fakeActionHandler = jest.fn();

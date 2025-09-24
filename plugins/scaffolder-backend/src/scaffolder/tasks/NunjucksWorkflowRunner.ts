@@ -33,7 +33,7 @@ import {
   SecureTemplater,
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
-import { TemplateActionRegistry } from '../actions/TemplateActionRegistry.ts';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { generateExampleOutput, isTruthy } from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 
@@ -245,7 +245,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         return;
       }
       const action: TemplateAction<JsonObject> =
-        await this.options.actionRegistry.get(step.action);
+        await this.options.actionRegistry.get(step.action, {
+          credentials: await task.getInitiatorCredentials(),
+        });
       const { taskLogger } = createStepLogger({
         task,
         step,

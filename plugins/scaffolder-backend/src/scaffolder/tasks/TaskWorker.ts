@@ -25,7 +25,7 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import PQueue from 'p-queue';
-import { TemplateActionRegistry } from '../actions/TemplateActionRegistry.ts';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';

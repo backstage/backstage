@@ -18,7 +18,6 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import {
-  AuthService,
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -31,9 +30,12 @@ import { JsonObject } from '@backstage/types';
  */
 export interface TemplateActionRegistry {
   register(action: TemplateAction<any, any, any>): void;
-  get(actionId: string): Promise<TemplateAction<any, any, any>>;
-  list(options?: {
-    credentials?: BackstageCredentials;
+  get(
+    actionId: string,
+    options: { credentials: BackstageCredentials },
+  ): Promise<TemplateAction<any, any, any>>;
+  list(options: {
+    credentials: BackstageCredentials;
   }): Promise<Map<string, TemplateAction<any, any, any>>>;
 }
 
@@ -45,7 +47,6 @@ export class DefaultTemplateActionRegistry implements TemplateActionRegistry {
 
   constructor(
     private readonly actionsRegistry: ActionsService,
-    private readonly auth: AuthService,
     private readonly logger: LoggerService,
   ) {}
 
@@ -59,8 +60,11 @@ export class DefaultTemplateActionRegistry implements TemplateActionRegistry {
     this.actions.set(action.id, action);
   }
 
-  async get(actionId: string): Promise<TemplateAction<any, any, any>> {
-    const action = (await this.list()).get(actionId);
+  async get(
+    actionId: string,
+    options: { credentials: BackstageCredentials },
+  ): Promise<TemplateAction<any, any, any>> {
+    const action = (await this.list(options)).get(actionId);
     if (!action) {
       throw new NotFoundError(
         `Template action with ID '${actionId}' is not registered. See https://backstage.io/docs/features/software-templates/builtin-actions/ on how to add a new action module.`,
@@ -69,14 +73,13 @@ export class DefaultTemplateActionRegistry implements TemplateActionRegistry {
     return action;
   }
 
-  async list(options?: {
-    credentials?: BackstageCredentials;
+  async list(options: {
+    credentials: BackstageCredentials;
   }): Promise<Map<string, TemplateAction<any, any, any>>> {
     const ret = new Map(this.actions);
 
     const { actions } = await this.actionsRegistry.list({
-      credentials:
-        options?.credentials ?? (await this.auth.getOwnServiceCredentials()),
+      credentials: options.credentials,
     });
 
     for (const action of actions) {
