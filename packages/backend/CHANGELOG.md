@@ -1,5 +1,45 @@
 # example-backend
 
+## 0.0.43-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/plugin-app-backend@0.5.7-next.0
+  - @backstage/plugin-devtools-backend@0.5.10-next.1
+  - @backstage/plugin-proxy-backend@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-backend@0.25.5-next.0
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.13-next.0
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.1-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-catalog-backend@3.1.1-next.1
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.7-next.0
+  - @backstage/plugin-events-backend@0.5.7-next.0
+  - @backstage/plugin-events-backend-module-google-pubsub@0.1.5-next.0
+  - @backstage/plugin-kubernetes-backend@0.20.3-next.1
+  - @backstage/plugin-notifications-backend@0.5.11-next.0
+  - @backstage/plugin-permission-backend@0.7.5-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/plugin-scaffolder-backend@3.0.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.1-next.1
+  - @backstage/plugin-search-backend@2.0.7-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.9-next.0
+  - @backstage/plugin-search-backend-module-explore@0.3.8-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.7-next.1
+  - @backstage/plugin-search-backend-node@1.3.16-next.0
+  - @backstage/plugin-signals-backend@0.3.9-next.0
+  - @backstage/plugin-techdocs-backend@2.1.1-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.3.8-next.0
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.15-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.13-next.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.5-next.0
+  - @backstage/plugin-mcp-actions-backend@0.1.4-next.1
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.15-next.1
+
 ## 0.0.43-next.0
 
 ### Patch Changes
