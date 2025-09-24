@@ -245,7 +245,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         return;
       }
       const action: TemplateAction<JsonObject> =
-        await this.options.actionRegistry.get(step.action);
+        await this.options.actionRegistry.get(step.action, {
+          credentials: await task.getInitiatorCredentials(),
+        });
       const { taskLogger } = createStepLogger({
         task,
         step,

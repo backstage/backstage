@@ -271,7 +271,6 @@ export async function createRouter(
 
   const actionRegistry = new DefaultTemplateActionRegistry(
     actionsRegistry,
-    auth,
     logger,
   );
 

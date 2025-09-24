@@ -31,9 +31,12 @@ export class DecoratedActionsRegistry implements TemplateActionRegistry {
     }
   }
 
-  async get(actionId: string): Promise<TemplateAction> {
+  async get(
+    actionId: string,
+    options: { credentials: BackstageCredentials },
+  ): Promise<TemplateAction> {
     try {
-      return await this.innerRegistry.get(actionId);
+      return await this.innerRegistry.get(actionId, options);
     } catch (e) {
       if (!this.innerActions.has(actionId)) {
         throw e;
@@ -42,8 +45,8 @@ export class DecoratedActionsRegistry implements TemplateActionRegistry {
     }
   }
 
-  async list(options?: {
-    credentials?: BackstageCredentials;
+  async list(options: {
+    credentials: BackstageCredentials;
   }): Promise<Map<string, TemplateAction<any, any, any>>> {
     const inner = await this.innerRegistry.list(options);
     return new Map<string, TemplateAction<any, any, any>>([
