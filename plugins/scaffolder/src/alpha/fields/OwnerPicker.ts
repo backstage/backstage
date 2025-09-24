@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { OwnerPicker as Component } from '../../components/fields/OwnerPicker/OwnerPicker';
-import { OwnerPickerFieldSchema } from '../../components';
+import {
+  OwnerPicker as Component,
+  OwnerPickerFieldSchema,
+} from '../../components/fields/OwnerPicker';
 
 export const OwnerPicker = createFormField({
   component: Component,

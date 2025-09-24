@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { MyGroupsPicker as Component } from '../../components/fields/MyGroupsPicker/MyGroupsPicker';
-import { MyGroupsPickerFieldSchema } from '../../components';
+import {
+  MyGroupsPicker as Component,
+  MyGroupsPickerFieldSchema,
+} from '../../components/fields/MyGroupsPicker';
 
 export const MyGroupsPicker = createFormField({
   component: Component,
