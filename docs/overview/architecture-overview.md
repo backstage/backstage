@@ -19,8 +19,8 @@ containerizing the components. Various commands are provided for accomplishing t
 
 There are 3 main components in this architecture:
 
-- The frontend container includes the core Backstage [UI](#user-interface) which is an [extension](#extensions) that interacts directly with the user to present the information from the integrated core feature plugins, and other plugins added by a user.
-- The backend container includes the backend plugins, [core services](https://backstage.io/docs/backend-system/core-services/index), and other services. This is the server-side part of Backstage that is responsible for wiring things together. You can deploy more than one backend, and more than one backend container, depending on your need to scale and isolate individual features.
+- The [frontend container](#frontend-building-blocks) includes the core Backstage [UI](#user-interface) which is an [extension](#extensions) that interacts directly with the user to present the information from the integrated core feature plugins, and other plugins added by a user.
+- The [backend container](#backend-building-blocks) includes the backend plugins, [core services](https://backstage.io/docs/backend-system/core-services/index), and other services. This is the server-side part of Backstage that is responsible for wiring things together. You can deploy more than one backend, and more than one backend container, depending on your need to scale and isolate individual features.
 - Databases host your Backstage data.
 
 ![The architecture of a basic Backstage application](../assets/architecture-overview/backstage-front-back-arch.jpeg)
@@ -35,7 +35,7 @@ This is the app instance itself that you create and use as the root of your Back
 
 ### Extensions
 
-Extensions are the building blocks that build out both the visual and non-visual structure of the application. There are both built-in extensions provided by the app itself as well as extensions provided by plugins. Each extension is attached to a parent with which it shares data and can have any number of children of its own. It is up to the app to wire together all extensions into a single tree known as the app extension tree. It is from this structure that the entire app can then be instantiated and rendered.
+[Extensions](../frontend-system/architecture/20-extensions.md) are the building blocks that build out both the visual and non-visual structure of the application. There are both built-in extensions provided by the app itself as well as extensions provided by plugins. Each extension is attached to a parent with which it shares data and can have any number of children of its own. It is up to the app to wire together all extensions into a single tree known as the app extension tree. It is from this structure that the entire app can then be instantiated and rendered.
 
 #### User Interface
 
@@ -45,7 +45,7 @@ The UI is one of the extensions in the frontend. It is a thin, client-side wrapp
 
 Each plugin typically makes itself available in the UI on a dedicated URL. For example, the Service Catalog plugin is registered with the UI on `/catalog`.
 
-### Plugins
+### Frontend plugins
 
 Plugins provide the actual features inside an app. The size of a plugin can range from a tiny component to an entire new system in which other plugins can be composed and integrated. Plugins can be completely standalone or built on top of each other to extend existing plugins and augment their features. Plugins can communicate with each other by composing their extensions or by sharing Utility APIs and routes.
 
@@ -61,15 +61,15 @@ Backstage includes the following set of core plugins:
 
 ### Extension Overrides
 
-In addition to the built-in extensions and extensions provided by plugins, it is also possible to install extension overrides. This is a collection of extensions with high priority that can replace existing extensions. They can for example be used to override an individual extension provided by a plugin, or install a completely new extension, such as a new app theme.
+In addition to the built-in extensions and extensions provided by plugins, it is also possible to install [extension overrides](../frontend-system/architecture/25-extension-overrides.md). This is a collection of extensions with high priority that can replace existing extensions. They can for example be used to override an individual extension provided by a plugin, or install a completely new extension, such as a new app theme.
 
 ### Utility APIs
 
-Utility APIs provide functionality that makes it easier to build plugins, make it possible for plugins to share functionality with other plugins, as well as serve as a customization point for integrators to change the behaviour of the app. Each Utility API is defined by a TypeScript interface as well as a reference used to access the implementations. The implementations of Utility APIs are defined by extensions that are provided and can be overridden the same as any other extension.
+[Utility APIs](../api/utility-apis.md) provide functionality that makes it easier to build plugins, make it possible for plugins to share functionality with other plugins, as well as serve as a customization point for integrators to change the behaviour of the app. Each Utility API is defined by a TypeScript interface as well as a reference used to access the implementations. The implementations of Utility APIs are defined by extensions that are provided and can be overridden the same as any other extension.
 
 ### Routes
 
-The Backstage routing system adds a layer of indirection that makes it possible for plugins to route to each other's extensions without explicit knowledge of what URL paths the extensions are rendered at or if they even exist at all. It makes it possible for plugins to share routes with each other and dynamically generate concrete links at runtime. It is the responsibility of the app to resolve these links to actual URLs, but it is also possible for integrators to define their own route bindings that decide how the links should be resolved. The routing system also lets plugins define internal routes, aiding in the linking to different content in the same plugin.
+The [Backstage routing system](../frontend-system/architecture/36-routes.md) adds a layer of indirection that makes it possible for plugins to route to each other's extensions without explicit knowledge of what URL paths the extensions are rendered at or if they even exist at all. It makes it possible for plugins to share routes with each other and dynamically generate concrete links at runtime. It is the responsibility of the app to resolve these links to actual URLs, but it is also possible for integrators to define their own route bindings that decide how the links should be resolved. The routing system also lets plugins define internal routes, aiding in the linking to different content in the same plugin.
 
 ## Backend building blocks
 
@@ -77,19 +77,19 @@ The architectural diagram provides an overview of the different building blocks,
 
 ### Backend
 
-This is the backend instance itself, which you can think of as the unit of deployment. It does not have any functionality in and of itself, but is simply responsible for wiring things together.
+This is the [backend instance](../backend-system/02-backends.md) itself, which you can think of as the unit of deployment. It does not have any functionality in and of itself, but is simply responsible for wiring things together.
 
-It is up to you to decide how many different backends you want to deploy. You can have all features in a single one, or split things out into multiple smaller deployments. All depending on your need to scale and isolate individual features.
+It is up to you to decide how many different backends you want to deploy. You can have all features in a single one, or split things out into multiple smaller deployments, depending on your need to scale and isolate individual features.
 
-### Plugins
+### Backend plugins
 
-Plugins provide the actual features. They operate completely independently of each other. If plugins want to communicate with each other, they must do so over the wire. There can be no direct communication between plugins through code. Because of this constraint, each plugin can be considered to be its own microservice.
+[Plugins](../backend-system/architecture/04-plugins.md) provide the actual features. They operate completely independently of each other. If plugins want to communicate with each other, they must do so over the wire. There can be no direct communication between plugins through code. Because of this constraint, each plugin can be considered to be its own microservice.
 
 [Plugin architecture](#plugin-architecture) provides greater detail about the architecture of the plugins themselves.
 
 ### Services
 
-Services provide utilities to help make it simpler to implement plugins, so that each plugin doesn't need to implement everything from scratch. There are many built-in core services, such as the ones for logging, database access, and reading configuration, but you can also import third-party services, or create your own.
+[Services](../backend-system/architecture/03-services.md) provide utilities to help make it simpler to implement plugins, so that each plugin doesn't need to implement everything from scratch. There are many built-in core services, such as the ones for logging, database access, and reading configuration, but you can also import third-party services, or create your own.
 
 Services are also a customization point for individual backend installations. You can override services with your own implementations, as well as make smaller customizations to existing services.
 
@@ -97,27 +97,40 @@ Services are also a customization point for individual backend installations. Yo
 
 Many plugins have ways in which you can extend them, for example entity providers for the Catalog, or custom actions for the Scaffolder. These extension patterns are now encoded into Extension Points.
 
-Extension Points look a little bit like services, since you depended on them just like you would a service. A key difference is that extension points are registered and provided by plugins or modules themselves, based on what customizations each of them want to expose.
+[Extension Points](../backend-system/architecture/05-extension-points.md) look a little bit like services, since you depend on them just like you would a service. A key difference is that extension points are registered and provided by plugins or modules themselves, based on what customizations each of them want to expose.
 
 Extension Points are exported separately from the plugin or module instance itself, and it is possible to expose multiple different extension points at once. This makes it easier to evolve and deprecate individual Extension Points over time, rather than dealing with a single large API surface.
 
 ### Modules
 
-Modules use Extension Points to add new features to other plugins or modules. They might for example add an individual Catalog Entity Provider, or one or more Scaffolder Actions.
+[Modules](../backend-system/architecture/06-modules.md) use Extension Points to add new features to other plugins or modules. They might for example add an individual Catalog Entity Provider, or one or more Scaffolder Actions.
 
 Each module may only use Extension Points that belong to a single plugin, and the module must be deployed together with that plugin in the same backend instance. Modules may only communicate with their plugin or other modules through the registered extension points.
 
 Just like plugins, modules also have access to services and can depend on their own service implementations. They will however share services with the plugin that they extend - there are no module-specific service implementations.
 
+## Databases
+
+The databases host your Backstage data. The Backstage backend and its built-in plugins are based on the [Knex](http://knexjs.org/) library, and set up a separate logical database per plugin. This gives great isolation and lets them perform migrations and evolve separately from each other.
+
+The Knex library supports a multitude of databases, but Backstage at this time of writing is tested primarily against two of them:
+
+- SQLite, which is mainly used as an in-memory mock/test database
+- PostgreSQL, which is the preferred production database.
+
+Other databases such as the MySQL variants are reported to work but [aren't fully tested](https://github.com/backstage/backstage/issues/2460) yet.
+
+[Configuring Plugin Databases](../tutorials/configuring-plugin-databases.md) provides information on how to configure a database for a plugin.
+
 ## Plugin architecture
 
 Architecturally, plugins can take three forms:
 
-- Standalone
-- Service backed
-- Third-party backed
+- [Standalone](#standalone-plugins)
+- [Service backed](#service-backed-plugins)
+- [Third-party backed](#third-party-backed-plugins)
 
-#### Standalone plugins
+### Standalone plugins
 
 Standalone plugins run entirely in the browser. [The Tech Radar plugin](https://demo.backstage.io/tech-radar), for example, simply renders hard-coded information. It doesn't make any API requests to other services.
 
@@ -125,14 +138,14 @@ The architecture of the Tech Radar installed into a Backstage app is very simple
 
 > **NOTE:**  
 > The following diagram does not show the detailed contents of the frontend and backend containers in order to highlight the changes that pertain to the addition of the specified plugin.
-> 
+
 ![ui and tech radar plugin connected together](../assets/architecture-overview/simplified-standalone-plugin-architecture.jpeg)
 
 Once the plugin has been added, then you can view the Tech Radar information in the Backstage UI.
 
 ![tech radar plugin ui](../assets/architecture-overview/tech-radar-plugin.png)
 
-#### Service backed plugins
+### Service backed plugins
 
 Service backed plugins make API requests to a service which is within the purview of the organization running Backstage.
 
@@ -159,7 +172,7 @@ The CircleCI plugin is an example of a third-party backed plugin. CircleCI is a 
 
 Requests going to CircleCI from the user's browser are passed through a proxy service that Backstage provides. Without this, the requests would be blocked by Cross Origin Resource Sharing policies which prevent a browser page served at [https://example.com](https://example.com) from serving resources hosted at https://circleci.com.
 
-> **NOTE:** 
+> **NOTE:**
 > The following diagram does not show the detailed contents of the frontend and backend containers in order to highlight the changes that pertain to the addition of the specified plugin.
 
 ![CircleCI plugin talking to proxy talking to SaaS Circle CI](../assets/architecture-overview/simplified-third-party-plugin-architecture.jpeg)
@@ -209,14 +222,6 @@ It can sometimes be difficult to decide where to place your plugin code. For exa
 Below is a chart to help you decide where to place your code.
 
 ![Package decision](../assets/architecture-overview/package-decision.drawio.svg)
-
-## Databases
-
-As we have seen, both the `lighthouse-audit-service` and `catalog-backend` require a database to work with.
-
-The Backstage backend and its built-in plugins are based on the [Knex](http://knexjs.org/) library, and set up a separate logical database per plugin. This gives great isolation and lets them perform migrations and evolve separately from each other.
-
-The Knex library supports a multitude of databases, but Backstage at this time of writing is tested primarily against two of them: SQLite, which is mainly used as an in-memory mock/test database, and PostgreSQL, which is the preferred production database. Other databases such as the MySQL variants are reported to work but [aren't fully tested](https://github.com/backstage/backstage/issues/2460) yet.
 
 ## Cache
 
