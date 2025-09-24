@@ -16,6 +16,24 @@
 
 import '@testing-library/jest-dom';
 
+// NOTE: This can be removed when Node 22 is required
+if (!Set.prototype.difference) {
+  // eslint-disable-next-line no-extend-native
+  Object.defineProperty(Set.prototype, 'difference', {
+    value: function difference(other: Set<any>) {
+      const result = new Set();
+      for (const v of this) {
+        if (!other.has(v)) {
+          result.add(v);
+        }
+      }
+      return result;
+    },
+    writable: true,
+    configurable: true,
+  });
+}
+
 // eslint-disable-next-line no-console
 const originalConsoleWarn = console.warn;
 // eslint-disable-next-line no-console
