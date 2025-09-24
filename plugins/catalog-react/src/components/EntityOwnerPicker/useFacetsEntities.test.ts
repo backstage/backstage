@@ -15,8 +15,12 @@
  */
 
 import { renderHook, waitFor } from '@testing-library/react';
+import { TestApiProvider } from '@backstage/test-utils';
+import { catalogApiRef } from '../../api';
+import { entityPresentationApiRef } from '../../apis';
 import { useFacetsEntities } from './useFacetsEntities';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { createElement } from 'react';
 
 const mockCatalogApi = catalogApiMock.mock();
 
@@ -26,17 +30,16 @@ const mockEntityPresentationApi = {
   }),
 };
 
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: (apiRef: any) => {
-    if (apiRef?.id === 'catalog-react.entity-presentation') {
-      return mockEntityPresentationApi;
-    }
-    return mockCatalogApi;
-  },
-}));
-
 describe('useFacetsEntities', () => {
+  const wrapper = ({ children }: { children: React.ReactNode }) =>
+    createElement(TestApiProvider, {
+      apis: [
+        [catalogApiRef, mockCatalogApi],
+        [entityPresentationApiRef, mockEntityPresentationApi],
+      ],
+      children,
+    });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -49,7 +52,9 @@ describe('useFacetsEntities', () => {
 
   it(`should return empty items when facets are loading`, () => {
     mockCatalogApi.getEntityFacets.mockReturnValue(new Promise(() => {}));
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper,
+    });
     expect(result.current[0]).toEqual({ value: { items: [] }, loading: true });
   });
 
@@ -58,7 +63,9 @@ describe('useFacetsEntities', () => {
       facets: { 'metadata.tags': [{ value: 'tag', count: 1 }] },
     });
     mockCatalogApi.getEntitiesByRefs.mockResolvedValueOnce({ items: [] });
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper,
+    });
     result.current[1]({ text: '' });
     await waitFor(() => {
       expect(result.current[0]).toEqual({
@@ -74,7 +81,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper,
+    });
 
     result.current[1]({ text: '' });
     await waitFor(() => {
@@ -113,7 +122,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper,
+    });
 
     result.current[1]({ text: '' });
     await waitFor(() => {
@@ -127,13 +138,13 @@ describe('useFacetsEntities', () => {
             },
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'user',
-              metadata: { name: 'a', namespace: 'default' },
+              kind: 'group',
+              metadata: { name: 'd', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'user',
-              metadata: { name: 'b', namespace: 'default' },
+              kind: 'group',
+              metadata: { name: 'e', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
@@ -142,13 +153,13 @@ describe('useFacetsEntities', () => {
             },
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'group',
-              metadata: { name: 'd', namespace: 'default' },
+              kind: 'user',
+              metadata: { name: 'a', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
-              kind: 'group',
-              metadata: { name: 'e', namespace: 'default' },
+              kind: 'user',
+              metadata: { name: 'b', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
@@ -173,7 +184,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper,
+    });
     result.current[1]({ text: '' });
 
     await waitFor(() => {
@@ -183,12 +196,12 @@ describe('useFacetsEntities', () => {
             {
               apiVersion: 'backstage.io/v1beta1',
               kind: 'group',
-              metadata: { name: 'a-id', namespace: 'default' },
+              metadata: { name: 'g-id', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
               kind: 'group',
-              metadata: { name: 'g-id', namespace: 'default' },
+              metadata: { name: 'a-id', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
@@ -215,7 +228,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper,
+    });
 
     result.current[1]({ text: '' }, { limit: 2 });
     await waitFor(() => {
@@ -230,7 +245,7 @@ describe('useFacetsEntities', () => {
             {
               apiVersion: 'backstage.io/v1beta1',
               kind: 'user',
-              metadata: { name: 'a', namespace: 'default' },
+              metadata: { name: 'c', namespace: 'default' },
             },
           ],
           cursor: 'eyJ0ZXh0IjoiIiwic3RhcnQiOjJ9',
@@ -252,17 +267,17 @@ describe('useFacetsEntities', () => {
             {
               apiVersion: 'backstage.io/v1beta1',
               kind: 'user',
+              metadata: { name: 'c', namespace: 'default' },
+            },
+            {
+              apiVersion: 'backstage.io/v1beta1',
+              kind: 'user',
               metadata: { name: 'a', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
               kind: 'user',
               metadata: { name: 'b', namespace: 'default' },
-            },
-            {
-              apiVersion: 'backstage.io/v1beta1',
-              kind: 'user',
-              metadata: { name: 'c', namespace: 'default' },
             },
           ],
           cursor: 'eyJ0ZXh0IjoiIiwic3RhcnQiOjR9',
@@ -284,17 +299,17 @@ describe('useFacetsEntities', () => {
             {
               apiVersion: 'backstage.io/v1beta1',
               kind: 'user',
+              metadata: { name: 'c', namespace: 'default' },
+            },
+            {
+              apiVersion: 'backstage.io/v1beta1',
+              kind: 'user',
               metadata: { name: 'a', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
               kind: 'user',
               metadata: { name: 'b', namespace: 'default' },
-            },
-            {
-              apiVersion: 'backstage.io/v1beta1',
-              kind: 'user',
-              metadata: { name: 'c', namespace: 'default' },
             },
             {
               apiVersion: 'backstage.io/v1beta1',
@@ -325,7 +340,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper,
+    });
 
     result.current[1]({ text: 'der  ' });
 

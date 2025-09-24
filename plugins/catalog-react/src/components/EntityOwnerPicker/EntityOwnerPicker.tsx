@@ -86,9 +86,10 @@ export type EntityOwnerPickerProps = {
 function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
   const classes = useStyles();
   const isGroup = props.entity.kind.toLocaleLowerCase('en-US') === 'group';
-  const { primaryTitle: title } = useEntityPresentation(
-    stringifyEntityRef(props.entity),
-  );
+  const presentation =
+    useEntityPresentation(stringifyEntityRef(props.entity)) ||
+    defaultEntityPresentation(props.entity);
+  const { primaryTitle: title } = presentation;
   return (
     <Box className={classes.fullWidth}>
       <FixedWidthFormControlLabel
