@@ -194,7 +194,7 @@ export function filterAndSortProcessors(
     }
   }
 
-  function getProcessorDisabled(processor: CatalogProcessor): boolean {
+  function isProcessorDisabled(processor: CatalogProcessor): boolean {
     return (
       getProcessorOptions(processor)?.getOptionalBoolean('disabled') === true
     );
@@ -216,7 +216,7 @@ export function filterAndSortProcessors(
   }
 
   return processors
-    .filter(p => !getProcessorDisabled(p))
+    .filter(p => !isProcessorDisabled(p))
     .sort((a, b) => getProcessorPriority(a) - getProcessorPriority(b));
 }
 
@@ -240,11 +240,11 @@ export function filterProviders(
     }
   }
 
-  function getProviderDisabled(provider: EntityProvider): boolean {
+  function isProviderDisabled(provider: EntityProvider): boolean {
     return (
       getProviderOptions(provider)?.getOptionalBoolean('disabled') === true
     );
   }
 
-  return providers.filter(p => !getProviderDisabled(p));
+  return providers.filter(p => !isProviderDisabled(p));
 }
