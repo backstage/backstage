@@ -212,7 +212,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         const payload = toChatPostMessageArgs({
           channel,
           payload: options.payload,
-          ...(this.username && { username: this.username }),
+          username: this.username,
         });
 
         this.logger.debug(
@@ -271,7 +271,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       toChatPostMessageArgs({
         channel,
         payload: formattedPayload,
-        ...(this.username && { username: this.username }),
+        username: this.username,
       }),
     );
 
