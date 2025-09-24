@@ -829,7 +829,7 @@ describe('SlackNotificationProcessor', () => {
 
       const calls = (slack.chat.postMessage as jest.Mock).mock.calls;
       expect(calls).toHaveLength(1);
-      expect(calls[0][0]).not.toHaveProperty('username');
+      expect(calls[0][0].username).toBeUndefined();
     });
   });
 
