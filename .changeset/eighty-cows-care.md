@@ -2,4 +2,4 @@
 '@backstage/ui': patch
 ---
 
-Added show/hide visibility and clear action icons to TextField
+Added PasswordField to BUI with default show/hide visibilty on text input
