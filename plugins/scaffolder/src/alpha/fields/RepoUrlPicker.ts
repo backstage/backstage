@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
 import { RepoUrlPicker as Component } from '../../components/fields/RepoUrlPicker/RepoUrlPicker';
 import {
-  RepoUrlPickerFieldSchema,
   repoPickerValidation,
+  RepoUrlPickerFieldSchema,
 } from '../../components';
 
 export const RepoUrlPicker = createFormField({
