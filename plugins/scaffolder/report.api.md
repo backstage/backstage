@@ -70,15 +70,6 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
   any
 >;
 
-// @public (undocumented)
-export const EntityNamePickerFieldSchema: FieldSchema_2<string, any>;
-
-// @public (undocumented)
-export const entityNamePickerValidation: (
-  value: string,
-  validation: FieldValidation,
-) => void;
-
 // @public
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
@@ -237,39 +228,6 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
   }
 >;
 
-// @public (undocumented)
-export const MultiEntityPickerFieldSchema: FieldSchema_2<
-  string[],
-  {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
-    catalogFilter?:
-      | Record<
-          string,
-          | string
-          | string[]
-          | {
-              exists?: boolean | undefined;
-            }
-        >
-      | Record<
-          string,
-          | string
-          | string[]
-          | {
-              exists?: boolean | undefined;
-            }
-        >[]
-      | undefined;
-    allowArbitraryValues?: boolean | undefined;
-  }
->;
-
-// @public
-export type MultiEntityPickerUiOptions = NonNullable<
-  (typeof MultiEntityPickerFieldSchema.TProps.uiSchema)['ui:options']
->;
-
 // @public
 export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
   string,
@@ -422,42 +380,15 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
         }
       | undefined;
   }
->;
-
-// @public (undocumented)
-export const RepoBranchPickerFieldSchema: FieldSchema_2<
-  string,
-  {
-    requestUserCredentials?:
-      | {
-          secretsKey: string;
-          additionalScopes?:
-            | {
-                azure?: string[] | undefined;
-                github?: string[] | undefined;
-                bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
-                gitlab?: string[] | undefined;
-                gitea?: string[] | undefined;
-              }
-            | undefined;
-        }
-      | undefined;
-  }
->;
-
-// @public
-export type RepoBranchPickerUiOptions = NonNullable<
-  (typeof RepoBranchPickerFieldSchema.TProps.uiSchema)['ui:options']
 >;
 
 // @public
@@ -473,11 +404,11 @@ export const repoPickerValidation: (
 export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    allowedHosts?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
           secretsKey: string;
@@ -485,9 +416,9 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -500,11 +431,11 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
 export const RepoUrlPickerFieldSchema: FieldSchema_2<
   string,
   {
-    allowedHosts?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
           secretsKey: string;
@@ -512,9 +443,9 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { EntityPicker as Component } from '../../components/fields/EntityPicker/EntityPicker';
-import { EntityPickerFieldSchema } from '../../components';
+import {
+  EntityPicker as Component,
+  EntityPickerFieldSchema,
+} from '../../components/fields/EntityPicker';
 
 export const EntityPicker = createFormField({
   component: Component,

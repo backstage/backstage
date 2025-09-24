@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { MultiEntityPicker as Component } from '../../components/fields/MultiEntityPicker/MultiEntityPicker';
-import { MultiEntityPickerFieldSchema } from '../../components';
+import {
+  MultiEntityPicker as Component,
+  MultiEntityPickerFieldSchema,
+} from '../../components/fields/MultiEntityPicker';
 
 export const MultiEntityPicker = createFormField({
   component: Component,

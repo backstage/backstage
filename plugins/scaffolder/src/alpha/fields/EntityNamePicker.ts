@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { EntityNamePicker as Component } from '../../components/fields/EntityNamePicker/EntityNamePicker';
 import {
+  EntityNamePicker as Component,
   EntityNamePickerFieldSchema,
   entityNamePickerValidation,
-} from '../../components';
+} from '../../components/fields/EntityNamePicker';
 
 export const EntityNamePicker = createFormField({
   component: Component,

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { OwnedEntityPicker as Component } from '../../components/fields/OwnedEntityPicker/OwnedEntityPicker';
-import { OwnedEntityPickerFieldSchema } from '../../components';
+import {
+  OwnedEntityPicker as Component,
+  OwnedEntityPickerFieldSchema,
+} from '../../components/fields/OwnedEntityPicker';
 
 export const OwnedEntityPicker = createFormField({
   component: Component,

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { RepoBranchPicker as Component } from '../../components/fields/RepoBranchPicker/RepoBranchPicker';
-import { RepoBranchPickerFieldSchema } from '../../components';
+import {
+  RepoBranchPicker as Component,
+  RepoBranchPickerFieldSchema,
+} from '../../components/fields/RepoBranchPicker';
 
 export const RepoBranchPicker = createFormField({
   component: Component,

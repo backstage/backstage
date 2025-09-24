@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { RepoUrlPicker as Component } from '../../components/fields/RepoUrlPicker/RepoUrlPicker';
 import {
   repoPickerValidation,
+  RepoUrlPicker as Component,
   RepoUrlPickerFieldSchema,
-} from '../../components';
+} from '../../components/fields/RepoUrlPicker';
 
 export const RepoUrlPicker = createFormField({
   component: Component,
