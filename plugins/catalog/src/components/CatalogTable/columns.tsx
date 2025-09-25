@@ -166,7 +166,16 @@ export const columnFactories = Object.freeze({
         padding: '0px 16px 0px 20px',
       },
       render: ({ entity }) => (
-        <>
+        <div
+          // We put the wrapping style in a div and not in cellStyle to keep
+          // the benefits of using <td> (item centering, cell height growth to row height)
+          style={{
+            gap: '2px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'stretch',
+          }}
+        >
           {entity.metadata.tags &&
             entity.metadata.tags.map(t => (
               <Chip
@@ -174,10 +183,10 @@ export const columnFactories = Object.freeze({
                 label={t}
                 size="small"
                 variant="outlined"
-                style={{ marginBottom: '0px' }}
+                style={{ margin: '0px' }}
               />
             ))}
-        </>
+        </div>
       ),
       width: 'auto',
     };
