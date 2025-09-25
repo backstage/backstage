@@ -120,7 +120,7 @@ The Knex library supports a multitude of databases, but Backstage at this time o
 
 Other databases such as the MySQL variants are reported to work but [aren't fully tested](https://github.com/backstage/backstage/issues/2460) yet.
 
-[Configuring Plugin Databases](../tutorials/configuring-plugin-databases.md) provides information on how to configure a database for a plugin.
+You can find instructions on setting up a PostgreSQL for your Backstage instance in [Database](../getting-started/config/database.md). [Configuring Plugin Databases](../tutorials/configuring-plugin-databases.md) provides information on how to configure a database for a plugin.
 
 ## Plugin architecture
 
