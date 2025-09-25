@@ -30,6 +30,7 @@ export type BitbucketServerEntityProviderConfig = {
   filters?: {
     projectKey?: RegExp;
     repoSlug?: RegExp;
+    branch?: string;
     skipArchivedRepos?: boolean;
   };
   validateLocationsExist: boolean;
@@ -64,6 +65,7 @@ function readProviderConfig(
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
   const projectKeyPattern = config.getOptionalString('filters.projectKey');
   const repoSlugPattern = config.getOptionalString('filters.repoSlug');
+  const branchPattern = config.getOptionalString('filters.branch');
   const skipArchivedReposFlag = config.getOptionalBoolean(
     'filters.skipArchivedRepos',
   );
@@ -82,6 +84,7 @@ function readProviderConfig(
     filters: {
       projectKey: projectKeyPattern ? new RegExp(projectKeyPattern) : undefined,
       repoSlug: repoSlugPattern ? new RegExp(repoSlugPattern) : undefined,
+      branch: branchPattern,
       skipArchivedRepos: skipArchivedReposFlag,
     },
     validateLocationsExist: validateLocationsExistFlag,

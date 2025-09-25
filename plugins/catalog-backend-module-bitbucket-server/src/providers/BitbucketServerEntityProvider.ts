@@ -28,7 +28,11 @@ import {
   CatalogService,
 } from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
-import { BitbucketServerClient, paginated } from '../lib';
+import {
+  BitbucketServerClient,
+  paginated,
+  convertToParamsString,
+} from '../lib';
 import {
   BitbucketServerEntityProviderConfig,
   readProviderConfigs,
@@ -253,17 +257,29 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         if (this.config?.filters?.skipArchivedRepos && repository.archived) {
           continue;
         }
+        let branch = this.config?.filters?.branch;
+        if (!branch) {
+          branch = repository.defaultBranch;
+          if (!branch) {
+            const defaultBranchResponse = await client.getDefaultBranch({
+              repo: repository.slug,
+              projectKey: project.key,
+            });
+            branch = defaultBranchResponse.displayId;
+          }
+        }
         if (this.config.validateLocationsExist) {
           try {
             const response = await client.getFile({
               projectKey: project.key,
               repo: repository.slug,
+              branch: branch,
               path: this.config.catalogPath,
             });
             if (!response.ok) {
               if (response.status === 404) {
                 this.logger.debug(
-                  `Skipping repository ${repository.slug} in project ${project.key} because the catalog file does not exist.`,
+                  `Skipping repository ${repository.slug} with branch ${branch} in project ${project.key} because the catalog file does not exist.`,
                 );
               } else {
                 this.logger.warn(
@@ -271,7 +287,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
                     response.status
                   } while fetching the catalog file from repository ${
                     repository.slug
-                  } in project ${
+                  } with branch ${branch} in project ${
                     project.key
                   }. Response details: ${JSON.stringify(response)}`,
                 );
@@ -280,33 +296,27 @@ export class BitbucketServerEntityProvider implements EntityProvider {
             }
           } catch (error) {
             this.logger.error(
-              `An error occurred while fetching the catalog file from repository ${repository.slug} in project ${project.key}: ${error}`,
+              `An error occurred while fetching the catalog file from repository ${repository.slug} with branch ${branch} in project ${project.key}: ${error}`,
             );
           }
         }
+
+        const locationTargetParams = convertToParamsString({
+          at: branch,
+        });
         for await (const entity of this.parser({
           client,
           logger: this.logger,
           location: {
             type: 'url',
-            target: `${repository.links.self[0].href}${this.config.catalogPath}`,
+            target: `${repository.links.self[0].href}${this.config.catalogPath}${locationTargetParams}`,
             presence: 'optional',
           },
         })) {
           if (entity.metadata.annotations === undefined) {
             entity.metadata.annotations = {};
           }
-          if (repository.defaultBranch === undefined) {
-            const defaultBranchResponse = await client.getDefaultBranch({
-              repo: repository.slug,
-              projectKey: project.key,
-            });
-            entity.metadata.annotations[this.defaultBranchAnnotation] =
-              defaultBranchResponse.displayId;
-          } else {
-            entity.metadata.annotations[this.defaultBranchAnnotation] =
-              repository.defaultBranch;
-          }
+          entity.metadata.annotations[this.defaultBranchAnnotation] = branch;
           result.push(entity);
         }
       }
@@ -342,6 +352,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
 
   private async getLocationEntity(
     event: BitbucketServerEvents.RefsChangedEvent,
+    branch: string,
   ): Promise<Entity[]> {
     const client = BitbucketServerClient.fromConfig({
       config: this.integration.config,
@@ -353,34 +364,26 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         repo: event.repository.slug,
       });
 
+      const locationTargetParams = convertToParamsString({
+        at: branch,
+      });
       for await (const entity of this.parser({
         client,
         logger: this.logger,
         location: {
           type: 'url',
-          target: `${repository.links.self[0].href}${this.config.catalogPath}`,
+          target: `${repository.links.self[0].href}${this.config.catalogPath}${locationTargetParams}`,
           presence: 'optional',
         },
       })) {
-        entity.metadata.annotations![
-          this.targetAnnotation
-        ] = `${repository.links.self[0].href}${this.config.catalogPath}`;
-
         if (entity.metadata.annotations === undefined) {
           entity.metadata.annotations = {};
         }
 
-        if (repository.defaultBranch === undefined) {
-          const defaultBranchResponse = await client.getDefaultBranch({
-            repo: repository.slug,
-            projectKey: event.repository.project.key,
-          });
-          entity.metadata.annotations[this.defaultBranchAnnotation] =
-            defaultBranchResponse.displayId;
-        } else {
-          entity.metadata.annotations[this.defaultBranchAnnotation] =
-            repository.defaultBranch;
-        }
+        entity.metadata.annotations[
+          this.targetAnnotation
+        ] = `${repository.links.self[0].href}${this.config.catalogPath}${locationTargetParams}`;
+        entity.metadata.annotations[this.defaultBranchAnnotation] = branch;
         result.push(entity);
       }
     } catch (error: any) {
@@ -406,10 +409,55 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
+    const projectKey = event.repository.project.key;
     const repoSlug = event.repository.slug;
-    const catalogRepoUrl: string = `https://${this.config.host}/projects/${event.repository.project.key}/repos/${repoSlug}/browse${this.config.catalogPath}`;
+    if (
+      this.config?.filters?.projectKey &&
+      !this.config.filters.projectKey.test(projectKey)
+    ) {
+      this.logger.info(
+        `skipping ${TOPIC_REPO_REFS_CHANGED} event for ${projectKey}/${repoSlug}`,
+      );
+      return;
+    }
+    if (
+      this.config?.filters?.repoSlug &&
+      !this.config.filters.repoSlug.test(repoSlug)
+    ) {
+      this.logger.info(
+        `skipping ${TOPIC_REPO_REFS_CHANGED} event for ${projectKey}/${repoSlug}`,
+      );
+      return;
+    }
+    let branch = this.config?.filters?.branch;
+    if (!branch) {
+      const client = BitbucketServerClient.fromConfig({
+        config: this.integration.config,
+      });
+      const defaultBranchResponse = await client.getDefaultBranch({
+        repo: repoSlug,
+        projectKey: projectKey,
+      });
+      branch = defaultBranchResponse.displayId;
+    }
+    if (
+      event.changes.filter(change => change.ref.displayId === branch).length ===
+      0
+    ) {
+      this.logger.info(
+        `skipping ${TOPIC_REPO_REFS_CHANGED} event for ${projectKey}/${repoSlug} from ${event.changes
+          .map(change => change.ref.id)
+          .join(',')}`,
+      );
+      return;
+    }
+
+    const catalogRepoUrlParams = convertToParamsString({
+      at: branch,
+    });
+    const catalogRepoUrl: string = `https://${this.config.host}/projects/${event.repository.project.key}/repos/${repoSlug}/browse${this.config.catalogPath}${catalogRepoUrlParams}`;
     this.logger.info(`handle repo:push event for ${catalogRepoUrl}`);
-    const targets = await this.getLocationEntity(event);
+    const targets = await this.getLocationEntity(event, branch);
     if (targets.length === 0) {
       this.logger.error('Failed to create location entity.');
       return;
