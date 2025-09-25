@@ -134,16 +134,19 @@ export const searchPage = PageBlueprint.makeWithOverrides({
           item.get(SearchFilterResultTypeBlueprint.dataRefs.resultType),
         );
 
-        const additionalSearchFilters = inputs.searchFilters.map(
-          item =>
-            item.get(SearchFilterBlueprint.dataRefs.searchFilters).component,
-        );
+        const searchFilters = inputs.searchFilters.map(item => ({
+          id: item.node.spec.id,
+          ...item.get(SearchFilterBlueprint.dataRefs.searchFilters),
+        }));
 
         const Component = () => {
           const classes = useSearchPageStyles();
           const { isMobile } = useSidebarPinState();
           const { types } = useSearch();
-          const catalogApi = useApi(catalogApiRef);
+
+          const relevantSearchFilters = searchFilters.filter(
+            ({ typeFilter }) => !typeFilter || typeFilter(types),
+          );
 
           return (
             <Page themeId="home">
@@ -157,71 +160,22 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                     <Grid item xs={3}>
                       <SearchType.Accordion
                         name="Result Type"
-                        defaultValue="software-catalog"
+                        defaultValue={resultTypes[0]?.value}
                         showCounts
-                        types={[
-                          {
-                            value: 'software-catalog',
-                            name: 'Software Catalog',
-                            icon: <CatalogIcon />,
-                          },
-                          {
-                            value: 'techdocs',
-                            name: 'Documentation',
-                            icon: <DocsIcon />,
-                          },
-                        ].concat(resultTypes)}
+                        types={resultTypes}
                       />
-                      <Paper className={classes.filters}>
-                        {types.includes('techdocs') && (
-                          <SearchFilter.Select
-                            className={classes.filter}
-                            label="Entity"
-                            name="name"
-                            values={async () => {
-                              // Return a list of entities which are documented.
-                              const { items } = await catalogApi.getEntities({
-                                fields: ['metadata.name'],
-                                filter: {
-                                  'metadata.annotations.backstage.io/techdocs-ref':
-                                    CATALOG_FILTER_EXISTS,
-                                },
-                              });
-
-                              const names = items.map(
-                                entity => entity.metadata.name,
-                              );
-                              names.sort();
-                              return names;
-                            }}
-                          />
-                        )}
-                        <SearchFilter.Select
-                          className={classes.filter}
-                          label="Kind"
-                          name="kind"
-                          values={[
-                            'API',
-                            'Component',
-                            'Domain',
-                            'Group',
-                            'Location',
-                            'Resource',
-                            'System',
-                            'Template',
-                            'User',
-                          ]}
-                        />
-                        <SearchFilter.Checkbox
-                          className={classes.filter}
-                          label="Lifecycle"
-                          name="lifecycle"
-                          values={['experimental', 'production']}
-                        />
-                        {additionalSearchFilters.map(SearchFilterComponent => (
-                          <SearchFilterComponent className={classes.filter} />
-                        ))}
-                      </Paper>
+                      {relevantSearchFilters.length > 0 && (
+                        <Paper className={classes.filters}>
+                          {relevantSearchFilters.map(
+                            ({ id, component: SearchFilterComponent }) => (
+                              <SearchFilterComponent
+                                key={id}
+                                className={classes.filter}
+                              />
+                            ),
+                          )}
+                        </Paper>
+                      )}
                     </Grid>
                   )}
                   <Grid item xs>
@@ -265,6 +219,95 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
 });
 
+const resultTypes = [
+  SearchFilterResultTypeBlueprint.make({
+    name: 'software-catalog',
+    params: {
+      value: 'software-catalog',
+      name: 'Software Catalog',
+      icon: <CatalogIcon />,
+    },
+  }),
+  SearchFilterResultTypeBlueprint.make({
+    name: 'techdocs',
+    params: {
+      value: 'techdocs',
+      name: 'Documentation',
+      icon: <DocsIcon />,
+    },
+  }),
+];
+
+const searchFilter = [
+  SearchFilterBlueprint.make({
+    name: 'techdocs-relevant-entities-filter',
+    params: {
+      typeFilter: types => types.includes('techdocs'),
+      component: ({ className }) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const catalogApi = useApi(catalogApiRef);
+        return (
+          <SearchFilter.Select
+            className={className}
+            label="Entity"
+            name="name"
+            values={async () => {
+              // Return a list of entities which are documented.
+              const { items } = await catalogApi.getEntities({
+                fields: ['metadata.name'],
+                filter: {
+                  'metadata.annotations.backstage.io/techdocs-ref':
+                    CATALOG_FILTER_EXISTS,
+                },
+              });
+
+              const names = items.map(entity => entity.metadata.name);
+              names.sort();
+              return names;
+            }}
+          />
+        );
+      },
+    },
+  }),
+  SearchFilterBlueprint.make({
+    name: 'entity-kind-filter',
+    params: {
+      component: props => (
+        <SearchFilter.Select
+          className={props.className}
+          label="Kind"
+          name="kind"
+          values={[
+            'API',
+            'Component',
+            'Domain',
+            'Group',
+            'Location',
+            'Resource',
+            'System',
+            'Template',
+            'User',
+          ]}
+        />
+      ),
+    },
+  }),
+  SearchFilterBlueprint.make({
+    name: 'lifecycle-filter',
+    params: {
+      component: props => (
+        <SearchFilter.Checkbox
+          className={props.className}
+          label="Lifecycle"
+          name="lifecycle"
+          values={['experimental', 'production']}
+        />
+      ),
+    },
+  }),
+];
+
 /** @alpha */
 export const searchNavItem = NavItemBlueprint.make({
   params: {
@@ -278,7 +321,13 @@ export const searchNavItem = NavItemBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'search',
   info: { packageJson: () => import('../package.json') },
-  extensions: [searchApi, searchPage, searchNavItem],
+  extensions: [
+    searchApi,
+    searchPage,
+    searchNavItem,
+    ...resultTypes,
+    ...searchFilter,
+  ],
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
   }),

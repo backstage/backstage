@@ -19,6 +19,12 @@ import { searchFilterDataRef, SearchFilterExtensionComponent } from './types';
 
 /** @alpha */
 export interface SearchFilterBlueprintParams {
+  /**
+   * The filter will only be shown if this predicate returns true.
+   *
+   * @param types - the currently selected result types
+   */
+  typeFilter?: (types: string[]) => boolean;
   component: SearchFilterExtensionComponent;
 }
 
@@ -35,9 +41,25 @@ export const SearchFilterBlueprint = createExtensionBlueprint({
   dataRefs: {
     searchFilters: searchFilterDataRef,
   },
-  *factory(params: SearchFilterBlueprintParams) {
+  config: {
+    schema: {
+      types: z =>
+        z
+          .array(z.string(), {
+            description:
+              'A list of result types where this search filter should be shown for',
+          })
+          .optional(),
+    },
+  },
+  *factory(params: SearchFilterBlueprintParams, { config }) {
+    const configTypes = config.types;
+    const typeFilter = configTypes?.length
+      ? (types: string[]) => configTypes.some(t => types.includes(t))
+      : params.typeFilter;
     yield searchFilterDataRef({
       component: params.component,
+      typeFilter: typeFilter,
     });
   },
 });
