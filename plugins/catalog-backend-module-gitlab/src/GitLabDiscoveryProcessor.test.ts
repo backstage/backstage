@@ -33,6 +33,7 @@ const API_URL = `${SERVER_URL}/api/v4`;
 const PROJECTS_URL = `${API_URL}/projects`;
 const GROUP_PROJECTS_URL = `${API_URL}/groups/group%2Fsubgroup/projects`;
 const EXISTING_PROJECT_PATH = 'exist';
+const EXISTING_PROJECT_ID = 2;
 
 const PROJECT_LOCATION: LocationSpec = {
   type: 'gitlab-discovery',
@@ -105,7 +106,7 @@ function setupFakeServer(
       );
     }),
     rest.head(
-      `${API_URL}/projects/:project_path/repository/files/:file_path`,
+      `${API_URL}/projects/:projectIdentifier/repository/files/:file_path`,
       (req, res, ctx) => {
         if (req.headers.get('authorization') !== 'Bearer test-token') {
           return res(
@@ -119,7 +120,11 @@ function setupFakeServer(
           return res(ctx.status(200));
         }
 
-        if (EXISTING_PROJECT_PATH === req.params.project_path) {
+        if (
+          // Gitlab GET project endpoint can use either numeric project.id or string project.path_with_namespace
+          EXISTING_PROJECT_ID.toString() === req.params.projectIdentifier ||
+          EXISTING_PROJECT_PATH === req.params.projectIdentifier
+        ) {
           return res(ctx.status(200));
         }
 
@@ -385,7 +390,7 @@ describe('GitlabDiscoveryProcessor', () => {
                   path_with_namespace: '1',
                 },
                 {
-                  id: 1,
+                  id: EXISTING_PROJECT_ID,
                   archived: false,
                   default_branch: 'main',
                   last_activity_at: '2021-08-05T11:03:05.774Z',
