@@ -16,13 +16,16 @@
 
 import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
-import { Link as RALink } from 'react-aria-components';
+import { Link as RALink, RouterProvider } from 'react-aria-components';
+import { useNavigate, useHref } from 'react-router-dom';
 import type { ButtonLinkProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { isExternalLink } from '../../utils/isExternalLink';
 
 /** @public */
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
+    const navigate = useNavigate();
     const {
       size = 'small',
       variant = 'primary',
@@ -30,6 +33,7 @@ export const ButtonLink = forwardRef(
       iconEnd,
       children,
       className,
+      href,
       ...rest
     } = props;
 
@@ -40,17 +44,48 @@ export const ButtonLink = forwardRef(
 
     const { classNames: classNamesButtonLink } = useStyles('ButtonLink');
 
+    const isExternal = isExternalLink(href);
+
+    // If it's an external link, render RALink without RouterProvider
+    if (isExternal) {
+      return (
+        <RALink
+          className={clsx(
+            classNames.root,
+            classNamesButtonLink.root,
+            className,
+          )}
+          ref={ref}
+          {...dataAttributes}
+          href={href}
+          {...rest}
+        >
+          {iconStart}
+          {children}
+          {iconEnd}
+        </RALink>
+      );
+    }
+
+    // For internal links, use RouterProvider
     return (
-      <RALink
-        className={clsx(classNames.root, classNamesButtonLink.root, className)}
-        ref={ref}
-        {...dataAttributes}
-        {...rest}
-      >
-        {iconStart}
-        {children}
-        {iconEnd}
-      </RALink>
+      <RouterProvider navigate={navigate} useHref={useHref}>
+        <RALink
+          className={clsx(
+            classNames.root,
+            classNamesButtonLink.root,
+            className,
+          )}
+          ref={ref}
+          {...dataAttributes}
+          href={href}
+          {...rest}
+        >
+          {iconStart}
+          {children}
+          {iconEnd}
+        </RALink>
+      </RouterProvider>
     );
   },
 );
