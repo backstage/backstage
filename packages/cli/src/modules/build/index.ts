@@ -139,7 +139,7 @@ export const buildPlugin = createCliPlugin({
           )
           .option(
             '--entrypoint <path>',
-            'Entry directory path (uses index file) or entry file path (without extension). Defaults to "dev"',
+            'The entrypoint to start from, relative to the package root. Can point to either a file (without extension) or a directory (in which case the index file in that directory is used). Defaults to "dev"',
           )
           .action(lazy(() => import('./commands/package/start'), 'command'));
 
