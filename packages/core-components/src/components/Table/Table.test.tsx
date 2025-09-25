@@ -209,6 +209,24 @@ describe('<Table />', () => {
     expect(rendered.getByText('subtitle')).toBeInTheDocument();
   });
 
+  it('renders with custom title element', async () => {
+    const rendered = await renderInTestApp(
+      <Table title={<div>CUSTOM TITLE RENDER</div>} {...minProps} />,
+    );
+    expect(rendered.getByText('CUSTOM TITLE RENDER')).toBeInTheDocument();
+  });
+
+  it('does not render subtitle with custom title element', async () => {
+    const rendered = await renderInTestApp(
+      <Table
+        title={<div>CUSTOM TITLE RENDER</div>}
+        subtitle="subtitle"
+        {...minProps}
+      />,
+    );
+    expect(rendered.queryByText('subtitle')).not.toBeInTheDocument();
+  });
+
   it('renders custom empty component if empty', async () => {
     const rendered = await renderInTestApp(
       <Table
