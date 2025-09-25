@@ -15,7 +15,7 @@
  */
 import { buiThemerPlugin } from './plugin';
 
-describe('bui-themer', () => {
+describe('mui-to-bui', () => {
   it('should export plugin', () => {
     expect(buiThemerPlugin).toBeDefined();
   });

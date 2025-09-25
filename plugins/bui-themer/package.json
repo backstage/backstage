@@ -1,11 +1,11 @@
 {
-  "name": "@backstage/plugin-bui-themer",
+  "name": "@backstage/plugin-mui-to-bui",
   "version": "0.1.0",
   "backstage": {
     "role": "frontend-plugin",
-    "pluginId": "bui-themer",
+    "pluginId": "mui-to-bui",
     "pluginPackages": [
-      "@backstage/plugin-bui-themer"
+      "@backstage/plugin-mui-to-bui"
     ]
   },
   "publishConfig": {

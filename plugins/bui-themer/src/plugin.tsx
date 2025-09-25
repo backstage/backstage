@@ -31,7 +31,7 @@ import { rootRouteRef } from './routes';
 // Old system
 /** @public */
 export const buiThemerPlugin = createPlugin({
-  id: 'bui-themer',
+  id: 'mui-to-bui',
   routes: {
     root: rootRouteRef,
   },
@@ -50,11 +50,11 @@ export const BuiThemerPage = buiThemerPlugin.provide(
 // New system
 /** @public */
 export default createFrontendPlugin({
-  pluginId: 'bui-themer',
+  pluginId: 'mui-to-bui',
   extensions: [
     PageBlueprint.make({
       params: {
-        path: '/bui-themer',
+        path: '/mui-to-bui',
         loader: () =>
           import('./components/BuiThemerPage').then(m => <m.BuiThemerPage />),
         routeRef: convertLegacyRouteRef(rootRouteRef),
