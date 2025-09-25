@@ -39,7 +39,7 @@
 @import '../components/TagGroup/TagGroup.styles.css';
 @import '../components/Text/styles.css';
 @import '../components/TextField/TextField.styles.css';
-@import '../components/TextField/PasswordField.styles.css';
+@import '../components/PasswordField/PasswordField.styles.css';
 @import '../components/SearchField/SearchField.styles.css';
 @import '../components/Skeleton/Skeleton.styles.css';
 @import '../components/Tooltip/Tooltip.styles.css';
