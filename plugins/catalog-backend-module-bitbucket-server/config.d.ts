@@ -47,6 +47,11 @@ export interface Config {
                */
               projectKey?: string;
               /**
+               * (Optional) String used to filter results based on the branch name.
+               * @visibility frontend
+               */
+              branch?: string;
+              /**
                * (Optional) Skip archived repositories
                */
               skipArchivedRepos?: boolean;
@@ -83,6 +88,11 @@ export interface Config {
                  * @visibility frontend
                  */
                 projectKey?: string;
+                /**
+                 * (Optional) String used to filter results based on the branch name.
+                 * @visibility frontend
+                 */
+                branch?: string;
                 /**
                  * (Optional) Skip archived repositories
                  */
