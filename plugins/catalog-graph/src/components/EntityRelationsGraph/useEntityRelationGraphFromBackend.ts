@@ -29,6 +29,14 @@ import {
 } from '@backstage/plugin-catalog-graph-common';
 import { useRelations } from '../../hooks';
 
+export interface UseEntityRelationGraphFromBackendOptions {
+  /**
+   * Disable fetching of data.
+   * If set to true, the hook will return an empty graph.
+   */
+  noFetch: boolean;
+}
+
 export interface UseBackendGraphResult {
   entities: { [ref: string]: Entity };
   loading: boolean;
@@ -55,8 +63,11 @@ function makeQueryParams(query: GraphQueryParams) {
   return searchParams.toString();
 }
 
+const emptySet = {};
+
 export function useEntityRelationGraphFromBackend(
   query: GraphQueryParams,
+  { noFetch }: UseEntityRelationGraphFromBackendOptions,
 ): UseBackendGraphResult {
   const { relationsToInclude } = useRelations({ relations: query.relations });
 
@@ -159,6 +170,10 @@ export function useEntityRelationGraphFromBackend(
     },
     [discoveryApi, fetch, errorApi],
   );
+
+  if (noFetch) {
+    return { entities: emptySet, loading: false };
+  }
 
   if (
     (query.maxDepth ?? Number.POSITIVE_INFINITY) >

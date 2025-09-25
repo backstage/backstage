@@ -49,124 +49,124 @@ function GraphContext(props: PropsWithChildren<{}>) {
 }
 
 describe('useEntityRelationGraph', () => {
-  beforeEach(() => {
-    const entities = {
-      'b:d/c': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            target: {
-              kind: 'k',
-              name: 'a1',
-              namespace: 'd',
-            },
-            targetRef: 'k:d/a1',
-            type: RELATION_OWNER_OF,
-          },
-          {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c1',
-            type: RELATION_HAS_PART,
-          },
-        ],
+  const mockEntities = {
+    'b:d/c': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c',
+        namespace: 'd',
       },
-      'k:d/a1': {
-        apiVersion: 'a',
-        kind: 'k',
-        metadata: {
-          name: 'a1',
-          namespace: 'd',
+      relations: [
+        {
+          target: {
+            kind: 'k',
+            name: 'a1',
+            namespace: 'd',
+          },
+          targetRef: 'k:d/a1',
+          type: RELATION_OWNER_OF,
         },
-        relations: [
-          {
-            target: {
-              kind: 'b',
-              name: 'c',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c',
-            type: RELATION_OWNED_BY,
+        {
+          target: {
+            kind: 'b',
+            name: 'c1',
+            namespace: 'd',
           },
-          {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c1',
-            type: RELATION_OWNED_BY,
-          },
-        ],
-      },
-      'b:d/c1': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c1',
-          namespace: 'd',
+          targetRef: 'b:d/c1',
+          type: RELATION_HAS_PART,
         },
-        relations: [
-          {
-            target: {
-              kind: 'b',
-              name: 'c',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c',
-            type: RELATION_PART_OF,
-          },
-          {
-            target: {
-              kind: 'k',
-              name: 'a1',
-              namespace: 'd',
-            },
-            targetRef: 'k:d/a1',
-            type: RELATION_OWNER_OF,
-          },
-          {
-            target: {
-              kind: 'b',
-              name: 'c2',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c2',
-            type: RELATION_HAS_PART,
-          },
-        ],
+      ],
+    },
+    'k:d/a1': {
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: {
+        name: 'a1',
+        namespace: 'd',
       },
-      'b:d/c2': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c2',
-          namespace: 'd',
+      relations: [
+        {
+          target: {
+            kind: 'b',
+            name: 'c',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c',
+          type: RELATION_OWNED_BY,
         },
-        relations: [
-          {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c1',
-            type: RELATION_PART_OF,
+        {
+          target: {
+            kind: 'b',
+            name: 'c1',
+            namespace: 'd',
           },
-        ],
+          targetRef: 'b:d/c1',
+          type: RELATION_OWNED_BY,
+        },
+      ],
+    },
+    'b:d/c1': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c1',
+        namespace: 'd',
       },
-    };
+      relations: [
+        {
+          target: {
+            kind: 'b',
+            name: 'c',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c',
+          type: RELATION_PART_OF,
+        },
+        {
+          target: {
+            kind: 'k',
+            name: 'a1',
+            namespace: 'd',
+          },
+          targetRef: 'k:d/a1',
+          type: RELATION_OWNER_OF,
+        },
+        {
+          target: {
+            kind: 'b',
+            name: 'c2',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c2',
+          type: RELATION_HAS_PART,
+        },
+      ],
+    },
+    'b:d/c2': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c2',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          target: {
+            kind: 'b',
+            name: 'c1',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c1',
+          type: RELATION_PART_OF,
+        },
+      ],
+    },
+  };
 
+  beforeEach(() => {
     useEntityRelationGraphFromBackend.mockImplementation(() => ({
-      entities: entities,
+      entities: mockEntities,
       loading: false,
       error: undefined,
     }));
@@ -190,10 +190,14 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBeUndefined();
     expect(loading).toBe(false);
     expect(entities).toEqual({});
-    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(1, {
-      maxDepth: Number.POSITIVE_INFINITY,
-      rootEntityRefs: [],
-    });
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: [],
+      },
+      { noFetch: false },
+    );
   });
 
   test('should pass through loading state', async () => {
@@ -212,10 +216,14 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBeUndefined();
     expect(loading).toBe(true);
     expect(entities).toEqual({});
-    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(1, {
-      maxDepth: Number.POSITIVE_INFINITY,
-      rootEntityRefs: [],
-    });
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: [],
+      },
+      { noFetch: false },
+    );
   });
 
   test('should pass through error state', async () => {
@@ -235,10 +243,14 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBe(err);
     expect(loading).toBe(false);
     expect(entities).toEqual({});
-    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(1, {
-      maxDepth: Number.POSITIVE_INFINITY,
-      rootEntityRefs: [],
-    });
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: [],
+      },
+      { noFetch: false },
+    );
   });
 
   test('should walk relation tree', async () => {
@@ -257,10 +269,45 @@ describe('useEntityRelationGraph', () => {
       'b:d/c2': expect.anything(),
       'k:d/a1': expect.anything(),
     });
-    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(1, {
-      maxDepth: Number.POSITIVE_INFINITY,
-      rootEntityRefs: ['b:d/c'],
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: ['b:d/c'],
+      },
+      { noFetch: false },
+    );
+  });
+
+  test('should handle custom entitySet', async () => {
+    const { result } = renderHook(
+      () =>
+        useEntityRelationGraph({
+          rootEntityRefs: ['b:d/c'],
+          entitySet: Object.entries(mockEntities)
+            .filter(([key]) => key !== 'b:d/c2')
+            .map(([_, entity]) => entity),
+        }),
+      { wrapper: GraphContext },
+    );
+
+    const { entities, loading, error } = result.current;
+
+    expect(error).toBeUndefined();
+    expect(loading).toBe(false);
+    expect(entities).toEqual({
+      'b:d/c': expect.anything(),
+      'b:d/c1': expect.anything(),
+      'k:d/a1': expect.anything(),
     });
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: ['b:d/c'],
+      },
+      { noFetch: true },
+    );
   });
 
   test('should limit max depth', async () => {
