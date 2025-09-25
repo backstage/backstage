@@ -4323,37 +4323,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-bui-themer@workspace:^, @backstage/plugin-bui-themer@workspace:plugins/bui-themer":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-bui-themer@workspace:plugins/bui-themer"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/core-compat-api": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
-    "@backstage/frontend-plugin-api": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
-    "@backstage/ui": "workspace:^"
-    "@mui/material": "npm:^5.12.2"
-    "@mui/system": "npm:^5.16.14"
-    "@testing-library/jest-dom": "npm:^6.0.0"
-    "@testing-library/react": "npm:^16.0.0"
-    "@types/react": "npm:^18.0.0"
-    react: "npm:^18.0.2"
-    react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  languageName: unknown
-  linkType: soft
-
 "@backstage/plugin-catalog-backend-module-aws@workspace:plugins/catalog-backend-module-aws":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-aws@workspace:plugins/catalog-backend-module-aws"
@@ -5736,6 +5705,37 @@ __metadata:
     express: "npm:^4.17.1"
     express-promise-router: "npm:^4.1.0"
     zod: "npm:^3.22.4"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-mui-to-bui@workspace:^, @backstage/plugin-mui-to-bui@workspace:plugins/bui-themer":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-mui-to-bui@workspace:plugins/bui-themer"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@backstage/ui": "workspace:^"
+    "@mui/material": "npm:^5.12.2"
+    "@mui/system": "npm:^5.16.14"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@types/react": "npm:^18.0.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router-dom: "npm:^6.3.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -29694,7 +29694,6 @@ __metadata:
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
     "@backstage/plugin-auth-react": "workspace:^"
-    "@backstage/plugin-bui-themer": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-graph": "workspace:^"
@@ -29705,6 +29704,7 @@ __metadata:
     "@backstage/plugin-home": "workspace:^"
     "@backstage/plugin-kubernetes": "workspace:^"
     "@backstage/plugin-kubernetes-cluster": "workspace:^"
+    "@backstage/plugin-mui-to-bui": "workspace:^"
     "@backstage/plugin-notifications": "workspace:^"
     "@backstage/plugin-org": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"

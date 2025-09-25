@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-plugin-bui-themer
-  title: '@backstage/plugin-bui-themer'
+  name: backstage-plugin-mui-to-bui
+  title: '@backstage/plugin-mui-to-bui'
 spec:
   lifecycle: experimental
   type: backstage-frontend-plugin

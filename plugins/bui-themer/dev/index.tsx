@@ -21,6 +21,6 @@ createDevApp()
   .addPage({
     element: <BuiThemerPage />,
     title: 'Root Page',
-    path: '/bui-themer',
+    path: '/mui-to-bui',
   })
   .render();
