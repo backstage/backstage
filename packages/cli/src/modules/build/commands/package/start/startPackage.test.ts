@@ -46,12 +46,12 @@ describe('resolveEntryPath', () => {
 
   it('should handle multiple dots in filename', () => {
     mockDir.setContent({
-      'file.backup.old.ts': 'export const data = {};',
+      'index.alpha.ts': 'export const data = {};',
     });
 
-    const result = resolveEntryPath('file.backup.old.ts', mockDir.path);
+    const result = resolveEntryPath('index.alpha.ts', mockDir.path);
 
-    expect(result).toBe('file.backup.old');
+    expect(result).toBe('index.alpha');
   });
 
   it('should handle simple directory names', () => {
