@@ -114,6 +114,12 @@ export type EntityRelationsGraphProps = {
 
   /** Don't apply default transformations */
   noDefaultTransformations?: boolean;
+
+  /**
+   * Don't fetch entities from the backend, instead use only entities in this
+   * provided set.
+   */
+  entitySet?: Entity[];
 };
 
 /**
@@ -143,6 +149,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     allowFullscreen,
     transformations,
     noDefaultTransformations,
+    entitySet,
   } = props;
 
   const theme = useTheme();
@@ -168,6 +175,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     relationPairs,
     transformations,
     noDefaultTransformations,
+    entitySet,
   });
 
   useEffect(() => {

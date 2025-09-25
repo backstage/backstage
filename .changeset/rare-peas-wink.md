@@ -7,6 +7,8 @@ The `catalog-graph` now requires the `catalog-graph-backend` to be installed. Th
 
 Configuration of the `catalog-graph` (and backend) is now done in `app-config.yaml`.
 
+`<EntityRelationsGraph>` now supports a custom entity set as a prop, instead of fetching entities from the backend.
+
 Performance improvements:
 
 Combined with changes to the `DependencyGraph`, the catalog graph is now very fast and smooth, without any flickering or shaking of the graph when updated.
