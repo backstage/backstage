@@ -33,21 +33,6 @@ function makeAppTheme(id: string, title: string, variant: 'light' | 'dark') {
 }
 
 describe('BuiThemerPage', () => {
-  beforeAll(() => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
   it('renders empty state when no themes installed', async () => {
     const apis = [[appThemeApiRef, { getInstalledThemes: () => [] }]] as const;
     await renderInTestApp(

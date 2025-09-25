@@ -20,21 +20,6 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { BuiThemePreview } from './BuiThemePreview';
 
 describe('BuiThemePreview', () => {
-  beforeAll(() => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
   it('renders headings and sample components', async () => {
     const { container } = await renderInTestApp(
       <BuiThemePreview
