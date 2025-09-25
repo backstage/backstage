@@ -1,28 +1,39 @@
 {
   "name": "@backstage/plugin-bui-themer",
   "version": "0.1.0",
-  "license": "Apache-2.0",
-  "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "bui-themer",
+    "pluginPackages": [
+      "@backstage/plugin-bui-themer"
+    ]
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "frontend-plugin",
-    "pluginId": "bui-themer"
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/bui-themer"
   },
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/core-compat-api": "workspace:^",
@@ -32,17 +43,6 @@
     "@backstage/ui": "workspace:^",
     "@mui/material": "^5.12.2",
     "@mui/system": "^5.16.14"
-  },
-  "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
-  },
-  "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -55,7 +55,15 @@
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
 }
