@@ -222,6 +222,7 @@ export type EntityRelationsGraphProps = {
   allowFullscreen?: boolean;
   transformations?: (GraphTransformer | BuiltInTransformations)[];
   noDefaultTransformations?: boolean;
+  entitySet?: Entity[];
 };
 
 // @public

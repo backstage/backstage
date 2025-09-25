@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useMemo } from 'react';
 import { pickBy } from 'lodash';
 import { useEntityRelationGraphFromBackend } from './useEntityRelationGraphFromBackend';
@@ -29,6 +29,7 @@ import { catalogGraphApiRef } from '../../api';
 export function useEntityRelationGraph({
   rootEntityRefs,
   filter: { maxDepth: userMaxDepth, relations, kinds, entityFilter } = {},
+  entitySet,
 }: {
   rootEntityRefs: string[];
   filter?: {
@@ -37,6 +38,7 @@ export function useEntityRelationGraph({
     kinds?: string[];
     entityFilter?: (entity: Entity) => boolean;
   };
+  entitySet?: Entity[];
 }): {
   entities: { [ref: string]: Entity };
   loading: boolean;
@@ -49,20 +51,32 @@ export function useEntityRelationGraph({
     Math.min(userMaxDepth ?? Number.POSITIVE_INFINITY, systemMaxDepth),
   );
 
-  const backendEntities = useEntityRelationGraphFromBackend({
-    rootEntityRefs,
-    maxDepth,
-    relations,
-    kinds,
-  });
+  const backendEntities = useEntityRelationGraphFromBackend(
+    {
+      rootEntityRefs,
+      maxDepth,
+      relations,
+      kinds,
+    },
+    { noFetch: !!entitySet },
+  );
+
+  const fetchedEntities = useMemo(() => {
+    if (entitySet) {
+      return Object.fromEntries(entitySet.map(e => [stringifyEntityRef(e), e]));
+    }
+    return backendEntities.entities;
+  }, [entitySet, backendEntities.entities]);
 
   // The backendEntities can contain more entities than wanted, as it caches
   // results to avoid excessive re-fetching when the user is changing maxDepth
-  // down (or back up again). So the filtering logic is applied here to ensure
-  // the right entities are returned, and also to respect entityFilter if set.
+  // down (or back up again). So the filtering logic is applied here to:
+  //  * Ensure only entities are returned when reusing a larger cache
+  //  * Respect entityFilter (if provided)
+  //  * Perform graph filtering when the set of entities is provided by the user
   const filteredBackendEntities = useEntityRelationGraphFilter({
     rootEntityRefs,
-    allEntities: backendEntities.entities,
+    allEntities: fetchedEntities,
     entityFilter,
     kinds,
     maxDepth,
