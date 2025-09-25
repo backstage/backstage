@@ -1,0 +1,13 @@
+diff --git a/package.json b/package.json
+index 40dd4d750b0cde15de3fbed0ba8e3f43c266ce12..bbbce75e88216d11f6e34e9e9bcfe3db91696a28 100644
+--- a/package.json
++++ b/package.json
+@@ -71,7 +71,7 @@
+   "dependencies": {
+     "@improbable-eng/grpc-web": "^0.15.0",
+     "@types/minimatch": "^3.0.5",
+-    "GendocuPublicApis": "https://git.gendocu.com/gendocu/GendocuPublicApis.git#master",
++    "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.3",
+     "google-protobuf": "^3.21.2",
+     "grpc-docs": "^1.0.6",
+     "js-yaml": "^4.1.0",

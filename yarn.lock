@@ -3594,7 +3594,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@types/react": "npm:^18.0.0"
-    grpc-docs: "npm:^1.1.2"
+    grpc-docs: "patch:grpc-docs@npm%3A1.1.4#~/.yarn/patches/grpc-docs-npm-1.1.4-4cca826ad6.patch"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -22991,13 +22991,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#master":
-  version: 1.0.0
-  resolution: "GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#commit=6e8d4c1d2342556a2e8e719f19385b266001ebae"
+"GendocuPublicApis@npm:gendocu-public-apis@^1.0.3":
+  version: 1.0.3
+  resolution: "gendocu-public-apis@npm:1.0.3"
   dependencies:
     "@improbable-eng/grpc-web": "npm:^0.14.0"
     google-protobuf: "npm:^3.15.8"
-  checksum: 10/a34386a6137d92f392121305fb899f63ba1631a1b60c80781f6e56e160c1d462a8ce4b3ee93cb67c73c079b53c6de57ba19f514f29dd11c9783cd0d8227c6968
+  checksum: 10/261a5cc97b599a7dfb492ac048e6bfce3f3bf64627f2b80ef195d5b6cefdbd4668d2b2ccd10676f01eb4f7862a5d19da567dd6ade9fc39a15268e81862308f7c
   languageName: node
   linkType: hard
 
@@ -31908,7 +31908,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grpc-docs@npm:^1.0.6, grpc-docs@npm:^1.1.2":
+"grpc-docs@npm:1.1.4":
   version: 1.1.4
   resolution: "grpc-docs@npm:1.1.4"
   dependencies:
@@ -31929,6 +31929,30 @@ __metadata:
   peerDependencies:
     react: ^16.0.0
   checksum: 10/ec022adc0c81ae17e2d59e8d36ec6e2306788d56c33296349ff252a627933491f8fab567cba90cfd5c998a13b36dfc321b3aa14c7a016d8e9c408853d23399de
+  languageName: node
+  linkType: hard
+
+"grpc-docs@patch:grpc-docs@npm%3A1.1.4#~/.yarn/patches/grpc-docs-npm-1.1.4-4cca826ad6.patch":
+  version: 1.1.4
+  resolution: "grpc-docs@patch:grpc-docs@npm%3A1.1.4#~/.yarn/patches/grpc-docs-npm-1.1.4-4cca826ad6.patch::version=1.1.4&hash=c236bc"
+  dependencies:
+    "@improbable-eng/grpc-web": "npm:^0.15.0"
+    "@types/minimatch": "npm:^3.0.5"
+    GendocuPublicApis: "https://git.gendocu.com/gendocu/GendocuPublicApis.git#master"
+    google-protobuf: "npm:^3.21.2"
+    grpc-docs: "npm:^1.0.6"
+    js-yaml: "npm:^4.1.0"
+    minimatch: "npm:^3.0.4"
+    react-copy-to-clipboard: "npm:^5.0.4"
+    react-dom: "npm:^16.13.1"
+    react-is: "npm:^16.8.0"
+    react-syntax-highlighter: "npm:^15.4.5"
+    rollup: "npm:^0.60"
+    rollup-plugin-smart-asset: "npm:^2.1.2"
+    styled-components: "npm:^5.3.3"
+  peerDependencies:
+    react: ^16.0.0
+  checksum: 10/60d1530a41aa5a4db6cdff9835a9750c6ed2c0ecfca3eef3822646fabafeeef738ca1901d95c917486c5d6edeb54dbfe134e01597bff3b0239b505623f5dca9f
   languageName: node
   linkType: hard
 

@@ -37,7 +37,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "grpc-docs": "^1.1.2"
+    "grpc-docs": "patch:grpc-docs@npm%3A1.1.4#~/.yarn/patches/grpc-docs-npm-1.1.4-4cca826ad6.patch"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
