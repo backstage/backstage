@@ -349,7 +349,7 @@ export class GitLabClient {
    * @param filePath - The path to the file
    */
   async hasFile(
-    projectIdentifier: string,
+    projectIdentifier: string | number,
     branch: string,
     filePath: string,
   ): Promise<boolean> {
