@@ -581,7 +581,7 @@ describe('hasFile', () => {
   });
 
   it('should find catalog file by id', async () => {
-    const hasFile = await client.hasFile('1', 'main', 'catalog-info.yaml');
+    const hasFile = await client.hasFile(1, 'main', 'catalog-info.yaml');
     expect(hasFile).toBe(true);
   });
 
