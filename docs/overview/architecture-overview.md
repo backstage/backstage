@@ -51,11 +51,11 @@ Plugins provide the actual features inside an app. The size of a plugin can rang
 
 Backstage includes the following set of core plugins:
 
-- Software Catalog
-- Software Templates
-- Techdocs
-- Kubernetes
-- Search
+- [Software Catalog](../features/software-catalog/index.md) - A centralized system that contains metadata for all your software, such as services, websites, libraries, ML models, data pipelines, and so on. It can also contain metadata for the physical or virtual infrastructure needed to operate a piece of software. The software catalog can be viewed and searched through a UI.
+- [Software Templates](../features/software-templates/index.md) - A tool to help you create components inside Backstage. A template can load skeletons of code, include some variables, and then publish the template to a location, such as GitHub.
+- [TechDocs](https://backstage.io/docs/features/techdocs/) - A docs-like-code solution built into Backstage. Documentation is written in Markdown files which lives together with the code.
+- [Kubernetes](../features/kubernetes/index.md) - A tool that allows developers to check the health of their services whether it is on a local host or in production.
+- [Search](https://backstage.io/docs/features/search/) - Search for information in the Backstage ecosystem. You can customize the look and feel of each search result and use your own search engine.
 
 [Plugin architecture](#plugin-architecture) provides greater detail about the architecture of the plugins themselves.
 
