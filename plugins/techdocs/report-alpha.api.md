@@ -322,6 +322,7 @@ const _default: OverridableFrontendPlugin<
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}
@@ -365,6 +366,7 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
+      icon?: JSX_2.Element;
     },
     'search.search-result-list-item.item',
     {}
