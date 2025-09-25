@@ -26,6 +26,7 @@ import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { json } from 'express';
+import { readTokenExpiration } from './readTokenExpiration.ts';
 
 export class OidcRouter {
   private constructor(
@@ -332,12 +333,18 @@ export class OidcRouter {
           });
         }
 
+        const expiresIn = readTokenExpiration(this.config, {
+          configKey:
+            'auth.experimentalDynamicClientRegistration.tokenExpiration',
+        });
+
         try {
           const result = await this.oidc.exchangeCodeForToken({
             code,
             redirectUri,
             codeVerifier,
             grantType,
+            expiresIn,
           });
 
           return res.json({

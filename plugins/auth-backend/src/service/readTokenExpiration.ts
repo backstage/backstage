@@ -22,23 +22,37 @@ const TOKEN_EXP_DEFAULT_S = 3600;
 const TOKEN_EXP_MIN_S = 600;
 const TOKEN_EXP_MAX_S = 86400;
 
-export function readBackstageTokenExpiration(config: RootConfigService) {
-  const processingIntervalKey = 'auth.backstageTokenExpiration';
+export function readTokenExpiration(
+  config: RootConfigService,
+  options?: {
+    configKey?: string;
+    maxExpiration?: number;
+    minExpiration?: number;
+    defaultExpiration?: number;
+  },
+): number {
+  const {
+    configKey,
+    maxExpiration = TOKEN_EXP_MAX_S,
+    minExpiration = TOKEN_EXP_MIN_S,
+    defaultExpiration = TOKEN_EXP_DEFAULT_S,
+  } = options ?? {};
+  const key = configKey ?? 'auth.backstageTokenExpiration';
 
-  if (!config.has(processingIntervalKey)) {
-    return TOKEN_EXP_DEFAULT_S;
+  if (!config.has(key)) {
+    return defaultExpiration;
   }
 
   const duration = readDurationFromConfig(config, {
-    key: processingIntervalKey,
+    key,
   });
 
   const durationS = Math.round(durationToMilliseconds(duration) / 1000);
 
-  if (durationS < TOKEN_EXP_MIN_S) {
-    return TOKEN_EXP_MIN_S;
-  } else if (durationS > TOKEN_EXP_MAX_S) {
-    return TOKEN_EXP_MAX_S;
+  if (durationS < minExpiration) {
+    return minExpiration;
+  } else if (durationS > maxExpiration) {
+    return maxExpiration;
   }
   return durationS;
 }

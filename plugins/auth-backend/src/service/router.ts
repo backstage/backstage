@@ -35,7 +35,7 @@ import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
 import { AuthDatabase } from '../database/AuthDatabase';
-import { readBackstageTokenExpiration } from './readBackstageTokenExpiration';
+import { readTokenExpiration } from './readTokenExpiration.ts';
 import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
@@ -73,7 +73,7 @@ export async function createRouter(
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
-  const backstageTokenExpiration = readBackstageTokenExpiration(config);
+  const backstageTokenExpiration = readTokenExpiration(config);
   const database = AuthDatabase.create(db);
 
   const keyStore = await KeyStores.fromConfig(config, {

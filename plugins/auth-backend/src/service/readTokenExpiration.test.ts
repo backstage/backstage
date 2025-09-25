@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readBackstageTokenExpiration } from './readBackstageTokenExpiration';
+import { readTokenExpiration } from './readTokenExpiration.ts';
 
 describe('Test for default backstage token expiry time', () => {
   it('Will return default backstage session expiration', () => {
@@ -24,7 +24,7 @@ describe('Test for default backstage token expiry time', () => {
         baseUrl: 'http://example.com/extra-path',
       },
     });
-    expect(readBackstageTokenExpiration(config)).toBe(3600);
+    expect(readTokenExpiration(config)).toBe(3600);
   });
 
   it('Will return user defined 120 minutes as backstage session expiration', () => {
@@ -36,7 +36,7 @@ describe('Test for default backstage token expiry time', () => {
         backstageTokenExpiration: { minutes: 120 },
       },
     });
-    expect(readBackstageTokenExpiration(config)).toBe(7200);
+    expect(readTokenExpiration(config)).toBe(7200);
   });
 
   it('Will return minimum duration of 10 minutes as backstage session expiration', () => {
@@ -48,7 +48,7 @@ describe('Test for default backstage token expiry time', () => {
         backstageTokenExpiration: { minutes: 2 },
       },
     });
-    expect(readBackstageTokenExpiration(config)).toBe(600);
+    expect(readTokenExpiration(config)).toBe(600);
   });
 
   it('Will return user configured value as backstage session expiration', () => {
@@ -60,7 +60,7 @@ describe('Test for default backstage token expiry time', () => {
         backstageTokenExpiration: { minutes: 20 },
       },
     });
-    expect(readBackstageTokenExpiration(config)).toBe(1200);
+    expect(readTokenExpiration(config)).toBe(1200);
   });
 
   it('Will return maximum of 24 hour as backstage session expiration if user configured value is more than a day', () => {
@@ -72,6 +72,51 @@ describe('Test for default backstage token expiry time', () => {
         backstageTokenExpiration: { minutes: 1500 },
       },
     });
-    expect(readBackstageTokenExpiration(config)).toBe(86400);
+    expect(readTokenExpiration(config)).toBe(86400);
+  });
+
+  it('will return expiration from custom key', () => {
+    const config = new ConfigReader({
+      app: {
+        baseUrl: 'http://example.com/extra-path',
+      },
+      custom: {
+        tokenExp: { minutes: 20 },
+      },
+    });
+    expect(readTokenExpiration(config, { configKey: 'custom.tokenExp' })).toBe(
+      1200,
+    );
+  });
+
+  it('will return custom default expiration', () => {
+    const config = new ConfigReader({});
+    expect(readTokenExpiration(config, { defaultExpiration: 1234 })).toBe(1234);
+  });
+
+  it('will return custom min/max expiration', () => {
+    const config = new ConfigReader({
+      auth: {
+        backstageTokenExpiration: { minutes: 20 },
+      },
+    });
+    expect(
+      readTokenExpiration(config, {
+        minExpiration: 2000,
+        maxExpiration: 3000,
+      }),
+    ).toBe(2000);
+    expect(
+      readTokenExpiration(config, {
+        minExpiration: 1000,
+        maxExpiration: 1100,
+      }),
+    ).toBe(1100);
+    expect(
+      readTokenExpiration(config, {
+        minExpiration: 1000,
+        maxExpiration: 2000,
+      }),
+    ).toBe(1200);
   });
 });

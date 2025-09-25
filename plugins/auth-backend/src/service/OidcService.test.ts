@@ -698,6 +698,46 @@ describe('OidcService', () => {
         });
       });
 
+      it('should exchange valid code for tokens with custom expiration', async () => {
+        const { service, mocks } = await createOidcService(databaseId);
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+          expiresIn: 6000,
+        });
+
+        expect(tokenResult).toEqual({
+          accessToken: mockToken,
+          tokenType: 'Bearer',
+          expiresIn: 6000,
+          idToken: mockToken,
+          scope: 'openid',
+        });
+      });
+
       it('should throw error for invalid grant type', async () => {
         const { service } = await createOidcService(databaseId);
 
