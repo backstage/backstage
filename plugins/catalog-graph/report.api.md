@@ -205,6 +205,7 @@ export type EntityRelationsGraphProps = {
   showArrowHeads?: boolean;
   transformations?: (GraphTransformer | BuiltInTransformations)[];
   noDefaultTransformations?: boolean;
+  entitySet?: Entity[];
 };
 
 // @public

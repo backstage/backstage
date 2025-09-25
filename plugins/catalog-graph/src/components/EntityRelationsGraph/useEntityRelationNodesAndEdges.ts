@@ -45,6 +45,7 @@ export function useEntityRelationNodesAndEdges({
   relationPairs: incomingRelationPairs,
   transformations: userTransformations,
   noDefaultTransformations = false,
+  entitySet,
 }: {
   rootEntityRefs: string[];
   maxDepth?: number;
@@ -57,6 +58,7 @@ export function useEntityRelationNodesAndEdges({
   relationPairs?: RelationPairs;
   transformations?: (GraphTransformer | BuiltInTransformations)[];
   noDefaultTransformations?: boolean;
+  entitySet?: Entity[];
 }): {
   loading: boolean;
   nodes?: EntityNode[];
@@ -77,6 +79,7 @@ export function useEntityRelationNodesAndEdges({
       relations,
       entityFilter,
     },
+    entitySet,
   });
 
   const { relationPairs, includeRelation } = useRelations({
