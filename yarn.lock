@@ -5708,6 +5708,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-mui-to-bui@workspace:^, @backstage/plugin-mui-to-bui@workspace:plugins/bui-themer":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-mui-to-bui@workspace:plugins/bui-themer"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@backstage/ui": "workspace:^"
+    "@mui/material": "npm:^5.12.2"
+    "@mui/system": "npm:^5.16.14"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@types/react": "npm:^18.0.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router-dom: "npm:^6.3.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-notifications-backend-module-email@workspace:plugins/notifications-backend-module-email":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-notifications-backend-module-email@workspace:plugins/notifications-backend-module-email"
@@ -22991,13 +23022,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#master":
-  version: 1.0.0
-  resolution: "GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#commit=6e8d4c1d2342556a2e8e719f19385b266001ebae"
+"GendocuPublicApis@npm:gendocu-public-apis@^1.0.0":
+  version: 1.0.3
+  resolution: "gendocu-public-apis@npm:1.0.3"
   dependencies:
     "@improbable-eng/grpc-web": "npm:^0.14.0"
     google-protobuf: "npm:^3.15.8"
-  checksum: 10/a34386a6137d92f392121305fb899f63ba1631a1b60c80781f6e56e160c1d462a8ce4b3ee93cb67c73c079b53c6de57ba19f514f29dd11c9783cd0d8227c6968
+  checksum: 10/261a5cc97b599a7dfb492ac048e6bfce3f3bf64627f2b80ef195d5b6cefdbd4668d2b2ccd10676f01eb4f7862a5d19da567dd6ade9fc39a15268e81862308f7c
   languageName: node
   linkType: hard
 
@@ -29673,6 +29704,7 @@ __metadata:
     "@backstage/plugin-home": "workspace:^"
     "@backstage/plugin-kubernetes": "workspace:^"
     "@backstage/plugin-kubernetes-cluster": "workspace:^"
+    "@backstage/plugin-mui-to-bui": "workspace:^"
     "@backstage/plugin-notifications": "workspace:^"
     "@backstage/plugin-org": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
