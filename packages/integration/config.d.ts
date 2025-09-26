@@ -123,7 +123,7 @@ export interface Config {
       /**
        * Bitbucket Cloud app password used to authenticate requests.
        * @visibility secret
-       * @deprecated Use `credentials` instead.
+       * @deprecated Use `token` instead.
        */
       appPassword?: string;
       /**
