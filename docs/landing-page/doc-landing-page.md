@@ -34,7 +34,6 @@ description: Documentation landing page.
         <li><a href='https://backstage.io/docs/getting-started/logging-in'>Logging into Backstage</a></li>
         <li><a href='https://backstage.io/docs/getting-started/register-a-component'>Registering a Component</a></li>
         <li><a href='https://backstage.io/docs/getting-started/create-a-component'>Creating a Component</a></li>
-        <li>Updating a Component</li>
         <li><a href='https://backstage.io/docs/features/software-templates/configuration'>Configuring a Software Template</a></li>
         <li><a href='https://backstage.io/docs/features/software-templates/adding-templates'>Creating a Software Template</a></li>
         <li><a href='https://backstage.io/docs/features/kubernetes/'>Check health of services with Kubernetes</a></li>
