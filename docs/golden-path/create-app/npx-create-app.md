@@ -32,7 +32,7 @@ This guide also assumes a basic understanding of working on a Linux based operat
   On macOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
-- Node.js [Active LTS Release](../overview/versioning-policy.md#nodejs-releases) installed using one of these
+- Node.js [Active LTS Release](../../overview/versioning-policy.md#nodejs-releases) installed using one of these
   methods:
   - Using `nvm` (recommended)
     - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)
