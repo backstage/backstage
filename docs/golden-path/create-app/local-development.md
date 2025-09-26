@@ -34,7 +34,7 @@ This section only touches on local development, we'll walk through what a Golden
 
 Now that you have that running, let's talk through what you just set up. You have 2 commands running as part of `yarn start` - the website that is stored at `packages/app` and the backend stored at `packages/backend`.
 
-The website listens on port `3000` by default. It's a React app with some extra flavor to provide strong plugin-friendly defaults. For local development, we use `webpack` for fast compilation and near-instant feedback.
+The website listens on port `3000` by default. It's a React app with some extra flavor to provide strong plugin-friendly defaults. For local development, we use `rspack` for fast compilation and near-instant feedback.
 
 The backend listens on port `7007` by default. It is a NodeJS app that has among other things an HTTP server through `express` and talks to a database.
 
@@ -45,7 +45,7 @@ Speaking of hot reloads, these are supported for both the frontend and backend.
 In the frontend, whenever you save a file used by your React app, after a slight delay, you should see a message like
 
 ```
-client (webpack 5.97.1) compiled successfully
+client (rspack 5.97.1) compiled successfully
 ```
 
 In the backend, you should see a
