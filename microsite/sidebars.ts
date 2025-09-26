@@ -66,15 +66,15 @@ export default {
       {
         type: 'category',
         label: '001 - create-app',
-        items:[
+        items: [
           'golden-path/create-app/index',
           'golden-path/create-app/npx-create-app',
           'golden-path/create-app/local-development',
           'golden-path/create-app/installing-plugins',
           'golden-path/create-app/logging-in',
           'golden-path/create-app/custom-theme',
-          'golden-path/create-app/keeping-backstage-updated'
-        ]
+          'golden-path/create-app/keeping-backstage-updated',
+        ],
       },
       {
         type: 'category',
@@ -88,11 +88,11 @@ export default {
             label: 'Backend Plugins',
             items: [
               'golden-path/plugins/backend/001-first-steps',
-              'golden-path/plugins/backend/002-poking-around'
-            ]
-          }
-        ]
-      }
+              'golden-path/plugins/backend/002-poking-around',
+            ],
+          },
+        ],
+      },
     ],
     'Core Features': [
       {
