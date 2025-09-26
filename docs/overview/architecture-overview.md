@@ -19,8 +19,8 @@ containerizing the components. Various commands are provided for accomplishing t
 
 There are 3 main components in this architecture:
 
-- The [frontend container](#frontend-building-blocks) includes the core Backstage [UI](#user-interface) which is an [extension](#extensions) that interacts directly with the user to present the information from the integrated core feature plugins, and other plugins added by a user.
-- The [backend container](#backend-building-blocks) includes the backend plugins, [core services](https://backstage.io/docs/backend-system/core-services/index), and other services. This is the server-side part of Backstage that is responsible for wiring things together. You can deploy more than one backend, and more than one backend container, depending on your need to scale and isolate individual features.
+- The [frontend](#frontend-building-blocks) includes the core Backstage [UI](#user-interface) which is an [extension](#extensions) that interacts directly with the user to present the information from the integrated core feature plugins, and other plugins added by a user.
+- The [backend](#backend-building-blocks) includes the backend plugins, [core services](https://backstage.io/docs/backend-system/core-services/index), and other services. This is the server-side part of Backstage that is responsible for wiring things together. You can deploy more than one backend, and more than one backend container, depending on your need to scale and isolate individual features.
 - Databases host your Backstage data.
 
 ![The architecture of a basic Backstage application](../assets/architecture-overview/backstage-front-back-arch.jpeg)
@@ -127,8 +127,8 @@ You can find instructions on setting up a PostgreSQL for your Backstage instance
 Architecturally, plugins can take three forms:
 
 - [Standalone](#standalone-plugins)
-- [Service backed](#service-backed-plugins)
-- [Third-party backed](#third-party-backed-plugins)
+- [Service backend](#service-backend-plugins)
+- [Third-party backend](#third-party-backend-plugins)
 
 ### Standalone plugins
 
@@ -145,9 +145,9 @@ Once the plugin has been added, then you can view the Tech Radar information in 
 
 ![tech radar plugin ui](../assets/architecture-overview/tech-radar-plugin.png)
 
-### Service backed plugins
+### Service backend plugins
 
-Service backed plugins make API requests to a service which is within the purview of the organization running Backstage.
+Service backend plugins make API requests to a service which is within the purview of the organization running Backstage.
 
 The Lighthouse plugin, for example, makes requests to the [lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service). The `lighthouse-audit-service` is a microservice which runs a copy of Google's [Lighthouse library](https://github.com/GoogleChrome/lighthouse/) and stores the results in a PostgreSQL database.
 
@@ -158,22 +158,22 @@ docker run spotify/lighthouse-audit-service:latest
 ```
 
 > **NOTE:**  
-> The following diagram does not show the detailed contents of the frontend and backend containers in order to highlight the changes that pertain to the addition of the specified plugin.
+> The following diagram does not show the detailed contents of the frontend and backend, in order to highlight the changes that pertain to the addition of the specified plugin.
 
 ![lighthouse plugin backed to microservice and database](../assets/architecture-overview/simplified-service-based-plugin-architecture.jpeg)
 
-The software catalog in Backstage is another example of a service backed plugin. It retrieves a list of services, or "entities", from the Backstage Backend service and renders them in a table for the user.
+The software catalog in Backstage is another example of a service backend plugin. It retrieves a list of services, or "entities", from the Backstage Backend service and renders them in a table for the user.
 
-### Third-party backed plugins
+### Third-party backend plugins
 
-Third-party backed plugins are similar to service backed plugins. The main difference is that the service which backs the plugin is hosted outside of the ecosystem of the company hosting Backstage.
+Third-party backend plugins are similar to service backend plugins. The main difference is that the service which backs the plugin is hosted outside of the ecosystem of the company hosting Backstage.
 
 The CircleCI plugin is an example of a third-party backed plugin. CircleCI is a SaaS service which can be used without any knowledge of Backstage. It has an API which a Backstage plugin consumes to display content.
 
 Requests going to CircleCI from the user's browser are passed through a proxy service that Backstage provides. Without this, the requests would be blocked by Cross Origin Resource Sharing policies which prevent a browser page served at [https://example.com](https://example.com) from serving resources hosted at https://circleci.com.
 
 > **NOTE:**
-> The following diagram does not show the detailed contents of the frontend and backend containers in order to highlight the changes that pertain to the addition of the specified plugin.
+> The following diagram does not show the detailed contents of the frontend and backen, in order to highlight the changes that pertain to the addition of the specified plugin.
 
 ![CircleCI plugin talking to proxy talking to SaaS Circle CI](../assets/architecture-overview/simplified-third-party-plugin-architecture.jpeg)
 
@@ -227,7 +227,14 @@ Below is a chart to help you decide where to place your code.
 
 The Backstage backend and its built-in plugins are also able to leverage cache stores as a means of improving performance or reliability. Similar to how databases are supported, plugins receive logically separated cache connections, which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
 
-At this time of writing, Backstage can be configured to use one of five cache stores: memory, which is mainly used for local testing, memcache, redis, valkey or infinispan, which are cache stores better suited for production deployment. The right cache store for your Backstage instance will depend on your own run-time constraints and those required of the plugins you're running.
+At this time of writing, Backstage can be configured to use one of five cache stores: 
+- `memory`
+- `memcache`
+- `redis`
+- `valkey`
+- `infinispan`
+
+`memory` is primarily used for local development, for production deployments, we recommend using one of the other cache stores. The right cache store for your Backstage instance will depend on your own run-time constraints and those required of the plugins you're running.
 
 ### Use memory for cache
 
