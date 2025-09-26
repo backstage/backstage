@@ -49,12 +49,6 @@ This guide also assumes a basic understanding of working on a Linux based operat
 
 ## 1. Create your Backstage App
 
-:::caution
-
-The Backstage app we'll be creating will only have demo data until we set up integrations with your specific data sources!
-
-:::
-
 To scaffold your new Backstage app, we'll be running an interactive command. Before you run the command, you should open a terminal and move your current working directory somewhere you're comfortable creating a new directory.
 
 The wizard for this command will ask what name you want to have for your new app. That name will match the folder that we create for you.
