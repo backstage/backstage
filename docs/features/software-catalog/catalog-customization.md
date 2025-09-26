@@ -693,6 +693,6 @@ filter:
   relations:
     $contains:
       type: ownedBy
-      target:
+      targetRef:
         $in: [group:default/admins, group:default/viewers]
 ```
