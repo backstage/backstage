@@ -163,7 +163,7 @@ export const columnFactories = Object.freeze({
       title: <EntityTableColumnTitle translationKey="tags" />,
       field: 'entity.metadata.tags',
       cellStyle: {
-        padding: '0px 16px 0px 20px',
+        padding: '0px 0px 0px 0px',
       },
       render: ({ entity }) => (
         <div
@@ -173,7 +173,6 @@ export const columnFactories = Object.freeze({
             gap: '2px',
             display: 'flex',
             flexWrap: 'wrap',
-            alignItems: 'stretch',
           }}
         >
           {entity.metadata.tags &&
