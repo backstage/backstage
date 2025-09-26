@@ -17,6 +17,7 @@ description: Documentation landing page.
     <td valign='top'><i>Learn about Backstage.</i><br><br>
       <ul>
         <li><a href='https://backstage.io/docs/overview/what-is-backstage'>What is Backstage?</a></li>
+        <li><a href='https://backstage.io/docs/overview/technical-overview'>Technical Overview</a></li>
         <li><a href='https://backstage.io/docs/overview/architecture-overview'>Architecture overview</a></li> 
         <li><a href='https://backstage.io/docs/plugins/'>Introduction to Plugins</a></li>
         <li><a href='https://backstage.io/docs/features/software-catalog/'>Software Catalog Overview</a></li>
