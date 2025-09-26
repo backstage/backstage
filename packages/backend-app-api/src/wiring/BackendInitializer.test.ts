@@ -32,9 +32,6 @@ const baseFactories = [
   mockServices.lifecycle.factory(),
   mockServices.rootLogger.factory(),
   mockServices.logger.factory(),
-  mockServices.rootConfig.factory(),
-  mockServices.rootHttpRouter.mock().factory,
-  mockServices.rootHealth.factory(),
 ];
 
 function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {

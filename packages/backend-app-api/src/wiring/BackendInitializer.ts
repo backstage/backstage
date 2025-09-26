@@ -42,7 +42,6 @@ import { createInitializationLogger } from './createInitializationLogger';
 import { unwrapFeature } from './helpers';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InstanceMetadataServicePluginInfo } from '../../../backend-plugin-api/src/services/definitions/InstanceMetadataService';
-import Router from 'express-promise-router';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -133,10 +132,9 @@ function createInstanceMetadataServiceFactory(
   return createServiceFactory({
     service: coreServices.instanceMetadata,
     deps: {
-      httpRouter: coreServices.rootHttpRouter,
       logger: coreServices.rootLogger,
     },
-    factory: async ({ logger, httpRouter }) => {
+    factory: async ({ logger }) => {
       const instanceMetadata = {
         getInstalledPlugins: () => Object.values(installedPlugins),
       };
@@ -147,14 +145,6 @@ function createInstanceMetadataServiceFactory(
           .map(p => p.pluginId)
           .join(', ')}`,
       );
-
-      const router = Router();
-
-      router.get('/info', (_, res) => {
-        res.json({ plugins: Object.values(installedPlugins) });
-      });
-
-      httpRouter.use('/.backstage/instanceMetadata/v1', router);
       return instanceMetadata;
     },
   });
