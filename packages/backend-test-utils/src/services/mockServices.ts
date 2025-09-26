@@ -567,5 +567,9 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.instanceMetadata, () => ({
       getInstalledPlugins: jest.fn(),
     }));
+    export const factory = simpleFactoryWithOptions(
+      coreServices.instanceMetadata,
+      instanceMetadata,
+    );
   }
 }
