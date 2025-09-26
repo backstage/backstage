@@ -45,7 +45,7 @@ Speaking of hot reloads, these are supported for both the frontend and backend.
 In the frontend, whenever you save a file used by your React app, after a slight delay, you should see a message like
 
 ```
-client (rspack 5.97.1) compiled successfully
+Rspack compiled successfully
 ```
 
 In the backend, you should see a
