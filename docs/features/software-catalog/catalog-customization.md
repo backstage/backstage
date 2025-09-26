@@ -571,10 +571,8 @@ Finally, entity predicates also support value operators that can be used in plac
 ```json
 {
   "filter": {
-    {
-      "kind": "component",
-      "spec.type": { "$in": ["service", "website"] }
-    },
+    "kind": "component",
+    "spec.type": { "$in": ["service", "website"] }
   }
 }
 ```
