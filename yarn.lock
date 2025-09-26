@@ -22991,13 +22991,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#master":
-  version: 1.0.0
-  resolution: "GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#commit=6e8d4c1d2342556a2e8e719f19385b266001ebae"
+"GendocuPublicApis@npm:gendocu-public-apis@^1.0.0":
+  version: 1.0.3
+  resolution: "gendocu-public-apis@npm:1.0.3"
   dependencies:
     "@improbable-eng/grpc-web": "npm:^0.14.0"
     google-protobuf: "npm:^3.15.8"
-  checksum: 10/a34386a6137d92f392121305fb899f63ba1631a1b60c80781f6e56e160c1d462a8ce4b3ee93cb67c73c079b53c6de57ba19f514f29dd11c9783cd0d8227c6968
+  checksum: 10/261a5cc97b599a7dfb492ac048e6bfce3f3bf64627f2b80ef195d5b6cefdbd4668d2b2ccd10676f01eb4f7862a5d19da567dd6ade9fc39a15268e81862308f7c
   languageName: node
   linkType: hard
 
