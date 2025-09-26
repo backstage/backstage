@@ -525,6 +525,12 @@ export const componentDefinitions: {
       readonly emptyState: 'bui-MenuEmptyState';
     };
   };
+  readonly PasswordField: {
+    readonly classNames: {
+      readonly root: 'bui-PasswordField';
+      readonly inputVisibility: 'bui-InputVisibility';
+    };
+  };
   readonly Popover: {
     readonly classNames: {
       readonly root: 'bui-Popover';
@@ -644,16 +650,6 @@ export const componentDefinitions: {
       readonly input: 'bui-Input';
       readonly inputIcon: 'bui-InputIcon';
       readonly inputAction: 'bui-InputAction';
-    };
-    readonly dataAttributes: {
-      readonly invalid: readonly [true, false];
-      readonly disabled: readonly [true, false];
-    };
-  };
-  readonly PasswordField: {
-    readonly classNames: {
-      readonly root: 'bui-PasswordField';
-      readonly inputVisibility: 'bui-InputVisibility';
     };
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
