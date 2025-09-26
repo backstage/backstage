@@ -14,13 +14,22 @@ plugin.
 
 ## Configuration
 
-API token usage example:
+API token usage example (recommended):
 
 ```yaml
 integrations:
   bitbucketCloud:
-    - username: user@domain.com
+    - username: user@domain.com # username -> user email
       token: my-token
+```
+
+Legacy:
+
+```yaml
+integrations:
+  bitbucketCloud:
+    - username: username
+      appPassword: my-password
 ```
 
 :::note Note
