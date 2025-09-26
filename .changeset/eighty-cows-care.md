@@ -2,4 +2,4 @@
 '@backstage/ui': minor
 ---
 
-Added PasswordField to BUI with default show/hide visibility on input
+**Breaking** We are adding a new component `PasswordField`. We will be removing support for types `password` and `search` on `TextField`.
