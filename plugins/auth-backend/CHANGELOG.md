@@ -1,5 +1,37 @@
 # @backstage/plugin-auth-backend
 
+## 0.25.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+
+## 0.25.4
+
+### Patch Changes
+
+- 1d47bf3: Implementing Dynamic Client Registration with the OIDC server. You can enable this by setting `auth.experimentalDynamicClientRegistration.enabled` in `app-config.yaml`. This is highly experimental, but feedback welcome.
+- 54ddfef: Updating plugin metadata
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.25.4-next.1
+
+### Patch Changes
+
+- 1d47bf3: Implementing Dynamic Client Registration with the OIDC server. You can enable this by setting `auth.experimentalDynamicClientRegistration.enabled` in `app-config.yaml`. This is highly experimental, but feedback welcome.
+- 54ddfef: Updating plugin metadata
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.1
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+
 ## 0.25.4-next.0
 
 ### Patch Changes

@@ -4,5 +4,5 @@
 
 | Name     | Location     | Severity |
 | :------- | :----------- | :------- |
-| passport | package.json | error    |
+| passport | plugins/auth-backend-module-oauth2-provider/package.json | error    |
 

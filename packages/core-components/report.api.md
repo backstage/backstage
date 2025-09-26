@@ -257,6 +257,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   extends SVGProps<SVGSVGElement> {
   acyclicer?: 'greedy';
   align?: DependencyGraphTypes.Alignment;
+  allowFullscreen?: boolean;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   defs?: JSX.Element | JSX.Element[];
   direction?: DependencyGraphTypes.Direction;
@@ -291,6 +292,7 @@ export namespace DependencyGraphTypes {
     from: string;
     to: string;
     label?: string;
+    distance?: number;
   };
   export type DependencyNode<T = {}> = T & {
     id: string;

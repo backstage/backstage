@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Icon } from '../Icon';
+import { Tooltip, TooltipTrigger } from '../Tooltip';
 
 const meta = {
   title: 'Backstage UI/Button',
@@ -214,5 +215,14 @@ export const Playground: Story = {
         </Flex>
       ))}
     </Flex>
+  ),
+};
+
+export const DisabledWithTooltips: Story = {
+  render: () => (
+    <TooltipTrigger>
+      <Button isDisabled>Save</Button>
+      <Tooltip>Why this is disabled</Tooltip>
+    </TooltipTrigger>
   ),
 };

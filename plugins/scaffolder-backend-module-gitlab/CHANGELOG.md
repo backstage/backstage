@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 0.9.5
+
+### Patch Changes
+
+- a84ddea: The log message now indicates that the pipeline trigger token was deleted and not pipeline itself.
+- Updated dependencies
+  - @backstage/integration@1.18.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-node@0.11.1
+
 ## 0.9.5-next.0
 
 ### Patch Changes

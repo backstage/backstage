@@ -1,5 +1,44 @@
 # @backstage/plugin-notifications
 
+## 0.5.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-notifications-common@0.1.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-signals-react@0.0.16-next.0
+
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.1.0
+  - @backstage/plugin-signals-react@0.0.15
+
+## 0.5.9
+
+### Patch Changes
+
+- 4815b12: Fixed missing app context when rendering the notifications view
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+
 ## 0.5.9-next.1
 
 ### Patch Changes

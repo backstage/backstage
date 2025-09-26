@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.10-next.0
+
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.6.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.1
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+
 ## 0.6.4-next.0
 
 ### Patch Changes

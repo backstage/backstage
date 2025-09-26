@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-components",
-  "version": "0.17.6-next.0",
+  "version": "0.18.2-next.1",
   "description": "Core components used by Backstage plugins and apps",
   "backstage": {
     "role": "web-library"
@@ -80,6 +80,7 @@
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
     "rc-progress": "3.5.1",
+    "react-full-screen": "^1.1.1",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
     "react-idle-timer": "5.7.2",
@@ -106,6 +107,7 @@
     "@types/d3-selection": "^3.0.1",
     "@types/d3-shape": "^3.0.1",
     "@types/d3-zoom": "^3.0.1",
+    "@types/fscreen": "^1",
     "@types/google-protobuf": "^3.7.2",
     "@types/react": "^18.0.0",
     "@types/react-helmet": "^6.1.0",

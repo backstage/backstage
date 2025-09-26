@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { MyGroupsPicker } from './MyGroupsPicker';
 export {
   MyGroupsPickerSchema,
   type MyGroupsPickerUiOptions,

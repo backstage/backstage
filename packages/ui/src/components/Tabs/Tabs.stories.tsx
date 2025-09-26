@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
 import { MemoryRouter } from 'react-router-dom';
 import { Box } from '../Box';

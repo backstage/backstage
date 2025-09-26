@@ -1,5 +1,37 @@
 # @backstage/frontend-plugin-api
 
+## 0.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.12.0
+
+### Minor Changes
+
+- 894d514: Make `openshiftApiRef` available to the new frontend system.
+
+### Patch Changes
+
+- 2fb8b04: Improved the types of `createFrontendPlugin` and `createFrontendModule` so that errors due to incompatible options are indicated more clearly.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+
 ## 0.11.1-next.0
 
 ### Patch Changes

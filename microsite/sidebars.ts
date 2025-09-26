@@ -14,6 +14,9 @@ const catalogSidebar = tryToLoadCustomSidebar(
 const searchSidebar = tryToLoadCustomSidebar(
   '../docs/features/search/api/sidebar.ts',
 );
+const scaffolderSidebar = tryToLoadCustomSidebar(
+  '../docs/features/software-templates/api/sidebar.ts',
+);
 
 export default {
   docs: {
@@ -226,6 +229,22 @@ export default {
           'features/software-templates/dry-run-testing',
           'features/software-templates/experimental',
           'features/software-templates/templating-extensions',
+          {
+            type: 'category',
+            label: 'API',
+            link:
+              scaffolderSidebar.length > 0
+                ? {
+                    type: 'generated-index',
+                    title: 'Scaffolder API',
+                    slug: '/category/scaffolder-api',
+                  }
+                : {
+                    type: 'doc',
+                    id: 'openapi/generated-docs/404',
+                  },
+            items: scaffolderSidebar,
+          },
         ],
       },
       {

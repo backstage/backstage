@@ -1,5 +1,53 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.7.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+
+## 0.7.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-events-node@0.4.15
+
+## 0.7.3
+
+### Patch Changes
+
+- ea80e76: When possible, requests a more limited set of results from the Gitlab projects API, which can reduce the amount of network traffic required to sync with Gitlab.
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/integration@1.18.0
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.7.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1-next.1
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration@1.18.0-next.0
+
 ## 0.7.3-next.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.34.1-next.1",
+  "version": "1.34.2-next.1",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin",
@@ -72,6 +72,8 @@
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",
+    "@backstage/plugin-techdocs-common": "workspace:^",
+    "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/types": "workspace:^",
     "@codemirror/language": "^6.0.0",
     "@codemirror/legacy-modes": "^6.1.0",
@@ -109,6 +111,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-techdocs": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",

@@ -1,5 +1,45 @@
 # @backstage/plugin-catalog-backend-module-gitea
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.19.0
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/integration@1.18.0
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration@1.18.0-next.0
+
 ## 0.1.4-next.0
 
 ### Patch Changes

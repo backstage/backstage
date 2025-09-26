@@ -6,6 +6,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 import { Expand } from '@backstage/types';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -306,6 +307,15 @@ export const parseRepoUrl: (
   project?: string;
 };
 
+// @public
+export interface ScaffolderActionsExtensionPoint {
+  // (undocumented)
+  addActions(...actions: TemplateAction<any, any, any>[]): void;
+}
+
+// @public
+export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
+
 // @public (undocumented)
 export interface SerializedFile {
   // (undocumented)
@@ -327,7 +337,7 @@ export function serializeDirectoryContents(
   },
 ): Promise<SerializedFile[]>;
 
-// @public
+// @public @deprecated
 export type SerializedTask = {
   id: string;
   spec: TaskSpec;
@@ -339,7 +349,7 @@ export type SerializedTask = {
   state?: JsonObject;
 };
 
-// @public
+// @public @deprecated
 export type SerializedTaskEvent = {
   id: number;
   isTaskRecoverable?: boolean;
@@ -353,10 +363,10 @@ export type SerializedTaskEvent = {
   createdAt: string;
 };
 
-// @public
+// @public @deprecated
 export interface TaskBroker {
   // (undocumented)
-  cancel?(taskId: string): Promise<void>;
+  cancel(taskId: string): Promise<void>;
   // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
@@ -370,7 +380,7 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
-  list?(options?: {
+  list(options?: {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
@@ -388,35 +398,30 @@ export interface TaskBroker {
     tasks: SerializedTask[];
     totalTasks?: number;
   }>;
-  // @deprecated (undocumented)
-  list?(options: { createdBy?: string; status?: TaskStatus }): Promise<{
-    tasks: SerializedTask[];
-    totalTasks?: number;
-  }>;
   // (undocumented)
-  recoverTasks?(): Promise<void>;
+  recoverTasks(): Promise<void>;
   // (undocumented)
-  retry?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
+  retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
   secrets?: TaskSecrets;
   createdBy?: string;
 };
 
-// @public
+// @public @deprecated
 export type TaskBrokerDispatchResult = {
   taskId: string;
 };
 
-// @public
+// @public @deprecated
 export type TaskCompletionState = 'failed' | 'completed';
 
-// @public
+// @public @deprecated
 export interface TaskContext {
   // (undocumented)
   cancelSignal: AbortSignal;
@@ -460,16 +465,16 @@ export interface TaskContext {
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
-// @public
+// @public @deprecated
 export type TaskFilter = {
   key: string;
   values?: string[];
 };
 
-// @public
+// @public @deprecated
 export type TaskFilters =
   | {
       anyOf: TaskFilter[];
@@ -487,7 +492,7 @@ export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
 
-// @public
+// @public @deprecated
 export type TaskStatus =
   | 'cancelled'
   | 'completed'

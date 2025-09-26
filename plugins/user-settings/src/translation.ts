@@ -28,7 +28,7 @@ export const userSettingsTranslationRef = createTranslationRef({
     themeToggle: {
       title: 'Theme',
       description: 'Change the theme mode',
-      select: 'Select theme {{theme}}',
+      select: 'Select {{theme}}',
       selectAuto: 'Select Auto Theme',
       names: {
         light: 'Light',

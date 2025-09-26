@@ -4,5 +4,5 @@
 
 | Name  | Location     | Severity |
 | :---- | :----------- | :------- |
-| luxon | package.json | error    |
+| luxon | plugins/catalog-backend-module-github-org/package.json | error    |
 

@@ -1,5 +1,48 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-react@0.4.37-next.0
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/plugin-kubernetes-react@0.5.12-next.1
+  - @backstage/plugin-kubernetes-common@0.9.7-next.1
+
+## 0.0.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.7-next.0
+  - @backstage/plugin-kubernetes-react@0.5.12-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/plugin-permission-react@0.4.36
+
+## 0.0.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/plugin-kubernetes-react@0.5.11
+
+## 0.0.29-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+
 ## 0.0.29-next.1
 
 ### Patch Changes

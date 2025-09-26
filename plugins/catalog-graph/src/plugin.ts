@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin } from '@backstage/core-plugin-api';
+import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
 import { catalogEntityRouteRef, catalogGraphRouteRef } from './routes';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
 
 /**
  * Catalog Graph Plugin instance.
@@ -28,4 +29,11 @@ export const catalogGraphPlugin = createPlugin({
   externalRoutes: {
     catalogEntity: catalogEntityRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: catalogGraphApiRef,
+      deps: {},
+      factory: () => new DefaultCatalogGraphApi(),
+    }),
+  ],
 });
