@@ -65,7 +65,7 @@ of the `@backstage/create-app` package. We recommend peeking at this changelog
 for any applicable updates when upgrading packages. As an alternative, the
 [Backstage Upgrade Helper](https://backstage.github.io/upgrade-helper/) provides
 a consolidated view of all the changes between two versions of Backstage. You
-can find the current version of your Backstage installation in `backstage.json`.
+can find the current version of your Backstage installation in `backstage.json` located in the root of your backstage repository.
 
 ## Managing package versions with the Backstage yarn plugin
 
@@ -143,7 +143,7 @@ down the number of duplicate packages.
 
 The Backstage CLI uses [global-agent](https://www.npmjs.com/package/global-agent) and `undici` to configure HTTP/HTTPS proxy settings using environment variables. This allows you to route the CLI’s network traffic through a proxy server, which can be useful in environments with restricted internet access.
 
-Additionally, yarn needs a proxy too (sometimes), when in environments with restricted internet access. It uses different settings than the other modules. If you decide to use the backstage yarn plugin [mentioned above](#plugin), you will need to set additional proxy values.
+Additionally, `yarn` needs a proxy too (sometimes), when in environments with restricted internet access. It uses different settings than the other modules. If you decide to use the backstage yarn plugin [mentioned above](#plugin), you will need to set additional proxy values.
 If you will always need proxy settings in all environments and situations, you can add `httpProxy` and `httpsProxy` values to [the yarnrc.yml file](https://yarnpkg.com/configuration/yarnrc). If some environments need it (say a developer workstation) but other environments do not (perhaps a CI build server running on AWS), then you may not want to update the yarnrc.yml file but just set environment variables `YARN_HTTP_PROXY` and `YARN_HTTPS_PROXY` in the environments/situations where you need to proxy.
 
 **If you plan to use the backstage yarn plugin, you will need these extra yarn proxy settings to both install the plugin and run the `versions:bump` command**. If you do not plan to use the backstage yarn plugin, it seems like the global agent proxy settings alone are sufficient.

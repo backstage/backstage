@@ -44,7 +44,7 @@ You may also need to add modules to provide the functionality in the plugin that
 
 ### Installing a Frontend Plugin
 
-Frontend plugins have multiple entrypoints, generally, you should follow the plugin's documentation for how to install it. There's no single easy way to install frontend plugins.
+Frontend plugins have multiple entrypoints, you should follow the plugin's documentation for how to install it.
 
 The New Frontend System (still in Alpha) vastly simplifies this! Keep your eyes peeled for updates.
 

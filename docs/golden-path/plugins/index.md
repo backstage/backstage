@@ -1,7 +1,7 @@
 ---
 id: index
 sidebar_label: Backstage Plugins!
-title: How to create plugins with Backstage?
+title: How to create plugins with Backstage
 ---
 
 ### Prerequisites
@@ -14,9 +14,10 @@ You have an awesome idea to create a todo list tracker in your Backstage instanc
 
 Many of the great Backstage plugins started in a similar way, a developer noticed that others on their team or in the company were:
 
-- wasting time manually compiling spreadsheets filled with error-prone data,
-- or spending hours every week trying to find that one specific link from that one site,
-- or a million other problems that impact developer flow or are just toil.
+- Wasting time manually compiling spreadsheets filled with error-prone data
+- Spending hours every week trying to find that one specific link from that one site
+- A million other problems that impact developer flow or are just toil
+  
   And they decided to create a shared plugin in Backstage to solve that problem.
 
 This guide will teach you how to deliver high-quality Backstage plugins with confidence. Both so you can impress everyone at the hackathon and set yourself up for success when you inevitably are asked to make your plugin production-ready.

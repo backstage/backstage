@@ -15,7 +15,7 @@ This guide walks through how to get started creating your very own Backstage cus
 
 By the end of this guide, you will have a standalone Backstage installation running locally with a `SQLite` database and demo content.
 
-:::note Organization customization
+:::caution Organization customization
 
 To be clear, this is not a production-ready installation, and it does not contain information specific to your organization. You will learn how to customize Backstage for your use case through this guide.
 
@@ -114,11 +114,9 @@ app
   and [TechDocs](https://backstage.io/docs/features/techdocs/)
   amongst other things.
 
-## FAQs
+## Common Issues
 
-### Help, the app isn't running on port X
-
-Backstage uses ports `3000` and `7007` as its default frontend and backend ports. Make sure that your commands haven't exited with errors. For remote or containerized setups, make sure those ports above are accessible.
+- App is not running on port X: Backstage uses ports `3000` and `7007` as its default frontend and backend ports. Make sure that your commands haven't exited with errors. For remote or containerized setups, make sure those ports above are accessible.
 
 ## Next Steps
 

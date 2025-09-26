@@ -20,7 +20,7 @@ When you see the message `[0] webpack compiled successfully`, you can navigate d
 
 :::
 
-You can start exploring the demo immediately.
+Once its spun up, you should see something similar to the below.
 
 ![Screenshot of the Backstage portal](../../assets/getting-started/portal.png)
 
