@@ -643,6 +643,17 @@ export const componentDefinitions: {
       readonly inputWrapper: 'bui-InputWrapper';
       readonly input: 'bui-Input';
       readonly inputIcon: 'bui-InputIcon';
+      readonly inputAction: 'bui-InputAction';
+    };
+    readonly dataAttributes: {
+      readonly invalid: readonly [true, false];
+      readonly disabled: readonly [true, false];
+    };
+  };
+  readonly PasswordField: {
+    readonly classNames: {
+      readonly root: 'bui-PasswordField';
+      readonly inputVisibility: 'bui-InputVisibility';
     };
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
@@ -1760,6 +1771,7 @@ export interface TextFieldProps
   icon?: ReactNode;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  type?: 'text' | 'email' | 'tel' | 'url';
 }
 
 // @public (undocumented)

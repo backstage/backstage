@@ -27,18 +27,10 @@ export interface TextFieldProps
    * The HTML input type for the text field
    *
    * @remarks
-   * The values 'search' and 'password' are deprecated. Use `SearchField` for
+   * Use `SearchField` for
    * search inputs and `PasswordField` for password inputs.
    */
-  type?:
-    | 'text'
-    | 'email'
-    | 'tel'
-    | 'url'
-    /** @deprecated Use `SearchField` instead */
-    | 'search'
-    /** @deprecated Use `PasswordField` instead */
-    | 'password';
+  type?: 'text' | 'email' | 'tel' | 'url';
   /**
    * An icon to render before the input
    */

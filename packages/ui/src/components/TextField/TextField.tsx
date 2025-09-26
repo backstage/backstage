@@ -48,20 +48,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    useEffect(() => {
-      const inputType = (props as { type?: string }).type;
-      if (inputType === 'search') {
-        console.warn(
-          'TextField type="search" is deprecated. Use SearchField instead.',
-        );
-      }
-      if (inputType === 'password') {
-        console.warn(
-          'TextField type="password" is deprecated. Use PasswordField instead.',
-        );
-      }
-    }, [props]);
-
     const { classNames, dataAttributes } = useStyles('TextField', {
       size,
     });
