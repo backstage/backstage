@@ -155,7 +155,7 @@ export class BitbucketCloudClient {
 
     if (this.config.token) {
       headers.Authorization = `Bearer ${this.config.token}`;
-    } else if (this.config.username && this.config.appPassword) {
+    } else if (this.config.username) {
       const buffer = Buffer.from(
         `${this.config.username}:${this.config.appPassword}`,
         'utf8',
