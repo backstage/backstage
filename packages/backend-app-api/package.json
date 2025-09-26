@@ -48,8 +48,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/errors": "workspace:^",
-    "express-promise-router": "^4.1.0"
+    "@backstage/errors": "workspace:^"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
