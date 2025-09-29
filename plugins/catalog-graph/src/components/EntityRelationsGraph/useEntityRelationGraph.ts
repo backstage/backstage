@@ -18,8 +18,10 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useMemo } from 'react';
 import { pickBy } from 'lodash';
 import { useEntityRelationGraphFromBackend } from './useEntityRelationGraphFromBackend';
+import { useEntityRelationGraphFromFrontend } from './useEntityRelationGraphFromFrontend';
 import { useEntityRelationGraphFilter } from './useEntityRelationFilter';
 import { catalogGraphApiRef } from '../../api';
+import { useFetchMethod } from './useFetchMethod';
 
 /**
  * Discover the graph of entities connected by relations, starting from a set of
@@ -51,6 +53,8 @@ export function useEntityRelationGraph({
     Math.min(userMaxDepth ?? Number.POSITIVE_INFINITY, systemMaxDepth),
   );
 
+  const fetchMethod = useFetchMethod(!!entitySet);
+
   const backendEntities = useEntityRelationGraphFromBackend(
     {
       rootEntityRefs,
@@ -58,15 +62,28 @@ export function useEntityRelationGraph({
       relations,
       kinds,
     },
-    { noFetch: !!entitySet },
+    { noFetch: fetchMethod !== 'backend' },
   );
+  const frontendEntities = useEntityRelationGraphFromFrontend(
+    {
+      rootEntityRefs,
+      maxDepth,
+      relations,
+      kinds,
+    },
+    { noFetch: fetchMethod !== 'frontend' },
+  );
+  const asyncEntities =
+    fetchMethod === 'backend' ? backendEntities : frontendEntities;
 
   const fetchedEntities = useMemo(() => {
     if (entitySet) {
       return Object.fromEntries(entitySet.map(e => [stringifyEntityRef(e), e]));
+    } else if (fetchMethod === 'frontend' || fetchMethod === 'backend') {
+      return asyncEntities.entities;
     }
-    return backendEntities.entities;
-  }, [entitySet, backendEntities.entities]);
+    return undefined;
+  }, [entitySet, fetchMethod, asyncEntities.entities]);
 
   // The backendEntities can contain more entities than wanted, as it caches
   // results to avoid excessive re-fetching when the user is changing maxDepth
@@ -74,7 +91,7 @@ export function useEntityRelationGraph({
   //  * Ensure only entities are returned when reusing a larger cache
   //  * Respect entityFilter (if provided)
   //  * Perform graph filtering when the set of entities is provided by the user
-  const filteredBackendEntities = useEntityRelationGraphFilter({
+  const filteredAsyncEntities = useEntityRelationGraphFilter({
     rootEntityRefs,
     allEntities: fetchedEntities,
     entityFilter,
@@ -86,9 +103,9 @@ export function useEntityRelationGraph({
   // As there might be no change to what entities are returned, the result is
   // memoized, to avoid unnecessary re-renders.
   const memoizedEntities = useMemo(
-    () => filteredBackendEntities,
+    () => filteredAsyncEntities,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(Object.keys(filteredBackendEntities).sort())],
+    [JSON.stringify(Object.keys(filteredAsyncEntities).sort())],
   );
 
   const filteredEntities = useMemo(() => {
@@ -99,7 +116,7 @@ export function useEntityRelationGraph({
 
   return {
     entities: filteredEntities,
-    loading: backendEntities.loading,
-    error: backendEntities.error,
+    loading: fetchMethod === 'pending' ? true : asyncEntities.loading,
+    error: asyncEntities.error,
   };
 }
