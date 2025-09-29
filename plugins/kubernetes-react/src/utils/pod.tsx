@@ -139,22 +139,14 @@ export const currentToDeclaredResourceToPerc = (
 export const podStatusToCpuUtil = (podStatus: ClientPodStatus): ReactNode => {
   const cpuUtil = podStatus.cpu;
 
-  let currentUsage: number | string = cpuUtil.currentUsage;
-
-  // current usage number for CPU is a different unit than request/limit total
-  // this might be a bug in the k8s library
-  if (typeof cpuUtil.currentUsage === 'number') {
-    currentUsage = cpuUtil.currentUsage / 10;
-  }
-
   return (
     <SubvalueCell
       value={`requests: ${currentToDeclaredResourceToPerc(
-        currentUsage,
+        cpuUtil.currentUsage,
         cpuUtil.requestTotal,
       )} of ${formatMillicores(cpuUtil.requestTotal)}`}
       subvalue={`limits: ${currentToDeclaredResourceToPerc(
-        currentUsage,
+        cpuUtil.currentUsage,
         cpuUtil.limitTotal,
       )} of ${formatMillicores(cpuUtil.limitTotal)}`}
     />
