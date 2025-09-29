@@ -126,15 +126,12 @@ export class DatabaseUserSettingsStore implements UserSettingsStore {
     const resultsMap = new Map<string, Map<string, JsonValue>>();
 
     await Promise.all(
-      bucketMap.keys().map(bucket =>
+      Array.from(bucketMap.entries()).map(([bucket, keySet]) =>
         dbLimit(async (): Promise<void> => {
           const keyMap = new Map<string, JsonValue>();
           resultsMap.set(bucket, keyMap);
 
-          const keyChunks = chunkKeys(
-            Array.from(bucketMap.get(bucket) || []),
-            100,
-          );
+          const keyChunks = chunkKeys(Array.from(keySet), 100);
 
           for (const keys of keyChunks) {
             const rows = await this.db<RawDbUserSettingsRow>('user_settings')
