@@ -160,7 +160,7 @@ docker run spotify/lighthouse-audit-service:latest
 > **NOTE:**  
 > The following diagram does not show the detailed contents of the frontend and backend, in order to highlight the changes that pertain to the addition of the specified plugin.
 
-![lighthouse plugin backed to microservice and database](../assets/architecture-overview/simplified-service-based-plugin-architecture.jpeg)
+![lighthouse plugin backend to microservice and database](../assets/architecture-overview/simplified-service-based-plugin-architecture.jpeg)
 
 The software catalog in Backstage is another example of a service backend plugin. It retrieves a list of services, or "entities", from the Backstage Backend service and renders them in a table for the user.
 
@@ -173,7 +173,7 @@ The CircleCI plugin is an example of a third-party backed plugin. CircleCI is a 
 Requests going to CircleCI from the user's browser are passed through a proxy service that Backstage provides. Without this, the requests would be blocked by Cross Origin Resource Sharing policies which prevent a browser page served at [https://example.com](https://example.com) from serving resources hosted at https://circleci.com.
 
 > **NOTE:**
-> The following diagram does not show the detailed contents of the frontend and backen, in order to highlight the changes that pertain to the addition of the specified plugin.
+> The following diagram does not show the detailed contents of the frontend and backend, in order to highlight the changes that pertain to the addition of the specified plugin.
 
 ![CircleCI plugin talking to proxy talking to SaaS Circle CI](../assets/architecture-overview/simplified-third-party-plugin-architecture.jpeg)
 
