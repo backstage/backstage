@@ -24,13 +24,15 @@ import {
 } from '@backstage/test-utils';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 import { ApiProvider } from '@backstage/core-app-api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 describe('<MaxDepthFilter/>', () => {
   const config = mockApis.config();
-  const apis: TestApiRegistry = TestApiRegistry.from([
-    catalogGraphApiRef,
-    new DefaultCatalogGraphApi({ config }),
-  ]);
+  const apis: TestApiRegistry = TestApiRegistry.from(
+    [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
+    [discoveryApiRef, mockApis.discovery()],
+    [fetchApiRef, {}],
+  );
 
   function Wrapper({ children }: { children: React.ReactNode }) {
     return <ApiProvider apis={apis}>{children}</ApiProvider>;

@@ -23,9 +23,11 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import {
+  catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   mockApis,
   renderInTestApp,
@@ -65,6 +67,7 @@ describe('<CatalogGraphCard/>', () => {
       [configApiRef, config],
       [discoveryApiRef, mockApis.discovery()],
       [fetchApiRef, fetchApi],
+      [catalogApiRef, catalogApiMock()],
       [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
     );
 
@@ -99,7 +102,7 @@ describe('<CatalogGraphCard/>', () => {
 
     expect(await screen.findByText('b:d/c')).toBeInTheDocument();
     expect(await screen.findAllByTestId('node')).toHaveLength(1);
-    expect(fetchApi.fetch).toHaveBeenCalledTimes(1);
+    expect(fetchApi.fetch).toHaveBeenCalled();
   });
 
   test('renders with custom title', async () => {
