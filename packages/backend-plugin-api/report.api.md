@@ -424,17 +424,19 @@ export interface HttpRouterServiceAuthPolicy {
 // @public (undocumented)
 export interface InstanceMetadataService {
   // (undocumented)
-  getInstalledPlugins: () => readonly InstanceMetadataServicePluginInfo[];
+  getInstalledPlugins: () => Promise<
+    ReadonlyArray<InstanceMetadataServicePluginInfo>
+  >;
 }
 
 // @public (undocumented)
 export interface InstanceMetadataServicePluginInfo {
   // (undocumented)
-  modules: {
+  readonly modules: ReadonlyArray<{
     moduleId: string;
-  }[];
+  }>;
   // (undocumented)
-  pluginId: string;
+  readonly pluginId: string;
 }
 
 export { isChildPath };

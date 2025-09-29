@@ -16,20 +16,15 @@
 
 /** @public */
 export interface InstanceMetadataServicePluginInfo {
-  pluginId: string;
-  modules: {
+  readonly pluginId: string;
+  readonly modules: ReadonlyArray<{
     moduleId: string;
-  }[];
+  }>;
 }
-
-/** @internal */
-export type DeepReadonly<T> = {
-  readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K];
-};
 
 /** @public */
 export interface InstanceMetadataService {
   getInstalledPlugins: () => Promise<
-    ReadonlyArray<DeepReadonly<InstanceMetadataServicePluginInfo>>
+    ReadonlyArray<InstanceMetadataServicePluginInfo>
   >;
 }
