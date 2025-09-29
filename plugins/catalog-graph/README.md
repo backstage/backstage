@@ -32,7 +32,16 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    # From your Backstage root directory
    yarn --cwd packages/app add @backstage/plugin-catalog-graph
    ```
-2. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
+2. Add a dependency to your `packages/backend/package.json`:
+   ```sh
+   # From your Backstage root directory
+   yarn --cwd packages/backend add @backstage/plugin-catalog-graph-backend
+   ```
+   and add the backend to `packages/backend/src/index.ts`
+   ```ts
+   backend.add(import('@backstage/plugin-catalog-graph-backend'));
+   ```
+3. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
 
    ```typescript
    <FlatRoutes>
@@ -56,7 +65,7 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    />
    ```
 
-3. Bind the external routes of the `catalogGraphPlugin` in your `packages/app/src/App.tsx`:
+4. Bind the external routes of the `catalogGraphPlugin` in your `packages/app/src/App.tsx`:
 
    ```typescript
    bindRoutes({ bind }) {
@@ -68,7 +77,7 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    }
    ```
 
-4. Add `EntityCatalogGraphCard` to any entity page that you want in your `packages/app/src/components/catalog/EntityPage.tsx`:
+5. Add `EntityCatalogGraphCard` to any entity page that you want in your `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```typescript
    <Grid item md={6} xs={12}>

@@ -31,14 +31,21 @@ import {
   TestApiRegistry,
 } from '@backstage/test-utils';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 function GraphContext(props: PropsWithChildren<{}>) {
   return (
     <ApiProvider
-      apis={TestApiRegistry.from([
-        catalogGraphApiRef,
-        new DefaultCatalogGraphApi({ config: mockApis.config() }),
-      ])}
+      apis={TestApiRegistry.from(
+        [
+          catalogGraphApiRef,
+          new DefaultCatalogGraphApi({
+            config: mockApis.config(),
+          }),
+        ],
+        [discoveryApiRef, mockApis.discovery()],
+        [fetchApiRef, {}],
+      )}
     >
       {props.children}
     </ApiProvider>
