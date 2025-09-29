@@ -155,11 +155,14 @@ export class BitbucketCloudClient {
   private getAuthHeaders(): Record<string, string> {
     const headers: Record<string, string> = {};
 
-    if (this.config.token) {
-      headers.Authorization = `Bearer ${this.config.token}`;
-    } else if (this.config.username) {
+    if (
+      this.config.username &&
+      (this.config.token ?? this.config.appPassword)
+    ) {
       const buffer = Buffer.from(
-        `${this.config.username}:${this.config.appPassword}`,
+        `${this.config.username}:${
+          this.config.token ?? this.config.appPassword
+        }`,
         'utf8',
       );
       headers.Authorization = `Basic ${buffer.toString('base64')}`;
