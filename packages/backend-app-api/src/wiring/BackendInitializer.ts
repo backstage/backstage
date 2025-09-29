@@ -122,7 +122,11 @@ function createInstanceMetadataServiceFactory(
               modules: [],
             };
           }
-          installedPlugins[feature.pluginId].modules.push({
+          (
+            installedPlugins[feature.pluginId].modules as Array<{
+              moduleId: string;
+            }>
+          ).push({
             moduleId: feature.moduleId,
           });
         }

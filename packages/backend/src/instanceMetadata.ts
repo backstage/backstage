@@ -28,9 +28,9 @@ export default createBackendPlugin({
         logger: coreServices.logger,
       },
       async init({ instanceMetadata, logger }) {
+        const plugins = await instanceMetadata.getInstalledPlugins();
         logger.info(
-          `Installed plugins on this instance: ${instanceMetadata
-            .getInstalledPlugins()
+          `Installed plugins on this instance: ${plugins
             .map(e => e.pluginId)
             .join(', ')}`,
         );

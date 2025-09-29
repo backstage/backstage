@@ -560,7 +560,7 @@ export namespace mockServices {
 
   export function instanceMetadata(): InstanceMetadataService {
     return {
-      getInstalledPlugins: () => [],
+      getInstalledPlugins: () => Promise.resolve([]),
     };
   }
   export namespace instanceMetadata {
