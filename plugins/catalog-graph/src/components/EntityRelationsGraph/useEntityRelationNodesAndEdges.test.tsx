@@ -30,11 +30,16 @@ import {
 import { ApiProvider } from '@backstage/core-app-api';
 import { TestApiRegistry, mockApis } from '@backstage/test-utils';
 import { createDeferred, DeferredPromise } from '@backstage/types';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 import { EntityNode } from '../../lib/types';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+import { useFetchMethod as useFetchMethodMocked } from './useFetchMethod';
+
+jest.mock('./useFetchMethod');
 
 /*
   This is the full test graph:
@@ -140,6 +145,7 @@ function GraphContext(props: PropsWithChildren<{}>) {
     <ApiProvider
       apis={TestApiRegistry.from(
         [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
+        [catalogApiRef, catalogApiMock()],
         [discoveryApiRef, mockApis.discovery()],
         [fetchApiRef, fetchApi],
         [errorApiRef, {}],
@@ -161,6 +167,10 @@ describe('useEntityRelationNodesAndEdges', () => {
         return { entities: Object.values(entities) };
       },
     })) as any;
+
+    (
+      useFetchMethodMocked as jest.Mock<ReturnType<typeof useFetchMethodMocked>>
+    ).mockReturnValue('backend');
   });
 
   afterAll(() => {
@@ -168,6 +178,7 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should forward loading state', async () => {
+    const rootEntityRefs = ['b:d/c'];
     deferred = createDeferred();
     fetchApi.fetch = jest.fn(async () => ({
       json: async () => {
@@ -179,7 +190,7 @@ describe('useEntityRelationNodesAndEdges', () => {
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
+          rootEntityRefs,
         }),
       { wrapper: GraphContext },
     );
@@ -195,6 +206,7 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should forward error state', async () => {
+    const rootEntityRefs = ['b:d/c'];
     const returnError = new Error('Test');
     fetchApi.fetch = jest.fn(async () => ({
       json: async () => {
@@ -206,7 +218,7 @@ describe('useEntityRelationNodesAndEdges', () => {
     const { result, rerender } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
+          rootEntityRefs,
         }),
       { wrapper: GraphContext },
     );

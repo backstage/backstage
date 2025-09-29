@@ -21,13 +21,18 @@ import {
   RELATION_OWNER_OF,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { TestApiRegistry, mockApis } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
 import { useEntityRelationGraphFromBackend as useEntityRelationGraphFromBackendMocked } from './useEntityRelationGraphFromBackend';
+import { useFetchMethod as useFetchMethodMocked } from './useFetchMethod';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 jest.mock('./useEntityRelationGraphFromBackend');
+jest.mock('./useFetchMethod');
 
 const useEntityRelationGraphFromBackend =
   useEntityRelationGraphFromBackendMocked as jest.Mock<
@@ -38,10 +43,12 @@ function GraphContext(props: PropsWithChildren<{}>) {
   const config = mockApis.config();
   return (
     <ApiProvider
-      apis={TestApiRegistry.from([
-        catalogGraphApiRef,
-        new DefaultCatalogGraphApi({ config }),
-      ])}
+      apis={TestApiRegistry.from(
+        [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
+        [catalogApiRef, catalogApiMock()],
+        [discoveryApiRef, mockApis.discovery()],
+        [fetchApiRef, {}],
+      )}
     >
       {props.children}
     </ApiProvider>
@@ -170,6 +177,10 @@ describe('useEntityRelationGraph', () => {
       loading: false,
       error: undefined,
     }));
+
+    (
+      useFetchMethodMocked as jest.Mock<ReturnType<typeof useFetchMethodMocked>>
+    ).mockReturnValue('backend');
   });
 
   afterEach(() => jest.resetAllMocks());
@@ -280,6 +291,10 @@ describe('useEntityRelationGraph', () => {
   });
 
   test('should handle custom entitySet', async () => {
+    (
+      useFetchMethodMocked as jest.Mock<ReturnType<typeof useFetchMethodMocked>>
+    ).mockReturnValue('none');
+
     const { result } = renderHook(
       () =>
         useEntityRelationGraph({

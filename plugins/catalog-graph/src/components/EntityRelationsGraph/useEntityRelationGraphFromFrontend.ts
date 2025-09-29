@@ -14,38 +14,40 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useEntityStore } from './useEntityStore';
 import { useRelations } from '../../hooks/useRelations';
 
-const emptySet = {};
-
 /**
- * Filter the graph entities already fetched from the backend, using
- * `entityFilter`, if such is provided.
+ * Discover the graph of entities connected by relations, starting from a set of
+ * root entities. Filters are used to select which relations to includes.
+ * Returns all discovered entities once they are loaded.
  */
-export function useEntityRelationGraphFilter({
-  rootEntityRefs,
-  maxDepth = Number.POSITIVE_INFINITY,
-  relations,
-  kinds,
-  entityFilter,
-  allEntities,
-}: {
-  rootEntityRefs: string[];
-  maxDepth?: number;
-  relations?: string[];
-  kinds?: string[];
-  entityFilter?: (entity: Entity) => boolean;
-  allEntities?: { [ref: string]: Entity };
-}): { [ref: string]: Entity } {
+export function useEntityRelationGraphFromFrontend(
+  {
+    rootEntityRefs,
+    maxDepth = Number.POSITIVE_INFINITY,
+    relations,
+    kinds,
+  }: {
+    rootEntityRefs: string[];
+    maxDepth?: number;
+    relations?: string[];
+    kinds?: string[];
+  },
+  { noFetch }: { noFetch: boolean },
+): {
+  entities?: { [ref: string]: Entity };
+  loading: boolean;
+  error?: Error;
+} {
+  const { entities, loading, error, requestEntities } = useEntityStore();
   const { includeRelation } = useRelations({ relations });
 
-  return useMemo(() => {
-    if (!allEntities || Object.keys(allEntities).length === 0) {
-      return emptySet;
+  useEffect(() => {
+    if (noFetch) {
+      return;
     }
-
-    const entities: { [ref: string]: Entity } = {};
 
     const expectedEntities = new Set([...rootEntityRefs]);
     const processedEntityRefs = new Set<string>();
@@ -55,27 +57,18 @@ export function useEntityRelationGraphFilter({
 
     while (
       nextDepthRefQueue.length > 0 &&
-      (!isFinite(maxDepth) || depth < maxDepth + 1)
+      (!isFinite(maxDepth) || depth < maxDepth)
     ) {
       const entityRefQueue = nextDepthRefQueue;
       nextDepthRefQueue = [];
 
       while (entityRefQueue.length > 0) {
         const entityRef = entityRefQueue.shift()!;
-        const entity = allEntities[entityRef];
+        const entity = entities[entityRef];
 
         processedEntityRefs.add(entityRef);
 
-        if (entity) {
-          entities[entityRef] = entity;
-        }
-
         if (entity && entity.relations) {
-          // If the entity is filtered out then no need to check any
-          // of its outgoing relationships to other entities
-          if (entityFilter && !entityFilter(entity)) {
-            continue;
-          }
           for (const rel of entity.relations) {
             if (
               includeRelation(rel.type) &&
@@ -97,14 +90,28 @@ export function useEntityRelationGraphFilter({
 
       ++depth;
     }
-
-    return entities;
+    requestEntities([...expectedEntities]);
   }, [
-    allEntities,
+    noFetch,
+    entities,
     rootEntityRefs,
     maxDepth,
     includeRelation,
     kinds,
-    entityFilter,
+    requestEntities,
   ]);
+
+  const filteredEntities = useMemo(() => {
+    if (loading || noFetch) {
+      return {};
+    }
+
+    return entities;
+  }, [loading, noFetch, entities]);
+
+  return {
+    entities: filteredEntities,
+    loading,
+    error,
+  };
 }
