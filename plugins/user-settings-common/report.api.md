@@ -4,38 +4,13 @@
 
 ```ts
 import type { JsonValue } from '@backstage/types';
-import type { SerializedError } from '@backstage/errors';
-
-// @public (undocumented)
-export function isMultiUserSettingError(
-  setting: MultiUserSetting,
-): setting is MultiUserSettingError;
 
 // @public
-export type MultiUserSetting = MultiUserSettingError | MultiUserSettingSuccess;
-
-// @public
-export type MultiUserSettingError = {
-  bucket: string;
-  key: string;
-  error: SerializedError;
+export type MultiGetResponse = {
+  items: ({
+    value: JsonValue;
+  } | null)[];
 };
-
-// @public
-export type MultiUserSettingSuccess = {
-  bucket: string;
-  key: string;
-  value: JsonValue;
-};
-
-// @public (undocumented)
-export function parseDataLoaderKey(bucketAndKey: string): {
-  bucket: string;
-  key: string;
-};
-
-// @public (undocumented)
-export function stringifyDataLoaderKey(bucket: string, key: string): string;
 
 // @public (undocumented)
 export type UserSettingsSignal = {

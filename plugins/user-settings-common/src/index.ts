@@ -15,6 +15,3 @@
  */
 
 export * from './types';
-export { isMultiUserSettingError } from './types';
-
-export { stringifyDataLoaderKey, parseDataLoaderKey } from './keys';

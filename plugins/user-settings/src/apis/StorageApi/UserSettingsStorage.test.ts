@@ -25,8 +25,6 @@ import {
   mockApis,
   registerMswTestHooks,
 } from '@backstage/test-utils';
-import { NotFoundError } from '@backstage/errors';
-import { parseDataLoaderKey } from '@backstage/plugin-user-settings-common';
 import { createDeferred } from '@backstage/types';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -187,7 +185,7 @@ describe('Persistent Storage API', () => {
           return res(ctx.json(data));
         },
       ),
-      rest.get(`${mockBaseUrl}/multi`, async (_req, res, ctx) => {
+      rest.post(`${mockBaseUrl}/multiget`, async (_req, res, ctx) => {
         serverCall.resolve();
         return res(ctx.json([]));
       }),
@@ -234,7 +232,7 @@ describe('Persistent Storage API', () => {
           return res(ctx.status(204));
         },
       ),
-      rest.get(`${mockBaseUrl}/multi`, async (_req, res, ctx) => {
+      rest.post(`${mockBaseUrl}/multiget`, async (_req, res, ctx) => {
         serverCall.resolve();
         return res(ctx.json([]));
       }),
@@ -283,10 +281,9 @@ describe('Persistent Storage API', () => {
           return res(ctx.json({ value }));
         },
       ),
-      rest.get(`${mockBaseUrl}/multi`, async (req, res, ctx) => {
-        const { bucket, key } = parseDataLoaderKey(
-          req.url.searchParams.get('items') as string,
-        );
+      rest.post(`${mockBaseUrl}/multiget`, async (req, res, ctx) => {
+        const payload = await req.json();
+        const { bucket, key } = payload.items[0];
 
         expect(bucket).toEqual('clash.profile/something');
         expect(key).toEqual('deep/test2');
@@ -333,12 +330,11 @@ describe('Persistent Storage API', () => {
     });
 
     server.use(
-      rest.get(`${mockBaseUrl}/multi`, async (req, res, ctx) => {
-        const { bucket, key } = parseDataLoaderKey(
-          req.url.searchParams.get('items') as string,
-        );
-        expect(bucket).toEqual('Test.Mock.Thing');
-        expect(key).toEqual('key');
+      rest.post(`${mockBaseUrl}/multiget`, async (req, res, ctx) => {
+        const payload = await req.json();
+        expect(payload).toEqual({
+          items: [{ bucket: 'Test.Mock.Thing', key: 'key' }],
+        });
         return res(ctx.text('{ invalid: json string }'));
       }),
     );
@@ -369,8 +365,8 @@ describe('Persistent Storage API', () => {
     const data = { foo: 'bar', baz: [{ foo: 'bar' }] };
 
     server.use(
-      rest.get(`${mockBaseUrl}/multi`, async (_req, res, ctx) => {
-        return res(ctx.json([{ bucket: 'freeze', key: 'key', value: data }]));
+      rest.post(`${mockBaseUrl}/multiget`, async (_req, res, ctx) => {
+        return res(ctx.json({ items: [{ value: data }] }));
       }),
     );
 
@@ -415,21 +411,21 @@ describe('Persistent Storage API', () => {
     let serverCalls = 0;
 
     server.use(
-      rest.get(`${mockBaseUrl}/multi`, async (req, res, ctx) => {
+      rest.post(`${mockBaseUrl}/multiget`, async (req, res, ctx) => {
         ++serverCalls;
-        const result = req.url.searchParams
-          .getAll('items')
-          .map(item => parseDataLoaderKey(item))
-          .map(({ key }) => {
-            if (key === 'key1') {
-              return { bucket: 'multiget', key, value: data1 };
-            } else if (key === 'key2') {
-              return { bucket: 'multiget', key, value: data2 };
-            }
-            return { bucket: 'multiget', key, error: new NotFoundError() };
-          });
+        const payload = (await req.json()) as {
+          items: { bucket: string; key: string }[];
+        };
+        const result = payload.items.map(item => {
+          if (item.key === 'key1') {
+            return { value: data1 };
+          } else if (item.key === 'key2') {
+            return { value: data2 };
+          }
+          return null;
+        });
 
-        return res(ctx.json(result));
+        return res(ctx.json({ items: result }));
       }),
     );
 
