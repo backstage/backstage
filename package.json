@@ -105,6 +105,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch",
+    "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0",
     "ast-types@0.14.2": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
     "ast-types@^0.14.1": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
     "ast-types@npm:0.14.2": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch",
