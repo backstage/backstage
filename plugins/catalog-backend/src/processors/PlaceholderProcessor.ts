@@ -140,7 +140,7 @@ export async function yamlPlaceholderResolver(
 
   let documents: yaml.Document.Parsed[];
   try {
-    documents = yaml.parseAllDocuments(content, {merge: true}).filter(d => d);
+    documents = yaml.parseAllDocuments(content, { merge: true }).filter(d => d);
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} failed to parse YAML data at ${params.value}, ${e}`,
