@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import {
   Input,
   SearchField as AriaSearchField,
@@ -39,11 +39,16 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       secondaryLabel,
       description,
       isRequired,
+      onChange,
       placeholder = 'Search',
+      startCollapsed = false,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       ...rest
     } = props;
+
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [shouldCollapse, setShouldCollapse] = useState(true);
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -60,13 +65,31 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       },
     );
 
-    const { classNames: searchFieldClassNames } = useStyles('SearchField', {
-      size,
-    });
+    const { classNames: searchFieldClassNames } = useStyles('SearchField', {});
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
+
+    const handleClick = (isFocused: boolean) => {
+      props.onFocusChange?.(isFocused);
+      if (shouldCollapse) {
+        if (isFocused) {
+          setIsCollapsed(true);
+        } else {
+          setIsCollapsed(false);
+        }
+      }
+    };
+
+    const handleChange = (value: string) => {
+      props.onChange?.(value);
+      if (value.length > 0) {
+        setShouldCollapse(false);
+      } else {
+        setShouldCollapse(true);
+      }
+    };
 
     return (
       <AriaSearchField
@@ -78,6 +101,10 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
+        data-start-collapsed={startCollapsed}
+        data-collapsed={isCollapsed}
+        onFocusChange={handleClick}
+        onChange={handleChange}
         {...rest}
         ref={ref}
       >

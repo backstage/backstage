@@ -4,12 +4,12 @@
 
 | Name              | Location     | Severity |
 | :---------------- | :----------- | :------- |
-| @material-ui/core | package.json | error    |
+| @material-ui/core | plugins/signals-react/package.json | error    |
 
 ## Unused devDependencies (2)
 
 | Name                   | Location     | Severity |
 | :--------------------- | :----------- | :------- |
-| @testing-library/react | package.json | error    |
-| @backstage/test-utils  | package.json | error    |
+| @testing-library/react | plugins/signals-react/package.json | error    |
+| @backstage/test-utils  | plugins/signals-react/package.json | error    |
 

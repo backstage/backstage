@@ -8,37 +8,33 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { AppTheme } from '@backstage/frontend-plugin-api';
-import { ComponentRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconComponent as IconComponent_2 } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
-const appPlugin: FrontendPlugin<
+const appPlugin: OverridableFrontendPlugin<
   {},
   {},
   {
     app: ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         root: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
@@ -55,11 +51,7 @@ const appPlugin: FrontendPlugin<
     'app/layout': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         nav: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
@@ -83,11 +75,7 @@ const appPlugin: FrontendPlugin<
     'app/nav': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         items: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -123,11 +111,7 @@ const appPlugin: FrontendPlugin<
     'app/root': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         router: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -184,11 +168,7 @@ const appPlugin: FrontendPlugin<
     'app/routes': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         routes: ExtensionInput<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -215,11 +195,7 @@ const appPlugin: FrontendPlugin<
       name: 'alert';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -232,11 +208,7 @@ const appPlugin: FrontendPlugin<
     'api:app/analytics': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         implementations: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -265,11 +237,7 @@ const appPlugin: FrontendPlugin<
       name: 'app-language';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -282,11 +250,7 @@ const appPlugin: FrontendPlugin<
     'api:app/app-theme': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         themes: ExtensionInput<
           ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>,
@@ -311,11 +275,7 @@ const appPlugin: FrontendPlugin<
       name: 'atlassian-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -330,11 +290,7 @@ const appPlugin: FrontendPlugin<
       name: 'bitbucket-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -349,11 +305,7 @@ const appPlugin: FrontendPlugin<
       name: 'bitbucket-server-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -364,31 +316,12 @@ const appPlugin: FrontendPlugin<
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/components': ExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {
-        components: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            {
-              ref: ComponentRef;
-              impl: ComponentType;
-            },
-            'core.component.component',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-      };
       kind: 'api';
       name: 'components';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
       params: <
         TApi,
         TImpl extends TApi,
@@ -402,11 +335,7 @@ const appPlugin: FrontendPlugin<
       name: 'dialog';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -421,11 +350,7 @@ const appPlugin: FrontendPlugin<
       name: 'discovery';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -440,11 +365,7 @@ const appPlugin: FrontendPlugin<
       name: 'error';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -459,11 +380,7 @@ const appPlugin: FrontendPlugin<
       name: 'feature-flags';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -478,11 +395,7 @@ const appPlugin: FrontendPlugin<
       name: 'fetch';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -497,11 +410,7 @@ const appPlugin: FrontendPlugin<
       name: 'github-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -516,11 +425,7 @@ const appPlugin: FrontendPlugin<
       name: 'gitlab-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -535,11 +440,7 @@ const appPlugin: FrontendPlugin<
       name: 'google-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -552,11 +453,7 @@ const appPlugin: FrontendPlugin<
     'api:app/icons': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -587,11 +484,7 @@ const appPlugin: FrontendPlugin<
       name: 'microsoft-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -606,11 +499,7 @@ const appPlugin: FrontendPlugin<
       name: 'oauth-request';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -625,11 +514,7 @@ const appPlugin: FrontendPlugin<
       name: 'okta-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -644,11 +529,22 @@ const appPlugin: FrontendPlugin<
       name: 'onelogin-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/openshift-auth': ExtensionDefinition<{
+      kind: 'api';
+      name: 'openshift-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -663,11 +559,7 @@ const appPlugin: FrontendPlugin<
       name: 'permission';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -682,11 +574,7 @@ const appPlugin: FrontendPlugin<
       name: 'scm-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -701,11 +589,7 @@ const appPlugin: FrontendPlugin<
       name: 'scm-integrations';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -720,12 +604,40 @@ const appPlugin: FrontendPlugin<
       name: 'storage';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/swappable-components': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        components: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              ref: SwappableComponentRef;
+              loader:
+                | (() => (props: {}) => JSX.Element | null)
+                | (() => Promise<(props: {}) => JSX.Element | null>);
+            },
+            'core.swappableComponent',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'swappable-components';
       params: <
         TApi,
         TImpl extends TApi,
@@ -737,11 +649,7 @@ const appPlugin: FrontendPlugin<
     'api:app/translations': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {
         translations: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -777,11 +685,7 @@ const appPlugin: FrontendPlugin<
       name: 'vmware-cloud-auth';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -808,11 +712,7 @@ const appPlugin: FrontendPlugin<
           | undefined;
         transientTimeoutMs?: number | undefined;
       };
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         [x: string]: ExtensionInput<
           ExtensionDataRef,
@@ -831,11 +731,7 @@ const appPlugin: FrontendPlugin<
     'app-root-element:app/dialog-display': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         [x: string]: ExtensionInput<
           ExtensionDataRef,
@@ -856,22 +752,186 @@ const appPlugin: FrontendPlugin<
       name: 'oauth-request-dialog';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};
       params: {
         element: JSX.Element;
       };
+    }>;
+    'component:app/core-error-display': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core-error-display';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
+    'component:app/core-not-found-error-page': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core-not-found-error-page';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
+    'component:app/core-progress': ExtensionDefinition<{
+      kind: 'component';
+      name: 'core-progress';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
     }>;
     'sign-in-page:app': ExtensionDefinition<{
       kind: 'sign-in-page';
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         ComponentType<SignInPageProps>,
         'core.sign-in-page.component',
         {}
@@ -886,7 +946,7 @@ const appPlugin: FrontendPlugin<
       name: 'dark';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
+      output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
       inputs: {};
       params: {
         theme: AppTheme;
@@ -897,7 +957,7 @@ const appPlugin: FrontendPlugin<
       name: 'light';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
+      output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
       inputs: {};
       params: {
         theme: AppTheme;

@@ -115,7 +115,7 @@ export class ElasticSearchClientWrapper {
 
   bulk(bulkOptions: {
     datasource: Readable;
-    onDocument: () => ElasticSearchIndexAction;
+    onDocument: (doc: any) => ElasticSearchIndexAction;
     refreshOnCompletion?: string | boolean;
   }) {
     if (this.openSearchClient) {

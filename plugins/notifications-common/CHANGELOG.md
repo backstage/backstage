@@ -1,5 +1,18 @@
 # @backstage/plugin-notifications-common
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
+## 0.1.0
+
+### Minor Changes
+
+- 9152ba8: Add an optional generic object `metadata` field to `NotificationPayload`. Metadata can be used to store additional unstructured data for the notification and are available to use by processors.
+
 ## 0.0.10
 
 ### Patch Changes

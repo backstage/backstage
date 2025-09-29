@@ -14,8 +14,91 @@
  * limitations under the License.
  */
 
-.bui-SearchField[data-empty] .bui-InputClear {
-  display: none;
+.bui-SearchField {
+  flex: 1;
+  flex-shrink: 0;
+
+  &[data-empty] {
+    .bui-InputClear {
+      display: none;
+    }
+  }
+
+  &[data-start-collapsed='true'] {
+    transition: flex-basis 0.3s ease-in-out;
+    padding: 0;
+    flex: 0 1 auto;
+
+    &[data-collapsed='true'] {
+      flex-basis: 200px;
+    }
+
+    &[data-collapsed='false'] {
+      cursor: pointer;
+
+      &[data-size='medium'] {
+        flex-basis: 2.5rem;
+        height: 2.5rem;
+      }
+
+      &[data-size='small'] {
+        flex-basis: 2rem;
+        height: 2rem;
+      }
+
+      &[data-size='medium'] .bui-Input {
+        &::placeholder {
+          opacity: 0;
+        }
+      }
+
+      &[data-size='small'] .bui-Input {
+        &::placeholder {
+          opacity: 0;
+        }
+      }
+
+      .bui-InputWrapper {
+        .bui-Input[data-icon] {
+          padding-right: 0px;
+        }
+      }
+    }
+  }
+}
+
+.bui-SearchField .bui-Input {
+  transition: padding 0.3s ease-in-out, border-color 0.2s ease-in-out,
+    outline-color 0.2s ease-in-out;
+
+  &[data-hovered] {
+    border-color: var(--bui-border-hover);
+  }
+
+  &[data-focused] {
+    border-color: var(--bui-border-pressed);
+    outline-width: 0px;
+  }
+}
+
+.bui-SearchField .bui-InputWrapper {
+  .bui-Input[data-icon] {
+    padding-right: var(--bui-space-6);
+  }
+}
+
+.bui-SearchField .bui-InputIcon {
+  left: 0;
+  display: flex;
+  justify-content: center;
+
+  &[data-size='small'] {
+    width: var(--bui-space-8);
+  }
+
+  &[data-size='medium'] {
+    width: var(--bui-space-10);
+  }
 }
 
 .bui-InputClear {

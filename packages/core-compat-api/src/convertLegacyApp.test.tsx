@@ -17,7 +17,7 @@
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import { ReactNode } from 'react';
 import { Route } from 'react-router-dom';
-import { convertLegacyApp } from './convertLegacyApp';
+import { convertLegacyAppRoot } from './convertLegacyApp';
 import {
   createApiFactory,
   createApiRef,
@@ -62,7 +62,7 @@ const ExamplePage2 = examplePlugin2.provide(
 
 describe('convertLegacyApp', () => {
   it('should find and extract root and routes', () => {
-    const collected = convertLegacyApp(
+    const collected = convertLegacyAppRoot(
       <>
         <div />
         <span />
@@ -142,7 +142,7 @@ describe('convertLegacyApp', () => {
   });
 
   it('should find and extract just routes', () => {
-    const collected = convertLegacyApp(
+    const collected = convertLegacyAppRoot(
       <FlatRoutes>
         <Route path="/example-1" element={<ExamplePage1 />} />
         <Route path="/example-2" element={<ExamplePage2 />} />
@@ -222,7 +222,7 @@ describe('convertLegacyApp', () => {
       </EntitySwitch>
     );
 
-    const converted = convertLegacyApp(
+    const converted = convertLegacyAppRoot(
       <FlatRoutes>
         <Route path="/test" element={<div>test</div>} />
       </FlatRoutes>,

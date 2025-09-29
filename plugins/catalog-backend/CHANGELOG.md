@@ -1,5 +1,187 @@
 # @backstage/plugin-catalog-backend
 
+## 3.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/backend-openapi-utils@0.6.2-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 3.1.1-next.0
+
+### Patch Changes
+
+- 9890488: Internal refactor to remove remnants of the old backend system
+- 2aaf01a: Fix for duplicate search results in entity-facets API call
+- e489661: Moved catalog processor and provider disabling and priorities under own config objects.
+
+  This is due to issue with some existing providers, such as GitHub, using array syntax for the provider configuration.
+
+  The new config format is not backwards compatible, so users will need to update their config files. The new format
+  is as follows:
+
+  ```yaml
+  catalog:
+    providerOptions:
+      providerA:
+        disabled: false
+      providerB:
+        disabled: true
+    processorOptions:
+      processorA:
+        disabled: false
+        priority: 10
+      processorB:
+        disabled: true
+  ```
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/plugin-permission-common@0.9.1
+
+## 3.1.0
+
+### Minor Changes
+
+- 9b40a55: Add support for specifying an entity `spec.type` in `catalog.rules` and `catalog.locations.rules` within the catalog configuration.
+
+  For example, this enables allowing all `Template` entities with the type `website`:
+
+  ```diff
+    catalog:
+      rules:
+        - allow:
+            - Component
+            - API
+            - Resource
+            - System
+            - Domain
+            - Location
+  +     - allow:
+  +         - kind: Template
+  +           spec.type: website
+          locations:
+            - type: url
+              pattern: https://github.com/org/*\/blob/master/*.yaml
+  ```
+
+### Patch Changes
+
+- 37b4eaf: The 'get-catalog-entity' action now throws a ConflictError instead of generic Error if multiple entities are found, so MCP call doesn't fail with 500.
+- 2bbd24f: Order catalog processors by priority.
+
+  This change enables the ordering of catalog processors by their priority,
+  allowing for more control over the catalog processing sequence.
+  The default priority is set to 20, and processors can be assigned a custom
+  priority to influence their execution order. Lower number indicates higher priority.
+  The priority can be set by implementing the `getPriority` method in the processor class
+  or by adding a `catalog.processors.<processorName>.priority` configuration
+  in the `app-config.yaml` file. The configuration takes precedence over the method.
+
+- e934a27: Updating `catalog:get-catalog-entity` action to be `readOnly` and non destructive
+- 0efcc97: Updated generated schemas
+- 2204f5b: Prevent deadlock in catalog deferred stitching
+- 58874c4: Add support to disable catalog providers and processors via configuration
+- a4c82ad: Only run provider orphan cleanup if the engine is started in the first place
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-permission-node@0.10.4
+
+## 3.0.2-next.1
+
+### Patch Changes
+
+- 2204f5b: Prevent deadlock in catalog deferred stitching
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration@1.18.0-next.0
+
+## 3.0.2-next.0
+
+### Patch Changes
+
+- 37b4eaf: The 'get-catalog-entity' action now throws a ConflictError instead of generic Error if multiple entities are found, so MCP call doesn't fail with 500.
+- a4c82ad: Only run provider orphan cleanup if the engine is started in the first place
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-permission-node@0.10.4-next.0
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 3.0.1
+
+### Patch Changes
+
+- 1752be6: Attempt to circumvent event listener memory leak in compression middleware
+- 9658703: Sort built-in relation fields for more stable entity hash in the processing engine
+- 9dd213c: Make the processing hash calculation not care about the order of the processors.
+
+  This change does not affect the behavior of the catalog, but it will make the processing
+  hash calculation more robust against changes in the order of processors. This should lead to
+  more stable processing hashes, which in turn should lead to fewer unnecessary reprocessing
+  of entities.
+
+  After deploying this fix, you may see a period of increased processing and stitching, but
+  this should stabilize over time as the processing hashes become more consistent.
+
+- fa6fa60: Fixed getLocationByEntity to use `original_value` instead of `value` when querying search table
+- 3a7dad9: Updated `better-sqlite3` to v12
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
+## 3.0.1-next.1
+
+### Patch Changes
+
+- 1752be6: Attempt to circumvent event listener memory leak in compression middleware
+- 9dd213c: Make the processing hash calculation not care about the order of the processors.
+
+  This change does not affect the behavior of the catalog, but it will make the processing
+  hash calculation more robust against changes in the order of processors. This should lead to
+  more stable processing hashes, which in turn should lead to fewer unnecessary reprocessing
+  of entities.
+
+  After deploying this fix, you may see a period of increased processing and stitching, but
+  this should stabilize over time as the processing hashes become more consistent.
+
+- fa6fa60: Fixed getLocationByEntity to use `original_value` instead of `value` when querying search table
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.1
+
 ## 3.0.1-next.0
 
 ### Patch Changes

@@ -1,11 +1,9 @@
 app:
-  experimental:
-    packages: 'all' # ✨
+  packages: 'all' # ✨
 
   routes:
     bindings:
       catalog.viewTechDoc: techdocs.docRoot
-      catalog.createComponent: catalog-import.importPage
       org.catalogIndex: catalog.catalogIndex
 
   pluginOverrides:

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
 import { MemoryRouter } from 'react-router-dom';
 import { Box } from '../Box';
 import { Text } from '../Text';
 
 const meta = {
-  title: 'Components/Tabs',
+  title: 'Backstage UI/Tabs',
   component: Tabs,
 } satisfies Meta<typeof Tabs>;
 

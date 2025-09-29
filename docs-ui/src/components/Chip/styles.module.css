@@ -16,11 +16,11 @@
   color: #2563eb;
 }
 
-[data-theme='dark'] .chip {
+[data-theme-mode='dark'] .chip {
   background-color: #2c2c2c;
   color: #fff;
 }
 
-[data-theme='dark'] .chip.head {
+[data-theme-mode='dark'] .chip.head {
   background-color: #33405b;
 }

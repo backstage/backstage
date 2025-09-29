@@ -1,5 +1,176 @@
 # @backstage/cli
 
+## 0.34.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.4-next.0
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/cli-node@0.2.14
+  - @backstage/release-manifests@0.0.13
+
+## 0.34.4-next.0
+
+### Patch Changes
+
+- 6ebc1ea: Fixed module federation config by only setting `import: false` on shared libraries for remote.
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.14
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.2
+
+## 0.34.2
+
+### Patch Changes
+
+- e6f45dc: Updated the WebPack configuration to use `contenthash`. This fixes an issue were builds would sometimes generate output files with the same name but different content across builds, leading to breakages when loading the frontend app.
+- fffd434: Disallow import fallback of critical shared dependencies in module federation.
+- 080f252: Fixed the `new-frontend-plugin` template that was incorrectly passing `id` instead of `pluginId` to `createFrontendPlugin` and unnecessarily importing `React`.
+- e0db9b8: Modify the `backstage.json` also for custom patterns if it extends the default pattern.
+
+  Examples:
+
+  - `@backstage/*` (default pattern)
+  - `@{backstage,backstage-community}/*`
+  - `@{extra1,backstage,extra2}/*`
+
+- 275bda8: Fixed an issue that could cause conflicts of detected modules in workspaces with multiple apps.
+- e1adce4: Updated the backend plugin template to use a new pattern for the `TodoListService` that reduces boilerplate.
+- Updated dependencies
+  - @backstage/config-loader@1.10.3
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+
+## 0.34.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.3-next.0
+  - @backstage/integration@1.18.0-next.0
+
+## 0.34.2-next.1
+
+### Patch Changes
+
+- e1adce4: Updated the backend plugin template to use a new pattern for the `TodoListService` that reduces boilerplate.
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+
+## 0.34.1-next.0
+
+### Patch Changes
+
+- 080f252: Fixed the `new-frontend-plugin` template that was incorrectly passing `id` instead of `pluginId` to `createFrontendPlugin` and unnecessarily importing `React`.
+- 275bda8: Fixed an issue that could cause conflicts of detected modules in workspaces with multiple apps.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.14
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/integration@1.17.1
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.34.0
+
+### Minor Changes
+
+- 38b4243: Added plugin and module templates for the new frontend system. These templates are not included by default, but can be included by adding `@backstage/cli/templates/new-frontend-plugin` and `@backstage/cli/templates/new-frontend-plugin-module` as [custom templates](https://backstage.io/docs/tooling/cli/templates#installing-custom-templates).
+- 923ceb2: **BREAKING**: The new app build based on [Rspack](https://rspack.dev/) is now the default, and the `EXPERIMENTAL_RSPACK` flag has been removed. To revert to the old behavior, set the `LEGACY_WEBPACK_BUILD` environment flag and install the following optional dependencies:
+
+  ```json
+  {
+    "dependencies": {
+      "@module-federation/enhanced": "^0.9.0",
+      "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
+      "esbuild-loader": "^4.0.0",
+      "eslint-webpack-plugin": "^4.2.0",
+      "fork-ts-checker-webpack-plugin": "^9.0.0",
+      "mini-css-extract-plugin": "^2.4.2",
+      "terser-webpack-plugin": "^5.1.3",
+      "webpack": "^5.96.0",
+      "webpack-dev-server": "^5.0.0"
+    }
+  }
+  ```
+
+  If you do encounter a blocking issue that forces you to use the old WebPack build, please [open an issue](https://github.com/backstage/backstage/issues) explaining the problem. The WebPack build will be removed in a future release.
+
+- eda80c7: **BREAKING**: Removed support for `.icon.svg` imports, which have been deprecated since the 1.19 release.
+
+### Patch Changes
+
+- 2b8082a: Internal refactor of error handling
+- 8b1bf6e: Deprecated new frontend system config setting `app.experimental.packages` to just `app.packages`. The old config will continue working for the time being, but may be removed in a future release.
+- ead626f: The Node.js transform in `@backstage/cli/config/nodeTransformHooks.mjs` now supports the built-in type stripping in Node.js, which is enabled by default from v22.18.0.
+- a6af768: Allow js files to be processed by the nodeTransform loader
+- Updated dependencies
+  - @backstage/cli-node@0.2.14
+
+## 0.34.0-next.2
+
+### Minor Changes
+
+- 923ceb2: **BREAKING**: The new app build based on [Rspack](https://rspack.dev/) is now the default, and the `EXPERIMENTAL_RSPACK` flag has been removed. To revert to the old behavior, set the `LEGACY_WEBPACK_BUILD` environment flag and install the following optional dependencies:
+
+  ```json
+  {
+    "dependencies": {
+      "@module-federation/enhanced": "^0.9.0",
+      "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
+      "esbuild-loader": "^4.0.0",
+      "eslint-webpack-plugin": "^4.2.0",
+      "fork-ts-checker-webpack-plugin": "^9.0.0",
+      "mini-css-extract-plugin": "^2.4.2",
+      "terser-webpack-plugin": "^5.1.3",
+      "webpack": "^5.96.0",
+      "webpack-dev-server": "^5.0.0"
+    }
+  }
+  ```
+
+  If you do encounter a blocking issue that forces you to use the old WebPack build, please [open an issue](https://github.com/backstage/backstage/issues) explaining the problem. The WebPack build will be removed in a future release.
+
+- eda80c7: **BREAKING**: Removed support for `.icon.svg` imports, which have been deprecated since the 1.19 release.
+
+### Patch Changes
+
+- 8b1bf6e: Deprecated new frontend system config setting `app.experimental.packages` to just `app.packages`. The old config will continue working for the time being, but may be removed in a future release.
+- ead626f: The Node.js transform in `@backstage/cli/config/nodeTransformHooks.mjs` now supports the built-in type stripping in Node.js, which is enabled by default from v22.18.0.
+
+## 0.34.0-next.1
+
+### Minor Changes
+
+- 38b4243: Added plugin and module templates for the new frontend system. These templates are not included by default, but can be included by adding `@backstage/cli/templates/new-frontend-plugin` and `@backstage/cli/templates/new-frontend-plugin-module` as [custom templates](https://backstage.io/docs/tooling/cli/templates#installing-custom-templates).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/integration@1.17.1
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
 ## 0.33.2-next.0
 
 ### Patch Changes

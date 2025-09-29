@@ -17,12 +17,8 @@
 import { DismissableBanner, Props } from './DismissableBanner';
 import Typography from '@material-ui/core/Typography';
 import { WebStorage } from '@backstage/core-app-api';
-import {
-  ErrorApi,
-  storageApiRef,
-  StorageApi,
-} from '@backstage/core-plugin-api';
-import { TestApiProvider } from '@backstage/test-utils';
+import { storageApiRef, StorageApi } from '@backstage/core-plugin-api';
+import { TestApiProvider, MockErrorApi } from '@backstage/test-utils';
 import { Link } from '../Link';
 
 export default {
@@ -36,11 +32,10 @@ export default {
   },
 };
 
-let errorApi: ErrorApi;
 const containerStyle = { width: '70%' };
 
 const createWebStorage = (): StorageApi => {
-  return WebStorage.create({ errorApi });
+  return WebStorage.create({ errorApi: new MockErrorApi() });
 };
 
 const apis = [[storageApiRef, createWebStorage()] as const];

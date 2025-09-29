@@ -23,5 +23,16 @@
 
 export * from './components';
 export { CatalogGraphPage, EntityCatalogGraphCard } from './extensions';
+export * from './api';
 export { catalogGraphPlugin } from './plugin';
 export { catalogGraphRouteRef } from './routes';
+export { ALL_RELATIONS, ALL_RELATION_PAIRS } from './lib/types';
+export type {
+  RelationPairs,
+  EntityEdgeData,
+  EntityEdge,
+  EntityNodeData,
+  EntityNode,
+} from './lib/types';
+export { Direction } from './lib/types';
+export type { TransformationContext } from './lib/graph-transformations';

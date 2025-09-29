@@ -23,9 +23,10 @@ import {
   Extension,
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
-import { AnyExternalRoutes, AnyRoutes, FeatureFlagConfig } from './types';
+import { FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
 import { JsonObject } from '@backstage/types';
+import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 
 /**
  * Information about the plugin.
@@ -87,12 +88,40 @@ export type FrontendPluginInfoOptions = {
   manifest?: () => Promise<JsonObject>;
 };
 
-/** @public */
-export interface FrontendPlugin<
-  TRoutes extends AnyRoutes = AnyRoutes,
-  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+/**
+ * A variant of the {@link FrontendPlugin} interface that can also be used to install overrides for the plugin.
+ *
+ * @public
+ */
+export interface OverridableFrontendPlugin<
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {
+    [name in string]: RouteRef | SubRouteRef;
+  },
+  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {
+    [name in string]: ExternalRouteRef;
+  },
   TExtensionMap extends { [id in string]: ExtensionDefinition } = {
     [id in string]: ExtensionDefinition;
+  },
+> extends FrontendPlugin<TRoutes, TExternalRoutes> {
+  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  withOverrides(options: {
+    extensions: Array<ExtensionDefinition>;
+
+    /**
+     * Overrides the original info loaders of the plugin one by one.
+     */
+    info?: FrontendPluginInfoOptions;
+  }): OverridableFrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
+}
+
+/** @public */
+export interface FrontendPlugin<
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {
+    [name in string]: RouteRef | SubRouteRef;
+  },
+  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {
+    [name in string]: ExternalRouteRef;
   },
 > {
   readonly $$type: '@backstage/FrontendPlugin';
@@ -104,22 +133,13 @@ export interface FrontendPlugin<
    * Loads the plugin info.
    */
   info(): Promise<FrontendPluginInfo>;
-  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
-  withOverrides(options: {
-    extensions: Array<ExtensionDefinition>;
-
-    /**
-     * Overrides the original info loaders of the plugin one by one.
-     */
-    info?: FrontendPluginInfoOptions;
-  }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
 
 /** @public */
 export interface PluginOptions<
   TId extends string,
-  TRoutes extends AnyRoutes,
-  TExternalRoutes extends AnyExternalRoutes,
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef },
+  TExternalRoutes extends { [name in string]: ExternalRouteRef },
   TExtensions extends readonly ExtensionDefinition[],
 > {
   pluginId: TId;
@@ -130,61 +150,50 @@ export interface PluginOptions<
   info?: FrontendPluginInfoOptions;
 }
 
-/** @public */
-export function createFrontendPlugin<
-  TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
-  TExtensions extends readonly ExtensionDefinition[] = [],
->(
-  options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-): FrontendPlugin<
-  TRoutes,
-  TExternalRoutes,
-  MakeSortedExtensionsMap<TExtensions[number], TId>
->;
 /**
+ * Creates a new plugin that can be installed in a Backstage app.
+ *
+ * @remarks
+ *
+ * Every plugin is created with a unique ID and a set of extensions
+ * that are installed as part of the plugin.
+ *
+ * For more information on how plugins work, see the
+ * {@link https://backstage.io/docs/frontend-system/building-plugins/index | documentation for plugins}
+ * in the frontend system documentation.
+ *
+ * @example
+ *
+ * ```tsx
+ * import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+ *
+ * export const examplePlugin = createFrontendPlugin({
+ *   pluginId: 'example',
+ *   extensions: [
+ *     PageBlueprint.make({
+ *       path: '/example',
+ *       loader: () => import('./ExamplePage').then(m => <m.ExamplePage />),
+ *     }),
+ *   ],
+ * });
+ * ```
+ *
  * @public
- * @deprecated The `id` option is deprecated, use `pluginId` instead.
  */
 export function createFrontendPlugin<
   TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
-  TExtensions extends readonly ExtensionDefinition[] = [],
+  TExtensions extends readonly ExtensionDefinition[],
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
+  TExternalRoutes extends { [name in string]: ExternalRouteRef } = {},
 >(
-  options: Omit<
-    PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-    'pluginId'
-  > & { id: string },
-): FrontendPlugin<
-  TRoutes,
-  TExternalRoutes,
-  MakeSortedExtensionsMap<TExtensions[number], TId>
->;
-export function createFrontendPlugin<
-  TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
-  TExtensions extends readonly ExtensionDefinition[] = [],
->(
-  options:
-    | PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>
-    | (Omit<
-        PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-        'pluginId'
-      > & { id: string }),
-): FrontendPlugin<
+  options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+): OverridableFrontendPlugin<
   TRoutes,
   TExternalRoutes,
   MakeSortedExtensionsMap<TExtensions[number], TId>
 > {
-  const pluginId = 'pluginId' in options ? options.pluginId : options.id;
-  if (!pluginId) {
-    throw new Error(
-      "Either 'id' or 'pluginId' must be provided to createFrontendPlugin",
-    );
-  }
+  const pluginId = options.pluginId;
+
   const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,

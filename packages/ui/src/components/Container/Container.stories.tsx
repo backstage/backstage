@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Box } from '../Box/Box';
 import { Container } from './Container';
 
 const meta = {
-  title: 'Layout/Container',
+  title: 'Backstage UI/Container',
   component: Container,
   parameters: {
     layout: 'fullscreen',

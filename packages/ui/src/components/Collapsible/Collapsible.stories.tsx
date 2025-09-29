@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Collapsible } from './Collapsible';
 import { Button } from '../Button';
 import { Box } from '../Box';
@@ -22,7 +22,7 @@ import { Text } from '../Text';
 import { Icon } from '../Icon';
 
 const meta = {
-  title: 'Components/Collapsible',
+  title: 'Backstage UI/Collapsible',
   component: Collapsible.Root,
 } satisfies Meta<typeof Collapsible.Root>;
 

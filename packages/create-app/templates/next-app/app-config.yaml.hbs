@@ -2,8 +2,8 @@ app:
   title: Scaffolded Backstage App
   baseUrl: http://localhost:3000
 
-  experimental:
-    packages: all
+  # Enable all packages by default, this will discover packages from packages/app/package.json
+  packages: all
 
   extensions:
     # Disable the nav items that we're manually rendering in packages/app/src/modules/nav/Sidebar.tsx
@@ -11,6 +11,11 @@ app:
     - nav-item:user-settings: false
     - nav-item:catalog: false
     - nav-item:scaffolder: false
+
+    # Configure the catalog index page to be the root page, this is normally mounted on /catalog
+    - page:catalog:
+        config:
+          path: /
 
 
 organization:

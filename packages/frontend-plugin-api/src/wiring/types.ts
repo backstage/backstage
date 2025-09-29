@@ -15,7 +15,6 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
 import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { ApiHolder, AppNode } from '../apis';
@@ -31,12 +30,6 @@ export type FeatureFlagConfig = {
   /** Feature flag name */
   name: string;
 };
-
-/** @public */
-export type AnyRoutes = { [name in string]: RouteRef | SubRouteRef };
-
-/** @public */
-export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
 
 /** @public */
 export type ExtensionMap<

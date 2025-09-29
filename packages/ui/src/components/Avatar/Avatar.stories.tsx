@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Avatar } from './index';
 import { Flex } from '../..';
 
 const meta = {
-  title: 'Components/Avatar',
+  title: 'Backstage UI/Avatar',
   component: Avatar,
 } satisfies Meta<typeof Avatar>;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj, StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
-import { HeaderBreadcrumb, HeaderMenuItem, HeaderTab } from './types';
-import { Button } from '../Button';
-import { HeaderPage } from '../HeaderPage';
+import type { HeaderTab } from './types';
+import {
+  Button,
+  HeaderPage,
+  Container,
+  Text,
+  ButtonIcon,
+  MenuTrigger,
+  Menu,
+  MenuItem,
+} from '../../';
 import { MemoryRouter } from 'react-router-dom';
-import { Container } from '../Container';
-import { Text } from '../Text';
-import { ButtonIcon } from '../ButtonIcon';
 import {
   RiHeartLine,
   RiEmotionHappyLine,
   RiCloudy2Line,
+  RiMore2Line,
 } from '@remixicon/react';
+import { HeaderPageBreadcrumb } from '../HeaderPage/types';
 
 const meta = {
-  title: 'Components/Header',
+  title: 'Backstage UI/Header',
   component: Header,
   parameters: {
     layout: 'fullscreen',
@@ -50,14 +57,17 @@ const tabs: HeaderTab[] = [
   {
     id: 'overview',
     label: 'Overview',
+    href: '/overview',
   },
   {
     id: 'checks',
     label: 'Checks',
+    href: '/checks',
   },
   {
     id: 'tracks',
     label: 'Tracks',
+    href: '/tracks',
   },
   {
     id: 'campaigns',
@@ -75,18 +85,41 @@ const tabs2: HeaderTab[] = [
   {
     id: 'Banana',
     label: 'Banana',
+    href: '/banana',
   },
   {
     id: 'Apple',
     label: 'Apple',
+    href: '/apple',
   },
   {
     id: 'Orange',
     label: 'Orange',
+    href: '/orange',
   },
 ];
 
-const breadcrumbs: HeaderBreadcrumb[] = [
+const menuItems = [
+  {
+    label: 'Settings',
+    value: 'settings',
+    href: '/settings',
+  },
+  {
+    label: 'Invite new members',
+    value: 'invite-new-members',
+    href: '/invite-new-members',
+  },
+  {
+    label: 'Logout',
+    value: 'logout',
+    onClick: () => {
+      alert('logout');
+    },
+  },
+];
+
+const breadcrumbs: HeaderPageBreadcrumb[] = [
   {
     label: 'Home',
     href: '/',
@@ -98,17 +131,6 @@ const breadcrumbs: HeaderBreadcrumb[] = [
   {
     label: 'Settings',
     href: '/settings',
-  },
-];
-
-const menuItems: HeaderMenuItem[] = [
-  {
-    label: 'Settings',
-    value: 'settings',
-  },
-  {
-    label: 'Invite new members',
-    value: 'invite-new-members',
   },
 ];
 
@@ -138,7 +160,35 @@ const layoutDecorator = [
       >
         <Story />
         <Container>
-          <Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
             quos.
           </Text>
@@ -161,13 +211,6 @@ export const WithTabs: Story = {
   decorators: [withRouter],
 };
 
-export const WithOptions: Story = {
-  args: {
-    menuItems,
-  },
-  decorators: [withRouter],
-};
-
 export const WithCustomActions: Story = {
   args: {},
   decorators: [withRouter],
@@ -179,37 +222,33 @@ export const WithCustomActions: Story = {
           <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
           <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
           <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+          <MenuTrigger>
+            <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+            <Menu placement="bottom end">
+              {menuItems.map(option => (
+                <MenuItem
+                  key={option.value}
+                  onAction={option.onClick}
+                  href={option.href}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </MenuTrigger>
         </>
       }
     />
   ),
 };
 
-export const WithAllOptions: Story = {
+export const WithAllOptionsAndTabs: Story = {
   args: {
-    title: 'My plugin',
-    titleLink: '/',
-    menuItems,
+    ...WithCustomActions.args,
+    tabs,
   },
   decorators: [withRouter],
   render: WithCustomActions.render,
-};
-
-export const WithBreadcrumbs: Story = {
-  args: {
-    breadcrumbs,
-    tabs,
-  },
-  decorators: [withRouter],
-};
-
-export const WithAllOptionsAndTabs: Story = {
-  args: {
-    ...WithAllOptions.args,
-    tabs,
-  },
-  decorators: [withRouter],
-  render: WithAllOptions.render,
 };
 
 export const WithHeaderPage: Story = {
@@ -231,51 +270,41 @@ export const WithHeaderPage: Story = {
       />
       <HeaderPage
         title="Page title"
-        menuItems={args.menuItems}
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
+        breadcrumbs={breadcrumbs}
       />
     </>
   ),
 };
 
 export const WithLayout: Story = {
-  args: {
-    menuItems,
-    breadcrumbs,
-  },
   decorators: layoutDecorator,
   render: args => (
     <>
       <Header {...args} tabs={tabs} />
       <HeaderPage
         title="Page title"
-        menuItems={args.menuItems}
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
+        breadcrumbs={breadcrumbs}
       />
     </>
   ),
 };
 
 export const WithLayoutNoTabs: Story = {
-  args: {
-    menuItems,
-    breadcrumbs,
-  },
   decorators: layoutDecorator,
   render: args => (
     <>
       <Header {...args} />
-      <HeaderPage title="Page title" menuItems={args.menuItems} tabs={tabs2} />
+      <HeaderPage title="Page title" tabs={tabs2} />
     </>
   ),
 };
 
 export const WithEverything: Story = {
   args: {
-    menuItems,
-    breadcrumbs,
     tabs,
     titleLink: '/',
   },
@@ -294,7 +323,6 @@ export const WithEverything: Story = {
       />
       <HeaderPage
         title="Page title"
-        menuItems={args.menuItems}
         tabs={tabs2}
         customActions={
           <>

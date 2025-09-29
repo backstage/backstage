@@ -95,7 +95,6 @@ export class DefaultCatalogProcessingOrchestrator
       parser: CatalogProcessorParser;
       policy: EntityPolicy;
       rulesEnforcer: CatalogRulesEnforcer;
-      legacySingleProcessorValidation: boolean;
     },
   ) {}
 
@@ -309,9 +308,6 @@ export class DefaultCatalogProcessingOrchestrator
             );
             if (thisValid) {
               valid = true;
-              if (this.options.legacySingleProcessorValidation) {
-                break;
-              }
             }
           } catch (e) {
             throw new InputError(

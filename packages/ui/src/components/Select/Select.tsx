@@ -25,7 +25,6 @@ import {
   Text,
 } from 'react-aria-components';
 import clsx from 'clsx';
-import './Select.styles.css';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { FieldLabel } from '../FieldLabel';
@@ -71,6 +70,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
       className={clsx(classNames.root, className)}
       {...dataAttributes}
       ref={ref}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
       {...rest}
     >
       <FieldLabel

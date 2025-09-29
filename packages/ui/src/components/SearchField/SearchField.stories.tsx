@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
 import { Icon } from '../Icon';
 import { Flex } from '../Flex';
 import { FieldLabel } from '../FieldLabel';
+import { ButtonIcon } from '../ButtonIcon';
+import { RiCactusLine } from '@remixicon/react';
+import { Button } from '../Button';
+import { Header } from '../Header';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
-  title: 'Forms/SearchField',
+  title: 'Backstage UI/SearchField',
   component: SearchField,
   argTypes: {
     isRequired: {
@@ -46,6 +51,7 @@ export const Default: Story = {
     style: {
       maxWidth: '300px',
     },
+    'aria-label': 'Search',
   },
 };
 
@@ -151,4 +157,140 @@ export const CustomField: Story = {
       />
     </>
   ),
+};
+
+export const StartCollapsed: Story = {
+  args: {
+    ...Default.args,
+    startCollapsed: true,
+  },
+
+  render: args => (
+    <Flex direction="row" gap="4">
+      <SearchField {...args} size="small" />
+      <SearchField {...args} size="medium" />
+    </Flex>
+  ),
+};
+
+export const InHeader: Story = {
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  render: args => (
+    <>
+      <Header
+        title="Title"
+        customActions={
+          <>
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+            <SearchField aria-label="Search" {...args} size="small" />
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+          </>
+        }
+      />
+    </>
+  ),
+};
+
+export const StartCollapsedInHeader: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  render: args => (
+    <>
+      <Header
+        title="Title"
+        customActions={
+          <>
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+            <SearchField {...args} size="small" />
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+          </>
+        }
+      />
+    </>
+  ),
+};
+
+export const StartCollapsedWithButtons: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  render: args => (
+    <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: '600px' }}>
+      <SearchField {...args} size="small" />
+      <ButtonIcon
+        aria-label="Cactus icon button"
+        icon={<RiCactusLine />}
+        size="small"
+        variant="secondary"
+      />
+      <Button size="small" variant="secondary">
+        Hello world
+      </Button>
+      <SearchField {...args} size="medium" />
+      <ButtonIcon
+        aria-label="Cactus icon button"
+        icon={<RiCactusLine />}
+        size="medium"
+        variant="secondary"
+      />
+      <Button size="medium" variant="secondary">
+        Hello world
+      </Button>
+    </Flex>
+  ),
+};
+
+export const StartCollapsedWithOnChange: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  render: args => {
+    const handleChange = (value: string) => {
+      console.log('Search value:', value);
+    };
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} onChange={handleChange} size="small" />
+      </Flex>
+    );
+  },
 };

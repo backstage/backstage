@@ -8,6 +8,7 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JsonValue } from '@backstage/types';
@@ -23,7 +24,7 @@ export const CatalogFilterBlueprint: ExtensionBlueprint<{
   params: {
     loader: () => Promise<JSX.Element>;
   };
-  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -85,6 +86,18 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'userListPicker.personalFilter.title': 'Personal';
     readonly 'userListPicker.personalFilter.ownedLabel': 'Owned';
     readonly 'userListPicker.personalFilter.starredLabel': 'Starred';
+    readonly 'entityTableColumnTitle.name': 'Name';
+    readonly 'entityTableColumnTitle.type': 'Type';
+    readonly 'entityTableColumnTitle.label': 'Label';
+    readonly 'entityTableColumnTitle.title': 'Title';
+    readonly 'entityTableColumnTitle.description': 'Description';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
+    readonly 'entityTableColumnTitle.system': 'System';
+    readonly 'entityTableColumnTitle.tags': 'Tags';
+    readonly 'entityTableColumnTitle.namespace': 'Namespace';
+    readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
+    readonly 'entityTableColumnTitle.owner': 'Owner';
+    readonly 'entityTableColumnTitle.targets': 'Targets';
   }
 >;
 
@@ -130,22 +143,22 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
     type?: EntityCardType;
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         EntityCardType,
         'catalog.entity-card-type',
         {
@@ -198,31 +211,31 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<string, 'core.routing.path', {}>
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
         'core.routing.ref',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
+    | ExtensionDataRef<
         string,
         'catalog.entity-content-group',
         {
@@ -274,21 +287,21 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
     loader: () => Promise<(props: EntityContentLayoutProps) => JSX_2.Element>;
   };
   output:
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (props: EntityContentLayoutProps) => React.JSX.Element,
         'catalog.entity-content-layout.component',
         {}
@@ -335,8 +348,8 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   kind: 'entity-context-menu-item';
   params: EntityContextMenuItemParams;
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
@@ -374,21 +387,21 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     filter?: EntityPredicate | ((entity: Entity) => boolean);
   };
   output:
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         JSX_2.Element,
         'core.reactElement',
         {
@@ -424,21 +437,21 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
     filter?: EntityPredicate | ((entity: Entity) => boolean);
   };
   output:
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
         {
           optional: true;
         }
       >
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<
         () => IconLinkVerticalProps,
         'entity-icon-link-props',
         {}
@@ -514,6 +527,40 @@ export type EntityPredicateValue =
   | {
       $contains: EntityPredicateExpression;
     };
+
+// @alpha (undocumented)
+export const EntityTableColumnTitle: ({
+  translationKey,
+}: EntityTableColumnTitleProps) =>
+  | 'Title'
+  | 'System'
+  | 'Domain'
+  | 'Lifecycle'
+  | 'Namespace'
+  | 'Owner'
+  | 'Tags'
+  | 'Type'
+  | 'Name'
+  | 'Description'
+  | 'Targets'
+  | 'Label';
+
+// @alpha (undocumented)
+export type EntityTableColumnTitleProps = {
+  translationKey:
+    | 'name'
+    | 'system'
+    | 'owner'
+    | 'type'
+    | 'lifecycle'
+    | 'namespace'
+    | 'description'
+    | 'tags'
+    | 'targets'
+    | 'title'
+    | 'label'
+    | 'domain';
+};
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

@@ -21,6 +21,18 @@ import {
   ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
 import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
+import { createErrorCollector } from '../wiring/createErrorCollector';
+
+const collector = createErrorCollector();
+
+afterEach(() => {
+  const errors = collector.collectErrors();
+  if (errors) {
+    throw new Error(
+      `Unexpected errors: ${errors.map(e => e.message).join(', ')}`,
+    );
+  }
+});
 
 function makeExt(
   id: string,
@@ -61,6 +73,7 @@ describe('resolveAppNodeSpecs', () => {
         features: [],
         builtinExtensions: [a],
         parameters: [],
+        collector,
       }),
     ).toEqual([
       {
@@ -68,6 +81,9 @@ describe('resolveAppNodeSpecs', () => {
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
     ]);
   });
@@ -80,6 +96,7 @@ describe('resolveAppNodeSpecs', () => {
         features: [],
         builtinExtensions: [a, b],
         parameters: [],
+        collector,
       }),
     ).toEqual([
       {
@@ -87,12 +104,18 @@ describe('resolveAppNodeSpecs', () => {
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'b',
         extension: b,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
     ]);
   });
@@ -113,6 +136,7 @@ describe('resolveAppNodeSpecs', () => {
             attachTo: { id: 'derp', input: 'default' },
           },
         ],
+        collector,
       }),
     ).toEqual([
       {
@@ -120,6 +144,9 @@ describe('resolveAppNodeSpecs', () => {
         extension: b,
         attachTo: { id: 'derp', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'test/a',
@@ -157,6 +184,7 @@ describe('resolveAppNodeSpecs', () => {
             config: { foo: { qux: 3 } },
           },
         ],
+        collector,
       }),
     ).toEqual([
       {
@@ -197,6 +225,7 @@ describe('resolveAppNodeSpecs', () => {
             disabled: false,
           },
         ],
+        collector,
       }),
     ).toEqual([
       {
@@ -204,12 +233,18 @@ describe('resolveAppNodeSpecs', () => {
         extension: b,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
     ]);
   });
@@ -231,6 +266,7 @@ describe('resolveAppNodeSpecs', () => {
           { id: 'd', disabled: false },
           { id: 'c', disabled: false },
         ],
+        collector,
       }),
     ).toEqual([
       {
@@ -238,42 +274,63 @@ describe('resolveAppNodeSpecs', () => {
         extension: e,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'd',
         extension: d,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'c',
         extension: c,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'b',
         extension: b,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'f',
         extension: f,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
       {
         id: 'g',
         extension: g,
         attachTo: { id: 'root', input: 'default' },
         disabled: true,
+        config: undefined,
+        plugin: expect.any(Object),
+        source: expect.any(Object),
       },
     ]);
   });
@@ -302,6 +359,7 @@ describe('resolveAppNodeSpecs', () => {
         ],
         builtinExtensions: [],
         parameters: [],
+        collector,
       }),
     ).toEqual([
       {
@@ -356,6 +414,7 @@ describe('resolveAppNodeSpecs', () => {
         id,
         disabled: false,
       })),
+      collector,
     });
 
     expect(result.map(r => r.extension.id)).toEqual([
@@ -366,53 +425,83 @@ describe('resolveAppNodeSpecs', () => {
   });
 
   it('throws an error when a forbidden extension is overridden by a plugin', () => {
-    expect(() =>
-      resolveAppNodeSpecs({
-        features: [
-          createFrontendPlugin({
-            pluginId: 'test',
-            extensions: [makeExtDef('forbidden')],
-          }),
-        ],
-        builtinExtensions: [],
-        parameters: [],
-        forbidden: new Set(['test/forbidden']),
-      }),
-    ).toThrow(
-      "It is forbidden to override the following extension(s): 'test/forbidden', which is done by the following plugin(s): 'test'",
-    );
+    const plugin = createFrontendPlugin({
+      pluginId: 'test',
+      extensions: [makeExtDef('forbidden')],
+    });
+    const result = resolveAppNodeSpecs({
+      features: [plugin],
+      builtinExtensions: [],
+      parameters: [],
+      forbidden: new Set(['test/forbidden']),
+      collector,
+    });
+    expect(result).toEqual([]);
+
+    expect(collector.collectErrors()).toEqual([
+      {
+        code: 'EXTENSION_IGNORED',
+        message:
+          "It is forbidden to override the 'test/forbidden' extension, attempted by the 'test' plugin",
+        context: {
+          plugin,
+          extensionId: 'test/forbidden',
+        },
+      },
+    ]);
   });
 
   it('throws an error when a forbidden extension is overridden by module', () => {
-    expect(() =>
-      resolveAppNodeSpecs({
-        features: [
-          createFrontendPlugin({
-            pluginId: 'forbidden',
-            extensions: [],
-          }),
-          createFrontendModule({
-            pluginId: 'forbidden',
-            extensions: [makeExtDef()],
-          }),
-        ],
-        builtinExtensions: [],
-        parameters: [],
-        forbidden: new Set(['forbidden']),
-      }),
-    ).toThrow(
-      "It is forbidden to override the following extension(s): 'forbidden', which is done by a module for the following plugin(s): 'forbidden'",
-    );
+    const plugin = createFrontendPlugin({
+      pluginId: 'forbidden',
+      extensions: [],
+    });
+    const result = resolveAppNodeSpecs({
+      features: [
+        plugin,
+        createFrontendModule({
+          pluginId: 'forbidden',
+          extensions: [makeExtDef()],
+        }),
+      ],
+      builtinExtensions: [],
+      parameters: [],
+      forbidden: new Set(['forbidden']),
+      collector,
+    });
+    expect(result).toEqual([]);
+
+    expect(collector.collectErrors()).toEqual([
+      {
+        code: 'EXTENSION_IGNORED',
+        message:
+          "It is forbidden to override the 'forbidden' extension, attempted by the 'forbidden' plugin",
+        context: {
+          plugin,
+          extensionId: 'forbidden',
+        },
+      },
+    ]);
   });
 
   it('throws an error when a forbidden extension is parametrized', () => {
-    expect(() =>
-      resolveAppNodeSpecs({
-        features: [],
-        builtinExtensions: [],
-        parameters: [{ id: 'forbidden', disabled: false }],
-        forbidden: new Set(['forbidden']),
-      }),
-    ).toThrow("Configuration of the 'forbidden' extension is forbidden");
+    const result = resolveAppNodeSpecs({
+      features: [],
+      builtinExtensions: [],
+      parameters: [{ id: 'forbidden', disabled: false }],
+      forbidden: new Set(['forbidden']),
+      collector,
+    });
+    expect(result).toEqual([]);
+
+    expect(collector.collectErrors()).toEqual([
+      {
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
+        message: "Configuration of the 'forbidden' extension is forbidden",
+        context: {
+          extensionId: 'forbidden',
+        },
+      },
+    ]);
   });
 });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TextField } from './TextField';
 import { Form } from 'react-aria-components';
 import { Icon } from '../Icon';
@@ -22,7 +22,7 @@ import { Flex } from '../Flex';
 import { FieldLabel } from '../FieldLabel';
 
 const meta = {
-  title: 'Forms/TextField',
+  title: 'Backstage UI/TextField',
   component: TextField,
   argTypes: {
     isRequired: {
@@ -113,6 +113,7 @@ export const DisabledWithIcon: Story = {
     ...WithIcon.args,
     isDisabled: true,
   },
+  render: WithIcon.render,
 };
 
 export const ShowError: Story = {

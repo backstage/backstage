@@ -7,6 +7,7 @@ import {
   searchFieldDefaultSnippet,
   searchFieldSizesSnippet,
   searchFieldDescriptionSnippet,
+  searchFieldCollapsibleSnippet,
 } from './search-field.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -57,6 +58,18 @@ Here's a simple SearchField with a description.
   open
   preview={<SearchFieldSnippet story="WithDescription" />}
   code={searchFieldDescriptionSnippet}
+/>
+
+### Collapsible
+
+You can make the SearchField collapsible by setting the `startCollapsed` prop to `true`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SearchFieldSnippet story="StartCollapsed" />}
+  code={searchFieldCollapsibleSnippet}
 />
 
 <Theming component="SearchField" />

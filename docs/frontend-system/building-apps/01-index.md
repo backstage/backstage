@@ -5,8 +5,6 @@ sidebar_label: Overview
 description: Building frontend apps using the new frontend system
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 To get set up quickly with your own Backstage project you can create a Backstage App.
 
 A Backstage App is a monorepo setup that includes everything you need to run Backstage in your own environment.

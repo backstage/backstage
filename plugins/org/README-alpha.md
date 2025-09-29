@@ -48,9 +48,8 @@ And below is an example of how a user page looks with the user profile and owner
    ```yaml
    # app-config.yaml
    app:
-     experimental:
-       # Auto discovering all plugins extensions
-       packages: all
+     # Auto discovering all plugins extensions
+     packages: all
      extensions:
        # Enabling the org plugin cards
        - entity-card:org/group-profile
