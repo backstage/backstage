@@ -39,7 +39,7 @@ import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
-import { unwrapFeature } from './helpers';
+import { deepFreeze, unwrapFeature } from './helpers';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InstanceMetadataServicePluginInfo } from '../../../backend-plugin-api/src/services/definitions/InstanceMetadataService';
 
@@ -135,13 +135,17 @@ function createInstanceMetadataServiceFactory(
       logger: coreServices.rootLogger,
     },
     factory: async ({ logger }) => {
+      const readonlyInstalledPlugins = deepFreeze(
+        Object.values(installedPlugins),
+      );
       const instanceMetadata = {
-        getInstalledPlugins: () => Object.values(installedPlugins),
+        getInstalledPlugins: () => Promise.resolve(readonlyInstalledPlugins),
       };
 
+      const plugins = await instanceMetadata.getInstalledPlugins();
+
       logger.info(
-        `Installed plugins on this instance: ${instanceMetadata
-          .getInstalledPlugins()
+        `Installed plugins on this instance: ${plugins
           .map(p => p.pluginId)
           .join(', ')}`,
       );
