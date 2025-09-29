@@ -6,7 +6,7 @@ description: Technical overview of Backstage
 
 ## Purpose
 
-Backstage is an open source framwork for building developer portals that was created at Spotify to simplify end-to-end software development. As they grew, their infrastructure became more fragmented and teams couldn't find the APIs they were supposed to use, or who owned a service, or documentation on anything.
+Backstage is an open source framework for building developer portals that was created at Spotify to simplify end-to-end software development. As Spotify grew, their infrastructure became more fragmented and teams couldn't find the APIs they were supposed to use, or who owned a service, or documentation on anything.
 
 Backstage is powered by a centralized [software catalog](#software-catalog-system-model) and utilizes an abstraction layer that sits on top of all of your infrastructure and developer tooling, allowing you to manage all of your software, services, tooling, and testing in one place.
 
@@ -21,7 +21,7 @@ Backstage is now a [CNCF incubation project](https://backstage.io/blog/2022/03/1
 - For _platform engineers_, it enables extensibility and scalability by letting you easily integrate new tools and services (via plugins), as well as extending the functionality of existing ones.
 - For _everyone_, it is a single, consistent experience that ties all of your infrastructure tooling, resources, standards, owners, contributors, and administrators together in one place.
 
-If you have question or want support, please join our [Discord chatroom](https://discord.gg/backstage-687207715902193673).
+If you have question or want support, please join our [Discord server](https://discord.gg/backstage-687207715902193673).
 
 ## Core Features
 
