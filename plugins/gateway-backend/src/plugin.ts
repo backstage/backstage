@@ -38,11 +38,11 @@ export const gatewayPlugin = createBackendPlugin({
       async init({ logger, discovery, instanceMeta, rootHttpRouter }) {
         rootHttpRouter.use(
           '/api/:pluginId',
-          createRouter({
+          (await createRouter({
             discovery,
             instanceMeta,
             logger,
-          }) as Handler,
+          })) as Handler,
         );
       },
     });

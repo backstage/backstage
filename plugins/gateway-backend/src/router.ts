@@ -23,7 +23,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { context } from '@opentelemetry/api';
 import { getRPCMetadata } from '@opentelemetry/core';
 
-export function createRouter({
+export async function createRouter({
   discovery,
   instanceMeta,
 }: {
@@ -31,9 +31,8 @@ export function createRouter({
   instanceMeta: InstanceMetadataService;
   logger: LoggerService;
 }) {
-  const localPluginIds = new Set(
-    instanceMeta.getInstalledPlugins().map(f => f.pluginId),
-  );
+  const plugins = await instanceMeta.getInstalledPlugins();
+  const localPluginIds = new Set(plugins.map(f => f.pluginId));
 
   const proxy = createProxyMiddleware({
     changeOrigin: true,

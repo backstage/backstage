@@ -1093,7 +1093,9 @@ describe('BackendInitializer', () => {
             instanceMetadata: coreServices.instanceMetadata,
           },
           async init({ instanceMetadata }) {
-            expect(instanceMetadata.getInstalledPlugins()).toEqual([
+            await expect(
+              instanceMetadata.getInstalledPlugins(),
+            ).resolves.toEqual([
               {
                 pluginId: 'test',
                 modules: [
@@ -1124,6 +1126,29 @@ describe('BackendInitializer', () => {
     backend.add(plugin);
     backend.add(module);
     backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
+  it('should prevent writes to the instance metadata service', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.instanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            const plugins = await instanceMetadata.getInstalledPlugins();
+            await expect(() => {
+              (plugins[0] as any).pluginId = 'foo';
+            }).toThrow(/Cannot assign to read only property/);
+          },
+        });
+      },
+    });
+    backend.add(plugin);
     await backend.start();
   });
 
