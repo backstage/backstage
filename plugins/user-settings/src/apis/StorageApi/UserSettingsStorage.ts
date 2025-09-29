@@ -23,15 +23,12 @@ import {
   StorageApi,
   StorageValueSnapshot,
 } from '@backstage/core-plugin-api';
-import { deserializeError, ResponseError } from '@backstage/errors';
+import { ResponseError } from '@backstage/errors';
 import { JsonValue, Observable } from '@backstage/types';
 import { SignalApi, SignalSubscriber } from '@backstage/plugin-signals-react';
 import ObservableImpl from 'zen-observable';
 import {
-  isMultiUserSettingError,
-  MultiUserSetting,
-  parseDataLoaderKey,
-  stringifyDataLoaderKey,
+  MultiGetResponse,
   UserSettingsSignal,
 } from '@backstage/plugin-user-settings-common';
 import DataLoader from 'dataloader';
@@ -46,6 +43,12 @@ const buckets = new Map<string, UserSettingsStorage>();
 
 const DATALOADER_CACHE_TTL_MS = 2 * 1000; // 2 seconds cache
 const DATALOADER_WINDOW_MS = 10; // 10 ms
+
+type DataLoaderType = DataLoader<
+  { bucket: string; key: string },
+  StorageValueSnapshot<JsonValue>,
+  string
+>;
 
 /**
  * An implementation of the storage API, that uses the user-settings backend to
@@ -70,7 +73,7 @@ export class UserSettingsStorage implements StorageApi {
   private readonly identityApi: IdentityApi;
   private readonly fallback: WebStorage;
   private readonly signalApi?: SignalApi;
-  private readonly userSettingsLoader: DataLoader<string, any>;
+  private readonly userSettingsLoader: DataLoaderType;
 
   private constructor(
     namespace: string,
@@ -80,7 +83,7 @@ export class UserSettingsStorage implements StorageApi {
     identityApi: IdentityApi,
     fallback: WebStorage,
     signalApi?: SignalApi,
-    userSettingsLoader?: DataLoader<string, any>,
+    userSettingsLoader?: DataLoaderType,
   ) {
     this.namespace = namespace;
     this.fetchApi = fetchApi;
@@ -92,24 +95,32 @@ export class UserSettingsStorage implements StorageApi {
 
     this.userSettingsLoader =
       userSettingsLoader ??
-      new DataLoader<string, any>(
+      new DataLoader(
         async bucketAndKeyList => this.getMulti(bucketAndKeyList),
         {
           name: 'UserSettingsStorage.userSettingsLoader',
-          cacheMap: new CacheMap<string, Promise<unknown>>(
-            DATALOADER_CACHE_TTL_MS,
-          ),
+          cacheMap: new CacheMap<
+            string,
+            Promise<StorageValueSnapshot<JsonValue>>
+          >(DATALOADER_CACHE_TTL_MS),
+          cacheKeyFn: bucketAndKey => this.stringifyDataLoaderKey(bucketAndKey),
           maxBatchSize: 100,
           batchScheduleFn: cb => setTimeout(cb, DATALOADER_WINDOW_MS),
         },
       );
   }
 
-  private stringifyDataLoaderKey(key: string) {
-    return stringifyDataLoaderKey(this.namespace, key);
+  private stringifyDataLoaderKey({
+    bucket,
+    key,
+  }: {
+    bucket: string;
+    key: string;
+  }) {
+    return `${encodeURIComponent(bucket)}/${encodeURIComponent(key)}`;
   }
   private clearCacheKey(key: string) {
-    this.userSettingsLoader.clear(this.stringifyDataLoaderKey(key));
+    this.userSettingsLoader.clear({ bucket: this.namespace, key });
   }
 
   static create(options: {
@@ -197,11 +208,14 @@ export class UserSettingsStorage implements StorageApi {
 
     const { value } = await response.json();
 
-    this.userSettingsLoader.prime(this.stringifyDataLoaderKey(key), {
-      key,
-      presence: 'present',
-      value,
-    });
+    this.userSettingsLoader.prime(
+      { bucket: this.namespace, key },
+      {
+        key,
+        presence: 'present',
+        value,
+      },
+    );
 
     this.notifyChanges({ key, value, presence: 'present' });
   }
@@ -219,7 +233,7 @@ export class UserSettingsStorage implements StorageApi {
           const updateSnapshot = () => {
             Promise.resolve()
               .then(() =>
-                this.userSettingsLoader.load(this.stringifyDataLoaderKey(key)),
+                this.userSettingsLoader.load({ bucket: this.namespace, key }),
               )
               .then(snapshot => subscriber.next(snapshot))
               .catch(error => this.errorApi.post(error));
@@ -256,53 +270,47 @@ export class UserSettingsStorage implements StorageApi {
   }
 
   private async getMulti(
-    bucketAndKeyList: readonly string[],
+    bucketAndKeyList: readonly { bucket: string; key: string }[],
   ): Promise<StorageValueSnapshot<JsonValue>[]> {
     if (bucketAndKeyList.length === 0) return [];
 
     if (!(await this.isSignedIn())) {
       // This explicitly uses WebStorage, which we know is synchronous and doesn't return presence: unknown
       return bucketAndKeyList.map(bucketAndKey =>
-        this.fallback.snapshot(parseDataLoaderKey(bucketAndKey).key),
+        this.fallback.snapshot(bucketAndKey.key),
       );
     }
 
-    const baseUrl = await this.discoveryApi.getBaseUrl('user-settings');
-    const url = new URL(`${baseUrl}/multi`);
-    for (const bucketAndKey of bucketAndKeyList) {
-      url.searchParams.append('items', bucketAndKey);
-    }
-    const response = await this.fetchApi.fetch(url);
-
-    if (response.status === 404) {
-      return bucketAndKeyList.map(bucketAndKey => ({
-        key: parseDataLoaderKey(bucketAndKey).key,
-        presence: 'absent',
-      }));
-    }
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
     try {
-      const values = await response.json();
+      const baseUrl = await this.discoveryApi.getBaseUrl('user-settings');
+      const response = await this.fetchApi.fetch(`${baseUrl}/multiget`, {
+        method: 'POST',
+        headers: JSON_HEADERS,
+        body: JSON.stringify({ items: bucketAndKeyList }),
+      });
 
-      return (values as MultiUserSetting[]).map(
-        (setting): StorageValueSnapshot<JsonValue> => {
-          if (isMultiUserSettingError(setting)) {
-            if (setting.error.name === 'NotFoundError') {
-              return {
-                key: setting.key,
-                presence: 'absent',
-              };
-            }
-            throw deserializeError(setting.error);
+      if (response.status === 404) {
+        return bucketAndKeyList.map(bucketAndKey => ({
+          key: bucketAndKey.key,
+          presence: 'absent',
+        }));
+      }
+
+      if (!response.ok) {
+        throw await ResponseError.fromResponse(response);
+      }
+
+      const { items: values } = (await response.json()) as MultiGetResponse;
+
+      return bucketAndKeyList.map(
+        ({ key }, i): StorageValueSnapshot<JsonValue> => {
+          if (!values[i]) {
+            return { key, presence: 'absent' };
           }
           return {
-            key: setting.key,
+            key,
             presence: 'present',
-            value: JSON.parse(JSON.stringify(setting.value), (_key, val) => {
+            value: JSON.parse(JSON.stringify(values[i].value), (_key, val) => {
               if (typeof val === 'object' && val !== null) {
                 Object.freeze(val);
               }
@@ -311,10 +319,10 @@ export class UserSettingsStorage implements StorageApi {
           };
         },
       );
-    } catch {
-      // If the value is not valid JSON, we return an unknown presence. This should never happen
+    } catch (e) {
+      this.errorApi.post(new Error(`Failed to fetch user settings, ${e}`));
       return bucketAndKeyList.map(bucketAndKey => ({
-        key: parseDataLoaderKey(bucketAndKey).key,
+        key: bucketAndKey.key,
         presence: 'absent',
       }));
     }

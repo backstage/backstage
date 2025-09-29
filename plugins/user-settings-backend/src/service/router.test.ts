@@ -18,17 +18,17 @@ import express from 'express';
 import request from 'supertest';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { createRouter } from './router';
-import { NotFoundError } from '@backstage/errors';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
   mockCredentials,
   mockServices,
   mockErrorHandler,
 } from '@backstage/backend-test-utils';
-import { stringifyDataLoaderKey } from '@backstage/plugin-user-settings-common';
+import { JsonValue } from '@backstage/types';
 
 describe('createRouter', () => {
   const userSettingsStore: jest.Mocked<UserSettingsStore> = {
+    multiget: jest.fn(),
     get: jest.fn(),
     set: jest.fn(),
     delete: jest.fn(),
@@ -111,78 +111,72 @@ describe('createRouter', () => {
   });
 
   describe('GET /multi', () => {
+    const mockMultiget = (store: Record<string, Record<string, JsonValue>>) => {
+      userSettingsStore.multiget.mockImplementation(async ({ items }) => {
+        return items.map(({ bucket, key }) => {
+          const value = store[bucket]?.[key];
+          if (typeof value !== 'undefined') {
+            return { value };
+          }
+          return null;
+        });
+      });
+    };
+
     it('returns single value', async () => {
       const values = { 'key-1': 'a' };
 
-      userSettingsStore.get.mockImplementation(async ({ bucket, key }) => {
-        if (key in values) {
-          return {
+      mockMultiget({ 'my-bucket': values });
+
+      const responses = await request(app)
+        .post('/multiget')
+        .send({
+          items: Object.keys(values).map(key => ({
             bucket: 'my-bucket',
             key,
-            value: values[key as keyof typeof values],
-          };
-        }
-        throw new NotFoundError(
-          `Unable to find '${key}' in bucket '${bucket}'`,
-        );
-      });
-
-      const url = new URLSearchParams();
-      for (const key of Object.keys(values)) {
-        url.append('items', stringifyDataLoaderKey('my-bucket', key));
-      }
-      const responses = await request(app).get(`/multi?${url.toString()}`);
+          })),
+        });
 
       expect(responses.status).toEqual(200);
-      expect(responses.body).toEqual([
-        { bucket: 'my-bucket', key: 'key-1', value: 'a' },
-      ]);
+      expect(responses.body).toEqual({ items: [{ value: 'a' }] });
 
-      expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.get).toHaveBeenCalledWith({
+      expect(userSettingsStore.multiget).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.multiget).toHaveBeenCalledWith({
         userEntityRef: mockUserRef,
-        bucket: 'my-bucket',
-        key: 'key-1',
+        items: [
+          {
+            bucket: 'my-bucket',
+            key: 'key-1',
+          },
+        ],
       });
     });
 
     it('returns single missing', async () => {
       const values = { 'key-1': 'a' };
 
-      userSettingsStore.get.mockImplementation(async ({ bucket, key }) => {
-        if (key in values) {
-          return {
-            bucket: 'my-bucket',
-            key,
-            value: values[key as keyof typeof values],
-          };
-        }
-        throw new NotFoundError(
-          `Unable to find '${key}' in bucket '${bucket}'`,
-        );
-      });
+      mockMultiget({ 'my-bucket': values });
 
-      const url = new URLSearchParams();
-      url.append('items', stringifyDataLoaderKey('my-bucket', 'missing-key'));
-      const responses = await request(app).get(`/multi?${url.toString()}`);
+      const responses = await request(app)
+        .post('/multiget')
+        .send({
+          items: [{ bucket: 'my-bucket', key: 'missing-key' }],
+        });
 
       expect(responses.status).toEqual(200);
-      expect(responses.body).toEqual([
-        {
-          bucket: 'my-bucket',
-          key: 'missing-key',
-          error: {
-            name: 'NotFoundError',
-            message: expect.stringContaining('missing-key'),
-          },
-        },
-      ]);
+      expect(responses.body).toEqual({
+        items: [null],
+      });
 
-      expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
-      expect(userSettingsStore.get).toHaveBeenCalledWith({
+      expect(userSettingsStore.multiget).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.multiget).toHaveBeenCalledWith({
         userEntityRef: mockUserRef,
-        bucket: 'my-bucket',
-        key: 'missing-key',
+        items: [
+          {
+            bucket: 'my-bucket',
+            key: 'missing-key',
+          },
+        ],
       });
     });
 
@@ -192,52 +186,35 @@ describe('createRouter', () => {
         'key-2': 'b',
       };
 
-      userSettingsStore.get.mockImplementation(async ({ bucket, key }) => {
-        if (key in values) {
-          return {
-            bucket: 'my-bucket',
-            key,
-            value: values[key as keyof typeof values],
-          };
-        }
-        throw new NotFoundError(
-          `Unable to find '${key}' in bucket '${bucket}'`,
-        );
-      });
+      mockMultiget({ 'my-bucket': values });
 
-      const url = new URLSearchParams();
-      for (const key of Object.keys(values)) {
-        url.append('items', stringifyDataLoaderKey('my-bucket', key));
-      }
-      url.append('items', stringifyDataLoaderKey('my-bucket', 'missing-key'));
-      const responses = await request(app).get(`/multi?${url.toString()}`);
+      const responses = await request(app)
+        .post('/multiget')
+        .send({
+          items: [
+            ...Object.keys(values).map(key => ({ bucket: 'my-bucket', key })),
+            { bucket: 'my-bucket', key: 'missing-key' },
+          ],
+        });
 
       expect(responses.status).toEqual(200);
-      expect(responses.body).toEqual([
-        { bucket: 'my-bucket', key: 'key-1', value: 'a' },
-        { bucket: 'my-bucket', key: 'key-2', value: 'b' },
-        {
-          bucket: 'my-bucket',
-          key: 'missing-key',
-          error: {
-            name: 'NotFoundError',
-            message: expect.stringContaining('missing-key'),
-          },
-        },
-      ]);
+      expect(responses.body).toEqual({
+        items: [{ value: 'a' }, { value: 'b' }, null],
+      });
 
-      expect(userSettingsStore.get).toHaveBeenCalledTimes(3);
-      for (const key of Object.keys(values)) {
-        expect(userSettingsStore.get).toHaveBeenCalledWith({
-          userEntityRef: mockUserRef,
-          bucket: 'my-bucket',
-          key,
-        });
-      }
-      expect(userSettingsStore.get).toHaveBeenCalledWith({
+      expect(userSettingsStore.multiget).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.multiget).toHaveBeenCalledWith({
         userEntityRef: mockUserRef,
-        bucket: 'my-bucket',
-        key: 'missing-key',
+        items: [
+          ...Object.keys(values).map(key => ({
+            bucket: 'my-bucket',
+            key,
+          })),
+          {
+            bucket: 'my-bucket',
+            key: 'missing-key',
+          },
+        ],
       });
     });
 

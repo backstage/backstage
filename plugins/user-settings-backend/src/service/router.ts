@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { InputError, serializeError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import pLimit from 'p-limit';
+import { z } from 'zod';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
-  MultiUserSetting,
+  MultiGetResponse,
   UserSettingsSignal,
-  parseDataLoaderKey,
 } from '@backstage/plugin-user-settings-common';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 
@@ -34,6 +33,10 @@ export async function createRouter(options: {
 }): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
+
+  const multiGetRequestSchema = z.object({
+    items: z.array(z.object({ bucket: z.string(), key: z.string() })),
+  });
 
   /**
    * Helper method to extract the userEntityRef from the request.
@@ -46,58 +49,17 @@ export async function createRouter(options: {
   };
 
   // get multiple values
-  router.get('/multi', async (req, res) => {
+  router.post('/multiget', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
 
-    const bucketsAndKeys: ReturnType<typeof parseDataLoaderKey>[] = [];
+    const bucketsAndKeys = multiGetRequestSchema.parse(req.body).items;
 
-    const items = req.query.items;
-    if (typeof items === 'string') {
-      bucketsAndKeys.push(parseDataLoaderKey(items));
-    } else if (Array.isArray(items)) {
-      bucketsAndKeys.push(
-        ...items.map(item => {
-          if (typeof item !== 'string') {
-            throw new InputError(
-              'Expected query param "items" to be an array of strings',
-            );
-          }
-          return parseDataLoaderKey(item);
-        }),
-      );
-    } else {
-      throw new InputError('Expected query param "items" to be an array');
-    }
+    const items = await options.userSettingsStore.multiget({
+      userEntityRef,
+      items: bucketsAndKeys,
+    });
 
-    const limit = pLimit(10);
-
-    const userSettings = await Promise.all(
-      bucketsAndKeys.map(({ bucket, key }) =>
-        limit(async (): Promise<MultiUserSetting> => {
-          try {
-            const setting = await options.userSettingsStore.get({
-              userEntityRef,
-              bucket,
-              key,
-            });
-            return setting;
-          } catch (e) {
-            if (e instanceof Error) {
-              const serialized = serializeError(e);
-              return { bucket, key, error: serialized };
-            }
-
-            return {
-              bucket,
-              key,
-              error: { name: 'Error', message: 'Unknown error' },
-            };
-          }
-        }),
-      ),
-    );
-
-    res.json(userSettings);
+    res.json({ items } satisfies MultiGetResponse);
   });
 
   // get a single value
