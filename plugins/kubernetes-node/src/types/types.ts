@@ -222,6 +222,7 @@ export interface ObjectFetchParams {
   labelSelector?: string;
   customResources: CustomResource[];
   namespace?: string;
+  backstageCredentials?: BackstageCredentials;
 }
 
 /**
