@@ -1,5 +1,11 @@
 # @backstage/backend-defaults
 
+## 0.13.0-next.2
+
+### Minor Changes
+
+- 8495b18: Add a new `externalTokenHandlersServiceRef` to allow custom external token validations
+
 ## 0.13.0-next.1
 
 ### Patch Changes
