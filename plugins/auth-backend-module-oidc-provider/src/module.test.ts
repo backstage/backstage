@@ -232,4 +232,96 @@ describe('authModuleOidcProvider', () => {
       encodeURIComponent(`"accessToken":"accessToken"`),
     );
   });
+
+  it('should include custom search params in the start URL when configured', async () => {
+    const backend = await startTestBackend({
+      features: [
+        authModuleOidcProvider,
+        import('@backstage/plugin-auth-backend'),
+        mockServices.rootConfig.factory({
+          data: {
+            app: { baseUrl: 'http://localhost' },
+            auth: {
+              session: { secret: 'test' },
+              providers: {
+                oidc: {
+                  development: {
+                    metadataUrl:
+                      'https://oidc.test/.well-known/openid-configuration',
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    startUrlSearchParams: {
+                      foo: '1',
+                      bar: '2',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(backend.server);
+    const startResponse = await agent.get(
+      `/api/auth/oidc/start?env=development`,
+    );
+
+    expect(startResponse.status).toEqual(302);
+    const startUrl = new URL(startResponse.get('location'));
+    expect(startUrl.searchParams.get('foo')).toBe('1');
+    expect(startUrl.searchParams.get('bar')).toBe('2');
+
+    backend.server.close();
+  });
+
+  it('should not override the core start URL search params', async () => {
+    const backend = await startTestBackend({
+      features: [
+        authModuleOidcProvider,
+        import('@backstage/plugin-auth-backend'),
+        mockServices.rootConfig.factory({
+          data: {
+            app: { baseUrl: 'http://localhost' },
+            auth: {
+              session: { secret: 'test' },
+              providers: {
+                oidc: {
+                  development: {
+                    metadataUrl:
+                      'https://oidc.test/.well-known/openid-configuration',
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    startUrlSearchParams: {
+                      foo: '1',
+                      prompt: 'customPrompt',
+                      scope: 'customScope',
+                      state: 'customState',
+                      nonce: 'customNonce',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(backend.server);
+    const startResponse = await agent.get(
+      `/api/auth/oidc/start?env=development`,
+    );
+
+    expect(startResponse.status).toEqual(302);
+    const startUrl = new URL(startResponse.get('location'));
+    expect(startUrl.searchParams.get('foo')).toBe('1');
+    expect(startUrl.searchParams.get('scope')).not.toBe('customScope');
+    expect(startUrl.searchParams.get('state')).not.toBe('customState');
+    expect(startUrl.searchParams.get('nonce')).not.toBe('customNonce');
+    expect(startUrl.searchParams.get('prompt')).not.toBe('customPrompt');
+
+    backend.server.close();
+  });
 });

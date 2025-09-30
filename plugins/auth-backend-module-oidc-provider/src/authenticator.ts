@@ -83,6 +83,9 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     );
     const initializedPrompt = config.getOptionalString('prompt');
 
+    const startUrlSearchParams: Record<string, string> =
+      config.getOptional('startUrlSearchParams') || {};
+
     if (config.has('scope')) {
       throw new Error(
         'The oidc provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
@@ -143,17 +146,21 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       return { helper, client, strategy };
     });
 
-    return { initializedPrompt, promise };
+    return { initializedPrompt, promise, searchParams: startUrlSearchParams };
   },
 
   async start(input, ctx) {
-    const { initializedPrompt, promise } = ctx;
+    const { initializedPrompt, promise, searchParams } = ctx;
     const { helper } = await promise;
+
+    // Merge the custom start URL params, but do not override the standard params (scope, state etc)
     const options: Record<string, string> = {
+      ...searchParams,
       scope: input.scope,
       state: input.state,
       nonce: crypto.randomBytes(16).toString('base64'),
     };
+
     const prompt = initializedPrompt || 'none';
     if (prompt !== 'auto') {
       options.prompt = prompt;
