@@ -5708,9 +5708,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-mui-to-bui@workspace:^, @backstage/plugin-mui-to-bui@workspace:plugins/bui-themer":
+"@backstage/plugin-mui-to-bui@workspace:^, @backstage/plugin-mui-to-bui@workspace:plugins/mui-to-bui":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-mui-to-bui@workspace:plugins/bui-themer"
+  resolution: "@backstage/plugin-mui-to-bui@workspace:plugins/mui-to-bui"
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/core-compat-api": "workspace:^"
