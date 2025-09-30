@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder
 
+## 1.34.2-next.2
+
+### Patch Changes
+
+- 075e064: Added missing form fields for the new frontend system.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.19.2-next.2
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+
 ## 1.34.2-next.1
 
 ### Patch Changes
