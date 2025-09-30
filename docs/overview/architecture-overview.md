@@ -227,7 +227,8 @@ Below is a chart to help you decide where to place your code.
 
 The Backstage backend and its built-in plugins are also able to leverage cache stores as a means of improving performance or reliability. Similar to how databases are supported, plugins receive logically separated cache connections, which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
 
-At this time of writing, Backstage can be configured to use one of five cache stores: 
+At this time of writing, Backstage can be configured to use one of five cache stores:
+
 - `memory`
 - `memcache`
 - `redis`
