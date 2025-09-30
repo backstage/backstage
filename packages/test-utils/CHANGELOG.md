@@ -1,5 +1,12 @@
 # @backstage/test-utils
 
+## 1.7.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.9-next.0
+
 ## 1.7.12-next.0
 
 ### Patch Changes

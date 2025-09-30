@@ -1,5 +1,27 @@
 # example-app
 
+## 0.2.114-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-mui-to-bui@0.2.0-next.0
+  - @backstage/plugin-scaffolder-react@1.19.2-next.2
+  - @backstage/plugin-org@0.6.45-next.2
+  - @backstage/cli@0.34.4-next.2
+  - @backstage/ui@0.7.2-next.1
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+  - @backstage/plugin-scaffolder@1.34.2-next.2
+  - @backstage/app-defaults@1.7.1-next.2
+  - @backstage/plugin-home@0.8.13-next.2
+  - @backstage/plugin-notifications@0.5.10-next.2
+  - @backstage/plugin-search-react@1.9.5-next.2
+  - @backstage/plugin-signals@0.0.24-next.2
+  - @backstage/plugin-techdocs@1.15.1-next.2
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+  - @backstage/plugin-user-settings@0.8.27-next.2
+
 ## 0.2.114-next.1
 
 ### Patch Changes

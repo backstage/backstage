@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.18.2-next.2
+
+### Patch Changes
+
+- 95935fb: Fixed dependency graph automatically scrolling forever
+- Updated dependencies
+  - @backstage/theme@0.6.9-next.0
+
 ## 0.18.2-next.1
 
 ### Patch Changes
