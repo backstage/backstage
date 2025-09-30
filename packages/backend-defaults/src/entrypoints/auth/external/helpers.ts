@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { AccessRestriptionsMap } from './types';
+import { AccessRestrictionsMap, ExternalTokenHandler } from './types';
 
 /**
  * Parses and returns the `accessRestrictions` configuration from an
@@ -25,12 +25,12 @@ import { AccessRestriptionsMap } from './types';
  */
 export function readAccessRestrictionsFromConfig(
   externalAccessEntryConfig: Config,
-): AccessRestriptionsMap | undefined {
+): AccessRestrictionsMap | undefined {
   const configs =
     externalAccessEntryConfig.getOptionalConfigArray('accessRestrictions') ??
     [];
 
-  const result: AccessRestriptionsMap = new Map();
+  const result: AccessRestrictionsMap = new Map();
   for (const config of configs) {
     const validKeys = ['plugin', 'permission', 'permissionAttribute'];
     for (const key of config.keys()) {
@@ -146,4 +146,38 @@ function readPermissionAttributes(externalAccessEntryConfig: Config) {
   };
 
   return Object.keys(result).length ? result : undefined;
+}
+
+/**
+ * Creates an external token handler with the provided implementation.
+ *
+ * This helper function simplifies the creation of external token handlers by
+ * providing type safety and a consistent API. External token handlers are used
+ * to validate tokens from external systems that need to authenticate with Backstage.
+ *
+ * See {@link https://backstage.io/docs/auth/service-to-service-auth#adding-custom-externaltokenhandler | the service-to-service auth docs}
+ * for more information about implementing custom external token handlers.
+ *
+ * @public
+ * @param handler - The external token handler implementation with type, initialize, and verifyToken methods
+ * @returns The same handler instance, typed as ExternalTokenHandler<TContext>
+ *
+ * @example
+ * ```ts
+ * const customHandler = createExternalTokenHandler({
+ *   type: 'custom',
+ *   initialize({ options }) {
+ *     return { apiKey: options.getString('apiKey') };
+ *   },
+ *   async verifyToken(token, context) {
+ *     // Custom validation logic here
+ *     return { subject: 'custom:user' };
+ *   },
+ * });
+ * ```
+ */
+export function createExternalTokenHandler<TContext>(
+  handler: ExternalTokenHandler<TContext>,
+): ExternalTokenHandler<TContext> {
+  return handler;
 }

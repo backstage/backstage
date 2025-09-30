@@ -21,7 +21,11 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { TaskBroker, TemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  scaffolderActionsExtensionPoint,
+  TaskBroker,
+  TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 import {
   AutocompleteHandler,
   CreatedTemplateFilter,
@@ -29,7 +33,6 @@ import {
   createTemplateFilter,
   createTemplateGlobalFunction,
   createTemplateGlobalValue,
-  scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,

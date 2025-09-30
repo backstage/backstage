@@ -36,7 +36,6 @@ export type MyGroupsPickerUiOptions = NonNullable<
 
 /**
  * Props for the MyGroupsPicker.
- * @public
  */
 export type MyGroupsPickerProps = typeof MyGroupsPickerFieldSchema.TProps;
 

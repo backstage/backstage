@@ -1,5 +1,12 @@
 # @backstage/ui
 
+## 0.7.2-next.0
+
+### Patch Changes
+
+- 827340f: remove default selection of tab
+- 9a47125: Improved SearchField component flex layout and animations. Fixed SearchField behavior in Header components by switching from width-based transitions to flex-basis transitions for better responsive behavior. Added new Storybook stories to test SearchField integration with Header component.
+
 ## 0.7.1
 
 ### Patch Changes

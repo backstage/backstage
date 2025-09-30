@@ -1,5 +1,33 @@
 # @backstage/cli
 
+## 0.34.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.4-next.0
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/cli-node@0.2.14
+  - @backstage/release-manifests@0.0.13
+
+## 0.34.4-next.0
+
+### Patch Changes
+
+- 6ebc1ea: Fixed module federation config by only setting `import: false` on shared libraries for remote.
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.14
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.11
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.2
+
 ## 0.34.2
 
 ### Patch Changes

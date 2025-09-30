@@ -50,8 +50,6 @@ type TaskState = {
 };
 /**
  * TaskManager
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export class TaskManager implements TaskContext {
   private isDone = false;
@@ -488,7 +486,7 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
-  async retry?(options: {
+  async retry(options: {
     secrets?: TaskSecrets;
     taskId: string;
   }): Promise<void> {

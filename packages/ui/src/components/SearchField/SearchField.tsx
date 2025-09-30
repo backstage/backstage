@@ -39,6 +39,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       secondaryLabel,
       description,
       isRequired,
+      onChange,
       placeholder = 'Search',
       startCollapsed = false,
       'aria-label': ariaLabel,

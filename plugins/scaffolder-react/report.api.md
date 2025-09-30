@@ -354,7 +354,7 @@ export type ScaffolderScaffoldResponse = ScaffolderScaffoldResponse_2;
 // @public
 export type ScaffolderStep = {
   id: string;
-  status: ScaffolderTaskStatus;
+  status: ScaffolderTaskStatus_2;
   endedAt?: string;
   startedAt?: string;
 };
@@ -398,11 +398,11 @@ export type TaskStream = {
     [stepId in string]: string[];
   };
   completed: boolean;
-  task?: ScaffolderTask;
+  task?: ScaffolderTask_2;
   steps: {
     [stepId in string]: ScaffolderStep;
   };
-  output?: ScaffolderTaskOutput;
+  output?: ScaffolderTaskOutput_2;
 };
 
 // @public @deprecated

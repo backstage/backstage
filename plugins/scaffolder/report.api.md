@@ -404,11 +404,11 @@ export const repoPickerValidation: (
 export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    allowedHosts?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
           secretsKey: string;
@@ -431,11 +431,11 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
 export const RepoUrlPickerFieldSchema: FieldSchema_2<
   string,
   {
-    allowedHosts?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
           secretsKey: string;
@@ -492,6 +492,7 @@ export type RouterProps = {
     actions?: boolean;
     tasks?: boolean;
     create?: boolean;
+    templatingExtensions?: boolean;
   };
 };
 

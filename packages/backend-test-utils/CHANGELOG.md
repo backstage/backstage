@@ -1,5 +1,33 @@
 # @backstage/backend-test-utils
 
+## 1.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/backend-app-api@1.2.8-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/backend-app-api@1.2.7
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 1.9.0
 
 ### Minor Changes

@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-notifications-common@0.1.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+  - @backstage/plugin-notifications-node@0.2.20-next.0
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-notifications-common@0.1.0
+  - @backstage/plugin-notifications-node@0.2.19
+
 ## 0.1.14
 
 ### Patch Changes

@@ -13,62 +13,166 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityProvider } from '@backstage/plugin-catalog-node';
-import { mockServices } from '@backstage/backend-test-utils';
+
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
-import { evictEntitiesFromOrphanedProviders } from './evictEntitiesFromOrphanedProviders';
+import {
+  evictEntitiesFromOrphanedProviders,
+  getOrphanedEntityProviderNames,
+} from './evictEntitiesFromOrphanedProviders';
+import { applyDatabaseMigrations } from '../database/migrations';
+import { Knex } from 'knex';
 
-describe('evictEntitiesFromOrphanedProviders', () => {
-  const db = {
-    transaction: jest.fn().mockImplementation(cb => cb((() => {}) as any)),
-    replaceUnprocessedEntities: jest.fn(),
-    listReferenceSourceKeys: jest.fn(),
-  } as unknown as jest.Mocked<DefaultProviderDatabase>;
+jest.setTimeout(60_000);
 
-  const providers = [
-    { getProviderName: () => 'provider1' },
-    { getProviderName: () => 'provider2' },
-  ] as unknown as EntityProvider[];
-  const logger = mockServices.logger.mock();
+const databases = TestDatabases.create();
+const logger = mockServices.logger.mock();
 
-  it('replaces unprocessed entities for orphaned providers with empty items', async () => {
-    db.listReferenceSourceKeys.mockResolvedValue(['foo', 'bar']);
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
-    await evictEntitiesFromOrphanedProviders({ db, providers, logger });
+describe.each(databases.eachSupportedId())('%p', databaseId => {
+  let knex: Knex;
+  let db: DefaultProviderDatabase;
 
-    expect(db.replaceUnprocessedEntities).toHaveBeenCalledTimes(2);
-    expect(db.replaceUnprocessedEntities).toHaveBeenNthCalledWith(
-      1,
-      expect.anything(),
-      {
-        sourceKey: 'foo',
-        type: 'full',
-        items: [],
-      },
-    );
-    expect(db.replaceUnprocessedEntities).toHaveBeenNthCalledWith(
-      2,
-      expect.anything(),
-      {
-        sourceKey: 'bar',
-        type: 'full',
-        items: [],
-      },
-    );
+  beforeEach(async () => {
+    knex = await databases.init(databaseId);
+    await applyDatabaseMigrations(knex);
+    db = new DefaultProviderDatabase({ database: knex, logger });
   });
 
-  it('does not replace unprocessed entities for providers that are not orphaned', async () => {
-    db.listReferenceSourceKeys.mockResolvedValue(['foo', 'provider1']);
+  afterEach(async () => {
+    await knex.destroy();
+  });
 
-    await evictEntitiesFromOrphanedProviders({ db, providers, logger });
+  describe('getOrphanedEntityProviderNames', () => {
+    it('correctly locates and logs orphaned providers', async () => {
+      const providers = [
+        { getProviderName: () => 'provider1', connect: jest.fn() },
+        { getProviderName: () => 'provider2', connect: jest.fn() },
+      ];
 
-    expect(db.replaceUnprocessedEntities).not.toHaveBeenCalledWith(
-      expect.anything(),
-      {
-        sourceKey: 'provider1',
-        type: 'full',
-        items: [],
-      },
-    );
+      await knex('refresh_state').insert([
+        {
+          entity_id: 'x',
+          entity_ref: 'x',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+      await knex('refresh_state_references').insert([
+        { source_key: 'provider2', target_entity_ref: 'x' },
+        { source_key: 'provider3', target_entity_ref: 'x' },
+      ]);
+
+      await expect(
+        getOrphanedEntityProviderNames({
+          db,
+          providers,
+          logger,
+        }),
+      ).resolves.toEqual(['provider3']);
+
+      expect(logger.warn).toHaveBeenCalledTimes(4);
+      expect(logger.warn).toHaveBeenCalledWith(
+        `Found 1 orphaned entity provider(s)`,
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        `Database contained providers: 'provider2', 'provider3'`,
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        `Installed providers were: 'provider1', 'provider2'`,
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        `Orphaned providers were thus: 'provider3'`,
+      );
+    });
+  });
+
+  describe('evictEntitiesFromOrphanedProviders', () => {
+    it('replaces unprocessed entities for orphaned providers with empty items', async () => {
+      jest.spyOn(db, 'replaceUnprocessedEntities');
+
+      const providers = [
+        { getProviderName: () => 'provider1', connect: jest.fn() },
+        { getProviderName: () => 'provider2', connect: jest.fn() },
+      ];
+
+      await knex('refresh_state').insert([
+        {
+          entity_id: 'x',
+          entity_ref: 'x',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+      await knex('refresh_state_references').insert([
+        { source_key: 'foo', target_entity_ref: 'x' },
+        { source_key: 'bar', target_entity_ref: 'x' },
+      ]);
+
+      await evictEntitiesFromOrphanedProviders({ db, providers, logger });
+
+      expect(db.replaceUnprocessedEntities).toHaveBeenCalledTimes(2);
+      expect(db.replaceUnprocessedEntities).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          sourceKey: 'foo',
+          type: 'full',
+          items: [],
+        },
+      );
+      expect(db.replaceUnprocessedEntities).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          sourceKey: 'bar',
+          type: 'full',
+          items: [],
+        },
+      );
+    });
+
+    it('does not replace unprocessed entities for providers that are not orphaned', async () => {
+      jest.spyOn(db, 'replaceUnprocessedEntities');
+
+      const providers = [
+        { getProviderName: () => 'provider1', connect: jest.fn() },
+        { getProviderName: () => 'provider2', connect: jest.fn() },
+      ];
+
+      await knex('refresh_state').insert([
+        {
+          entity_id: 'x',
+          entity_ref: 'x',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+      await knex('refresh_state_references').insert([
+        { source_key: 'foo', target_entity_ref: 'x' },
+        { source_key: 'provider1', target_entity_ref: 'x' },
+      ]);
+
+      await evictEntitiesFromOrphanedProviders({ db, providers, logger });
+
+      expect(db.replaceUnprocessedEntities).not.toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          sourceKey: 'provider1',
+          type: 'full',
+          items: [],
+        },
+      );
+    });
   });
 });

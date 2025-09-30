@@ -16,10 +16,9 @@
 
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+
 /**
  * Registry of all registered template actions.
- * @public
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export class TemplateActionRegistry {
   private readonly actions = new Map<string, TemplateAction>();

@@ -226,6 +226,126 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
       };
     }>;
+    'scaffolder-form-field:scaffolder/entity-name-picker': ExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'entity-name-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/entity-picker': ExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'entity-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/entity-tags-picker': ExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'entity-tags-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/multi-entity-picker': ExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'multi-entity-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/my-groups-picker': ExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'my-groups-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/owned-entity-picker': ExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'owned-entity-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/owner-picker': ExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'owner-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/repo-branch-picker': ExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'repo-branch-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
     'scaffolder-form-field:scaffolder/repo-url-picker': ExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'repo-url-picker';

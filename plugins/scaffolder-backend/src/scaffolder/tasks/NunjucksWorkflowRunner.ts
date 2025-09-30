@@ -33,7 +33,7 @@ import {
   SecureTemplater,
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
-import { TemplateActionRegistry } from '../actions';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { generateExampleOutput, isTruthy } from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 

@@ -45,7 +45,7 @@ import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { createGetCatalogEntityAction } from '../actions/createGetCatalogEntityAction';
+import { createCatalogActions } from '../actions';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -271,9 +271,8 @@ export const catalogPlugin = createBackendPlugin({
           auth,
           httpAuth,
           auditor,
+          events,
         });
-
-        builder.setEventBroker(events);
 
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({
@@ -321,7 +320,7 @@ export const catalogPlugin = createBackendPlugin({
 
         httpRouter.use(router);
 
-        createGetCatalogEntityAction({
+        createCatalogActions({
           catalog,
           actionsRegistry,
         });

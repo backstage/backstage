@@ -87,7 +87,10 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }

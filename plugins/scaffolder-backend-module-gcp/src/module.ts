@@ -22,7 +22,7 @@ import { GcpBucketWorkspaceProvider } from './providers/GcpBucketWorkspaceProvid
 
 /**
  * @public
- * The Azure Module for the Scaffolder Backend
+ * The GCP Module for the Scaffolder Backend
  */
 export const gcpBucketModule = createBackendModule({
   moduleId: 'gcp',

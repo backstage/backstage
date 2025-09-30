@@ -58,6 +58,7 @@ describe('DefaultProcessingDatabase', () => {
           minSeconds: 100,
           maxSeconds: 150,
         }),
+        events: mockServices.events.mock(),
       }),
     };
   }

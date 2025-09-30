@@ -1,5 +1,35 @@
 # @backstage/plugin-search-backend
 
+## 2.0.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/plugin-search-backend-node@1.3.16-next.0
+  - @backstage/backend-openapi-utils@0.6.2-next.0
+  - @backstage/plugin-search-common@1.2.20-next.0
+
+## 2.0.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/plugin-search-backend-node@1.3.15
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-search-common@1.2.19
+
 ## 2.0.6
 
 ### Patch Changes

@@ -79,6 +79,7 @@ describePerformanceTest('getProcessableEntities', () => {
         const sut = new DefaultProcessingDatabase({
           database: knex,
           logger: mockServices.logger.mock(),
+          events: mockServices.events.mock(),
           refreshInterval: () => 0,
         });
 

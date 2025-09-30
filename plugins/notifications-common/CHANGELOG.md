@@ -1,5 +1,12 @@
 # @backstage/plugin-notifications-common
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
 ## 0.1.0
 
 ### Minor Changes

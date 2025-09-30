@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   ThemeProvider,
@@ -58,6 +58,8 @@ const generateV4ClassName = createGenerateClassName({
   productionPrefix: 'jss4-',
 });
 
+import { useApplyThemeAttributes } from './useApplyThemeAttributes';
+
 /**
  * Provides themes for all Material UI versions supported by the provided unified theme.
  *
@@ -70,18 +72,11 @@ export function UnifiedThemeProvider(
 
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
-  const themeMode = v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode;
-  const themeName = 'backstage';
 
-  useEffect(() => {
-    document.body.setAttribute('data-theme-mode', themeMode);
-    document.body.setAttribute('data-theme-name', themeName);
-
-    return () => {
-      document.body.removeAttribute('data-theme-mode');
-      document.body.removeAttribute('data-theme-name');
-    };
-  }, [themeMode, themeName]);
+  useApplyThemeAttributes(
+    v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode,
+    'backstage',
+  );
 
   let cssBaseline: JSX.Element | undefined = undefined;
   if (!noCssBaseline) {
