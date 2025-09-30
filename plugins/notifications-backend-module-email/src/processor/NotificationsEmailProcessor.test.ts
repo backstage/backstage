@@ -109,7 +109,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -156,7 +156,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -200,7 +200,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -231,7 +231,40 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledWith({
+      from: 'backstage@backstage.io',
+      html: '<p><a href="https://example.org/notifications">https://example.org/notifications</a></p>',
+      replyTo: undefined,
+      subject: 'notification',
+      text: 'https://example.org/notifications',
+      to: 'mock@backstage.io',
+    });
+  });
+
+  it('should send user email with old recipients', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({ data: DEFAULT_SENDMAIL_CONFIG }),
+      catalogServiceMock({ entities: [DEFAULT_ENTITIES_RESPONSE.items[0]] }),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'entity', entityRef: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -364,7 +397,7 @@ describe('NotificationsEmailProcessor', () => {
         },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -390,7 +423,7 @@ describe('NotificationsEmailProcessor', () => {
         },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -428,7 +461,7 @@ describe('NotificationsEmailProcessor', () => {
         },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );
@@ -484,7 +517,7 @@ describe('NotificationsEmailProcessor', () => {
         payload: { title: 'notification' },
       },
       {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        recipients: { type: 'entities', entityRefs: ['user:default/mock'] },
         payload: { title: 'notification' },
       },
     );

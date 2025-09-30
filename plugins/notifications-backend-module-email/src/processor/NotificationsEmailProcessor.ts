@@ -212,7 +212,11 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     let emails: string[];
     if (options.recipients.type === 'broadcast') {
       emails = await this.getBroadcastEmails();
-    } else if (options.recipients.type === 'entity' && !!notification.user) {
+    } else if (
+      (options.recipients.type === 'entity' ||
+        options.recipients.type === 'entities') &&
+      !!notification.user
+    ) {
       emails = await this.getUserEmail(notification.user);
     } else {
       this.logger.info(

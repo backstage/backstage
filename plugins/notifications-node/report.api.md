@@ -55,6 +55,11 @@ export interface NotificationRecipientResolver {
 // @public (undocumented)
 export type NotificationRecipients =
   | {
+      type: 'entities';
+      entityRefs: string[];
+      excludedEntityRefs?: string[];
+    }
+  | {
       type: 'entity';
       entityRef: string | string[];
       excludeEntityRef?: string | string[];

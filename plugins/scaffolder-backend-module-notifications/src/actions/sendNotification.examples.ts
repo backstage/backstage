@@ -43,7 +43,7 @@ export const examples: TemplateExample[] = [
           action: 'notification:send',
           name: 'Send Notification',
           input: {
-            recipients: 'entity',
+            recipients: 'entities',
             entityRefs: ['entity:component:1'],
             title: 'Security Update',
             info: 'A security update has been applied. Please review.',
@@ -65,7 +65,7 @@ export const examples: TemplateExample[] = [
           action: 'notification:send',
           name: 'Send Notification',
           input: {
-            recipients: 'entity',
+            recipients: 'entities',
             entityRefs: ['entity:component:1'],
             title: 'Weekly Update',
             info: 'Here is your weekly update.',
@@ -106,7 +106,7 @@ export const examples: TemplateExample[] = [
           action: 'notification:send',
           name: 'Send Notification',
           input: {
-            recipients: 'entity',
+            recipients: 'entities',
             entityRefs: ['entity:component:1'],
             title: 'Critical Bug Found',
             info: 'A critical bug has been identified. Immediate action required.',
@@ -241,7 +241,7 @@ export const examples: TemplateExample[] = [
           action: 'notification:send',
           name: 'Send Notification to Entity',
           input: {
-            recipients: 'entity',
+            recipients: 'entities',
             entityRefs: ['entity:service1'],
             title: 'Entity Notification',
             info: 'This is a notification for entity service1',

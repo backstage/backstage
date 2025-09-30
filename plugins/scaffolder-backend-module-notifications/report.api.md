@@ -12,9 +12,11 @@ export function createSendNotificationAction(options: {
   notifications: NotificationService;
 }): TemplateAction<
   {
-    recipients: 'entity' | 'broadcast';
+    recipients: 'entities' | 'entity' | 'broadcast';
     title: string;
     entityRefs?: string[] | undefined;
+    excludedEntityRefs?: string[] | undefined;
+    excludeCurrentUser?: boolean | undefined;
     info?: string | undefined;
     link?: string | undefined;
     severity?: 'normal' | 'high' | 'low' | 'critical' | undefined;

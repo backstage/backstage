@@ -236,7 +236,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       ]);
     });
 
-    it('should send to user entity', async () => {
+    it('should send to user entity with deprecated type', async () => {
       const response = await sendNotification({
         recipients: {
           type: 'entity',
@@ -274,11 +274,49 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       expect(notifications).toHaveLength(1);
     });
 
+    it('should send to user entity', async () => {
+      const response = await sendNotification({
+        recipients: {
+          type: 'entities',
+          entityRefs: ['user:default/mock'],
+        },
+        payload: {
+          title: 'test notification',
+          metadata: {
+            attr: 1,
+          },
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          created: expect.any(String),
+          id: expect.any(String),
+          origin: 'external:test-service',
+          payload: {
+            severity: 'normal',
+            title: 'test notification',
+            metadata: {
+              attr: 1,
+            },
+          },
+          user: 'user:default/mock',
+        },
+      ]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(1);
+    });
+
     it('should send to group entity', async () => {
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['group:default/mock'],
+          type: 'entities',
+          entityRefs: ['group:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -309,8 +347,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should only send one notification per user', async () => {
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['group:default/mock', 'user:default/mock'],
+          type: 'entities',
+          entityRefs: ['group:default/mock', 'user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -359,8 +397,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['user:default/mock'],
+          type: 'entities',
+          entityRefs: ['user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -400,8 +438,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['user:default/mock'],
+          type: 'entities',
+          entityRefs: ['user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -439,8 +477,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['user:default/mock'],
+          type: 'entities',
+          entityRefs: ['user:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -550,8 +588,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       });
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['system:default/mock'],
+          type: 'entities',
+          entityRefs: ['system:default/mock'],
         },
         payload: {
           title: 'test notification',
@@ -585,8 +623,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       });
       const response = await sendNotification({
         recipients: {
-          type: 'entity',
-          entityRef: ['system:default/mock'],
+          type: 'entities',
+          entityRefs: ['system:default/mock'],
         },
         payload: {
           title: 'test notification',

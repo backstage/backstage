@@ -63,8 +63,9 @@ describe('notification:send', () => {
     await action.handler(ctx);
     expect(notificationService.send).toHaveBeenCalledWith({
       recipients: {
-        entityRef: ['entity:component:1'],
-        type: 'entity',
+        entityRefs: ['entity:component:1'],
+        excludedEntityRefs: [],
+        type: 'entities',
       },
       payload: {
         description: 'A security update has been applied. Please review.',
@@ -84,8 +85,9 @@ describe('notification:send', () => {
     await action.handler(ctx);
     expect(notificationService.send).toHaveBeenCalledWith({
       recipients: {
-        type: 'entity',
-        entityRef: ['entity:component:1'],
+        type: 'entities',
+        entityRefs: ['entity:component:1'],
+        excludedEntityRefs: [],
       },
       payload: {
         description: 'Here is your weekly update.',
@@ -123,8 +125,9 @@ describe('notification:send', () => {
     await action.handler(ctx);
     expect(notificationService.send).toHaveBeenCalledWith({
       recipients: {
-        type: 'entity',
-        entityRef: ['entity:component:1'],
+        type: 'entities',
+        entityRefs: ['entity:component:1'],
+        excludedEntityRefs: [],
       },
       payload: {
         description:
@@ -257,8 +260,9 @@ describe('notification:send', () => {
     await action.handler(ctx);
     expect(notificationService.send).toHaveBeenCalledWith({
       recipients: {
-        type: 'entity',
-        entityRef: ['entity:service1'],
+        type: 'entities',
+        entityRefs: ['entity:service1'],
+        excludedEntityRefs: [],
       },
       payload: {
         title: 'Entity Notification',

@@ -27,15 +27,33 @@ export type NotificationServiceOptions = {
 /** @public */
 export type NotificationRecipients =
   | {
+      type: 'entities';
+      /**
+       * Entity references to send the notifications to
+       */
+      entityRefs: string[];
+      /**
+       * Optional entity reference(s) to filter out of the resolved recipients.
+       * Usually the currently logged-in user for preventing sending notification
+       * of user action to him/herself.
+       */
+      excludedEntityRefs?: string[];
+    }
+  | {
+      /**
+       * @deprecated Please use 'entities' instead. This will be removed in a future release.
+       */
       type: 'entity';
       /**
        * Entity references to send the notifications to
+       * @deprecated Please use type 'entities' and 'entityRefs' instead
        */
       entityRef: string | string[];
       /**
        * Optional entity reference(s) to filter out of the resolved recipients.
        * Usually the currently logged-in user for preventing sending notification
        * of user action to him/herself.
+       * @deprecated Please use type 'entities' and 'excludedEntityRefs' instead
        */
       excludeEntityRef?: string | string[];
     }

@@ -165,11 +165,17 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   async processOptions(
     options: NotificationSendOptions,
   ): Promise<NotificationSendOptions> {
-    if (options.recipients.type !== 'entity') {
+    if (
+      options.recipients.type !== 'entity' &&
+      options.recipients.type !== 'entities'
+    ) {
       return options;
     }
 
-    const entityRefs = [options.recipients.entityRef].flat();
+    const entityRefs =
+      options.recipients.type === 'entity'
+        ? [options.recipients.entityRef].flat()
+        : options.recipients.entityRefs;
 
     const outbound: ChatPostMessageArguments[] = [];
     await Promise.all(
@@ -229,9 +235,15 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     // Handle broadcast case
     if (notification.user === null) {
       destinations.push(...(this.broadcastChannels ?? []));
-    } else if (options.recipients.type === 'entity') {
+    } else if (
+      options.recipients.type === 'entity' ||
+      options.recipients.type === 'entities'
+    ) {
       // Handle user-specific notification
-      const entityRefs = [options.recipients.entityRef].flat();
+      const entityRefs =
+        options.recipients.type === 'entity'
+          ? [options.recipients.entityRef].flat()
+          : options.recipients.entityRefs;
       if (entityRefs.some(e => parseEntityRef(e).kind === 'group')) {
         // We've already dispatched a slack channel message, so let's not send a DM.
         return;
