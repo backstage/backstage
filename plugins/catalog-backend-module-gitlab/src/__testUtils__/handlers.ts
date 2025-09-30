@@ -272,28 +272,19 @@ const httpProjectFindByIdDynamic = all_projects_response.map(project => {
  * https://docs.gitlab.com/api/repository_files/#get-file-from-repository
  */
 const httpProjectCatalogDynamic = all_projects_response.flatMap(project => {
-  const possibleIdSegments: string[] = [
-    project.id.toString(),
-    project.path_with_namespace ?? '',
-  ];
-
-  return possibleIdSegments.map(seg =>
-    rest.head(
-      `${apiBaseUrl}/projects/${encodeURIComponent(
-        seg,
-      )}/repository/files/catalog-info.yaml`,
-      (req, res, ctx) => {
-        const branch = req.url.searchParams.get('ref');
-        if (
-          branch === project.default_branch ||
-          branch === 'main' ||
-          branch === 'develop'
-        ) {
-          return res(ctx.status(200));
-        }
-        return res(ctx.status(404, 'Not Found'));
-      },
-    ),
+  return rest.head(
+    `${apiBaseUrl}/projects/${project.id.toString()}/repository/files/catalog-info.yaml`,
+    (req, res, ctx) => {
+      const branch = req.url.searchParams.get('ref');
+      if (
+        branch === project.default_branch ||
+        branch === 'main' ||
+        branch === 'develop'
+      ) {
+        return res(ctx.status(200));
+      }
+      return res(ctx.status(404, 'Not Found'));
+    },
   );
 });
 
