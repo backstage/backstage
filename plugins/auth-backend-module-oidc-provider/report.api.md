@@ -25,6 +25,7 @@ export const oidcAuthenticator: OAuthAuthenticator<
       client: BaseClient;
       strategy: Strategy<OidcAuthResult, BaseClient>;
     }>;
+    searchParams: Record<string, string>;
   },
   OidcAuthResult
 >;

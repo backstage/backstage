@@ -264,6 +264,12 @@ check the App Registration you created:
 - `prompt`: Recommended to use `auto` so the browser will request login to the IDP if the
   user has no active session.
 - `sessionDuration` (optional): Lifespan of the user session.
+- `startUrlSearchParams`: This is a dictionary of search (query) parameters for the OIDC
+  authorization start URL. Don't define it unless you want to change the identity
+  provider's behavior. (For example, you could set the `organization` parameter to guide
+  users towards a particular sign-in option that your organization prefers.) **Note:** the
+  start URL is controlled by the browser, so this feature is only for improving the
+  Backstage user experience.
 
 Note that for the time being, any change in this yaml file requires a restart of the app,
 also you need to have the `session.secret` part to use OIDC (some other providers might
