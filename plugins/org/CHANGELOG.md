@@ -1,5 +1,13 @@
 # @backstage/plugin-org
 
+## 0.6.45-next.2
+
+### Patch Changes
+
+- 8b7351f: Add `initialRelationAggregation` and `showAggregateMembersToggle` options to `EntityMembersListCard` as well to `EntityOwnershipCard`
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+
 ## 0.6.45-next.1
 
 ### Patch Changes

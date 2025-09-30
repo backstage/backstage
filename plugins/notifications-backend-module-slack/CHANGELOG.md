@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 3d09bb2: Adds username as optional config in order to send Slack notifications with a specific username in the case when using one Slack App for more than just Backstage.
+
 ## 0.1.6-next.0
 
 ### Patch Changes

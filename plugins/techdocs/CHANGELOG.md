@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs
 
+## 1.15.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+  - @backstage/plugin-search-react@1.9.5-next.2
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+
 ## 1.15.1-next.1
 
 ### Patch Changes
