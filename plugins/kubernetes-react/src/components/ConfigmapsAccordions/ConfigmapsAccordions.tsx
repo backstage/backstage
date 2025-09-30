@@ -70,11 +70,6 @@ const ConfigmapCard = ({ configmap }: ConfigmapsCardProps) => {
   );
 };
 
-/**
- *
- *
- * @public
- */
 export type ConfigmapsAccordionsProps = {};
 
 type ConfigmapsAccordionProps = {
@@ -94,11 +89,6 @@ const ConfigmapsAccordion = ({ configmap }: ConfigmapsAccordionProps) => {
   );
 };
 
-/**
- *
- *
- * @public
- */
 export const ConfigmapsAccordions = ({}: ConfigmapsAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
   return (
