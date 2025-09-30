@@ -1,5 +1,13 @@
 # @backstage/plugin-signals
 
+## 0.0.24-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
 ## 0.0.24-next.1
 
 ### Patch Changes
