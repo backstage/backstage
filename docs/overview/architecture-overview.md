@@ -168,7 +168,7 @@ The software catalog in Backstage is another example of a service backend plugin
 
 Third-party backend plugins are similar to service backend plugins. The main difference is that the service which backs the plugin is hosted outside of the ecosystem of the company hosting Backstage.
 
-The CircleCI plugin is an example of a third-party backed plugin. CircleCI is a SaaS service which can be used without any knowledge of Backstage. It has an API which a Backstage plugin consumes to display content.
+The CircleCI plugin is an example of a third-party backend plugin. CircleCI is a SaaS service which can be used without any knowledge of Backstage. It has an API which a Backstage plugin consumes to display content.
 
 Requests going to CircleCI from the user's browser are passed through a proxy service that Backstage provides. Without this, the requests would be blocked by Cross Origin Resource Sharing policies which prevent a browser page served at [https://example.com](https://example.com) from serving resources hosted at https://circleci.com.
 
