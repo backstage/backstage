@@ -234,16 +234,6 @@ describe('authModuleOidcProvider', () => {
   });
 
   it('should include custom search params in the start URL when configured', async () => {
-    mswServer.use(
-      rest.get('/api/auth/oidc/start', (_req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        ),
-      ),
-    );
-
     const backend = await startTestBackend({
       features: [
         authModuleOidcProvider,
@@ -275,7 +265,7 @@ describe('authModuleOidcProvider', () => {
 
     const agent = request.agent(backend.server);
     const startResponse = await agent.get(
-      `/api/auth/oidc/start?env=development`,
+      `${appUrl}/api/auth/oidc/start?env=development`,
     );
 
     expect(startResponse.status).toEqual(302);
@@ -321,7 +311,7 @@ describe('authModuleOidcProvider', () => {
 
     const agent = request.agent(backend.server);
     const startResponse = await agent.get(
-      `/api/auth/oidc/start?env=development`,
+      `${appUrl}/api/auth/oidc/start?env=development`,
     );
 
     expect(startResponse.status).toEqual(302);
