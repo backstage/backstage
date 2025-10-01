@@ -164,6 +164,61 @@ You can customize the origin names shown in the UI by passing an object where th
 
 Each notification processor will receive its own row in the settings page, where the user can enable or disable notifications from that processor.
 
+### Default notification settings
+
+You can configure default notification settings for all users in your `app-config.yaml` file. This allows you to set up notification preferences globally, such as disabling specific channels or origins by default, implementing an opt-in strategy instead of opt-out.
+
+#### Channel-level defaults
+
+You can set a default enabled state for an entire channel. When set to `false`, the channel uses an opt-in strategy where notifications are disabled by default unless explicitly enabled by the user or for specific origins.
+
+```yaml
+notifications:
+  defaultSettings:
+    channels:
+      - id: 'Web'
+        enabled: false # Opt-in strategy: channel disabled by default
+      - id: 'Email'
+        enabled: true # Opt-out strategy: channel enabled by default (default behavior)
+```
+
+#### Origin-level defaults
+
+You can also configure defaults for specific origins within a channel:
+
+```yaml
+notifications:
+  defaultSettings:
+    channels:
+      - id: 'Web'
+        enabled: true # Channel is enabled by default
+        origins:
+          - id: 'plugin:scaffolder'
+            enabled: false # Disable scaffolder notifications by default
+          - id: 'plugin:catalog'
+            enabled: true # Enable catalog notifications by default
+```
+
+#### Topic-level defaults
+
+For even more granular control, you can set defaults for specific topics within origins:
+
+```yaml
+notifications:
+  defaultSettings:
+    channels:
+      - id: 'Email'
+        enabled: false # Email is opt-in by default
+        origins:
+          - id: 'plugin:catalog'
+            enabled: true # But catalog notifications are enabled
+            topics:
+              - id: 'entity:validation:error'
+                enabled: false # Except validation errors
+```
+
+**Note:** If a channel's `enabled` flag is not set, it defaults to `true` for backwards compatibility. When a channel is set to `enabled: false`, all origins within that channel default to disabled unless explicitly enabled.
+
 ### Automatic notification cleanup
 
 Notifications are deleted automatically after a certain period of time to prevent the database from growing indefinitely
