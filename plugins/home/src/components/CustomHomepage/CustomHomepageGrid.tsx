@@ -173,9 +173,9 @@ const convertConfigToDefaultWidgets = (
         isResizable: false,
       },
       settings: {},
-      movable: conf.movable,
-      deletable: conf.deletable,
-      resizable: conf.resizable,
+      movable: conf.movable ?? true,
+      deletable: conf.deletable ?? true,
+      resizable: conf.resizable ?? true,
     };
   });
   return compact(ret);
@@ -247,7 +247,16 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
   const { t } = useTranslationRef(homeTranslationRef);
 
+  // Get available widgets that are not already in use
+  const getAvailableWidgets = () => {
+    const usedWidgetNames = new Set(
+      widgets.map(w => getWidgetNameFromKey(w.id)),
+    );
+    return availableWidgets.filter(widget => !usedWidgetNames.has(widget.name));
+  };
+
   const handleAdd = (widget: Widget) => {
+    const defaultConfig = defaultLayout.find(w => w.id.includes(widget.name));
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
       .toString(36)
       .slice(2)}`;
@@ -270,9 +279,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           isDraggable: editMode,
         },
         settings: {},
-        movable: widget.movable,
-        deletable: widget.deletable,
-        resizable: widget.resizable,
+        movable: widget.movable ?? defaultConfig?.movable ?? true,
+        deletable: widget.deletable ?? defaultConfig?.deletable ?? true,
+        resizable: widget.resizable ?? defaultConfig?.resizable ?? true,
       },
     ]);
     setAddWidgetDialogOpen(false);
@@ -372,7 +381,12 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         open={addWidgetDialogOpen}
         onClose={() => setAddWidgetDialogOpen(false)}
       >
-        <AddWidgetDialog widgets={availableWidgets} handleAdd={handleAdd} />
+        {addWidgetDialogOpen && (
+          <AddWidgetDialog
+            widgets={getAvailableWidgets()}
+            handleAdd={handleAdd}
+          />
+        )}
       </Dialog>
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">

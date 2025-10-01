@@ -23,6 +23,8 @@ export const homeTranslationRef = createTranslationRef({
   messages: {
     addWidgetDialog: {
       title: 'Add new widget to dashboard',
+      noAvailableWidgets:
+        'All available widgets have been added to the dashboard.',
     },
     customHomepageButtons: {
       edit: 'Edit',
