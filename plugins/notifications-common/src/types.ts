@@ -154,6 +154,12 @@ export type OriginSetting = {
  */
 export type ChannelSetting = {
   id: string;
+  /**
+   * Optional flag to enable/disable the channel by default.
+   * If not set, defaults to true for backwards compatibility.
+   * When set to false, the channel uses an opt-in strategy.
+   */
+  enabled?: boolean;
   origins: OriginSetting[];
 };
 
