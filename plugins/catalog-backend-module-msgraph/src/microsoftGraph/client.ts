@@ -186,10 +186,10 @@ export class MicrosoftGraphClient {
   ): Promise<Response> {
     const queryString = qs.stringify(
       {
-        $search: query?.search,
-        $filter: query?.filter,
+        $search: query?.search?.trim(),
+        $filter: query?.filter?.trim(),
         $select: query?.select?.join(','),
-        $expand: query?.expand,
+        $expand: query?.expand?.trim(),
         $count: query?.count,
         $top: query?.top,
       },

@@ -358,6 +358,28 @@ describe('MicrosoftGraphClient', () => {
 
     expect(organization).toEqual({ displayName: 'Example' });
   });
+
+  it.each(['search', 'filter', 'expand'])(
+    'should trim the %s param',
+    async paramName => {
+      worker.use(
+        rest.get('https://example.com/users', (req, res, ctx) =>
+          res(ctx.status(200), ctx.json({ queryString: req.url.search })),
+        ),
+      );
+
+      const response = await client.requestApi('users', {
+        [paramName]: `
+          text to trim
+        `,
+      });
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({
+        queryString: `?%24${paramName}=text%20to%20trim`,
+      });
+    },
+  );
 });
 
 async function collectAsyncIterable<T>(
