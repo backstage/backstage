@@ -92,12 +92,12 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.title': 'Title';
     readonly 'entityTableColumnTitle.description': 'Description';
     readonly 'entityTableColumnTitle.domain': 'Domain';
+    readonly 'entityTableColumnTitle.system': 'System';
+    readonly 'entityTableColumnTitle.tags': 'Tags';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.owner': 'Owner';
-    readonly 'entityTableColumnTitle.system': 'System';
     readonly 'entityTableColumnTitle.targets': 'Targets';
-    readonly 'entityTableColumnTitle.tags': 'Tags';
   }
 >;
 
@@ -533,8 +533,8 @@ export const EntityTableColumnTitle: ({
   translationKey,
 }: EntityTableColumnTitleProps) =>
   | 'Title'
-  | 'Domain'
   | 'System'
+  | 'Domain'
   | 'Lifecycle'
   | 'Namespace'
   | 'Owner'
