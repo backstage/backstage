@@ -268,8 +268,7 @@ const httpProjectFindByIdDynamic = all_projects_response.map(project => {
 });
 
 /**
- * Checks for both project id and namespaced path, as these can both be used for the :id segment in Gitlab API:
- * https://docs.gitlab.com/api/repository_files/#get-file-from-repository
+ * See https://docs.gitlab.com/api/repository_files/#get-file-from-repository
  */
 const httpProjectCatalogDynamic = all_projects_response.flatMap(project => {
   return rest.head(
