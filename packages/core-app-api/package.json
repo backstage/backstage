@@ -48,6 +48,8 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-signals-react": "workspace:^",
+    "@backstage/plugin-user-settings-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@types/prop-types": "^15.7.3",
