@@ -6,7 +6,6 @@
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { z } from 'zod';
@@ -26,6 +25,31 @@ export type AutocompleteHandler = ({
     id: string;
   }[];
 }>;
+
+// @alpha
+export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
+  key: string;
+  fn: () => Promise<T> | T;
+};
+
+// @alpha
+export type CheckpointState = {
+  [key: string]: CheckpointStateValue;
+};
+
+// @alpha
+export type CheckpointStateValue<T extends JsonValue = JsonValue> =
+  | {
+      status: 'failed';
+      reason: string;
+    }
+  | {
+      status: 'success';
+      value: T;
+    };
+
+// @alpha
+export type CheckpointStatus = 'failed' | 'success';
 
 // @alpha (undocumented)
 export type CreatedTemplateFilter<
@@ -99,15 +123,6 @@ export const restoreWorkspace: (opts: {
 }) => Promise<void>;
 
 // @alpha
-export interface ScaffolderActionsExtensionPoint {
-  // (undocumented)
-  addActions(...actions: TemplateAction<any, any, any>[]): void;
-}
-
-// @alpha
-export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
-
-// @alpha
 export interface ScaffolderAutocompleteExtensionPoint {
   // (undocumented)
   addAutocompleteProvider({
@@ -122,13 +137,13 @@ export interface ScaffolderAutocompleteExtensionPoint {
 // @alpha
 export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
 
-// @alpha
+// @alpha @deprecated
 export interface ScaffolderTaskBrokerExtensionPoint {
   // (undocumented)
   setTaskBroker(taskBroker: TaskBroker): void;
 }
 
-// @alpha
+// @alpha @deprecated
 export const scaffolderTaskBrokerExtensionPoint: ExtensionPoint<ScaffolderTaskBrokerExtensionPoint>;
 
 // @alpha
@@ -186,6 +201,11 @@ export type TemplateGlobalFunctionExample = {
   example: string;
   notes?: string;
 };
+
+// @alpha
+export type UpdateTaskCheckpointOptions = {
+  key: string;
+} & CheckpointStateValue;
 
 // @alpha
 export interface WorkspaceProvider {

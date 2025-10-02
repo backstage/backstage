@@ -1,7 +1,6 @@
 ---
 id: adrs-adr003
 title: 'ADR003: Avoid Default Exports and Prefer Named Exports'
-# prettier-ignore
 description: Architecture Decision Record (ADR) log on Avoid Default Exports and Prefer Named Exports
 ---
 

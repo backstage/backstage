@@ -1,0 +1,524 @@
+.bui-py {
+  padding-top: var(--py);
+  padding-bottom: var(--py);
+}
+
+.bui-py-0\.5 {
+  padding-top: var(--bui-space-0_5);
+  padding-bottom: var(--bui-space-0_5);
+}
+
+.bui-py-1 {
+  padding-top: var(--bui-space-1);
+  padding-bottom: var(--bui-space-1);
+}
+
+.bui-py-1\.5 {
+  padding-top: var(--bui-space-1_5);
+  padding-bottom: var(--bui-space-1_5);
+}
+
+.bui-py-2 {
+  padding-top: var(--bui-space-2);
+  padding-bottom: var(--bui-space-2);
+}
+
+.bui-py-3 {
+  padding-top: var(--bui-space-3);
+  padding-bottom: var(--bui-space-3);
+}
+
+.bui-py-4 {
+  padding-top: var(--bui-space-4);
+  padding-bottom: var(--bui-space-4);
+}
+
+.bui-py-5 {
+  padding-top: var(--bui-space-5);
+  padding-bottom: var(--bui-space-5);
+}
+
+.bui-py-6 {
+  padding-top: var(--bui-space-6);
+  padding-bottom: var(--bui-space-6);
+}
+
+.bui-py-7 {
+  padding-top: var(--bui-space-7);
+  padding-bottom: var(--bui-space-7);
+}
+
+.bui-py-8 {
+  padding-top: var(--bui-space-8);
+  padding-bottom: var(--bui-space-8);
+}
+
+.bui-py-9 {
+  padding-top: var(--bui-space-9);
+  padding-bottom: var(--bui-space-9);
+}
+
+.bui-py-10 {
+  padding-top: var(--bui-space-10);
+  padding-bottom: var(--bui-space-10);
+}
+
+.bui-py-11 {
+  padding-top: var(--bui-space-11);
+  padding-bottom: var(--bui-space-11);
+}
+
+.bui-py-12 {
+  padding-top: var(--bui-space-12);
+  padding-bottom: var(--bui-space-12);
+}
+
+.bui-py-13 {
+  padding-top: var(--bui-space-13);
+  padding-bottom: var(--bui-space-13);
+}
+
+.bui-py-14 {
+  padding-top: var(--bui-space-14);
+  padding-bottom: var(--bui-space-14);
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:bui-py {
+    padding-top: var(--py-xs);
+    padding-bottom: var(--py-xs);
+  }
+
+  .xs\:bui-py-0\.5 {
+    padding-top: var(--bui-space-0_5);
+    padding-bottom: var(--bui-space-0_5);
+  }
+
+  .xs\:bui-py-1 {
+    padding-top: var(--bui-space-1);
+    padding-bottom: var(--bui-space-1);
+  }
+
+  .xs\:bui-py-1\.5 {
+    padding-top: var(--bui-space-1_5);
+    padding-bottom: var(--bui-space-1_5);
+  }
+
+  .xs\:bui-py-2 {
+    padding-top: var(--bui-space-2);
+    padding-bottom: var(--bui-space-2);
+  }
+
+  .xs\:bui-py-3 {
+    padding-top: var(--bui-space-3);
+    padding-bottom: var(--bui-space-3);
+  }
+
+  .xs\:bui-py-4 {
+    padding-top: var(--bui-space-4);
+    padding-bottom: var(--bui-space-4);
+  }
+
+  .xs\:bui-py-5 {
+    padding-top: var(--bui-space-5);
+    padding-bottom: var(--bui-space-5);
+  }
+
+  .xs\:bui-py-6 {
+    padding-top: var(--bui-space-6);
+    padding-bottom: var(--bui-space-6);
+  }
+
+  .xs\:bui-py-7 {
+    padding-top: var(--bui-space-7);
+    padding-bottom: var(--bui-space-7);
+  }
+
+  .xs\:bui-py-8 {
+    padding-top: var(--bui-space-8);
+    padding-bottom: var(--bui-space-8);
+  }
+
+  .xs\:bui-py-9 {
+    padding-top: var(--bui-space-9);
+    padding-bottom: var(--bui-space-9);
+  }
+
+  .xs\:bui-py-10 {
+    padding-top: var(--bui-space-10);
+    padding-bottom: var(--bui-space-10);
+  }
+
+  .xs\:bui-py-11 {
+    padding-top: var(--bui-space-11);
+    padding-bottom: var(--bui-space-11);
+  }
+
+  .xs\:bui-py-12 {
+    padding-top: var(--bui-space-12);
+    padding-bottom: var(--bui-space-12);
+  }
+
+  .xs\:bui-py-13 {
+    padding-top: var(--bui-space-13);
+    padding-bottom: var(--bui-space-13);
+  }
+
+  .xs\:bui-py-14 {
+    padding-top: var(--bui-space-14);
+    padding-bottom: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:bui-py {
+    padding-top: var(--py-sm);
+    padding-bottom: var(--py-sm);
+  }
+
+  .sm\:bui-py-0\.5 {
+    padding-top: var(--bui-space-0_5);
+    padding-bottom: var(--bui-space-0_5);
+  }
+
+  .sm\:bui-py-1 {
+    padding-top: var(--bui-space-1);
+    padding-bottom: var(--bui-space-1);
+  }
+
+  .sm\:bui-py-1\.5 {
+    padding-top: var(--bui-space-1_5);
+    padding-bottom: var(--bui-space-1_5);
+  }
+
+  .sm\:bui-py-2 {
+    padding-top: var(--bui-space-2);
+    padding-bottom: var(--bui-space-2);
+  }
+
+  .sm\:bui-py-3 {
+    padding-top: var(--bui-space-3);
+    padding-bottom: var(--bui-space-3);
+  }
+
+  .sm\:bui-py-4 {
+    padding-top: var(--bui-space-4);
+    padding-bottom: var(--bui-space-4);
+  }
+
+  .sm\:bui-py-5 {
+    padding-top: var(--bui-space-5);
+    padding-bottom: var(--bui-space-5);
+  }
+
+  .sm\:bui-py-6 {
+    padding-top: var(--bui-space-6);
+    padding-bottom: var(--bui-space-6);
+  }
+
+  .sm\:bui-py-7 {
+    padding-top: var(--bui-space-7);
+    padding-bottom: var(--bui-space-7);
+  }
+
+  .sm\:bui-py-8 {
+    padding-top: var(--bui-space-8);
+    padding-bottom: var(--bui-space-8);
+  }
+
+  .sm\:bui-py-9 {
+    padding-top: var(--bui-space-9);
+    padding-bottom: var(--bui-space-9);
+  }
+
+  .sm\:bui-py-10 {
+    padding-top: var(--bui-space-10);
+    padding-bottom: var(--bui-space-10);
+  }
+
+  .sm\:bui-py-11 {
+    padding-top: var(--bui-space-11);
+    padding-bottom: var(--bui-space-11);
+  }
+
+  .sm\:bui-py-12 {
+    padding-top: var(--bui-space-12);
+    padding-bottom: var(--bui-space-12);
+  }
+
+  .sm\:bui-py-13 {
+    padding-top: var(--bui-space-13);
+    padding-bottom: var(--bui-space-13);
+  }
+
+  .sm\:bui-py-14 {
+    padding-top: var(--bui-space-14);
+    padding-bottom: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:bui-py {
+    padding-top: var(--py-md);
+    padding-bottom: var(--py-md);
+  }
+
+  .md\:bui-py-0\.5 {
+    padding-top: var(--bui-space-0_5);
+    padding-bottom: var(--bui-space-0_5);
+  }
+
+  .md\:bui-py-1 {
+    padding-top: var(--bui-space-1);
+    padding-bottom: var(--bui-space-1);
+  }
+
+  .md\:bui-py-1\.5 {
+    padding-top: var(--bui-space-1_5);
+    padding-bottom: var(--bui-space-1_5);
+  }
+
+  .md\:bui-py-2 {
+    padding-top: var(--bui-space-2);
+    padding-bottom: var(--bui-space-2);
+  }
+
+  .md\:bui-py-3 {
+    padding-top: var(--bui-space-3);
+    padding-bottom: var(--bui-space-3);
+  }
+
+  .md\:bui-py-4 {
+    padding-top: var(--bui-space-4);
+    padding-bottom: var(--bui-space-4);
+  }
+
+  .md\:bui-py-5 {
+    padding-top: var(--bui-space-5);
+    padding-bottom: var(--bui-space-5);
+  }
+
+  .md\:bui-py-6 {
+    padding-top: var(--bui-space-6);
+    padding-bottom: var(--bui-space-6);
+  }
+
+  .md\:bui-py-7 {
+    padding-top: var(--bui-space-7);
+    padding-bottom: var(--bui-space-7);
+  }
+
+  .md\:bui-py-8 {
+    padding-top: var(--bui-space-8);
+    padding-bottom: var(--bui-space-8);
+  }
+
+  .md\:bui-py-9 {
+    padding-top: var(--bui-space-9);
+    padding-bottom: var(--bui-space-9);
+  }
+
+  .md\:bui-py-10 {
+    padding-top: var(--bui-space-10);
+    padding-bottom: var(--bui-space-10);
+  }
+
+  .md\:bui-py-11 {
+    padding-top: var(--bui-space-11);
+    padding-bottom: var(--bui-space-11);
+  }
+
+  .md\:bui-py-12 {
+    padding-top: var(--bui-space-12);
+    padding-bottom: var(--bui-space-12);
+  }
+
+  .md\:bui-py-13 {
+    padding-top: var(--bui-space-13);
+    padding-bottom: var(--bui-space-13);
+  }
+
+  .md\:bui-py-14 {
+    padding-top: var(--bui-space-14);
+    padding-bottom: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:bui-py {
+    padding-top: var(--py-lg);
+    padding-bottom: var(--py-lg);
+  }
+
+  .lg\:bui-py-0\.5 {
+    padding-top: var(--bui-space-0_5);
+    padding-bottom: var(--bui-space-0_5);
+  }
+
+  .lg\:bui-py-1 {
+    padding-top: var(--bui-space-1);
+    padding-bottom: var(--bui-space-1);
+  }
+
+  .lg\:bui-py-1\.5 {
+    padding-top: var(--bui-space-1_5);
+    padding-bottom: var(--bui-space-1_5);
+  }
+
+  .lg\:bui-py-2 {
+    padding-top: var(--bui-space-2);
+    padding-bottom: var(--bui-space-2);
+  }
+
+  .lg\:bui-py-3 {
+    padding-top: var(--bui-space-3);
+    padding-bottom: var(--bui-space-3);
+  }
+
+  .lg\:bui-py-4 {
+    padding-top: var(--bui-space-4);
+    padding-bottom: var(--bui-space-4);
+  }
+
+  .lg\:bui-py-5 {
+    padding-top: var(--bui-space-5);
+    padding-bottom: var(--bui-space-5);
+  }
+
+  .lg\:bui-py-6 {
+    padding-top: var(--bui-space-6);
+    padding-bottom: var(--bui-space-6);
+  }
+
+  .lg\:bui-py-7 {
+    padding-top: var(--bui-space-7);
+    padding-bottom: var(--bui-space-7);
+  }
+
+  .lg\:bui-py-8 {
+    padding-top: var(--bui-space-8);
+    padding-bottom: var(--bui-space-8);
+  }
+
+  .lg\:bui-py-9 {
+    padding-top: var(--bui-space-9);
+    padding-bottom: var(--bui-space-9);
+  }
+
+  .lg\:bui-py-10 {
+    padding-top: var(--bui-space-10);
+    padding-bottom: var(--bui-space-10);
+  }
+
+  .lg\:bui-py-11 {
+    padding-top: var(--bui-space-11);
+    padding-bottom: var(--bui-space-11);
+  }
+
+  .lg\:bui-py-12 {
+    padding-top: var(--bui-space-12);
+    padding-bottom: var(--bui-space-12);
+  }
+
+  .lg\:bui-py-13 {
+    padding-top: var(--bui-space-13);
+    padding-bottom: var(--bui-space-13);
+  }
+
+  .lg\:bui-py-14 {
+    padding-top: var(--bui-space-14);
+    padding-bottom: var(--bui-space-14);
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:bui-py {
+    padding-top: var(--py-xl);
+    padding-bottom: var(--py-xl);
+  }
+
+  .xl\:bui-py-0\.5 {
+    padding-top: var(--bui-space-0_5);
+    padding-bottom: var(--bui-space-0_5);
+  }
+
+  .xl\:bui-py-1 {
+    padding-top: var(--bui-space-1);
+    padding-bottom: var(--bui-space-1);
+  }
+
+  .xl\:bui-py-1\.5 {
+    padding-top: var(--bui-space-1_5);
+    padding-bottom: var(--bui-space-1_5);
+  }
+
+  .xl\:bui-py-2 {
+    padding-top: var(--bui-space-2);
+    padding-bottom: var(--bui-space-2);
+  }
+
+  .xl\:bui-py-3 {
+    padding-top: var(--bui-space-3);
+    padding-bottom: var(--bui-space-3);
+  }
+
+  .xl\:bui-py-4 {
+    padding-top: var(--bui-space-4);
+    padding-bottom: var(--bui-space-4);
+  }
+
+  .xl\:bui-py-5 {
+    padding-top: var(--bui-space-5);
+    padding-bottom: var(--bui-space-5);
+  }
+
+  .xl\:bui-py-6 {
+    padding-top: var(--bui-space-6);
+    padding-bottom: var(--bui-space-6);
+  }
+
+  .xl\:bui-py-7 {
+    padding-top: var(--bui-space-7);
+    padding-bottom: var(--bui-space-7);
+  }
+
+  .xl\:bui-py-8 {
+    padding-top: var(--bui-space-8);
+    padding-bottom: var(--bui-space-8);
+  }
+
+  .xl\:bui-py-9 {
+    padding-top: var(--bui-space-9);
+    padding-bottom: var(--bui-space-9);
+  }
+
+  .xl\:bui-py-10 {
+    padding-top: var(--bui-space-10);
+    padding-bottom: var(--bui-space-10);
+  }
+
+  .xl\:bui-py-11 {
+    padding-top: var(--bui-space-11);
+    padding-bottom: var(--bui-space-11);
+  }
+
+  .xl\:bui-py-12 {
+    padding-top: var(--bui-space-12);
+    padding-bottom: var(--bui-space-12);
+  }
+
+  .xl\:bui-py-13 {
+    padding-top: var(--bui-space-13);
+    padding-bottom: var(--bui-space-13);
+  }
+
+  .xl\:bui-py-14 {
+    padding-top: var(--bui-space-14);
+    padding-bottom: var(--bui-space-14);
+  }
+}

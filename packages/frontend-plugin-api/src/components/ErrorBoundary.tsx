@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { Component, ComponentType, PropsWithChildren } from 'react';
+import { Component, PropsWithChildren } from 'react';
 import { FrontendPlugin } from '../wiring';
-import { CoreErrorBoundaryFallbackProps } from '../types';
+import { ErrorDisplay } from './DefaultSwappableComponents';
 
 type ErrorBoundaryProps = PropsWithChildren<{
   plugin?: FrontendPlugin;
-  Fallback: ComponentType<CoreErrorBoundaryFallbackProps>;
 }>;
 type ErrorBoundaryState = { error?: Error };
 
@@ -41,13 +40,15 @@ export class ErrorBoundary extends Component<
 
   render() {
     const { error } = this.state;
-    const { plugin, children, Fallback } = this.props;
+    const { plugin, children } = this.props;
 
     if (error) {
       return (
-        <Fallback
+        <ErrorDisplay
+          // todo: do we want to just use useAppNode hook in the ErrorDisplay instead?
           plugin={plugin}
           error={error}
+          // todo: probably change this to onResetError
           resetError={this.handleErrorReset}
         />
       );

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /** @public */
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
@@ -50,6 +52,10 @@ export type NotificationPayload = {
    * Optional notification icon
    */
   icon?: string;
+  /**
+   * Optional additional customizable metadata.
+   */
+  metadata?: { [KMetadataKey in string]?: JsonValue };
 };
 
 /** @public */
@@ -129,12 +135,31 @@ export type NotificationProcessorFilters = {
 /**
  * @public
  */
+export type TopicSetting = {
+  id: string;
+  enabled: boolean;
+};
+
+/**
+ * @public
+ */
+export type OriginSetting = {
+  id: string;
+  enabled: boolean;
+  topics?: TopicSetting[];
+};
+
+/**
+ * @public
+ */
+export type ChannelSetting = {
+  id: string;
+  origins: OriginSetting[];
+};
+
+/**
+ * @public
+ */
 export type NotificationSettings = {
-  channels: {
-    id: string;
-    origins: {
-      id: string;
-      enabled: boolean;
-    }[];
-  }[];
+  channels: ChannelSetting[];
 };

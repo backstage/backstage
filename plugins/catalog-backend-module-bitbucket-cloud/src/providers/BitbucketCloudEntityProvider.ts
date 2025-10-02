@@ -20,7 +20,6 @@ import {
   SchedulerService,
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
 import { LocationEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -33,6 +32,7 @@ import {
   Models,
 } from '@backstage/plugin-bitbucket-cloud-common';
 import {
+  CatalogService,
   DeferredEntity,
   EntityProvider,
   EntityProviderConnection,
@@ -68,7 +68,7 @@ interface IngestionTarget {
  */
 export class BitbucketCloudEntityProvider implements EntityProvider {
   private readonly auth: AuthService;
-  private readonly catalogApi: CatalogApi;
+  private readonly catalog: CatalogService;
   private readonly client: BitbucketCloudClient;
   private readonly config: BitbucketCloudEntityProviderConfig;
   private readonly events: EventsService;
@@ -81,7 +81,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     config: Config,
     options: {
       auth: AuthService;
-      catalogApi: CatalogApi;
+      catalog: CatalogService;
       events: EventsService;
       logger: LoggerService;
       schedule?: SchedulerServiceTaskRunner;
@@ -113,7 +113,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
       return new BitbucketCloudEntityProvider(
         options.auth,
-        options.catalogApi,
+        options.catalog,
         providerConfig,
         options.events,
         integration,
@@ -125,7 +125,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
   private constructor(
     auth: AuthService,
-    catalogApi: CatalogApi,
+    catalog: CatalogService,
     config: BitbucketCloudEntityProviderConfig,
     events: EventsService,
     integration: BitbucketCloudIntegration,
@@ -133,7 +133,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.auth = auth;
-    this.catalogApi = catalogApi;
+    this.catalog = catalog;
     this.client = BitbucketCloudClient.fromConfig(integration.config);
     this.config = config;
     this.events = events;
@@ -350,13 +350,11 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     filter[`metadata.annotations.${ANNOTATION_BITBUCKET_CLOUD_REPO_URL}`] =
       repoUrl;
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-
-    return this.catalogApi
-      .getEntities({ filter }, { token })
+    return this.catalog
+      .getEntities(
+        { filter },
+        { credentials: await this.auth.getOwnServiceCredentials() },
+      )
       .then(result => result.items) as Promise<LocationEntity[]>;
   }
 
@@ -411,7 +409,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     ].join(',');
 
     const searchResults = this.client
-      .searchCode(workspace, query, { fields })
+      .searchCode(workspace, query, { fields }, this.config.pagelen)
       .iterateResults();
 
     const result: IngestionTarget[] = [];

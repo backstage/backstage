@@ -1,5 +1,0 @@
-.canon-DataTableRoot {
-  display: flex;
-  flex-direction: column;
-  gap: var(--canon-space-3);
-}

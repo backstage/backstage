@@ -4,5 +4,5 @@
 
 | Name      | Location     | Severity |
 | :-------- | :----------- | :------- |
-| jest-when | package.json | error    |
+| jest-when | plugins/scaffolder-backend-module-rails/package.json | error    |
 

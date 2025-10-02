@@ -187,6 +187,55 @@ describe('GitLabClient', () => {
 
       expect(allProjects).toHaveLength(mock.all_projects_response.length);
     });
+
+    it('should pass simple parameter to API when provided', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      // Mock the pagedRequest method to verify parameters
+      const mockPagedRequest = jest.fn().mockResolvedValue({
+        items: [],
+        nextPage: undefined,
+      });
+      (client as any).pagedRequest = mockPagedRequest;
+
+      await client.listProjects({ simple: true });
+
+      expect(mockPagedRequest).toHaveBeenCalledWith('/projects', {
+        simple: true,
+      });
+    });
+
+    it('should pass simple parameter to group projects API when provided', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      // Mock the pagedRequest method to verify parameters
+      const mockPagedRequest = jest.fn().mockResolvedValue({
+        items: [],
+        nextPage: undefined,
+      });
+      (client as any).pagedRequest = mockPagedRequest;
+
+      await client.listProjects({ group: 'test-group', simple: true });
+
+      expect(mockPagedRequest).toHaveBeenCalledWith(
+        '/groups/test-group/projects',
+        {
+          group: 'test-group',
+          simple: true,
+          include_subgroups: true,
+        },
+      );
+    });
   });
 
   describe('listUsers', () => {
@@ -532,20 +581,12 @@ describe('hasFile', () => {
   });
 
   it('should find catalog file', async () => {
-    const hasFile = await client.hasFile(
-      'group1/test-repo1',
-      'main',
-      'catalog-info.yaml',
-    );
+    const hasFile = await client.hasFile(1, 'main', 'catalog-info.yaml');
     expect(hasFile).toBe(true);
   });
 
   it('should not find catalog file', async () => {
-    const hasFile = await client.hasFile(
-      'group1/test-repo1',
-      'unknown',
-      'catalog-info.yaml',
-    );
+    const hasFile = await client.hasFile(1, 'unknown', 'catalog-info.yaml');
     expect(hasFile).toBe(false);
   });
 });

@@ -1,0 +1,64 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { SkeletonSnippet } from '@/snippets/stories-snippets';
+import {
+  skeletonPropDefs,
+  skeletonUsageSnippet,
+  skeletonDefaultSnippet,
+  skeletonDemo1Snippet,
+  skeletonDemo2Snippet,
+} from './skeleton.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Skeleton"
+  description="Use to show a placeholder while content is loading."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SkeletonSnippet story="Demo2" />}
+  code={skeletonDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={skeletonUsageSnippet} />
+
+## API reference
+
+<PropsTable data={skeletonPropDefs} />
+
+## Examples
+
+### Demo 1
+
+You can use a mix of different sizes to create a more complex skeleton.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SkeletonSnippet story="Demo1" />}
+  code={skeletonDemo1Snippet}
+  open
+/>
+
+### Demo 2
+
+You can use a mix of different sizes to create a more complex skeleton.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SkeletonSnippet story="Demo2" />}
+  code={skeletonDemo2Snippet}
+  open
+/>
+
+<Theming component="Skeleton" />
+
+<ChangelogComponent component="skeleton" />

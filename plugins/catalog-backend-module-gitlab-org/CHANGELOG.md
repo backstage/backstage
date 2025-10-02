@@ -1,5 +1,154 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.2.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.4-next.1
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
+## 0.2.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.4-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-events-node@0.4.15
+
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.3
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.2.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.3-next.1
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.3-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 0.2.12
+
+### Patch Changes
+
+- d8cb60e: feat: Add gitlabOrgEntityProviderTransformsExtensionPoint for overriding user and group transformers
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.2
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
+## 0.2.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.2-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+
+## 0.2.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.1
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.1-next.1
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-events-node@0.4.12
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-events-node@0.4.12
+
+## 0.2.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+
+## 0.2.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.6.7-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+
+## 0.2.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-catalog-backend-module-gitlab@0.6.7-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-catalog-backend-module-gitlab@0.6.6
+  - @backstage/plugin-events-node@0.4.11
+
 ## 0.2.9-next.3
 
 ### Patch Changes

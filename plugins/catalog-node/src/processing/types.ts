@@ -21,7 +21,7 @@ import {
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
 import { JsonValue } from '@backstage/types';
-import { CatalogProcessorEmit } from '../api';
+import { CatalogProcessorEmit } from '../api/processor';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**

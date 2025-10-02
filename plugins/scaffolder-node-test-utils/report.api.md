@@ -7,12 +7,12 @@ import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
 
 // @public
-export const createMockActionContext: <
+export function createMockActionContext<
   TActionInput extends JsonObject = JsonObject,
-  TActionOutput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = any,
 >(
   options?: Partial<ActionContext<TActionInput, TActionOutput>>,
-) => ActionContext<TActionInput, TActionOutput>;
+): ActionContext<TActionInput, TActionOutput>;
 
 // (No @packageDocumentation comment for this package)
 ```

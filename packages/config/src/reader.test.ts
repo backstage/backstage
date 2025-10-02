@@ -43,6 +43,7 @@ const DATA = {
     null: null,
     string: 'string',
     strings: ['string1', 'string2'],
+    'with:colon': 'yes',
   },
   nestlings: [{ boolean: true }, { string: 'string' }, { number: 42 }] as {}[],
 };
@@ -57,6 +58,7 @@ function expectValidValues(config: ConfigReader) {
   expect(config.has('nested.one')).toBe(true);
   expect(config.has('nested.missing')).toBe(false);
   expect(config.has('nested.null')).toBe(false);
+  expect(config.has('nested.with:colon')).toBe(true);
   expect(config.getNumber('zero')).toBe(0);
   expect(config.getNumber('one')).toBe(1);
   expect(config.getNumber('zeroString')).toBe(0);
@@ -84,8 +86,11 @@ function expectValidValues(config: ConfigReader) {
     null: undefined,
     string: 'string',
     strings: ['string1', 'string2'],
+    'with:colon': 'yes',
   });
   expect(config.getConfig('nested').getString('string')).toBe('string');
+  expect(config.getString('nested.string')).toBe('string');
+  expect(config.getString('nested.with:colon')).toBe('yes');
   expect(config.getOptionalConfig('nested')!.getStringArray('strings')).toEqual(
     ['string1', 'string2'],
   );
@@ -171,6 +176,7 @@ describe('ConfigReader', () => {
     expect(config.getOptionalString('x_x')).toBeUndefined();
     expect(config.getOptionalString('x-X')).toBeUndefined();
     expect(config.getOptionalString('x0')).toBeUndefined();
+    expect(config.getOptionalString('x-2')).toBeUndefined();
     expect(config.getOptionalString('X-x2')).toBeUndefined();
     expect(config.getOptionalString('x0_x0')).toBeUndefined();
     expect(config.getOptionalString('x_x-x_x')).toBeUndefined();

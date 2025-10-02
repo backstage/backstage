@@ -47,140 +47,61 @@ export function createPublishGithubAction(options: {
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    homepage?: string;
-    access?: string;
-    defaultBranch?: string;
-    protectDefaultBranch?: boolean;
-    protectEnforceAdmins?: boolean;
-    deleteBranchOnMerge?: boolean;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    allowRebaseMerge?: boolean;
-    allowSquashMerge?: boolean;
-    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
-    squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
-    allowMergeCommit?: boolean;
-    allowAutoMerge?: boolean;
-    allowUpdateBranch?: boolean;
-    sourcePath?: string;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredApprovingReviewCount?: number;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requireCodeOwnerReviews?: boolean;
-    dismissStaleReviews?: boolean;
-    requiredStatusCheckContexts?: string[];
-    requireBranchesToBeUpToDate?: boolean;
-    requiredConversationResolution?: boolean;
-    requireLastPushApproval?: boolean;
-    repoVisibility?: 'private' | 'internal' | 'public';
-    collaborators?: Array<
-      | {
-          user: string;
-          access: string;
-        }
-      | {
-          team: string;
-          access: string;
-        }
-      | {
-          /** @deprecated This field is deprecated in favor of team */
-          username: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-        }
-    >;
-    hasProjects?: boolean | undefined;
-    hasWiki?: boolean | undefined;
-    hasIssues?: boolean | undefined;
-    token?: string;
-    topics?: string[];
-    repoVariables?: { [key: string]: string };
-    secrets?: { [key: string]: string };
-    oidcCustomization?: {
-      useDefault: boolean;
-      includeClaimKeys?: string[];
-    };
-    requiredCommitSigning?: boolean;
-    requiredLinearHistory?: boolean;
-    customProperties?: { [key: string]: string };
-    subscribe?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'publish:github',
     description:
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          description: inputProps.description,
-          homepage: inputProps.homepage,
-          access: inputProps.access,
-          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-          restrictions: inputProps.restrictions,
-          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-          dismissStaleReviews: inputProps.dismissStaleReviews,
-          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-          requiredConversationResolution:
-            inputProps.requiredConversationResolution,
-          requireLastPushApproval: inputProps.requireLastPushApproval,
-          repoVisibility: inputProps.repoVisibility,
-          defaultBranch: inputProps.defaultBranch,
-          protectDefaultBranch: inputProps.protectDefaultBranch,
-          protectEnforceAdmins: inputProps.protectEnforceAdmins,
-          deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
-          gitCommitMessage: inputProps.gitCommitMessage,
-          gitAuthorName: inputProps.gitAuthorName,
-          gitAuthorEmail: inputProps.gitAuthorEmail,
-          allowMergeCommit: inputProps.allowMergeCommit,
-          allowSquashMerge: inputProps.allowSquashMerge,
-          squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
-          squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
-          allowRebaseMerge: inputProps.allowRebaseMerge,
-          allowAutoMerge: inputProps.allowAutoMerge,
-          allowUpdateBranch: inputProps.allowUpdateBranch,
-          sourcePath: inputProps.sourcePath,
-          collaborators: inputProps.collaborators,
-          hasProjects: inputProps.hasProjects,
-          hasWiki: inputProps.hasWiki,
-          hasIssues: inputProps.hasIssues,
-          token: inputProps.token,
-          topics: inputProps.topics,
-          repoVariables: inputProps.repoVariables,
-          secrets: inputProps.secrets,
-          oidcCustomization: inputProps.oidcCustomization,
-          requiredCommitSigning: inputProps.requiredCommitSigning,
-          requiredLinearHistory: inputProps.requiredLinearHistory,
-          customProperties: inputProps.customProperties,
-          subscribe: inputProps.subscribe,
-        },
+        repoUrl: inputProps.repoUrl,
+        description: inputProps.description,
+        homepage: inputProps.homepage,
+        access: inputProps.access,
+        bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+        requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+        restrictions: inputProps.restrictions,
+        requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+        dismissStaleReviews: inputProps.dismissStaleReviews,
+        requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+        requiredConversationResolution:
+          inputProps.requiredConversationResolution,
+        requireLastPushApproval: inputProps.requireLastPushApproval,
+        repoVisibility: inputProps.repoVisibility,
+        defaultBranch: inputProps.defaultBranch,
+        protectDefaultBranch: inputProps.protectDefaultBranch,
+        protectEnforceAdmins: inputProps.protectEnforceAdmins,
+        deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
+        gitCommitMessage: inputProps.gitCommitMessage,
+        gitAuthorName: inputProps.gitAuthorName,
+        gitAuthorEmail: inputProps.gitAuthorEmail,
+        allowMergeCommit: inputProps.allowMergeCommit,
+        allowSquashMerge: inputProps.allowSquashMerge,
+        squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
+        squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
+        allowRebaseMerge: inputProps.allowRebaseMerge,
+        allowAutoMerge: inputProps.allowAutoMerge,
+        allowUpdateBranch: inputProps.allowUpdateBranch,
+        sourcePath: inputProps.sourcePath,
+        collaborators: inputProps.collaborators,
+        hasProjects: inputProps.hasProjects,
+        hasWiki: inputProps.hasWiki,
+        hasIssues: inputProps.hasIssues,
+        token: inputProps.token,
+        topics: inputProps.topics,
+        repoVariables: inputProps.repoVariables,
+        secrets: inputProps.secrets,
+        oidcCustomization: inputProps.oidcCustomization,
+        requiredCommitSigning: inputProps.requiredCommitSigning,
+        requiredLinearHistory: inputProps.requiredLinearHistory,
+        customProperties: inputProps.customProperties,
+        subscribe: inputProps.subscribe,
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: outputProps.remoteUrl,
-          repoContentsUrl: outputProps.repoContentsUrl,
-          commitHash: outputProps.commitHash,
-        },
+        remoteUrl: outputProps.remoteUrl,
+        repoContentsUrl: outputProps.repoContentsUrl,
+        commitHash: outputProps.commitHash,
       },
     },
     async handler(ctx) {

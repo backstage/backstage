@@ -19,13 +19,11 @@ import {
   devToolsConfigReadPermission,
   devToolsExternalDependenciesReadPermission,
   devToolsInfoReadPermission,
-  devToolsPermissions,
 } from '@backstage/plugin-devtools-common';
 import { DevToolsBackendApi } from '../api';
 import { NotAllowedError } from '@backstage/errors';
 import Router from 'express-promise-router';
 import express from 'express';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
   DiscoveryService,
   HttpAuthService,
@@ -59,11 +57,6 @@ export async function createRouter(
 
   const router = Router();
   router.use(express.json());
-  router.use(
-    createPermissionIntegrationRouter({
-      permissions: devToolsPermissions,
-    }),
-  );
 
   router.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });

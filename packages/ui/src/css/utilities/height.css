@@ -1,0 +1,86 @@
+.bui-h {
+  height: var(--height);
+}
+
+.bui-min-h {
+  min-height: var(--min-height);
+}
+
+.bui-max-h {
+  max-height: var(--max-height);
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:bui-h {
+    height: var(--height);
+  }
+
+  .xs\:bui-min-h {
+    min-height: var(--min-height);
+  }
+
+  .xs\:bui-max-h {
+    max-height: var(--max-height);
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:bui-h {
+    height: var(--height);
+  }
+
+  .sm\:bui-min-h {
+    min-height: var(--min-height);
+  }
+
+  .sm\:bui-max-h {
+    max-height: var(--max-height);
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:bui-h {
+    height: var(--height);
+  }
+
+  .md\:bui-min-h {
+    min-height: var(--min-height);
+  }
+
+  .md\:bui-max-h {
+    max-height: var(--max-height);
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:bui-h {
+    height: var(--height);
+  }
+
+  .lg\:bui-min-h {
+    min-height: var(--min-height);
+  }
+
+  .lg\:bui-max-h {
+    max-height: var(--max-height);
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:bui-h {
+    height: var(--height);
+  }
+
+  .xl\:bui-min-h {
+    min-height: var(--min-height);
+  }
+
+  .xl\:bui-max-h {
+    max-height: var(--max-height);
+  }
+}

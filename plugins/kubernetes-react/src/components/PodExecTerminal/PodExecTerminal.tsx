@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import 'xterm/css/xterm.css';
+import '@xterm/xterm/css/xterm.css';
 
 import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useRef, useEffect, useMemo, useState } from 'react';
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
+import { Terminal } from '@xterm/xterm';
+import { FitAddon } from '@xterm/addon-fit';
 
 import { PodExecTerminalAttachAddon } from './PodExecTerminalAttachAddon';
 

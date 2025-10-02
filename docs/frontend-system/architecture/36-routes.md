@@ -2,11 +2,8 @@
 id: routes
 title: Frontend Routes
 sidebar_label: Routes
-# prettier-ignore
 description: Frontend routes
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 ## Introduction
 
@@ -48,7 +45,7 @@ import { indexRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
   // The `name` option is omitted because this is an index page
-  defaultPath: '/entities',
+  path: '/entities',
   // highlight-next-line
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
@@ -198,7 +195,7 @@ import {
 import { indexRouteRef, createComponentExternalRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
-  defaultPath: '/entities',
+  path: '/entities',
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
@@ -280,7 +277,7 @@ Another thing to note is that this indirection in the routing is particularly us
 
 ### Default Targets for External Route References
 
-It is possible to define a default target for an external route reference, potentially removing the need to bind the route in the app. This reduces the need for configuration when installing new plugins through providing a sensible default. It is of course still possible to override the route binding in the app.
+It is possible to define a default target for an external route reference, potentially removing the need to bind the route in the app. This reduces the need for configuration when installing new plugins through providing a sensible default. It is of course still possible to override the route binding in the app, as long as the external route ref is exported via the `externalRoutes` property of the plugin instance.
 
 The default target uses the same syntax as the route binding configuration, and will only be used if the target plugin and route exist. For example, this is how the catalog can define a default target for the create component external route in a way that removes the need for the binding in the previous example:
 
@@ -405,7 +402,7 @@ import {
 import { indexRouteRef, detailsSubRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
-  defaultPath: '/entities',
+  path: '/entities',
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
@@ -419,4 +416,43 @@ export default createFrontendPlugin({
   },
   extensions: [catalogIndexPage],
 });
+```
+
+## Route Aliases - Overriding Routed Extensions in Modules
+
+It is possible to [override extensions of a plugin using a module](./25-extension-overrides.md#creating-a-frontend-module). In some cases the extension you're overriding may require a route reference. You could import the plugin instance and access the it via the `routes` property, but this creates a direct dependency on the plugin and risks leading to package duplication issues that would also break the route reference.
+
+Instead of accessing the route reference directly, you can create a new route reference that acts as an alias for the original one from the plugin. For example, you can override the catalog index page with a custom one like this:
+
+```tsx
+const indexRouteRef = createRouteRef({ aliasFor: 'catalog.catalogIndex' });
+
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [
+    PageBlueprint.make({
+      params: {
+        defaultPath: '/catalog',
+        routeRef: indexRouteRef,
+        loader: () =>
+          import('./CustomCatalogIndexPage').then(m => (
+            <m.CustomCatalogIndexPage />
+          )),
+      },
+    }),
+  ],
+});
+```
+
+Aliases are limited to the plugin that they are defined in. These aliases can also be imported and used as usual with for example `useRouteRef`, but they must always be registered in the app via an extension for this to work. For example, the following will not work:
+
+```tsx
+function MyInvalidComponent() {
+  // This is NOT valid
+  const link = useRouteRef(
+    createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+  );
+
+  // ...
+}
 ```

@@ -10,3 +10,17 @@ spec:
   type: service
   lifecycle: experimental
   owner: user:guest
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: techdocs-entity-documented-component
+  title: Example Entity Documented By TechDocs Entity Annotation
+  description: A Service with TechDocs documentation via the `backstage.io/techdocs-entity` annotation.
+  annotations:
+    backstage.io/techdocs-entity: component:default/documented-component
+    backstage.io/techdocs-entity-path: /inner-component-docs
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest

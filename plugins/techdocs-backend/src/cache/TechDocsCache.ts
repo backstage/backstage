@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { assertError, CustomErrorBase } from '@backstage/errors';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
+import { durationToMilliseconds } from '@backstage/types';
 
 export class CacheInvalidationError extends CustomErrorBase {}
 
@@ -42,8 +43,20 @@ export class TechDocsCache {
     config: Config,
     { cache, logger }: { cache: CacheService; logger: LoggerService },
   ) {
-    const timeout = config.getOptionalNumber('techdocs.cache.readTimeout');
-    const readTimeout = timeout === undefined ? 1000 : timeout;
+    let readTimeout: number;
+    if (config.has('techdocs.cache.readTimeout')) {
+      if (typeof config.get('techdocs.cache.readTimeout') === 'number') {
+        readTimeout = config.getNumber('techdocs.cache.readTimeout');
+      } else {
+        readTimeout = durationToMilliseconds(
+          readDurationFromConfig(config, {
+            key: 'techdocs.cache.readTimeout',
+          }),
+        );
+      }
+    } else {
+      readTimeout = 1000;
+    }
     return new TechDocsCache({ cache, logger, readTimeout });
   }
 

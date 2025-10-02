@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import {
+  GithubAppCredentialsMux,
   GithubCredentialsProvider,
   GithubIntegration,
   GithubIntegrationConfig,
@@ -82,6 +83,7 @@ type Repository = {
   defaultBranchRef?: string;
   isCatalogInfoFilePresent: boolean;
   visibility: string;
+  organization: string;
 };
 
 /**
@@ -219,8 +221,25 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     );
   }
 
-  private async createGraphqlClient() {
-    const organization = this.config.organization;
+  private async getOrganizations(): Promise<string[]> {
+    if (this.config.organization) return [this.config.organization];
+
+    const githubAppMux = new GithubAppCredentialsMux(this.integration, [
+      this.config.app!,
+    ]);
+    const installs = await githubAppMux.getAllInstallations();
+    return installs
+      .map(install =>
+        install.target_type === 'Organization' &&
+        install.account &&
+        'login' in install.account
+          ? install.account.login
+          : undefined,
+      )
+      .filter(Boolean) as string[];
+  }
+
+  private async createGraphqlClient(organization: string) {
     const host = this.integration.host;
     const orgUrl = `https://${host}/${organization}`;
 
@@ -236,15 +255,21 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   // go to the server and get all repositories
   private async findCatalogFiles(): Promise<Repository[]> {
-    const organization = this.config.organization;
+    const organizations = await this.getOrganizations();
     const catalogPath = this.config.catalogPath;
-    const client = await this.createGraphqlClient();
 
-    const { repositories: repositoriesFromGithub } =
-      await getOrganizationRepositories(client, organization, catalogPath);
-    const repositories = repositoriesFromGithub.map(
-      this.createRepoFromGithubResponse,
-    );
+    let repositories: Repository[] = [];
+    for (const organization of organizations) {
+      const client = await this.createGraphqlClient(organization);
+
+      const { repositories: repositoriesFromGithub } =
+        await getOrganizationRepositories(client, organization, catalogPath);
+      repositories = repositories.concat(
+        repositoriesFromGithub.map(r =>
+          this.createRepoFromGithubResponse(r, organization),
+        ),
+      );
+    }
 
     if (this.config.validateLocationsExist) {
       return repositories.filter(
@@ -323,7 +348,16 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onPush(event: PushEvent) {
-    if (this.config.organization !== event.organization?.login) {
+    const configOrganizations = (await this.getOrganizations()).map(org =>
+      org.toLocaleLowerCase('en-US'),
+    );
+    const eventOrganization =
+      event.organization?.login.toLocaleLowerCase('en-US');
+
+    if (
+      !eventOrganization ||
+      !configOrganizations.includes(eventOrganization)
+    ) {
       this.logger.debug(
         `skipping push event from organization ${event.organization?.login}`,
       );
@@ -337,7 +371,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const branch =
       this.config.filters.branch || event.repository.default_branch;
 
-    if (!event.ref.includes(branch)) {
+    if (event.ref !== `refs/heads/${branch}`) {
       this.logger.debug(`skipping push event from ref ${event.ref}`);
       return;
     }
@@ -406,7 +440,16 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onRepoChange(event: RepositoryEvent) {
-    if (this.config.organization !== event.organization?.login) {
+    const configOrganizations = (await this.getOrganizations()).map(org =>
+      org.toLocaleLowerCase('en-US'),
+    );
+    const eventOrganization =
+      event.organization?.login.toLocaleLowerCase('en-US');
+
+    if (
+      !eventOrganization ||
+      !configOrganizations.includes(eventOrganization)
+    ) {
       this.logger.debug(
         `skipping repository event from organization ${event.organization?.login}`,
       );
@@ -600,16 +643,18 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private async addEntitiesForRepo(repository: Repository) {
     if (this.config.validateLocationsExist) {
-      const organization = this.config.organization;
+      const organization = repository.organization;
       const catalogPath = this.config.catalogPath;
-      const client = await this.createGraphqlClient();
+      const client = await this.createGraphqlClient(organization);
 
       const repositoryFromGithub = await getOrganizationRepository(
         client,
         organization,
         repository.name,
         catalogPath,
-      ).then(r => (r ? this.createRepoFromGithubResponse(r) : null));
+      ).then(r =>
+        r ? this.createRepoFromGithubResponse(r, organization) : null,
+      );
 
       if (!repositoryFromGithub?.isCatalogInfoFilePresent) {
         return;
@@ -639,11 +684,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       // only the catalog file will be recovered from the commits
       isCatalogInfoFilePresent: true,
       visibility: event.repository.visibility,
+      organization: event.repository.owner.login,
     };
   }
 
   private createRepoFromGithubResponse(
     repositoryResponse: RepositoryResponse,
+    organization: string,
   ): Repository {
     return {
       url: repositoryResponse.url,
@@ -658,6 +705,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         repositoryResponse.catalogInfoFile?.__typename === 'Blob' &&
         repositoryResponse.catalogInfoFile.text !== '',
       visibility: repositoryResponse.visibility,
+      organization,
     };
   }
 

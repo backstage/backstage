@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
         with:
           egress-policy: audit
 
@@ -80,6 +80,34 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore package-docs cache
+        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
+
+      - name: build API reference (beta)
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference (beta)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stable-reference-beta
+          path: type-docs/
+          if-no-files-found: error
+          retention-days: 1
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save package-docs cache
+        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        if: always()
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
+
       - name: microsite yarn install
         run: yarn install --immutable
         working-directory: microsite
@@ -107,7 +135,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
         with:
           egress-policy: audit
 
@@ -136,20 +164,42 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-        # Also build and upload storybook
-      - name: storybook yarn install
-        run: yarn install --immutable
-        working-directory: storybook
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore package-docs cache
+        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-
 
-      - name: storybook build
+      - name: build API reference (beta)
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference (beta)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: next-reference-beta
+          path: type-docs/
+          if-no-files-found: error
+          retention-days: 1
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save package-docs cache
+        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        if: always()
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
+
+      - name: Build Storybook
         run: yarn build-storybook
-        working-directory: storybook
 
-      - name: storybook upload
+      - name: Upload Storybook
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: storybook
-          path: storybook/dist/
+          path: dist-storybook
           if-no-files-found: error
           retention-days: 1
 
@@ -190,7 +240,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
         with:
           egress-policy: audit
 
@@ -265,8 +315,18 @@ jobs:
           name: storybook
           path: microsite/build/storybook
 
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: stable-reference-beta
+          path: microsite/build/api/stable/
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: next-reference-beta
+          path: microsite/build/api/next/
+
       - name: Check the build output
-        run: ls microsite/build && ls microsite/build/storybook
+        run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
 
       - name: Deploy both microsite and storybook to gh-pages
         uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # v4.7.3

@@ -26,6 +26,7 @@ These labels indicate what is needed to move an issue forward before it can be a
 
 - `needs:bep` - The issue is an advanced addition that needs a [Backstage Enhancement Proposal](./beps/README.md).
 - `needs:direction` - The issue needs direction from the owners of the area.
+- `needs:discussion` - The way forward for this issue is unclear and it needs further discussion with the author and other participants.
 - `needs:more-info` - The issue needs more information from the author.
 - `needs:motivation` - It is not clear why this change is needed. The author should provide motivation for the change, for instance by giving examples of concrete use cases or scenarios.
 - `needs:repro` - The issue cannot be reproduced by the owners of the area. The author should provide more information to help them reproduce the issue, if possible with a minimal reproduction repository.
@@ -39,7 +40,7 @@ These labels indicate which part of Backstage an issue or pull request relates t
 - `area:auditor` - Auditor service and it's use in plugins.
 - `area:auth` - Authentication and 3rd party authorization.
 - `area:catalog` - The Catalog plugin and the Software Catalog model and integrations.
-- `area:design-system` - The Canon design system and library.
+- `area:design-system` - The Backstage UI design system and library.
 - `area:documentation` - Documentation for adopters, users, and developers.
 - `area:events` - The Events system and integrations for other plugins.
 - `area:framework` - The core Backstage framework.
@@ -81,11 +82,17 @@ These labels indicate that an issue is related to specific domains of expertise.
 - `domain:tooling` - Tooling and automation in Node.js and GitHub Actions.
 - `domain:web` - Frontend development using TypeScript and React.
 
+## Workflow Labels
+
+These labels indicate a workflow status for the owners.
+
+- `workflow:do-not-merge` - The Pull Request should not be merged.
+- `workflow:before-release` - Should be handled before the next main-line release.
+- `workflow:after-release` - Should be handled after the next main-line release.
+- `workflow:after-vacations` - To be handled once the owners return from vacation.
+
 ## General Labels
 
-- `after vacations` - To be handled once the owners return from vacation.
-- `do not merge` - The pull request should not be merged.
-- `fix before release` - Should be handled before the next release.
 - `good first issue` - Good for new contributors.
 - `stale` - The issue or pull request has not seen any activity for a while and will be closed if no further activity is seen.
 - `no stale` - The issue or pull request should not be closed due to inactivity.

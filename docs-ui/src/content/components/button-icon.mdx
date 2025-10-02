@@ -1,0 +1,85 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ButtonIconSnippet } from '@/snippets/stories-snippets';
+import {
+  buttonIconPropDefs,
+  buttonIconUsageSnippet,
+  buttonIconDefaultSnippet,
+  buttonIconVariantsSnippet,
+  buttonIconSizesSnippet,
+  buttonIconDisabledSnippet,
+  buttonIconResponsiveSnippet,
+  buttonIconAsLinkSnippet,
+} from './button-icon.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="ButtonIcon"
+  description="A button component with a single icon that can be used to trigger actions."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<ButtonIconSnippet story="Variants" />}
+  code={buttonIconDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={buttonIconUsageSnippet} />
+
+## API reference
+
+<PropsTable data={buttonIconPropDefs} />
+
+## Examples
+
+### Variants
+
+Here's a view when buttons have different variants.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonIconSnippet story="Variants" />}
+  code={buttonIconVariantsSnippet}
+/>
+
+### Sizes
+
+Here's a view when buttons have different sizes.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonIconSnippet story="Sizes" />}
+  code={buttonIconSizesSnippet}
+/>
+
+### Disabled
+
+Here's a view when buttons are disabled.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonIconSnippet story="Disabled" />}
+  code={buttonIconDisabledSnippet}
+/>
+
+### Responsive
+
+Here's a view when buttons are responsive.
+
+<CodeBlock code={buttonIconResponsiveSnippet} />
+
+<Theming component="ButtonIcon" />
+
+<ChangelogComponent component="button-icon" />

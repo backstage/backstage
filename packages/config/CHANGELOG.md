@@ -1,5 +1,25 @@
 # @backstage/config
 
+## 1.3.4-next.0
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+
+## 1.3.3
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- 3507fcd: Just some more circular dep cleanup
+
+## 1.3.3-next.0
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- 3507fcd: Just some more circular dep cleanup
+
 ## 1.3.2
 
 ### Patch Changes

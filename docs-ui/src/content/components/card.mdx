@@ -1,0 +1,89 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CardSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  cardPropDefs,
+  cardUsageSnippet,
+  cardDefaultSnippet,
+  cardHeaderPropDefs,
+  cardBodyPropDefs,
+  cardFooterPropDefs,
+  cardLongBodySnippet,
+  cardListRowSnippet,
+} from './card.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Card"
+  description="A card component that can be used to display content in a box."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CardSnippet story="CustomSize" />}
+  code={cardDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={cardUsageSnippet} />
+
+## API reference
+
+### Card
+
+A card component that can be used to display content in a box.
+
+<PropsTable data={cardPropDefs} />
+
+### CardHeader
+
+To display a header in a card, use the `CardHeader` component. This will be fixed at the top of the card.
+
+<PropsTable data={cardHeaderPropDefs} />
+
+### CardBody
+
+To display content in a card, use the `CardBody` component. This will automatically fill the card.
+
+<PropsTable data={cardBodyPropDefs} />
+
+### CardFooter
+
+To display a footer in a card, use the `CardFooter` component. This will be fixed at the bottom of the card.
+
+<PropsTable data={cardFooterPropDefs} />
+
+## Examples
+
+### With long body
+
+Here's a view when card has a long body.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CardSnippet story="WithLongBody" />}
+  code={cardLongBodySnippet}
+  open
+/>
+
+### With list
+
+Here's a view when card has a list.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CardSnippet story="WithListRow" />}
+  code={cardListRowSnippet}
+  open
+/>
+
+<Theming component="Card" />
+
+<ChangelogComponent component="card" />

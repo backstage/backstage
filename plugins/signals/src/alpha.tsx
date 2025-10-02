@@ -16,17 +16,19 @@
 
 import {
   ApiBlueprint,
-  createApiFactory,
+  AppRootElementBlueprint,
   createFrontendPlugin,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/frontend-plugin-api';
 import { signalApiRef } from '@backstage/plugin-signals-react';
 import { SignalClient } from './api/SignalClient';
+import { SignalsDisplay } from './plugin';
+import { compatWrapper } from '@backstage/core-compat-api';
 
 const api = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: signalApiRef,
       deps: {
         identity: identityApiRef,
@@ -39,11 +41,18 @@ const api = ApiBlueprint.make({
         });
       },
     }),
+});
+
+const signalsDisplayAppRootElement = AppRootElementBlueprint.make({
+  name: 'signals-display',
+  params: {
+    element: compatWrapper(<SignalsDisplay />),
   },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'signals',
-  extensions: [api],
+  info: { packageJson: () => import('../package.json') },
+  extensions: [api, signalsDisplayAppRootElement],
 });

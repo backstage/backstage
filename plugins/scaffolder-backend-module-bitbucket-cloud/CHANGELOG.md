@@ -1,5 +1,171 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.2.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+
+## 0.2.14-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.3-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-bitbucket-cloud-common@0.3.2
+  - @backstage/plugin-scaffolder-node@0.11.1
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.2-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.2.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1
+
+## 0.2.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/integration@1.17.1
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1
+
+## 0.2.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.2.10
+
+### Patch Changes
+
+- ca9fdc0: Migrate `bitbucket-cloud` to new actions format
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- 280611d: Fix `bitbucketCloudBranchRestrictions` API calls to accept null to prevent 400 errors for some branch restriction kinds defined.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+
+## 0.2.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+
+## 0.2.10-next.1
+
+### Patch Changes
+
+- ca9fdc0: Migrate `bitbucket-cloud` to new actions format
+- 280611d: Fix `bitbucketCloudBranchRestrictions` API calls to accept null to prevent 400 errors for some branch restriction kinds defined.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+
+## 0.2.10-next.0
+
+### Patch Changes
+
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.2.9
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.2.9-next.3
 
 ### Patch Changes

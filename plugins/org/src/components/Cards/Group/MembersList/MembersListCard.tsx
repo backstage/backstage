@@ -48,6 +48,8 @@ import {
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
 import { EntityRelationAggregation } from '../../types';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { orgTranslationRef } from '../../../../translation';
 
 /** @public */
 export type MemberComponentClassKey = 'card' | 'avatar';
@@ -157,8 +159,9 @@ export const MembersListCard = (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
 }) => {
+  const { t } = useTranslationRef(orgTranslationRef);
   const {
-    memberDisplayTitle = 'Members',
+    memberDisplayTitle = t('membersListCard.title'),
     pageSize = 50,
     showAggregateMembersToggle,
     relationType = 'memberof',
@@ -236,7 +239,13 @@ export const MembersListCard = (props: {
   }
 
   const nbPages = Math.ceil((members?.length || 0) / pageSize);
-  const paginationLabel = nbPages < 2 ? '' : `, page ${page} of ${nbPages}`;
+  const paginationLabel =
+    nbPages < 2
+      ? ''
+      : t('membersListCard.paginationLabel', {
+          page: String(page),
+          nbPages: String(nbPages),
+        });
 
   const pagination = (
     <Pagination
@@ -260,9 +269,7 @@ export const MembersListCard = (props: {
   } else {
     memberList = (
       <Box p={2}>
-        <Typography>
-          This group has no {memberDisplayTitle.toLocaleLowerCase()}.
-        </Typography>
+        <Typography>{t('membersListCard.noMembersDescription')}</Typography>
       </Box>
     );
   }
@@ -273,23 +280,29 @@ export const MembersListCard = (props: {
         title={`${memberDisplayTitle} (${
           members?.length || 0
         }${paginationLabel})`}
-        subheader={`of ${displayName}`}
+        subheader={t('membersListCard.subtitle', {
+          groupName: displayName,
+        })}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
         className={classes.root}
         cardClassName={classes.cardContent}
       >
         {showAggregateMembersToggle && (
           <>
-            Direct Members
+            {t('membersListCard.aggregateMembersToggle.directMembers')}
             <Switch
               color="primary"
               checked={showAggregateMembers}
               onChange={() => {
                 setShowAggregateMembers(!showAggregateMembers);
               }}
-              inputProps={{ 'aria-label': 'Users Type Switch' }}
+              inputProps={{
+                'aria-label': t(
+                  'membersListCard.aggregateMembersToggle.ariaLabel',
+                ),
+              }}
             />
-            Aggregated Members
+            {t('membersListCard.aggregateMembersToggle.aggregatedMembers')}
           </>
         )}
         {showAggregateMembers && loadingDescendantMembers ? (

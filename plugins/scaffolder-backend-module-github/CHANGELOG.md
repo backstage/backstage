@@ -1,5 +1,361 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.0
+
+## 0.9.0
+
+### Minor Changes
+
+- f0f06b4: Adding a new scaffolder action `github:issues:create` following the reference of `github:issues:label` with `dryRun` testing possibility
+
+  It can be used like this
+
+  ```
+    steps:
+      - id: create-simple-issue
+        name: Create Simple Issue
+        action: github:issues:create
+        input:
+          repoUrl: ${{ parameters.repoUrl }}
+          title: "[${{ parameters.projectName }}] Simple Bug Report"
+          body: |
+            ## Bug Description
+            This is a simple bug report created by the scaffolder template.
+
+            ### Steps to Reproduce
+            1. Run the application
+            2. Navigate to the main page
+            3. Click on the problematic button
+
+            ### Expected Behavior
+            The button should work correctly.
+
+            ### Actual Behavior
+            The button does not respond to clicks.
+    output:
+      links:
+        - title: Simple Issue
+          url: ${{ steps['create-simple-issue'].output.issueUrl }}
+  ```
+
+### Patch Changes
+
+- aee107b: Add `auto_init` option to `github:repo:create` action to create repository with an initial commit containing a README.md file
+
+  This initial commit is created by GitHub itself and the commit is signed, so the repository will not be empty after creation.
+
+  ```diff
+    - action: github:repo:create
+      id: init-new-repo
+      input:
+        repoUrl: 'github.com?repo=repo&owner=owner'
+        description: This is the description
+        visibility: private
+  +     autoInit: true
+
+  ```
+
+- 6393b78: Add block creations field in github branch protection scaffolder actions
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-node@0.11.1
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration@1.18.0-next.0
+
+## 0.8.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- a22cce0: Fixed bug in the `customProperties` type which was preventing it being used to set a list of values against a key (e.g. for multi-select fields)
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.8.2-next.1
+
+### Patch Changes
+
+- a22cce0: Fixed bug in the `customProperties` type which was preventing it being used to set a list of values against a key (e.g. for multi-select fields)
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+
+## 0.8.1
+
+### Patch Changes
+
+- f36bcf9: Added support for file deletion to `publish:github:pull-request` action.
+
+  Example usage:
+
+  ```diff
+    - action: publish:github:pull-request
+      id: clean-up-pr
+      input:
+        description: This is the description
+  +     filesToDelete:
+  +       - outdated/changelog.md
+  +       - sample-file.txt
+        owner: owner
+        repo: repo
+        title: Title Goes Here
+
+  ```
+
+- 38db3eb: Fix typo in `InputError`
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/integration@1.17.1
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-node@1.17.2
+
+## 0.8.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
+## 0.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- f36bcf9: Added support for file deletion to `publish:github:pull-request` action.
+
+  Example usage:
+
+  ```diff
+    - action: publish:github:pull-request
+      id: clean-up-pr
+      input:
+        description: This is the description
+  +     filesToDelete:
+  +       - outdated/changelog.md
+  +       - sample-file.txt
+        owner: owner
+        repo: repo
+        title: Title Goes Here
+
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.8.0
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The `createGithubEnvironmentAction` action no longer requires an `AuthService`, and now accepts a `CatalogService` instead of `CatalogClient`.
+
+  Unless you're providing your own override action to the default, this should be a non-breaking change.
+
+  You can migrate using the following if you're getting typescript errors:
+
+  ```ts
+  import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  export const myModule = createBackendModule({
+    pluginId: 'scaffolder',
+    moduleId: 'test',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          catalog: catalogServiceRef,
+        },
+        async init({ scaffolder, catalog }) {
+          scaffolder.addActions(
+            createGithubEnvironmentAction({
+              catalog,
+            }),
+          );
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 575c76b: Migrate to using new actions
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+
+## 0.8.0-next.2
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The `createGithubEnvironmentAction` action no longer requires an `AuthService`, and now accepts a `CatalogService` instead of `CatalogClient`.
+
+  Unless you're providing your own override action to the default, this should be a non-breaking change.
+
+  You can migrate using the following if you're getting typescript errors:
+
+  ```ts
+  import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  export const myModule = createBackendModule({
+    pluginId: 'scaffolder',
+    moduleId: 'test',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          catalog: catalogServiceRef,
+        },
+        async init({ scaffolder, catalog }) {
+          scaffolder.addActions(
+            createGithubEnvironmentAction({
+              catalog,
+            }),
+          );
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 575c76b: Migrate to using new actions
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+
+## 0.7.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- 6579c2c: Use action context logger in Octokit client
+- 72d019d: Removed various typos
+- b2b654c: Added optional assignees parameter to `publish:github:pull-request` action
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.7.1-next.3
 
 ### Patch Changes

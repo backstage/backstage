@@ -2,11 +2,8 @@
 id: consuming
 title: Consuming Utility APIs
 sidebar_label: Consuming APIs
-# prettier-ignore
 description: Consuming utility APIs
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 All of the utility API extensions that were passed into your app through installed plugins, get instantiated and configured in the right order by the framework, and are then made available for consumption. You can interact with these instances in the following ways.
 
@@ -47,14 +44,13 @@ Your utility APIs can depend on other utility APIs in their factories. You do th
 import {
   configApiRef,
   ApiBlueprint,
-  createApiFactory,
   discoveryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { MyApiImpl } from './MyApiImpl';
 
 const myApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: myApiRef,
       deps: {
         configApi: configApiRef,
@@ -64,7 +60,6 @@ const myApi = ApiBlueprint.make({
         return new MyApiImpl({ configApi, discoveryApi });
       },
     }),
-  },
 });
 ```
 

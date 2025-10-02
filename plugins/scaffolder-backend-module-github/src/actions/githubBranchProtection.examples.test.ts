@@ -50,7 +50,7 @@ describe('github:branch-protection:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -99,6 +99,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: false,
       required_linear_history: false,
+      block_creations: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -132,6 +133,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: false,
       required_linear_history: false,
+      block_creations: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -165,6 +167,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: true,
       required_linear_history: false,
+      block_creations: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -202,6 +205,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: true,
       required_linear_history: true,
+      block_creations: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,

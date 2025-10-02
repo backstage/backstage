@@ -46,7 +46,6 @@ export type EntityTagsPickerProps = typeof EntityTagsPickerFieldSchema.TProps;
 /**
  * The input props that can be specified under `ui:options` for the
  * `EntityTagsPicker` field extension.
- *
  * @public
  */
 export type EntityTagsPickerUiOptions = NonNullable<

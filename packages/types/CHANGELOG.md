@@ -1,5 +1,11 @@
 # @backstage/types
 
+## 1.2.2
+
+### Patch Changes
+
+- a95cebd: Internal refactoring for better type support
+
 ## 1.2.1
 
 ### Patch Changes

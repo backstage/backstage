@@ -35,7 +35,8 @@ export const DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE = {
 export type GithubEntityProviderConfig = {
   id: string;
   catalogPath: string;
-  organization: string;
+  organization?: string;
+  app?: number;
   host: string;
   filters: {
     repository?: RegExp;
@@ -62,7 +63,7 @@ export function readProviderConfigs(
     return [];
   }
 
-  if (providersConfig.has('organization')) {
+  if (providersConfig.has('organization') || providersConfig.has('app')) {
     // simple/single config variant
     return [readProviderConfig(DEFAULT_PROVIDER_ID, providersConfig)];
   }
@@ -78,7 +79,15 @@ function readProviderConfig(
   id: string,
   config: Config,
 ): GithubEntityProviderConfig {
-  const organization = config.getString('organization');
+  const organization = config.getOptionalString('organization');
+  const app = config.getOptionalNumber('app');
+
+  if (!organization && !app) {
+    throw new Error(
+      'Error while processing GitHub provider config. Either organization or app must be specified.',
+    );
+  }
+
   const catalogPath =
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
   const host = config.getOptionalString('host') ?? 'github.com';
@@ -123,6 +132,7 @@ function readProviderConfig(
     id,
     catalogPath,
     organization,
+    app,
     host,
     filters: {
       repository: repositoryPattern

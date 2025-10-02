@@ -2,11 +2,8 @@
 id: index
 title: Building Frontend Apps
 sidebar_label: Overview
-# prettier-ignore
 description: Building frontend apps using the new frontend system
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 To get set up quickly with your own Backstage project you can create a Backstage App.
 

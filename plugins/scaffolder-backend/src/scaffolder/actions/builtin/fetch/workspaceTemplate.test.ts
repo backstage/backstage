@@ -92,7 +92,7 @@ describe('workspace:template', () => {
           }),
         ),
       ).rejects.toThrow(
-        /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
+        /input extension incompatible with copyWithoutTemplating and cookiecutterCompat/,
       );
     });
 

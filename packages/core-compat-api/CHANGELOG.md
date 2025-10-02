@@ -1,5 +1,200 @@
 # @backstage/core-compat-api
 
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.2
+
+### Patch Changes
+
+- dc01d6f: Fix for `compatWrapper` creating many wrapping `Providers` when they should not
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+
+## 0.5.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+
+## 0.5.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- dc01d6f: Fix for `compatWrapper` creating many wrapping `Providers` when they should not
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.0
+
+### Minor Changes
+
+- 62c3628: Rename `createLegacyApp` to `createLegacyAppRoot` as it better refers to the purpose of the function.
+- e4ddf22: **BREAKING**: The `defaultPath` override of `convertLegacyPageExtension` has been renamed to `path`, in order to align with the same update that was made to the `PageBlueprint`.
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- fda1bbc: The `compatWrapper` has been switched to use the new `SwappableComponentsApi` instead of the old `ComponentsApi` in its bridging to the old frontend system.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-catalog-react@1.20.0
+
+## 0.5.0-next.3
+
+### Patch Changes
+
+- fda1bbc: The `compatWrapper` has been switched to use the new `SwappableComponentsApi` instead of the old `ComponentsApi` in its bridging to the old frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+
+## 0.5.0-next.2
+
+### Minor Changes
+
+- e4ddf22: **BREAKING**: The `defaultPath` override of `convertLegacyPageExtension` has been renamed to `path`, in order to align with the same update that was made to the `PageBlueprint`.
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.5-next.1
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.4.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- 173db8f: Updates to use the new `plugin` property of `AppNodeSpec`.
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 6eedf46: Updated dependency `@backstage-community/plugin-puppetdb` to `^0.6.0`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.2-next.3
 
 ### Patch Changes

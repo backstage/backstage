@@ -21,27 +21,9 @@ import {
   ExpandedPipelineSchema,
   PipelineTriggerTokenSchema,
 } from '@gitbeaker/rest';
-import { z } from 'zod';
-import commonGitlabConfig from '../commonGitlabConfig';
 import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabPipelineTrigger.examples';
 import { getErrorMessage } from './helpers';
-
-const pipelineInputProperties = z.object({
-  projectId: z.number().describe('Project Id'),
-  tokenDescription: z.string().describe('Pipeline token description'),
-  branch: z.string().describe('Project branch'),
-  variables: z
-    .record(z.string(), z.string())
-    .optional()
-    .describe(
-      'A object/record of key-valued strings containing the pipeline variables.',
-    ),
-});
-
-const pipelineOutputProperties = z.object({
-  pipelineUrl: z.string({ description: 'Pipeline Url' }),
-});
 
 /**
  * Creates a `gitlab:pipeline:trigger` Scaffolder action.
@@ -58,15 +40,50 @@ export const createTriggerGitlabPipelineAction = (options: {
     description: 'Triggers a GitLab Pipeline.',
     examples,
     schema: {
-      input: commonGitlabConfig.merge(pipelineInputProperties),
-      output: pipelineOutputProperties,
+      input: {
+        repoUrl: z =>
+          z.string({
+            description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
+          }),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitLab',
+            })
+            .optional(),
+        projectId: z =>
+          z.number({
+            description: 'Project Id',
+          }),
+        tokenDescription: z =>
+          z.string({
+            description: 'Pipeline token description',
+          }),
+        branch: z =>
+          z.string({
+            description: 'Project branch',
+          }),
+        variables: z =>
+          z
+            .record(z.string(), z.string(), {
+              description:
+                'A object/record of key-valued strings containing the pipeline variables.',
+            })
+            .optional(),
+      },
+      output: {
+        pipelineUrl: z =>
+          z.string({
+            description: 'Pipeline Url',
+          }),
+      },
     },
     async handler(ctx) {
       let pipelineTriggerToken: string | undefined = undefined;
       let pipelineTriggerId: number | undefined = undefined;
 
       const { repoUrl, projectId, tokenDescription, token, branch, variables } =
-        commonGitlabConfig.merge(pipelineInputProperties).parse(ctx.input);
+        ctx.input;
 
       const { host } = parseRepoUrl(repoUrl, integrations);
       const api = getClient({ host, integrations, token });
@@ -118,12 +135,6 @@ export const createTriggerGitlabPipelineAction = (options: {
 
         ctx.output('pipelineUrl', pipelineTriggerResponse.web_url);
       } catch (error: any) {
-        if (error instanceof z.ZodError) {
-          // Handling Zod validation errors
-          throw new InputError(`Validation error: ${error.message}`, {
-            validationErrors: error.errors,
-          });
-        }
         // Handling other errors
         throw new InputError(
           `Failed to trigger Pipeline: ${getErrorMessage(error)}`,
@@ -145,11 +156,14 @@ export const createTriggerGitlabPipelineAction = (options: {
               },
             });
             ctx.logger.info(
-              `Deleted pipeline with token id ${pipelineTriggerId}.`,
+              // in version 18.0 of gitlab this was also deleting the pipeline
+              // this is a problem in gitlab which is fixed in version 18.1
+              // https://gitlab.com/gitlab-org/gitlab/-/issues/546669
+              `Deleted pipeline trigger token with token id: ${pipelineTriggerId}.`,
             );
           } catch (error: any) {
             ctx.logger.error(
-              `Failed to delete pipeline with token id ${pipelineTriggerId}.`,
+              `Failed to delete pipeline trigger token with token id: ${pipelineTriggerId}.`,
             );
           }
         }

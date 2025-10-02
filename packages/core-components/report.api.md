@@ -257,6 +257,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   extends SVGProps<SVGSVGElement> {
   acyclicer?: 'greedy';
   align?: DependencyGraphTypes.Alignment;
+  allowFullscreen?: boolean;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   defs?: JSX.Element | JSX.Element[];
   direction?: DependencyGraphTypes.Direction;
@@ -291,6 +292,7 @@ export namespace DependencyGraphTypes {
     from: string;
     to: string;
     label?: string;
+    distance?: number;
   };
   export type DependencyNode<T = {}> = T & {
     id: string;
@@ -399,14 +401,7 @@ export type ErrorPanelProps = {
 };
 
 // @public
-export function FavoriteToggle(
-  props: ComponentProps<typeof IconButton> & {
-    id: string;
-    title: string;
-    isFavorite: boolean;
-    onToggle: (value: boolean) => void;
-  },
-): JSX_2.Element;
+export function FavoriteToggle(props: FavoriteToggleProps): JSX_2.Element;
 
 // @public
 export function FavoriteToggleIcon(props: {
@@ -415,6 +410,14 @@ export function FavoriteToggleIcon(props: {
 
 // @public (undocumented)
 export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
+
+// @public
+export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
+  id: string;
+  title: string;
+  isFavorite: boolean;
+  onToggle: (value: boolean) => void;
+};
 
 // @public (undocumented)
 export type FeatureCalloutCircleClassKey =

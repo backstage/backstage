@@ -16,9 +16,9 @@
 
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+
 /**
  * Registry of all registered template actions.
- * @public
  */
 export class TemplateActionRegistry {
   private readonly actions = new Map<string, TemplateAction>();

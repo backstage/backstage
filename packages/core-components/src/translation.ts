@@ -79,6 +79,8 @@ export const coreComponentsTranslationRef = createTranslationRef({
       authRedirectTitle: 'This will trigger a http redirect to OAuth Login.',
       login: 'Log in',
       rejectAll: 'Reject All',
+      message:
+        'Sign-in to allow {{appTitle}} access to {{provider}} APIs and identities.',
     },
     supportButton: {
       title: 'Support',
@@ -104,6 +106,9 @@ export const coreComponentsTranslationRef = createTranslationRef({
       toolbar: {
         search: 'Filter',
       },
+      header: {
+        actions: 'Actions',
+      },
     },
     alertDisplay: {
       message_one: '({{ count }} newer message)',
@@ -114,6 +119,9 @@ export const coreComponentsTranslationRef = createTranslationRef({
         title: 'Logging out due to inactivity',
         buttonText: "Yes! Don't log me out",
       },
+    },
+    dependencyGraph: {
+      fullscreenTooltip: 'Toggle fullscreen',
     },
     proxiedSignInPage: {
       title:

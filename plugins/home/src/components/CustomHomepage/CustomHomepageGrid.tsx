@@ -34,7 +34,11 @@ import {
 } from '@material-ui/core/styles';
 import { compact } from 'lodash';
 import useObservable from 'react-use/esm/useObservable';
-import { ContentHeader, ErrorBoundary } from '@backstage/core-components';
+import {
+  ContentHeader,
+  ErrorBoundary,
+  Progress,
+} from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import { WidgetSettingsOverlay } from './WidgetSettingsOverlay';
 import { AddWidgetDialog } from './AddWidgetDialog';
@@ -50,6 +54,8 @@ import {
   WidgetSchema,
 } from './types';
 import { CardConfig } from '@backstage/plugin-home-react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 // eslint-disable-next-line new-cap
 const ResponsiveGrid = WidthProvider(Responsive);
@@ -88,7 +94,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function useHomeStorage(
   defaultWidgets: GridWidget[],
-): [GridWidget[], (value: GridWidget[]) => void] {
+): [GridWidget[], (value: GridWidget[]) => void, boolean] {
   const key = 'home';
   const storageApi = useApi(storageApiRef).forBucket('home.customHomepage');
   // TODO: Support multiple home pages
@@ -108,6 +114,9 @@ function useHomeStorage(
     storageApi.observe$<string>(key),
     storageApi.snapshot(key),
   );
+
+  const isStorageLoading = homeSnapshot.presence === 'unknown' || !homeSnapshot;
+
   const widgets: GridWidget[] = useMemo(() => {
     if (homeSnapshot.presence === 'absent') {
       return defaultWidgets;
@@ -120,7 +129,7 @@ function useHomeStorage(
     }
   }, [homeSnapshot, defaultWidgets]);
 
-  return [widgets, setWidgets];
+  return [widgets, setWidgets, isStorageLoading];
 }
 
 const convertConfigToDefaultWidgets = (
@@ -211,7 +220,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       ? convertConfigToDefaultWidgets(props.config, availableWidgets)
       : [];
   }, [props.config, availableWidgets]);
-  const [widgets, setWidgets] = useHomeStorage(defaultLayout);
+  const [widgets, setWidgets, isStorageLoading] = useHomeStorage(defaultLayout);
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = useState(editModeOn);
@@ -222,6 +231,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   const getWidgetNameFromKey = (key: string) => {
     return key.split('__')[0];
   };
+  const { t } = useTranslationRef(homeTranslationRef);
 
   const handleAdd = (widget: Widget) => {
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
@@ -272,7 +282,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const clearLayout = () => {
-    setWidgets([]);
+    setWidgets(widgets.filter(w => !w.deletable));
   };
 
   const changeEditMode = (mode: boolean) => {
@@ -319,6 +329,10 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     );
   };
 
+  if (isStorageLoading) {
+    return <Progress />;
+  }
+
   return (
     <>
       <ContentHeader title={props.title}>
@@ -340,7 +354,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       </Dialog>
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
-          No widgets added. Start by clicking the 'Add widget' button.
+          {t('customHomepage.noWidgets')}
         </Typography>
       )}
       <ResponsiveGrid

@@ -101,6 +101,25 @@ export const apis: AnyApiFactory[] = [
     },
   }),
 ];
+
+// Or, when building for the new frontend system:
+import { AnalyticsImplementationBlueprint } from '@backstage/frontend-plugin-api';
+
+export const acmeAnalyticsImplementation =
+  AnalyticsImplementationBlueprint.make({
+    name: 'acme',
+    params: define =>
+      define({
+        deps: {},
+        factory() {
+          return {
+            captureEvent: event => {
+              window._AcmeAnalyticsQ.push(event);
+            },
+          };
+        },
+      }),
+  });
 ```
 
 In reality, you would likely want to encapsulate instantiation logic and pull
@@ -140,6 +159,19 @@ export const apis: AnyApiFactory[] = [
     factory: ({ configApi }) => AcmeAnalytics.fromConfig(configApi),
   }),
 ];
+
+// Or, when building for the new frontend system:
+import { AnalyticsImplementationBlueprint } from '@backstage/frontend-plugin-api';
+
+export const acmeAnalyticsImplementation =
+  AnalyticsImplementationBlueprint.make({
+    name: 'acme',
+    params: define =>
+      define({
+        deps: { configApi: configApiRef },
+        factory: ({ configApi }) => AcmeAnalytics.fromConfig(configApi),
+      }),
+  });
 ```
 
 If you are integrating with an analytics service (as opposed to an internal

@@ -1,5 +1,65 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.3.3-next.0
+
+### Patch Changes
+
+- 2aded73: Allow for passing a `pagelen` parameter to configure the `pagelength` property of the `BitbucketCloudEntityProvider` `searchCode` pagination to resolve [bug](https://jira.atlassian.com/browse/BCLOUD-23644) pertaining to duplicate results being returned.
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 5850717: Update Bitbucket Cloud schema and models.
+
+  The latest schema was fetched from Bitbucket Cloud and stored locally.
+  Based on the updated schema, the models got regenerated.
+
+  **BREAKING:**
+
+  Due to the schema changes, the model update includes one breaking change:
+
+  - `Account.username` was removed.
+
+  Additionally, there were a couple of compatible changes including the addition of
+  `BaseCommit.committer` and others.
+
+### Patch Changes
+
+- 57ad208: Add support for `repo:updated` events as `Events.RepoUpdatedEvent`.
+- Updated dependencies
+  - @backstage/integration@1.17.0
+
 ## 0.3.0-next.3
 
 ### Patch Changes

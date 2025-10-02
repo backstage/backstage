@@ -16,7 +16,7 @@
 
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { ObjectToFetch } from '../types/types';
+import { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
 import {
   MockedRequest,
   RestContext,

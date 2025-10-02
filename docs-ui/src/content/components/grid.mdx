@@ -1,0 +1,98 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { GridSnippet } from '@/snippets/stories-snippets';
+import { spacingPropDefs } from '@/utils/propDefs';
+import {
+  gridPropDefs,
+  gridItemPropDefs,
+  gridUsageSnippet,
+  gridDefaultSnippet,
+  gridSimpleSnippet,
+  gridComplexSnippet,
+  gridMixingRowsSnippet,
+  gridResponsiveSnippet,
+  gridStartEndSnippet,
+} from './grid.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Layout"
+  title="Grid"
+  description="A layout component that helps to create simple column-based layouts as well as more complex ones."
+/>
+
+<Snippet
+  py={4}
+  preview={<GridSnippet story="Default" />}
+  code={gridDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={gridUsageSnippet} />
+
+## API reference
+
+### Grid.Root
+
+This is the grid container component. It will help to define the number of
+columns that will be used in the grid. You can also define the gap between the
+columns. All values are responsive.
+
+<PropsTable data={gridPropDefs} />
+
+The grid component also accepts all the spacing props from the Box component.
+
+<PropsTable data={spacingPropDefs} />
+
+### Grid.Item
+
+If you need more control over the columns, you can use the grid item
+component. This will give you access to `rowSpan`, `colSpan`, `start` and
+`end`. All values are responsive. This component is optional, you can use any
+elements directly if you prefer.
+
+<PropsTable data={gridItemPropDefs} />
+
+## Examples
+
+### Simple grid
+
+A simple grid with 3 columns and a gap of md.
+
+<CodeBlock code={gridSimpleSnippet} />
+
+### Complex grid
+
+You can also use the grid item to create more complex layouts. In this example
+the first column will span 1 column and the second column will span 2 columns.
+
+<CodeBlock code={gridComplexSnippet} />
+
+### Mixing rows and columns
+
+The grid item component also supports the `rowSpan` prop, which allows you to
+span multiple rows within the grid layout. In this example, the first item
+will span 2 rows to achieve a dynamic and flexible grid structure.
+
+<CodeBlock code={gridMixingRowsSnippet} />
+
+### Responsive grid
+
+The grid component also supports responsive values, making it easy to create
+responsive designs.
+
+<CodeBlock code={gridResponsiveSnippet} />
+
+### Start and End
+
+The start and end props can be used to position the item in the grid.
+
+<CodeBlock code={gridStartEndSnippet} />
+
+<Theming component="Grid" />
+
+<ChangelogComponent component="grid" />

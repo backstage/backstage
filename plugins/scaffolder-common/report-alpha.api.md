@@ -13,6 +13,9 @@ export const actionExecutePermission: ResourcePermission<'scaffolder-action'>;
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 
 // @alpha
+export const RESOURCE_TYPE_SCAFFOLDER_TASK = 'scaffolder-task';
+
+// @alpha
 export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 
 // @alpha
@@ -23,22 +26,26 @@ export const scaffolderPermissions: (
   | BasicPermission
   | ResourcePermission<'scaffolder-action'>
   | ResourcePermission<'scaffolder-template'>
+  | ResourcePermission<'scaffolder-task'>
 )[];
 
 // @alpha
-export const scaffolderTaskPermissions: BasicPermission[];
+export const scaffolderTaskPermissions: (
+  | BasicPermission
+  | ResourcePermission<'scaffolder-task'>
+)[];
 
 // @alpha
 export const scaffolderTemplatePermissions: ResourcePermission<'scaffolder-template'>[];
 
 // @alpha
-export const taskCancelPermission: BasicPermission;
+export const taskCancelPermission: ResourcePermission<'scaffolder-task'>;
 
 // @alpha
 export const taskCreatePermission: BasicPermission;
 
 // @alpha
-export const taskReadPermission: BasicPermission;
+export const taskReadPermission: ResourcePermission<'scaffolder-task'>;
 
 // @alpha
 export const templateManagementPermission: BasicPermission;

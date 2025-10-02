@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-backend",
-  "version": "2.0.2-next.3",
+  "version": "2.1.1-next.1",
   "description": "The Backstage backend plugin that renders technical documentation for your components",
   "backstage": {
     "role": "backend-plugin",
@@ -71,6 +71,7 @@
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-techdocs-common": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
+    "@backstage/types": "workspace:^",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",

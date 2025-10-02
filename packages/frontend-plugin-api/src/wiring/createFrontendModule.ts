@@ -45,10 +45,48 @@ export interface InternalFrontendModule extends FrontendModule {
   readonly featureFlags: FeatureFlagConfig[];
 }
 
-/** @public */
+/**
+ * Creates a new module that can be installed in a Backstage app.
+ *
+ * @remarks
+ *
+ * Modules are used to add or override extensions for an existing plugin. If a
+ * module provides an extension with the same ID as one provided by the plugin,
+ * the extension provided by the module will always take precedence.
+ *
+ * Every module is created for a specific plugin by providing the
+ * unique ID of the plugin that the module should be installed for. If that
+ * plugin is not present in the app, the module will be ignored and have no
+ * effect.
+ *
+ * For more information on how modules work, see the
+ * {@link https://backstage.io/docs/frontend-system/architecture/extension-overrides#creating-a-frontend-module | documentation for modules}
+ * in the frontend system documentation.
+ *
+ * It is recommended to name the module variable of the form `<pluginId>Module<ModuleName>`.
+ *
+ * @example
+ *
+ * ```tsx
+ * import { createFrontendModule } from '@backstage/frontend-plugin-api';
+ *
+ * export const exampleModuleCustomPage = createFrontendModule({
+ *   pluginId: 'example',
+ *   extensions: [
+ *     // Overrides the default page for the 'example' plugin
+ *     PageBlueprint.make({
+ *       path: '/example',
+ *       loader: () => import('./CustomPage').then(m => <m.CustomPage />),
+ *     }),
+ *   ],
+ * });
+ * ```
+ *
+ * @public
+ */
 export function createFrontendModule<
   TId extends string,
-  TExtensions extends readonly ExtensionDefinition[] = [],
+  TExtensions extends readonly ExtensionDefinition[],
 >(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule {
   const { pluginId } = options;
 

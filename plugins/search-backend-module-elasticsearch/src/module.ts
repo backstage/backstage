@@ -22,7 +22,7 @@ import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-bac
 import {
   ElasticSearchQueryTranslator,
   ElasticSearchSearchEngine,
-} from '@backstage/plugin-search-backend-module-elasticsearch';
+} from './engines/ElasticSearchSearchEngine';
 
 /** @public */
 export interface ElasticSearchQueryTranslatorExtensionPoint {

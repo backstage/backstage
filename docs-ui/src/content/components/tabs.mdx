@@ -1,0 +1,84 @@
+import { PropsTable } from '@/components/PropsTable';
+import { TabsSnippet } from '@/snippets/stories-snippets';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  tabsPropDefs,
+  tabPropDefs,
+  tabsUsageSnippet,
+  tabsDefaultSnippet,
+  tabsWithTabPanelsSnippet,
+  tabsWithLinksSnippet,
+  tabsWithDeeplyNestedRoutesSnippet,
+} from './tabs.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Tabs"
+  description="A component for toggling between related panels on the same page."
+/>
+
+<Snippet
+  py={4}
+  preview={<TabsSnippet story="Default" />}
+  code={tabsDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={tabsUsageSnippet} />
+
+## API reference
+
+### Tabs
+
+Groups the tabs and the corresponding panels. Renders a `<div>` element.
+
+<PropsTable data={tabsPropDefs} />
+
+### Tab
+
+An individual interactive tab button that toggles the corresponding panel. Renders a `<button>` element.
+
+<PropsTable data={tabPropDefs} />
+
+## Examples
+
+### Simple tabs
+
+To connect the tabs with the panels, you need to use the `id` prop on the tab and the tab panel.
+
+<Snippet
+  py={4}
+  preview={<TabsSnippet story="WithTabPanels" />}
+  code={tabsWithTabPanelsSnippet}
+  open
+/>
+
+### Tabs as links
+
+You can use the `href` prop on the tab to make it a link. This will use the `react-router` under the hood to navigate to the tab. We automatically detect if this is an external URL and render a `<a>` element instead of a `<button>`.
+
+<Snippet
+  py={4}
+  preview={<TabsSnippet story="WithMockedURLTab2" />}
+  code={tabsWithLinksSnippet}
+  open
+/>
+
+### With deeply nested routes
+
+You can use the `matchStrategy` prop on the tab to control how the tab is matched to the current URL.
+
+<Snippet
+  py={4}
+  preview={<TabsSnippet story="PrefixMatchingDeepNesting" />}
+  code={tabsWithDeeplyNestedRoutesSnippet}
+  open
+/>
+
+<Theming component="Tabs" />
+
+<ChangelogComponent component="tabs" />

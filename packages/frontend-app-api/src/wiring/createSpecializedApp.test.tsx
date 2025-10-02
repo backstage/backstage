@@ -31,11 +31,7 @@ import {
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
-import {
-  configApiRef,
-  createApiFactory,
-  featureFlagsApiRef,
-} from '@backstage/core-plugin-api';
+import { configApiRef, featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { Fragment } from 'react';
@@ -148,16 +144,20 @@ describe('createSpecializedApp', () => {
               ],
             }),
             ApiBlueprint.make({
-              params: {
-                factory: createApiFactory(featureFlagsApiRef, {
-                  registerFlag(flag) {
-                    flags.push(flag);
-                  },
-                  getRegisteredFlags() {
-                    return flags;
-                  },
-                } as typeof featureFlagsApiRef.T),
-              },
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () =>
+                    ({
+                      registerFlag(flag) {
+                        flags.push(flag);
+                      },
+                      getRegisteredFlags() {
+                        return flags;
+                      },
+                    } as typeof featureFlagsApiRef.T),
+                }),
             }),
           ],
         }),
@@ -253,15 +253,14 @@ describe('createSpecializedApp', () => {
           pluginId: 'first',
           extensions: [
             ApiBlueprint.make({
-              params: {
-                factory: createApiFactory({
+              params: defineParams =>
+                defineParams({
                   api: analyticsApiRef,
                   deps: {},
                   factory: () => {
                     throw new Error('BROKEN');
                   },
                 }),
-              },
             }),
           ],
         }),
@@ -295,13 +294,12 @@ describe('createSpecializedApp', () => {
               },
             }),
             ApiBlueprint.make({
-              params: {
-                factory: createApiFactory({
+              params: defineParams =>
+                defineParams({
                   api: analyticsApiRef,
                   deps: {},
                   factory: mockAnalyticsApi,
                 }),
-              },
             }),
           ],
         }),
@@ -315,10 +313,12 @@ describe('createSpecializedApp', () => {
 
   it('should use provided apis', async () => {
     const app = createSpecializedApp({
-      apis: TestApiRegistry.from([
-        configApiRef,
-        new ConfigReader({ anything: 'config' }),
-      ]),
+      advanced: {
+        apis: TestApiRegistry.from([
+          configApiRef,
+          new ConfigReader({ anything: 'config' }),
+        ]),
+      },
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -641,28 +641,30 @@ describe('createSpecializedApp', () => {
           ],
         }),
       ],
-      extensionFactoryMiddleware: [
-        function* middleware(originalFactory, { config }) {
-          const result = originalFactory({
-            config: config && { text: `1-${config.text}` },
-          });
-          yield* result;
-          const el = result.get(textDataRef);
-          if (el) {
-            yield textDataRef(`${el}-1`);
-          }
-        },
-        function* middleware(originalFactory, { config }) {
-          const result = originalFactory({
-            config: config && { text: `2-${config.text}` },
-          });
-          yield* result;
-          const el = result.get(textDataRef);
-          if (el) {
-            yield textDataRef(`${el}-2`);
-          }
-        },
-      ],
+      advanced: {
+        extensionFactoryMiddleware: [
+          function* middleware(originalFactory, { config }) {
+            const result = originalFactory({
+              config: config && { text: `1-${config.text}` },
+            });
+            yield* result;
+            const el = result.get(textDataRef);
+            if (el) {
+              yield textDataRef(`${el}-1`);
+            }
+          },
+          function* middleware(originalFactory, { config }) {
+            const result = originalFactory({
+              config: config && { text: `2-${config.text}` },
+            });
+            yield* result;
+            const el = result.get(textDataRef);
+            if (el) {
+              yield textDataRef(`${el}-2`);
+            }
+          },
+        ],
+      },
     });
 
     const root = app.tree.root.instance!.getData(
@@ -670,5 +672,126 @@ describe('createSpecializedApp', () => {
     );
 
     expect(render(root).container.textContent).toBe('1-2-test-1-2');
+  });
+
+  describe('plugin info', () => {
+    const testExtension = createExtension({
+      attachTo: { id: 'root', input: 'app' },
+      output: [coreExtensionData.reactElement],
+      factory: () => [coreExtensionData.reactElement(<div>Test</div>)],
+    });
+
+    it('should throw unless accessed via an app', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        extensions: [testExtension],
+      });
+
+      const errorMsg =
+        "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app";
+      await expect(plugin.info()).rejects.toThrow(errorMsg);
+
+      const app = createSpecializedApp({ features: [plugin] });
+
+      await expect(plugin.info()).rejects.toThrow(errorMsg);
+
+      const installedPlugin = app.tree.nodes.get('test')?.spec.plugin;
+      expect(installedPlugin).toBeDefined();
+      const info = await installedPlugin?.info();
+      expect(info).toEqual({});
+    });
+
+    it('should forward plugin info', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: {
+          packageJson: () => import('../../package.json'),
+        },
+        extensions: [testExtension],
+      });
+
+      const app = createSpecializedApp({ features: [plugin] });
+      const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
+      expect(info).toMatchObject({
+        packageName: '@backstage/frontend-app-api',
+      });
+    });
+
+    it('should allow overriding plugin info per plugin', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: {
+          packageJson: () => import('../../package.json'),
+        },
+        extensions: [testExtension],
+      });
+
+      const overriddenPlugin = plugin.withOverrides({
+        extensions: [],
+        info: {
+          packageJson: () => Promise.resolve({ name: 'test-override' }),
+        },
+      });
+
+      const app = createSpecializedApp({ features: [overriddenPlugin] });
+      const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
+      expect(info).toMatchObject({
+        packageName: 'test-override',
+      });
+    });
+
+    it('should merge with plugin info from manifest', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: {
+          packageJson: () => import('../../package.json'),
+          manifest: async () => ({
+            metadata: {
+              links: [{ title: 'Example', url: 'https://example.com' }],
+            },
+            spec: {
+              owner: 'cubic-belugas',
+            },
+          }),
+        },
+        extensions: [testExtension],
+      });
+
+      const app = createSpecializedApp({ features: [plugin] });
+      const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
+      expect(info).toEqual({
+        packageName: '@backstage/frontend-app-api',
+        version: expect.any(String),
+        links: [{ title: 'Example', url: 'https://example.com' }],
+        ownerEntityRefs: ['group:default/cubic-belugas'],
+      });
+    });
+
+    it('should allow overriding of the plugin info resolver', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: {
+          packageJson: () => import('../../package.json'),
+        },
+        extensions: [testExtension],
+      });
+
+      const app = createSpecializedApp({
+        features: [plugin],
+        advanced: {
+          pluginInfoResolver: async ctx => {
+            const { info } = await ctx.defaultResolver({
+              packageJson: await ctx.packageJson(),
+              manifest: await ctx.manifest(),
+            });
+            return { info: { packageName: `decorated:${info.packageName}` } };
+          },
+        },
+      });
+      const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
+      expect(info).toEqual({
+        packageName: 'decorated:@backstage/frontend-app-api',
+      });
+    });
   });
 });

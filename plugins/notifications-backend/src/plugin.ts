@@ -22,15 +22,19 @@ import { createRouter } from './service/router';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import {
   NotificationProcessor,
+  NotificationRecipientResolver,
   notificationsProcessingExtensionPoint,
   NotificationsProcessingExtensionPoint,
 } from '@backstage/plugin-notifications-node';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { DatabaseNotificationsStore } from './database';
+import { NotificationCleaner } from './service/NotificationCleaner.ts';
 
 class NotificationsProcessingExtensionPointImpl
   implements NotificationsProcessingExtensionPoint
 {
   #processors = new Array<NotificationProcessor>();
+  #recipientResolver: NotificationRecipientResolver | undefined = undefined;
 
   addProcessor(
     ...processors: Array<NotificationProcessor | Array<NotificationProcessor>>
@@ -40,6 +44,21 @@ class NotificationsProcessingExtensionPointImpl
 
   get processors() {
     return this.#processors;
+  }
+
+  setNotificationRecipientResolver(
+    resolver: NotificationRecipientResolver,
+  ): void {
+    if (this.#recipientResolver) {
+      throw new Error(
+        'Notification recipient resolver is already set. You can only set it once.',
+      );
+    }
+    this.#recipientResolver = resolver;
+  }
+
+  get recipientResolver() {
+    return this.#recipientResolver;
   }
 }
 
@@ -69,6 +88,7 @@ export const notificationsPlugin = createBackendPlugin({
         signals: signalsServiceRef,
         config: coreServices.rootConfig,
         catalog: catalogServiceRef,
+        scheduler: coreServices.scheduler,
       },
       async init({
         auth,
@@ -80,7 +100,10 @@ export const notificationsPlugin = createBackendPlugin({
         signals,
         config,
         catalog,
+        scheduler,
       }) {
+        const store = await DatabaseNotificationsStore.create({ database });
+
         httpRouter.use(
           await createRouter({
             auth,
@@ -88,16 +111,25 @@ export const notificationsPlugin = createBackendPlugin({
             userInfo,
             logger,
             config,
-            database,
+            store,
             catalog,
             signals,
             processors: processingExtensions.processors,
+            recipientResolver: processingExtensions.recipientResolver,
           }),
         );
         httpRouter.addAuthPolicy({
           path: '/health',
           allow: 'unauthenticated',
         });
+
+        const cleaner = new NotificationCleaner(
+          config,
+          scheduler,
+          logger,
+          store,
+        );
+        await cleaner.initTaskRunner();
       },
     });
   },

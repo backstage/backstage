@@ -51,7 +51,7 @@ describe('github:autolinks:create', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any, any>;
+  let action: TemplateAction<any, any, any>;
   const workspacePath = createMockDirectory().resolve('workspace');
 
   it('should pass context logger to Octokit client', async () => {

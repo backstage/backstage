@@ -39,10 +39,12 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
 import {
+  catalogApiRef,
   EntityPresentationApi,
   entityPresentationApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -235,8 +237,19 @@ export class TechDocsAddonTester {
       }),
     };
 
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name: 'docs' },
+        },
+      ],
+    });
+
     const apis: TechdocsAddonTesterApis<any[]> = [
       [fetchApiRef, fetchApi],
+      [catalogApiRef, catalogApi],
       [entityPresentationApiRef, entityPresentationApi],
       [discoveryApiRef, discoveryApi],
       [techdocsApiRef, techdocsApi],

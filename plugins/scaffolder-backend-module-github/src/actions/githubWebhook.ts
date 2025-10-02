@@ -42,92 +42,74 @@ export function createGithubWebhookAction(options: {
 
   const eventNames = emitterEventNames.filter(event => !event.includes('.'));
 
-  return createTemplateAction<{
-    repoUrl: string;
-    webhookUrl: string;
-    webhookSecret?: string;
-    events?: string[];
-    active?: boolean;
-    contentType?: 'form' | 'json';
-    insecureSsl?: boolean;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'github:webhook',
     description: 'Creates webhook for a repository on GitHub.',
     examples,
     supportsDryRun: true,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'webhookUrl'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description:
               'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
-            type: 'string',
-          },
-          webhookUrl: {
-            title: 'Webhook URL',
+          }),
+        webhookUrl: z =>
+          z.string({
             description: 'The URL to which the payloads will be delivered',
-            type: 'string',
-          },
-          webhookSecret: {
-            title: 'Webhook Secret',
-            description:
-              'Webhook secret value. The default can be provided internally in action creation',
-            type: 'string',
-          },
-          events: {
-            title: 'Triggering Events',
-            description:
-              'Determines what events the hook is triggered for. Default: `[push]`',
-            type: 'array',
-            default: ['push'],
-            oneOf: [
-              {
-                items: {
-                  type: 'string',
-                  enum: eventNames,
-                },
-              },
-              {
-                items: {
-                  type: 'string',
-                  const: '*',
-                },
-              },
-            ],
-          },
-          active: {
-            title: 'Active',
-            type: 'boolean',
-            default: true,
-            description:
-              'Determines if notifications are sent when the webhook is triggered. Default: `true`',
-          },
-          contentType: {
-            title: 'Content Type',
-            type: 'string',
-            enum: ['form', 'json'],
-            default: 'form',
-            description:
-              'The media type used to serialize the payloads. The default is `form`',
-          },
-          insecureSsl: {
-            title: 'Insecure SSL',
-            type: 'boolean',
-            default: false,
-            description:
-              'Determines whether the SSL certificate of the host for url will be verified when delivering payloads. Default `false`',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description:
-              'The `GITHUB_TOKEN` to use for authorization to GitHub',
-          },
-        },
+          }),
+        webhookSecret: z =>
+          z
+            .string({
+              description:
+                'Webhook secret value. The default can be provided internally in action creation',
+            })
+            .optional(),
+        events: z =>
+          z
+            .union([
+              z.array(z.enum(eventNames as [string, ...string[]]), {
+                description:
+                  'Determines what events the hook is triggered for. Default: `[push]`',
+              }),
+              z.array(z.literal('*'), {
+                description:
+                  'Determines what events the hook is triggered for. Use "*" for all events. Default: `[push]`',
+              }),
+            ])
+            .default(['push'])
+            .optional(),
+        active: z =>
+          z
+            .boolean({
+              description:
+                'Determines if notifications are sent when the webhook is triggered. Default: `true`',
+            })
+            .default(true)
+            .optional(),
+        contentType: z =>
+          z
+            .enum(['form', 'json'], {
+              description:
+                'The media type used to serialize the payloads. The default is `form`',
+            })
+            .default('form')
+            .optional(),
+        insecureSsl: z =>
+          z
+            .boolean({
+              description:
+                'Determines whether the SSL certificate of the host for url will be verified when delivering payloads. Default `false`',
+            })
+            .default(false)
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'The `GITHUB_TOKEN` to use for authorization to GitHub',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

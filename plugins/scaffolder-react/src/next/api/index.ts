@@ -16,4 +16,4 @@
 
 export { formFieldsApi } from './FormFieldsApi';
 export { formFieldsApiRef } from './ref';
-export type { ScaffolderFormFieldsApi } from './types';
+export type { ScaffolderFormFieldsApi, FormField } from './types';

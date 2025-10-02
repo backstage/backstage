@@ -26,9 +26,12 @@ import {
   createLogger,
   transports,
   transport as Transport,
+  config as winstonConfig,
 } from 'winston';
 import { MESSAGE } from 'triple-beam';
 import { escapeRegExp } from '../../lib/escapeRegExp';
+import { winstonLevels, WinstonLoggerLevelOverride } from './types';
+import { createLogMatcher } from './utils';
 
 /**
  * @public
@@ -48,20 +51,27 @@ export interface WinstonLoggerOptions {
 export class WinstonLogger implements RootLoggerService {
   #winston: Logger;
   #addRedactions?: (redactions: Iterable<string>) => void;
+  #setLevelOverrides?: (overrides: WinstonLoggerLevelOverride[]) => void;
 
   /**
    * Creates a {@link WinstonLogger} instance.
    */
   static create(options: WinstonLoggerOptions): WinstonLogger {
+    const defaultLogLevel = process.env.LOG_LEVEL || options.level || 'info';
+
     const redacter = WinstonLogger.redacter();
+    const logLevelFilter = WinstonLogger.logLevelFilter(defaultLogLevel);
+
     const defaultFormatter =
       process.env.NODE_ENV === 'production'
         ? format.json()
         : WinstonLogger.colorFormat();
 
     let logger = createLogger({
-      level: process.env.LOG_LEVEL || options.level || 'info',
+      // Lowest level possible as we let the logLevelFilter do the filtering
+      level: 'silly',
       format: format.combine(
+        logLevelFilter.format,
         options.format ?? defaultFormatter,
         redacter.format,
       ),
@@ -72,7 +82,7 @@ export class WinstonLogger implements RootLoggerService {
       logger = logger.child(options.meta);
     }
 
-    return new WinstonLogger(logger, redacter.add);
+    return new WinstonLogger(logger, redacter.add, logLevelFilter.setOverrides);
   }
 
   /**
@@ -99,6 +109,10 @@ export class WinstonLogger implements RootLoggerService {
       add(newRedactions) {
         let added = 0;
         for (const redactionToTrim of newRedactions) {
+          // Skip null or undefined values
+          if (redactionToTrim === null || redactionToTrim === undefined) {
+            continue;
+          }
           // Trimming the string ensures that we don't accdentally get extra
           // newlines or other whitespace interfering with the redaction; this
           // can happen for example when using string literals in yaml
@@ -165,12 +179,61 @@ export class WinstonLogger implements RootLoggerService {
     );
   }
 
+  /**
+   * Formatter that filters log levels using overrides, falling back to the default level when no criteria match.
+   */
+  static logLevelFilter(
+    defaultLogLevel: keyof winstonConfig.NpmConfigSetLevels,
+  ): {
+    format: Format;
+    setOverrides: (overrides: WinstonLoggerLevelOverride[]) => void;
+  } {
+    const overrides: {
+      predicate: (log: TransformableInfo) => boolean;
+      level: string;
+    }[] = [];
+
+    return {
+      format: format(log => {
+        for (const override of overrides) {
+          if (override.predicate(log)) {
+            // Discard the log if the log level is below the override
+            // eg, if the override level is 'warn' (1) and the log is 'debug' (5)
+            if (winstonLevels[log.level] > winstonLevels[override.level]) {
+              return false;
+            }
+
+            return log;
+          }
+        }
+
+        // Ignore logs that are below the global level
+        // eg, if the global level is 'warn' (1) and the log level is 'debug' (5)
+        if (winstonLevels[log.level] > winstonLevels[defaultLogLevel]) {
+          return false;
+        }
+
+        return log;
+      })(),
+      setOverrides: newOverrides => {
+        const newOverridesPredicates = newOverrides.map(o => ({
+          predicate: createLogMatcher(o.matchers),
+          level: o.level,
+        }));
+        // Replace the content while preserving the reference to support live config updates
+        overrides.splice(0, overrides.length, ...newOverridesPredicates);
+      },
+    };
+  }
+
   private constructor(
     winston: Logger,
     addRedactions?: (redactions: Iterable<string>) => void,
+    setLevelOverrides?: (overrides: WinstonLoggerLevelOverride[]) => void,
   ) {
     this.#winston = winston;
     this.#addRedactions = addRedactions;
+    this.#setLevelOverrides = setLevelOverrides;
   }
 
   error(message: string, meta?: JsonObject): void {
@@ -195,5 +258,9 @@ export class WinstonLogger implements RootLoggerService {
 
   addRedactions(redactions: Iterable<string>) {
     this.#addRedactions?.(redactions);
+  }
+
+  setLevelOverrides(overrides: WinstonLoggerLevelOverride[]) {
+    this.#setLevelOverrides?.(overrides);
   }
 }

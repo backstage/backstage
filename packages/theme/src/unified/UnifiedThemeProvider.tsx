@@ -58,6 +58,8 @@ const generateV4ClassName = createGenerateClassName({
   productionPrefix: 'jss4-',
 });
 
+import { useApplyThemeAttributes } from './useApplyThemeAttributes';
+
 /**
  * Provides themes for all Material UI versions supported by the provided unified theme.
  *
@@ -70,6 +72,11 @@ export function UnifiedThemeProvider(
 
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
+
+  useApplyThemeAttributes(
+    v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode,
+    'backstage',
+  );
 
   let cssBaseline: JSX.Element | undefined = undefined;
   if (!noCssBaseline) {

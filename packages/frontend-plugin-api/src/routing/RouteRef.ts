@@ -41,6 +41,8 @@ export interface InternalRouteRef<
   getParams(): string[];
   getDescription(): string;
 
+  alias: string | undefined;
+
   setId(id: string): void;
 }
 
@@ -68,16 +70,26 @@ export class RouteRefImpl implements InternalRouteRef {
   declare readonly T: never;
 
   #id?: string;
-  #params: string[];
-  #creationSite: string;
+  readonly #params: string[];
+  readonly #creationSite: string;
+  readonly #alias?: string;
 
-  constructor(readonly params: string[] = [], creationSite: string) {
+  constructor(
+    readonly params: string[] = [],
+    creationSite: string,
+    alias?: string,
+  ) {
     this.#params = params;
     this.#creationSite = creationSite;
+    this.#alias = alias;
   }
 
   getParams(): string[] {
     return this.#params;
+  }
+
+  get alias(): string | undefined {
+    return this.#alias;
   }
 
   getDescription(): string {
@@ -121,7 +133,11 @@ export function createRouteRef<
   TParamKeys extends string = string,
 >(config?: {
   /** A list of parameter names that the path that this route ref is bound to must contain */
-  readonly params: string extends TParamKeys ? (keyof TParams)[] : TParamKeys[];
+  readonly params?: string extends TParamKeys
+    ? (keyof TParams)[]
+    : TParamKeys[];
+
+  aliasFor?: string;
 }): RouteRef<
   keyof TParams extends never
     ? undefined
@@ -132,5 +148,6 @@ export function createRouteRef<
   return new RouteRefImpl(
     config?.params as string[] | undefined,
     describeParentCallSite(),
+    config?.aliasFor,
   ) as RouteRef<any>;
 }

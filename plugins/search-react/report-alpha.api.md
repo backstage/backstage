@@ -5,6 +5,7 @@
 ```ts
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ListItemProps } from '@material-ui/core/ListItem';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
@@ -19,9 +20,8 @@ export type BaseSearchResultListItemProps<T = {}> = T & {
 // @alpha (undocumented)
 export const SearchFilterBlueprint: ExtensionBlueprint<{
   kind: 'search-filter';
-  name: undefined;
   params: SearchFilterBlueprintParams;
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       component: SearchFilterExtensionComponent;
     },
@@ -61,9 +61,8 @@ export type SearchFilterExtensionComponentProps = {
 // @alpha (undocumented)
 export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
   kind: 'search-filter-result-type';
-  name: undefined;
   params: SearchFilterResultTypeBlueprintParams;
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       value: string;
       name: string;
@@ -101,6 +100,7 @@ export const searchReactTranslationRef: TranslationRef<
   {
     readonly 'searchBar.title': 'Search';
     readonly 'searchBar.placeholder': 'Search in {{org}}';
+    readonly 'searchBar.clearButtonTitle': 'Clear';
     readonly 'searchFilter.allOptionTitle': 'All';
     readonly 'searchPagination.limitLabel': 'Results per page:';
     readonly 'searchPagination.limitText': 'of {{num}}';
@@ -127,9 +127,8 @@ export type SearchResultItemExtensionPredicate = (
 // @alpha
 export const SearchResultListItemBlueprint: ExtensionBlueprint<{
   kind: 'search-result-list-item';
-  name: undefined;
   params: SearchResultListItemBlueprintParams;
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;

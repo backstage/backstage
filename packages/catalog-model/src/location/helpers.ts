@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '../entity';
+import { Entity } from '../entity/Entity';
+import { stringifyEntityRef } from '../entity/ref';
 import { ANNOTATION_LOCATION, ANNOTATION_SOURCE_LOCATION } from './annotation';
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js

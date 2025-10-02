@@ -31,8 +31,11 @@ import type { Cluster } from '@kubernetes/client-node';
 import { createProxyMiddleware, RequestHandler } from 'http-proxy-middleware';
 import fs from 'fs-extra';
 
-import { AuthenticationStrategy } from '../auth';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import {
+  AuthenticationStrategy,
+  ClusterDetails,
+  KubernetesClustersSupplier,
+} from '@backstage/plugin-kubernetes-node';
 
 import type { Request } from 'express';
 import { IncomingHttpHeaders } from 'http';
@@ -42,10 +45,6 @@ import {
   LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import {
-  createLegacyAuthAdapters,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -83,7 +82,7 @@ export type KubernetesProxyOptions = {
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
   discovery: DiscoveryService;
-  httpAuth?: HttpAuthService;
+  httpAuth: HttpAuthService;
 };
 
 /**
@@ -102,13 +101,7 @@ export class KubernetesProxy {
     this.logger = options.logger;
     this.clusterSupplier = options.clusterSupplier;
     this.authStrategy = options.authStrategy;
-
-    const legacy = createLegacyAuthAdapters({
-      discovery: options.discovery,
-      httpAuth: options.httpAuth,
-    });
-
-    this.httpAuth = legacy.httpAuth;
+    this.httpAuth = options.httpAuth;
   }
 
   public createRequestHandler(
@@ -153,8 +146,13 @@ export class KubernetesProxy {
     if (!middleware) {
       const logger = this.logger.child({ cluster: originalCluster.name });
       middleware = createProxyMiddleware({
-        // TODO: Add 'log' to LoggerService
-        logProvider: () => loggerToWinstonLogger(logger),
+        logProvider: () => ({
+          log: logger.info.bind(logger),
+          debug: logger.debug.bind(logger),
+          info: logger.info.bind(logger),
+          warn: logger.warn.bind(logger),
+          error: logger.error.bind(logger),
+        }),
         ws: true,
         secure: !originalCluster.skipTLSVerify,
         changeOrigin: true,

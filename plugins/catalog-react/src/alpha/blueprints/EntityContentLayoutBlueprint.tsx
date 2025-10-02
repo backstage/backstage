@@ -25,7 +25,7 @@ import {
   EntityCardType,
 } from './extensionData';
 import { JSX } from 'react';
-import { EntityPredicate } from '../predicates';
+import { EntityPredicate } from '../predicates/types';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import { Entity } from '@backstage/catalog-model';

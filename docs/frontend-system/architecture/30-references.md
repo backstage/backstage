@@ -2,11 +2,8 @@
 id: references
 title: Value References
 sidebar_label: Value References
-# prettier-ignore
 description: Value References
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 <!--
 

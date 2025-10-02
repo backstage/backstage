@@ -20,6 +20,8 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { ContentModal } from '@backstage/plugin-home-react';
 import { useStyles } from './styles';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 /**
  * Props customizing the <QuickStartCard/> component.
@@ -54,14 +56,15 @@ export type QuickStartCardProps = {
  */
 export const Content = (props: QuickStartCardProps): JSX.Element => {
   const styles = useStyles();
+  const { t } = useTranslationRef(homeTranslationRef);
   return (
     <>
       <ContentModal
         modalContent={props.image}
-        linkContent={props.modalTitle || 'Onboarding'}
+        linkContent={props.modalTitle || t('quickStart.title')}
       />
       <Typography variant="body1" paragraph>
-        {props.cardDescription || 'Get started with Backstage'}
+        {props.cardDescription || t('quickStart.description')}
       </Typography>
       <ContentModal modalContent={props.image} linkContent={props.image} />
       <Grid
@@ -78,7 +81,7 @@ export const Content = (props: QuickStartCardProps): JSX.Element => {
             variant="h6"
             className={styles.link}
           >
-            {props.docsLinkTitle || 'Learn more'}
+            {props.docsLinkTitle || t('quickStart.learnMoreLinkTitle')}
           </Link>
         </Grid>
       </Grid>

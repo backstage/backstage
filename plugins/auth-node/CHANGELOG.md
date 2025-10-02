@@ -1,5 +1,164 @@
 # @backstage/plugin-auth-node
 
+## 0.6.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 0.6.7
+
+### Patch Changes
+
+- 54ddfef: Updating plugin metadata
+- 3aff9e1: Changes OAuth cookies from domain-scoped to host-only by avoid setting the domain attribute in the default cookie configurer.
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- 54ddfef: Updating plugin metadata
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- 3aff9e1: Changes OAuth cookies from domain-scoped to host-only by avoid setting the domain attribute in the default cookie configurer.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
+## 0.6.4
+
+### Patch Changes
+
+- 0169b23: Internal tweak to avoid circular dependencies
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.6.3
+
+### Patch Changes
+
+- 332e934: Added the `identity` property to `BackstageSignInResult`.
+
+  The `prepareBackstageIdentityResponse` function will now also forward the `identity` to the response if present in the provided sign-in result.
+
+- ab53e6f: Added a new `dangerousEntityRefFallback` option to the `signInWithCatalogUser` method in `AuthResolverContext`. The option will cause the provided entity reference to be used as a fallback in case the user is not found in the catalog. It is up to the caller to provide the fallback entity reference.
+
+  Auth providers that include pre-defined sign-in resolvers are encouraged to define a flag named `dangerouslyAllowSignInWithoutUserInCatalog` in their config, which in turn enables use of the `dangerousEntityRefFallback` option. For example:
+
+  ```ts
+  export const usernameMatchingUserEntityName = createSignInResolverFactory({
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
+      return async (
+        info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
+        ctx,
+      ) => {
+        const { username } = info.result.fullProfile;
+        if (!username) {
+          throw new Error('User profile does not contain a username');
+        }
+
+        return ctx.signInWithCatalogUser(
+          { entityRef: { name: username } },
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { entityRef: { name: username } }
+                : undefined,
+          },
+        );
+      };
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.6.3-next.2
 
 ### Patch Changes

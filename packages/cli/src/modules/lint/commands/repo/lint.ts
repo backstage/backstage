@@ -220,6 +220,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   });
 
   const outputSuccessCache = [];
+  const jsonResults = [];
 
   let errorOutput = '';
 
@@ -238,7 +239,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       // dump of all warnings that might be irrelevant
       if (resultText) {
         if (opts.outputFile) {
-          errorOutput += `${resultText}\n`;
+          if (opts.format === 'json') {
+            jsonResults.push(resultText);
+          } else {
+            errorOutput += `${resultText}\n`;
+          }
         } else {
           console.log();
           console.log(resultText.trimStart());
@@ -247,6 +252,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     } else if (sha) {
       outputSuccessCache.push(sha);
     }
+  }
+
+  if (opts.format === 'json') {
+    let mergedJsonResults: any[] = [];
+    for (const jsonResult of jsonResults) {
+      mergedJsonResults = mergedJsonResults.concat(JSON.parse(jsonResult));
+    }
+    errorOutput = JSON.stringify(mergedJsonResults, null, 2);
   }
 
   if (opts.outputFile && errorOutput) {

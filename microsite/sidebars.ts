@@ -14,14 +14,16 @@ const catalogSidebar = tryToLoadCustomSidebar(
 const searchSidebar = tryToLoadCustomSidebar(
   '../docs/features/search/api/sidebar.ts',
 );
+const scaffolderSidebar = tryToLoadCustomSidebar(
+  '../docs/features/software-templates/api/sidebar.ts',
+);
 
 export default {
   docs: {
     Overview: [
       'overview/what-is-backstage',
+      'overview/technical-overview',
       'overview/architecture-overview',
-      'overview/background',
-      'overview/vision',
       'overview/roadmap',
       'overview/threat-model',
       'overview/versioning-policy',
@@ -229,6 +231,22 @@ export default {
           'features/software-templates/dry-run-testing',
           'features/software-templates/experimental',
           'features/software-templates/templating-extensions',
+          {
+            type: 'category',
+            label: 'API',
+            link:
+              scaffolderSidebar.length > 0
+                ? {
+                    type: 'generated-index',
+                    title: 'Scaffolder API',
+                    slug: '/category/scaffolder-api',
+                  }
+                : {
+                    type: 'doc',
+                    id: 'openapi/generated-docs/404',
+                  },
+            items: scaffolderSidebar,
+          },
         ],
       },
       {
@@ -330,7 +348,7 @@ export default {
       {
         type: 'category',
         label: 'Gitea',
-        items: ['integrations/gitea/locations'],
+        items: ['integrations/gitea/locations', 'integrations/gitea/discovery'],
       },
       {
         type: 'category',
@@ -462,6 +480,8 @@ export default {
               'backend-system/core-services/token-manager',
               'backend-system/core-services/url-reader',
               'backend-system/core-services/user-info',
+              'backend-system/core-services/actions-registry',
+              'backend-system/core-services/actions',
             ],
           },
         ],
@@ -552,6 +572,7 @@ export default {
           'tutorials/using-backstage-proxy-within-plugin',
           'tutorials/enable-public-entry',
           'tutorials/setup-opentelemetry',
+          'tutorials/integrating-event-driven-updates-with-entity-providers',
           'accessibility/index',
         ],
       },

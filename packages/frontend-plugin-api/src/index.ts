@@ -24,7 +24,6 @@ export * from './analytics';
 export * from './apis';
 export * from './blueprints';
 export * from './components';
-export * from './extensions';
 export * from './icons';
 export * from './routing';
 export * from './schema';
@@ -33,7 +32,7 @@ export * from './translation';
 export * from './wiring';
 
 export type {
-  CoreProgressProps,
-  CoreNotFoundErrorPageProps,
-  CoreErrorBoundaryFallbackProps,
+  ProgressProps,
+  NotFoundErrorPageProps,
+  ErrorDisplayProps,
 } from './types';
