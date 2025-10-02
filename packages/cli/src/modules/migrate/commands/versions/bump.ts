@@ -21,11 +21,10 @@ import chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import semver from 'semver';
 import { OptionValues } from 'commander';
-import yaml from 'yaml';
-import z from 'zod';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../../../lib/paths';
+import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 import {
   mapDependencies,
   fetchPackageInfo,
@@ -496,43 +495,4 @@ async function asLockfileVersion(version: string) {
   }
 
   return version;
-}
-
-const yarnRcSchema = z.object({
-  plugins: z
-    .array(
-      z.object({
-        path: z.string(),
-      }),
-    )
-    .optional(),
-});
-
-async function getHasYarnPlugin() {
-  const yarnRcPath = paths.resolveTargetRoot('.yarnrc.yml');
-  const yarnRcContent = await fs.readFile(yarnRcPath, 'utf-8').catch(e => {
-    if (e.code === 'ENOENT') {
-      // gracefully continue in case the file doesn't exist
-      return '';
-    }
-    throw e;
-  });
-
-  if (!yarnRcContent) {
-    return false;
-  }
-
-  const parseResult = yarnRcSchema.safeParse(yaml.parse(yarnRcContent));
-
-  if (!parseResult.success) {
-    throw new Error(
-      `Unexpected content in .yarnrc.yml: ${parseResult.error.toString()}`,
-    );
-  }
-
-  const yarnRc = parseResult.data;
-
-  return yarnRc.plugins?.some(
-    plugin => plugin.path === '.yarn/plugins/@yarnpkg/plugin-backstage.cjs',
-  );
 }
