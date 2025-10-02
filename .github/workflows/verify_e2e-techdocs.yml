@@ -41,11 +41,10 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: install dependencies
-        run: yarn install --immutable
-
-      - name: generate types
-        run: yarn tsc
+      - name: yarn install
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: build techdocs-cli
         working-directory: packages/techdocs-cli

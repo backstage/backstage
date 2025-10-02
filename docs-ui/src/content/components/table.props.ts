@@ -212,6 +212,11 @@ export const cellPropDefs: Record<string, PropDef> = {
     description:
       "A string representation of the cell's contents, used for features like typeahead.",
   },
+  leadingIcon: {
+    type: 'enum',
+    values: ['ReactNode'],
+    description: 'Optional icon to display before the cell content.',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

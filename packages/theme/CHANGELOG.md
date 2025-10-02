@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.6.9-next.0
+
+### Patch Changes
+
+- d5cbdba: The `UnifiedThemeProvider` now coordinates theme attributes on the document `body` in case multiple theme providers are rendered.
+
 ## 0.6.8
 
 ### Patch Changes

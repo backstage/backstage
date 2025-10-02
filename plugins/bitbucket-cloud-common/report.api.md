@@ -36,6 +36,7 @@ export class BitbucketCloudClient {
     workspace: string,
     query: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
+    pagelen?: number,
   ): WithPagination<Models.SearchResultPage, Models.SearchCodeSearchResult>;
 }
 
@@ -517,6 +518,7 @@ export class WithPagination<
   constructor(
     createUrl: (options: PaginationOptions) => URL,
     fetch: (url: URL) => Promise<TPage>,
+    pagelen?: number | undefined,
   );
   // (undocumented)
   getPage(options?: PaginationOptions): Promise<TPage>;

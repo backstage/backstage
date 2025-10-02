@@ -15,9 +15,6 @@
  */
 import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
-/**
- * @public
- */
 export const RepoBranchPickerFieldSchema = makeFieldSchema({
   output: z => z.string(),
   uiOptions: z =>
@@ -69,8 +66,6 @@ export const RepoBranchPickerFieldSchema = makeFieldSchema({
 /**
  * The input props that can be specified under `ui:options` for the
  * `RepoBranchPicker` field extension.
- *
- * @public
  */
 export type RepoBranchPickerUiOptions = NonNullable<
   (typeof RepoBranchPickerFieldSchema.TProps.uiSchema)['ui:options']

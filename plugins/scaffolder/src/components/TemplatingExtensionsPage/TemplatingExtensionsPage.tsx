@@ -296,7 +296,18 @@ export const TemplatingExtensionsPageContent = ({
   );
 };
 
-export const TemplatingExtensionsPage = () => {
+export type TemplatingExtensionsPageProps = {
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    tasks?: boolean;
+    create?: boolean;
+  };
+};
+
+export const TemplatingExtensionsPage = (
+  props: TemplatingExtensionsPageProps,
+) => {
   const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
@@ -304,10 +315,23 @@ export const TemplatingExtensionsPage = () => {
   const actionsLink = useRouteRef(actionsRouteRef);
 
   const scaffolderPageContextMenuProps: ScaffolderPageContextMenuProps = {
-    onEditorClicked: () => navigate(editorLink()),
-    onActionsClicked: () => navigate(actionsLink()),
-    onTasksClicked: () => navigate(tasksLink()),
-    onCreateClicked: () => navigate(createLink()),
+    onEditorClicked:
+      props?.contextMenu?.editor !== false
+        ? () => navigate(editorLink())
+        : undefined,
+    onActionsClicked:
+      props?.contextMenu?.actions !== false
+        ? () => navigate(actionsLink())
+        : undefined,
+    onTasksClicked:
+      props?.contextMenu?.tasks !== false
+        ? () => navigate(tasksLink())
+        : undefined,
+    onCreateClicked:
+      props?.contextMenu?.create !== false
+        ? () => navigate(createLink())
+        : undefined,
+    onTemplatingExtensionsClicked: undefined,
   };
 
   const { t } = useTranslationRef(scaffolderTranslationRef);
