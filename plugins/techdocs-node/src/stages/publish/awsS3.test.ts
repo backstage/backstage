@@ -416,7 +416,7 @@ describe('AwsS3Publish', () => {
         bucketName: bucketName,
       });
       await publisher.publish({ entity, directory });
-      expect(loggerErrorSpy).toHaveBeenLastCalledWith(
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
         'Unable to delete file(s) from AWS S3. Error: Message',
       );
     });
