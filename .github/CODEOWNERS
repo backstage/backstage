@@ -4,7 +4,7 @@
 # The last matching pattern takes precedence.
 # https://help.github.com/articles/about-codeowners/
 
-*                                                 @backstage/maintainers @backstage/reviewers
+*                                                 @backstage/maintainers @backstage/framework-maintainers @backstage/reviewers
 yarn.lock                                         @backstage/maintainers @backstage-service
 */yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset                                       @backstage/operations-maintainers
