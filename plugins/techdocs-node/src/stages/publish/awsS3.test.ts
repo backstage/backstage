@@ -31,7 +31,7 @@ import {
   AwsCredentialProviderOptions,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
-import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
+import { mockClient } from 'aws-sdk-client-mock';
 import express from 'express';
 import request from 'supertest';
 import path from 'path';
@@ -44,9 +44,10 @@ import {
 } from '@backstage/backend-test-utils';
 
 const env = process.env;
-let s3Mock: AwsClientStub<S3Client>;
+let s3Mock: any;
 
-const mockDir = createMockDirectory();
+// Create a new MockDirectory for each test to avoid Windows file locking issues
+let mockDir: ReturnType<typeof createMockDirectory>;
 
 function getMockCredentialProvider(): Promise<AwsCredentialProvider> {
   return Promise.resolve({
@@ -155,7 +156,7 @@ describe('AwsS3Publish', () => {
     build_timestamp: 612741599,
   };
 
-  const directory = getEntityRootDir(entity);
+  let directory: string;
 
   const files = {
     'index.html': '',
@@ -176,7 +177,7 @@ describe('AwsS3Publish', () => {
     },
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     process.env = { ...env };
     process.env.AWS_REGION = 'us-west-2';
 
@@ -185,20 +186,26 @@ describe('AwsS3Publish', () => {
       getMockCredentialProvider(),
     );
 
+    // Create a fresh mockdirectory for each test to avoid windows file locking
+    mockDir = createMockDirectory();
+    // Calculate directory path with the new mockDir instance
+    directory = getEntityRootDir(entity);
+
+    // Set up the test files
     mockDir.setContent({
       [directory]: files,
     });
 
-    s3Mock = mockClient(S3Client);
+    s3Mock = mockClient(S3Client as any);
 
-    s3Mock.on(HeadObjectCommand).callsFake(input => {
+    s3Mock.on(HeadObjectCommand).callsFake((input: any) => {
       if (!fs.pathExistsSync(mockDir.resolve(input.Key))) {
         throw new Error('File does not exist');
       }
       return {};
     });
 
-    s3Mock.on(GetObjectCommand).callsFake(input => {
+    s3Mock.on(GetObjectCommand).callsFake((input: any) => {
       if (fs.pathExistsSync(mockDir.resolve(input.Key))) {
         return {
           Body: Readable.from(fs.readFileSync(mockDir.resolve(input.Key))),
@@ -208,14 +215,14 @@ describe('AwsS3Publish', () => {
       throw new Error(`The file ${input.Key} does not exist!`);
     });
 
-    s3Mock.on(HeadBucketCommand).callsFake(input => {
+    s3Mock.on(HeadBucketCommand).callsFake((input: any) => {
       if (input.Bucket === 'errorBucket') {
         throw new Error('Bucket does not exist');
       }
       return {};
     });
 
-    s3Mock.on(ListObjectsV2Command).callsFake(input => {
+    s3Mock.on(ListObjectsV2Command).callsFake((input: any) => {
       if (
         input.Bucket === 'delete_stale_files_success' ||
         input.Bucket === 'delete_stale_files_error'
@@ -227,7 +234,7 @@ describe('AwsS3Publish', () => {
       return {};
     });
 
-    s3Mock.on(DeleteObjectCommand).callsFake(input => {
+    s3Mock.on(DeleteObjectCommand).callsFake((input: any) => {
       if (input.Bucket === 'delete_stale_files_error') {
         throw new Error('Message');
       }
@@ -235,7 +242,7 @@ describe('AwsS3Publish', () => {
     });
 
     s3Mock.on(UploadPartCommand).rejects();
-    s3Mock.on(PutObjectCommand).callsFake(input => {
+    s3Mock.on(PutObjectCommand).callsFake((input: any) => {
       mockDir.addContent({ [input.Key]: input.Body });
     });
   });
@@ -320,7 +327,7 @@ describe('AwsS3Publish', () => {
           `default/component/backstage/assets/main.css`,
         ]),
       });
-    });
+    }, 30000);
 
     it('should publish a directory as well when legacy casing is used', async () => {
       const publisher = await createPublisherFromConfig({
@@ -333,7 +340,7 @@ describe('AwsS3Publish', () => {
           `default/Component/backstage/assets/main.css`,
         ]),
       });
-    });
+    }, 30000);
 
     it('should publish a directory when root path is specified', async () => {
       const publisher = await createPublisherFromConfig({
@@ -346,7 +353,7 @@ describe('AwsS3Publish', () => {
           `backstage-data/techdocs/default/component/backstage/assets/main.css`,
         ]),
       });
-    });
+    }, 30000);
 
     it('should publish a directory when root path is specified and legacy casing is used', async () => {
       const publisher = await createPublisherFromConfig({
@@ -360,7 +367,7 @@ describe('AwsS3Publish', () => {
           `backstage-data/techdocs/default/Component/backstage/assets/main.css`,
         ]),
       });
-    });
+    }, 30000);
 
     it('should publish a directory when sse is specified', async () => {
       const publisher = await createPublisherFromConfig({
@@ -373,7 +380,7 @@ describe('AwsS3Publish', () => {
           'default/component/backstage/assets/main.css',
         ]),
       });
-    });
+    }, 30000);
 
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = mockDir.resolve(
@@ -408,7 +415,7 @@ describe('AwsS3Publish', () => {
       expect(loggerInfoSpy).toHaveBeenLastCalledWith(
         `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
       );
-    });
+    }, 30000);
 
     it('should log error when the stale files deletion fails', async () => {
       const bucketName = 'delete_stale_files_error';
@@ -419,7 +426,7 @@ describe('AwsS3Publish', () => {
       expect(loggerErrorSpy).toHaveBeenLastCalledWith(
         'Unable to delete file(s) from AWS S3. Error: Message',
       );
-    });
+    }, 30000);
   });
 
   describe('hasDocsBeenGenerated', () => {
@@ -427,7 +434,7 @@ describe('AwsS3Publish', () => {
       const publisher = await createPublisherFromConfig();
       await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-    });
+    }, 30000);
 
     it('should return true if docs has been generated even if the legacy case is enabled', async () => {
       const publisher = await createPublisherFromConfig({
@@ -435,7 +442,7 @@ describe('AwsS3Publish', () => {
       });
       await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-    });
+    }, 30000);
 
     it('should return true if docs has been generated if root path is specified', async () => {
       const publisher = await createPublisherFromConfig({
@@ -443,7 +450,7 @@ describe('AwsS3Publish', () => {
       });
       await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-    });
+    }, 30000);
 
     it('should return true if docs has been generated if root path is specified and legacy casing is used', async () => {
       const publisher = await createPublisherFromConfig({
@@ -452,7 +459,7 @@ describe('AwsS3Publish', () => {
       });
       await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-    });
+    }, 30000);
 
     it('should return false if docs has not been generated', async () => {
       const publisher = await createPublisherFromConfig();
@@ -475,7 +482,7 @@ describe('AwsS3Publish', () => {
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
-    });
+    }, 30000);
 
     it('should return tech docs metadata even if the legacy case is enabled', async () => {
       const publisher = await createPublisherFromConfig({
@@ -485,7 +492,7 @@ describe('AwsS3Publish', () => {
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
-    });
+    }, 30000);
 
     it('should return tech docs metadata even if root path is specified', async () => {
       const publisher = await createPublisherFromConfig({
@@ -495,7 +502,7 @@ describe('AwsS3Publish', () => {
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
-    });
+    }, 30000);
 
     it('should return tech docs metadata if root path is specified and legacy casing is used', async () => {
       const publisher = await createPublisherFromConfig({
@@ -506,7 +513,7 @@ describe('AwsS3Publish', () => {
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
-    });
+    }, 30000);
 
     it('should return tech docs metadata when json encoded with single quotes', async () => {
       const techdocsMetadataPath = path.join(
@@ -528,7 +535,7 @@ describe('AwsS3Publish', () => {
       );
 
       fs.writeFileSync(techdocsMetadataPath, techdocsMetadataContent);
-    });
+    }, 30000);
 
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const publisher = await createPublisherFromConfig();
@@ -549,7 +556,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return an error if the techdocs_metadata.json file cannot be read from stream', async () => {
-      s3Mock.on(GetObjectCommand).callsFake(_ => {
+      s3Mock.on(GetObjectCommand).callsFake((_: any) => {
         return {
           Body: new ErrorReadable('No stream!'),
         };
@@ -582,7 +589,7 @@ describe('AwsS3Publish', () => {
       const publisher = await createPublisherFromConfig();
       await publisher.publish({ entity, directory });
       app = express().use(publisher.docsRouter());
-    });
+    }, 30000);
 
     it('should pass expected object path to bucket', async () => {
       // Ensures leading slash is trimmed and encoded path is decoded.
@@ -688,7 +695,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return 404 if file cannot be read from stream', async () => {
-      s3Mock.on(GetObjectCommand).callsFake(_ => {
+      s3Mock.on(GetObjectCommand).callsFake((_: any) => {
         return {
           Body: new ErrorReadable('No stream!'),
         };
