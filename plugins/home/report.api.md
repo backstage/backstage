@@ -298,7 +298,7 @@ export type VisitsApiQueryParams = {
   }>;
 };
 
-// @public (undocumented)
+// @public
 export const visitsApiRef: ApiRef<VisitsApi>;
 
 // @public
