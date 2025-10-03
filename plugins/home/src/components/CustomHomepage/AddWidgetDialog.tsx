@@ -25,6 +25,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { homeTranslationRef } from '../../translation';
+import Box from '@material-ui/core/Box';
 
 interface AddWidgetDialogProps {
   widgets: Widget[];
@@ -42,39 +43,47 @@ export const AddWidgetDialog = (props: AddWidgetDialogProps) => {
     <>
       <DialogTitle>{t('addWidgetDialog.title')}</DialogTitle>
       <DialogContent>
-        <List dense>
-          {widgets.map(widget => {
-            return (
-              <ListItem
-                key={widget.name}
-                button
-                onClick={() => handleAdd(widget)}
-              >
-                <ListItemAvatar>
-                  <AddIcon />
-                </ListItemAvatar>
-                <ListItemText
-                  secondary={
-                    widget.description && (
-                      <Typography
-                        component="span"
-                        variant="caption"
-                        color="textPrimary"
-                      >
-                        {widget.description}
+        {widgets.length === 0 ? (
+          <Box pb={3} textAlign="center">
+            <Typography variant="body1" color="textSecondary">
+              {t('addWidgetDialog.noAvailableWidgets')}
+            </Typography>
+          </Box>
+        ) : (
+          <List dense>
+            {widgets.map(widget => {
+              return (
+                <ListItem
+                  key={widget.name}
+                  button
+                  onClick={() => handleAdd(widget)}
+                >
+                  <ListItemAvatar>
+                    <AddIcon />
+                  </ListItemAvatar>
+                  <ListItemText
+                    secondary={
+                      widget.description && (
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color="textPrimary"
+                        >
+                          {widget.description}
+                        </Typography>
+                      )
+                    }
+                    primary={
+                      <Typography variant="body1" color="textPrimary">
+                        {getTitle(widget)}
                       </Typography>
-                    )
-                  }
-                  primary={
-                    <Typography variant="body1" color="textPrimary">
-                      {getTitle(widget)}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            );
-          })}
-        </List>
+                    }
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
+        )}
       </DialogContent>
     </>
   );
