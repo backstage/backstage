@@ -127,6 +127,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'PasswordField',
+    slug: 'password-field',
+    status: 'alpha',
+  },
+  {
     title: 'RadioGroup',
     slug: 'radio-group',
     status: 'alpha',

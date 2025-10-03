@@ -63,7 +63,7 @@ jobs:
             packages/ui/src/**/*.css
 
       - name: Prepare Chromatic Message
-        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url && !github.event.repository.fork
         id: prepare-message
         run: |
           if [ "${{ steps.chromatic.outputs.changeCount }}" = "0" ] || [ -z "${{ steps.chromatic.outputs.changeCount }}" ]; then
@@ -73,7 +73,7 @@ jobs:
           fi
 
       - name: Post Chromatic Link in PR Comment
-        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url && !github.event.repository.fork
         uses: mshick/add-pr-comment@v2
         with:
           message: |

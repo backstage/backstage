@@ -20,24 +20,16 @@ import type { Breakpoint } from '../../types';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
-export interface TextFieldProps
+export interface PasswordFieldProps
   extends AriaTextFieldProps,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
-  /**
-   * The HTML input type for the text field
-   *
-   * @remarks
-   * Use `SearchField` for
-   * search inputs and `PasswordField` for password inputs.
-   */
-  type?: 'text' | 'email' | 'tel' | 'url';
   /**
    * An icon to render before the input
    */
   icon?: ReactNode;
 
   /**
-   * The size of the text field
+   * The size of the password field
    * @defaultValue 'medium'
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;

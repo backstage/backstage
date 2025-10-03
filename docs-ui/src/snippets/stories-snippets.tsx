@@ -28,6 +28,7 @@ import * as HeaderStories from '../../../packages/ui/src/components/Header/Heade
 import * as HeaderPageStories from '../../../packages/ui/src/components/HeaderPage/HeaderPage.stories';
 import * as TableStories from '../../../packages/ui/src/components/Table/Table.stories';
 import * as TagGroupStories from '../../../packages/ui/src/components/TagGroup/TagGroup.stories';
+import * as PasswordFieldStories from '../../../packages/ui/src/components/PasswordField/PasswordField.stories';
 
 // Helper function to create snippet components
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,6 +54,8 @@ export const ContainerSnippet = createSnippetComponent(ContainerStories);
 export const GridSnippet = createSnippetComponent(GridStories);
 export const IconSnippet = createSnippetComponent(IconStories);
 export const TextFieldSnippet = createSnippetComponent(TextFieldStories);
+export const PasswordFieldSnippet =
+  createSnippetComponent(PasswordFieldStories);
 export const TextSnippet = createSnippetComponent(TextStories);
 export const FlexSnippet = createSnippetComponent(FlexStories);
 export const SelectSnippet = createSnippetComponent(SelectStories);
