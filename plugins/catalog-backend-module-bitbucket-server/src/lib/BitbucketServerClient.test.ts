@@ -177,6 +177,7 @@ describe('BitbucketServerClient', () => {
       projectKey: 'test-project',
       repo: 'test-repo',
       path: 'catalog-info.yaml',
+      branch: 'master',
     });
     expect(await response.text()).toEqual(catalogInfoFile);
   });

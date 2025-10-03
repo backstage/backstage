@@ -65,6 +65,7 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
+          branch: 'master' # optional; string
           skipArchivedRepos: true # optional; boolean
         validateLocationsExist: false # optional; boolean
         schedule: # same options as in SchedulerServiceTaskScheduleDefinition
@@ -85,6 +86,8 @@ catalog:
     Regular expression used to filter results based on the project key.
   - **`repoSlug`** _(optional)_:
     Regular expression used to filter results based on the repo slug.
+  - **`branch`** _(optional)_:
+    String used to filter results based on the branch name.
   - **`skipArchivedRepos`** _(optional)_:
     Boolean flag to filter out archived repositories.
 - **`validateLocationsExist`** _(optional)_:

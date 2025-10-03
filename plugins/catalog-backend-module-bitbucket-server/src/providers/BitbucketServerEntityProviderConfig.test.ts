@@ -135,6 +135,7 @@ describe('readProviderConfigs', () => {
               filters: {
                 projectKey: 'project1',
                 repoSlug: '.*',
+                branch: 'test',
                 skipArchivedRepos: true,
               },
             },
@@ -152,6 +153,7 @@ describe('readProviderConfigs', () => {
       filters: {
         projectKey: /project1/,
         repoSlug: /.*/,
+        branch: 'test',
         skipArchivedRepos: true,
       },
       schedule: undefined,
