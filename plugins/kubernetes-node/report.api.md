@@ -254,6 +254,8 @@ export type KubernetesServiceLocatorFactory = (opts: {
 // @public (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
+  backstageCredentials?: BackstageCredentials;
+  // (undocumented)
   clusterDetails: ClusterDetails;
   // (undocumented)
   credential: KubernetesCredential;

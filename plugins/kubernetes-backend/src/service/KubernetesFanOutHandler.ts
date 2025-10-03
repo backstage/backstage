@@ -315,6 +315,7 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
               objectType: 'customresources',
             })),
             namespace,
+            backstageCredentials: options.credentials,
           })
           .then(result =>
             this.getMetricsForPods(
