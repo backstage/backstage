@@ -24,7 +24,7 @@ import {
 } from '@backstage/integration';
 import { createGithubPagesEnableAction } from './githubPagesEnable';
 
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 
 const octokitMock = Octokit as unknown as jest.Mock;
 
@@ -32,7 +32,7 @@ const mockOctokit = {
   request: jest.fn(),
 };
 
-jest.mock('octokit', () => ({
+jest.mock('@octokit/rest', () => ({
   Octokit: jest.fn(),
 }));
 

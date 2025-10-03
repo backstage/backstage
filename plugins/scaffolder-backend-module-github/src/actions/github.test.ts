@@ -54,7 +54,7 @@ const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
   Promise<{ commitHash: string }>
 >;
 
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 
 const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
@@ -83,7 +83,7 @@ const mockOctokit = {
   },
   request: jest.fn(),
 };
-jest.mock('octokit', () => ({
+jest.mock('@octokit/rest', () => ({
   Octokit: jest.fn(),
 }));
 

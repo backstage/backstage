@@ -20,7 +20,7 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 import {
   createTemplateAction,
   parseRepoUrl,

@@ -27,7 +27,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 
 export interface OctokitProviderService {
   getOctokit: (url: string) => Promise<Octokit>;

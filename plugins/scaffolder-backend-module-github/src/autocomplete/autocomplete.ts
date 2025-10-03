@@ -16,7 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import { getOctokitOptions } from '../util';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
 export function createHandleAutocompleteRequest(options: {

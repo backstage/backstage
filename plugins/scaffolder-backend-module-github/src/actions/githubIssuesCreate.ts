@@ -23,7 +23,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { assertError, InputError } from '@backstage/errors';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 import { getOctokitOptions } from '../util';
 import { examples } from './githubIssuesCreate.examples';
 

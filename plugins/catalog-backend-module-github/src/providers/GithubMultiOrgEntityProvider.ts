@@ -39,7 +39,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
-import {
+import type {
   InstallationCreatedEvent,
   InstallationEvent,
   MembershipEvent,

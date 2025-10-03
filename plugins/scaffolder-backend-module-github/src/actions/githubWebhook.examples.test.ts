@@ -32,12 +32,16 @@ const mockOctokit = {
     },
   },
 };
-jest.mock('octokit', () => ({
+jest.mock('@octokit/rest', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
     }
   },
+}));
+
+jest.mock('@octokit/webhooks', () => ({
+  emitterEventNames: [],
 }));
 
 describe('github:webhook examples', () => {

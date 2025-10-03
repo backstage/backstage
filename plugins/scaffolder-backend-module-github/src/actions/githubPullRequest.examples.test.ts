@@ -38,7 +38,7 @@ const mockOctokit = {
   },
 };
 
-jest.mock('octokit', () => ({
+jest.mock('@octokit/core', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -62,10 +62,7 @@ describe('publish:github:pull-request examples', () => {
   const mockContext = createMockActionContext();
   let fakeClient: {
     createPullRequest: jest.Mock;
-    rest: {
-      pulls: { requestReviewers: jest.Mock };
-      issues: { addAssignees: jest.Mock };
-    };
+    request: jest.Mock;
   };
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
@@ -90,14 +87,7 @@ describe('publish:github:pull-request examples', () => {
           },
         };
       }),
-      rest: {
-        pulls: {
-          requestReviewers: jest.fn(async (_: any) => ({ data: {} })),
-        },
-        issues: {
-          addAssignees: jest.fn(async (_: any) => ({ data: {} })),
-        },
-      },
+      request: jest.fn(async (_: any) => ({ data: {} })),
     };
 
     const clientFactory = jest.fn(async () => fakeClient as any);
@@ -145,7 +135,7 @@ describe('publish:github:pull-request examples', () => {
         },
       ],
     });
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -185,7 +175,7 @@ describe('publish:github:pull-request examples', () => {
         },
       ],
     });
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -224,7 +214,7 @@ describe('publish:github:pull-request examples', () => {
         },
       ],
     });
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -264,7 +254,7 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -310,7 +300,7 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -350,7 +340,7 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -390,12 +380,15 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).toHaveBeenCalledWith({
-      owner: 'owner',
-      repo: 'repo',
-      pull_number: 123,
-      reviewers: ['foobar'],
-    });
+    expect(fakeClient.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers',
+      {
+        owner: 'owner',
+        repo: 'repo',
+        pull_number: 123,
+        reviewers: ['foobar'],
+      },
+    );
 
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
@@ -436,12 +429,15 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).toHaveBeenCalledWith({
-      owner: 'owner',
-      repo: 'repo',
-      pull_number: 123,
-      team_reviewers: ['team-foo'],
-    });
+    expect(fakeClient.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers',
+      {
+        owner: 'owner',
+        repo: 'repo',
+        pull_number: 123,
+        team_reviewers: ['team-foo'],
+      },
+    );
 
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
@@ -482,7 +478,7 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -526,7 +522,7 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -570,7 +566,7 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -614,7 +610,7 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -655,7 +651,7 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(fakeClient.request).not.toHaveBeenCalled();
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
     expect(mockContext.output).toHaveBeenCalledWith(
@@ -707,13 +703,16 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.pulls.requestReviewers).toHaveBeenCalledWith({
-      owner: 'owner',
-      repo: 'repo',
-      pull_number: 123,
-      reviewers: ['foobar'],
-      team_reviewers: ['team-foo'],
-    });
+    expect(fakeClient.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers',
+      {
+        owner: 'owner',
+        repo: 'repo',
+        pull_number: 123,
+        reviewers: ['foobar'],
+        team_reviewers: ['team-foo'],
+      },
+    );
 
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
@@ -754,12 +753,15 @@ describe('publish:github:pull-request examples', () => {
       ],
     });
 
-    expect(fakeClient.rest.issues.addAssignees).toHaveBeenCalledWith({
-      owner: 'owner',
-      repo: 'repo',
-      issue_number: 123,
-      assignees: ['foobar'],
-    });
+    expect(fakeClient.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/issues/{issue_number}/assignees',
+      {
+        owner: 'owner',
+        repo: 'repo',
+        issue_number: 123,
+        assignees: ['foobar'],
+      },
+    );
 
     expect(mockContext.output).toHaveBeenCalledTimes(3);
     expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');

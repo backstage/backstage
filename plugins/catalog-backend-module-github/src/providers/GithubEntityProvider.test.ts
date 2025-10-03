@@ -29,7 +29,7 @@ import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 import { EventParams } from '@backstage/plugin-events-node';
 import { mockServices } from '@backstage/backend-test-utils';
-import {
+import type {
   Commit,
   PushEvent,
   RepositoryEvent,

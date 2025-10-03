@@ -23,7 +23,7 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 import { getOctokitOptions } from '../util';
 import { examples } from './githubActionsDispatch.examples';
 
