@@ -39,6 +39,9 @@ const ItemDetailTimeAgo = ({ visit }: { visit: Visit }) => {
   );
 };
 
+/**
+ * @internal
+ */
 export type ItemDetailType = 'time-ago' | 'hits';
 
 export const ItemDetail = ({
