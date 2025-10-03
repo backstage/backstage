@@ -377,6 +377,7 @@ export interface ConfigurableExtensionDataRef<
 
 // @public (undocumented)
 export const coreExtensionData: {
+  title: ConfigurableExtensionDataRef<string, 'core.title', {}>;
   reactElement: ConfigurableExtensionDataRef<
     JSX_3.Element,
     'core.reactElement',
