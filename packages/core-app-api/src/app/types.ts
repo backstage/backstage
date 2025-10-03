@@ -29,6 +29,17 @@ import {
 import { AppConfig } from '@backstage/config';
 
 /**
+ * Props for the `ErrorPage` component of {@link AppComponents}.
+ *
+ * @public
+ */
+export type ErrorPageProps = PropsWithChildren<{
+  status?: string;
+  statusMessage?: string;
+  additionalInfo?: string;
+}>;
+
+/**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
  *
  * @public
@@ -67,7 +78,7 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
  * @public
  */
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
+  NotFoundErrorPage: ComponentType<ErrorPageProps>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<PropsWithChildren<{}>>;
   Router: ComponentType<PropsWithChildren<{ basename?: string }>>;

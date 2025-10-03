@@ -73,6 +73,7 @@ import { openshiftAuthApiRef } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -1497,9 +1498,11 @@ export const NotFoundErrorPage: {
 };
 
 // @public (undocumented)
-export type NotFoundErrorPageProps = {
-  children?: ReactNode;
-};
+export type NotFoundErrorPageProps = PropsWithChildren<{
+  status?: string;
+  statusMessage?: string;
+  additionalInfo?: string;
+}>;
 
 export { OAuthApi };
 

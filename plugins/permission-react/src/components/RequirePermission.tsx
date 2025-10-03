@@ -78,5 +78,5 @@ export function RequirePermission(
   }
   // If no explicit error element is provided, the not found page is used as fallback.
   const { NotFoundErrorPage } = app.getComponents();
-  return <NotFoundErrorPage />;
+  return <NotFoundErrorPage status="403" statusMessage="Forbidden" />;
 }
