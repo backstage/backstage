@@ -22,6 +22,7 @@ import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 const targetDataRef = createExtensionDataRef<{
   title: string;
   icon: IconComponent;
+  featureFlag?: string;
   routeRef: RouteRef<undefined>;
 }>().with({ id: 'core.nav-item.target' });
 
@@ -37,27 +38,31 @@ export const NavItemBlueprint = createExtensionBlueprint({
   dataRefs: {
     target: targetDataRef,
   },
+  config: {
+    schema: {
+      title: z => z.string().optional(),
+      featureFlag: z => z.string().optional(),
+    },
+  },
   factory: (
     {
       icon,
       routeRef,
       title,
+      featureFlag,
     }: {
       title: string;
       icon: IconComponent;
       routeRef: RouteRef<undefined>;
+      featureFlag?: string;
     },
     { config },
   ) => [
     targetDataRef({
       title: config.title ?? title,
       icon,
+      featureFlag: config.featureFlag ?? featureFlag,
       routeRef,
     }),
   ],
-  config: {
-    schema: {
-      title: z => z.string().optional(),
-    },
-  },
 });

@@ -33,9 +33,11 @@ export interface NavContentComponentProps {
    */
   items: Array<{
     // Original props from nav items
+    id: string;
     icon: IconComponent;
     title: string;
     routeRef: RouteRef<undefined>;
+    featureFlag?: string;
 
     // Additional props to simplify item rendering
     to: string;

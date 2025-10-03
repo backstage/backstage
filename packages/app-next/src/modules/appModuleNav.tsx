@@ -31,7 +31,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import BuildIcon from '@material-ui/icons/Build';
 import {
   createFrontendModule,
+  featureFlagsApiRef,
   NavContentBlueprint,
+  useApi,
 } from '@backstage/frontend-plugin-api';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
@@ -107,6 +109,8 @@ export const appModuleNav = createFrontendModule({
     NavContentBlueprint.make({
       params: {
         component: ({ items }) => {
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const featureFlagsApi = useApi(featureFlagsApiRef);
           return compatWrapper(
             <Sidebar>
               <SidebarLogo />
@@ -116,9 +120,15 @@ export const appModuleNav = createFrontendModule({
               <SidebarDivider />
               <SidebarGroup label="Menu" icon={<MenuIcon />}>
                 <SidebarScrollWrapper>
-                  {items.map((item, index) => (
-                    <SidebarItem {...item} key={index} />
-                  ))}
+                  {items
+                    .filter(
+                      item =>
+                        !item.featureFlag ||
+                        featureFlagsApi.isActive(item.featureFlag),
+                    )
+                    .map(item => (
+                      <SidebarItem {...item} key={item.id} />
+                    ))}
                 </SidebarScrollWrapper>
               </SidebarGroup>
               <SidebarDivider />

@@ -773,9 +773,15 @@ export const SidebarContent = NavContentBlueprint.make({
           <SidebarGroup label="Plugins">
             <SidebarScrollWrapper>
               {/* Items in this group will be scrollable if they run out of space */}
-              {items.map((item, index) => (
-                <SidebarItem {...item} key={index} />
-              ))}
+              {items
+                .filter(
+                  item =>
+                    !item.featureFlag ||
+                    featureFlagsApi.isActive(item.featureFlag),
+                )
+                .map(item => (
+                  <SidebarItem {...item} key={item.id} />
+                ))}
             </SidebarScrollWrapper>
           </SidebarGroup>
         </Sidebar>,
