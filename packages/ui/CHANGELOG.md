@@ -1,5 +1,12 @@
 # @backstage/ui
 
+## 0.7.2-next.1
+
+### Patch Changes
+
+- a9b88be: Enable tooltips on disabled buttons with automatic wrapper
+- 4adbb03: Avoid overriding onChange when spreading props
+
 ## 0.7.2-next.0
 
 ### Patch Changes
