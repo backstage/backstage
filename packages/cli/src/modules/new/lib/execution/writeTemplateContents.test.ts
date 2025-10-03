@@ -94,4 +94,41 @@ describe('writeTemplateContents', () => {
       },
     });
   });
+
+  it('should prioritize system values over custom values when conflicts occur', async () => {
+    const { targetDir } = await writeTemplateContents(
+      {
+        name: 'test',
+        files: [
+          {
+            path: 'test.txt',
+            content:
+              'packageName={{packageName}},pluginId={{pluginId}},customValue={{customValue}}',
+            syntax: 'handlebars',
+          },
+        ],
+        role: 'frontend-plugin',
+        values: {},
+      },
+      {
+        ...baseConfig,
+        roleParams: { role: 'frontend-plugin', pluginId: 'system-plugin' },
+        packageName: '@internal/plugin-system',
+        packagePath: 'out',
+        customValues: {
+          packageName: 'malicious-package', // This should be ignored
+          pluginId: 'malicious-plugin', // This should be ignored
+          customValue: 'allowed-custom', // This should be preserved
+        },
+      },
+    );
+
+    expect(relativePath(mockDir.path, targetDir)).toBe('out');
+    expect(mockDir.content()).toEqual({
+      out: {
+        'test.txt':
+          'packageName=@internal/plugin-system,pluginId=system-plugin,customValue=allowed-custom',
+      },
+    });
+  });
 });
