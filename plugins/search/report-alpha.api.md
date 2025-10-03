@@ -90,6 +90,7 @@ const _default: OverridableFrontendPlugin<
             {
               predicate?: SearchResultItemExtensionPredicate;
               component: SearchResultItemExtensionComponent;
+              icon?: JSX_2.Element;
             },
             'search.search-result-list-item.item',
             {}
@@ -104,7 +105,7 @@ const _default: OverridableFrontendPlugin<
             {
               value: string;
               name: string;
-              icon: JSX.Element;
+              icon: JSX_2.Element;
             },
             'search.filters.result-types.type',
             {}
@@ -209,6 +210,7 @@ export const searchPage: ExtensionDefinition<{
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}
@@ -223,7 +225,7 @@ export const searchPage: ExtensionDefinition<{
         {
           value: string;
           name: string;
-          icon: JSX.Element;
+          icon: JSX_2.Element;
         },
         'search.filters.result-types.type',
         {}

@@ -55,6 +55,7 @@ import {
 } from '@backstage/plugin-techdocs-react';
 
 import { useTechdocsReaderIconLinkProps } from './hooks/useTechdocsReaderIconLinkProps';
+import { DocsIcon } from '@backstage/core-components';
 
 /** @alpha */
 const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
@@ -116,6 +117,7 @@ export const techDocsSearchResultListItemExtension =
     },
     factory(originalFactory, { config }) {
       return originalFactory({
+        icon: <DocsIcon />,
         predicate: result => result.type === 'techdocs',
         component: async () => {
           const { TechDocsSearchResultListItem } = await import(
