@@ -1,5 +1,17 @@
 # @backstage/cli
 
+## 0.34.4-next.3
+
+### Patch Changes
+
+- 024645e: Remove unused @octokit modules from cli package
+
+  - @octokit/graphql
+  - @octokit/graphql-schema
+  - @octokit/oauth-app
+
+- d14ef24: Added automatic detection and support for the Backstage Yarn plugin when generating new packages with `yarn new`. When the plugin is installed, new packages will automatically use `backstage:^` ranges for `@backstage/*` dependencies.
+
 ## 0.34.4-next.2
 
 ### Patch Changes

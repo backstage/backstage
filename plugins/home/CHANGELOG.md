@@ -1,5 +1,11 @@
 # @backstage/plugin-home
 
+## 0.8.13-next.3
+
+### Patch Changes
+
+- e7d59d3: fix(home): correct `clearAll` logic to properly handle `deletable` flag
+
 ## 0.8.13-next.2
 
 ### Patch Changes
