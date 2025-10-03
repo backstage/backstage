@@ -115,9 +115,22 @@ export const Tabs = (props: TabsProps) => {
             }
           }
         }
+
+        //No route matches - check if all tabs have hrefs (pure navigation)
+        const allTabsHaveHref = tabListChildren.every(
+          child => isValidElement(child) && child.props.href,
+        );
+
+        if (allTabsHaveHref) {
+          // Pure navigation tabs, no route match
+          return null;
+        } else {
+          // Mixed tabs or pure local state
+          return undefined;
+        }
       }
     }
-    return null;
+    return undefined;
   })();
 
   if (!children) return null;
