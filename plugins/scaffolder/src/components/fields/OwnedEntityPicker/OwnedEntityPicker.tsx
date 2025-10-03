@@ -115,6 +115,7 @@ function buildEntityPickerUISchema(
       ...extraOptions,
       catalogFilter,
     },
+    'ui:disabled': uiSchema['ui:disabled'],
   };
 }
 
