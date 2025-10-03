@@ -282,6 +282,7 @@ export const VisitListener: ({
 export interface VisitsApi {
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+  updateName(pathname: string, name: string): Promise<void>;
 }
 
 // @public
@@ -312,6 +313,7 @@ export class VisitsStorageApi implements VisitsApi {
   static create(options: VisitsStorageApiOptions): VisitsStorageApi;
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+  updateName(pathname: string, name: string): Promise<void>;
 }
 
 // @public (undocumented)
