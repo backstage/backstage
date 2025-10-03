@@ -14,6 +14,7 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { Observable } from '@backstage/types';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -137,6 +138,14 @@ export type BackstageCredentials<TPrincipal = unknown> = {
   principal: TPrincipal;
 };
 
+// @public (undocumented)
+export interface BackstageInstance {
+  // (undocumented)
+  externalUrl: string;
+  // (undocumented)
+  internalUrl: string;
+}
+
 // @public
 export type BackstageNonePrincipal = {
   type: 'none';
@@ -232,6 +241,7 @@ export namespace coreServices {
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
+  const systemMetadata: ServiceRef<SystemMetadataService, 'root', 'singleton'>;
 }
 
 // @public
@@ -719,6 +729,12 @@ export interface ServiceRefOptions<
   multiton?: TInstances extends 'multiton' ? true : false;
   // (undocumented)
   scope?: TScope;
+}
+
+// @public (undocumented)
+export interface SystemMetadataService {
+  // (undocumented)
+  instances(): Observable<BackstageInstance[]>;
 }
 
 // @public
