@@ -37,6 +37,7 @@ import {
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { rootRouteRef } from '../routes';
 import { Entity } from '@backstage/catalog-model';
+import { ReactNode } from 'react';
 
 describe('Entity page', () => {
   const entityMock = {
@@ -595,6 +596,467 @@ describe('Entity page', () => {
         expect(
           screen.getByRole('heading', { name: /Custom header/ }),
         ).toBeInTheDocument(),
+      );
+    });
+
+    it('Should render a custom header component', async () => {
+      const CustomHeaderComponent = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>Custom Component Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const customEntityHeader = EntityHeaderBlueprint.make({
+        name: 'custom-component',
+        params: {
+          componentLoader: async () => CustomHeaderComponent,
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      ).add(customEntityHeader);
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          config: {
+            app: {
+              title: 'Custom app',
+            },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        },
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.getByRole('heading', { name: /Custom Component Header/ }),
+        ).toBeInTheDocument(),
+      );
+    });
+
+    it('Should render headers based on filter function', async () => {
+      const ComponentHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>Component Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const ApiHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>API Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const componentHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'component-header',
+        params: {
+          componentLoader: async () => ComponentHeader,
+          filter: { kind: 'Component' },
+        },
+      });
+
+      const apiHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'api-header',
+        params: {
+          componentLoader: async () => ApiHeader,
+          filter: { kind: 'API' },
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(componentHeaderBlueprint)
+        .add(apiHeaderBlueprint);
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          config: {
+            app: {
+              title: 'Custom app',
+            },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        },
+      );
+
+      // Should render Component header since entityMock is kind: 'Component'
+      await waitFor(() =>
+        expect(
+          screen.getByRole('heading', { name: /Component Header/ }),
+        ).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('heading', { name: /API Header/ }),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
+    it('Should render headers based on custom filter function', async () => {
+      const ExperimentalHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: ReactNode;
+      }) => (
+        <header>
+          <h1>Experimental Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const ProductionHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: ReactNode;
+      }) => (
+        <header>
+          <h1>Production Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const experimentalHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'experimental-header',
+        params: {
+          componentLoader: async () => ExperimentalHeader,
+          filter: (entity: Entity) => entity.spec?.lifecycle === 'experimental',
+        },
+      });
+
+      const productionHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'production-header',
+        params: {
+          componentLoader: async () => ProductionHeader,
+          filter: (entity: Entity) => entity.spec?.lifecycle === 'production',
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(experimentalHeaderBlueprint)
+        .add(productionHeaderBlueprint);
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          config: {
+            app: {
+              title: 'Custom app',
+            },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        },
+      );
+
+      // Should render Experimental header since entityMock has lifecycle: 'experimental'
+      await waitFor(() =>
+        expect(
+          screen.getByRole('heading', { name: /Experimental Header/ }),
+        ).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('heading', { name: /Production Header/ }),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
+    it('Should prioritize headers by order', async () => {
+      const PrimaryHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>Primary Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const SecondaryHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>Secondary Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const primaryHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'primary-header',
+        params: {
+          componentLoader: async () => PrimaryHeader,
+          order: 100,
+        },
+      });
+
+      const secondaryHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'secondary-header',
+        params: {
+          componentLoader: async () => SecondaryHeader,
+          order: 200,
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(secondaryHeaderBlueprint) // Add secondary first
+        .add(primaryHeaderBlueprint); // Add primary second
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          config: {
+            app: {
+              title: 'Custom app',
+            },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        },
+      );
+
+      // Should render Primary header due to lower order value (higher priority)
+      await waitFor(() =>
+        expect(
+          screen.getByRole('heading', { name: /Primary Header/ }),
+        ).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('heading', { name: /Secondary Header/ }),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
+    it('Should prefer headers with filters over those without when no order is specified', async () => {
+      const GenericHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>Generic Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const SpecificHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>Specific Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const genericHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'generic-header',
+        params: {
+          componentLoader: async () => GenericHeader,
+        },
+      });
+
+      const specificHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'specific-header',
+        params: {
+          componentLoader: async () => SpecificHeader,
+          filter: { kind: 'Component' },
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(genericHeaderBlueprint)
+        .add(specificHeaderBlueprint);
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          config: {
+            app: {
+              title: 'Custom app',
+            },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        },
+      );
+
+      // Should render Specific header due to having a filter (higher priority)
+      await waitFor(() =>
+        expect(
+          screen.getByRole('heading', { name: /Specific Header/ }),
+        ).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('heading', { name: /Generic Header/ }),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
+    it('Should support mixing element and component headers', async () => {
+      const ComponentHeader = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>Component Header</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const elementHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'element-header',
+        params: {
+          loader: async () => (
+            <header>
+              <h1>Element Header</h1>
+            </header>
+          ),
+          order: 200,
+        },
+      });
+
+      const componentHeaderBlueprint = EntityHeaderBlueprint.make({
+        name: 'component-header',
+        params: {
+          componentLoader: async () => ComponentHeader,
+          order: 100,
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(elementHeaderBlueprint)
+        .add(componentHeaderBlueprint);
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          config: {
+            app: {
+              title: 'Custom app',
+            },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        },
+      );
+
+      // Should render Component header due to lower order value
+      await waitFor(() =>
+        expect(
+          screen.getByRole('heading', { name: /Component Header/ }),
+        ).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('heading', { name: /Element Header/ }),
+        ).not.toBeInTheDocument(),
       );
     });
   });

@@ -24,19 +24,21 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  type DialogApiDialog,
   dialogApiRef,
   useTranslationRef,
-  type DialogApiDialog,
 } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from './translation';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
+  InspectEntityDialog,
   UnregisterEntityDialog,
+  useAsyncEntity,
   useEntity,
 } from '@backstage/plugin-catalog-react';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../routes';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
-import { useEffect } from 'react';
+import { ComponentProps, useCallback, useEffect } from 'react';
 import { compatWrapper } from '@backstage/core-compat-api';
 
 export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
@@ -75,6 +77,34 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
     name: 'inspect-entity',
     params: {
       icon: <BugReportIcon fontSize="small" />,
+      usePortal: () => {
+        const [searchParams, setSearchParams] = useSearchParams();
+        const selectedInspectEntityDialogTab = searchParams.get('inspect');
+        const { entity } = useAsyncEntity();
+        const inspectDialogOpen =
+          typeof selectedInspectEntityDialogTab === 'string';
+        const setInspectEntityDialogTab = useCallback(
+          (newTab: string) => setSearchParams(`inspect=${newTab}`),
+          [setSearchParams],
+        );
+        const closeInspectEntityDialog = useCallback(
+          () => setSearchParams(),
+          [setSearchParams],
+        );
+        return (
+          <InspectEntityDialog
+            entity={entity!}
+            initialTab={
+              (selectedInspectEntityDialogTab as ComponentProps<
+                typeof InspectEntityDialog
+              >['initialTab']) || undefined
+            }
+            open={inspectDialogOpen}
+            onClose={closeInspectEntityDialog}
+            onSelect={setInspectEntityDialogTab}
+          />
+        );
+      },
       useProps: () => {
         const [_, setSearchParams] = useSearchParams();
         const { t } = useTranslationRef(catalogTranslationRef);

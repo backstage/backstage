@@ -203,6 +203,15 @@ describe('EntityContextMenuItemBlueprint', () => {
             "optional": [Function],
             "toString": [Function],
           },
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "catalog.entity-context-menu-item.portal",
+            "optional": [Function],
+            "toString": [Function],
+          },
         ],
         "override": [Function],
         "toString": [Function],
@@ -241,9 +250,15 @@ describe('EntityContextMenuItemBlueprint', () => {
   });
 
   it.each([
-    { filter: { kind: 'Api' } },
-    { filter: (e: Entity) => e.kind.toLowerCase() === 'api' },
-  ])('should return a filter function', async ({ filter }) => {
+    {
+      name: 'object filter',
+      filter: { kind: 'Api' },
+    },
+    {
+      name: 'function filter',
+      filter: (e: Entity) => e.kind.toLowerCase() === 'api',
+    },
+  ])('should return a filter function - $name', async ({ filter }) => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
       params: {
@@ -262,5 +277,65 @@ describe('EntityContextMenuItemBlueprint', () => {
     expect(filterFn).toBeDefined();
     expect(filterFn?.({ kind: 'Api' } as Entity)).toBe(true);
     expect(filterFn?.({ kind: 'Component' } as Entity)).toBe(false);
+  });
+
+  it('should render portal content when usePortal is provided', async () => {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'test',
+      params: {
+        icon: <span>Icon</span>,
+        useProps: () => ({
+          title: 'Test',
+          onClick: () => {},
+        }),
+        usePortal: () => <div data-testid="portal-content">Portal Content</div>,
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+
+    const portalElement = tester.get(
+      EntityContextMenuItemBlueprint.dataRefs.portalElement,
+    );
+
+    expect(portalElement).toBeDefined();
+
+    renderInTestApp(
+      <EntityProvider
+        entity={{
+          apiVersion: 'v1',
+          kind: 'Component',
+          metadata: { name: 'test' },
+        }}
+      >
+        <div>{portalElement}</div>
+      </EntityProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('portal-content')).toBeInTheDocument();
+      expect(screen.getByText('Portal Content')).toBeInTheDocument();
+    });
+  });
+
+  it('should not yield portal element when usePortal is not provided', () => {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'test',
+      params: {
+        icon: <span>Icon</span>,
+        useProps: () => ({
+          title: 'Test',
+          onClick: () => {},
+        }),
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+
+    const portalElement = tester.get(
+      EntityContextMenuItemBlueprint.dataRefs.portalElement,
+    );
+
+    expect(portalElement).toBeUndefined();
   });
 });

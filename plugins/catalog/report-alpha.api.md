@@ -10,8 +10,10 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentLayoutHeaderProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alpha';
+import { EntityLayoutBlueprintProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
@@ -873,6 +875,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            JSX_2.Element,
+            'catalog.entity-context-menu-item.portal',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -894,6 +903,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            JSX_2.Element,
+            'catalog.entity-context-menu-item.portal',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -912,6 +928,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            JSX_2.Element,
+            'catalog.entity-context-menu-item.portal',
             {
               optional: true;
             }
@@ -1081,6 +1104,20 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              (props: EntityContentLayoutHeaderProps) => JSX_2.Element,
+              'catalog.entity-header.component',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              number,
+              'catalog.entity-layout.order',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
@@ -1136,6 +1173,38 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              JSX_2.Element,
+              'catalog.entity-context-menu-item.portal',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+        layouts: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              number,
+              'catalog.entity-layout.order',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              (props: EntityLayoutBlueprintProps) => JSX_2.Element,
+              'catalog.entity-layout.component',
+              {}
             >,
           {
             singleton: false;

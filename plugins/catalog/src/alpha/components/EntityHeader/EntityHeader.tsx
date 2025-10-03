@@ -14,88 +14,24 @@
  * limitations under the License.
  */
 
-import {
-  useState,
-  useCallback,
-  useEffect,
-  ComponentProps,
-  ReactNode,
-} from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { ReactNode } from 'react';
 import useAsync from 'react-use/esm/useAsync';
-
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-
-import { Header, Breadcrumbs } from '@backstage/core-components';
+import { Breadcrumbs, Header } from '@backstage/core-components';
+import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 import {
-  useApi,
-  useRouteRef,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
-
-import {
-  Entity,
-  EntityRelation,
-  DEFAULT_NAMESPACE,
-} from '@backstage/catalog-model';
-
-import {
-  useAsyncEntity,
-  entityRouteRef,
   catalogApiRef,
-  EntityRefLink,
-  InspectEntityDialog,
-  UnregisterEntityDialog,
   EntityDisplayName,
+  EntityRefLink,
+  entityRouteRef,
   FavoriteEntity,
+  useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
 
 import { EntityLabels } from '../EntityLabels';
-import { EntityContextMenu } from '../../../components/EntityContextMenu';
-import { rootRouteRef, unregisterRedirectRouteRef } from '../../../routes';
-
-function headerProps(
-  paramKind: string | undefined,
-  paramNamespace: string | undefined,
-  paramName: string | undefined,
-  entity: Entity | undefined,
-): { headerTitle: string; headerType: string } {
-  const kind = paramKind ?? entity?.kind ?? '';
-  const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
-  const name =
-    entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
-
-  return {
-    headerTitle: `${name}${
-      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
-    }`,
-    headerType: (() => {
-      let t = kind.toLocaleLowerCase('en-US');
-      if (entity && entity.spec && 'type' in entity.spec) {
-        t += ' — ';
-        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
-      }
-      return t;
-    })(),
-  };
-}
-
-function findParentRelation(
-  entityRelations: EntityRelation[] = [],
-  relationTypes: string[] = [],
-) {
-  for (const type of relationTypes) {
-    const foundRelation = entityRelations.find(
-      relation => relation.type === type,
-    );
-    if (foundRelation) {
-      return foundRelation; // Return the first found relation and stop
-    }
-  }
-  return null;
-}
+import { headerProps } from '../../../utils/headerProps.ts';
+import { findParentRelation } from '../../../utils/findParentRelation.ts';
 
 const useStyles = makeStyles(theme => ({
   breadcrumbs: {
@@ -166,19 +102,7 @@ function EntityHeaderSubtitle(props: { parentEntityRelations?: string[] }) {
 
 /** @alpha */
 export function EntityHeader(props: {
-  // NOTE(freben): Intentionally not exported at this point, since it's part of
-  // the unstable extra context menu items concept below
-  UNSTABLE_extraContextMenuItems?: {
-    title: string;
-    Icon: IconComponent;
-    onClick: () => void;
-  }[];
-  // NOTE(blam): Intentionally not exported at this point, since it's part of
-  // unstable context menu option, eg: disable the unregister entity menu
-  UNSTABLE_contextMenuOptions?: {
-    disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
-  };
-  contextMenuItems?: React.JSX.Element[];
+  contextMenu?: ReactNode;
   /**
    * An array of relation types used to determine the parent entities in the hierarchy.
    * These relations are prioritized in the order provided, allowing for flexible
@@ -193,14 +117,7 @@ export function EntityHeader(props: {
   title?: ReactNode;
   subtitle?: ReactNode;
 }) {
-  const {
-    UNSTABLE_extraContextMenuItems,
-    UNSTABLE_contextMenuOptions,
-    contextMenuItems,
-    parentEntityRelations,
-    title,
-    subtitle,
-  } = props;
+  const { contextMenu, parentEntityRelations, title, subtitle } = props;
   const { entity } = useAsyncEntity();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { headerTitle: entityFallbackText, headerType: type } = headerProps(
@@ -209,62 +126,6 @@ export function EntityHeader(props: {
     name,
     entity,
   );
-
-  const location = useLocation();
-  const navigate = useNavigate();
-  const catalogRoute = useRouteRef(rootRouteRef);
-  const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
-
-  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-
-  const openUnregisterEntityDialog = useCallback(
-    () => setConfirmationDialogOpen(true),
-    [setConfirmationDialogOpen],
-  );
-
-  const closeUnregisterEntityDialog = useCallback(
-    () => setConfirmationDialogOpen(false),
-    [setConfirmationDialogOpen],
-  );
-
-  const cleanUpAfterUnregisterConfirmation = useCallback(async () => {
-    setConfirmationDialogOpen(false);
-    navigate(
-      unregisterRedirectRoute ? unregisterRedirectRoute() : catalogRoute(),
-    );
-  }, [
-    navigate,
-    catalogRoute,
-    unregisterRedirectRoute,
-    setConfirmationDialogOpen,
-  ]);
-
-  // Make sure to close the dialog if the user clicks links in it that navigate
-  // to another entity.
-  useEffect(() => {
-    setConfirmationDialogOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const selectedInspectEntityDialogTab = searchParams.get('inspect');
-
-  const setInspectEntityDialogTab = useCallback(
-    (newTab: string) => setSearchParams(`inspect=${newTab}`),
-    [setSearchParams],
-  );
-
-  const openInspectEntityDialog = useCallback(
-    () => setSearchParams('inspect'),
-    [setSearchParams],
-  );
-
-  const closeInspectEntityDialog = useCallback(
-    () => setSearchParams(),
-    [setSearchParams],
-  );
-
-  const inspectDialogOpen = typeof selectedInspectEntityDialogTab === 'string';
 
   return (
     <Header
@@ -280,30 +141,7 @@ export function EntityHeader(props: {
       {entity && (
         <>
           <EntityLabels entity={entity} />
-          <EntityContextMenu
-            UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-            UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-            contextMenuItems={contextMenuItems}
-            onInspectEntity={openInspectEntityDialog}
-            onUnregisterEntity={openUnregisterEntityDialog}
-          />
-          <InspectEntityDialog
-            entity={entity!}
-            initialTab={
-              (selectedInspectEntityDialogTab as ComponentProps<
-                typeof InspectEntityDialog
-              >['initialTab']) || undefined
-            }
-            open={inspectDialogOpen}
-            onClose={closeInspectEntityDialog}
-            onSelect={setInspectEntityDialogTab}
-          />
-          <UnregisterEntityDialog
-            entity={entity!}
-            open={confirmationDialogOpen}
-            onClose={closeUnregisterEntityDialog}
-            onConfirm={cleanUpAfterUnregisterConfirmation}
-          />
+          {contextMenu}
         </>
       )}
     </Header>
