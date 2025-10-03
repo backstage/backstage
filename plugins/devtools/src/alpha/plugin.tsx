@@ -21,6 +21,8 @@ import {
   ApiBlueprint,
   PageBlueprint,
   NavItemBlueprint,
+  createExtensionInput,
+  coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
@@ -30,6 +32,7 @@ import {
 } from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
+import { contentTitleDataRef } from '@backstage/plugin-devtools-react';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
@@ -46,14 +49,35 @@ export const devToolsApi = ApiBlueprint.make({
 });
 
 /** @alpha */
-export const devToolsPage = PageBlueprint.make({
-  params: {
-    path: '/devtools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
-    loader: () =>
-      import('../components/DevToolsPage').then(m =>
-        compatWrapper(<m.DevToolsPage />),
-      ),
+export const devToolsPage = PageBlueprint.makeWithOverrides({
+  inputs: {
+    contents: createExtensionInput(
+      [
+        coreExtensionData.reactElement,
+        coreExtensionData.routePath,
+        coreExtensionData.routeRef.optional(),
+        contentTitleDataRef,
+      ],
+      {
+        optional: true,
+      },
+    ),
+  },
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      path: '/devtools',
+      routeRef: convertLegacyRouteRef(rootRouteRef),
+      loader: () => {
+        const extensions = inputs.contents.map(content => ({
+          path: content.get(coreExtensionData.routePath),
+          title: content.get(contentTitleDataRef),
+          children: content.get(coreExtensionData.reactElement),
+        }));
+        return import('../components/DevToolsPage').then(m =>
+          compatWrapper(<m.DevToolsPage extensions={extensions} />),
+        );
+      },
+    });
   },
 });
 
