@@ -23,3 +23,4 @@ export {
   type DevToolsRouteBlueprintParams,
   DevToolsContentBlueprint,
 } from './devToolsContentBlueprint.tsx';
+export { contentTitleDataRef } from './extensionData';

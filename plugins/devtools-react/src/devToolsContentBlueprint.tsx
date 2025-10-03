@@ -68,7 +68,6 @@ export const DevToolsContentBlueprint = createExtensionBlueprint({
     },
   },
   *factory(params: DevToolsRouteBlueprintParams, { node, config }) {
-    console.log('DevToolsContentBlueprint', params, config);
     const path = config.path ?? params.path;
     const title = config.title ?? params.title;
 

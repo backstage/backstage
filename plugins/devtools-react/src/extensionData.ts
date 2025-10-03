@@ -15,7 +15,7 @@
  */
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
 
-/** @internal */
+/** @public */
 export const contentTitleDataRef = createExtensionDataRef<string>().with({
   id: 'devtools.content-title',
 });
