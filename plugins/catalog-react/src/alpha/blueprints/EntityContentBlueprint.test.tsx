@@ -185,6 +185,9 @@ describe('EntityContentBlueprint', () => {
                   },
                 ],
               },
+              "icon": {
+                "type": "string",
+              },
               "path": {
                 "type": "string",
               },
@@ -237,6 +240,15 @@ describe('EntityContentBlueprint', () => {
               "optional": true,
             },
             "id": "catalog.entity-content-group",
+            "optional": [Function],
+            "toString": [Function],
+          },
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "catalog.entity-content-icon",
             "optional": [Function],
             "toString": [Function],
           },
