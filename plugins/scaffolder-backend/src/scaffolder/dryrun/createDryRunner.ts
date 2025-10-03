@@ -20,6 +20,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import type { UserEntity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -79,6 +80,7 @@ export type TemplateTesterCreateOptions = {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
+  config?: Config;
 };
 
 /**
@@ -105,6 +107,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           },
         }),
       ]),
+      config: options.config,
     });
 
     // Extracting contentsPath and dryRunId from the baseUrl
