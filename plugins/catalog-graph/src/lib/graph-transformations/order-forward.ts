@@ -52,7 +52,7 @@ export const orderForward: GraphTransformer = ({
         visitedNodes.add(currentNode);
       }
 
-      const nextNodes: string[] = [];
+      const nextNodes = new Set<string>();
 
       currentNodes.forEach(node => {
         entityEdges.get(node)?.forEach(edge => {
@@ -64,11 +64,12 @@ export const orderForward: GraphTransformer = ({
             edge.relations.reverse();
           }
 
-          nextNodes.push(edge.from, edge.to);
+          nextNodes.add(edge.from);
+          nextNodes.add(edge.to);
         });
       });
 
-      currentNodes = Array.from(new Set(nextNodes)).filter(
+      currentNodes = Array.from(nextNodes).filter(
         node => !visitedNodes.has(node),
       );
     }

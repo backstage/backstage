@@ -6,7 +6,6 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { Direction } from '@backstage/plugin-catalog-graph';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
@@ -100,8 +99,8 @@ const _default: OverridableFrontendPlugin<
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         title?: string | undefined;
         relations?: string[] | undefined;
-        maxDepth?: number | undefined;
         kinds?: string[] | undefined;
+        maxDepth?: number | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
@@ -173,8 +172,8 @@ const _default: OverridableFrontendPlugin<
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         relations?: string[] | undefined;
         rootEntityRefs?: string[] | undefined;
-        maxDepth?: number | undefined;
         kinds?: string[] | undefined;
+        maxDepth?: number | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
@@ -215,6 +214,14 @@ const _default: OverridableFrontendPlugin<
   }
 >;
 export default _default;
+
+// @public
+export enum Direction {
+  BOTTOM_TOP = 'BT',
+  LEFT_RIGHT = 'LR',
+  RIGHT_LEFT = 'RL',
+  TOP_BOTTOM = 'TB',
+}
 
 // (No @packageDocumentation comment for this package)
 ```

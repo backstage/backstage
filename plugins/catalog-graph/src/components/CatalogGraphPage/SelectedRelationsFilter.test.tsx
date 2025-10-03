@@ -25,16 +25,27 @@ import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ALL_RELATIONS } from '../../lib/types';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 function GraphContext(props: PropsWithChildren<{}>) {
   return (
     <ApiProvider
-      apis={TestApiRegistry.from([
-        catalogGraphApiRef,
-        new DefaultCatalogGraphApi(),
-      ])}
+      apis={TestApiRegistry.from(
+        [
+          catalogGraphApiRef,
+          new DefaultCatalogGraphApi({
+            config: mockApis.config(),
+          }),
+        ],
+        [discoveryApiRef, mockApis.discovery()],
+        [fetchApiRef, {}],
+      )}
     >
       {props.children}
     </ApiProvider>

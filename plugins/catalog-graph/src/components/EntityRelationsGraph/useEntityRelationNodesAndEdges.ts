@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MouseEvent, useState } from 'react';
-import useDebounce from 'react-use/esm/useDebounce';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { RelationPairs } from '../../lib/types';
 import { EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
@@ -27,6 +26,9 @@ import {
   GraphTransformer,
   TransformationContext,
 } from '../../lib/graph-transformations';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+
+type AnyTransformation = BuiltInTransformations | GraphTransformer;
 
 /**
  * Generate nodes and edges to render the entity graph.
@@ -41,6 +43,9 @@ export function useEntityRelationNodesAndEdges({
   entityFilter,
   onNodeClick,
   relationPairs: incomingRelationPairs,
+  transformations: userTransformations,
+  noDefaultTransformations = false,
+  entitySet,
 }: {
   rootEntityRefs: string[];
   maxDepth?: number;
@@ -51,16 +56,21 @@ export function useEntityRelationNodesAndEdges({
   entityFilter?: (entity: Entity) => boolean;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
+  transformations?: (GraphTransformer | BuiltInTransformations)[];
+  noDefaultTransformations?: boolean;
+  entitySet?: Entity[];
 }): {
   loading: boolean;
   nodes?: EntityNode[];
   edges?: EntityEdge[];
   error?: Error;
 } {
+  const errorApi = useApi(errorApiRef);
   const [nodesAndEdges, setNodesAndEdges] = useState<{
     nodes?: EntityNode[];
     edges?: EntityEdge[];
   }>({});
+
   const { entities, loading, error } = useEntityRelationGraph({
     rootEntityRefs,
     filter: {
@@ -69,6 +79,7 @@ export function useEntityRelationNodesAndEdges({
       relations,
       entityFilter,
     },
+    entitySet,
   });
 
   const { relationPairs, includeRelation } = useRelations({
@@ -76,99 +87,131 @@ export function useEntityRelationNodesAndEdges({
     relationPairs: incomingRelationPairs,
   });
 
-  useDebounce(
-    () => {
-      if (!entities || Object.keys(entities).length === 0) {
-        setNodesAndEdges({});
-        return;
+  const transformations = useMemo(() => {
+    return userTransformations?.filter(transformation => {
+      if (
+        typeof transformation !== 'function' &&
+        !builtInTransformations[transformation]
+      ) {
+        errorApi.post(
+          new Error(`Unknown graph transformation: ${transformation}`),
+        );
+        return false;
       }
+      return true;
+    });
+  }, [userTransformations, errorApi]);
 
-      const nodes = Object.entries(entities).map(([entityRef, entity]) => {
-        const focused = rootEntityRefs.includes(entityRef);
-        const node: EntityNode = {
-          id: entityRef,
-          entity,
-          focused,
-          color: focused ? 'secondary' : 'primary',
-          // @deprecated
-          kind: entity.kind,
-          name: entity.metadata.name,
-          namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-          title: entity.metadata.title,
-          spec: entity.spec,
-        };
+  const appliedTransformations = useMemo((): AnyTransformation[] => {
+    const curTransformations: AnyTransformation[] = [];
 
-        if (onNodeClick) {
-          node.onClick = event => onNodeClick(node, event);
-        }
-
-        return node;
-      });
-
-      const edges = buildGraph({
-        rootEntityRefs,
-        entities,
-        includeRelation,
-        kinds,
-        mergeRelations,
-        relationPairs,
-        unidirectional,
-      });
-
-      const transformationContext: TransformationContext = {
-        nodeDistances: new Map(),
-        edges,
-        nodes,
-
-        rootEntityRefs,
-        unidirectional,
-        maxDepth,
-      };
-
-      const runTransformation = (
-        transformation: BuiltInTransformations | GraphTransformer,
-      ) => {
-        if (typeof transformation === 'function') {
-          transformation(transformationContext);
-        } else {
-          builtInTransformations[transformation](transformationContext);
-        }
-      };
-
-      runTransformation('reduce-edges');
-      runTransformation('set-distances');
+    if (!noDefaultTransformations) {
+      curTransformations.push('reduce-edges');
+      curTransformations.push('set-distances');
       if (unidirectional) {
-        runTransformation('strip-distant-edges');
+        curTransformations.push('strip-distant-edges');
       }
       if (mergeRelations || unidirectional) {
         // Merge relations even if only unidirectional, the next transformer
         // 'remove-backward-edges' needs to know about all relations before it
         // strips away the backward ones
-        runTransformation('merge-relations');
+        curTransformations.push('merge-relations');
       }
       if (unidirectional && !mergeRelations) {
-        runTransformation('order-forward');
-        runTransformation('remove-backward-edges');
+        curTransformations.push('order-forward');
+        curTransformations.push('remove-backward-edges');
+      }
+    }
+
+    curTransformations.push(...(transformations ?? []));
+
+    return curTransformations;
+  }, [
+    transformations,
+    noDefaultTransformations,
+    unidirectional,
+    mergeRelations,
+  ]);
+
+  useEffect(() => {
+    if (loading || error) {
+      return;
+    }
+
+    const nodes = Object.entries(entities).map(([entityRef, entity]) => {
+      const focused = rootEntityRefs.includes(entityRef);
+      const node: EntityNode = {
+        id: entityRef,
+        entity,
+        focused,
+        color: focused ? 'secondary' : 'primary',
+        // @deprecated
+        kind: entity.kind,
+        name: entity.metadata.name,
+        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+        title: entity.metadata.title,
+        spec: entity.spec,
+      };
+
+      if (onNodeClick) {
+        node.onClick = event => onNodeClick(node, event);
       }
 
-      setNodesAndEdges({
-        nodes: transformationContext.nodes,
-        edges: transformationContext.edges,
-      });
-    },
-    100,
-    [
-      maxDepth,
-      entities,
+      return node;
+    });
+
+    const edges = buildGraph({
       rootEntityRefs,
-      kinds,
+      entities,
       includeRelation,
-      unidirectional,
+      kinds,
       mergeRelations,
-      onNodeClick,
       relationPairs,
-    ],
-  );
+      unidirectional,
+    });
+
+    const transformationContext: TransformationContext = {
+      nodeDistances: new Map(),
+      edges,
+      nodes,
+
+      rootEntityRefs,
+      unidirectional,
+      maxDepth,
+    };
+
+    const runTransformation = (
+      transformation: BuiltInTransformations | GraphTransformer,
+    ) => {
+      if (typeof transformation === 'function') {
+        transformation(transformationContext);
+      } else {
+        builtInTransformations[transformation](transformationContext);
+      }
+    };
+
+    for (const transformation of appliedTransformations) {
+      runTransformation(transformation);
+    }
+
+    setNodesAndEdges({
+      nodes: transformationContext.nodes,
+      edges: transformationContext.edges,
+    });
+  }, [
+    loading,
+    error,
+    maxDepth,
+    entities,
+    rootEntityRefs,
+    kinds,
+    includeRelation,
+    unidirectional,
+    mergeRelations,
+    onNodeClick,
+    relationPairs,
+    appliedTransformations,
+  ]);
 
   return {
     loading,

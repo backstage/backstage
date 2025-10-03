@@ -16,7 +16,12 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
-import { analyticsApiRef } from '@backstage/core-plugin-api';
+import {
+  analyticsApiRef,
+  configApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   EntityProvider,
@@ -40,8 +45,11 @@ import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 describe('<CatalogGraphCard/>', () => {
   let entity: Entity;
   let wrapper: JSX.Element;
-  const catalog = catalogApiMock.mock();
   let apis: TestApiRegistry;
+  const config = mockApis.config();
+  const fetchApi: typeof fetchApiRef.T = {
+    fetch: jest.fn(),
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -55,9 +63,12 @@ describe('<CatalogGraphCard/>', () => {
       },
     };
     apis = TestApiRegistry.from(
-      [catalogApiRef, catalog],
       [translationApiRef, mockApis.translation()],
-      [catalogGraphApiRef, new DefaultCatalogGraphApi()],
+      [configApiRef, config],
+      [discoveryApiRef, mockApis.discovery()],
+      [fetchApiRef, fetchApi],
+      [catalogApiRef, catalogApiMock()],
+      [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
     );
 
     wrapper = (
@@ -70,14 +81,17 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('renders without exploding', async () => {
-    catalog.getEntitiesByRefs.mockImplementation(async _ => ({
-      items: [
-        {
-          ...entity,
-          relations: [],
-        },
-      ],
-    }));
+    fetchApi.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        entities: [
+          {
+            ...entity,
+            relations: [],
+          },
+        ],
+      }),
+    });
 
     await renderInTestApp(wrapper, {
       mountedRoutes: {
@@ -88,21 +102,21 @@ describe('<CatalogGraphCard/>', () => {
 
     expect(await screen.findByText('b:d/c')).toBeInTheDocument();
     expect(await screen.findAllByTestId('node')).toHaveLength(1);
-    expect(catalog.getEntitiesByRefs).toHaveBeenCalledTimes(1);
-    expect(catalog.getEntitiesByRefs).toHaveBeenCalledWith(
-      expect.objectContaining({ entityRefs: ['b:d/c'] }),
-    );
+    expect(fetchApi.fetch).toHaveBeenCalled();
   });
 
   test('renders with custom title', async () => {
-    catalog.getEntitiesByRefs.mockImplementation(async _ => ({
-      items: [
-        {
-          ...entity,
-          relations: [],
-        },
-      ],
-    }));
+    fetchApi.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        entities: [
+          {
+            ...entity,
+            relations: [],
+          },
+        ],
+      }),
+    });
 
     await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -122,14 +136,17 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('renders with action attribute', async () => {
-    catalog.getEntitiesByRefs.mockImplementation(async _ => ({
-      items: [
-        {
-          ...entity,
-          relations: [],
-        },
-      ],
-    }));
+    fetchApi.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        entities: [
+          {
+            ...entity,
+            relations: [],
+          },
+        ],
+      }),
+    });
 
     await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -149,14 +166,17 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('renders link to standalone viewer', async () => {
-    catalog.getEntitiesByRefs.mockImplementation(async _ => ({
-      items: [
-        {
-          ...entity,
-          relations: [],
-        },
-      ],
-    }));
+    fetchApi.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        entities: [
+          {
+            ...entity,
+            relations: [],
+          },
+        ],
+      }),
+    });
 
     await renderInTestApp(wrapper, {
       mountedRoutes: {
@@ -175,14 +195,17 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('renders link to standalone viewer with custom config', async () => {
-    catalog.getEntitiesByRefs.mockImplementation(async _ => ({
-      items: [
-        {
-          ...entity,
-          relations: [],
-        },
-      ],
-    }));
+    fetchApi.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        entities: [
+          {
+            ...entity,
+            relations: [],
+          },
+        ],
+      }),
+    });
 
     await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -208,14 +231,17 @@ describe('<CatalogGraphCard/>', () => {
   });
 
   test('captures analytics event on click', async () => {
-    catalog.getEntitiesByRefs.mockImplementation(async _ => ({
-      items: [
-        {
-          ...entity,
-          relations: [],
-        },
-      ],
-    }));
+    fetchApi.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        entities: [
+          {
+            ...entity,
+            relations: [],
+          },
+        ],
+      }),
+    });
 
     const analyticsApi = mockApis.analytics();
     await renderInTestApp(
