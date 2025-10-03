@@ -62,21 +62,62 @@ const getContentTypeForExtension = (ext: string): string => {
   return mime.contentType(ext) || defaultContentType;
 };
 
+/**
+ * Helper to get the expected cache control for a given filename.
+ *
+ * Very conservative, only allow caching for hashed CSS files.
+ */
+const getCacheControlForFilename = (filename: string): string | undefined => {
+  // For *.{8chars}.min.css, allow client cache (will never change!)
+  return /^[^.]*\.[a-f0-9]{8}\.min\.css$/i.test(filename)
+    ? 'public, max-age=31536000, immutable'
+    : undefined;
+};
+
 export type responseHeadersType = {
   'Content-Type': string;
+  'Cache-Control'?: string;
 };
 
 /**
  * Some files need special headers to be used correctly by the frontend. This function
  * generates headers in the response to those file requests.
+ *
+ * It may be used to set the cache control for the file.
  * @param fileExtension - .html, .css, .js, .png etc.
+ * @deprecated Use getHeadersForFilename instead, as this function only receives the extension and cannot properly determine cache headers for hashed files.
  */
 export const getHeadersForFileExtension = (
   fileExtension: string,
 ): responseHeadersType => {
-  return {
+  const headers: responseHeadersType = {
     'Content-Type': getContentTypeForExtension(fileExtension),
   };
+
+  return headers;
+};
+
+/**
+ * Some files need special headers to be used correctly by the frontend. This function
+ * generates headers in the response to those file requests.
+ *
+ * It may be used to set the cache control for the file.
+ * @param filename - The full filename or path (e.g., 'main.8608ea7d.min.css', 'index.html', 'styles.css')
+ */
+export const getHeadersForFilename = (
+  filename: string,
+): responseHeadersType => {
+  const fileExtension = path.extname(filename);
+  const headers: responseHeadersType = {
+    'Content-Type': getContentTypeForExtension(fileExtension),
+  };
+
+  const cacheControl = getCacheControlForFilename(filename);
+  if (cacheControl) {
+    headers['Cache-Control'] = cacheControl;
+  }
+
+  return headers;
 };
 
 /**

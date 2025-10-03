@@ -25,15 +25,15 @@ import { assertError, ForwardedError } from '@backstage/errors';
 import express from 'express';
 import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
-import { default as path, default as platformPath } from 'path';
+import { default as path } from 'path';
 import {
-  bulkStorageOperation,
-  getCloudPathForLocalPath,
+  getHeadersForFilename,
   getFileTreeRecursively,
-  getHeadersForFileExtension,
+  getCloudPathForLocalPath,
+  bulkStorageOperation,
   lowerCaseEntityTriplet,
-  getStaleFiles,
   lowerCaseEntityTripletInStoragePath,
+  getStaleFiles,
 } from './helpers';
 import {
   PublisherBase,
@@ -349,8 +349,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
         : lowerCaseEntityTripletInStoragePath(decodedUri);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
-      const fileExtension = platformPath.extname(filePath);
-      const responseHeaders = getHeadersForFileExtension(fileExtension);
+      const responseHeaders = getHeadersForFilename(filePath);
 
       const blobClient = this.storageClient
         .getContainerClient(this.containerName)

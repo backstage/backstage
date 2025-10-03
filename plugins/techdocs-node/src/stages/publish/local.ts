@@ -40,7 +40,7 @@ import {
 } from './types';
 import {
   getFileTreeRecursively,
-  getHeadersForFileExtension,
+  getHeadersForFilename,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import { ForwardedError } from '@backstage/errors';
@@ -232,8 +232,7 @@ export class LocalPublish implements PublisherBase {
       express.static(this.staticDocsDir, {
         // Handle content-type header the same as all other publishers.
         setHeaders: (res, filePath) => {
-          const fileExtension = path.extname(filePath);
-          const headers = getHeadersForFileExtension(fileExtension);
+          const headers = getHeadersForFilename(filePath);
           for (const [header, value] of Object.entries(headers)) {
             res.setHeader(header, value);
           }
