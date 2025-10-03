@@ -62,6 +62,7 @@ import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SessionState } from '@backstage/core-plugin-api';
+import { SignalApi } from '@backstage/plugin-signals-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
@@ -272,13 +273,27 @@ export class AppThemeSelector implements AppThemeApi {
   // (undocumented)
   activeThemeId$(): Observable<string | undefined>;
   // (undocumented)
-  static createWithStorage(themes: AppTheme[]): AppThemeSelector;
+  static create(themes: AppTheme[]): AppThemeSelector;
+  // (undocumented)
+  static createWithStorage(
+    themes: AppTheme[],
+    storageApi: StorageApi,
+    errorApi: ErrorApi,
+    signalApi?: SignalApi,
+  ): AppThemeSelector;
+  destroy(): void;
   // (undocumented)
   getActiveThemeId(): string | undefined;
   // (undocumented)
   getInstalledThemes(): AppTheme[];
   // (undocumented)
   setActiveThemeId(themeId?: string): void;
+  // (undocumented)
+  setStorage(
+    storageApi: StorageApi,
+    errorApi: ErrorApi,
+    signalApi?: SignalApi,
+  ): void;
 }
 
 // @public
