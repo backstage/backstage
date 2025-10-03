@@ -16,4 +16,7 @@
 
 export * from './builtin';
 
-export { TemplateActionRegistry } from './TemplateActionRegistry';
+export {
+  type TemplateActionRegistry,
+  DefaultTemplateActionRegistry,
+} from './TemplateActionRegistry';
