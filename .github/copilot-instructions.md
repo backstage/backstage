@@ -14,7 +14,7 @@ The following files contain guidelines for the project:
 Before any of these commands can be run, you need to run `yarn install` in the project root.
 
 - Build: There is no need to build the project during development, and it is verified automatically in the CI pipeline.
-- Test: Use `yarn test <path>` in the project root to run tests. The path can be either a single file or a directory, and be omitted to run tests for all changed files.
+- Test: Use `yarn test --no-watch <path>` in the project root to run tests. The path can be either a single file or a directory. Always provide a path, avoid running all tests.
 - Type checking: Use `yarn tsc` in the project root to run the type checker.
 - Code formatting: Use `yarn prettier --write <path>` to format code.
 - Lint: Use `yarn lint --fix` in the project root to run the linter.

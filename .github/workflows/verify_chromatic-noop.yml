@@ -6,16 +6,8 @@ on:
   pull_request:
     paths-ignore:
       - '.github/workflows/verify_chromatic.yml'
-      - 'storybook/**'
-      - 'packages/config/src/**'
-      - 'packages/theme/src/**'
-      - 'packages/types/src/**'
-      - 'packages/errors/src/**'
-      - 'packages/version-bridge/src/**'
-      - 'packages/test-utils/src/**'
-      - 'packages/core-app-api/src/**'
-      - 'packages/core-plugin-api/src/**'
-      - 'packages/core-components/src/**'
+      - '.storybook/**'
+      - 'packages/ui/src/**'
       - '**/*.stories.tsx'
 
 permissions:

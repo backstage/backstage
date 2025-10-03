@@ -16,72 +16,56 @@
 
 import { Config } from '@backstage/config';
 import { base64url, decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
-import { readAccessRestrictionsFromConfig } from './helpers';
-import { AccessRestriptionsMap, TokenHandler } from './types';
 
-/**
- * Handles `type: legacy` access.
- *
- * @internal
- */
-export class LegacyTokenHandler implements TokenHandler {
-  #entries = new Array<{
-    key: Uint8Array;
-    result: {
-      subject: string;
-      allAccessRestrictions?: AccessRestriptionsMap;
-    };
-  }>();
+import { ExternalTokenHandler } from './types';
 
-  add(config: Config) {
-    const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
-    this.#doAdd(
-      config.getString('options.secret'),
-      config.getString('options.subject'),
-      allAccessRestrictions,
-    );
-  }
+export type LegacyConfigWrapper = {
+  legacy: boolean;
+  config: Config;
+};
 
-  // used only for the old backend.auth.keys array
-  addOld(config: Config) {
-    // This choice of subject is for compatibility reasons
-    this.#doAdd(config.getString('secret'), 'external:backstage-plugin');
-  }
+type LegacyTokenHandlerContext = {
+  key: Uint8Array;
 
-  #doAdd(
-    secret: string,
-    subject: string,
-    allAccessRestrictions?: AccessRestriptionsMap,
-  ) {
+  subject: string;
+};
+
+type LegacyTokenHandlerOverloaded =
+  ExternalTokenHandler<LegacyTokenHandlerContext> & {
+    initialize(ctx: {
+      options: Config;
+      legacy: true;
+    }): LegacyTokenHandlerContext;
+  };
+
+export const legacyTokenHandler: LegacyTokenHandlerOverloaded = {
+  type: 'legacy',
+  initialize(ctx: {
+    options: Config;
+    legacy?: true;
+  }): LegacyTokenHandlerContext {
+    const secret = ctx.options.getString('secret');
+    const subject = ctx.legacy
+      ? 'external:backstage-plugin'
+      : ctx.options.getString('subject');
+
     if (!secret.match(/^\S+$/)) {
       throw new Error('Illegal secret, must be a valid base64 string');
     } else if (!subject.match(/^\S+$/)) {
       throw new Error('Illegal subject, must be a set of non-space characters');
     }
 
-    let key: Uint8Array;
     try {
-      key = base64url.decode(secret);
+      return {
+        key: base64url.decode(secret),
+        subject,
+      };
     } catch {
       throw new Error('Illegal secret, must be a valid base64 string');
     }
+  },
 
-    if (this.#entries.some(e => e.key === key)) {
-      throw new Error(
-        'Legacy externalAccess token was declared more than once',
-      );
-    }
-
-    this.#entries.push({
-      key,
-      result: {
-        subject,
-        allAccessRestrictions,
-      },
-    });
-  }
-
-  async verifyToken(token: string) {
+  async verifyToken(token: string, context: LegacyTokenHandlerContext) {
     // First do a duck typing check to see if it remotely looks like a legacy token
     try {
       // We do a fair amount of checking upfront here. Since we aren't certain
@@ -102,19 +86,18 @@ export class LegacyTokenHandler implements TokenHandler {
       return undefined;
     }
 
-    for (const { key, result } of this.#entries) {
-      try {
-        await jwtVerify(token, key);
-        return result;
-      } catch (e) {
-        if (e.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
-          throw e;
-        }
-        // Otherwise continue to try the next key
+    try {
+      await jwtVerify(token, context.key);
+      return {
+        subject: context.subject,
+      };
+    } catch (error) {
+      if (error.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
+        throw error;
       }
     }
 
     // None of the signing keys matched
     return undefined;
-  }
-}
+  },
+};

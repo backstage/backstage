@@ -1,5 +1,13 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.3.3-next.0
+
+### Patch Changes
+
+- 2aded73: Allow for passing a `pagelen` parameter to configure the `pagelength` property of the `BitbucketCloudEntityProvider` `searchCode` pagination to resolve [bug](https://jira.atlassian.com/browse/BCLOUD-23644) pertaining to duplicate results being returned.
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+
 ## 0.3.2
 
 ### Patch Changes
