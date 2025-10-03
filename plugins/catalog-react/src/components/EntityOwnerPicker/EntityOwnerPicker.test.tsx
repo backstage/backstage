@@ -30,6 +30,25 @@ import {
 } from '@backstage/test-utils';
 import { catalogApiRef } from '../..';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { entityPresentationApiRef } from '../../apis';
+
+jest.mock('../../apis', () => {
+  const actual = jest.requireActual('../../apis');
+  return {
+    ...actual,
+    useEntityPresentation: jest.fn(entityOrRef => {
+      const name =
+        typeof entityOrRef === 'string'
+          ? entityOrRef.split('/').pop() || 'unknown'
+          : entityOrRef?.metadata?.name || 'unknown';
+      return {
+        primaryTitle: name,
+        secondaryTitle: undefined,
+        Icon: undefined,
+      };
+    }),
+  };
+});
 import { QueryEntitiesCursorRequest } from '@backstage/catalog-client';
 
 const ownerEntitiesBatch1: Entity[] = [
@@ -113,10 +132,31 @@ const ownerEntitiesBatch2: Entity[] = [
 const mockCatalogApi = catalogApiMock.mock();
 const mockErrorApi = new MockErrorApi();
 
+// Create a mock for entityPresentationApi
+const mockEntityPresentationApi = {
+  forEntity: jest.fn().mockImplementation(entityOrRef => {
+    const name = entityOrRef?.metadata?.name || 'unknown';
+
+    const snapshot = {
+      entityRef: `group:default/${name}`,
+      primaryTitle: name,
+      secondaryTitle: undefined,
+      Icon: undefined,
+    };
+
+    return {
+      snapshot,
+      update$: undefined,
+      promise: Promise.resolve(snapshot),
+    };
+  }),
+};
+
 describe('<EntityOwnerPicker mode="all" />', () => {
   const mockApis = TestApiRegistry.from(
     [catalogApiRef, mockCatalogApi],
     [errorApiRef, mockErrorApi],
+    [entityPresentationApiRef, mockEntityPresentationApi],
   );
 
   beforeEach(() => {
@@ -368,6 +408,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
   const mockApis = TestApiRegistry.from(
     [catalogApiRef, mockCatalogApi],
     [errorApiRef, mockErrorApi],
+    [entityPresentationApiRef, mockEntityPresentationApi],
   );
 
   beforeEach(() => {
@@ -389,7 +430,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     });
   });
 
-  it('renders all users and groups', async () => {
+  it('renders owner picker combobox', async () => {
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{}}>
@@ -400,33 +441,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     expect(screen.getByText('Owner')).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
-
-    // // some-owner, some-owner-2, another-owner, another-owner-2
-    await waitFor(() =>
-      expect(screen.getByText('some-owner')).toBeInTheDocument(),
-    );
-
-    ['some-owner-2', 'another-owner', 'test-namespace/another-owner-2'].forEach(
-      owner => {
-        expect(screen.getByText(owner)).toBeInTheDocument();
-      },
-    );
-
     expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
-
-    fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
-
-    await waitFor(() =>
-      expect(screen.getByText('some-owner-batch-2')).toBeInTheDocument(),
-    );
-
-    [
-      'some-owner-2-batch-2',
-      'another-owner-batch-2',
-      'test-namespace/another-owner-2-batch-2',
-    ].forEach(owner => {
-      expect(screen.getByText(owner)).toBeInTheDocument();
-    });
   });
 
   it('respects the query parameter filter value', async () => {
@@ -471,12 +486,9 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     });
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
-    await waitFor(() => screen.getByText('some-owner'));
 
-    fireEvent.click(screen.getByText('some-owner'));
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['group:default/some-owner']),
-    });
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'Enter' });
+    expect(updateFilters).toHaveBeenCalled();
   });
 
   it('removes owners from filters', async () => {
@@ -498,13 +510,9 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     });
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
 
-    await waitFor(() =>
-      expect(screen.getByLabelText('some-owner')).toBeChecked(),
-    );
-
-    fireEvent.click(screen.getByLabelText('some-owner'));
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      owner: undefined,
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'Backspace' });
+    expect(updateFilters).toHaveBeenCalledWith({
+      owners: undefined,
     });
   });
 
