@@ -87,15 +87,19 @@ export const ProviderSettingsItem = (props: {
   }, [api]);
 
   return (
-    <ListItem>
+    <ListItem divider>
       <ListItemIcon>
         <Icon />
       </ListItemIcon>
       <ListItemText
-        primary={title}
+        primary={
+          <Typography variant="subtitle1" color="textPrimary" gutterBottom>
+            {title}
+          </Typography>
+        }
         secondary={
           <Tooltip placement="top" arrow title={description}>
-            <Grid container spacing={6}>
+            <Grid container spacing={3}>
               <Grid item>
                 <ProviderSettingsAvatar size={48} picture={profile.picture} />
               </Grid>
@@ -116,7 +120,11 @@ export const ProviderSettingsItem = (props: {
                         {profile.email}
                       </Typography>
                     )}
-                    <Typography variant="body2" color="textSecondary">
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      gutterBottom
+                    >
                       {description}
                     </Typography>
                   </Grid>
@@ -125,7 +133,9 @@ export const ProviderSettingsItem = (props: {
             </Grid>
           </Tooltip>
         }
-        secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
+        secondaryTypographyProps={{
+          style: { width: '80%', whiteSpace: 'normal' },
+        }}
       />
       <ListItemSecondaryAction>
         <Tooltip
