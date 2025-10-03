@@ -153,21 +153,20 @@ const createBitbucketServerRepository = async (opts: {
 };
 
 const getAuthorizationHeader = (config: BitbucketIntegrationConfig) => {
-  if (config.username && config.appPassword) {
-    const buffer = Buffer.from(
-      `${config.username}:${config.appPassword}`,
-      'utf8',
-    );
-
-    return `Basic ${buffer.toString('base64')}`;
-  }
-
   if (config.token) {
     return `Bearer ${config.token}`;
   }
 
+  if (config.username && (config.token ?? config.appPassword)) {
+    const buffer = Buffer.from(
+      `${config.username}:${config.token ?? config.appPassword}`,
+      'utf8',
+    );
+    return `Basic ${buffer.toString('base64')}`;
+  }
+
   throw new Error(
-    `Authorization has not been provided for Bitbucket. Please add either username + appPassword or token to the Integrations config`,
+    `Authorization has not been provided for Bitbucket. Please add either provide a username + token or  username + appPassword to the Integrations config`,
   );
 };
 

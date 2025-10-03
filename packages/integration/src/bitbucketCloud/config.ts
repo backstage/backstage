@@ -62,21 +62,32 @@ export type BitbucketCloudIntegrationConfig = {
  * @param config - The config object of a single integration
  * @public
  */
+
 export function readBitbucketCloudIntegrationConfig(
   config: Config,
 ): BitbucketCloudIntegrationConfig {
   const host = BITBUCKET_CLOUD_HOST;
   const apiBaseUrl = BITBUCKET_CLOUD_API_BASE_URL;
-  // If config is provided, we assume authenticated access is desired
-  // (as the anonymous one is provided by default).
+
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
   const username = config.getString('username');
-  const appPassword = config.getString('appPassword')?.trim();
+  const appPassword = config.getOptionalString('appPassword')?.trim();
+  // TODO: token will become required string once appPassword fully deprecated
+  const token = config.getOptionalString('token');
+
+  if (!token && (!username || !appPassword)) {
+    throw new Error(
+      `Bitbucket Cloud integration must configure either a token or appPassword.`,
+    );
+  }
 
   return {
     host,
     apiBaseUrl,
     username,
     appPassword,
+    token,
     commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }

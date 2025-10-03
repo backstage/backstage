@@ -21,22 +21,22 @@ export const getBitbucketClient = (config: {
   username?: string;
   appPassword?: string;
 }) => {
-  if (config.username && config.appPassword) {
+  if (config.token) {
+    return new Bitbucket({
+      auth: {
+        token: config.token,
+      },
+    });
+  } else if (config.username && config.appPassword) {
     return new Bitbucket({
       auth: {
         username: config.username,
         password: config.appPassword,
       },
     });
-  } else if (config.token) {
-    return new Bitbucket({
-      auth: {
-        token: config.token,
-      },
-    });
   }
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
+    `Authorization has not been provided for Bitbucket Cloud. Please add either provide a username + token or  username + appPassword to the Integrations config`,
   );
 };
 
@@ -45,20 +45,19 @@ export const getAuthorizationHeader = (config: {
   appPassword?: string;
   token?: string;
 }) => {
-  if (config.username && config.appPassword) {
-    const buffer = Buffer.from(
-      `${config.username}:${config.appPassword}`,
-      'utf8',
-    );
-
-    return `Basic ${buffer.toString('base64')}`;
-  }
-
   if (config.token) {
     return `Bearer ${config.token}`;
   }
 
+  if (config.username && (config.token ?? config.appPassword)) {
+    const buffer = Buffer.from(
+      `${config.username}:${config.token ?? config.appPassword}`,
+      'utf8',
+    );
+    return `Basic ${buffer.toString('base64')}`;
+  }
+
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
+    `Authorization has not been provided for Bitbucket Cloud. Please add either provide a username + token or  username + appPassword to the Integrations config`,
   );
 };
