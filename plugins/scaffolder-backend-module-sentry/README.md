@@ -4,6 +4,9 @@ Welcome to the Sentry Module for Scaffolder.
 
 Here you can find all Sentry related features to improve your scaffolder:
 
+- Create a Sentry Project
+- Fetch the DSN for an existing Sentry Project
+
 ## Getting started
 
 You need to configure the action in your backend:
@@ -111,6 +114,14 @@ spec:
         organizationSlug: ORG-SLUG
         teamSlug: TEAM-SLUG
         name: ${{ parameters.name }}
+
+    - id: fetch-sentry-dsn
+      if: ${{ parameters.dryRun !== true }}
+      name: Get the DSN of the newly created Sentry Project
+      action: sentry:fetch:dsn
+      input:
+        organizationSlug: ORG-SLUG
+        projectSlug: ${{ parameters.name }}
 
     - id: publish
       if: ${{ parameters.dryRun !== true }}
