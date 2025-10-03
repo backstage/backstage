@@ -15,7 +15,9 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SearchFilterBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
+import { SearchFilterResultTypeBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -118,6 +120,7 @@ const _default: OverridableFrontendPlugin<
           ConfigurableExtensionDataRef<
             {
               component: SearchFilterExtensionComponent;
+              typeFilter?: (types: string[]) => boolean;
             },
             'search.filters.filter',
             {}
@@ -136,6 +139,100 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
+    }>;
+    'search-filter:search/entity-kind-filter': ExtensionDefinition<{
+      kind: 'search-filter';
+      name: 'entity-kind-filter';
+      config: {
+        types: string[] | undefined;
+      };
+      configInput: {
+        types?: string[] | undefined;
+      };
+      output: ExtensionDataRef<
+        {
+          component: SearchFilterExtensionComponent;
+          typeFilter?: (types: string[]) => boolean;
+        },
+        'search.filters.filter',
+        {}
+      >;
+      inputs: {};
+      params: SearchFilterBlueprintParams;
+    }>;
+    'search-filter:search/lifecycle-filter': ExtensionDefinition<{
+      kind: 'search-filter';
+      name: 'lifecycle-filter';
+      config: {
+        types: string[] | undefined;
+      };
+      configInput: {
+        types?: string[] | undefined;
+      };
+      output: ExtensionDataRef<
+        {
+          component: SearchFilterExtensionComponent;
+          typeFilter?: (types: string[]) => boolean;
+        },
+        'search.filters.filter',
+        {}
+      >;
+      inputs: {};
+      params: SearchFilterBlueprintParams;
+    }>;
+    'search-filter:search/techdocs-relevant-entities-filter': ExtensionDefinition<{
+      kind: 'search-filter';
+      name: 'techdocs-relevant-entities-filter';
+      config: {
+        types: string[] | undefined;
+      };
+      configInput: {
+        types?: string[] | undefined;
+      };
+      output: ExtensionDataRef<
+        {
+          component: SearchFilterExtensionComponent;
+          typeFilter?: (types: string[]) => boolean;
+        },
+        'search.filters.filter',
+        {}
+      >;
+      inputs: {};
+      params: SearchFilterBlueprintParams;
+    }>;
+    'search-filter-result-type:search/software-catalog': ExtensionDefinition<{
+      kind: 'search-filter-result-type';
+      name: 'software-catalog';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          value: string;
+          name: string;
+          icon: JSX.Element;
+        },
+        'search.filters.result-types.type',
+        {}
+      >;
+      inputs: {};
+      params: SearchFilterResultTypeBlueprintParams;
+    }>;
+    'search-filter-result-type:search/techdocs': ExtensionDefinition<{
+      kind: 'search-filter-result-type';
+      name: 'techdocs';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          value: string;
+          name: string;
+          icon: JSX.Element;
+        },
+        'search.filters.result-types.type',
+        {}
+      >;
+      inputs: {};
+      params: SearchFilterResultTypeBlueprintParams;
     }>;
   }
 >;
@@ -237,6 +334,7 @@ export const searchPage: ExtensionDefinition<{
       ConfigurableExtensionDataRef<
         {
           component: SearchFilterExtensionComponent;
+          typeFilter?: (types: string[]) => boolean;
         },
         'search.filters.filter',
         {}

@@ -62,4 +62,10 @@ export type SearchFilterExtensionComponent = (
 /** @alpha */
 export const searchFilterDataRef = createExtensionDataRef<{
   component: SearchFilterExtensionComponent;
+  /**
+   * The filter will only be shown if this predicate returns true.
+   *
+   * @param types - the currently selected result types
+   */
+  typeFilter?: (types: string[]) => boolean;
 }>().with({ id: 'search.filters.filter' });
