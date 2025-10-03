@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.7.2-next.2
+
+### Patch Changes
+
+- 5c21e45: Add react router for internal routing for ButtonLinks
+
 ## 0.7.2-next.1
 
 ### Patch Changes
