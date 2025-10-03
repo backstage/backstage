@@ -136,7 +136,7 @@ describe('MemberTab Test', () => {
 
     expect(screen.getByText('Super Awesome Developer')).toBeInTheDocument();
 
-    expect(screen.getByText('Members (1)')).toBeInTheDocument();
+    expect(screen.getByText('Members (1 of 1)')).toBeInTheDocument();
   });
 
   it('Can render different member display title', async () => {
@@ -154,7 +154,7 @@ describe('MemberTab Test', () => {
       },
     );
 
-    expect(screen.getByText('Testers (1)')).toBeInTheDocument();
+    expect(screen.getByText('Testers (1 of 1)')).toBeInTheDocument();
   });
 
   it('Can query a different relationship', async () => {
@@ -434,5 +434,57 @@ describe('MemberTab Test', () => {
     // Should show all descendant users on load
     const displayedMemberNames = screen.queryAllByTestId('user-link');
     expect(displayedMemberNames).toHaveLength(5);
+  });
+
+  describe('Search', () => {
+    it('filters members by name', async () => {
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={groupEntity}>
+            <MembersListCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/catalog': rootRouteRef,
+          },
+        },
+      );
+
+      // type into the search field
+      await userEvent.type(screen.getByPlaceholderText(/search/i), 'Tara');
+
+      // Tara should show
+      expect(await screen.findByText('Tara MacGovern')).toBeInTheDocument();
+
+      // Someone else not in results should be missing
+      expect(screen.queryByText('Nigel Manning')).not.toBeInTheDocument();
+    });
+
+    it('shows no members message when search yields no results', async () => {
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={groupEntity}>
+            <MembersListCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/catalog': rootRouteRef,
+          },
+        },
+      );
+
+      await userEvent.type(
+        screen.getByPlaceholderText(/search/i),
+        'XYZDoesNotExist',
+      );
+
+      expect(
+        screen.getByText(/This group has no members./i),
+      ).toBeInTheDocument();
+    });
   });
 });
