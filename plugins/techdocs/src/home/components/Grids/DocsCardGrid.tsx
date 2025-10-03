@@ -23,6 +23,7 @@ import {
   ItemCardGrid,
   ItemCardHeader,
 } from '@backstage/core-components';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -55,7 +56,7 @@ export const DocsCardGrid = (props: DocsCardGridProps) => {
             <Card key={index}>
               <CardMedia>
                 <ItemCardHeader
-                  title={entity.metadata.title ?? entity.metadata.name}
+                  title={<EntityDisplayName entityRef={entity} hideIcon />}
                 />
               </CardMedia>
               <CardContent>{entity.metadata.description}</CardContent>

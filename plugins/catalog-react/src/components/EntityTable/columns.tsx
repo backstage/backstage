@@ -25,7 +25,6 @@ import { getEntityRelations } from '../../utils';
 import {
   EntityRefLink,
   EntityRefLinks,
-  humanizeEntityRef,
 } from '../EntityRefLink';
 import { EntityTableColumnTitle } from './TitleColumn';
 
@@ -38,9 +37,8 @@ export const columnFactories = Object.freeze({
     function formatContent(entity: T): string {
       return (
         entity.metadata?.title ||
-        humanizeEntityRef(entity, {
-          defaultKind,
-        })
+        entity.metadata?.name ||
+        ''
       );
     }
 
@@ -83,8 +81,10 @@ export const columnFactories = Object.freeze({
     }
 
     function formatContent(entity: T): string {
+      // For relation columns, we'll use EntityRefLinks which handles the presentation properly
+      // This formatContent is mainly for filtering, so we'll use the ref strings
       return getRelations(entity)
-        .map(r => humanizeEntityRef(r, { defaultKind }))
+        .map(r => `${r.kind}:${r.namespace}/${r.name}`)
         .join(', ');
     }
 
