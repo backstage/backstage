@@ -28,6 +28,7 @@ import {
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
+import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
 
 async function generate(
   outputDirectory: string,
@@ -99,6 +100,14 @@ async function generate(
     await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
     });
+  }
+
+  // Deduplicate imports in generated files
+  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
+  for (const file of generatedFiles) {
+    if (file.endsWith('.ts')) {
+      deduplicateImports(resolve(resolvedOutputDirectory, file));
+    }
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
