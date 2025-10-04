@@ -280,4 +280,108 @@ describe('confluence:transform:markdown', () => {
       await action.handler(mockContext);
     }).rejects.toThrow('Request failed with 404 nope');
   });
+
+  it('uses page id when present', async () => {
+    const options = { reader, integrations, config };
+    const ctxWithId = createMockActionContext({
+      input: {
+        confluenceUrls: [
+          'https://nodomain.confluence.com/spaces/testing/pages/5555555/mkdocs',
+        ],
+        repoUrl:
+          'https://notreal.github.com/space/backstage/blob/main/mkdocs.yml',
+      },
+      workspacePath,
+    });
+    jest.spyOn(ctxWithId.logger, 'info');
+    mockDir.setContent({ 'workspace/mkdocs.yml': 'File contents' });
+
+    const emptySearch = { results: [] };
+    const byIdResponse = {
+      id: '5555555',
+      type: 'page',
+      title: 'Testing',
+      body: { export_view: { value: '<p>hello by id after empty search</p>' } },
+    };
+
+    worker.use(
+      // ID-first path
+      rest.get(`${baseUrl}/rest/api/content/5555555`, (_, res, ctx) =>
+        res(ctx.status(200, 'OK'), ctx.json(byIdResponse)),
+      ),
+      // No attachments
+      rest.get(
+        `${baseUrl}/rest/api/content/5555555/child/attachment`,
+        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json({ results: [] })),
+      ),
+      // Title+space endpoint provided but not used in this flow
+      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+        res(ctx.status(200, 'OK'), ctx.json(emptySearch)),
+      ),
+    );
+
+    const action = createConfluenceToMarkdownAction(options);
+    await action.handler(ctxWithId);
+
+    expect(ctxWithId.logger.info).toHaveBeenCalledWith(
+      `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/blob/main/mkdocs.yml`,
+    );
+    expect(mockDir.content({ path: 'workspace/docs' })).toEqual({
+      'mkdocs.md': 'hello by id after empty search',
+    });
+  });
+
+  it('falls back to title+space when pageId fetch fails', async () => {
+    const options = { reader, integrations, config };
+    const ctxWithId = createMockActionContext({
+      input: {
+        confluenceUrls: [
+          'https://nodomain.confluence.com/spaces/testing/pages/7777777/mkdocs',
+        ],
+        repoUrl:
+          'https://notreal.github.com/space/backstage/blob/main/mkdocs.yml',
+      },
+      workspacePath,
+    });
+    jest.spyOn(ctxWithId.logger, 'info');
+    mockDir.setContent({ 'workspace/mkdocs.yml': 'File contents' });
+
+    const byTitleResponse = {
+      results: [
+        {
+          id: '8888888',
+          type: 'page',
+          title: 'Testing',
+          body: { export_view: { value: '<p>hello by title</p>' } },
+        },
+      ],
+    };
+    const attachments = { results: [] };
+
+    worker.use(
+      // ID-first fails
+      rest.get(`${baseUrl}/rest/api/content/7777777`, (_, res, ctx) =>
+        res(ctx.status(404, 'nope'), ctx.json({})),
+      ),
+      // Fallback to title+space succeeds
+      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+        res(ctx.status(200, 'OK'), ctx.json(byTitleResponse)),
+      ),
+      // Attachments for the page returned by title+space
+      rest.get(
+        `${baseUrl}/rest/api/content/8888888/child/attachment`,
+        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json(attachments)),
+      ),
+    );
+
+    const action = createConfluenceToMarkdownAction(options);
+    await action.handler(ctxWithId);
+
+    expect(ctxWithId.logger.info).toHaveBeenCalledWith(
+      `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/blob/main/mkdocs.yml`,
+    );
+    expect(mockDir.content({ path: 'workspace/docs' })).toEqual({
+      'mkdocs.md': 'hello by title',
+    });
+  });
 });
