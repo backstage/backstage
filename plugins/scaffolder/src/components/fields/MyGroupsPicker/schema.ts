@@ -15,6 +15,7 @@
  */
 
 import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
+import { createEntityQueryFilterExpressionSchema } from '../EntityPicker/schema.ts';
 
 /**
  * Field schema for the MyGroupsPicker.
@@ -23,8 +24,15 @@ import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
 export const MyGroupsPickerFieldSchema = makeFieldSchema({
   output: z => z.string(),
+  uiOptions: z =>
+    z.object({
+      catalogFilter: (t => t.or(t.array()))(
+        createEntityQueryFilterExpressionSchema(z),
+      )
+        .optional()
+        .describe('List of key-value filter expression for entities'),
+    }),
 });
-
 /**
  * UI options for the MyGroupsPicker.
  * @public
