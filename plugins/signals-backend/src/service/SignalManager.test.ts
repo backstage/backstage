@@ -138,7 +138,7 @@ describe('SignalManager', () => {
     expect(ws.data.length).toEqual(1);
   });
 
-  it('should only send to users from identity', async () => {
+  it('should only send to users from identity using legacy type', async () => {
     // Connection without identity
     const ws1 = new MockWebSocket();
     manager.addConnection(ws1 as unknown as WebSocket);
@@ -173,6 +173,54 @@ describe('SignalManager', () => {
       topic: 'signals',
       eventPayload: {
         recipients: { type: 'user', entityRef: 'user:default/john.doe' },
+        channel: 'test',
+        message: { msg: 'test' },
+      },
+    });
+
+    expect(ws1.data.length).toEqual(0);
+    expect(ws3.data.length).toEqual(0);
+    expect(ws2.data.length).toEqual(1);
+    expect(ws2.data[0]).toEqual(
+      JSON.stringify({ channel: 'test', message: { msg: 'test' } }),
+    );
+  });
+
+  it('should only send to users from identity', async () => {
+    // Connection without identity
+    const ws1 = new MockWebSocket();
+    manager.addConnection(ws1 as unknown as WebSocket);
+
+    // Connection with identity and subscription
+    const ws2 = new MockWebSocket();
+    manager.addConnection(ws2 as unknown as WebSocket, {
+      ownershipEntityRefs: ['user:default/john.doe'],
+      userEntityRef: 'user:default/john.doe',
+    });
+
+    // Connection without subscription
+    const ws3 = new MockWebSocket();
+    manager.addConnection(ws3 as unknown as WebSocket, {
+      ownershipEntityRefs: ['user:default/john.doe'],
+      userEntityRef: 'user:default/john.doe',
+    });
+
+    ws1.trigger(
+      'message',
+      JSON.stringify({ action: 'subscribe', channel: 'test' }),
+      false,
+    );
+
+    ws2.trigger(
+      'message',
+      JSON.stringify({ action: 'subscribe', channel: 'test' }),
+      false,
+    );
+
+    await onEvent({
+      topic: 'signals',
+      eventPayload: {
+        recipients: { type: 'users', entityRefs: ['user:default/john.doe'] },
         channel: 'test',
         message: { msg: 'test' },
       },

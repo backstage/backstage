@@ -23,6 +23,10 @@ export class DefaultSignalsService implements SignalsService {
 export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
   recipients:
     | {
+        type: 'users';
+        entityRefs: string[];
+      }
+    | {
         type: 'user';
         entityRef: string | string[];
       }

@@ -21,8 +21,8 @@ import { createRouter } from './router';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
   mockCredentials,
-  mockServices,
   mockErrorHandler,
+  mockServices,
 } from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
@@ -101,7 +101,7 @@ describe('createRouter', () => {
         key: 'my-key',
       });
       expect(signalService.publish).toHaveBeenCalledWith({
-        recipients: { type: 'user', entityRef: mockUserRef },
+        recipients: { type: 'users', entityRefs: [mockUserRef] },
         channel: `user-settings`,
         message: { type: 'key-deleted', key: 'my-key' },
       });
@@ -145,7 +145,7 @@ describe('createRouter', () => {
         key: 'my-key',
       });
       expect(signalService.publish).toHaveBeenCalledWith({
-        recipients: { type: 'user', entityRef: mockUserRef },
+        recipients: { type: 'users', entityRefs: [mockUserRef] },
         channel: `user-settings`,
         message: { type: 'key-changed', key: 'my-key' },
       });

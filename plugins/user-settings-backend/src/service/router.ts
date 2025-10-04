@@ -78,7 +78,7 @@ export async function createRouter(options: {
 
     if (options.signals) {
       await options.signals.publish<UserSettingsSignal>({
-        recipients: { type: 'user', entityRef: userEntityRef },
+        recipients: { type: 'users', entityRefs: [userEntityRef] },
         channel: `user-settings`,
         message: { type: 'key-changed', key },
       });
@@ -95,7 +95,7 @@ export async function createRouter(options: {
     await options.userSettingsStore.delete({ userEntityRef, bucket, key });
     if (options.signals) {
       await options.signals.publish<UserSettingsSignal>({
-        recipients: { type: 'user', entityRef: userEntityRef },
+        recipients: { type: 'users', entityRefs: [userEntityRef] },
         channel: 'user-settings',
         message: { type: 'key-deleted', key },
       });
