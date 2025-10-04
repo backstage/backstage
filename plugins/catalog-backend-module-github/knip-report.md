@@ -1,17 +1,5 @@
 # Knip report
 
-## Unused dependencies (2)
-
-| Name                              | Location     | Severity |
-| :-------------------------------- | :----------- | :------- |
-| @backstage/plugin-catalog-backend | plugins/catalog-backend-module-github/package.json | error    |
-| @backstage/catalog-client         | plugins/catalog-backend-module-github/package.json | error    |
-
-## Unused devDependencies (1)
-
-| Name  | Location     | Severity |
-| :---- | :----------- | :------- |
-| luxon | plugins/catalog-backend-module-github/package.json | error    |
 
 ## Unlisted dependencies (4)
 
