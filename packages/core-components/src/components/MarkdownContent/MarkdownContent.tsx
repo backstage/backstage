@@ -20,6 +20,7 @@ import gfm from 'remark-gfm';
 import { Children, createElement } from 'react';
 import { CodeSnippet } from '../CodeSnippet';
 import { HeadingProps } from 'react-markdown/lib/ast-to-react';
+import rehypeRaw from 'rehype-raw'; // 1. IMPORT rehype-raw
 
 export type MarkdownContentClassKey = 'markdown';
 
@@ -71,6 +72,7 @@ type Props = {
   transformLinkUri?: (href: string) => string;
   transformImageUri?: (href: string) => string;
   className?: string;
+  allowUnsafeHtml?: boolean; // 2. ADD the new optional prop
 };
 
 const flatten = (text: string, child: any): string => {
@@ -122,11 +124,17 @@ export function MarkdownContent(props: Props) {
     transformLinkUri,
     transformImageUri,
     className,
+    allowUnsafeHtml = false, // 3. DESTRUCTURE the prop with a default value
   } = props;
   const classes = useStyles();
+
+  // 4. CONDITIONALLY define the rehype plugins array
+  const rehypePlugins = allowUnsafeHtml ? [rehypeRaw] : [];
+
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
+      rehypePlugins={rehypePlugins} // 5. PASS the plugins to the component
       className={`${classes.markdown} ${className ?? ''}`.trim()}
       children={content}
       components={components}
