@@ -23,6 +23,7 @@ import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
+import { InstanceMetadataService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import Keyv from 'keyv';
 import { Knex } from 'knex';
@@ -260,6 +261,21 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<HttpRouterService> | undefined,
       ) => ServiceMock<HttpRouterService>;
+  }
+  // (undocumented)
+  export function instanceMetadata(): InstanceMetadataService;
+  // (undocumented)
+  export namespace instanceMetadata {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<InstanceMetadataService> | undefined,
+      ) => ServiceMock<InstanceMetadataService>;
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        InstanceMetadataService,
+        'plugin',
+        'singleton' | 'multiton'
+      >;
   }
   // (undocumented)
   export namespace lifecycle {

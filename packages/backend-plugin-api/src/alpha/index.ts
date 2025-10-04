@@ -15,11 +15,6 @@
  */
 
 export type {
-  BackendFeatureMeta,
-  InstanceMetadataService,
-} from './InstanceMetadataService';
-
-export type {
   ActionsRegistryService,
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
@@ -27,8 +22,4 @@ export type {
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
-export {
-  actionsRegistryServiceRef,
-  actionsServiceRef,
-  instanceMetadataServiceRef,
-} from './refs';
+export { actionsRegistryServiceRef, actionsServiceRef } from './refs';

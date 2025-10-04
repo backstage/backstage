@@ -36,14 +36,12 @@ import type {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
-import {
-  instanceMetadataServiceRef,
-  BackendFeatureMeta,
-} from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
-import { unwrapFeature } from './helpers';
+import { deepFreeze, unwrapFeature } from './helpers';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type { InstanceMetadataServicePluginInfo } from '../../../backend-plugin-api/src/services/definitions/InstanceMetadataService';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -104,53 +102,59 @@ const instanceRegistry = new (class InstanceRegistry {
 function createInstanceMetadataServiceFactory(
   registrations: InternalBackendRegistrations[],
 ) {
-  const installedFeatures = registrations
-    .map(registration => {
-      if (registration.featureType === 'registrations') {
-        return registration
-          .getRegistrations()
-          .map(feature => {
-            if (feature.type === 'plugin') {
-              return Object.defineProperty(
-                {
-                  type: 'plugin',
-                  pluginId: feature.pluginId,
-                },
-                'toString',
-                {
-                  enumerable: false,
-                  configurable: true,
-                  value: () => `plugin{pluginId=${feature.pluginId}}`,
-                },
-              );
-            } else if (feature.type === 'module') {
-              return Object.defineProperty(
-                {
-                  type: 'module',
-                  pluginId: feature.pluginId,
-                  moduleId: feature.moduleId,
-                },
-                'toString',
-                {
-                  enumerable: false,
-                  configurable: true,
-                  value: () =>
-                    `module{moduleId=${feature.moduleId},pluginId=${feature.pluginId}}`,
-                },
-              );
-            }
-            // Ignore unknown feature types.
-            return undefined;
-          })
-          .filter(Boolean) as BackendFeatureMeta[];
+  const installedPlugins: {
+    [pluginId: string]: InstanceMetadataServicePluginInfo;
+  } = {};
+  for (const registration of registrations) {
+    if (registration.featureType === 'registrations') {
+      for (const feature of registration.getRegistrations()) {
+        if (feature.type === 'plugin') {
+          if (!installedPlugins[feature.pluginId]) {
+            installedPlugins[feature.pluginId] = {
+              pluginId: feature.pluginId,
+              modules: [],
+            };
+          }
+        } else if (feature.type === 'module') {
+          if (!installedPlugins[feature.pluginId]) {
+            installedPlugins[feature.pluginId] = {
+              pluginId: feature.pluginId,
+              modules: [],
+            };
+          }
+          (
+            installedPlugins[feature.pluginId].modules as Array<{
+              moduleId: string;
+            }>
+          ).push({
+            moduleId: feature.moduleId,
+          });
+        }
       }
-      return [];
-    })
-    .flat();
+    }
+  }
   return createServiceFactory({
-    service: instanceMetadataServiceRef,
-    deps: {},
-    factory: async () => ({ getInstalledFeatures: () => installedFeatures }),
+    service: coreServices.instanceMetadata,
+    deps: {
+      logger: coreServices.rootLogger,
+    },
+    factory: async ({ logger }) => {
+      const readonlyInstalledPlugins = deepFreeze(
+        Object.values(installedPlugins),
+      );
+      const instanceMetadata = {
+        getInstalledPlugins: () => Promise.resolve(readonlyInstalledPlugins),
+      };
+
+      const plugins = await instanceMetadata.getInstalledPlugins();
+
+      logger.info(
+        `Installed plugins on this instance: ${plugins
+          .map(p => p.pluginId)
+          .join(', ')}`,
+      );
+      return instanceMetadata;
+    },
   });
 }
 
