@@ -417,6 +417,13 @@ export default {
       'conf/writing',
       'conf/defining',
     ],
+    Observability: [
+      'observability/index',
+      'observability/metric-naming-conventions',
+      {
+        Tutorials: ['observability/tutorials/setup-opentelemetry'],
+      },
+    ],
     Framework: [
       {
         type: 'category',
