@@ -93,13 +93,23 @@ export class MockSearchApi implements SearchApi {
   // (undocumented)
   mockedResults?: SearchResultSet | undefined;
   // (undocumented)
-  query(): Promise<SearchResultSet>;
+  query(
+    _query: SearchQuery,
+    _options?: {
+      signal?: AbortSignal;
+    },
+  ): Promise<SearchResultSet>;
 }
 
 // @public (undocumented)
 export interface SearchApi {
   // (undocumented)
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(
+    query: SearchQuery,
+    options?: {
+      signal?: AbortSignal;
+    },
+  ): Promise<SearchResultSet>;
 }
 
 // @public (undocumented)

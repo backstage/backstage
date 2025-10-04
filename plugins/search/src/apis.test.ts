@@ -52,10 +52,19 @@ describe('apis', () => {
     identityApi.getCredentials.mockResolvedValue({});
     await client.query(query);
     expect(getBaseUrl).toHaveBeenLastCalledWith('search');
-    expect(mockFetch).toHaveBeenLastCalledWith(
-      `${baseUrl}/query?term=`,
-      undefined,
-    );
+    expect(mockFetch).toHaveBeenLastCalledWith(`${baseUrl}/query?term=`, {
+      signal: undefined,
+    });
+  });
+
+  it('Fetch is called with abort signal when provided', async () => {
+    identityApi.getCredentials.mockResolvedValue({});
+    const abortController = new AbortController();
+    await client.query(query, { signal: abortController.signal });
+    expect(getBaseUrl).toHaveBeenLastCalledWith('search');
+    expect(mockFetch).toHaveBeenLastCalledWith(`${baseUrl}/query?term=`, {
+      signal: abortController.signal,
+    });
   });
 
   it('Resolves JSON from fetch response', async () => {
