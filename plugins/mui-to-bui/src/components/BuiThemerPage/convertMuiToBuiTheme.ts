@@ -125,7 +125,7 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     warning: palette.warning.light,
     success: palette.success.light,
   }).forEach(([key, value]) => {
-    styleObject[`--bui-bg-${key}`] = value;
+    styleObject[`--bui-bg${key ? `-${key}` : ''}`] = value;
   });
 
   // Border colors
@@ -134,7 +134,7 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     warning: palette.warning.main,
     success: palette.success.main,
   }).forEach(([key, value]) => {
-    styleObject[`--bui-border${key ? `-${key}` : ''}`] = value;
+    styleObject[`--bui-border-${key}`] = value;
   });
 
   // Base border color if available
