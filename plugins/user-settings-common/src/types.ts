@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
+import type { JsonValue } from '@backstage/types';
+
 /** @public */
 export type UserSettingsSignal = {
   type: 'key-changed' | 'key-deleted';
   key: string;
 };
+
+/**
+ * Response type from /multiget
+ *
+ * @public
+ */
+export type MultiGetResponse = { items: ({ value: JsonValue } | null)[] };
