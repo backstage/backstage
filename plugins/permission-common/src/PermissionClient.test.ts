@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import { RestContext, rest } from 'msw';
+import { rest, RestContext } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import {
   BatchedAuthorizePermissionRequest,
   PermissionClient,
+  PermissionClientOptions,
 } from './PermissionClient';
 import {
-  EvaluatePermissionRequest,
   AuthorizeResult,
-  IdentifiedPermissionMessage,
   ConditionalPolicyDecision,
+  EvaluatePermissionRequest,
+  IdentifiedPermissionMessage,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { createPermission } from './permissions';
@@ -47,6 +48,22 @@ const mockPermission = createPermission({
   resourceType: 'foo',
 });
 
+class PermissionClientForTests extends PermissionClient {
+  constructor(
+    options: PermissionClientOptions,
+    dataLoaderOptions?: {
+      loaderCacheTtl?: number;
+      cacheTtl?: number;
+      batchDelay?: number;
+    },
+  ) {
+    super(options);
+    if (dataLoaderOptions) {
+      this.setDataLoaderParamsForTests(dataLoaderOptions);
+    }
+  }
+}
+
 describe('PermissionClient', () => {
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterAll(() => server.close());
@@ -54,10 +71,16 @@ describe('PermissionClient', () => {
 
   describe('authorize', () => {
     beforeAll(() => {
-      client = new PermissionClient({
-        discovery,
-        config: new ConfigReader({ permission: { enabled: true } }),
-      });
+      client = new PermissionClientForTests(
+        {
+          discovery,
+          config: new ConfigReader({ permission: { enabled: true } }),
+        },
+        {
+          batchDelay: 0,
+          cacheTtl: 0,
+        },
+      );
     });
 
     const mockAuthorizeConditional = {
@@ -113,14 +136,12 @@ describe('PermissionClient', () => {
 
     it('should not include authorization headers if no token is supplied', async () => {
       await client.authorize([mockAuthorizeConditional]);
-
       const request = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
       await client.authorize([mockAuthorizeConditional], { token });
-
       const request = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
     });
@@ -182,7 +203,7 @@ describe('PermissionClient', () => {
           return res(json({ items: responses }));
         },
       );
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
@@ -206,7 +227,7 @@ describe('PermissionClient', () => {
           return res(json(responses));
         },
       );
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({}),
       });
@@ -218,17 +239,91 @@ describe('PermissionClient', () => {
     });
   });
 
-  describe('authorize (batched)', () => {
+  describe('authorize with dataloader', () => {
     beforeAll(() => {
-      client = new PermissionClient({
+      client = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({
           permission: {
             enabled: true,
-            EXPERIMENTAL_enableBatchedRequests: true,
+            EXPERIMENTAL_enableDataloaderRequests: true,
           },
         }),
       });
+    });
+
+    const mockAuthorizeConditional = {
+      permission: mockPermission,
+      resourceRef: 'foo:bar',
+    };
+
+    const mockAuthorizeConditional2 = {
+      permission: mockPermission,
+      resourceRef: 'bar:foo',
+    };
+
+    const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
+      const responses = req.body.items.map(
+        (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+          id: a.id,
+          result: AuthorizeResult.ALLOW,
+        }),
+      );
+
+      return res(json({ items: responses }));
+    });
+
+    beforeEach(() => {
+      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should include multiple authorize requests in a request body', async () => {
+      client.authorize([mockAuthorizeConditional], {
+        token: '1234.1234.signature1',
+      });
+      client.authorize([mockAuthorizeConditional2], {
+        token: '1234.1234.signature2',
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      const request = mockAuthorizeHandler.mock.calls[0][0];
+
+      expect(request.body).toEqual({
+        items: [
+          expect.objectContaining({
+            permission: mockPermission,
+            resourceRef: 'foo:bar',
+          }),
+          expect.objectContaining({
+            permission: mockPermission,
+            resourceRef: 'bar:foo',
+          }),
+        ],
+      });
+    });
+  });
+
+  describe('authorize (batched)', () => {
+    beforeAll(() => {
+      client = new PermissionClientForTests(
+        {
+          discovery,
+          config: new ConfigReader({
+            permission: {
+              enabled: true,
+              EXPERIMENTAL_enableBatchedRequests: true,
+            },
+          }),
+        },
+        {
+          batchDelay: 0,
+          cacheTtl: 0,
+        },
+      );
     });
 
     const mockAuthorizeConditional = {
@@ -361,7 +456,7 @@ describe('PermissionClient', () => {
     });
 
     it('should allow all when permission.enabled is false', async () => {
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
@@ -373,7 +468,7 @@ describe('PermissionClient', () => {
     });
 
     it('should allow all when permission.enabled is not configured', async () => {
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({}),
       });
@@ -490,10 +585,16 @@ describe('PermissionClient', () => {
 
   describe('authorizeConditional', () => {
     beforeAll(() => {
-      client = new PermissionClient({
-        discovery,
-        config: new ConfigReader({ permission: { enabled: true } }),
-      });
+      client = new PermissionClientForTests(
+        {
+          discovery,
+          config: new ConfigReader({ permission: { enabled: true } }),
+        },
+        {
+          batchDelay: 0,
+          cacheTtl: 0,
+        },
+      );
     });
 
     const mockResourceAuthorizeConditional = {
@@ -678,7 +779,7 @@ describe('PermissionClient', () => {
           return res(json({ items: responses }));
         },
       );
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
@@ -707,7 +808,7 @@ describe('PermissionClient', () => {
           return res(json({ items: responses }));
         },
       );
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({}),
       });
