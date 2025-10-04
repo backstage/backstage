@@ -10,7 +10,6 @@ import { ActionsServiceAction } from '@backstage/backend-plugin-api/alpha';
 import { AnyZodObject } from 'zod';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -52,12 +51,12 @@ export class MockActionsRegistry
   // (undocumented)
   static create(opts: { logger: LoggerService }): MockActionsRegistry;
   // (undocumented)
-  invoke(opts: {
+  invoke<Output>(opts: {
     id: string;
     input?: JsonObject;
     credentials?: BackstageCredentials;
   }): Promise<{
-    output: JsonValue;
+    output: Output;
   }>;
   // (undocumented)
   list(): Promise<{

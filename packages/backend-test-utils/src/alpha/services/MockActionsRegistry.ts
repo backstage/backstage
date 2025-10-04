@@ -18,8 +18,8 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
-import { JsonObject, JsonValue } from '@backstage/types';
-import { z, AnyZodObject } from 'zod';
+import { JsonObject } from '@backstage/types';
+import { AnyZodObject, z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from '../../services';
 import {
@@ -98,11 +98,11 @@ export class MockActionsRegistry
     };
   }
 
-  async invoke(opts: {
+  async invoke<Output>(opts: {
     id: string;
     input?: JsonObject;
     credentials?: BackstageCredentials;
-  }): Promise<{ output: JsonValue }> {
+  }): Promise<{ output: Output }> {
     const action = this.actions.get(opts.id);
 
     if (!action) {
@@ -140,7 +140,7 @@ export class MockActionsRegistry
         );
       }
 
-      return { output: output.data };
+      return { output: output.data as Output };
     } catch (error) {
       throw new ForwardedError(
         `Failed execution of action "${opts.id}"`,
