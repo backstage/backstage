@@ -30,6 +30,7 @@ export const homeTranslationRef = createTranslationRef({
       clearAll: 'Clear all',
       addWidget: 'Add widget',
       save: 'Save',
+      cancel: 'Cancel',
     },
     customHomepage: {
       noWidgets: "No widgets added. Start by clicking the 'Add widget' button.",
