@@ -19,6 +19,19 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha
+export const CatalogContentHeaderItemBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-content-header-item';
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
+// @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
   kind: 'catalog-filter';
   params: {

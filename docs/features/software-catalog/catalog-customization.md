@@ -698,3 +698,36 @@ filter:
       target:
         $in: [group:default/admins, group:default/viewers]
 ```
+
+### Catalog Content Header
+
+The catalog page comes with a content header containing default elements, but you may want to add your own elements to it.
+
+You can do so by creating an extension based on the `CatalogContentHeaderItemBlueprint` blueprint:
+
+```tsx
+const catalogHelloBannerCatalogContentHeaderItem =
+  CatalogContentHeaderItemBlueprint.make({
+    name: 'hello-banner',
+    params: {
+      loader: async () => {
+        const { DismissableBanner } = await import(
+          '@backstage/core-components'
+        );
+
+        return (
+          <DismissableBanner
+            variant="info"
+            message="Hello from the New Frontend System 👋"
+            id="hello"
+          />
+        );
+      },
+    },
+  });
+
+const customCatalogModule = createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [catalogHelloBannerCatalogContentHeaderItem],
+});
+```
