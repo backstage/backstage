@@ -53,7 +53,6 @@
     "@gitbeaker/requester-utils": "^41.2.0",
     "@gitbeaker/rest": "^41.2.0",
     "luxon": "^3.0.0",
-    "winston": "^3.2.1",
     "yaml": "^2.0.0",
     "zod": "^3.22.4"
   },
