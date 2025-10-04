@@ -15,13 +15,10 @@
  */
 
 import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
-import { EntityRefLinks } from '@backstage/plugin-catalog-react';
+import { EntityRefLinks, EntityDisplayName } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { DocsTableRow } from './types';
-
-function customTitle(entity: Entity): string {
-  return entity.metadata.title || entity.metadata.name;
-}
+import React from 'react';
 
 /**
  * Not directly exported, but through DocsTable.columns and EntityListDocsTable.columns
@@ -45,14 +42,17 @@ export const columnFactories = {
       searchable: true,
       defaultSort: 'asc',
       customSort: (row1, row2) => {
-        const title1 = customTitle(row1.entity).toLocaleLowerCase();
-        const title2 = customTitle(row2.entity).toLocaleLowerCase();
+        // For sorting, we'll use the entity name as fallback since EntityDisplayName is a component
+        const title1 = (row1.entity.metadata.title || row1.entity.metadata.name).toLocaleLowerCase();
+        const title2 = (row2.entity.metadata.title || row2.entity.metadata.name).toLocaleLowerCase();
         return title1.localeCompare(title2);
       },
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={
-            <Link to={row.resolved.docsUrl}>{customTitle(row.entity)}</Link>
+            <Link to={row.resolved.docsUrl}>
+              <EntityDisplayName entityRef={row.entity} hideIcon />
+            </Link>
           }
           subvalue={row.entity.metadata.description}
         />

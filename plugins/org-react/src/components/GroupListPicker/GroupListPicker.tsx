@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useState, useCallback } from 'react';
+import React, { MouseEvent, useState, useCallback } from 'react';
 import {
   catalogApiRef,
-  humanizeEntityRef,
+  EntityDisplayName,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -85,8 +85,6 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
     return <ResponseErrorPanel error={error} />;
   }
 
-  const getHumanEntityRef = (entity: Entity) => humanizeEntityRef(entity);
-
   return (
     <>
       <Popover
@@ -101,7 +99,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           options={groups ?? []}
           groupBy={option => option.spec.type}
           getOptionLabel={option =>
-            option.spec.profile?.displayName ?? getHumanEntityRef(option)
+            option.spec.profile?.displayName ?? option.metadata.title ?? option.metadata.name
           }
           inputValue={inputValue}
           onInputChange={(_, value) => setInputValue(value)}
