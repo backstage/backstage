@@ -64,7 +64,8 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@elastic/elasticsearch-mock": "^1.0.0",
-    "@short.io/opensearch-mock": "^0.4.0"
+    "@short.io/opensearch-mock": "^0.4.0",
+    "@types/aws4": "^1.5.1"
   },
   "configSchema": "config.d.ts"
 }
