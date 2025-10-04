@@ -15,18 +15,27 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendFeatureLoader,
+} from '@backstage/backend-plugin-api';
 
 const backend = createBackend();
 
 // An example of how to group together and load multiple features. You can also
 // access root-scoped services by adding `deps`.
 const searchLoader = createBackendFeatureLoader({
-  *loader() {
+  deps: {
+    config: coreServices.rootConfig,
+  },
+  *loader({ config }) {
     yield import('@backstage/plugin-search-backend');
     yield import('@backstage/plugin-search-backend-module-catalog');
     yield import('@backstage/plugin-search-backend-module-explore');
     yield import('@backstage/plugin-search-backend-module-techdocs');
+    if (config.has('search.elasticsearch')) {
+      yield import('@backstage/plugin-search-backend-module-elasticsearch');
+    }
   },
 });
 
