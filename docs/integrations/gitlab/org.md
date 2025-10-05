@@ -245,24 +245,6 @@ catalog:
         includeUsersWithoutSeat: false # Optional: Set to true to include users without paid seat, only applicable for SaaS
 ```
 
-### Limiting `User` and `Group` entity ingestion in the provider
-
-Optionally, you can limit the entity types ingested by the provider when using
-`orgEnabled: true` with the following `rules` configuration to limit it to only
-`User` and `Group` entities.
-
-```yaml
-catalog:
-  providers:
-    gitlab:
-      yourOrgDataProviderId:
-        host: gitlab.com
-        orgEnabled: true
-        group: org/teams
-        rules:
-          - allow: [Group, User]
-```
-
 ### Custom Transformers
 
 You can inject your own transformation logic to help map GitLab API responses
