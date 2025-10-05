@@ -98,6 +98,11 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         );
       }
 
+      if (providerConfig.orgEnabled) {
+        options.logger.info(`Skipping ${providerConfig.id} as org is enabled.`);
+        return;
+      }
+
       const taskRunner =
         options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);

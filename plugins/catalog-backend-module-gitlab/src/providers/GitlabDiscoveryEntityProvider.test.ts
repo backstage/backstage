@@ -87,6 +87,7 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
       'No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:test-id',
     );
   });
+
   it('should throw error when no matching GitLab integration config found', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader(mock.config_github_host);
@@ -97,6 +98,20 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
         schedule,
       });
     }).toThrow('No gitlab integration found that matches host example.com');
+  });
+
+  it('should log a message and return when org configuration is found', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader(mock.config_saas_no_group);
+
+    GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    });
+
+    expect(logger.info).toHaveBeenCalledWith(
+      'Skipping test-id as org is enabled.',
+    );
   });
 
   it('should instantiate provider with single simple discovery config', () => {
