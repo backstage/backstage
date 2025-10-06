@@ -22,6 +22,7 @@ import {
   storageApiRef,
   useApi,
   useElementFilter,
+  configApiRef,
 } from '@backstage/core-plugin-api';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -210,6 +211,7 @@ const availableWidgetsFilter = (elements: ElementCollection) => {
 export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   const styles = useStyles();
   const theme = useTheme();
+  const configApi = useApi(configApiRef);
   const availableWidgets = useElementFilter(
     props.children,
     availableWidgetsFilter,
@@ -220,6 +222,16 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       ? convertConfigToDefaultWidgets(props.config, availableWidgets)
       : [];
   }, [props.config, availableWidgets]);
+
+  // Get preventDuplicateWidgets from config with prop override
+  const configPreventDuplicates = configApi.getOptionalBoolean(
+    'home.customHomepage.preventDuplicateWidgets',
+  );
+
+  // Precedence: prop > config > default (false)
+  const preventDuplicateWidgets =
+    props.preventDuplicateWidgets ?? configPreventDuplicates ?? false;
+
   const [widgets, setWidgets, isStorageLoading] = useHomeStorage(defaultLayout);
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
@@ -233,8 +245,10 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
   const { t } = useTranslationRef(homeTranslationRef);
 
-  // Get available widgets that are not already in use
   const getAvailableWidgets = () => {
+    if (!preventDuplicateWidgets) {
+      return availableWidgets;
+    }
     const usedWidgetNames = new Set(
       widgets.map(w => getWidgetNameFromKey(w.id)),
     );
