@@ -7,7 +7,6 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { DevToolsRouteBlueprintParams } from '@backstage/plugin-devtools-react';
-import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -91,12 +90,28 @@ const _default: OverridableFrontendPlugin<
 export default _default;
 
 // @alpha
-export const unprocessedEntitiesDevToolsRoute: ExtensionDefinition<{
-  kind: 'devtools-route';
+export const unprocessedEntitiesDevToolsContent: ExtensionDefinition<{
+  kind: 'devtools-content';
   name: undefined;
-  config: {};
-  configInput: {};
-  output: ExtensionDataRef<DevToolsRouteData, 'devtools.route', {}>;
+  config: {
+    path: string | undefined;
+    title: string | undefined;
+  };
+  configInput: {
+    title?: string | undefined;
+    path?: string | undefined;
+  };
+  output:
+    | ExtensionDataRef<string, 'core.routing.path', {}>
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
+        RouteRef<AnyRouteRefParams>,
+        'core.routing.ref',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<string, 'devtools.content-title', {}>;
   inputs: {};
   params: DevToolsRouteBlueprintParams;
 }>;

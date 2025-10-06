@@ -7,7 +7,6 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -78,8 +77,17 @@ const _default: OverridableFrontendPlugin<
             }
           >;
       inputs: {
-        routes: ExtensionInput<
-          ConfigurableExtensionDataRef<DevToolsRouteData, 'devtools.route', {}>,
+        contents: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<string, 'devtools.content-title', {}>,
           {
             singleton: false;
             optional: true;

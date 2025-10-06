@@ -4,7 +4,6 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { DevToolsRouteData } from '@backstage/plugin-devtools-react';
 import { ElementType } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { ReactNode } from 'react';
@@ -28,14 +27,12 @@ export type DevToolsLayoutProps = {
 };
 
 // @public (undocumented)
-export const DevToolsPage: ({
-  extensionRoutes,
-}: DevToolsPageProps) => JSX_2.Element;
+export const DevToolsPage: ({ extensions }: DevToolsPageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface DevToolsPageProps {
   // (undocumented)
-  extensionRoutes?: DevToolsRouteData[];
+  extensions?: any[];
 }
 
 // @public (undocumented)
