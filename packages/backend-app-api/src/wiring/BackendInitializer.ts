@@ -258,6 +258,30 @@ export class BackendInitializer {
       createInstanceMetadataServiceFactory(this.#registrations),
     );
 
+    // This makes sure that any uncaught errors or unhandled rejections are
+    // caught and logged, rather than terminating the process. We register these
+    // as early as possible while still using the root logger service, the
+    // tradeoff that if there are any unhandled errors as part of the that
+    // instationation, it will cause the process to crash. If there are multiple
+    // backend instances, each instance will log the error, because we can't
+    // determine which instance the error came from.
+    if (process.env.NODE_ENV !== 'test') {
+      const rootLogger = await this.#serviceRegistry.get(
+        coreServices.rootLogger,
+        'root',
+      );
+      process.on('unhandledRejection', (reason: Error) => {
+        rootLogger
+          ?.child({ type: 'unhandledRejection' })
+          ?.error('Unhandled rejection', reason);
+      });
+      process.on('uncaughtException', error => {
+        rootLogger
+          ?.child({ type: 'uncaughtException' })
+          ?.error('Uncaught exception', error);
+      });
+    }
+
     // Initialize all root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
 
@@ -449,25 +473,6 @@ export class BackendInitializer {
     await lifecycleService.startup();
 
     initLogger.onAllStarted();
-
-    // Once the backend is started, any uncaught errors or unhandled rejections are caught
-    // and logged, in order to avoid crashing the entire backend on local failures.
-    if (process.env.NODE_ENV !== 'test') {
-      const rootLogger = await this.#serviceRegistry.get(
-        coreServices.rootLogger,
-        'root',
-      );
-      process.on('unhandledRejection', (reason: Error) => {
-        rootLogger
-          ?.child({ type: 'unhandledRejection' })
-          ?.error('Unhandled rejection', reason);
-      });
-      process.on('uncaughtException', error => {
-        rootLogger
-          ?.child({ type: 'uncaughtException' })
-          ?.error('Uncaught exception', error);
-      });
-    }
   }
 
   // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit
