@@ -31,24 +31,7 @@ import {
 import { catalogApiRef } from '../..';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { entityPresentationApiRef } from '../../apis';
-
-jest.mock('../../apis', () => {
-  const actual = jest.requireActual('../../apis');
-  return {
-    ...actual,
-    useEntityPresentation: jest.fn(entityOrRef => {
-      const name =
-        typeof entityOrRef === 'string'
-          ? entityOrRef.split('/').pop() || 'unknown'
-          : entityOrRef?.metadata?.name || 'unknown';
-      return {
-        primaryTitle: name,
-        secondaryTitle: undefined,
-        Icon: undefined,
-      };
-    }),
-  };
-});
+import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { QueryEntitiesCursorRequest } from '@backstage/catalog-client';
 
 const ownerEntitiesBatch1: Entity[] = [
@@ -131,26 +114,7 @@ const ownerEntitiesBatch2: Entity[] = [
 
 const mockCatalogApi = catalogApiMock.mock();
 const mockErrorApi = new MockErrorApi();
-
-// Create a mock for entityPresentationApi
-const mockEntityPresentationApi = {
-  forEntity: jest.fn().mockImplementation(entityOrRef => {
-    const name = entityOrRef?.metadata?.name || 'unknown';
-
-    const snapshot = {
-      entityRef: `group:default/${name}`,
-      primaryTitle: name,
-      secondaryTitle: undefined,
-      Icon: undefined,
-    };
-
-    return {
-      snapshot,
-      update$: undefined,
-      promise: Promise.resolve(snapshot),
-    };
-  }),
-};
+const mockEntityPresentationApi = DefaultEntityPresentationApi.createLocal();
 
 describe('<EntityOwnerPicker mode="all" />', () => {
   const mockApis = TestApiRegistry.from(
