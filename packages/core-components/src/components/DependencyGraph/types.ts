@@ -21,7 +21,6 @@
  */
 
 import { ReactNode } from 'react';
-import dagre from '@dagrejs/dagre';
 
 /**
  * Types for the {@link DependencyGraph} component.
@@ -114,7 +113,11 @@ export namespace DependencyGraphTypes {
       to?: string;
       relations?: string[];
     };
-    id: dagre.Edge;
+    id: {
+      v: string;
+      w: string;
+      name?: string | undefined;
+    };
   };
 
   /**
