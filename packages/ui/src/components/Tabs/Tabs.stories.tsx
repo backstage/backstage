@@ -34,17 +34,32 @@ const withRouter = (Story: StoryFn) => (
   </MemoryRouter>
 );
 
+// White background decorator for stories
+const withWhiteBackground = (Story: StoryFn) => (
+  <div
+    style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}
+  >
+    <Story />
+  </div>
+);
+
 export const Default: Story = {
   args: {
     children: '',
   },
-  decorators: [withRouter],
+  decorators: [withRouter, withWhiteBackground],
   render: () => (
     <Tabs>
       <TabList>
-        <Tab id="tab1">Tab 1</Tab>
-        <Tab id="tab2">Tab 2</Tab>
-        <Tab id="tab3">Tab 3 With long title</Tab>
+        <Tab id="tab1" href="/tab1">
+          Tab 1
+        </Tab>
+        <Tab id="tab2" href="/tab2">
+          Tab 2
+        </Tab>
+        <Tab id="tab3" href="/tab3">
+          Tab 3 With long title
+        </Tab>
       </TabList>
     </Tabs>
   ),
@@ -54,7 +69,7 @@ export const WithTabPanels: Story = {
   args: {
     children: '',
   },
-  decorators: [withRouter],
+  decorators: [withRouter, withWhiteBackground],
   render: () => (
     <Tabs>
       <TabList>
@@ -79,6 +94,7 @@ export const WithMockedURLTab2: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/tab2']}>
       <Tabs>
@@ -111,6 +127,7 @@ export const WithMockedURLTab3: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/tab3']}>
       <Tabs>
@@ -143,6 +160,7 @@ export const WithMockedURLNoMatch: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/some-other-page']}>
       <Tabs>
@@ -181,6 +199,7 @@ export const ExactMatchingDefault: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/mentorship/events']}>
       <Tabs>
@@ -217,6 +236,7 @@ export const PrefixMatchingForNestedRoutes: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/mentorship/events']}>
       <Tabs>
@@ -257,6 +277,7 @@ export const PrefixMatchingDeepNesting: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/catalog/users/john/details']}>
       <Tabs>
@@ -292,6 +313,7 @@ export const MixedMatchingStrategies: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/dashboard/analytics/reports']}>
       <Tabs>
@@ -343,6 +365,7 @@ export const PrefixMatchingEdgeCases: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/foobar']}>
       <Tabs>
@@ -385,6 +408,7 @@ export const PrefixMatchingWithSlash: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/foo/bar']}>
       <Tabs>
@@ -426,6 +450,7 @@ export const RootPathMatching: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/']}>
       <Tabs>
@@ -460,6 +485,7 @@ export const AutoSelectionOfTabs: Story = {
   args: {
     children: '',
   },
+  decorators: [withWhiteBackground],
   render: () => (
     <MemoryRouter initialEntries={['/random-page']}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>

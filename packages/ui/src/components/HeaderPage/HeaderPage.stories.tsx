@@ -44,22 +44,27 @@ const tabs: HeaderTab[] = [
   {
     id: 'overview',
     label: 'Overview',
+    href: '/overview',
   },
   {
     id: 'checks',
     label: 'Checks',
+    href: '/checks',
   },
   {
     id: 'tracks',
     label: 'Tracks',
+    href: '/tracks',
   },
   {
     id: 'campaigns',
     label: 'Campaigns',
+    href: '/campaigns',
   },
   {
     id: 'integrations',
     label: 'Integrations',
+    href: '/integrations',
   },
 ];
 
@@ -89,10 +94,19 @@ const withRouter = (Story: StoryFn) => (
   </MemoryRouter>
 );
 
+// White background decorator for stories
+const withWhiteBackground = (Story: StoryFn) => (
+  <div
+    style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}
+  >
+    <Story />
+  </div>
+);
+
 // Extract layout decorator as a reusable constant
 const layoutDecorator = [
   (Story: StoryFn) => (
-    <>
+    <div style={{ backgroundColor: 'white' }}>
       <div
         style={{
           width: '250px',
@@ -121,7 +135,7 @@ const layoutDecorator = [
           </Text>
         </Container>
       </div>
-    </>
+    </div>
   ),
 ];
 
@@ -129,6 +143,7 @@ export const Default: Story = {
   args: {
     title: 'Page Title',
   },
+  decorators: [withWhiteBackground],
 };
 
 export const WithTabs: Story = {
@@ -136,11 +151,11 @@ export const WithTabs: Story = {
     ...Default.args,
     tabs,
   },
-  decorators: [withRouter],
+  decorators: [withRouter, withWhiteBackground],
 };
 
 export const WithCustomActions: Story = {
-  decorators: [withRouter],
+  decorators: [withRouter, withWhiteBackground],
   render: () => (
     <HeaderPage
       {...Default.args}
@@ -168,7 +183,7 @@ export const WithCustomActions: Story = {
 };
 
 export const WithBreadcrumbs: Story = {
-  decorators: [withRouter],
+  decorators: [withRouter, withWhiteBackground],
   args: {
     ...Default.args,
     breadcrumbs: [{ label: 'Home', href: '/' }],
@@ -176,7 +191,7 @@ export const WithBreadcrumbs: Story = {
 };
 
 export const WithLongBreadcrumbs: Story = {
-  decorators: [withRouter],
+  decorators: [withRouter, withWhiteBackground],
   args: {
     ...Default.args,
     breadcrumbs: [
@@ -187,7 +202,7 @@ export const WithLongBreadcrumbs: Story = {
 };
 
 export const WithEverything: Story = {
-  decorators: [withRouter],
+  decorators: [withRouter, withWhiteBackground],
   render: () => (
     <HeaderPage
       {...Default.args}
@@ -207,6 +222,7 @@ export const WithLayout: Story = {
 };
 
 export const WithTabsMatchingStrategies: Story = {
+  decorators: [withWhiteBackground],
   args: {
     title: 'Route Matching Demo',
     tabs: [
@@ -267,6 +283,7 @@ export const WithTabsMatchingStrategies: Story = {
 };
 
 export const WithTabsExactMatching: Story = {
+  decorators: [withWhiteBackground],
   args: {
     title: 'Exact Matching Demo',
     tabs: [
@@ -306,6 +323,7 @@ export const WithTabsExactMatching: Story = {
 };
 
 export const WithTabsPrefixMatchingDeep: Story = {
+  decorators: [withWhiteBackground],
   args: {
     title: 'Deep Nesting Demo',
     tabs: [
