@@ -63,15 +63,15 @@ function nodeToText(
           .filter(e => options?.showDisabled || e.instance)
           .sort((a, b) => a.spec.id.localeCompare(b.spec.id));
         if (children.length === 0) {
-          return mkDiv(`${key} []`, { indent: true });
+          return mkDiv(`${key} []`, { key, indent: true });
         }
         return mkDiv(
           [
-            mkDiv(`${key} [`),
+            mkDiv(`${key} [`, { key: 'start' }),
             ...children.map(e =>
-              mkDiv(nodeToText(e, options), { indent: true }),
+              mkDiv(nodeToText(e, options), { indent: true, key: e.spec.id }),
             ),
-            mkDiv(']'),
+            mkDiv(']', { key: 'end' }),
           ],
           { key, indent: true },
         );
