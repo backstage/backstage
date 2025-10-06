@@ -101,6 +101,7 @@ export type CustomHomepageGridProps = {
   compactType?: 'vertical' | 'horizontal' | null;
   allowOverlap?: boolean;
   preventCollision?: boolean;
+  preventDuplicateWidgets?: boolean;
 };
 
 // @public
