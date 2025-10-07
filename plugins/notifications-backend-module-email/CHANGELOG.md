@@ -1,5 +1,12 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.14-next.1
+
+### Patch Changes
+
+- b8cf31a: chore(deps): bump `nodemailer` from 6.9.16 to 7.0.7
+- f5e0963: Removed unused dependencies
+
 ## 0.3.14-next.0
 
 ### Patch Changes
