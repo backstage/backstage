@@ -20,15 +20,18 @@ import {
   MockAnalyticsApi,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
-import { analyticsApiRef, useAnalytics } from '@backstage/frontend-plugin-api';
-import { Routes, Route } from 'react-router-dom';
+import {
+  analyticsApiRef,
+  PageBlueprint,
+  useAnalytics,
+} from '@backstage/frontend-plugin-api';
 import { renderInTestApp } from './renderInTestApp';
 
 describe('renderInTestApp', () => {
   it('should render the given component in a page', async () => {
     const IndexPage = () => <div>Index Page</div>;
     renderInTestApp(<IndexPage />);
-    expect(screen.getByText('Index Page')).toBeInTheDocument();
+    expect(await screen.findByText('Index Page')).toBeInTheDocument();
   });
 
   it('should works with apis provider', async () => {
@@ -55,7 +58,7 @@ describe('renderInTestApp', () => {
       </TestApiProvider>,
     );
 
-    fireEvent.click(screen.getByRole('link', { name: 'See details' }));
+    fireEvent.click(await screen.findByRole('link', { name: 'See details' }));
 
     expect(analyticsApiMock.getEvents()).toEqual(
       expect.arrayContaining([
@@ -68,16 +71,20 @@ describe('renderInTestApp', () => {
   });
 
   it('should support setting different locations in the history stack', async () => {
-    renderInTestApp(
-      <Routes>
-        <Route path="/" element={<h1>Index Page</h1>} />
-        <Route path="/second-page" element={<h1>Second Page</h1>} />
-      </Routes>,
-      {
-        initialRouteEntries: ['/second-page'],
-      },
-    );
+    renderInTestApp(<h1>Index page</h1>, {
+      extensions: [
+        PageBlueprint.make({
+          name: 'second-page',
+          params: defineParams =>
+            defineParams({
+              path: '/second-page',
+              loader: async () => <h1>Second Page</h1>,
+            }),
+        }),
+      ],
+      initialRouteEntries: ['/second-page'],
+    });
 
-    expect(screen.getByText('Second Page')).toBeInTheDocument();
+    expect(await screen.findByText('Second Page')).toBeInTheDocument();
   });
 });
