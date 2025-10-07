@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import {
+  createExtensionPoint,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 import {
   AuthenticationStrategy,
   CustomResource,
@@ -23,6 +26,9 @@ import {
   KubernetesObjectsProvider,
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
+import type express from 'express';
+import type { CatalogService } from '@backstage/plugin-catalog-node';
+import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /**
  * A factory function for creating a KubernetesObjectsProvider.
@@ -33,6 +39,7 @@ export type KubernetesObjectsProviderFactory = (opts: {
   getDefault: () => Promise<KubernetesObjectsProvider>;
   clusterSupplier: KubernetesClustersSupplier;
   serviceLocator: KubernetesServiceLocator;
+  fetcher: KubernetesFetcher;
   customResources: CustomResource[];
   objectTypesToFetch?: ObjectToFetch[];
   authStrategy: AuthenticationStrategy;
@@ -167,4 +174,38 @@ export interface KubernetesServiceLocatorExtensionPoint {
 export const kubernetesServiceLocatorExtensionPoint =
   createExtensionPoint<KubernetesServiceLocatorExtensionPoint>({
     id: 'kubernetes.service-locator',
+  });
+
+/**
+ * A factory function for creating a kubernetes router.
+ *
+ * @public
+ */
+export type KubernetesRouterFactory = (opts: {
+  getDefault: () => express.Router;
+  objectsProvider: KubernetesObjectsProvider;
+  clusterSupplier: KubernetesClustersSupplier;
+  catalog: CatalogService;
+  permissions: PermissionEvaluator;
+  httpAuth: HttpAuthService;
+  authStrategyMap: { [key: string]: AuthenticationStrategy };
+}) => express.Router;
+
+/**
+ * The interface for {@link kubernetesRouterExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesRouterExtensionPoint {
+  addRouter(router: KubernetesRouterFactory): void;
+}
+
+/**
+ * An extension point the exposes the ability to configure a kubernetes service locator.
+ *
+ * @public
+ */
+export const kubernetesRouterExtensionPoint =
+  createExtensionPoint<KubernetesRouterExtensionPoint>({
+    id: 'kubernetes.router',
   });

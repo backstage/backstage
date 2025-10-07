@@ -40,7 +40,7 @@ import {
   AuthMetadata,
   KubernetesClustersSupplier,
   KubernetesFetcher,
-  KubernetesObjectsProvider,
+  KubernetesObjectsProvider, KubernetesRouterFactory,
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
@@ -62,6 +62,7 @@ export interface KubernetesEnvironment {
   clusterSupplier: KubernetesClustersSupplier;
   serviceLocator: KubernetesServiceLocator;
   objectsProvider: KubernetesObjectsProvider;
+  customRouter?: KubernetesRouterFactory;
 }
 
 export class KubernetesRouter {
@@ -86,6 +87,7 @@ export class KubernetesRouter {
       catalog,
       discovery,
       httpAuth,
+      customRouter,
     } = this.env;
 
     logger.info('Initializing Kubernetes backend');
@@ -108,7 +110,23 @@ export class KubernetesRouter {
       authStrategyMap,
     );
 
-    return this.buildRouter(
+    return customRouter?.({
+      getDefault: () => this.buildDefaultRouter(
+        objectsProvider,
+        clusterSupplier,
+        catalog,
+        proxy,
+        permissions,
+        httpAuth,
+        authStrategyMap,
+      ),
+      objectsProvider,
+      clusterSupplier,
+      catalog,
+      permissions,
+      httpAuth,
+      authStrategyMap,
+    }) ?? this.buildDefaultRouter(
       objectsProvider,
       clusterSupplier,
       catalog,
@@ -138,7 +156,7 @@ export class KubernetesRouter {
     });
   }
 
-  private buildRouter(
+  private buildDefaultRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
     catalog: CatalogService,
