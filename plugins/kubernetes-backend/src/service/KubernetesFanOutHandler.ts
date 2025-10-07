@@ -139,6 +139,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'daemonsets',
     objectType: 'daemonsets',
   },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'persistentvolumes',
+    objectType: 'persistentvolumes',
+  },
 ];
 
 export const ALL_OBJECTS: ObjectToFetch[] = [

@@ -13,27 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext } from 'react';
-import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
-
-/**
- *
- *
- * @public
- */
-export const GroupedResponsesContext = createContext<GroupedResponses>({
-  pods: [],
-  replicaSets: [],
-  deployments: [],
-  daemonSets: [],
-  services: [],
-  configMaps: [],
-  secrets: [],
-  horizontalPodAutoscalers: [],
-  ingresses: [],
-  jobs: [],
-  cronJobs: [],
-  customResources: [],
-  statefulsets: [],
-  persistentVolumes: [],
-});
+export * from './PersistentVolumesAccordions.tsx';

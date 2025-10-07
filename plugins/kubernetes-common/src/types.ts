@@ -31,6 +31,7 @@ import type {
   V1Service,
   V1StatefulSet,
   V1Secret,
+  V1PersistentVolume,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
@@ -142,7 +143,8 @@ export type FetchResponse =
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
   | PodStatusFetchResponse
-  | SecretsFetchResponse;
+  | SecretsFetchResponse
+  | PersistentVolumeFetchResponse;
 
 /** @public */
 export interface PodFetchResponse {
@@ -247,6 +249,12 @@ export interface SecretsFetchResponse {
 }
 
 /** @public */
+export interface PersistentVolumeFetchResponse {
+  type: 'persistentvolumes';
+  resources: Array<V1PersistentVolume>;
+}
+
+/** @public */
 export type KubernetesFetchError = StatusError | RawFetchError;
 
 /** @public */
@@ -311,4 +319,5 @@ export interface GroupedResponses extends DeploymentResources {
   customResources: any[];
   statefulsets: V1StatefulSet[];
   daemonSets: V1DaemonSet[];
+  persistentVolumes: V1PersistentVolume[];
 }

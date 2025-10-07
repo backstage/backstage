@@ -64,6 +64,9 @@ export const groupResponses = (
         case 'daemonsets':
           prev.daemonSets.push(...next.resources);
           break;
+        case 'persistentvolumes':
+          prev.persistentVolumes.push(...next.resources);
+          break;
         default:
       }
       return prev;
@@ -82,6 +85,7 @@ export const groupResponses = (
       customResources: [],
       statefulsets: [],
       daemonSets: [],
+      persistentVolumes: [],
     } as GroupedResponses,
   );
 };
