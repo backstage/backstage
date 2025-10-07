@@ -20,11 +20,18 @@ import {
   createFrontendPlugin,
   ExtensionDefinition,
   FrontendFeature,
+  RouterBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { render } from '@testing-library/react';
 import appPlugin from '@backstage/plugin-app';
 import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
+import { MemoryRouter } from 'react-router-dom';
+
+const DEFAULT_MOCK_CONFIG = {
+  app: { baseUrl: 'http://localhost:3000' },
+  backend: { baseUrl: 'http://localhost:7007' },
+};
 
 /**
  * Options for `renderTestApp`.
@@ -45,6 +52,11 @@ export type RenderTestAppOptions = {
    * Additional features to add to the test app.
    */
   features?: FrontendFeature[];
+
+  /**
+   * Initial route entries to use for the router.
+   */
+  initialRouteEntries?: string[];
 };
 
 const appPluginOverride = appPlugin.withOverrides({
@@ -62,10 +74,23 @@ const appPluginOverride = appPlugin.withOverrides({
  * @public
  */
 export function renderTestApp(options: RenderTestAppOptions) {
+  const extensions = [
+    RouterBlueprint.make({
+      params: {
+        component: ({ children }) => (
+          <MemoryRouter initialEntries={options.initialRouteEntries}>
+            {children}
+          </MemoryRouter>
+        ),
+      },
+    }),
+    ...(options.extensions ?? []),
+  ];
+
   const features: FrontendFeature[] = [
     createFrontendPlugin({
       pluginId: 'test',
-      extensions: options.extensions,
+      extensions,
     }),
     appPluginOverride,
   ];
@@ -76,14 +101,12 @@ export function renderTestApp(options: RenderTestAppOptions) {
 
   const app = createSpecializedApp({
     features,
-    config: options.config
-      ? ConfigReader.fromConfigs([
-          {
-            context: 'render-config',
-            data: options.config,
-          },
-        ])
-      : undefined,
+    config: ConfigReader.fromConfigs([
+      {
+        context: 'render-config',
+        data: options?.config ?? DEFAULT_MOCK_CONFIG,
+      },
+    ]),
   });
 
   return render(

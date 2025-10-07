@@ -130,6 +130,7 @@ export type RenderTestAppOptions = {
   config?: JsonObject;
   extensions?: ExtensionDefinition<any>[];
   features?: FrontendFeature[];
+  initialRouteEntries?: string[];
 };
 
 export { TestApiProvider };
