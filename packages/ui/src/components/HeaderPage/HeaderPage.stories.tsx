@@ -44,22 +44,27 @@ const tabs: HeaderTab[] = [
   {
     id: 'overview',
     label: 'Overview',
+    href: '/overview',
   },
   {
     id: 'checks',
     label: 'Checks',
+    href: '/checks',
   },
   {
     id: 'tracks',
     label: 'Tracks',
+    href: '/tracks',
   },
   {
     id: 'campaigns',
     label: 'Campaigns',
+    href: '/campaigns',
   },
   {
     id: 'integrations',
     label: 'Integrations',
+    href: '/integrations',
   },
 ];
 
