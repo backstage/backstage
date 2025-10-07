@@ -40,7 +40,8 @@ import {
   AuthMetadata,
   KubernetesClustersSupplier,
   KubernetesFetcher,
-  KubernetesObjectsProvider, KubernetesRouterFactory,
+  KubernetesObjectsProvider,
+  KubernetesRouterFactory,
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
@@ -110,8 +111,26 @@ export class KubernetesRouter {
       authStrategyMap,
     );
 
-    return customRouter?.({
-      getDefault: () => this.buildDefaultRouter(
+    return (
+      customRouter?.({
+        getDefault: () =>
+          this.buildDefaultRouter(
+            objectsProvider,
+            clusterSupplier,
+            catalog,
+            proxy,
+            permissions,
+            httpAuth,
+            authStrategyMap,
+          ),
+        objectsProvider,
+        clusterSupplier,
+        catalog,
+        permissions,
+        httpAuth,
+        authStrategyMap,
+      }) ??
+      this.buildDefaultRouter(
         objectsProvider,
         clusterSupplier,
         catalog,
@@ -119,21 +138,7 @@ export class KubernetesRouter {
         permissions,
         httpAuth,
         authStrategyMap,
-      ),
-      objectsProvider,
-      clusterSupplier,
-      catalog,
-      permissions,
-      httpAuth,
-      authStrategyMap,
-    }) ?? this.buildDefaultRouter(
-      objectsProvider,
-      clusterSupplier,
-      catalog,
-      proxy,
-      permissions,
-      httpAuth,
-      authStrategyMap,
+      )
     );
   }
 

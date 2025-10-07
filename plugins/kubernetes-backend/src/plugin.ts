@@ -168,7 +168,7 @@ class CustomRouter implements KubernetesRouterExtensionPoint {
   }
 
   addRouter(router: KubernetesRouterFactory) {
-    if (this.router) { 
+    if (this.router) {
       throw new Error(
         'Multiple Kubernetes routers is not supported at this time',
       );
@@ -190,7 +190,7 @@ export const kubernetesPlugin = createBackendPlugin({
     const extPointAuthStrategy = new AuthStrategy();
     const extPointFetcher = new Fetcher();
     const extPointServiceLocator = new ServiceLocator();
-    const extPointRouter = new CustomRouter()
+    const extPointRouter = new CustomRouter();
 
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
@@ -212,10 +212,7 @@ export const kubernetesPlugin = createBackendPlugin({
       kubernetesServiceLocatorExtensionPoint,
       extPointServiceLocator,
     );
-    env.registerExtensionPoint(
-      kubernetesRouterExtensionPoint,
-      extPointRouter,
-    );
+    env.registerExtensionPoint(kubernetesRouterExtensionPoint, extPointRouter);
 
     env.registerInit({
       deps: {
