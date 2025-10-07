@@ -412,7 +412,7 @@ describe('AwsS3Publish', () => {
         bucketName: bucketName,
       });
       await publisher.publish({ entity, directory });
-      expect(loggerInfoSpy).toHaveBeenLastCalledWith(
+      expect(loggerInfoSpy).toHaveBeenCalledWith(
         `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
       );
     }, 30000);
