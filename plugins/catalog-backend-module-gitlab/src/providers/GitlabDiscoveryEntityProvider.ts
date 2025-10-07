@@ -406,12 +406,12 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     );
 
     // Modified files will be scheduled to a refresh
-    const addedEntities = this.createLocationSpecCommitedFiles(
+    const addedEntities = this.createLocationSpecCommittedFiles(
       event.project,
       added,
     );
 
-    const removedEntities = this.createLocationSpecCommitedFiles(
+    const removedEntities = this.createLocationSpecCommittedFiles(
       event.project,
       removed,
     );
@@ -490,25 +490,20 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * Creates Backstage location specs for committed files.
    *
    * @param project - The GitLab project information.
-   * @param addedFiles - The array of added file paths.
+   * @param files - The array of added file paths.
    * @returns An array of location specs.
    */
-  private createLocationSpecCommitedFiles(
+  private createLocationSpecCommittedFiles(
     project: WebhookProjectSchema,
-    addedFiles: string[],
+    files: string[],
   ): LocationSpec[] {
     const projectBranch =
       this.config.branch ??
       project.default_branch ??
       this.config.fallbackBranch;
 
-    // Filter added files that match the catalog file pattern
-    const matchingFiles = addedFiles.filter(
-      file => path.basename(file) === this.config.catalogFile,
-    );
-
-    // Create a location spec for each matching file
-    const locationSpecs: LocationSpec[] = matchingFiles.map(file => ({
+    // Create a location spec for each file
+    const locationSpecs: LocationSpec[] = files.map(file => ({
       type: 'url',
       target: `${project.web_url}/-/blob/${projectBranch}/${file}`,
       presence: 'optional',
