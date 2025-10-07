@@ -1,5 +1,11 @@
 # @backstage/backend-app-api
 
+## 1.2.8-next.1
+
+### Patch Changes
+
+- dd69cf6: Moved up registration of unhandled rejections and errors listeners to be done as early as possible, avoiding flakiness in backend startups and instead always logging these failures rather than sometimes crashing the process.
+
 ## 1.2.8-next.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-notifications
 
+## 0.5.10-next.3
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
 ## 0.5.10-next.2
 
 ### Patch Changes
