@@ -26,6 +26,7 @@ import {
   useAnalytics,
 } from '@backstage/frontend-plugin-api';
 import { renderInTestApp } from './renderInTestApp';
+import { Route, Routes } from 'react-router-dom';
 
 describe('renderInTestApp', () => {
   it('should render the given component in a page', async () => {
@@ -78,13 +79,18 @@ describe('renderInTestApp', () => {
           params: defineParams =>
             defineParams({
               path: '/second-page',
-              loader: async () => <h1>Second Page</h1>,
+              loader: async () => (
+                <Routes>
+                  <Route path="/" element={<h1>Second page</h1>} />
+                  <Route path="/subpage" element={<h1>Subpage</h1>} />
+                </Routes>
+              ),
             }),
         }),
       ],
-      initialRouteEntries: ['/second-page'],
+      initialRouteEntries: ['/second-page/subpage'],
     });
 
-    expect(await screen.findByText('Second Page')).toBeInTheDocument();
+    expect(await screen.findByText('Subpage')).toBeInTheDocument();
   });
 });
