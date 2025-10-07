@@ -90,6 +90,7 @@ catalog:
           initialDelay: { seconds: 30 }
           frequency: { hours: 1 }
           timeout: { minutes: 50 }
+        excludeSuspendedUsers: true
 ```
 
 Directly under the `githubOrg` is a list of configurations, each entry is a structure with the following elements:
@@ -98,6 +99,7 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 - `githubUrl`: The target that this provider should consume
 - `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
 - `schedule`: The refresh schedule to use, matches the structure of [`SchedulerServiceTaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinitionconfig/)
+<<<<<<< HEAD
 - `pageSizes` (optional): Configure page sizes for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors. You can configure the following page sizes:
 
   - `teams`: Number of teams to fetch per page when querying organization teams (default: 25)
@@ -105,6 +107,9 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
   - `organizationMembers`: Number of organization members to fetch per page (default: 50)
 
   Reducing page sizes will result in more API calls and slightly longer sync times, but will prevent API resource limits for organizations with large number of teams and members.
+=======
+- `excludeSuspendedUsers` (optional): Whether to exclude suspended users when querying organization users. Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
+>>>>>>> 40785ff87c (Update documentation to list the new option 'excludeSuspendedUsers')
 
 ### Events Support
 
