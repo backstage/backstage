@@ -1,5 +1,4 @@
 ---
-'@backstage/frontend-test-utils': patch
 '@backstage/plugin-app': patch
 ---
 
