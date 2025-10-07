@@ -26,6 +26,11 @@ import appPlugin from '@backstage/plugin-app';
 import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 
+/**
+ * Options for `renderTestApp`.
+ *
+ * @public
+ */
 export type RenderTestAppOptions = {
   /**
    * Additional configuration passed to the app when rendering elements inside it.
@@ -50,6 +55,12 @@ const appPluginOverride = appPlugin.withOverrides({
   ],
 });
 
+/**
+ * Renders the provided extensions inside a Backstage app, returning the same
+ * utilities as `@testing-library/react` `render` function.
+ *
+ * @public
+ */
 export function renderTestApp(options: RenderTestAppOptions) {
   const features: FrontendFeature[] = [
     createFrontendPlugin({

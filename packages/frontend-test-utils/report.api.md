@@ -29,6 +29,7 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { TestApiProviderProps } from '@backstage/test-utils';
 import { TestApiRegistry } from '@backstage/test-utils';
+import { testingLibraryDomTypesQueries } from '@testing-library/dom/types/queries';
 import { withLogCollector } from '@backstage/test-utils';
 
 export { ApiMock };
@@ -118,6 +119,18 @@ export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
 ): RenderResult;
+
+// @public
+export function renderTestApp(
+  options: RenderTestAppOptions,
+): RenderResult<testingLibraryDomTypesQueries, HTMLElement, HTMLElement>;
+
+// @public
+export type RenderTestAppOptions = {
+  config?: JsonObject;
+  extensions: ExtensionDefinition<any>[];
+  features?: FrontendFeature[];
+};
 
 export { TestApiProvider };
 
