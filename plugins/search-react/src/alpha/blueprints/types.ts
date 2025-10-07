@@ -15,13 +15,18 @@
  */
 
 import { ListItemProps } from '@material-ui/core/ListItem';
-import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
+import {
+  ResultHighlight,
+  SearchDocument,
+  SearchResult,
+} from '@backstage/plugin-search-common';
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
 
 /** @alpha */
 export type BaseSearchResultListItemProps<T = {}> = T & {
   rank?: number;
   result?: SearchDocument;
+  highlight?: ResultHighlight;
 } & Omit<ListItemProps, 'button'>;
 
 /** @alpha */

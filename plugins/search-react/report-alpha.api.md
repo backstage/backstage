@@ -7,6 +7,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ListItemProps } from '@material-ui/core/ListItem';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -15,6 +16,7 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 export type BaseSearchResultListItemProps<T = {}> = T & {
   rank?: number;
   result?: SearchDocument;
+  highlight?: ResultHighlight;
 } & Omit<ListItemProps, 'button'>;
 
 // @alpha (undocumented)
