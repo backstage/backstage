@@ -272,7 +272,7 @@ const config: Config = {
           {
             from: '/docs/getting-started/app-custom-theme',
             to: '/docs/conf/user-interface',
-          }
+          },
         ],
       }),
     [
