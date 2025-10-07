@@ -33,6 +33,14 @@ import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
+import {
+  SwappableReviewStepComponent,
+  SwappableTaskPageComponent,
+  SwappableTemplateCardComponent,
+  SwappableTemplateListPageComponent,
+  SwappableTemplateOutputsComponent,
+  SwappableTemplateWizardPageComponent,
+} from './swappableComponents';
 
 export const scaffolderPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -40,7 +48,30 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
       FormFieldBlueprint.dataRefs.formFieldLoader,
     ]),
   },
-  factory(originalFactory, { inputs }) {
+  config: {
+    schema: {
+      headerOptions: z =>
+        z
+          .object({
+            pageTitleOverride: z.string().optional(),
+            title: z.string().optional(),
+            subtitle: z.string().optional(),
+          })
+          .optional(),
+      defaultPreviewTemplate: z => z.string().optional(),
+      contextMenu: z =>
+        z
+          .object({
+            editor: z.boolean().optional(),
+            actions: z.boolean().optional(),
+            tasks: z.boolean().optional(),
+            create: z.boolean().optional(),
+            templatingExtensions: z.boolean().optional(),
+          })
+          .optional(),
+    },
+  },
+  factory(originalFactory, { inputs, config }) {
     const formFieldLoaders = inputs.formFields.map(i =>
       i.get(FormFieldBlueprint.dataRefs.formFieldLoader),
     );
@@ -50,7 +81,21 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
       loader: () =>
         import('../components/Router/Router').then(m =>
           compatWrapper(
-            <m.InternalRouter formFieldLoaders={formFieldLoaders} />,
+            <m.InternalRouter
+              {...config}
+              formFieldLoaders={formFieldLoaders}
+              components={{
+                TemplateCardComponent: SwappableTemplateCardComponent,
+                ReviewStepComponent: SwappableReviewStepComponent,
+                TaskPageComponent: SwappableTaskPageComponent,
+                EXPERIMENTAL_TemplateOutputsComponent:
+                  SwappableTemplateOutputsComponent,
+                EXPERIMENTAL_TemplateListPageComponent:
+                  SwappableTemplateListPageComponent,
+                EXPERIMENTAL_TemplateWizardPageComponent:
+                  SwappableTemplateWizardPageComponent,
+              }}
+            />,
           ),
         ),
     });

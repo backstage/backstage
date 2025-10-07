@@ -31,7 +31,9 @@ import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -189,9 +191,45 @@ const _default: OverridableFrontendPlugin<
     }>;
     'page:scaffolder': ExtensionDefinition<{
       config: {
+        headerOptions:
+          | {
+              title?: string | undefined;
+              subtitle?: string | undefined;
+              pageTitleOverride?: string | undefined;
+            }
+          | undefined;
+        defaultPreviewTemplate: string | undefined;
+        contextMenu:
+          | {
+              create?: boolean | undefined;
+              actions?: boolean | undefined;
+              editor?: boolean | undefined;
+              templatingExtensions?: boolean | undefined;
+              tasks?: boolean | undefined;
+            }
+          | undefined;
+      } & {
         path: string | undefined;
       };
       configInput: {
+        contextMenu?:
+          | {
+              create?: boolean | undefined;
+              actions?: boolean | undefined;
+              editor?: boolean | undefined;
+              templatingExtensions?: boolean | undefined;
+              tasks?: boolean | undefined;
+            }
+          | undefined;
+        defaultPreviewTemplate?: string | undefined;
+        headerOptions?:
+          | {
+              title?: string | undefined;
+              subtitle?: string | undefined;
+              pageTitleOverride?: string | undefined;
+            }
+          | undefined;
+      } & {
         path?: string | undefined;
       };
       output:
@@ -631,6 +669,56 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorToolbarTemplatesMenu.button': 'Templates';
   }
 >;
+
+// @alpha (undocumented)
+export const SwappableReviewStepComponent: {
+  (props: ReviewStepProps): JSX.Element | null;
+  ref: SwappableComponentRef<ReviewStepProps, ReviewStepProps>;
+};
+
+// @alpha (undocumented)
+export const SwappableTaskPageComponent: {
+  (props: {}): JSX.Element | null;
+  ref: SwappableComponentRef<{}, {}>;
+};
+
+// @alpha (undocumented)
+export const SwappableTemplateCardComponent: {
+  (props: { template: TemplateEntityV1beta3 }): JSX.Element | null;
+  ref: SwappableComponentRef<
+    {
+      template: TemplateEntityV1beta3;
+    },
+    {
+      template: TemplateEntityV1beta3;
+    }
+  >;
+};
+
+// @alpha (undocumented)
+export const SwappableTemplateListPageComponent: {
+  (props: TemplateListPageProps): JSX.Element | null;
+  ref: SwappableComponentRef<TemplateListPageProps, TemplateListPageProps>;
+};
+
+// @alpha (undocumented)
+export const SwappableTemplateOutputsComponent: {
+  (props: { output?: ScaffolderTaskOutput }): JSX.Element | null;
+  ref: SwappableComponentRef<
+    {
+      output?: ScaffolderTaskOutput;
+    },
+    {
+      output?: ScaffolderTaskOutput;
+    }
+  >;
+};
+
+// @alpha (undocumented)
+export const SwappableTemplateWizardPageComponent: {
+  (props: TemplateWizardPageProps): JSX.Element | null;
+  ref: SwappableComponentRef<TemplateWizardPageProps, TemplateWizardPageProps>;
+};
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {

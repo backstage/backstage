@@ -36,11 +36,11 @@ import ajvErrors from 'ajv-errors';
 import { merge } from 'lodash';
 import {
   ComponentType,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
 } from 'react';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
@@ -49,10 +49,12 @@ import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps
 import { Form } from '../Form';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
+
 import {
   createAsyncValidators,
   type FormValidation,
 } from './createAsyncValidators';
+import { DefaultReviewStep } from './DefaultReviewStep';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
 import { hasErrors } from './utils';
@@ -119,7 +121,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   const { layouts = [], components = {}, onCreate, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
-    ReviewStepComponent,
+    ReviewStepComponent = DefaultReviewStep,
     backButtonText = t('stepper.backButtonText'),
     createButtonText = t('stepper.createButtonText'),
     reviewButtonText = t('stepper.reviewButtonText'),
@@ -270,7 +272,6 @@ export const Stepper = (stepperProps: StepperProps) => {
         </MuiStep>
       </MuiStepper>
       <div className={styles.formWrapper}>
-        {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < steps.length ? (
           <Form
             key={activeStep}
@@ -311,37 +312,18 @@ export const Stepper = (stepperProps: StepperProps) => {
               </Button>
             </div>
           </Form>
-        ) : // TODO: potentially move away from this pattern, deprecate?
-        ReviewStepComponent ? (
+        ) : (
           <ReviewStepComponent
-            disableButtons={isValidating}
+            disableButtons={isValidating || isCreating}
             formData={stepsState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
             handleCreate={handleCreate}
+            backButtonLabel={backLabel}
+            createButtonLabel={createLabel}
+            ReviewStateComponent={ReviewStateComponent}
           />
-        ) : (
-          <>
-            <ReviewStateComponent formState={stepsState} schemas={steps} />
-            <div className={styles.footer}>
-              <Button
-                onClick={handleBack}
-                className={styles.backButton}
-                disabled={activeStep < 1}
-              >
-                {backLabel}
-              </Button>
-              <Button
-                disabled={isCreating}
-                variant="contained"
-                color="primary"
-                onClick={handleCreate}
-              >
-                {createLabel}
-              </Button>
-            </div>
-          </>
         )}
       </div>
     </>
