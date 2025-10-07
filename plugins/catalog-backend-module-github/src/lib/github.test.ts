@@ -1044,12 +1044,19 @@ describe('github', () => {
         }),
       );
 
-      await getOrganizationUsers(graphql as any, org, 'token', undefined, {
-        teams: 10,
-        teamMembers: 20,
-        organizationMembers: 30,
-        repositories: 10,
-      });
+      await getOrganizationUsers(
+        graphql as any,
+        org,
+        'token',
+        false,
+        undefined,
+        {
+          teams: 10,
+          teamMembers: 20,
+          organizationMembers: 30,
+          repositories: 10,
+        },
+      );
     });
 
     it('uses custom page sizes for getOrganizationRepositories', async () => {
