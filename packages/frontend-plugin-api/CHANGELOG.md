@@ -1,5 +1,13 @@
 # @backstage/frontend-plugin-api
 
+## 0.12.1-next.2
+
+### Patch Changes
+
+- 8ed53eb: Added `coreExtensionData.title`, especially useful for creating extensible layout with tabbed pages, but available for use for other cases too.
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+
 ## 0.12.1-next.1
 
 ### Patch Changes

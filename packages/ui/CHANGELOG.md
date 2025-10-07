@@ -1,5 +1,14 @@
 # @backstage/ui
 
+## 0.7.2-next.2
+
+### Patch Changes
+
+- 3c921c5: Making href mandatory in tabs that are part of a Header component
+- 5c21e45: Add react router for internal routing for ButtonLinks
+- 9781815: Remove auto selection of tabs for tabs that all have href defined
+- f6dff5b: Using react router for internal links in the Menu component
+
 ## 0.7.2-next.1
 
 ### Patch Changes
