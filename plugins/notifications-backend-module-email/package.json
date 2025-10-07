@@ -48,7 +48,7 @@
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
-    "nodemailer": "^6.9.13",
+    "nodemailer": "^7.0.7",
     "p-throttle": "^4.1.1"
   },
   "devDependencies": {
