@@ -132,6 +132,20 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     this.logger = options.logger.child({
       target: this.getProviderName(),
     });
+
+    // Log information about entityFilePattern usage
+    if (this.config.catalogFilePattern) {
+      this.logger.info(
+        `Using entityFilePattern '${
+          this.config.catalogFilePattern.source
+        }' to match catalog files. This overrides the entityFilename setting${
+          this.config.catalogFilePattern.test('catalog-info.yaml')
+            ? ''
+            : ' (note: this pattern will not match the default catalog-info.yaml file)'
+        }.`,
+      );
+    }
+
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
     this.events = options.events;
     this.gitLabClient = new GitLabClient({
@@ -389,20 +403,14 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     }
 
     // Get array of added, removed or modified files from the push event
-    const added = this.getFilesMatchingConfig(
-      event,
-      'added',
-      this.config.catalogFile,
-    );
-    const removed = this.getFilesMatchingConfig(
-      event,
-      'removed',
-      this.config.catalogFile,
-    );
+    const catalogFile =
+      this.config.catalogFilePattern ?? this.config.catalogFile;
+    const added = this.getFilesMatchingConfig(event, 'added', catalogFile);
+    const removed = this.getFilesMatchingConfig(event, 'removed', catalogFile);
     const modified = this.getFilesMatchingConfig(
       event,
       'modified',
-      this.config.catalogFile,
+      catalogFile,
     );
 
     // Modified files will be scheduled to a refresh
@@ -465,16 +473,23 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private getFilesMatchingConfig(
     event: WebhookPushEventSchema,
     action: 'added' | 'removed' | 'modified',
-    catalogFile: string,
+    catalogFile: string | RegExp,
   ): string[] {
     if (!event.commits) {
       return [];
     }
 
+    let test: (file: string) => boolean;
+
+    if (typeof catalogFile === 'string') {
+      test = (file: string) => path.basename(file) === catalogFile;
+    } else {
+      test = (file: string) =>
+        catalogFile.test(file) || catalogFile.test(path.basename(file));
+    }
+
     const matchingFiles = event.commits.flatMap((element: any) =>
-      element[action].filter(
-        (file: string) => path.basename(file) === catalogFile,
-      ),
+      element[action].filter(test),
     );
 
     if (matchingFiles.length === 0) {

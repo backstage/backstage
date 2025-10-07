@@ -33,6 +33,10 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const fallbackBranch = config.getOptionalString('fallbackBranch') ?? 'master';
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
+  const entityFilePattern = config.getOptionalString('entityFilePattern');
+  const catalogFilePattern = entityFilePattern
+    ? new RegExp(entityFilePattern)
+    : undefined;
   const projectPattern = new RegExp(
     config.getOptionalString('projectPattern') ?? /[\s\S]*/,
   );
@@ -90,6 +94,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     fallbackBranch,
     host,
     catalogFile,
+    catalogFilePattern,
     projectPattern,
     userPattern,
     groupPattern,
