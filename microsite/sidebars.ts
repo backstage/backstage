@@ -396,17 +396,7 @@ export default {
       'conf/index',
       'conf/reading',
       'conf/writing',
-      'conf/defining',
-      {
-        type: 'category',
-        label: 'User Interface',
-        items: [
-          'conf/user-interface/index',
-          'conf/user-interface/logo',
-          'conf/user-interface/icons',
-          'conf/user-interface/sidebar',
-        ],
-      },
+      'conf/defining'
     ],
     Framework: [
       {
@@ -549,6 +539,16 @@ export default {
             ],
           },
           'tooling/package-metadata',
+        ],
+      },
+      {
+        type: 'category',
+        label: 'User Interface',
+        items: [
+          'conf/user-interface/index',
+          'conf/user-interface/logo',
+          'conf/user-interface/icons',
+          'conf/user-interface/sidebar',
         ],
       },
     ],
