@@ -107,6 +107,12 @@ const appPluginOverride = appPlugin.withOverrides({
     appPlugin.getExtension('sign-in-page:app').override({
       disabled: true,
     }),
+    appPlugin.getExtension('app/layout').override({
+      disabled: true,
+    }),
+    appPlugin.getExtension('app/routes').override({
+      disabled: true,
+    }),
     appPlugin.getExtension('app/nav').override({
       output: [coreExtensionData.reactElement],
       factory(_originalFactory, { inputs }) {
@@ -147,13 +153,10 @@ export function renderInTestApp(
 ): RenderResult {
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
-      attachTo: { id: 'app/routes', input: 'routes' },
-      output: [coreExtensionData.reactElement, coreExtensionData.routePath],
+      attachTo: { id: 'app/root', input: 'children' },
+      output: [coreExtensionData.reactElement],
       factory: () => {
-        return [
-          coreExtensionData.reactElement(element),
-          coreExtensionData.routePath('/'),
-        ];
+        return [coreExtensionData.reactElement(element)];
       },
     }),
     RouterBlueprint.make({
