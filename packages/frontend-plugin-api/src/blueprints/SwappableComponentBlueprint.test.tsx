@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
 import { createSwappableComponent } from '../components';
 import { SwappableComponentBlueprint } from './SwappableComponentBlueprint';
 import { PageBlueprint } from './PageBlueprint';
-import { waitFor, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 describe('SwappableComponentBlueprint', () => {
   it('should allow defining a component override for a component ref', () => {
@@ -48,21 +48,19 @@ describe('SwappableComponentBlueprint', () => {
       loader: () => (props: { hello: string }) => <div>{props.hello}</div>,
     });
 
-    renderInTestApp(<div />, {
+    renderTestApp({
       extensions: [
         PageBlueprint.make({
           params: define =>
             define({
-              // todo(blam): there's a bug that this path cannot be `/`?
-              path: '/test',
+              path: '/',
               loader: async () => <TestComponent hello="test!" />,
             }),
         }),
       ],
-      initialRouteEntries: ['/test'],
     });
 
-    await waitFor(() => expect(screen.getByText('test!')).toBeInTheDocument());
+    expect(await screen.findByText('test!')).toBeInTheDocument();
   });
 
   it('should render a component ref without a default implementation', async () => {
@@ -70,22 +68,19 @@ describe('SwappableComponentBlueprint', () => {
       id: 'test.component',
     });
 
-    renderInTestApp(<div />, {
+    renderTestApp({
       extensions: [
         PageBlueprint.make({
           params: define =>
             define({
-              path: '/test',
+              path: '/',
               loader: async () => <TestComponent />,
             }),
         }),
       ],
-      initialRouteEntries: ['/test'],
     });
 
-    await waitFor(() =>
-      expect(screen.getByTestId('test.component')).toBeInTheDocument(),
-    );
+    expect(await screen.findByTestId('test.component')).toBeInTheDocument();
   });
 
   it('should render a component ref with an async loader implementation', async () => {
@@ -95,21 +90,20 @@ describe('SwappableComponentBlueprint', () => {
         <div>{props.hello}</div>,
     });
 
-    renderInTestApp(<div />, {
+    renderTestApp({
       extensions: [
         PageBlueprint.make({
           params: define =>
             define({
               // todo(blam): there's a bug that this path cannot be `/`?
-              path: '/test',
+              path: '/',
               loader: async () => <TestComponent hello="test!" />,
             }),
         }),
       ],
-      initialRouteEntries: ['/test'],
     });
 
-    await waitFor(() => expect(screen.getByText('test!')).toBeInTheDocument());
+    expect(await screen.findByText('test!')).toBeInTheDocument();
   });
 
   it('should render a component ref with an async loader implementation and prop transform', async () => {
@@ -120,22 +114,18 @@ describe('SwappableComponentBlueprint', () => {
       transformProps: ({ hello }) => ({ hello: `tr ${hello}` }),
     });
 
-    renderInTestApp(<div />, {
+    renderTestApp({
       extensions: [
         PageBlueprint.make({
           params: define =>
             define({
-              // todo(blam): there's a bug that this path cannot be `/`?
-              path: '/test',
+              path: '/',
               loader: async () => <TestComponent hello="test!" />,
             }),
         }),
       ],
-      initialRouteEntries: ['/test'],
     });
 
-    await waitFor(() =>
-      expect(screen.getByText('tr test!')).toBeInTheDocument(),
-    );
+    expect(await screen.findByText('tr test!')).toBeInTheDocument();
   });
 });
