@@ -31,7 +31,6 @@ import {
   NavItemBlueprint,
   createFrontendPlugin,
   FrontendFeature,
-  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
 
@@ -108,6 +107,12 @@ const appPluginOverride = appPlugin.withOverrides({
     appPlugin.getExtension('sign-in-page:app').override({
       disabled: true,
     }),
+    appPlugin.getExtension('app/layout').override({
+      disabled: true,
+    }),
+    appPlugin.getExtension('app/routes').override({
+      disabled: true,
+    }),
     appPlugin.getExtension('app/nav').override({
       output: [coreExtensionData.reactElement],
       factory(_originalFactory, { inputs }) {
@@ -147,6 +152,13 @@ export function renderInTestApp(
   options?: TestAppOptions,
 ): RenderResult {
   const extensions: Array<ExtensionDefinition> = [
+    createExtension({
+      attachTo: { id: 'app/root', input: 'children' },
+      output: [coreExtensionData.reactElement],
+      factory: () => {
+        return [coreExtensionData.reactElement(element)];
+      },
+    }),
     RouterBlueprint.make({
       params: {
         component: ({ children }) => (
@@ -184,13 +196,6 @@ export function renderInTestApp(
   if (options?.extensions) {
     extensions.push(...options.extensions);
   }
-
-  extensions.push(
-    PageBlueprint.make({
-      name: 'mocked-root-page',
-      params: define => define({ path: '/', loader: async () => element }),
-    }),
-  );
 
   const features: FrontendFeature[] = [
     createFrontendPlugin({

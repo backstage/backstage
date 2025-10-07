@@ -20,19 +20,15 @@ import {
   MockAnalyticsApi,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
-import {
-  analyticsApiRef,
-  PageBlueprint,
-  useAnalytics,
-} from '@backstage/frontend-plugin-api';
+import { analyticsApiRef, useAnalytics } from '@backstage/frontend-plugin-api';
+import { Routes, Route } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
-import { Route, Routes } from 'react-router-dom';
 
 describe('renderInTestApp', () => {
   it('should render the given component in a page', async () => {
     const IndexPage = () => <div>Index Page</div>;
     renderInTestApp(<IndexPage />);
-    expect(await screen.findByText('Index Page')).toBeInTheDocument();
+    expect(screen.getByText('Index Page')).toBeInTheDocument();
   });
 
   it('should works with apis provider', async () => {
@@ -59,7 +55,7 @@ describe('renderInTestApp', () => {
       </TestApiProvider>,
     );
 
-    fireEvent.click(await screen.findByRole('link', { name: 'See details' }));
+    fireEvent.click(screen.getByRole('link', { name: 'See details' }));
 
     expect(analyticsApiMock.getEvents()).toEqual(
       expect.arrayContaining([
@@ -72,25 +68,16 @@ describe('renderInTestApp', () => {
   });
 
   it('should support setting different locations in the history stack', async () => {
-    renderInTestApp(<h1>Index page</h1>, {
-      extensions: [
-        PageBlueprint.make({
-          name: 'second-page',
-          params: defineParams =>
-            defineParams({
-              path: '/second-page',
-              loader: async () => (
-                <Routes>
-                  <Route path="/" element={<h1>Second page</h1>} />
-                  <Route path="/subpage" element={<h1>Subpage</h1>} />
-                </Routes>
-              ),
-            }),
-        }),
-      ],
-      initialRouteEntries: ['/second-page/subpage'],
-    });
+    renderInTestApp(
+      <Routes>
+        <Route path="/" element={<h1>Index Page</h1>} />
+        <Route path="/second-page" element={<h1>Second Page</h1>} />
+      </Routes>,
+      {
+        initialRouteEntries: ['/second-page'],
+      },
+    );
 
-    expect(await screen.findByText('Subpage')).toBeInTheDocument();
+    expect(screen.getByText('Second Page')).toBeInTheDocument();
   });
 });
