@@ -128,7 +128,7 @@ export function renderTestApp(
 // @public
 export type RenderTestAppOptions = {
   config?: JsonObject;
-  extensions: ExtensionDefinition<any>[];
+  extensions?: ExtensionDefinition<any>[];
   features?: FrontendFeature[];
 };
 

@@ -39,7 +39,7 @@ export type RenderTestAppOptions = {
   /**
    * Additional extensions to add to the test app.
    */
-  extensions: ExtensionDefinition<any>[];
+  extensions?: ExtensionDefinition<any>[];
 
   /**
    * Additional features to add to the test app.
