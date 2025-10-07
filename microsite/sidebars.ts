@@ -396,7 +396,7 @@ export default {
       'conf/index',
       'conf/reading',
       'conf/writing',
-      'conf/defining'
+      'conf/defining',
     ],
     Framework: [
       {
