@@ -178,7 +178,7 @@ These colors are used for the background of your application. We are mostly usin
 
 #### Foreground colors
 
-Foreground colours are meant to work in pair with a background colours. Typeically this would work for icons, texts, shapes, ... Use a matching name to know what foreground color to use. These colors are prefixed with `fg` to make it easier to identify.
+Foreground colours are meant to work in pair with a background colours. Typically this would work for icons, texts, shapes, ... Use a matching name to know what foreground color to use. These colors are prefixed with `fg` to make it easier to identify.
 
 | Token Name               | Description                                                       |
 | ------------------------ | ----------------------------------------------------------------- |
