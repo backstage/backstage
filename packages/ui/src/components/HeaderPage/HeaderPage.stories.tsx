@@ -148,7 +148,11 @@ export const WithCustomActions: Story = {
         <>
           <Button>Custom action</Button>
           <MenuTrigger>
-            <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+            <ButtonIcon
+              variant="tertiary"
+              icon={<RiMore2Line />}
+              aria-label="More options"
+            />
             <Menu placement="bottom end">
               {menuItems.map(option => (
                 <MenuItem
