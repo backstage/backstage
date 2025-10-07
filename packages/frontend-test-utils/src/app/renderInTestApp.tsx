@@ -69,6 +69,8 @@ export type TestAppOptions = {
 
   /**
    * Additional extensions to add to the test app.
+   *
+   * @deprecated Use `renderTestApp` instead.
    */
   extensions?: ExtensionDefinition<any>[];
 
