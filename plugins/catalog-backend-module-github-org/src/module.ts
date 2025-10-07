@@ -121,6 +121,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               alwaysUseDefaultNamespace:
                 definitions.length === 1 && definition.orgs?.length === 1,
               pageSizes: definition.pageSizes,
+              excludeSuspendedUsers: definition.excludeSuspendedUsers,
             }),
           );
         }
@@ -133,6 +134,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
   id: string;
   githubUrl: string;
   orgs?: string[];
+  excludeSuspendedUsers?: boolean;
   schedule: SchedulerServiceTaskScheduleDefinition;
   pageSizes?: {
     teams?: number;
@@ -154,6 +156,8 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     id: c.getString('id'),
     githubUrl: c.getString('githubUrl'),
     orgs: c.getOptionalStringArray('orgs'),
+    excludeSuspendedUsers:
+      c.getOptionalBoolean('excludeSuspendedUsers') ?? false,
     schedule: readSchedulerServiceTaskScheduleDefinitionFromConfig(
       c.getConfig('schedule'),
     ),

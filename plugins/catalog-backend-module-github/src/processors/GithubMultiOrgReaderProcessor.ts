@@ -148,6 +148,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           client,
           orgConfig.name,
           tokenType,
+          false,
           async (githubUser, ctx): Promise<Entity | undefined> => {
             const result = this.options.userTransformer
               ? await this.options.userTransformer(githubUser, ctx)

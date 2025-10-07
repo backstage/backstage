@@ -62,6 +62,9 @@ export const defaultUserTransformer = async (
   item: GithubUser,
   _ctx: TransformerContext,
 ): Promise<UserEntity | undefined> => {
+  if (item.suspendedAt) {
+    return undefined;
+  }
   const entity: UserEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'User',

@@ -130,6 +130,14 @@ export interface GithubOrgEntityProviderOptions {
    * Optionally include a team transformer for transforming from GitHub teams to Group Entities
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * Optionally exclude suspended users when querying organization users.
+   * @defaultValue false
+   * @remarks
+   * Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
+   */
+  excludeSuspendedUsers?: boolean;
 }
 
 /**
@@ -167,6 +175,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
+      excludeSuspendedUsers: options.excludeSuspendedUsers,
     });
 
     provider.schedule(options.schedule);
@@ -184,6 +193,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
+      excludeSuspendedUsers?: boolean;
     },
   ) {
     this.credentialsProvider =
@@ -235,6 +245,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
+      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
     );
     const { teams } = await getOrganizationTeams(
@@ -363,6 +374,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
+      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
     );
 
@@ -454,6 +466,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
+      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
     );
 

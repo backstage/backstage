@@ -174,6 +174,14 @@ export interface GithubMultiOrgEntityProviderOptions {
    * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
    */
   pageSizes?: Partial<GithubPageSizes>;
+
+  /**
+   * Optionally exclude suspended users when querying organization users.
+   * @defaultValue false
+   * @remarks
+   * Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
+   */
+  excludeSuspendedUsers?: boolean;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -221,6 +229,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
       pageSizes: options.pageSizes,
+      excludeSuspendedUsers: options.excludeSuspendedUsers,
     });
 
     provider.schedule(options.schedule);
@@ -241,6 +250,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
       pageSizes?: Partial<GithubPageSizes>;
+      excludeSuspendedUsers?: boolean;
     },
   ) {}
 
@@ -304,6 +314,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         client,
         org,
         tokenType,
+        this.options.excludeSuspendedUsers,
         this.options.userTransformer,
         pageSizes,
       );
@@ -456,6 +467,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
+      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
       pageSizes,
     );
@@ -690,6 +702,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
+      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
       pageSizes,
     );
