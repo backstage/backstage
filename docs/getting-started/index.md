@@ -1,8 +1,8 @@
 ---
 id: index
-title: Creating your Backstage App
-sidebar_label: Introduction
-description: How to install Backstage for your own use.
+title: Creating and running a stand-alone Backstage App
+sidebar_label: Creating and running a stand-alone Backstage App
+description: How to install a Stand-alone Backstage for your own use.
 ---
 
 Audience: Developers and Admins
@@ -11,11 +11,11 @@ Audience: Developers and Admins
 It is not required, although recommended to have a basic understanding of [Yarn](https://www.pluralsight.com/guides/yarn-a-package-manager-for-node-js) and [npm](https://docs.npmjs.com/about-npm) before starting this guide.
 :::
 
-## Summary
+## Overview
 
-This guide walks through how to get started creating your very own Backstage customizable app. This is the first step in evaluating, developing on, or demoing Backstage.
+This guide walks through how to create your own Backstage customizable app. This is the first step in evaluating, developing on, or demoing Backstage.
 
-By the end of this guide, you will have a standalone Backstage installation running locally with a `SQLite` database and demo content. To be clear, this is not a production-ready installation, and it does not contain information specific to your organization.
+By the end of this guide, you will have a standalone Backstage installation running locally with an in-memory `SQLite` database and demo content. To be clear, this is not a production-ready installation, and it does not contain information specific to your organization until you set up integrations with your specific data sources!
 
 :::note Contributors
 
@@ -23,46 +23,9 @@ If you are planning to contribute a new feature or bug fix to the Backstage proj
 
 :::
 
-## Prerequisites
+The instructions make use of `npx`. `npx` is a tool that comes preinstalled with Node.js and lets you run commands straight from `npm` or other registries.
 
-This guide also assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
-
-- Access to a Unix-based operating system, such as Linux, macOS or
-  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
-- A GNU-like build environment available at the command line.
-  For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
-  On macOS, you will want to run `xcode-select --install` to get the XCode command line build tooling in place.
-- An account with elevated rights to install the dependencies
-- `curl` or `wget` installed
-- Node.js [Active LTS Release](../overview/versioning-policy.md#nodejs-releases) installed using one of these
-  methods:
-  - Using `nvm` (recommended)
-    - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)
-    - [Install and change Node version with nvm](https://nodejs.org/en/download/package-manager/#nvm)
-    - Node 20 is a good starting point, this can be installed using `nvm install lts/iron`
-  - [Binary Download](https://nodejs.org/en/download/)
-  - [Package manager](https://nodejs.org/en/download/package-manager/)
-  - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
-- `yarn` [Installation](https://yarnpkg.com/getting-started/install)
-  - Backstage currently uses Yarn 4.4.1, once you've ran `corepack enable` you'll want to then run `yarn set version 4.4.1`
-- `docker` [installation](https://docs.docker.com/engine/install/)
-- `git` [installation](https://github.com/git-guides/install-git)
-- If the system is not directly accessible over your network the following ports
-  need to be opened: 3000, 7007. This is quite uncommon, unless you're installing in a container, VM or remote system.
-
-## 1. Create your Backstage App
-
-:::caution
-
-The Backstage app we'll be creating will only have demo data until we set up integrations with your specific data sources!
-
-:::
-
-To install the Backstage Standalone app, we will make use of `npx`. `npx` is a tool that comes preinstalled with Node.js and lets you run commands straight from `npm` or other registries. Before we run the command, let's discuss what it does.
-
-This command will create a new directory with a Backstage app inside. The wizard will ask you for the name of the app. This name will be created as subdirectory in your current working directory.
-
-![create app](../assets/getting-started/create-app-output.png)
+This command creates a new directory with a Backstage app inside. The wizard will ask you for the name of the app. This name will be created as a subdirectory in your current working directory.
 
 Inside that directory, it will generate all the files and folder structure
 needed for you to run your app.
@@ -100,46 +63,101 @@ app
   and [TechDocs](https://backstage.io/docs/features/techdocs/)
   amongst other things.
 
-Now, that we know what it does, let's run it!
+## Prerequisites
 
-```bash
-npx @backstage/create-app@latest
-```
+This guide also assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
+
+- Access to a Unix-based operating system, such as Linux, macOS or
+  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+- A GNU-like build environment available at the command line.
+  For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
+  On macOS, you will want to run `xcode-select --install` to get the XCode command line build tooling in place.
+- An account with elevated rights to install the dependencies
+- `curl` or `wget` installed
+- Node.js [Active LTS Release](../overview/versioning-policy.md#nodejs-releases) installed using one of these
+  methods:
+  - Using `nvm` (recommended)
+    - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)
+    - [Install and change Node version with nvm](https://nodejs.org/en/download/package-manager/#nvm)
+    - Node 20 is a good starting point, this can be installed using `nvm install lts/iron`
+  - [Binary Download](https://nodejs.org/en/download/)
+  - [Package manager](https://nodejs.org/en/download/package-manager/)
+  - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
+- If you are creating your Backstage app in a virtual machine, you must have the`isolated-vm` module installed. Install the `isolated-vm` module, following their [requirements section](https://github.com/laverdet/isolated-vm#requirements).
+- `yarn` [Installation](https://yarnpkg.com/getting-started/install)
+  - Backstage currently uses Yarn 4.4.1, once you've ran `corepack enable` you'll want to then run `yarn set version 4.4.1`
+- `docker` [installation](https://docs.docker.com/engine/install/)
+- `git` [installation](https://github.com/git-guides/install-git)
+- If the system is not directly accessible over your network the following ports
+  need to be opened: 3000, 7007. This is quite uncommon, unless you're installing in a container, VM or remote system.
+
+## Creating and running a Backstage application
 
 This may take a few minutes to fully install everything. Don't stress if the loading seems to be spinning nonstop, there's a lot going on in the background.
 
-:::note
+To create the application:
 
-If this fails on the `yarn install` step, it's likely that you will need to install some additional dependencies which are used to configure `isolated-vm`. You can find out more in their [requirements section](https://github.com/laverdet/isolated-vm#requirements), and then run `yarn install` manually again after you've completed those steps.
+1. Type the following command to install the Backstage application.
+
+```bash
+     npx @backstage/create-app@latest
+```
+
+2. If this is the first time that you are installing a Backstage application on this device, the following question is displayed. Enter `y` and select `Enter` to proceed with the installation.
+
+```
+     Need to install the following packages:
+     @backstage/create-app@0.7.4
+     ok to proceed? (y)
+```
+
+3. Enter the name for your application and select `Enter`. This is the root directory of your application. In this example, the name is set to `my-backstage-app`.
+
+   ![create app](../assets/getting-started/create-app-output.png)
+
+:::tip Install fails wth isolated_vm error
+
+If the `yarn install` command fails, and you see an error in the logs similar to the following:
+
+```
+Error: Cannot find module './out/isolated_vm'
+```
+
+then perform the following steps:
+
+1. Install the `isolated-vm` module, following their [requirements section](https://github.com/laverdet/isolated-vm#requirements).
+2. Run `yarn install` manually again.
 
 :::
 
-## 2. Run the Backstage app
-
 Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
 
-```bash
-cd my-backstage-app # your app name
-yarn start
-```
+To run the application:
+ 1. Change to the root directory of your Backstage app. This is the same as the name of your application that you provided during the installation. In this example, it is `my-backstage-app`.
+    
+     ```bash
+     cd my-backstage-app # your app name
+     ```
+     
+2. Start the Backstage application.
 
+   ```bash
+   yarn start
+   ```
+   
 ![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)
 
 Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
 
-:::tip Browser window didn't open
+You can start exploring the demo immediately.
+
+:::tip Browser window didn't open with yarn start
 
 When you see the message `[0] webpack compiled successfully`, you can navigate directly to `http://localhost:3000` to see your Backstage app.
 
 :::
 
-You can start exploring the demo immediately.
-
 ![Screenshot of the Backstage portal.](../assets/getting-started/portal.png)
-
-## Recap
-
-This tutorial walked through how to deploy Backstage using the `npx @backstage/create-app@latest` command. That command created a new directory that holds your new Backstage app. That app is currently only configured for development purposes, as it is using an in-memory database and contains demo data.
 
 ## Next steps
 
