@@ -1038,7 +1038,7 @@ export interface HeaderProps {
 // @public
 export interface HeaderTab {
   // (undocumented)
-  href?: string;
+  href: string;
   // (undocumented)
   id: string;
   // (undocumented)

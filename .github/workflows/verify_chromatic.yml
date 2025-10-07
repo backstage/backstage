@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master
-  pull_request:
+  pull_request_target:
     paths:
       - '.github/workflows/verify_chromatic.yml'
       - '.storybook/**'
@@ -31,6 +31,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          # For pull_request_target, we need to check out the PR branch
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 10000 # Required to retrieve git history
 
       - name: Use node.js ${{ matrix.node-version }}
@@ -63,7 +65,7 @@ jobs:
             packages/ui/src/**/*.css
 
       - name: Prepare Chromatic Message
-        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        if: github.event_name == 'pull_request_target' && steps.chromatic.outputs.url
         id: prepare-message
         run: |
           if [ "${{ steps.chromatic.outputs.changeCount }}" = "0" ] || [ -z "${{ steps.chromatic.outputs.changeCount }}" ]; then
@@ -73,7 +75,7 @@ jobs:
           fi
 
       - name: Post Chromatic Link in PR Comment
-        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        if: github.event_name == 'pull_request_target' && steps.chromatic.outputs.url
         uses: mshick/add-pr-comment@v2
         with:
           message: |
