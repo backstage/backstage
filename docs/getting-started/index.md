@@ -115,20 +115,20 @@ To create the application:
 
    ![create app](../assets/getting-started/create-app-output.png)
 
-:::tip Install fails wth isolated_vm error
+   :::tip Install fails wth isolated_vm error
 
-If the `yarn install` command fails, and you see an error in the logs similar to the following:
+   If the `yarn install` command fails, and you see an error in the logs similar to the following:
 
-```
-Error: Cannot find module './out/isolated_vm'
-```
+   ```
+   Error: Cannot find module './out/isolated_vm'
+   ```
 
-then perform the following steps:
+   then perform the following steps:
 
-1. Install the `isolated-vm` module, following their [requirements section](https://github.com/laverdet/isolated-vm#requirements).
-2. Run `yarn install` manually again.
+   1. Install the `isolated-vm` module, following their [requirements section](https://github.com/laverdet/isolated-vm#requirements).
+   2. Run `yarn install` manually again.
 
-:::
+   :::
 
 Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
 
@@ -144,23 +144,23 @@ To run the application:
    ```bash
    yarn start
    ```   
-![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)
+   ![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)
 
-  Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
+   Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
 
-:::tip Browser window didn't open with yarn start
+   :::tip Browser window didn't open with yarn start
 
-When you see the message `[0] webpack compiled successfully`, you can navigate directly to `http://localhost:3000` to see your Backstage app.
+   When you see the message `[0] webpack compiled successfully`, you can navigate directly to `http://localhost:3000` to see your Backstage app.
 
-:::
+   :::
 
 3. Your new Backstage application includes a Guest User. Select `ENTER` to login to the application and display the UI.
    
-  ![Guest User login screen](../assets/getting-started/login-to-app-as-guest-user.png)
+    ![Guest User login screen](../assets/getting-started/login-to-app-as-guest-user.png)
 
   The UI is displayed and you can start exploring the demo immediately.
   
-![Screenshot of the Backstage portal.](../assets/getting-started/portal.png)
+    ![Screenshot of the Backstage portal.](../assets/getting-started/portal.png)
 
 ## Next steps
 
