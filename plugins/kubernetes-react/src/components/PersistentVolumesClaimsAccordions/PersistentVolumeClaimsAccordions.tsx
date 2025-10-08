@@ -22,7 +22,12 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { V1PersistentVolumeClaim } from '@kubernetes/client-node';
 import { GroupedResponsesContext } from '../../hooks';
-import { StructuredMetadataTable } from '@backstage/core-components';
+import {
+  StatusError,
+  StatusOK,
+  StatusPending,
+  StructuredMetadataTable,
+} from '@backstage/core-components';
 import { PersistentVolumeClaimsDrawer } from './PersistentVolumeClaimsDrawer.tsx';
 
 type PersistentVolumeClaimSummaryProps = {
@@ -47,7 +52,20 @@ const PersistentVolumeClaimsSummary = ({
       </Grid>
 
       <Grid item>
-        <Typography variant="subtitle2">Data Count:</Typography>
+        <Typography variant="subtitle2">
+          {persistentVolumeClaim.status?.phase === 'Bound' && (
+            <StatusOK>Bound</StatusOK>
+          )}
+          {persistentVolumeClaim.status?.phase === 'Pending' && (
+            <StatusPending>Pending</StatusPending>
+          )}
+          {persistentVolumeClaim.status?.phase === 'Lost' && (
+            <StatusError>Lost</StatusError>
+          )}
+        </Typography>
+        <Typography variant="subtitle2">
+          Size: {persistentVolumeClaim.status?.capacity?.storage ?? 'N/A'}
+        </Typography>
       </Grid>
     </Grid>
   );
@@ -62,11 +80,20 @@ const PersistentVolumeClaimClaimCard = ({
 }: PersistentVolumeClaimsCardProps) => {
   const metadata: any = {};
 
-  metadata.phase = persistentVolumeClaim.status?.phase;
+  metadata.size = persistentVolumeClaim.status?.capacity?.storage;
+  metadata.accessModes = persistentVolumeClaim.spec?.accessModes;
+  metadata.storageClassName = persistentVolumeClaim.spec?.storageClassName;
+  metadata.volumeName = persistentVolumeClaim.spec?.volumeName;
+  metadata.volumeMode = persistentVolumeClaim.spec?.volumeMode;
 
   return (
     <StructuredMetadataTable
       metadata={{
+        size: persistentVolumeClaim.status?.capacity?.storage,
+        accessModes: persistentVolumeClaim.spec?.accessModes,
+        storageClassName: persistentVolumeClaim.spec?.storageClassName,
+        volumeName: persistentVolumeClaim.spec?.volumeName,
+        volumeMode: persistentVolumeClaim.spec?.volumeMode,
         ...metadata,
       }}
       options={{ nestedValuesAsYaml: true }}
