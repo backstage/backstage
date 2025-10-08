@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-gerrit
 
+## 0.3.7-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+
 ## 0.3.7-next.0
 
 ### Patch Changes

@@ -94,6 +94,42 @@ export namespace DependencyGraphTypes {
   ) => ReactNode;
 
   /**
+   * Properties of {@link DependencyGraphTypes.RenderEdgeFunction} for {@link DependencyGraphTypes.DependencyEdge}
+   *
+   * @public
+   */
+  export type RenderEdgeProps<T = {}> = {
+    edge: T & {
+      points: { x: number; y: number }[];
+      label?: string;
+      labeloffset?: number;
+      labelpos?: string;
+      width?: number;
+      height?: number;
+      weight?: number;
+      minlen?: number;
+      showArrowHeads?: boolean;
+      from?: string;
+      to?: string;
+      relations?: string[];
+    };
+    id: {
+      v: string;
+      w: string;
+      name?: string | undefined;
+    };
+  };
+
+  /**
+   * Custom React component for graph {@link DependencyGraphTypes.DependencyEdge}
+   *
+   * @public
+   */
+  export type RenderEdgeFunction<T = {}> = (
+    props: RenderEdgeProps<T>,
+  ) => ReactNode;
+
+  /**
    * Graph direction
    *
    * @public

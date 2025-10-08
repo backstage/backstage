@@ -1,5 +1,49 @@
 # @backstage/cli
 
+## 0.34.4-next.3
+
+### Patch Changes
+
+- f2cf564: Removed the script transform cache from the default Jest configuration. The script cache provided a moderate performance boost, but it is incompatible with Jest 30.
+- 024645e: Remove unused @octokit modules from cli package
+
+  - @octokit/graphql
+  - @octokit/graphql-schema
+  - @octokit/oauth-app
+
+- d14ef24: Added automatic detection and support for the Backstage Yarn plugin when generating new packages with `yarn new`. When the plugin is installed, new packages will automatically use `backstage:^` ranges for `@backstage/*` dependencies.
+
+## 0.34.4-next.2
+
+### Patch Changes
+
+- ab96bb7: Added a new `--entrypoint` option to the `package start` command, which allows you to specify a custom entry directory/file for development applications. This is particularly useful when maintaining separate dev apps for different versions of your plugin (e.g., stable and alpha).
+
+  **Example usage:**
+
+  Consider the following plugin dev folder structure:
+
+  ```
+  dev/
+    index.tsx
+    alpha/
+      index.ts
+  ```
+
+  - The default `yarn package start` command uses the `dev/` folder as the entry point and executes `dev/index.tsx` file;
+  - Running `yarn package start --entrypoint dev/alpha` will instead use `dev/alpha/` as the entry point and execute `dev/alpha/index.ts` file.
+
+## 0.34.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.4-next.0
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/cli-node@0.2.14
+  - @backstage/release-manifests@0.0.13
+
 ## 0.34.4-next.0
 
 ### Patch Changes

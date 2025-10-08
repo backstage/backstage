@@ -282,6 +282,7 @@ modularization
 monorepo
 Monorepo
 monorepos
+monospace
 morgan
 msgraph
 msw

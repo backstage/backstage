@@ -20,6 +20,7 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export const coreExtensionData = {
+  title: createExtensionDataRef<string>().with({ id: 'core.title' }),
   reactElement: createExtensionDataRef<JSX.Element>().with({
     id: 'core.reactElement',
   }),

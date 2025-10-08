@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.7-next.1
+  - @backstage/plugin-techdocs-node@1.13.8-next.1
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/catalog-client@1.12.0
+
 ## 2.1.1-next.0
 
 ### Patch Changes

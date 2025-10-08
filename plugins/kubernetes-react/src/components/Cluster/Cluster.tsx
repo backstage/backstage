@@ -30,6 +30,7 @@ import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { StatefulSetsAccordions } from '../StatefulSetsAccordions';
 import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
+import { ConfigmapsAccordions } from '../ConfigmapsAccordions';
 import { CronJobsAccordions } from '../CronJobsAccordions';
 import { CustomResources } from '../CustomResources';
 import { DaemonSetsAccordions } from '../DaemonSetsAccordions';
@@ -168,6 +169,11 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   {groupedResponses.services.length > 0 ? (
                     <Grid item>
                       <ServicesAccordions />
+                    </Grid>
+                  ) : undefined}
+                  {groupedResponses.configMaps.length > 0 ? (
+                    <Grid item>
+                      <ConfigmapsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.cronJobs.length > 0 ? (
