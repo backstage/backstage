@@ -23,7 +23,7 @@ export const getPersistentVolumeType = (driver?: string): string | null => {
     if (driver.includes('s3')) return `S3 Bucket`;
   }
 
-  if (driver.includes('gke.io') || driver.includes('gcp')) {
+  if (driver.includes('gke')) {
     if (driver.includes('gcsfuse')) return `GCS Fuse`;
     if (driver.includes('filestore')) return `GCP Filestore`;
     if (driver.includes('pd')) return `GCP Persistent Disk`;
