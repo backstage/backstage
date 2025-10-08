@@ -219,7 +219,9 @@ export type KubernetesObjectTypes =
   | 'customresources'
   | 'statefulsets'
   | 'daemonsets'
-  | 'secrets';
+  | 'secrets'
+  | 'persistentvolumes'
+  | 'persistentvolumeclaims';
 
 // @public
 export interface KubernetesServiceLocator {
