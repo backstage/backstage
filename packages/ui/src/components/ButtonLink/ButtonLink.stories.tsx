@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Icon } from '../Icon';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Backstage UI/ButtonLink',
   component: ButtonLink,
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
   argTypes: {
     size: {
       control: 'select',

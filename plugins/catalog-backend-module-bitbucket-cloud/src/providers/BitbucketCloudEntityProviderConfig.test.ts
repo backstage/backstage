@@ -92,6 +92,7 @@ describe('readProviderConfigs', () => {
         projectKey: undefined,
         repoSlug: undefined,
       },
+      pagelen: undefined,
     });
     expect(providerConfigs[1]).toEqual({
       id: 'providerCustomCatalogPath',
@@ -101,6 +102,7 @@ describe('readProviderConfigs', () => {
         projectKey: undefined,
         repoSlug: undefined,
       },
+      pagelen: undefined,
     });
     expect(providerConfigs[2]).toEqual({
       id: 'providerWithProjectKeyFilter',
@@ -110,6 +112,7 @@ describe('readProviderConfigs', () => {
         projectKey: /^projectKey.*filter$/,
         repoSlug: undefined,
       },
+      pagelen: undefined,
     });
     expect(providerConfigs[3]).toEqual({
       id: 'providerWithRepoSlugFilter',
@@ -119,6 +122,7 @@ describe('readProviderConfigs', () => {
         projectKey: undefined,
         repoSlug: /^repoSlug.*filter$/,
       },
+      pagelen: undefined,
     });
     expect(providerConfigs[4]).toEqual({
       id: 'providerWithSchedule',
@@ -134,6 +138,24 @@ describe('readProviderConfigs', () => {
           minutes: 3,
         },
       },
+      pagelen: undefined,
     });
+  });
+
+  it('provider config with pagelen', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketCloud: {
+            workspace: 'test-ws',
+            pagelen: 50,
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(1);
+    expect(providerConfigs[0].pagelen).toEqual(50);
   });
 });

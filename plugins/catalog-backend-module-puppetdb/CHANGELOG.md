@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.2.15-next.1
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+
+## 0.2.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+
 ## 0.2.14
 
 ### Patch Changes
