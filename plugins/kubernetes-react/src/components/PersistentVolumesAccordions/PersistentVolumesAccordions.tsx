@@ -91,17 +91,23 @@ const PersistentVolumeCard = ({
   const metadata: any = {};
 
   metadata.size = persistentVolume.spec?.capacity?.storage;
+  metadata.access_modes = persistentVolume.spec?.accessModes;
   metadata.driver = persistentVolume.spec?.csi?.driver;
   metadata.volume_handle = persistentVolume.spec?.csi?.volumeHandle;
   metadata.mount_options = persistentVolume.spec?.mountOptions;
+  metadata.claim_ref_name = persistentVolume.spec?.claimRef?.name;
+  metadata.claim_ref_namespace = persistentVolume.spec?.claimRef?.namespace;
 
   return (
     <StructuredMetadataTable
       metadata={{
         size: persistentVolume.spec?.capacity?.storage,
+        access_modes: persistentVolume.spec?.accessModes,
         driver: persistentVolume.spec?.csi?.driver,
         volume_handle: persistentVolume.spec?.csi?.volumeHandle,
         mount_options: persistentVolume.spec?.mountOptions,
+        claim_ref_name: persistentVolume.spec?.claimRef?.name,
+        claim_ref_namespace: persistentVolume.spec?.claimRef?.namespace,
         ...metadata,
       }}
       options={{ nestedValuesAsYaml: true }}
