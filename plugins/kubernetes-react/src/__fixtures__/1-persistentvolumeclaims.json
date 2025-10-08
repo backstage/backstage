@@ -1,0 +1,37 @@
+{
+  "persistentVolumeClaims": [
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "pvc-web-storage",
+        "namespace": "default",
+        "uid": "1ea073bc-7a4b-4b99-8321-0305bce85568",
+        "resourceVersion": "1362732552",
+        "creationTimestamp": "2021-07-16T22:39:58Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "web-app"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "accessModes": ["ReadWriteOnce"],
+        "resources": {
+          "requests": {
+            "storage": "10Gi"
+          }
+        },
+        "storageClassName": "standard",
+        "volumeName": "pv-web-volume"
+      },
+      "status": {
+        "phase": "Bound",
+        "accessModes": ["ReadWriteOnce"],
+        "capacity": {
+          "storage": "10Gi"
+        }
+      }
+    }
+  ]
+}
