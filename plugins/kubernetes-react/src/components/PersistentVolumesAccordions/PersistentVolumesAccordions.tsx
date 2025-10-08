@@ -61,6 +61,9 @@ const PersistentVolumeSummary = ({
           {persistentVolume.status?.phase === 'Released' && (
             <StatusPending>Released</StatusPending>
           )}
+          {persistentVolume.status?.phase === 'Pending' && (
+            <StatusPending>Pending</StatusPending>
+          )}
           {persistentVolume.status?.phase === 'Failed' && (
             <StatusError>Failed</StatusError>
           )}
