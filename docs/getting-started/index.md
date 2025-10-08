@@ -147,6 +147,7 @@ To run the application:
 ![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)
 
 3. Your new Backstage application includes a Guest User. Select `ENTER` to login to the application and display the UI.
+   
   ![Guest User login screen](../assets/getting-started/login-to-app-as-guest-user.png)
 
   Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
