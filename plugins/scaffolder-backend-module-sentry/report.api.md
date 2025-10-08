@@ -35,7 +35,7 @@ export function createSentryFetchDSNAction(options: {
     authToken?: string | undefined;
   },
   {
-    [x: string]: any;
+    dsn?: string | undefined;
   },
   'v2'
 >;
