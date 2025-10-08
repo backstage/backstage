@@ -37,7 +37,6 @@ import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material
 export interface UnifiedThemeProviderProps {
   children: ReactNode;
   theme: UnifiedTheme;
-  noCssBaseline?: boolean;
 }
 
 /**
