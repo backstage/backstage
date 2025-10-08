@@ -145,6 +145,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'persistentvolumes',
     objectType: 'persistentvolumes',
   },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'persistentvolumeclaims',
+    objectType: 'persistentvolumeclaims',
+  },
 ];
 
 export const ALL_OBJECTS: ObjectToFetch[] = [

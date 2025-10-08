@@ -67,6 +67,9 @@ export const groupResponses = (
         case 'persistentvolumes':
           prev.persistentVolumes.push(...next.resources);
           break;
+        case 'persistentvolumeclaims':
+          prev.persistentVolumeClaims.push(...next.resources);
+          break;
         default:
       }
       return prev;
@@ -86,6 +89,7 @@ export const groupResponses = (
       statefulsets: [],
       daemonSets: [],
       persistentVolumes: [],
+      persistentVolumeClaims: [],
     } as GroupedResponses,
   );
 };
