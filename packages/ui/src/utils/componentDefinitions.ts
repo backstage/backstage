@@ -174,6 +174,12 @@ export const componentDefinitions = {
       emptyState: 'bui-MenuEmptyState',
     },
   },
+  PasswordField: {
+    classNames: {
+      root: 'bui-PasswordField',
+      inputVisibility: 'bui-InputVisibility',
+    },
+  },
   Popover: {
     classNames: {
       root: 'bui-Popover',
@@ -286,6 +292,7 @@ export const componentDefinitions = {
       inputWrapper: 'bui-InputWrapper',
       input: 'bui-Input',
       inputIcon: 'bui-InputIcon',
+      inputAction: 'bui-InputAction',
     },
     dataAttributes: {
       invalid: [true, false] as const,

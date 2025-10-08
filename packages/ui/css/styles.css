@@ -10522,6 +10522,59 @@
   }
 }
 
+.bui-PasswordField {
+  font-family: var(--bui-font-regular);
+  --bui-passwordmanager-icon-width: var(--bui-space-1);
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 100%;
+  display: flex;
+}
+
+.bui-InputVisibility {
+  right: var(--bui-passwordmanager-icon-width);
+  cursor: pointer;
+  color: var(--bui-fg-primary);
+  background-color: #0000;
+  border: none;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+
+  &[data-size="small"] {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  &[data-size="small"] svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &[data-size="medium"] {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  &[data-size="medium"] svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.bui-PasswordField .bui-InputWrapper[data-size="small"] .bui-Input {
+  padding-right: calc(2rem + var(--bui-passwordmanager-icon-width));
+}
+
+.bui-PasswordField .bui-InputWrapper[data-size="medium"] .bui-Input {
+  padding-right: calc(2.5rem + var(--bui-passwordmanager-icon-width));
+}
+
 .bui-SearchField {
   flex: 1 0;
 
