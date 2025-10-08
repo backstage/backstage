@@ -32,6 +32,15 @@ export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
 /**
  * @alpha
  */
+export type ActionsRegistryAuthorizeContext<TInputSchema extends AnyZodObject> =
+  {
+    credentials: BackstageCredentials;
+    input?: z.infer<TInputSchema>;
+  };
+
+/**
+ * @alpha
+ */
 export type ActionsRegistryActionOptions<
   TInputSchema extends AnyZodObject,
   TOutputSchema extends AnyZodObject,
@@ -48,9 +57,9 @@ export type ActionsRegistryActionOptions<
     idempotent?: boolean;
     readOnly?: boolean;
   };
-  authorize?: (context: {
-    credentials: BackstageCredentials;
-  }) => Promise<DefinitivePolicyDecision>;
+  authorize?: (
+    context: ActionsRegistryAuthorizeContext<TInputSchema>,
+  ) => Promise<DefinitivePolicyDecision>;
   action: (
     context: ActionsRegistryActionContext<TInputSchema>,
   ) => Promise<

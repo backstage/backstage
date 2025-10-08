@@ -37,9 +37,9 @@ export type ActionsRegistryActionOptions<
     idempotent?: boolean;
     readOnly?: boolean;
   };
-  authorize?: (context: {
-    credentials: BackstageCredentials;
-  }) => Promise<DefinitivePolicyDecision>;
+  authorize?: (
+    context: ActionsRegistryAuthorizeContext<TInputSchema>,
+  ) => Promise<DefinitivePolicyDecision>;
   action: (context: ActionsRegistryActionContext<TInputSchema>) => Promise<
     z.infer<TOutputSchema> extends void
       ? void
@@ -48,6 +48,13 @@ export type ActionsRegistryActionOptions<
         }
   >;
 };
+
+// @alpha (undocumented)
+export type ActionsRegistryAuthorizeContext<TInputSchema extends AnyZodObject> =
+  {
+    credentials: BackstageCredentials;
+    input?: z.infer<TInputSchema>;
+  };
 
 // @alpha (undocumented)
 export interface ActionsRegistryService {
@@ -98,6 +105,7 @@ export type ActionsServiceAction = {
     destructive: boolean;
     idempotent: boolean;
   };
+  authorized: boolean;
 };
 
 // @alpha

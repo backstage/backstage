@@ -83,6 +83,10 @@ export class DefaultTemplateActionRegistry implements TemplateActionRegistry {
     });
 
     for (const action of actions) {
+      if (!action.authorized) {
+        continue;
+      }
+
       if (ret.has(action.id)) {
         this.logger.warn(
           `Template action with ID '${action.id}' has already been registered, skipping action provided by actions service`,

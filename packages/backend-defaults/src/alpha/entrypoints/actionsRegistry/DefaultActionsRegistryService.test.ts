@@ -21,11 +21,36 @@ import express from 'express';
 import { DefaultActionsRegistryService } from './DefaultActionsRegistryService';
 import { mockServices } from '@backstage/backend-test-utils';
 import { MiddlewareFactory } from '../../../entrypoints/rootHttpRouter';
+import { ConfigReader } from '@backstage/config';
+import { catalogLocationAnalyzePermission } from '@backstage/plugin-catalog-common/alpha';
 
 describe('DefaultActionsRegistryService', () => {
   let service: DefaultActionsRegistryService;
   const mockLogger = mockServices.logger.mock();
   const mockHttpAuth = mockServices.httpAuth.mock();
+  const permissions = mockServices.permissions.mock({
+    authorize: jest.fn().mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+  });
+  const config = new ConfigReader({
+    backend: {
+      actions: {
+        actionConfig: {
+          'test-plugin:configured-action': {
+            permissions: [
+              {
+                name: 'catalog.location.analyze',
+              },
+            ],
+          },
+          'test-plugin:skip-permission-action': {
+            permissions: {
+              disabled: true,
+            },
+          },
+        },
+      },
+    },
+  });
   const mockAuth = mockServices.auth.mock();
   let mockMetadata: jest.Mocked<PluginMetadataService>;
   let app: express.Application;
@@ -40,6 +65,8 @@ describe('DefaultActionsRegistryService', () => {
       httpAuth: mockHttpAuth,
       auth: mockAuth,
       metadata: mockMetadata,
+      config,
+      permissions,
     });
 
     const middleware = MiddlewareFactory.create({
@@ -53,6 +80,93 @@ describe('DefaultActionsRegistryService', () => {
   });
 
   describe('authorize callback functionality', () => {
+    it('should be abole to authorize using permissions', async () => {
+      service.register({
+        name: 'permissioned-action',
+        title: 'Permissioned Action',
+        description: 'An action with permission-based authorization',
+        schema: {
+          input: z => z.object({ message: z.string() }),
+          output: z => z.object({ result: z.string() }),
+        },
+        authorize: async ({ credentials }) => {
+          const decisions = await permissions.authorize(
+            [{ permission: catalogLocationAnalyzePermission }],
+            { credentials },
+          );
+
+          return {
+            result: decisions[0].result,
+          };
+        },
+        action: async ({ input }) => ({
+          output: { result: `Permissioned: ${input.message}` },
+        }),
+      });
+
+      const response = await request(app)
+        .get('/.backstage/actions/v1/actions')
+        .expect(200);
+
+      expect(response.body.actions).toHaveLength(1);
+      expect(response.body.actions[0].id).toBe(
+        'test-plugin:permissioned-action',
+      );
+      expect(response.body.actions[0].authorized).toBe(false);
+    });
+
+    it('should allow configuring action permissions via config', async () => {
+      service.register({
+        name: 'configured-action',
+        title: 'Configured Action',
+        description: 'An action with configured permissions',
+        schema: {
+          input: z => z.object({ message: z.string() }),
+          output: z => z.object({ result: z.string() }),
+        },
+        action: async ({ input }) => ({
+          output: { result: `Configured: ${input.message}` },
+        }),
+      });
+
+      const response = await request(app)
+        .get('/.backstage/actions/v1/actions')
+        .expect(200);
+
+      expect(response.body.actions).toHaveLength(1);
+      expect(response.body.actions[0].id).toBe('test-plugin:configured-action');
+      expect(response.body.actions[0].authorized).toBe(false);
+    });
+
+    it('should skip permission checks when disabled via config', async () => {
+      const mockAuthorize = jest
+        .fn()
+        .mockRejectedValue(new Error('This should not be called'));
+      service.register({
+        name: 'skip-permission-action',
+        title: 'Skip Permission Action',
+        description: 'An action that skips permission checks',
+        schema: {
+          input: z => z.object({ message: z.string() }),
+          output: z => z.object({ result: z.string() }),
+        },
+        authorize: mockAuthorize,
+        action: async ({ input }) => ({
+          output: { result: `Skipped: ${input.message}` },
+        }),
+      });
+
+      const response = await request(app)
+        .get('/.backstage/actions/v1/actions')
+        .expect(200);
+
+      expect(response.body.actions).toHaveLength(1);
+      expect(response.body.actions[0].id).toBe(
+        'test-plugin:skip-permission-action',
+      );
+      expect(response.body.actions[0].authorized).toBe(true);
+    });
+
     it('should allow access to actions without authorize callback', async () => {
       service.register({
         name: 'test-action',
@@ -127,7 +241,9 @@ describe('DefaultActionsRegistryService', () => {
         .expect(200);
 
       expect(mockAuthorize).toHaveBeenCalled();
-      expect(response.body.actions).toHaveLength(0);
+      expect(response.body.actions).toHaveLength(1);
+      expect(response.body.actions[0].id).toBe('test-plugin:denied-action');
+      expect(response.body.actions[0].authorized).toEqual(false);
     });
 
     it('should handle mixed authorization results correctly', async () => {
@@ -187,11 +303,13 @@ describe('DefaultActionsRegistryService', () => {
       expect(allowAuthorize).toHaveBeenCalled();
       expect(denyAuthorize).toHaveBeenCalled();
 
-      expect(response.body.actions).toHaveLength(2);
-      const actionIds = response.body.actions.map((action: any) => action.id);
-      expect(actionIds).toContain('test-plugin:allowed-action');
-      expect(actionIds).toContain('test-plugin:no-auth-action');
-      expect(actionIds).not.toContain('test-plugin:denied-action');
+      expect(response.body.actions).toHaveLength(3);
+      expect(response.body.actions[0].id).toBe('test-plugin:allowed-action');
+      expect(response.body.actions[0].authorized).toEqual(true);
+      expect(response.body.actions[1].id).toBe('test-plugin:denied-action');
+      expect(response.body.actions[1].authorized).toEqual(false);
+      expect(response.body.actions[2].id).toBe('test-plugin:no-auth-action');
+      expect(response.body.actions[2].authorized).toEqual(true);
     });
 
     it('should prevent action invocation when authorize callback returns DENY', async () => {
@@ -283,7 +401,9 @@ describe('DefaultActionsRegistryService', () => {
         .expect(200);
 
       expect(mockAuthorize).toHaveBeenCalled();
-      expect(response.body.actions).toHaveLength(0);
+      expect(response.body.actions).toHaveLength(1);
+      expect(response.body.actions[0].id).toBe('test-plugin:error-auth-action');
+      expect(response.body.actions[0].authorized).toEqual(false);
     });
 
     it('should handle authorize callback errors during invocation', async () => {
