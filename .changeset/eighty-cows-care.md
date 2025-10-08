@@ -2,4 +2,4 @@
 '@backstage/ui': minor
 ---
 
-**Breaking** We are adding a new component `PasswordField`. We will be removing support for types `password` and `search` on `TextField`.
+**BREAKING**: Added a new `PasswordField` component. As part of this change, the `password` and `search` types have been removed from `TextField`.
