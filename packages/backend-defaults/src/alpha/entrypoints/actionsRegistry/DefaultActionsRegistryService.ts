@@ -16,13 +16,14 @@
 
 import {
   AuthService,
+  BackstageCredentials,
   HttpAuthService,
   LoggerService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
-import { Router, json } from 'express';
-import { z, AnyZodObject } from 'zod';
+import { json, Router } from 'express';
+import { AnyZodObject, z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import {
   ActionsRegistryActionOptions,
@@ -34,6 +35,7 @@ import {
   NotAllowedError,
   NotFoundError,
 } from '@backstage/errors';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
@@ -74,27 +76,64 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     const router = PromiseRouter();
     router.use(json());
 
-    router.get('/.backstage/actions/v1/actions', (_, res) => {
+    const authorizeAction = async (
+      actionId: string,
+      credentials: BackstageCredentials,
+    ) => {
+      const action = this.actions.get(actionId);
+      if (!action) {
+        return false;
+      }
+      if (!action.authorize) {
+        return true;
+      }
+
+      try {
+        const decision = await action.authorize({ credentials });
+        return decision.result === AuthorizeResult.ALLOW;
+      } catch (err) {
+        this.logger.error(`Failed to authorize action ${actionId}`, err);
+        return false;
+      }
+    };
+
+    router.get('/.backstage/actions/v1/actions', async (req, res) => {
+      const credentials = await this.httpAuth.credentials(req);
+      const allowedActionIds = new Set(
+        (
+          await Promise.all(
+            Array.from(this.actions.keys()).map(async actionId => ({
+              actionId,
+              allowed: await authorizeAction(actionId, credentials),
+            })),
+          )
+        )
+          .filter(a => a.allowed)
+          .map(a => a.actionId),
+      );
+
       return res.json({
-        actions: Array.from(this.actions.entries()).map(([id, action]) => ({
-          id,
-          ...action,
-          attributes: {
-            // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
-            // https://github.com/modelcontextprotocol/typescript-sdk/blob/dd69efa1de8646bb6b195ff8d5f52e13739f4550/src/types.ts#L777-L812
-            destructive: action.attributes?.destructive ?? true,
-            idempotent: action.attributes?.idempotent ?? false,
-            readOnly: action.attributes?.readOnly ?? false,
-          },
-          schema: {
-            input: action.schema?.input
-              ? zodToJsonSchema(action.schema.input(z))
-              : zodToJsonSchema(z.object({})),
-            output: action.schema?.output
-              ? zodToJsonSchema(action.schema.output(z))
-              : zodToJsonSchema(z.object({})),
-          },
-        })),
+        actions: Array.from(this.actions.entries())
+          .filter(([id, _]) => allowedActionIds.has(id))
+          .map(([id, action]) => ({
+            id,
+            ...action,
+            attributes: {
+              // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
+              // https://github.com/modelcontextprotocol/typescript-sdk/blob/dd69efa1de8646bb6b195ff8d5f52e13739f4550/src/types.ts#L777-L812
+              destructive: action.attributes?.destructive ?? true,
+              idempotent: action.attributes?.idempotent ?? false,
+              readOnly: action.attributes?.readOnly ?? false,
+            },
+            schema: {
+              input: action.schema?.input
+                ? zodToJsonSchema(action.schema.input(z))
+                : zodToJsonSchema(z.object({})),
+              output: action.schema?.output
+                ? zodToJsonSchema(action.schema.output(z))
+                : zodToJsonSchema(z.object({})),
+            },
+          })),
       });
     });
 
@@ -118,6 +157,13 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
         if (!action) {
           throw new NotFoundError(`Action "${req.params.actionId}" not found`);
+        }
+
+        const allowed = await authorizeAction(req.params.actionId, credentials);
+        if (!allowed) {
+          throw new NotAllowedError(
+            `You are not authorized to invoke action "${req.params.actionId}"`,
+          );
         }
 
         const input = action.schema?.input
