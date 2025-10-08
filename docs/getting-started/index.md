@@ -143,13 +143,15 @@ To run the application:
 
    ```bash
    yarn start
-   ```
-   
+   ```   
 ![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)
 
-Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
+3. Your new Backstage application includes a Guest User. Select `ENTER` to login to the application and display the UI.
+  ![Guest User login screen](../assets/getting-started/login-to-app-as-guest-user.png)
 
-You can start exploring the demo immediately.
+  Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
+
+  You can start exploring the demo immediately.
 
 :::tip Browser window didn't open with yarn start
 
