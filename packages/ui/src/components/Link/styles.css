@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-.bui-Link {
-  font-family: var(--bui-font-regular);
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-  text-decoration-line: none;
-  display: inline-block;
+@layer components {
+  .bui-Link {
+    font-family: var(--bui-font-regular);
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-decoration-line: none;
+    display: inline-block;
 
-  &:hover {
-    text-decoration-line: underline;
-    text-decoration-style: solid;
-    text-decoration-thickness: min(2px, max(1px, 0.05em));
-    text-underline-offset: calc(0.025em + 2px);
-    text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+    &:hover {
+      text-decoration-line: underline;
+      text-decoration-style: solid;
+      text-decoration-thickness: min(2px, max(1px, 0.05em));
+      text-underline-offset: calc(0.025em + 2px);
+      text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+    }
   }
 }
