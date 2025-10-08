@@ -52,6 +52,14 @@ export function createSentryFetchDSNAction(options: { config: Config }) {
             })
             .optional(),
       },
+      output: {
+        dsn: z =>
+          z
+            .string({
+              description: 'The public DSN of the Sentry project',
+            })
+            .optional(),
+      },
     },
     async handler(ctx) {
       const { organizationSlug, projectSlug, authToken } = ctx.input;
