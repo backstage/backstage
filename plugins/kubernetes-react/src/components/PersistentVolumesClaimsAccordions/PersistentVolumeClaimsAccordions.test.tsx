@@ -44,7 +44,6 @@ describe('PersistentVolumeClaimsAccordions', () => {
 
     await renderInTestApp(wrapper(<PersistentVolumeClaimsAccordions />));
 
-    // Check PVC names
     expect(screen.getByText('pvc-web-storage')).toBeInTheDocument();
     expect(screen.getByText('pvc-database-storage')).toBeInTheDocument();
     expect(screen.getByText('pvc-cache-storage')).toBeInTheDocument();
@@ -53,12 +52,10 @@ describe('PersistentVolumeClaimsAccordions', () => {
 
     expect(screen.getAllByText('PersistentVolumeClaim')).toHaveLength(5);
 
-    // Check statuses
     expect(screen.getAllByText('Bound')).toHaveLength(3);
     expect(screen.getByText('Pending')).toBeInTheDocument();
     expect(screen.getByText('Lost')).toBeInTheDocument();
 
-    // Check namespaces
     expect(screen.getByText('namespace: default')).toBeInTheDocument();
     expect(screen.getByText('namespace: production')).toBeInTheDocument();
     expect(screen.getByText('namespace: staging')).toBeInTheDocument();
