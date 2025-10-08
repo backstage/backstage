@@ -23,9 +23,11 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import type { V1PersistentVolume } from '@kubernetes/client-node';
 import { PersistentVolumesDrawer } from './PersistentVolumesDrawer.tsx';
 import { GroupedResponsesContext } from '../../hooks';
+import { getPersistentVolumeType } from '../../utils/persistentVolumes.ts';
 import {
   StatusError,
   StatusOK,
+  StatusPending,
   StructuredMetadataTable,
 } from '@backstage/core-components';
 
@@ -50,21 +52,25 @@ const PersistentVolumeSummary = ({
 
       <Grid item>
         <Typography variant="subtitle2">
-          {persistentVolume.status?.phase === 'Bound' ? (
-            <StatusOK> Status: {persistentVolume.status?.phase} </StatusOK>
-          ) : (
-            <StatusError>
-              {' '}
-              Status: {persistentVolume.status?.phase ?? '?'}{' '}
-            </StatusError>
+          {persistentVolume.status?.phase === 'Bound' && (
+            <StatusOK>Bound</StatusOK>
+          )}
+          {persistentVolume.status?.phase === 'Available' && (
+            <StatusPending>Available</StatusPending>
+          )}
+          {persistentVolume.status?.phase === 'Released' && (
+            <StatusPending>Released</StatusPending>
+          )}
+          {persistentVolume.status?.phase === 'Failed' && (
+            <StatusError>Failed</StatusError>
           )}
         </Typography>
         <Typography variant="subtitle2">
           Size: {persistentVolume.spec?.capacity?.storage ?? 'N/A'}
         </Typography>
-        {persistentVolume.spec?.csi?.driver?.includes('gcsfuse') && (
+        {persistentVolume.spec?.csi?.driver && (
           <Typography variant="subtitle2">
-            Bucket: {persistentVolume.spec?.csi?.volumeHandle}
+            Type: {getPersistentVolumeType(persistentVolume.spec?.csi?.driver)}
           </Typography>
         )}
       </Grid>
