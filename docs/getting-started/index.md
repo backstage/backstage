@@ -165,13 +165,13 @@ When you see the message `[0] webpack compiled successfully`, you can navigate d
 Choose the correct next steps for your user role, if you're likely to be deploying and managing a Backstage instance for your organization, look through the [Admin](#admin) section. If you're likely to be developing on/for Backstage, take a look through the [Developer](#developer) section.
 
 ### Admin
+
 - Configuring Backstage
   - [Setting up authentication](./config/authentication.md)
   - [Configuring a database](./config/database.md)
   - [Adding plugins](./configure-app-with-plugins.md)
   - [Customizing Your App's UI](../conf/user-interface/index.md)
   - [Populating the homepage](./homepage.md)
-  
 - Deploying to production
   - [Deploying with Docker](../deployment/docker.md)
   - [Deploying with Kubernetes](../deployment/k8s.md)
