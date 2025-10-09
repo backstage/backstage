@@ -1,0 +1,108 @@
+/* Backdrop */
+.bui-Dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bui-Dialog[data-entering] {
+  animation: fade-in 200ms ease-out forwards;
+}
+
+.bui-Dialog[data-exiting] {
+  animation: fade-out 150ms ease-out forwards;
+}
+
+.bui-DialogContent {
+  background: var(--bui-bg-surface-1);
+  border-radius: 0.5rem;
+  border: 1px solid var(--bui-border);
+  color: var(--bui-fg-primary);
+  position: relative;
+  width: 24rem;
+  max-width: calc(100vw - 3rem);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dialog entering animation */
+.bui-Dialog[data-entering] .bui-DialogContent {
+  animation: dialog-enter 150ms ease-out forwards;
+}
+
+/* Dialog exiting animation */
+.bui-Dialog[data-exiting] .bui-DialogContent {
+  animation: dialog-exit 150ms ease-out forwards;
+}
+
+.bui-DialogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bui-space-3);
+  border-bottom: 1px solid var(--bui-border);
+}
+
+.bui-Dialog [slot="title"] {
+  font-size: var(--bui-font-size-3);
+}
+
+.bui-DialogFooter {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: var(--bui-space-2);
+  padding: var(--bui-space-3);
+  border-top: 1px solid var(--bui-border);
+}
+
+.bui-DialogBody {
+  padding: var(--bui-space-3);
+}
+
+/* Keyframe animations */
+@keyframes fade-in {
+  from { 
+    opacity: 0; 
+  }
+  to { 
+    opacity: 1; 
+  }
+}
+
+@keyframes fade-out {
+  from { 
+    opacity: 1; 
+  }
+  to { 
+    opacity: 0; 
+  }
+}
+
+@keyframes dialog-enter {
+  from {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dialog-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
