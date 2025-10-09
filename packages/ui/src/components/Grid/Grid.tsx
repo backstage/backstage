@@ -32,11 +32,12 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
 
   const { classNames } = useStyles('Grid');
 
-  const { className, style } = extractProps(props, propDefs);
+  const { className, style, dataProps } = extractProps(props, propDefs);
 
   return createElement('div', {
     ref,
     className: clsx(classNames.root, className),
+    ...dataProps,
     style,
     children: props.children,
   });
@@ -48,11 +49,12 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
   };
 
   const { classNames } = useStyles('Grid');
-  const { className, style } = extractProps(props, propDefs);
+  const { className, style, dataProps } = extractProps(props, propDefs);
 
   return createElement('div', {
     ref,
     className: clsx(classNames.item, className),
+    ...dataProps,
     style,
     children: props.children,
   });
