@@ -9098,6 +9098,10 @@
   }
 }
 
+body {
+  background-color: var(--bui-bg);
+}
+
 :root {
   --bui-font-regular: system-ui;
   --bui-font-monospace: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;

@@ -30,6 +30,10 @@
   }
 }
 
+body {
+  background-color: var(--bui-bg);
+}
+
 /* Light theme tokens */
 :root {
   /* Font families */
