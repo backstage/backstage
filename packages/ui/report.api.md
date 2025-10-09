@@ -516,6 +516,7 @@ export const componentDefinitions: {
       readonly item: 'bui-MenuItem';
       readonly itemListBox: 'bui-MenuItemListBox';
       readonly itemListBoxCheck: 'bui-MenuItemListBoxCheck';
+      readonly itemWrapper: 'bui-MenuItemWrapper';
       readonly itemContent: 'bui-MenuItemContent';
       readonly itemArrow: 'bui-MenuItemArrow';
       readonly separator: 'bui-MenuSeparator';
@@ -1277,9 +1278,15 @@ export interface MenuAutocompleteListBoxProps<T>
   extends ListBoxProps<T>,
     Omit<ListBoxProps<T>, 'children'> {
   // (undocumented)
+  maxHeight?: string;
+  // (undocumented)
+  maxWidth?: string;
+  // (undocumented)
   placeholder?: string;
   // (undocumented)
   placement?: PopoverProps['placement'];
+  // (undocumented)
+  virtualized?: boolean;
 }
 
 // @public (undocumented)
@@ -1287,9 +1294,15 @@ export interface MenuAutocompleteProps<T>
   extends MenuProps_2<T>,
     Omit<MenuProps_2<T>, 'children'> {
   // (undocumented)
+  maxHeight?: string;
+  // (undocumented)
+  maxWidth?: string;
+  // (undocumented)
   placeholder?: string;
   // (undocumented)
   placement?: PopoverProps['placement'];
+  // (undocumented)
+  virtualized?: boolean;
 }
 
 // @public (undocumented)
@@ -1326,7 +1339,13 @@ export interface MenuListBoxProps<T>
   extends ListBoxProps<T>,
     Omit<ListBoxProps<T>, 'children'> {
   // (undocumented)
+  maxHeight?: string;
+  // (undocumented)
+  maxWidth?: string;
+  // (undocumented)
   placement?: PopoverProps['placement'];
+  // (undocumented)
+  virtualized?: boolean;
 }
 
 // @public (undocumented)
@@ -1334,7 +1353,13 @@ export interface MenuProps<T>
   extends MenuProps_2<T>,
     Omit<MenuProps_2<T>, 'children'> {
   // (undocumented)
+  maxHeight?: string;
+  // (undocumented)
+  maxWidth?: string;
+  // (undocumented)
   placement?: PopoverProps['placement'];
+  // (undocumented)
+  virtualized?: boolean;
 }
 
 // @public (undocumented)
