@@ -55,6 +55,9 @@ import {
 import { useNavigate, useHref } from 'react-router-dom';
 import { isExternalLink } from '../../utils/isExternalLink';
 
+// The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
+const rowHeight = 32;
+
 const MenuEmptyState = () => {
   const { classNames } = useStyles('Menu');
 
@@ -100,7 +103,7 @@ export const Menu = (props: MenuProps<object>) => {
           <Virtualizer
             layout={ListLayout}
             layoutOptions={{
-              rowHeight: 32,
+              rowHeight,
             }}
           >
             {menuContent}
@@ -141,7 +144,7 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
         <Virtualizer
           layout={ListLayout}
           layoutOptions={{
-            rowHeight: 32,
+            rowHeight,
           }}
         >
           {listBoxContent}
@@ -194,7 +197,7 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
             <Virtualizer
               layout={ListLayout}
               layoutOptions={{
-                rowHeight: 32,
+                rowHeight,
               }}
             >
               {menuContent}
@@ -251,7 +254,7 @@ export const MenuAutocompleteListbox = (
           <Virtualizer
             layout={ListLayout}
             layoutOptions={{
-              rowHeight: 32,
+              rowHeight,
             }}
           >
             {listBoxContent}
