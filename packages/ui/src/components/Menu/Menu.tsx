@@ -51,8 +51,8 @@ import {
   RiCheckLine,
   RiCloseCircleLine,
 } from '@remixicon/react';
-import { isExternalLink } from '../../utils/isExternalLink';
 import { useNavigate, useHref } from 'react-router-dom';
+import { isExternalLink } from '../../utils/isExternalLink';
 
 const MenuEmptyState = () => {
   const { classNames } = useStyles('Menu');
@@ -74,19 +74,22 @@ export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
 export const Menu = (props: MenuProps<object>) => {
   const { placement = 'bottom start', ...rest } = props;
   const { classNames } = useStyles('Menu');
+  const navigate = useNavigate();
 
   return (
     <RAPopover className={classNames.popover} placement={placement}>
-      <ScrollArea.Root>
-        <ScrollArea.Viewport>
-          <RAMenu className={classNames.content} {...rest}>
-            {props.children}
-          </RAMenu>
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+      <RouterProvider navigate={navigate} useHref={useHref}>
+        <ScrollArea.Root>
+          <ScrollArea.Viewport>
+            <RAMenu className={classNames.content} {...rest}>
+              {props.children}
+            </RAMenu>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar orientation="vertical" style={{}}>
+            <ScrollArea.Thumb />
+          </ScrollArea.Scrollbar>
+        </ScrollArea.Root>
+      </RouterProvider>
     </RAPopover>
   );
 };
@@ -201,7 +204,6 @@ export const MenuAutocompleteListbox = (
 export const MenuItem = (props: MenuItemProps) => {
   const { iconStart, color = 'primary', children, href, ...rest } = props;
   const { classNames } = useStyles('Menu');
-  const navigate = useNavigate();
 
   const isLink = href !== undefined;
   const isExternal = isExternalLink(href);
@@ -224,11 +226,23 @@ export const MenuItem = (props: MenuItemProps) => {
     </RAMenuItem>
   );
 
-  if (isLink && !isExternal) {
+  if (isLink && isExternal) {
     return (
-      <RouterProvider navigate={navigate} useHref={useHref}>
-        {content}
-      </RouterProvider>
+      <RAMenuItem
+        className={classNames.item}
+        data-color={color}
+        textValue={typeof children === 'string' ? children : undefined}
+        onAction={() => window.open(href, '_blank', 'noopener,noreferrer')}
+        {...rest}
+      >
+        <div className={classNames.itemContent}>
+          {iconStart}
+          {children}
+        </div>
+        <div className={classNames.itemArrow}>
+          <RiArrowRightSLine />
+        </div>
+      </RAMenuItem>
     );
   }
 

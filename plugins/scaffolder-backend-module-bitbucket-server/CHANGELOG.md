@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.2.14-next.2
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+
 ## 0.2.14-next.1
 
 ### Patch Changes

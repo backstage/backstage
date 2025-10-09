@@ -54,16 +54,16 @@ export class DefaultNotificationRecipientResolver
 
   async resolveNotificationRecipients(options: {
     entityRefs: string[];
-    excludeEntityRefs?: string[];
+    excludedEntityRefs?: string[];
   }): Promise<{ userEntityRefs: string[] }> {
-    const { entityRefs, excludeEntityRefs = [] } = options;
+    const { entityRefs, excludedEntityRefs = [] } = options;
 
     const [userEntityRefs, otherEntityRefs] = partitionEntityRefs(entityRefs);
     const users: string[] = userEntityRefs.filter(
-      ref => !excludeEntityRefs.includes(ref),
+      ref => !excludedEntityRefs.includes(ref),
     );
     const filtered = otherEntityRefs.filter(
-      ref => !excludeEntityRefs.includes(ref),
+      ref => !excludedEntityRefs.includes(ref),
     );
 
     const fields = ['kind', 'metadata.name', 'metadata.namespace', 'relations'];
@@ -87,7 +87,7 @@ export class DefaultNotificationRecipientResolver
       }
 
       const currentEntityRef = stringifyEntityRef(entity);
-      if (excludeEntityRefs.includes(currentEntityRef)) {
+      if (excludedEntityRefs.includes(currentEntityRef)) {
         return [];
       }
 
@@ -130,7 +130,7 @@ export class DefaultNotificationRecipientResolver
 
         const ret = [
           ...new Set([...groupUsers, ...childGroupUsers.flat(2)]),
-        ].filter(ref => !excludeEntityRefs.includes(ref));
+        ].filter(ref => !excludedEntityRefs.includes(ref));
         cachedEntityRefs.set(currentEntityRef, ret);
         return ret;
       }
@@ -145,7 +145,7 @@ export class DefaultNotificationRecipientResolver
         }
 
         if (isUserEntityRef(ownerRef)) {
-          if (excludeEntityRefs.includes(ownerRef)) {
+          if (excludedEntityRefs.includes(ownerRef)) {
             return [];
           }
           return [ownerRef];
@@ -171,7 +171,7 @@ export class DefaultNotificationRecipientResolver
       userEntityRefs: [...new Set(users)]
         .filter(Boolean)
         // Need to filter again after resolving users
-        .filter(ref => !excludeEntityRefs.includes(ref)),
+        .filter(ref => !excludedEntityRefs.includes(ref)),
     };
   }
 }

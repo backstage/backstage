@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.6-next.2
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+
 ## 0.9.6-next.1
 
 ### Patch Changes

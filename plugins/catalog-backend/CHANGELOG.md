@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend
 
+## 3.1.2-next.2
+
+### Patch Changes
+
+- 6493c98: Log before provider-orphaning eviction happens
+- 77516c5: Added new `catalog:validate-entity` action to actions registry.
+
+  This action can be used to validate entities against the software catalog.
+  This is useful for validating `catalog-info.yaml` file changes locally using the
+  Backstage MCP server.
+
 ## 3.1.1-next.1
 
 ### Patch Changes

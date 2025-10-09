@@ -31,6 +31,9 @@ import { toInternalBackstageCredentials } from './helpers';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 
+import { externalTokenHandlersServiceRef } from './external/ExternalAuthTokenHandler';
+import { createExternalTokenHandler } from './external/helpers';
+
 const server = setupServer();
 
 // TODO: Ship discovery mock service in the service factory tester
@@ -450,8 +453,88 @@ describe('authServiceFactory', () => {
         dependencies: [...mockDeps, customPluginTokenHandler],
       });
       const searchAuth = await tester.getSubject('search');
-      searchAuth.authenticate('unlimited-static-token');
+      await searchAuth.authenticate('unlimited-static-token');
       expect(customLogic).toHaveBeenCalledWith('unlimited-static-token');
+    });
+  });
+  describe('add custom  ExternalTokenHandler', () => {
+    it('should allow custom logic to be injected into the plugin token handler', async () => {
+      const customLogic = jest.fn();
+      const customConfig = jest.fn();
+      const deps = [
+        discoveryServiceFactory,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost',
+              auth: {
+                keys: [{ secret: 'abc' }],
+                externalAccess: [
+                  {
+                    type: 'static',
+                    options: {
+                      token: 'limited-static-token',
+                      subject: 'limited-static-subject',
+                    },
+                    accessRestrictions: [
+                      { plugin: 'catalog', permission: 'do.it' },
+                    ],
+                  },
+                  {
+                    type: 'static',
+                    options: {
+                      token: 'unlimited-static-token',
+                      subject: 'unlimited-static-subject',
+                    },
+                  },
+                  {
+                    type: 'custom',
+                    options: {
+                      [`custom-config`]: 'custom-config',
+                      foo: 'bar',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        }),
+      ];
+
+      const customExternalTokenHandler = createExternalTokenHandler<{
+        [`custom-config`]: string;
+        foo: string;
+      }>({
+        type: 'custom',
+        initialize({ options }) {
+          const customConfigValue = options.getString('custom-config');
+          const foo = options.getString('foo');
+          customConfig(customConfigValue);
+          return { [`custom-config`]: customConfigValue, foo };
+        },
+        async verifyToken(token, ctx) {
+          customLogic(token);
+          return {
+            subject: ctx.foo,
+          };
+        },
+      });
+
+      const customPluginTokenHandler = createServiceFactory({
+        service: externalTokenHandlersServiceRef,
+        deps: {},
+        async factory() {
+          return customExternalTokenHandler;
+        },
+      });
+      const tester = ServiceFactoryTester.from(authServiceFactory, {
+        dependencies: [...deps, customPluginTokenHandler],
+      });
+      const searchAuth = await tester.getSubject('search');
+      await searchAuth.authenticate('custom-token');
+
+      expect(customLogic).toHaveBeenCalledWith('custom-token');
+      expect(customConfig).toHaveBeenCalledWith('custom-config');
     });
   });
 });

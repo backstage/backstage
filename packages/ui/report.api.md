@@ -525,6 +525,12 @@ export const componentDefinitions: {
       readonly emptyState: 'bui-MenuEmptyState';
     };
   };
+  readonly PasswordField: {
+    readonly classNames: {
+      readonly root: 'bui-PasswordField';
+      readonly inputVisibility: 'bui-InputVisibility';
+    };
+  };
   readonly Popover: {
     readonly classNames: {
       readonly root: 'bui-Popover';
@@ -643,6 +649,7 @@ export const componentDefinitions: {
       readonly inputWrapper: 'bui-InputWrapper';
       readonly input: 'bui-Input';
       readonly inputIcon: 'bui-InputIcon';
+      readonly inputAction: 'bui-InputAction';
     };
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
@@ -1038,7 +1045,7 @@ export interface HeaderProps {
 // @public
 export interface HeaderTab {
   // (undocumented)
-  href?: string;
+  href: string;
   // (undocumented)
   id: string;
   // (undocumented)
@@ -1760,6 +1767,7 @@ export interface TextFieldProps
   icon?: ReactNode;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  type?: 'text' | 'email' | 'tel' | 'url';
 }
 
 // @public (undocumented)

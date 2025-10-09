@@ -1,5 +1,17 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.11-next.2
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+
+## 0.5.11-next.1
+
+### Patch Changes
+
+- 3b8e156: Fixed exclude entity reference not working in notification sending
+
 ## 0.5.11-next.0
 
 ### Patch Changes

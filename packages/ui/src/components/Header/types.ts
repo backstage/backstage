@@ -39,7 +39,7 @@ export interface HeaderProps {
 export interface HeaderTab {
   id: string;
   label: string;
-  href?: string;
+  href: string;
   /**
    * Strategy for matching the current route to determine if this tab should be active.
    * - 'exact': Tab href must exactly match the current pathname (default)

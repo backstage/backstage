@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.10-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+
 ## 0.3.10-next.1
 
 ### Patch Changes

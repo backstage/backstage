@@ -137,6 +137,10 @@ export const buildPlugin = createCliPlugin({
             '--link <path>',
             'Link an external workspace for module resolution',
           )
+          .option(
+            '--entrypoint <path>',
+            'The entrypoint to start from, relative to the package root. Can point to either a file (without extension) or a directory (in which case the index file in that directory is used). Defaults to "dev"',
+          )
           .action(lazy(() => import('./commands/package/start'), 'command'));
 
         await defaultCommand.parseAsync(args, { from: 'user' });
