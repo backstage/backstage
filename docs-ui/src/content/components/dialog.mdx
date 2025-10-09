@@ -1,0 +1,101 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {DialogSnippet} from '@/snippets/stories-snippets';
+import {
+  dialogPropDefs,
+  dialogTriggerPropDefs,
+  dialogHeaderPropDefs,
+  dialogBodyPropDefs,
+  dialogFooterPropDefs,
+  dialogClosePropDefs,
+  dialogUsageSnippet,
+  dialogDefaultSnippet,
+  dialogScrollableSnippet,
+  dialogWithFormSnippet,
+} from './dialog.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Dialog"
+  description="A modal dialog component that displays content in an overlay window."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<DialogSnippet story="Default" />}
+  code={dialogDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={dialogUsageSnippet} />
+
+## API reference
+
+### Dialog
+
+The main dialog container that renders as a modal overlay.
+
+<PropsTable data={dialogPropDefs} />
+
+### DialogTrigger
+
+Wraps a trigger element and the dialog content to handle open/close state.
+
+<PropsTable data={dialogTriggerPropDefs} />
+
+### DialogHeader
+
+Displays the dialog title with a built-in close button.
+
+<PropsTable data={dialogHeaderPropDefs} />
+
+### DialogBody
+
+The main content area of the dialog with optional scrolling.
+
+<PropsTable data={dialogBodyPropDefs} />
+
+### DialogFooter
+
+Contains action buttons or other footer content.
+
+<PropsTable data={dialogFooterPropDefs} />
+
+### DialogClose
+
+A button that closes the dialog when pressed.
+
+<PropsTable data={dialogClosePropDefs} />
+
+## Examples
+
+### Scrollable Content
+
+Dialog with a fixed height body that scrolls when content overflows.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<DialogSnippet story="Scrollable" />}
+  code={dialogScrollableSnippet}
+/>
+
+### Dialog with Form
+
+Dialog containing form elements for user input.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<DialogSnippet story="WithForm" />}
+  code={dialogWithFormSnippet}
+/>
+
+<Theming component="Dialog" />
+
+<ChangelogComponent component="dialog" />

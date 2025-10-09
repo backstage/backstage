@@ -22,7 +22,7 @@ import {
   DialogFooter,
   DialogClose,
 } from './Dialog';
-import { Button, Flex, Text } from '@backstage/ui';
+import { Button, Flex, Text, TextField, Select } from '@backstage/ui';
 
 const meta = {
   title: 'Components/Dialog',
@@ -33,64 +33,106 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    children: (
-      <>
-        <DialogHeader>Hello</DialogHeader>
+  render: () => (
+    <DialogTrigger>
+      <Button variant="secondary">Open Dialog</Button>
+      <Dialog>
+        <DialogHeader>Example Dialog</DialogHeader>
         <DialogBody>
-          <Text>Hello world</Text>
+          <Text>
+            This is a basic dialog example with React Aria Components.
+          </Text>
         </DialogBody>
         <DialogFooter>
-          <Flex gap="2" align="center" justify="end">
-            <DialogClose>Close</DialogClose>
-            <DialogClose variant="primary" onPress={() => console.log('Save')}>
-              Save
-            </DialogClose>
-          </Flex>
+          <DialogClose>Close</DialogClose>
+          <DialogClose variant="primary">Save</DialogClose>
         </DialogFooter>
-      </>
-    ),
-  },
-  render: args => (
-    <DialogTrigger>
-      <Button size="small" variant="secondary">
-        Open Dialog
-      </Button>
-      <Dialog {...args} />
+      </Dialog>
     </DialogTrigger>
   ),
 };
 
-export const CustomBodyMaxHeight: Story = {
-  args: {
-    children: (
-      <>
-        <DialogHeader> Hello</DialogHeader>
-        <DialogBody height={400}>
-          {Array.from({ length: 40 }).map((_, index) => (
-            <Text key={index}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-              quos.
-            </Text>
-          ))}
+export const Scrollable: Story = {
+  render: () => (
+    <DialogTrigger>
+      <Button variant="secondary">Scrollable Dialog</Button>
+      <Dialog>
+        <DialogHeader>Long Content Dialog</DialogHeader>
+        <DialogBody height={200}>
+          <Text>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat.
+          </Text>
+          <Text>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt mollit
+            anim id est laborum.
+          </Text>
+          <Text>
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+            quae ab illo inventore veritatis et quasi architecto beatae vitae
+            dicta sunt explicabo.
+          </Text>
         </DialogBody>
         <DialogFooter>
-          <Flex gap="2" align="center" justify="end">
-            <DialogClose>Close</DialogClose>
-            <DialogClose variant="primary" onPress={() => console.log('Save')}>
-              Save
-            </DialogClose>
-          </Flex>
+          <DialogClose>Cancel</DialogClose>
+          <DialogClose variant="primary">Accept</DialogClose>
         </DialogFooter>
-      </>
-    ),
-  },
-  render: args => (
+      </Dialog>
+    </DialogTrigger>
+  ),
+};
+
+export const Confirmation: Story = {
+  render: () => (
     <DialogTrigger>
-      <Button size="small" variant="secondary">
-        Open Dialog
-      </Button>
-      <Dialog {...args} />
+      <Button variant="secondary">Delete Item</Button>
+      <Dialog>
+        <DialogHeader>Confirm Delete</DialogHeader>
+        <DialogBody>
+          <Text>
+            Are you sure you want to delete this item? This action cannot be
+            undone.
+          </Text>
+        </DialogBody>
+        <DialogFooter>
+          <DialogClose>Cancel</DialogClose>
+          <DialogClose variant="primary">Delete</DialogClose>
+        </DialogFooter>
+      </Dialog>
+    </DialogTrigger>
+  ),
+};
+
+export const WithForm: Story = {
+  render: () => (
+    <DialogTrigger>
+      <Button variant="secondary">Create User</Button>
+      <Dialog>
+        <DialogHeader>Create New User</DialogHeader>
+        <DialogBody>
+          <Flex direction="column" gap="3">
+            <TextField label="Name" placeholder="Enter full name" />
+            <TextField label="Email" placeholder="Enter email address" />
+            <Select
+              label="Role"
+              options={[
+                { value: 'admin', label: 'Admin' },
+                { value: 'user', label: 'User' },
+                { value: 'viewer', label: 'Viewer' },
+              ]}
+            />
+          </Flex>
+        </DialogBody>
+        <DialogFooter>
+          <DialogClose>Cancel</DialogClose>
+          <DialogClose variant="primary">Create User</DialogClose>
+        </DialogFooter>
+      </Dialog>
     </DialogTrigger>
   ),
 };
