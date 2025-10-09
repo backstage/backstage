@@ -15,7 +15,6 @@
  */
 
 import { ReactNode } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   ThemeProvider,
   StylesProvider,
@@ -38,7 +37,6 @@ import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material
 export interface UnifiedThemeProviderProps {
   children: ReactNode;
   theme: UnifiedTheme;
-  noCssBaseline?: boolean;
 }
 
 /**
@@ -68,7 +66,7 @@ import { useApplyThemeAttributes } from './useApplyThemeAttributes';
 export function UnifiedThemeProvider(
   props: UnifiedThemeProviderProps,
 ): JSX.Element {
-  const { children, theme, noCssBaseline = false } = props;
+  const { children, theme } = props;
 
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
@@ -78,17 +76,7 @@ export function UnifiedThemeProvider(
     'backstage',
   );
 
-  let cssBaseline: JSX.Element | undefined = undefined;
-  if (!noCssBaseline) {
-    cssBaseline = <CssBaseline />;
-  }
-
-  let result = (
-    <>
-      {cssBaseline}
-      {children}
-    </>
-  );
+  let result = children as JSX.Element;
 
   if (v4Theme) {
     result = (

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-.bui-Card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--bui-space-3);
-  background-color: var(--bui-bg-surface-1);
-  border-radius: var(--bui-radius-3);
-  padding-block: var(--bui-space-3);
-  color: var(--bui-fg-primary);
-  border: 1px solid var(--bui-border);
-  overflow: hidden;
-  min-height: 0;
-  width: 100%;
-}
+@layer components {
+  .bui-Card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-3);
+    background-color: var(--bui-bg-surface-1);
+    border-radius: var(--bui-radius-3);
+    padding-block: var(--bui-space-3);
+    color: var(--bui-fg-primary);
+    border: 1px solid var(--bui-border);
+    overflow: hidden;
+    min-height: 0;
+    width: 100%;
+  }
 
-.bui-CardBody {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-}
+  .bui-CardBody {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
 
-.bui-CardHeader {
-  padding-inline: var(--bui-space-3);
-}
+  .bui-CardHeader {
+    padding-inline: var(--bui-space-3);
+  }
 
-.bui-CardFooter {
-  padding-inline: var(--bui-space-3);
+  .bui-CardFooter {
+    padding-inline: var(--bui-space-3);
+  }
 }
