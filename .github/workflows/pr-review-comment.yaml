@@ -17,7 +17,7 @@ jobs:
     steps:
       # Inspired by https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#using-data-from-the-triggering-workflow
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@v2.13.1 # v2.13.0
         with:
           egress-policy: audit
 
