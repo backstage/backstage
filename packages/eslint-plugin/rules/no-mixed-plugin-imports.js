@@ -146,8 +146,21 @@ module.exports = {
       }
 
       const sourceRole = pkg.packageJson.backstage?.role;
+      const sourcePluginId = pkg.packageJson.backstage?.pluginId;
       const targetRole = targetPackage.packageJson.backstage?.role;
+      const targetPluginId = targetPackage.packageJson.backstage?.pluginId;
       if (!sourceRole || !targetRole) {
+        return;
+      }
+
+      // Allow frontend plugins to import from other frontend plugins with the same pluginId for NFS
+      if (
+        sourceRole === 'frontend-plugin' &&
+        targetRole === 'frontend-plugin' &&
+        sourcePluginId &&
+        targetPluginId &&
+        sourcePluginId === targetPluginId
+      ) {
         return;
       }
 
