@@ -1,5 +1,40 @@
 # @backstage/backend-plugin-api
 
+## 1.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+
+## 1.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-node@0.10.4
+
+## 1.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/plugin-permission-node@0.10.4-next.0
+
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-permission-node@0.10.3
+
 ## 1.4.2-next.0
 
 ### Patch Changes

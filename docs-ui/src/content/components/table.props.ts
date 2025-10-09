@@ -212,23 +212,28 @@ export const cellPropDefs: Record<string, PropDef> = {
     description:
       "A string representation of the cell's contents, used for features like typeahead.",
   },
+  leadingIcon: {
+    type: 'enum',
+    values: ['ReactNode'],
+    description: 'Optional icon to display before the cell content.',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
 export const tablePaginationPropDefs: Record<string, PropDef> = {
-  pageIndex: {
+  offset: {
     type: 'number',
-    description: 'The current page index.',
+    description: 'The current offset (starting index) for pagination.',
   },
   pageSize: {
     type: 'number',
     description: 'The number of items per page.',
   },
-  setPageIndex: {
+  setOffset: {
     type: 'enum',
-    values: ['(pageIndex: number) => void'],
-    description: 'Handler that is called when the page index changes.',
+    values: ['(offset: number) => void'],
+    description: 'Handler that is called when the offset changes.',
   },
   setPageSize: {
     type: 'enum',
@@ -277,10 +282,7 @@ export const tableUsageSnippet = `import { Cell, ..., TableHeader, TablePaginati
 </Table>
 <TablePagination />`;
 
-export const tableBasicSnippet = `import { Table, TablePagination } from '@backstage/ui';
-
-const [pageIndex, setPageIndex] = useState(0);
-const [pageSize, setPageSize] = useState(5);
+export const tableBasicSnippet = `import { Table, TableHeader, Column, TableBody, Row, Cell, CellProfile, TablePagination, useTable } from '@backstage/ui';
 
 const data = [
   {
@@ -293,10 +295,13 @@ const data = [
   // ... more data
 ];
 
-const newData = data4.slice(
-  pageIndex * pageSize,
-  (pageIndex + 1) * pageSize,
-);
+// Uncontrolled pagination (easiest)
+const { data: paginatedData, paginationProps } = useTable({
+  data,
+  pagination: {
+    defaultPageSize: 5,
+  },
+});
 
 <Table>
   <TableHeader>
@@ -306,9 +311,9 @@ const newData = data4.slice(
     <Column>Albums</Column>
   </TableHeader>
   <TableBody>
-    {newData.map(item => (
+    {paginatedData?.map(item => (
       <Row key={item.name}>
-        <CellProfileBUI
+        <CellProfile
           name={item.name}
           src={item.image}
           href={item.website}
@@ -320,10 +325,4 @@ const newData = data4.slice(
     ))}
   </TableBody>
 </Table>
-<TablePagination
-  pageIndex={pageIndex}
-  pageSize={pageSize}
-  rowCount={data4.length}
-  setPageIndex={setPageIndex}
-  setPageSize={setPageSize}
-/>`;
+<TablePagination {...paginationProps} />`;

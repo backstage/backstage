@@ -24,7 +24,7 @@ interface TestResultItem {
 interface TestPage extends Models.Paginated<TestResultItem> {}
 
 describe('WithPagination', () => {
-  const createPagination = () =>
+  const createPagination = (pagelen?: number) =>
     new WithPagination<TestPage, TestResultItem>(
       opts =>
         new URL(
@@ -45,6 +45,7 @@ describe('WithPagination', () => {
           ],
         };
       },
+      pagelen,
     );
 
   it('iterateResults', async () => {
@@ -120,5 +121,18 @@ describe('WithPagination', () => {
         'http://localhost/create-url?page=4&pagelen=100',
       );
     });
+  });
+
+  it('uses custom pagelen when provided', async () => {
+    const pagination = createPagination(50);
+
+    const page = await pagination.getPage();
+
+    expect(page.page).toEqual(1);
+    expect(page.next).toEqual('http://localhost/create-url?page=2&pagelen=50');
+    expect(page.values).toHaveLength(1);
+    expect((page.values! as TestResultItem[])[0].url).toEqual(
+      'http://localhost/create-url?page=1&pagelen=50',
+    );
   });
 });

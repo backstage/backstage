@@ -192,6 +192,9 @@ describe('SearchType', () => {
           expect.objectContaining({
             types: [values[0]],
           }),
+          {
+            signal: expect.any(AbortSignal),
+          },
         );
       });
 
@@ -240,6 +243,9 @@ describe('SearchType', () => {
           expect.objectContaining({
             types: [...typeValues, values[0]],
           }),
+          {
+            signal: expect.any(AbortSignal),
+          },
         );
       });
 
@@ -253,7 +259,12 @@ describe('SearchType', () => {
 
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
-          expect.objectContaining([]),
+          expect.objectContaining({
+            types: typeValues,
+          }),
+          {
+            signal: expect.any(AbortSignal),
+          },
         );
       });
     });

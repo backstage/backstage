@@ -33,7 +33,10 @@ import {
   toInternalSubRouteRef,
 } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { isExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
+import {
+  isExternalRouteRef,
+  toInternalExternalRouteRef,
+} from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
 import { RouteAliasResolver } from './RouteAliasResolver';
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
@@ -52,54 +55,50 @@ export function joinPaths(...paths: string[]): string {
  * Returns an undefined target ref if one could not be fully resolved.
  */
 function resolveTargetRef(
-  anyRouteRef: AnyRouteRef,
+  targetRouteRef: AnyRouteRef,
   routePaths: Map<RouteRef, string>,
   routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
+  routeRefsById: Map<string, RouteRef | SubRouteRef>,
 ): readonly [RouteRef | undefined, string] {
   // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
   // For sub routes it will be the parent path, while for external routes it will be the bound route.
-  let targetRef: RouteRef;
-  let subRoutePath = '';
-  if (isRouteRef(anyRouteRef)) {
-    targetRef = anyRouteRef;
-  } else if (isSubRouteRef(anyRouteRef)) {
-    const internal = toInternalSubRouteRef(anyRouteRef);
-    targetRef = internal.getParent();
-    subRoutePath = internal.path;
-  } else if (isExternalRouteRef(anyRouteRef)) {
-    const resolvedRoute = routeBindings.get(anyRouteRef);
+  let ref: AnyRouteRef = targetRouteRef;
+  let path = '';
+
+  if (isExternalRouteRef(ref)) {
+    let resolvedRoute = routeBindings.get(ref);
+    if (!resolvedRoute) {
+      const internal = toInternalExternalRouteRef(ref);
+      const defaultTarget = internal.getDefaultTarget();
+      if (defaultTarget) {
+        resolvedRoute = routeRefsById.get(defaultTarget);
+      }
+    }
     if (!resolvedRoute) {
       return [undefined, ''];
     }
-    if (isRouteRef(resolvedRoute)) {
-      targetRef = resolvedRoute;
-    } else if (isSubRouteRef(resolvedRoute)) {
-      const internal = toInternalSubRouteRef(resolvedRoute);
-      targetRef = internal.getParent();
-      subRoutePath = resolvedRoute.path;
-    } else {
-      throw new Error(
-        `ExternalRouteRef was bound to invalid target, ${resolvedRoute}`,
-      );
-    }
-  } else {
-    throw new Error(`Unknown object passed to useRouteRef, got ${anyRouteRef}`);
+    ref = resolvedRoute;
   }
 
-  // Bail if no absolute path could be resolved
-  if (!targetRef) {
-    return [undefined, ''];
+  if (isSubRouteRef(ref)) {
+    const internal = toInternalSubRouteRef(ref);
+    path = ref.path;
+    ref = internal.getParent();
+  }
+
+  if (!isRouteRef(ref)) {
+    throw new Error(
+      `Unexpectedly resolved ${targetRouteRef} to a non-route ref ${ref}`,
+    );
   }
 
   // Find the path that our target route is bound to
-  const resolvedPath = routePaths.get(targetRef);
+  const resolvedPath = routePaths.get(ref);
   if (resolvedPath === undefined) {
     return [undefined, ''];
   }
 
-  // SubRouteRefs join the path from the parent route with its own path
-  const targetPath = joinPaths(resolvedPath, subRoutePath);
-  return [targetRef, targetPath];
+  return [ref, path ? joinPaths(resolvedPath, path) : resolvedPath];
 }
 
 /**
@@ -190,6 +189,7 @@ export class RouteResolver implements RouteResolutionApi {
     >,
     private readonly appBasePath: string, // base path without a trailing slash
     private readonly routeAliasResolver: RouteAliasResolver,
+    private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>,
   ) {}
 
   resolve<TParams extends AnyRouteRefParams>(
@@ -206,6 +206,7 @@ export class RouteResolver implements RouteResolutionApi {
         : anyRouteRef,
       this.routePaths,
       this.routeBindings,
+      this.routeRefsById,
     );
     if (!targetRef) {
       return undefined;

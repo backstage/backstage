@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.41-next.1",
+  "version": "0.0.43-next.1",
   "backstage": {
     "role": "backend"
   },
@@ -37,6 +37,7 @@
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^",
+    "@backstage/plugin-auth-backend-module-openshift-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^",

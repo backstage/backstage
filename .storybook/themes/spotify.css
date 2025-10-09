@@ -209,6 +209,10 @@
   .bui-Input {
     border-radius: var(--bui-radius-3);
   }
+
+  .bui-Tag {
+    border-radius: var(--bui-radius-full);
+  }
 }
 
 [data-theme-mode='light'][data-theme-name='spotify'] {

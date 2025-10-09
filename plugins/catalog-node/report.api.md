@@ -27,6 +27,7 @@ import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
 
 // @public (undocumented)
@@ -59,6 +60,7 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
+  getPriority?(): number;
 };
 
 // @public
@@ -194,6 +196,11 @@ export interface CatalogService {
     id: string,
     options: CatalogServiceRequestOptions,
   ): Promise<void>;
+  // (undocumented)
+  streamEntities(
+    request: StreamEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Entity[]>;
   // (undocumented)
   validateEntity(
     entity: Entity,

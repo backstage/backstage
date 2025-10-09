@@ -211,10 +211,7 @@ export type NotificationPayload = {
   topic?: string;
   scope?: string;
   icon?: string;
-  metadata?: Array<{
-    type: string;
-    value: JsonValue;
-  }>;
+  metadata?: { [KMetadataKey in string]?: JsonValue };
 };
 
 export type Notification = {

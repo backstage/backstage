@@ -55,7 +55,7 @@ describe('authModuleMicrosoftProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('microsoft-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/microsoft/handler',
       script: false,
       secure: false,
@@ -114,7 +114,7 @@ describe('authModuleMicrosoftProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('microsoft-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/microsoft/handler',
       script: false,
       secure: false,
@@ -175,7 +175,7 @@ describe('authModuleMicrosoftProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('microsoft-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/microsoft/handler',
       script: false,
       secure: false,

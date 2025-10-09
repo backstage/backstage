@@ -22,10 +22,6 @@ import { Theme } from '@material-ui/core/styles';
 type BackstageSidebar = {
   /** Tracks whether the user pinned the sidebar or not. */
   isPinned: boolean;
-  /** Tracks whether a Backstage sidebar is actually present in the DOM. */
-  isPresent: boolean;
-  /** The actual width of the sidebar in pixels, if present. */
-  width: number;
 };
 
 /**

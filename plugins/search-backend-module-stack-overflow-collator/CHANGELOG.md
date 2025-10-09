@@ -1,5 +1,39 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.3.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-search-backend-node@1.3.16-next.0
+  - @backstage/plugin-search-common@1.2.20-next.0
+
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-search-backend-node@1.3.15
+
+## 0.3.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-search-backend-node@1.3.15-next.0
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.14
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.3.12-next.0
 
 ### Patch Changes

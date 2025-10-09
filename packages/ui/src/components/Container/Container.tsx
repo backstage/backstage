@@ -43,11 +43,12 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
       ...displayPropDefs,
       ...containerSpacingProps,
     };
-    const { className, style } = extractProps(props, propDefs);
+    const { className, style, dataProps } = extractProps(props, propDefs);
 
     return createElement('div', {
       ref,
       className: clsx(classNames.root, className),
+      ...dataProps,
       style,
       children,
     });

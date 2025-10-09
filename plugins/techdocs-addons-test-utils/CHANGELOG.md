@@ -1,5 +1,101 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.1-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/integration-react@1.2.11-next.1
+  - @backstage/test-utils@1.7.12-next.0
+  - @backstage/plugin-techdocs@1.15.1-next.1
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+  - @backstage/plugin-catalog@1.31.4-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/plugin-search-react@1.9.5-next.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/plugin-catalog@1.31.4-next.0
+  - @backstage/plugin-techdocs@1.15.1-next.0
+  - @backstage/integration-react@1.2.11-next.0
+  - @backstage/plugin-search-react@1.9.5-next.0
+  - @backstage/plugin-techdocs-react@1.3.4-next.0
+  - @backstage/core-app-api@1.19.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/test-utils@1.7.11
+
+## 1.1.0
+
+### Minor Changes
+
+- 72543e9: Adding catalogApiRef to test-utils to support catalog API usage by TechDocs reader page.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.15.0
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/plugin-techdocs-react@1.3.3
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/plugin-catalog@1.31.3
+  - @backstage/core-app-api@1.19.0
+  - @backstage/plugin-search-react@1.9.4
+  - @backstage/integration-react@1.2.10
+
+## 1.0.53-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/plugin-catalog@1.31.3-next.2
+  - @backstage/plugin-techdocs@1.14.2-next.2
+
+## 1.0.53-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/plugin-catalog@1.31.3-next.1
+  - @backstage/plugin-search-react@1.9.4-next.0
+  - @backstage/plugin-techdocs@1.14.2-next.1
+  - @backstage/plugin-techdocs-react@1.3.3-next.0
+  - @backstage/integration-react@1.2.10-next.0
+
+## 1.0.53-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.14.2-next.0
+  - @backstage/plugin-catalog@1.31.3-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration-react@1.2.9
+  - @backstage/test-utils@1.7.11
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-techdocs-react@1.3.2
+
+## 1.0.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.31.2
+  - @backstage/plugin-search-react@1.9.3
+  - @backstage/plugin-techdocs@1.14.0
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/test-utils@1.7.11
+  - @backstage/plugin-techdocs-react@1.3.2
+
 ## 1.0.52-next.1
 
 ### Patch Changes

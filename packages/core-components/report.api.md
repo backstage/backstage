@@ -257,6 +257,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   extends SVGProps<SVGSVGElement> {
   acyclicer?: 'greedy';
   align?: DependencyGraphTypes.Alignment;
+  allowFullscreen?: boolean;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   defs?: JSX.Element | JSX.Element[];
   direction?: DependencyGraphTypes.Direction;
@@ -273,6 +274,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   paddingY?: number;
   ranker?: DependencyGraphTypes.Ranker;
   rankMargin?: number;
+  renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EdgeData>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EdgeData>;
   renderNode?: DependencyGraphTypes.RenderNodeFunction<NodeData>;
   showArrowHeads?: boolean;
@@ -291,6 +293,7 @@ export namespace DependencyGraphTypes {
     from: string;
     to: string;
     label?: string;
+    distance?: number;
   };
   export type DependencyNode<T = {}> = T & {
     id: string;
@@ -314,6 +317,33 @@ export namespace DependencyGraphTypes {
     NETWORK_SIMPLEX = 'network-simplex',
     TIGHT_TREE = 'tight-tree',
   }
+  export type RenderEdgeFunction<T = {}> = (
+    props: RenderEdgeProps<T>,
+  ) => ReactNode;
+  export type RenderEdgeProps<T = {}> = {
+    edge: T & {
+      points: {
+        x: number;
+        y: number;
+      }[];
+      label?: string;
+      labeloffset?: number;
+      labelpos?: string;
+      width?: number;
+      height?: number;
+      weight?: number;
+      minlen?: number;
+      showArrowHeads?: boolean;
+      from?: string;
+      to?: string;
+      relations?: string[];
+    };
+    id: {
+      v: string;
+      w: string;
+      name?: string | undefined;
+    };
+  };
   export type RenderLabelFunction<T = {}> = (
     props: RenderLabelProps<T>,
   ) => ReactNode;

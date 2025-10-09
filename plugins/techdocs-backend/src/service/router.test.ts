@@ -30,14 +30,10 @@ import { TechDocsCache } from '../cache';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@backstage/catalog-client');
-jest.mock('@backstage/config');
 jest.mock('./CachedEntityLoader');
 jest.mock('./DocsSynchronizer');
 jest.mock('../cache/TechDocsCache');
 
-const MockedConfigReader = ConfigReader as jest.MockedClass<
-  typeof ConfigReader
->;
 const MockDocsSynchronizer = DocsSynchronizer as jest.MockedClass<
   typeof DocsSynchronizer
 >;
@@ -115,7 +111,13 @@ describe('createRouter', () => {
     preparers,
     generators,
     publisher,
-    config: new ConfigReader({}),
+    config: new ConfigReader({
+      techdocs: {
+        cache: {
+          ttl: 1,
+        },
+      },
+    }),
     logger: mockServices.logger.mock(),
     discovery,
     cache: mockServices.cache.mock(),
@@ -143,9 +145,6 @@ describe('createRouter', () => {
     discovery.getBaseUrl.mockImplementation(async type => {
       return `http://backstage.local/api/${type}`;
     });
-    MockedConfigReader.prototype.getOptionalNumber.mockImplementation(key =>
-      key === 'techdocs.cache.ttl' ? 1 : undefined,
-    );
     MockTechDocsCache.get.mockResolvedValue(undefined);
     MockTechDocsCache.set.mockResolvedValue();
   });
@@ -326,13 +325,17 @@ data: {"updated":true}
     });
 
     it('should check entity access when permissions are enabled', async () => {
-      MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(key =>
-        key === 'permission.enabled' ? true : undefined,
-      );
       const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
       publisher.docsRouter.mockReturnValue(docsRouter);
 
-      const app = await createApp(outOfTheBoxOptions);
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        config: new ConfigReader({
+          permission: {
+            enabled: true,
+          },
+        }),
+      });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
 
@@ -345,11 +348,14 @@ data: {"updated":true}
     });
 
     it('should not return assets without corresponding entity access', async () => {
-      MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(key =>
-        key === 'permission.enabled' ? true : undefined,
-      );
-
-      const app = await createApp(outOfTheBoxOptions);
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        config: new ConfigReader({
+          permission: {
+            enabled: true,
+          },
+        }),
+      });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
 

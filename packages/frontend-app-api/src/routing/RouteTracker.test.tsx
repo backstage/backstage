@@ -20,7 +20,6 @@ import { BackstageRouteObject } from './types';
 import { fireEvent, render } from '@testing-library/react';
 import { RouteTracker } from './RouteTracker';
 import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
-import { createPlugin } from '@backstage/core-plugin-api';
 import {
   createRouteRef,
   AnalyticsApi,
@@ -34,16 +33,12 @@ describe('RouteTracker', () => {
   const routeRef0 = createRouteRef();
   const routeRef1 = createRouteRef();
   const routeRef2 = createRouteRef();
-  const plugin0 = createPlugin({ id: 'home' });
-  const plugin1 = createPlugin({ id: 'plugin1' });
-  const plugin2 = createPlugin({ id: 'plugin2' });
 
   const routeObjects: BackstageRouteObject[] = [
     {
       path: '',
       element: <div>home page</div>,
       routeRefs: new Set([routeRef0]),
-      plugins: new Set([plugin0]),
       caseSensitive: false,
       children: [MATCH_ALL_ROUTE],
       appNode: {
@@ -57,7 +52,6 @@ describe('RouteTracker', () => {
       path: '/path/:p1/:p2',
       element: <Link to="/path2/hello">go</Link>,
       routeRefs: new Set([routeRef1]),
-      plugins: new Set([plugin1]),
       caseSensitive: false,
       children: [MATCH_ALL_ROUTE],
       appNode: {
@@ -71,7 +65,6 @@ describe('RouteTracker', () => {
       path: '/path2/:param',
       element: <div>hi there</div>,
       routeRefs: new Set([routeRef2]),
-      plugins: new Set([plugin2]),
       caseSensitive: false,
       children: [MATCH_ALL_ROUTE],
       appNode: {

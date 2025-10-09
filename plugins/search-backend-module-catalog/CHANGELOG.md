@@ -1,5 +1,57 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-search-backend-node@1.3.16-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/plugin-search-common@1.2.20-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-search-backend-node@1.3.15
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-search-backend-node@1.3.15-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+
+## 0.3.7
+
+### Patch Changes
+
+- d9bda0f: Allow filter to be an array in config schema
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-search-backend-node@1.3.14
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.3.7-next.1
 
 ### Patch Changes

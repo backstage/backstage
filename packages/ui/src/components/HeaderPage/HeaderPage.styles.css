@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,36 @@
  * limitations under the License.
  */
 
-.bui-HeaderPage {
-  display: flex;
-  flex-direction: column;
-  gap: var(--bui-space-1);
-  margin-top: var(--bui-space-6);
-  margin-bottom: var(--bui-space-6);
-}
+@layer components {
+  .bui-HeaderPage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-1);
+    margin-top: var(--bui-space-6);
+    margin-bottom: var(--bui-space-6);
+  }
 
-.bui-HeaderPageContent {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
+  .bui-HeaderPageContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
 
-.bui-HeaderPageTabsWrapper {
-  margin-left: -8px;
-}
+  .bui-HeaderPageTabsWrapper {
+    margin-left: -8px;
+  }
 
-.bui-HeaderPageControls {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--bui-space-2);
-}
+  .bui-HeaderPageControls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--bui-space-2);
+  }
 
-.bui-HeaderPageBreadcrumbs {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--bui-space-2);
+  .bui-HeaderPageBreadcrumbs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--bui-space-2);
+  }
 }

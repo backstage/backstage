@@ -127,6 +127,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'PasswordField',
+    slug: 'password-field',
+    status: 'alpha',
+  },
+  {
     title: 'RadioGroup',
     slug: 'radio-group',
     status: 'alpha',
@@ -154,11 +159,16 @@ export const components: Page[] = [
   {
     title: 'Table',
     slug: 'table',
-    status: 'inProgress',
+    status: 'alpha',
   },
   {
     title: 'Tabs',
     slug: 'tabs',
+    status: 'alpha',
+  },
+  {
+    title: 'TagGroup',
+    slug: 'tag-group',
     status: 'alpha',
   },
   {

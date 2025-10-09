@@ -157,21 +157,28 @@ export const componentDefinitions = {
   },
   Menu: {
     classNames: {
-      trigger: 'bui-MenuTrigger',
-      backdrop: 'bui-MenuBackdrop',
-      positioner: 'bui-MenuPositioner',
-      popup: 'bui-MenuPopup',
-      arrow: 'bui-MenuArrow',
+      root: 'bui-Menu',
+      popover: 'bui-MenuPopover',
+      content: 'bui-MenuContent',
+      section: 'bui-MenuSection',
+      sectionHeader: 'bui-MenuSectionHeader',
       item: 'bui-MenuItem',
-      group: 'bui-MenuGroup',
-      groupLabel: 'bui-MenuGroupLabel',
-      radioGroup: 'bui-MenuRadioGroup',
-      radioItem: 'bui-MenuRadioItem',
-      radioItemIndicator: 'bui-MenuRadioItemIndicator',
-      checkboxItem: 'bui-MenuCheckboxItem',
-      checkboxItemIndicator: 'bui-MenuCheckboxItemIndicator',
-      submenuTrigger: 'bui-MenuSubmenuTrigger',
+      itemListBox: 'bui-MenuItemListBox',
+      itemListBoxCheck: 'bui-MenuItemListBoxCheck',
+      itemWrapper: 'bui-MenuItemWrapper',
+      itemContent: 'bui-MenuItemContent',
+      itemArrow: 'bui-MenuItemArrow',
       separator: 'bui-MenuSeparator',
+      searchField: 'bui-MenuSearchField',
+      searchFieldInput: 'bui-MenuSearchFieldInput',
+      searchFieldClear: 'bui-MenuSearchFieldClear',
+      emptyState: 'bui-MenuEmptyState',
+    },
+  },
+  PasswordField: {
+    classNames: {
+      root: 'bui-PasswordField',
+      inputVisibility: 'bui-InputVisibility',
     },
   },
   Popover: {
@@ -260,6 +267,15 @@ export const componentDefinitions = {
       panel: 'bui-TabPanel',
     },
   },
+  TagGroup: {
+    classNames: {
+      group: 'bui-TagGroup',
+      list: 'bui-TagList',
+      tag: 'bui-Tag',
+      tagIcon: 'bui-TagIcon',
+      tagRemoveButton: 'bui-TagRemoveButton',
+    },
+  },
   Text: {
     classNames: {
       root: 'bui-Text',
@@ -277,6 +293,7 @@ export const componentDefinitions = {
       inputWrapper: 'bui-InputWrapper',
       input: 'bui-Input',
       inputIcon: 'bui-InputIcon',
+      inputAction: 'bui-InputAction',
     },
     dataAttributes: {
       invalid: [true, false] as const,

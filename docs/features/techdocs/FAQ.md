@@ -12,6 +12,8 @@ This page answers frequently asked questions about [TechDocs](README.md).
 - [What static site generator is TechDocs using?](#what-static-site-generator-is-techdocs-using)
 - [What is the mkdocs-techdocs-core plugin?](#what-is-the-mkdocs-techdocs-core-plugin)
 - [Does TechDocs support file formats other than Markdown (e.g. RST, AsciiDoc)?](#does-techdocs-support-file-formats-other-than-markdown-eg-rst-asciidoc-)
+- [What should be the value of `backstage.io/techdocs-ref` when using external build and storage?](#what-should-be-the-value-of-backstageiotechdocs-ref-when-using-external-build-and-storage)
+- [Is it possible for users to suggest changes or provide feedback on a TechDocs page?](#is-it-possible-for-users-to-suggest-changes-or-provide-feedback-on-a-techdocs-page)
 
 #### What static site generator is TechDocs using?
 
@@ -45,6 +47,10 @@ metadata annotation is used in the build process of TechDocs. But when
 annotation should still be present in entity descriptor file (e.g.
 `catalog-info.yaml`) for Backstage to know that TechDocs is enabled for the
 entity.
+
+#### What happens when you navigate to a TechDocs URL for an entity uses the `backstage.io/techdocs-entity` annotation?
+
+If you navigate to a TechDocs URL in the format `docs/{namespace}/{kind}/{name}` for an entity that has the `backstage.io/techdocs-entity` annotation (instead of the `backstage.io/techdocs-ref` annotation), then Backstage will redirect to the TechDocs page of the entity referenced in the value of that annotation.
 
 #### Is it possible for users to suggest changes or provide feedback on a TechDocs page?
 

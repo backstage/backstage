@@ -1,5 +1,120 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.0
+
+## 0.9.0
+
+### Minor Changes
+
+- f0f06b4: Adding a new scaffolder action `github:issues:create` following the reference of `github:issues:label` with `dryRun` testing possibility
+
+  It can be used like this
+
+  ```
+    steps:
+      - id: create-simple-issue
+        name: Create Simple Issue
+        action: github:issues:create
+        input:
+          repoUrl: ${{ parameters.repoUrl }}
+          title: "[${{ parameters.projectName }}] Simple Bug Report"
+          body: |
+            ## Bug Description
+            This is a simple bug report created by the scaffolder template.
+
+            ### Steps to Reproduce
+            1. Run the application
+            2. Navigate to the main page
+            3. Click on the problematic button
+
+            ### Expected Behavior
+            The button should work correctly.
+
+            ### Actual Behavior
+            The button does not respond to clicks.
+    output:
+      links:
+        - title: Simple Issue
+          url: ${{ steps['create-simple-issue'].output.issueUrl }}
+  ```
+
+### Patch Changes
+
+- aee107b: Add `auto_init` option to `github:repo:create` action to create repository with an initial commit containing a README.md file
+
+  This initial commit is created by GitHub itself and the commit is signed, so the repository will not be empty after creation.
+
+  ```diff
+    - action: github:repo:create
+      id: init-new-repo
+      input:
+        repoUrl: 'github.com?repo=repo&owner=owner'
+        description: This is the description
+        visibility: private
+  +     autoInit: true
+
+  ```
+
+- 6393b78: Add block creations field in github branch protection scaffolder actions
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-node@0.11.1
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration@1.18.0-next.0
+
+## 0.8.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- a22cce0: Fixed bug in the `customProperties` type which was preventing it being used to set a list of values against a key (e.g. for multi-select fields)
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 0.8.2-next.1
 
 ### Patch Changes

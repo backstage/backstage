@@ -348,6 +348,14 @@ const requiredLinearHistory = (z: typeof zod) =>
     })
     .optional();
 
+const blockCreations = (z: typeof zod) =>
+  z
+    .boolean({
+      description: `Prevents creation of new branches during push, unless the push is initiated by a user, team, or app (defined in restrictions) which has the ability to push.`,
+    })
+    .default(false)
+    .optional();
+
 const repoVariables = (z: typeof zod) =>
   z
     .record(z.string(), {
@@ -405,6 +413,14 @@ const branch = (z: typeof zod) =>
     })
     .optional();
 
+const autoInit = (z: typeof zod) =>
+  z
+    .boolean({
+      description: `Create an initial commit with empty README. Default is 'false'`,
+    })
+    .default(false)
+    .optional();
+
 export {
   repoUrl,
   description,
@@ -449,4 +465,6 @@ export {
   protectEnforceAdmins,
   bypassPullRequestAllowances,
   branch,
+  blockCreations,
+  autoInit,
 };

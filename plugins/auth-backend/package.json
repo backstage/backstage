@@ -1,11 +1,12 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.25.3-next.0",
+  "version": "0.25.5-next.0",
   "description": "A Backstage backend plugin that handles authentication",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "auth",
     "pluginPackages": [
+      "@backstage/plugin-auth",
       "@backstage/plugin-auth-backend",
       "@backstage/plugin-auth-node",
       "@backstage/plugin-auth-react"
@@ -60,6 +61,7 @@
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
+    "matcher": "^4.0.0",
     "minimatch": "^9.0.0",
     "passport": "^0.7.0",
     "uuid": "^11.0.0"

@@ -86,6 +86,18 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'userListPicker.personalFilter.title': 'Personal';
     readonly 'userListPicker.personalFilter.ownedLabel': 'Owned';
     readonly 'userListPicker.personalFilter.starredLabel': 'Starred';
+    readonly 'entityTableColumnTitle.name': 'Name';
+    readonly 'entityTableColumnTitle.type': 'Type';
+    readonly 'entityTableColumnTitle.label': 'Label';
+    readonly 'entityTableColumnTitle.title': 'Title';
+    readonly 'entityTableColumnTitle.description': 'Description';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
+    readonly 'entityTableColumnTitle.system': 'System';
+    readonly 'entityTableColumnTitle.tags': 'Tags';
+    readonly 'entityTableColumnTitle.namespace': 'Namespace';
+    readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
+    readonly 'entityTableColumnTitle.owner': 'Owner';
+    readonly 'entityTableColumnTitle.targets': 'Targets';
   }
 >;
 
@@ -515,6 +527,40 @@ export type EntityPredicateValue =
   | {
       $contains: EntityPredicateExpression;
     };
+
+// @alpha (undocumented)
+export const EntityTableColumnTitle: ({
+  translationKey,
+}: EntityTableColumnTitleProps) =>
+  | 'Title'
+  | 'System'
+  | 'Domain'
+  | 'Lifecycle'
+  | 'Namespace'
+  | 'Owner'
+  | 'Tags'
+  | 'Type'
+  | 'Name'
+  | 'Description'
+  | 'Targets'
+  | 'Label';
+
+// @alpha (undocumented)
+export type EntityTableColumnTitleProps = {
+  translationKey:
+    | 'name'
+    | 'system'
+    | 'owner'
+    | 'type'
+    | 'lifecycle'
+    | 'namespace'
+    | 'description'
+    | 'tags'
+    | 'targets'
+    | 'title'
+    | 'label'
+    | 'domain';
+};
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

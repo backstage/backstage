@@ -55,7 +55,7 @@ import {
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
-import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import {
   Permission,
   PermissionAuthorizer,
@@ -111,6 +111,7 @@ import {
   catalogEntityPermissionResourceRef,
   CatalogPermissionRuleInput,
 } from '@backstage/plugin-catalog-node/alpha';
+import { filterAndSortProcessors, filterProviders } from './util';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -119,10 +120,11 @@ export type CatalogEnvironment = {
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
   permissionsRegistry?: PermissionsRegistryService;
-  scheduler?: SchedulerService;
+  scheduler: SchedulerService;
   auth: AuthService;
   httpAuth: HttpAuthService;
-  auditor?: AuditorService;
+  auditor: AuditorService;
+  events: EventsService;
 };
 
 /**
@@ -168,8 +170,6 @@ export class CatalogBuilder {
   private readonly permissions: Permission[];
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
-  private legacySingleProcessorValidation = false;
-  private eventBroker?: EventBroker | EventsService;
 
   /**
    * Creates a catalog builder.
@@ -213,31 +213,6 @@ export class CatalogBuilder {
     ...policies: Array<EntityPolicy | Array<EntityPolicy>>
   ): CatalogBuilder {
     this.entityPolicies.push(...policies.flat());
-    return this;
-  }
-
-  /**
-   * Processing interval determines how often entities should be processed.
-   * Seconds provided will be multiplied by 1.5
-   * The default processing interval is 100-150 seconds.
-   * setting this too low will potentially deplete request quotas to upstream services.
-   */
-  setProcessingIntervalSeconds(seconds: number): CatalogBuilder {
-    this.processingInterval = createRandomProcessingInterval({
-      minSeconds: seconds,
-      maxSeconds: seconds * 1.5,
-    });
-    return this;
-  }
-
-  /**
-   * Overwrites the default processing interval function used to spread
-   * entity updates in the catalog.
-   */
-  setProcessingInterval(
-    processingInterval: ProcessingIntervalFunction,
-  ): CatalogBuilder {
-    this.processingInterval = processingInterval;
     return this;
   }
 
@@ -428,23 +403,6 @@ export class CatalogBuilder {
   }
 
   /**
-   * Enables the legacy behaviour of canceling validation early whenever only a
-   * single processor declares an entity kind to be valid.
-   */
-  useLegacySingleProcessorValidation(): this {
-    this.legacySingleProcessorValidation = true;
-    return this;
-  }
-
-  /**
-   * Enables the publishing of events for conflicts in the DefaultProcessingDatabase
-   */
-  setEventBroker(broker: EventBroker | EventsService): CatalogBuilder {
-    this.eventBroker = broker;
-    return this;
-  }
-
-  /**
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
@@ -461,6 +419,7 @@ export class CatalogBuilder {
       auditor,
       auth,
       httpAuth,
+      events,
     } = this.env;
 
     const enableRelationsCompatibility = Boolean(
@@ -485,8 +444,8 @@ export class CatalogBuilder {
     const processingDatabase = new DefaultProcessingDatabase({
       database: dbClient,
       logger,
+      events,
       refreshInterval: this.processingInterval,
-      eventBroker: this.eventBroker,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
@@ -523,7 +482,6 @@ export class CatalogBuilder {
       logger,
       parser,
       policy,
-      legacySingleProcessorValidation: this.legacySingleProcessorValidation,
     });
 
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
@@ -568,9 +526,12 @@ export class CatalogBuilder {
 
     const locationStore = new DefaultLocationStore(dbClient);
     const configLocationProvider = new ConfigLocationEntityProvider(config);
-    const entityProviders = lodash.uniqBy(
-      [...this.entityProviders, locationStore, configLocationProvider],
-      provider => provider.getProviderName(),
+    const entityProviders = filterProviders(
+      lodash.uniqBy(
+        [...this.entityProviders, locationStore, configLocationProvider],
+        provider => provider.getProviderName(),
+      ),
+      config,
     );
 
     const processingEngine = new DefaultCatalogProcessingEngine({
@@ -586,7 +547,7 @@ export class CatalogBuilder {
       onProcessingError: event => {
         this.onProcessingError?.(event);
       },
-      eventBroker: this.eventBroker,
+      events,
     });
 
     const locationAnalyzer =
@@ -622,18 +583,21 @@ export class CatalogBuilder {
       enableRelationsCompatibility,
     });
 
-    if (config.getOptionalString('catalog.orphanProviderStrategy') !== 'keep') {
-      await evictEntitiesFromOrphanedProviders({
-        db: providerDatabase,
-        providers: entityProviders,
-        logger,
-      });
-    }
     await connectEntityProviders(providerDatabase, entityProviders);
 
     return {
       processingEngine: {
         async start() {
+          if (
+            config.getOptionalString('catalog.orphanProviderStrategy') !==
+            'keep'
+          ) {
+            await evictEntitiesFromOrphanedProviders({
+              db: providerDatabase,
+              providers: entityProviders,
+              logger,
+            });
+          }
           await processingEngine.start();
           await stitcher.start();
         },
@@ -722,7 +686,7 @@ export class CatalogBuilder {
 
     this.checkMissingExternalProcessors(processors);
 
-    return processors;
+    return filterAndSortProcessors(processors, config);
   }
 
   // TODO(Rugvip): These old processors are removed, for a while we'll be throwing

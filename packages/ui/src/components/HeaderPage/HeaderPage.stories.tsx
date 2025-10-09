@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj, StoryFn } from '@storybook/react-vite';
 import { HeaderPage } from './HeaderPage';
-import type { HeaderTab, HeaderMenuItem } from '../Header/types';
+import type { HeaderTab } from '../Header/types';
 import { MemoryRouter } from 'react-router-dom';
-import { Button } from '../Button';
-import { Container } from '../Container';
-import { Text } from '../Text';
+import {
+  Button,
+  Container,
+  Text,
+  ButtonIcon,
+  MenuTrigger,
+  Menu,
+  MenuItem,
+} from '../../';
+import { RiMore2Line } from '@remixicon/react';
 
 const meta = {
   title: 'Backstage UI/HeaderPage',
@@ -37,33 +44,47 @@ const tabs: HeaderTab[] = [
   {
     id: 'overview',
     label: 'Overview',
+    href: '/overview',
   },
   {
     id: 'checks',
     label: 'Checks',
+    href: '/checks',
   },
   {
     id: 'tracks',
     label: 'Tracks',
+    href: '/tracks',
   },
   {
     id: 'campaigns',
     label: 'Campaigns',
+    href: '/campaigns',
   },
   {
     id: 'integrations',
     label: 'Integrations',
+    href: '/integrations',
   },
 ];
 
-const menuItems: HeaderMenuItem[] = [
+const menuItems = [
   {
     label: 'Settings',
     value: 'settings',
+    href: '/settings',
   },
   {
     label: 'Invite new members',
     value: 'invite-new-members',
+    href: '/invite-new-members',
+  },
+  {
+    label: 'Logout',
+    value: 'logout',
+    onClick: () => {
+      alert('logout');
+    },
   },
 ];
 
@@ -123,18 +144,34 @@ export const WithTabs: Story = {
   decorators: [withRouter],
 };
 
-export const WithMenuItems: Story = {
-  args: {
-    ...Default.args,
-    menuItems,
-  },
-};
-
 export const WithCustomActions: Story = {
+  decorators: [withRouter],
   render: () => (
     <HeaderPage
       {...Default.args}
-      customActions={<Button>Custom action</Button>}
+      customActions={
+        <>
+          <Button>Custom action</Button>
+          <MenuTrigger>
+            <ButtonIcon
+              variant="tertiary"
+              icon={<RiMore2Line />}
+              aria-label="More options"
+            />
+            <Menu placement="bottom end">
+              {menuItems.map(option => (
+                <MenuItem
+                  key={option.value}
+                  onAction={option.onClick}
+                  href={option.href}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </MenuTrigger>
+        </>
+      }
     />
   ),
 };
@@ -163,7 +200,6 @@ export const WithEverything: Story = {
   render: () => (
     <HeaderPage
       {...Default.args}
-      menuItems={menuItems}
       tabs={tabs}
       customActions={<Button>Custom action</Button>}
       breadcrumbs={[{ label: 'Home', href: '/' }]}

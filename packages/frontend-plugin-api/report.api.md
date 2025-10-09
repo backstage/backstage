@@ -69,6 +69,7 @@ import { OAuthScope } from '@backstage/core-plugin-api';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { openshiftAuthApiRef } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -376,6 +377,7 @@ export interface ConfigurableExtensionDataRef<
 
 // @public (undocumented)
 export const coreExtensionData: {
+  title: ConfigurableExtensionDataRef<string, 'core.title', {}>;
   reactElement: ConfigurableExtensionDataRef<
     JSX_3.Element,
     'core.reactElement',
@@ -691,7 +693,7 @@ export interface CreateFrontendFeatureLoaderOptions {
 // @public
 export function createFrontendModule<
   TId extends string,
-  TExtensions extends readonly ExtensionDefinition[] = [],
+  TExtensions extends readonly ExtensionDefinition[],
 >(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule;
 
 // @public (undocumented)
@@ -710,16 +712,16 @@ export interface CreateFrontendModuleOptions<
 // @public
 export function createFrontendPlugin<
   TId extends string,
+  TExtensions extends readonly ExtensionDefinition[],
   TRoutes extends {
     [name in string]: RouteRef | SubRouteRef;
   } = {},
   TExternalRoutes extends {
     [name in string]: ExternalRouteRef;
   } = {},
-  TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-): FrontendPlugin<
+): OverridableFrontendPlugin<
   TRoutes,
   TExternalRoutes,
   MakeSortedExtensionsMap<TExtensions[number], TId>
@@ -880,7 +882,7 @@ export interface ExtensionBlueprint<
   // (undocumented)
   make<
     TName extends string | undefined,
-    TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
+    TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
   >(args: {
     name?: TName;
     attachTo?: ExtensionAttachToSpec;
@@ -932,7 +934,7 @@ export interface ExtensionBlueprint<
     };
     factory(
       originalFactory: <
-        TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
+        TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
       >(
         params: TParamsInput extends ExtensionBlueprintDefineParams
           ? TParamsInput
@@ -1122,7 +1124,7 @@ export type ExtensionDefinition<
         }
       >;
     },
-    TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+    TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
   >(
     args: Expand<
       {
@@ -1141,7 +1143,7 @@ export type ExtensionDefinition<
         };
         factory?(
           originalFactory: <
-            TFactoryParamsReturn extends AnyParamsInput<
+            TFactoryParamsReturn extends AnyParamsInput_2<
               NonNullable<T['params']>
             >,
           >(
@@ -1328,28 +1330,16 @@ export interface FrontendPlugin<
   } = {
     [name in string]: ExternalRouteRef;
   },
-  TExtensionMap extends {
-    [id in string]: ExtensionDefinition;
-  } = {
-    [id in string]: ExtensionDefinition;
-  },
 > {
   // (undocumented)
   readonly $$type: '@backstage/FrontendPlugin';
   // (undocumented)
   readonly externalRoutes: TExternalRoutes;
   // (undocumented)
-  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
-  // (undocumented)
   readonly id: string;
   info(): Promise<FrontendPluginInfo>;
   // (undocumented)
   readonly routes: TRoutes;
-  // (undocumented)
-  withOverrides(options: {
-    extensions: Array<ExtensionDefinition>;
-    info?: FrontendPluginInfoOptions;
-  }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
 
 // @public
@@ -1529,6 +1519,35 @@ export { oktaAuthApiRef };
 export { oneloginAuthApiRef };
 
 export { OpenIdConnectApi };
+
+export { openshiftAuthApiRef };
+
+// @public
+export interface OverridableFrontendPlugin<
+  TRoutes extends {
+    [name in string]: RouteRef | SubRouteRef;
+  } = {
+    [name in string]: RouteRef | SubRouteRef;
+  },
+  TExternalRoutes extends {
+    [name in string]: ExternalRouteRef;
+  } = {
+    [name in string]: ExternalRouteRef;
+  },
+  TExtensionMap extends {
+    [id in string]: ExtensionDefinition;
+  } = {
+    [id in string]: ExtensionDefinition;
+  },
+> extends FrontendPlugin<TRoutes, TExternalRoutes> {
+  // (undocumented)
+  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  // (undocumented)
+  withOverrides(options: {
+    extensions: Array<ExtensionDefinition>;
+    info?: FrontendPluginInfoOptions;
+  }): OverridableFrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
+}
 
 // @public
 export const PageBlueprint: ExtensionBlueprint<{

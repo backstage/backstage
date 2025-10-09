@@ -5,8 +5,6 @@ sidebar_label: Common Extension Blueprints
 description: Extension blueprints provided by the frontend system and core features
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 This section covers many of the [extension blueprints](../architecture/23-extension-blueprints.md) available at your disposal when building Backstage frontend plugins.
 
 ## Extension blueprints in `@backstage/frontend-plugin-api`

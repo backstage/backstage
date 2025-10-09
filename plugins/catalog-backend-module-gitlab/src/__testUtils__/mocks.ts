@@ -820,6 +820,95 @@ export const config_org_group_with_subgroups_sass = {
     },
   },
 };
+
+export const config_groupPatterns_only_noMatch = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: ['^group8$', '^group9$', '^group10$'],
+        },
+      },
+    },
+  },
+};
+
+export const config_groupPatterns_only_Match1Group = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: ['^group1$', '^group9$', '^group10$'],
+        },
+      },
+    },
+  },
+};
+
+export const config_groupPatterns_multiple_matches = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: ['^group1$', '^group2$', '^group10$'],
+        },
+      },
+    },
+  },
+};
+
+export const config_groupPatterns_duplicate_match = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: ['^group1$', 'subgroup1'], // Both patterns match the same group
+        },
+      },
+    },
+  },
+};
+
 /**
  * GitLab API responses
  */
@@ -918,6 +1007,18 @@ export const all_projects_response: GitLabProject[] = [
     last_activity_at: new Date().toString(),
     web_url: 'https://example.com/group1/test-repo8-archived',
     path_with_namespace: 'group1/test-repo8-archived',
+  },
+  // project in subgroup
+  {
+    id: 9,
+    description: 'Project Nine Description',
+    name: 'test-repo9',
+    default_branch: 'main',
+    path: 'test-repo9',
+    archived: false,
+    last_activity_at: new Date().toString(),
+    web_url: 'https://example.com/group1/subgroup1/test-repo9',
+    path_with_namespace: 'group1/subgroup1/test-repo9',
   },
 ];
 
@@ -1210,6 +1311,12 @@ export const all_groups_response: GitLabGroup[] = [
     name: 'subgroup2',
     description: '',
     full_path: 'group1/subgroup2',
+  },
+  {
+    id: 8,
+    name: 'awsome-group',
+    description: '',
+    full_path: 'awsome-group',
   },
 ];
 

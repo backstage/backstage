@@ -27,13 +27,19 @@ import {
   TestApiProvider,
   mockApis,
 } from '@backstage/test-utils';
-import { rootRouteRef } from '../../../routes';
+import { rootRouteRef, viewTechDocRouteRef } from '../../../routes';
 import { TemplateListPage } from './TemplateListPage';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+  TECHDOCS_EXTERNAL_PATH_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 
 const mountedRoutes = {
   mountedRoutes: {
     '/': rootRouteRef,
     '/catalog/:namespace/:kind/:name': entityRouteRef,
+    '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
   },
 };
 
@@ -49,6 +55,127 @@ describe('TemplateListPage', () => {
         },
       },
     ],
+  });
+
+  describe('TechDocs link rendering', () => {
+    it('shows TechDocs link when template has backstage.io/techdocs-ref', async () => {
+      const mockCatalogApiWithDocs = catalogApiMock({
+        entities: [
+          {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: {
+              name: 'tmpl-a',
+              annotations: { [TECHDOCS_ANNOTATION]: 'dir:.' },
+            },
+            spec: { type: 'service' },
+          },
+        ],
+      });
+
+      const { findByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApiWithDocs],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+            [permissionApiRef, mockApis.permission()],
+          ]}
+        >
+          <TemplateListPage />
+        </TestApiProvider>,
+        mountedRoutes,
+      );
+
+      expect(await findByText('View TechDocs')).toBeInTheDocument();
+    });
+
+    it('shows TechDocs link when template has backstage.io/techdocs-entity', async () => {
+      const mockCatalogApiWithExternal = catalogApiMock({
+        entities: [
+          {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: {
+              name: 'tmpl-b',
+              annotations: {
+                [TECHDOCS_EXTERNAL_ANNOTATION]: 'component:default/other',
+              },
+            },
+            spec: { type: 'service' },
+          },
+        ],
+      });
+
+      const { findByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApiWithExternal],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+            [permissionApiRef, mockApis.permission()],
+          ]}
+        >
+          <TemplateListPage />
+        </TestApiProvider>,
+        mountedRoutes,
+      );
+
+      expect(await findByText('View TechDocs')).toBeInTheDocument();
+    });
+
+    it('appends path when backstage.io/techdocs-entity-path is set', async () => {
+      const mockCatalogApiWithPath = catalogApiMock({
+        entities: [
+          {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: {
+              name: 'tmpl-c',
+              annotations: {
+                [TECHDOCS_EXTERNAL_ANNOTATION]: 'component:default/other',
+                [TECHDOCS_EXTERNAL_PATH_ANNOTATION]: '/guides/start',
+              },
+            },
+            spec: { type: 'service' },
+          },
+        ],
+      });
+
+      const { findByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApiWithPath],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+            [permissionApiRef, mockApis.permission()],
+          ]}
+        >
+          <TemplateListPage />
+        </TestApiProvider>,
+        mountedRoutes,
+      );
+
+      const link = (await findByText('View TechDocs')).closest('a')!;
+      expect(link).toHaveAttribute(
+        'href',
+        expect.stringMatching(
+          /\/docs\/default\/component\/other\/?(index\.html)?#?\/guides\/start|\/docs\/default\/component\/other\/guides\/start/,
+        ),
+      );
+    });
   });
 
   it('should render the search bar for templates', async () => {
