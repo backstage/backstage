@@ -165,6 +165,7 @@ export const componentDefinitions = {
       item: 'bui-MenuItem',
       itemListBox: 'bui-MenuItemListBox',
       itemListBoxCheck: 'bui-MenuItemListBoxCheck',
+      itemWrapper: 'bui-MenuItemWrapper',
       itemContent: 'bui-MenuItemContent',
       itemArrow: 'bui-MenuItemArrow',
       separator: 'bui-MenuSeparator',
