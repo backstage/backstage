@@ -52,6 +52,9 @@ export interface MenuAutocompleteProps<T>
     Omit<RAMenuProps<T>, 'children'> {
   placeholder?: string;
   placement?: RAPopoverProps['placement'];
+  virtualized?: boolean;
+  maxWidth?: string;
+  maxHeight?: string;
 }
 
 /** @public */

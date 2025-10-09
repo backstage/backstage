@@ -31,6 +31,8 @@ import {
   ListBoxItem as RAListBoxItem,
   useFilter,
   RouterProvider,
+  Virtualizer,
+  ListLayout,
 } from 'react-aria-components';
 import { ScrollArea } from '../ScrollArea';
 import { useStyles } from '../../hooks/useStyles';
@@ -123,9 +125,25 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
 
 /** @public */
 export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
-  const { placement = 'bottom start', ...rest } = props;
+  const {
+    placement = 'bottom start',
+    virtualized = false,
+    maxWidth,
+    maxHeight,
+    ...rest
+  } = props;
   const { classNames } = useStyles('Menu');
   const { contains } = useFilter({ sensitivity: 'base' });
+  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+
+  const menuContent = (
+    <RAMenu
+      className={classNames.content}
+      renderEmptyState={() => <MenuEmptyState />}
+      style={{ width: newMaxWidth, maxHeight }}
+      {...rest}
+    />
+  );
 
   return (
     <RAPopover className={classNames.popover} placement={placement}>
@@ -140,18 +158,18 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
             <RiCloseCircleLine />
           </RAButton>
         </RASearchField>
-        <ScrollArea.Root>
-          <ScrollArea.Viewport>
-            <RAMenu
-              className={classNames.content}
-              renderEmptyState={() => <MenuEmptyState />}
-              {...rest}
-            />
-          </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-            <ScrollArea.Thumb />
-          </ScrollArea.Scrollbar>
-        </ScrollArea.Root>
+        {virtualized ? (
+          <Virtualizer
+            layout={ListLayout}
+            layoutOptions={{
+              rowHeight: 32,
+            }}
+          >
+            {menuContent}
+          </Virtualizer>
+        ) : (
+          menuContent
+        )}
       </RAAutocomplete>
     </RAPopover>
   );
@@ -208,24 +226,6 @@ export const MenuItem = (props: MenuItemProps) => {
   const isLink = href !== undefined;
   const isExternal = isExternalLink(href);
 
-  const content = (
-    <RAMenuItem
-      className={classNames.item}
-      data-color={color}
-      href={href}
-      textValue={typeof children === 'string' ? children : undefined}
-      {...rest}
-    >
-      <div className={classNames.itemContent}>
-        {iconStart}
-        {children}
-      </div>
-      <div className={classNames.itemArrow}>
-        <RiArrowRightSLine />
-      </div>
-    </RAMenuItem>
-  );
-
   if (isLink && isExternal) {
     return (
       <RAMenuItem
@@ -235,6 +235,28 @@ export const MenuItem = (props: MenuItemProps) => {
         onAction={() => window.open(href, '_blank', 'noopener,noreferrer')}
         {...rest}
       >
+        <div className={classNames.itemWrapper}>
+          <div className={classNames.itemContent}>
+            {iconStart}
+            {children}
+          </div>
+          <div className={classNames.itemArrow}>
+            <RiArrowRightSLine />
+          </div>
+        </div>
+      </RAMenuItem>
+    );
+  }
+
+  return (
+    <RAMenuItem
+      className={classNames.item}
+      data-color={color}
+      href={href}
+      textValue={typeof children === 'string' ? children : undefined}
+      {...rest}
+    >
+      <div className={classNames.itemWrapper}>
         <div className={classNames.itemContent}>
           {iconStart}
           {children}
@@ -242,11 +264,9 @@ export const MenuItem = (props: MenuItemProps) => {
         <div className={classNames.itemArrow}>
           <RiArrowRightSLine />
         </div>
-      </RAMenuItem>
-    );
-  }
-
-  return content;
+      </div>
+    </RAMenuItem>
+  );
 };
 
 /** @public */

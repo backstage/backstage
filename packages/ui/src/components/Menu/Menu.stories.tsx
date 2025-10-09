@@ -19,15 +19,11 @@ import {
   MenuTrigger,
   SubmenuTrigger,
   Menu,
-  MenuListBox,
-  MenuAutocomplete,
-  MenuAutocompleteListbox,
   MenuItem,
-  MenuListBoxItem,
   MenuSection,
   MenuSeparator,
 } from './index';
-import { Button, Flex, Text } from '../..';
+import { Button } from '../..';
 import {
   RiChat1Line,
   RiEdit2Line,
@@ -39,10 +35,7 @@ import {
   RiDeleteBinLine,
   RiShareBoxLine,
 } from '@remixicon/react';
-import { useState } from 'react';
-import { Selection } from 'react-aria-components';
 import { MemoryRouter } from 'react-router-dom';
-import { MenuItem as AriaMenuItem } from 'react-aria-components';
 
 const meta = {
   title: 'Backstage UI/Menu',
@@ -206,88 +199,6 @@ export const PreviewLinks: Story = {
   ),
 };
 
-export const PreviewAutocompleteMenu: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => (
-    <MenuTrigger>
-      <Button aria-label="Menu">Menu</Button>
-      <MenuAutocomplete placeholder="Filter">
-        <MenuItem>Create new file...</MenuItem>
-        <MenuItem>Create new folder...</MenuItem>
-        <MenuItem>Assign to...</MenuItem>
-        <MenuItem>Assign to me</MenuItem>
-        <MenuItem>Change status...</MenuItem>
-        <MenuItem>Change priority...</MenuItem>
-        <MenuItem>Add label...</MenuItem>
-        <MenuItem>Remove label...</MenuItem>
-      </MenuAutocomplete>
-    </MenuTrigger>
-  ),
-};
-
-export const PreviewAutocompleteListbox: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => {
-    const [selected, setSelected] = useState<Selection>(
-      new Set([options[2].value]),
-    );
-
-    return (
-      <Flex direction="column" gap="2" align="center">
-        <Text>Selected: {Array.from(selected).join(', ')}</Text>
-        <MenuTrigger>
-          <Button aria-label="Menu">Menu</Button>
-          <MenuAutocompleteListbox
-            selectedKeys={selected}
-            onSelectionChange={setSelected}
-          >
-            {options.map(option => (
-              <MenuListBoxItem key={option.value} id={option.value}>
-                {option.label}
-              </MenuListBoxItem>
-            ))}
-          </MenuAutocompleteListbox>
-        </MenuTrigger>
-      </Flex>
-    );
-  },
-};
-
-export const PreviewAutocompleteListboxMultiple: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => {
-    const [selected, setSelected] = useState<Selection>(
-      new Set([options[2].value, options[3].value]),
-    );
-
-    return (
-      <Flex direction="column" gap="2" align="center">
-        <Text>Selected: {Array.from(selected).join(', ')}</Text>
-        <MenuTrigger>
-          <Button aria-label="Menu">Menu</Button>
-          <MenuAutocompleteListbox
-            selectionMode="multiple"
-            selectedKeys={selected}
-            onSelectionChange={setSelected}
-          >
-            {options.map(option => (
-              <MenuListBoxItem key={option.value} id={option.value}>
-                {option.label}
-              </MenuListBoxItem>
-            ))}
-          </MenuAutocompleteListbox>
-        </MenuTrigger>
-      </Flex>
-    );
-  },
-};
-
 export const Opened: Story = {
   args: {
     ...Preview.args,
@@ -315,24 +226,6 @@ export const WithIcons: Story = {
         <MenuItem iconStart={<RiFileCopyLine />}>Copy</MenuItem>
         <MenuItem iconStart={<RiEdit2Line />}>Rename</MenuItem>
         <MenuItem iconStart={<RiChat1Line />}>Send feedback</MenuItem>
-      </Menu>
-    </MenuTrigger>
-  ),
-};
-
-export const WithScrolling: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => (
-    <MenuTrigger isOpen>
-      <Button aria-label="Menu">Menu with Scrolling</Button>
-      <Menu>
-        {Array.from({ length: 50 }, (_, i) => (
-          <MenuItem key={i}>
-            Item {i + 1} - This is a long menu item to demonstrate scrolling
-          </MenuItem>
-        ))}
       </Menu>
     </MenuTrigger>
   ),
@@ -421,125 +314,6 @@ export const WithLinks: Story = {
   ),
 };
 
-export const WithLinksTest: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => (
-    <MenuTrigger isOpen>
-      <Button aria-label="Menu">Menu</Button>
-      <Menu>
-        <AriaMenuItem href="/home">Internal link</AriaMenuItem>
-        <AriaMenuItem href="https://www.google.com">External link</AriaMenuItem>
-        <AriaMenuItem href="mailto:test@test.com">Email link</AriaMenuItem>
-      </Menu>
-    </MenuTrigger>
-  ),
-};
-
-export const WithListBox: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => (
-    <MenuTrigger isOpen>
-      <Button aria-label="Menu">Menu</Button>
-      <MenuListBox>
-        <MenuListBoxItem>Item 1</MenuListBoxItem>
-        <MenuListBoxItem>Item 2</MenuListBoxItem>
-        <MenuListBoxItem>Item 3</MenuListBoxItem>
-      </MenuListBox>
-    </MenuTrigger>
-  ),
-};
-
-export const WithListBoxControlled: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => {
-    const [selected, setSelected] = useState<Selection>(new Set(['paul']));
-
-    return (
-      <Flex direction="column" gap="2" align="start">
-        <Text>Selected: {Array.from(selected).join(', ')}</Text>
-        <MenuTrigger isOpen>
-          <Button aria-label="Menu">Menu</Button>
-          <MenuListBox
-            selectionMode="multiple"
-            selectedKeys={selected}
-            onSelectionChange={setSelected}
-          >
-            <MenuListBoxItem key="item1" id="john">
-              John Lennon
-            </MenuListBoxItem>
-            <MenuListBoxItem key="item2" id="paul">
-              Paul McCartney
-            </MenuListBoxItem>
-            <MenuListBoxItem key="item3" id="george">
-              George Harrison
-            </MenuListBoxItem>
-            <MenuListBoxItem key="item4" id="ringo">
-              Ringo Starr
-            </MenuListBoxItem>
-          </MenuListBox>
-        </MenuTrigger>
-      </Flex>
-    );
-  },
-};
-
-export const WithAutocompleteMenu: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => (
-    <MenuTrigger isOpen>
-      <Button aria-label="Menu">Menu</Button>
-      <MenuAutocomplete placeholder="Filter">
-        <MenuItem>Create new file...</MenuItem>
-        <MenuItem>Create new folder...</MenuItem>
-        <MenuItem>Assign to...</MenuItem>
-        <MenuItem>Assign to me</MenuItem>
-        <MenuItem>Change status...</MenuItem>
-        <MenuItem>Change priority...</MenuItem>
-        <MenuItem>Add label...</MenuItem>
-        <MenuItem>Remove label...</MenuItem>
-      </MenuAutocomplete>
-    </MenuTrigger>
-  ),
-};
-
-export const WithAutocompleteListbox: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => {
-    const [selected, setSelected] = useState<Selection>(
-      new Set([options[2].value]),
-    );
-
-    return (
-      <Flex direction="column" gap="2" align="start">
-        <Text>Selected: {Array.from(selected).join(', ')}</Text>
-        <MenuTrigger isOpen>
-          <Button aria-label="Menu">Menu</Button>
-          <MenuAutocompleteListbox
-            selectedKeys={selected}
-            onSelectionChange={setSelected}
-          >
-            {options.map(option => (
-              <MenuListBoxItem key={option.value} id={option.value}>
-                {option.label}
-              </MenuListBoxItem>
-            ))}
-          </MenuAutocompleteListbox>
-        </MenuTrigger>
-      </Flex>
-    );
-  },
-};
-
 export const Submenu: Story = {
   args: {
     ...Preview.args,
@@ -552,7 +326,7 @@ export const Submenu: Story = {
         <MenuItem>Duplicate</MenuItem>
         <SubmenuTrigger>
           <MenuItem>Submenu</MenuItem>
-          <Menu>
+          <Menu placement="right top">
             <MenuItem>Edit</MenuItem>
             <MenuItem>Duplicate</MenuItem>
             <MenuItem>Rename</MenuItem>
@@ -566,64 +340,4 @@ export const Submenu: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
-
-export const SubmenuAutocompleteMenu: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => (
-    <MenuTrigger isOpen>
-      <Button aria-label="Menu">Menu</Button>
-      <Menu>
-        <MenuItem>Edit</MenuItem>
-        <SubmenuTrigger>
-          <MenuItem>Submenu</MenuItem>
-          <MenuAutocomplete>
-            {options.map(option => (
-              <MenuItem key={option.value} id={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </MenuAutocomplete>
-        </SubmenuTrigger>
-      </Menu>
-    </MenuTrigger>
-  ),
-};
-
-export const SubmenuAutocompleteListbox: Story = {
-  args: {
-    ...Preview.args,
-  },
-  render: () => {
-    const [selected, setSelected] = useState<Selection>(
-      new Set([options[2].value]),
-    );
-
-    return (
-      <Flex direction="column" gap="2" align="start">
-        <Text>Selected: {Array.from(selected).join(', ')}</Text>
-        <MenuTrigger isOpen>
-          <Button aria-label="Menu">Menu</Button>
-          <Menu>
-            <MenuItem>Edit</MenuItem>
-            <SubmenuTrigger>
-              <MenuItem>Submenu</MenuItem>
-              <MenuAutocompleteListbox
-                selectedKeys={selected}
-                onSelectionChange={setSelected}
-              >
-                {options.map(option => (
-                  <MenuListBoxItem key={option.value} id={option.value}>
-                    {option.label}
-                  </MenuListBoxItem>
-                ))}
-              </MenuAutocompleteListbox>
-            </SubmenuTrigger>
-          </Menu>
-        </MenuTrigger>
-      </Flex>
-    );
-  },
 };
