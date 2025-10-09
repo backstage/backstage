@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,52 +14,54 @@
  * limitations under the License.
  */
 
-.bui-ScrollAreaRoot {
-  box-sizing: border-box;
-  width: 100%;
-}
-
-.bui-ScrollAreaViewport {
-  height: 100%;
-  overscroll-behavior: contain;
-}
-
-.bui-ScrollAreaContent {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-block: 0.75rem;
-  padding-left: 1rem;
-  padding-right: 1.5rem;
-}
-
-.bui-ScrollAreaScrollbar {
-  display: flex;
-  justify-content: center;
-  background-color: var(--bui-scrollbar);
-  width: 0.25rem;
-  border-radius: 0.375rem;
-  margin: 0.5rem;
-  opacity: 0;
-  transition: opacity 150ms 300ms;
-
-  &[data-hovering],
-  &[data-scrolling] {
-    opacity: 1;
-    transition-duration: 75ms;
-    transition-delay: 0ms;
+@layer components {
+  .bui-ScrollAreaRoot {
+    box-sizing: border-box;
+    width: 100%;
   }
 
-  &::before {
-    content: '';
-    position: absolute;
-    width: 1.25rem;
+  .bui-ScrollAreaViewport {
     height: 100%;
+    overscroll-behavior: contain;
   }
-}
 
-.bui-ScrollAreaThumb {
-  width: 100%;
-  border-radius: inherit;
-  background-color: var(--bui-scrollbar-thumb);
+  .bui-ScrollAreaContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-block: 0.75rem;
+    padding-left: 1rem;
+    padding-right: 1.5rem;
+  }
+
+  .bui-ScrollAreaScrollbar {
+    display: flex;
+    justify-content: center;
+    background-color: var(--bui-scrollbar);
+    width: 0.25rem;
+    border-radius: 0.375rem;
+    margin: 0.5rem;
+    opacity: 0;
+    transition: opacity 150ms 300ms;
+
+    &[data-hovering],
+    &[data-scrolling] {
+      opacity: 1;
+      transition-duration: 75ms;
+      transition-delay: 0ms;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 1.25rem;
+      height: 100%;
+    }
+  }
+
+  .bui-ScrollAreaThumb {
+    width: 100%;
+    border-radius: inherit;
+    background-color: var(--bui-scrollbar-thumb);
+  }
 }
