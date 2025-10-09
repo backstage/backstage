@@ -36,6 +36,7 @@ import {
   RiShareBoxLine,
 } from '@remixicon/react';
 import { MemoryRouter } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const meta = {
   title: 'Backstage UI/Menu',
@@ -340,4 +341,74 @@ export const Submenu: Story = {
       </Menu>
     </MenuTrigger>
   ),
+};
+
+export const Virtualized: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => {
+    const [pokemon, setPokemon] = useState<
+      Array<{ name: string; url: string }>
+    >([]);
+
+    useEffect(() => {
+      fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')
+        .then(response => response.json())
+        .then(data => {
+          setPokemon(data.results);
+        })
+        .catch(error => {
+          console.error('Error fetching Pokemon:', error);
+        });
+    }, []);
+
+    return (
+      <MenuTrigger isOpen>
+        <Button aria-label="Menu">Menu</Button>
+        <Menu items={pokemon} virtualized>
+          {pokemon.map((p, index) => (
+            <MenuItem key={index} id={p.name}>
+              {p.name.charAt(0).toLocaleUpperCase('en-US') + p.name.slice(1)}
+            </MenuItem>
+          ))}
+        </Menu>
+      </MenuTrigger>
+    );
+  },
+};
+
+export const VirtualizedMaxHeight: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: () => {
+    const [pokemon, setPokemon] = useState<
+      Array<{ name: string; url: string }>
+    >([]);
+
+    useEffect(() => {
+      fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')
+        .then(response => response.json())
+        .then(data => {
+          setPokemon(data.results);
+        })
+        .catch(error => {
+          console.error('Error fetching Pokemon:', error);
+        });
+    }, []);
+
+    return (
+      <MenuTrigger isOpen>
+        <Button aria-label="Menu">Menu</Button>
+        <Menu items={pokemon} virtualized maxHeight="300px">
+          {pokemon.map((p, index) => (
+            <MenuItem key={index} id={p.name}>
+              {p.name.charAt(0).toLocaleUpperCase('en-US') + p.name.slice(1)}
+            </MenuItem>
+          ))}
+        </Menu>
+      </MenuTrigger>
+    );
+  },
 };

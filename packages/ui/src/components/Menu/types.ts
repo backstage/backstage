@@ -37,6 +37,9 @@ export interface MenuProps<T>
   extends RAMenuProps<T>,
     Omit<RAMenuProps<T>, 'children'> {
   placement?: RAPopoverProps['placement'];
+  virtualized?: boolean;
+  maxWidth?: string;
+  maxHeight?: string;
 }
 
 /** @public */
@@ -44,6 +47,9 @@ export interface MenuListBoxProps<T>
   extends RAListBoxProps<T>,
     Omit<RAListBoxProps<T>, 'children'> {
   placement?: RAPopoverProps['placement'];
+  virtualized?: boolean;
+  maxWidth?: string;
+  maxHeight?: string;
 }
 
 /** @public */
@@ -63,6 +69,9 @@ export interface MenuAutocompleteListBoxProps<T>
     Omit<RAListBoxProps<T>, 'children'> {
   placeholder?: string;
   placement?: RAPopoverProps['placement'];
+  virtualized?: boolean;
+  maxWidth?: string;
+  maxHeight?: string;
 }
 
 /** @public */

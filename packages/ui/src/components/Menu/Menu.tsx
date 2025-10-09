@@ -34,7 +34,6 @@ import {
   Virtualizer,
   ListLayout,
 } from 'react-aria-components';
-import { ScrollArea } from '../ScrollArea';
 import { useStyles } from '../../hooks/useStyles';
 import type {
   MenuTriggerProps,
@@ -74,23 +73,41 @@ export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
 
 /** @public */
 export const Menu = (props: MenuProps<object>) => {
-  const { placement = 'bottom start', ...rest } = props;
+  const {
+    placement = 'bottom start',
+    virtualized = false,
+    maxWidth,
+    maxHeight,
+    ...rest
+  } = props;
   const { classNames } = useStyles('Menu');
   const navigate = useNavigate();
+  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+
+  const menuContent = (
+    <RAMenu
+      className={classNames.content}
+      renderEmptyState={() => <MenuEmptyState />}
+      style={{ width: newMaxWidth, maxHeight }}
+      {...rest}
+    />
+  );
 
   return (
     <RAPopover className={classNames.popover} placement={placement}>
       <RouterProvider navigate={navigate} useHref={useHref}>
-        <ScrollArea.Root>
-          <ScrollArea.Viewport>
-            <RAMenu className={classNames.content} {...rest}>
-              {props.children}
-            </RAMenu>
-          </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-            <ScrollArea.Thumb />
-          </ScrollArea.Scrollbar>
-        </ScrollArea.Root>
+        {virtualized ? (
+          <Virtualizer
+            layout={ListLayout}
+            layoutOptions={{
+              rowHeight: 32,
+            }}
+          >
+            {menuContent}
+          </Virtualizer>
+        ) : (
+          menuContent
+        )}
       </RouterProvider>
     </RAPopover>
   );
@@ -101,24 +118,37 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
   const {
     selectionMode = 'single',
     placement = 'bottom start',
+    virtualized = false,
+    maxWidth,
+    maxHeight,
     ...rest
   } = props;
   const { classNames } = useStyles('Menu');
+  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+
+  const listBoxContent = (
+    <RAListBox
+      className={classNames.content}
+      selectionMode={selectionMode}
+      style={{ width: newMaxWidth, maxHeight }}
+      {...rest}
+    />
+  );
 
   return (
     <RAPopover className={classNames.popover} placement={placement}>
-      <ScrollArea.Root>
-        <ScrollArea.Viewport>
-          <RAListBox
-            className={classNames.content}
-            selectionMode={selectionMode}
-            {...rest}
-          />
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+      {virtualized ? (
+        <Virtualizer
+          layout={ListLayout}
+          layoutOptions={{
+            rowHeight: 32,
+          }}
+        >
+          {listBoxContent}
+        </Virtualizer>
+      ) : (
+        listBoxContent
+      )}
     </RAPopover>
   );
 };
@@ -135,11 +165,70 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   const { classNames } = useStyles('Menu');
   const { contains } = useFilter({ sensitivity: 'base' });
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+  const navigate = useNavigate();
 
   const menuContent = (
     <RAMenu
       className={classNames.content}
       renderEmptyState={() => <MenuEmptyState />}
+      style={{ width: newMaxWidth, maxHeight }}
+      {...rest}
+    />
+  );
+
+  return (
+    <RAPopover className={classNames.popover} placement={placement}>
+      <RouterProvider navigate={navigate} useHref={useHref}>
+        <RAAutocomplete filter={contains}>
+          <RASearchField className={classNames.searchField}>
+            <RAInput
+              className={classNames.searchFieldInput}
+              aria-label="Search"
+              placeholder={props.placeholder || 'Search...'}
+            />
+            <RAButton className={classNames.searchFieldClear}>
+              <RiCloseCircleLine />
+            </RAButton>
+          </RASearchField>
+          {virtualized ? (
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                rowHeight: 32,
+              }}
+            >
+              {menuContent}
+            </Virtualizer>
+          ) : (
+            menuContent
+          )}
+        </RAAutocomplete>
+      </RouterProvider>
+    </RAPopover>
+  );
+};
+
+/** @public */
+export const MenuAutocompleteListbox = (
+  props: MenuAutocompleteListBoxProps<object>,
+) => {
+  const {
+    selectionMode = 'single',
+    placement = 'bottom start',
+    virtualized = false,
+    maxWidth,
+    maxHeight,
+    ...rest
+  } = props;
+  const { classNames } = useStyles('Menu');
+  const { contains } = useFilter({ sensitivity: 'base' });
+  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+
+  const listBoxContent = (
+    <RAListBox
+      className={classNames.content}
+      renderEmptyState={() => <MenuEmptyState />}
+      selectionMode={selectionMode}
       style={{ width: newMaxWidth, maxHeight }}
       {...rest}
     />
@@ -165,54 +254,11 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
               rowHeight: 32,
             }}
           >
-            {menuContent}
+            {listBoxContent}
           </Virtualizer>
         ) : (
-          menuContent
+          listBoxContent
         )}
-      </RAAutocomplete>
-    </RAPopover>
-  );
-};
-
-/** @public */
-export const MenuAutocompleteListbox = (
-  props: MenuAutocompleteListBoxProps<object>,
-) => {
-  const {
-    selectionMode = 'single',
-    placement = 'bottom start',
-    ...rest
-  } = props;
-  const { classNames } = useStyles('Menu');
-  const { contains } = useFilter({ sensitivity: 'base' });
-
-  return (
-    <RAPopover className={classNames.popover} placement={placement}>
-      <RAAutocomplete filter={contains}>
-        <RASearchField className={classNames.searchField}>
-          <RAInput
-            className={classNames.searchFieldInput}
-            aria-label="Search"
-            placeholder={props.placeholder || 'Search...'}
-          />
-          <RAButton className={classNames.searchFieldClear}>
-            <RiCloseCircleLine />
-          </RAButton>
-        </RASearchField>
-        <ScrollArea.Root>
-          <ScrollArea.Viewport>
-            <RAListBox
-              className={classNames.content}
-              renderEmptyState={() => <MenuEmptyState />}
-              selectionMode={selectionMode}
-              {...rest}
-            />
-          </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-            <ScrollArea.Thumb />
-          </ScrollArea.Scrollbar>
-        </ScrollArea.Root>
       </RAAutocomplete>
     </RAPopover>
   );
@@ -282,11 +328,13 @@ export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
       className={classNames.itemListBox}
       {...rest}
     >
-      <div className={classNames.itemContent}>
-        <div className={classNames.itemListBoxCheck}>
-          <RiCheckLine />
+      <div className={classNames.itemWrapper}>
+        <div className={classNames.itemContent}>
+          <div className={classNames.itemListBoxCheck}>
+            <RiCheckLine />
+          </div>
+          {children}
         </div>
-        {children}
       </div>
     </RAListBoxItem>
   );

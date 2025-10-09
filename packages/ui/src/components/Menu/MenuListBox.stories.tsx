@@ -17,7 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MenuTrigger, MenuListBox, MenuListBoxItem } from './index';
 import { Button, Flex, Text } from '../..';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Selection } from 'react-aria-components';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -84,6 +84,76 @@ export const Controlled: Story = {
           </MenuListBox>
         </MenuTrigger>
       </Flex>
+    );
+  },
+};
+
+export const Virtualized: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => {
+    const [pokemon, setPokemon] = useState<
+      Array<{ name: string; url: string }>
+    >([]);
+
+    useEffect(() => {
+      fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')
+        .then(response => response.json())
+        .then(data => {
+          setPokemon(data.results);
+        })
+        .catch(error => {
+          console.error('Error fetching Pokemon:', error);
+        });
+    }, []);
+
+    return (
+      <MenuTrigger isOpen>
+        <Button aria-label="Menu">Menu</Button>
+        <MenuListBox items={pokemon} virtualized>
+          {pokemon.map((p, index) => (
+            <MenuListBoxItem key={index} id={p.name}>
+              {p.name.charAt(0).toLocaleUpperCase('en-US') + p.name.slice(1)}
+            </MenuListBoxItem>
+          ))}
+        </MenuListBox>
+      </MenuTrigger>
+    );
+  },
+};
+
+export const VirtualizedMaxHeight: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => {
+    const [pokemon, setPokemon] = useState<
+      Array<{ name: string; url: string }>
+    >([]);
+
+    useEffect(() => {
+      fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')
+        .then(response => response.json())
+        .then(data => {
+          setPokemon(data.results);
+        })
+        .catch(error => {
+          console.error('Error fetching Pokemon:', error);
+        });
+    }, []);
+
+    return (
+      <MenuTrigger isOpen>
+        <Button aria-label="Menu">Menu</Button>
+        <MenuListBox items={pokemon} virtualized maxHeight="300px">
+          {pokemon.map((p, index) => (
+            <MenuListBoxItem key={index} id={p.name}>
+              {p.name.charAt(0).toLocaleUpperCase('en-US') + p.name.slice(1)}
+            </MenuListBoxItem>
+          ))}
+        </MenuListBox>
+      </MenuTrigger>
     );
   },
 };
