@@ -184,7 +184,7 @@
   display: flex;
   align-items: center;
   padding-top: var(--bui-space-3);
-  padding-left: var(--bui-space-2);
+  padding-left: var(--bui-space-3);
   color: var(--bui-fg-primary);
   font-size: var(--bui-font-size-1);
   font-weight: bold;
