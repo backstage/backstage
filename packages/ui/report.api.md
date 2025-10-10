@@ -441,6 +441,16 @@ export const componentDefinitions: {
       readonly root: 'bui-Container';
     };
   };
+  readonly Dialog: {
+    readonly classNames: {
+      readonly root: 'bui-Dialog';
+      readonly content: 'bui-DialogContent';
+      readonly header: 'bui-DialogHeader';
+      readonly headerTitle: 'bui-DialogHeaderTitle';
+      readonly body: 'bui-DialogBody';
+      readonly footer: 'bui-DialogFooter';
+    };
+  };
   readonly FieldLabel: {
     readonly classNames: {
       readonly root: 'bui-FieldLabelWrapper';
