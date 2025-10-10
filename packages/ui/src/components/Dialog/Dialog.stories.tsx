@@ -23,20 +23,65 @@ import {
   DialogClose,
 } from './Dialog';
 import { Button, Flex, Text, TextField, Select } from '@backstage/ui';
+import { useArgs } from 'storybook/preview-api';
 
 const meta = {
   title: 'Backstage UI/Dialog',
   component: Dialog,
+  args: {
+    isOpen: undefined,
+    defaultOpen: undefined,
+  },
+  argTypes: {
+    isOpen: { control: 'boolean' },
+    defaultOpen: { control: 'boolean' },
+  },
 } satisfies Meta<typeof Dialog>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => (
-    <DialogTrigger>
-      <Button variant="secondary">Open Dialog</Button>
-      <Dialog>
+  render: args => {
+    return (
+      <DialogTrigger {...args}>
+        <Button variant="secondary">Open Dialog</Button>
+        <Dialog>
+          <DialogHeader>Example Dialog</DialogHeader>
+          <DialogBody>
+            <Text>This is a basic dialog example.</Text>
+          </DialogBody>
+          <DialogFooter>
+            <DialogClose>Close</DialogClose>
+            <DialogClose variant="primary">Save</DialogClose>
+          </DialogFooter>
+        </Dialog>
+      </DialogTrigger>
+    );
+  },
+};
+
+export const Open: Story = {
+  args: {
+    ...Default.args,
+    defaultOpen: true,
+  },
+  render: Default.render,
+};
+
+export const NoTrigger: Story = {
+  args: {
+    isOpen: true,
+  },
+  render: args => {
+    const [{ isOpen }, updateArgs] = useArgs();
+
+    return (
+      <Dialog
+        {...args}
+        isOpen={isOpen}
+        onOpenChange={value => updateArgs({ isOpen: value })}
+      >
         <DialogHeader>Example Dialog</DialogHeader>
         <DialogBody>
           <Text>This is a basic dialog example.</Text>
@@ -46,30 +91,16 @@ export const Default: Story = {
           <DialogClose variant="primary">Save</DialogClose>
         </DialogFooter>
       </Dialog>
-    </DialogTrigger>
-  ),
-};
-
-export const WithNoHeader: Story = {
-  render: () => (
-    <DialogTrigger>
-      <Button variant="secondary">Open Dialog</Button>
-      <Dialog>
-        <DialogBody>
-          <Text>This is a basic dialog example.</Text>
-        </DialogBody>
-        <DialogFooter>
-          <DialogClose>Close</DialogClose>
-          <DialogClose variant="primary">Save</DialogClose>
-        </DialogFooter>
-      </Dialog>
-    </DialogTrigger>
-  ),
+    );
+  },
 };
 
 export const Scrollable: Story = {
-  render: () => (
-    <DialogTrigger>
+  args: {
+    isOpen: true,
+  },
+  render: args => (
+    <DialogTrigger {...args}>
       <Button variant="secondary">Scrollable Dialog</Button>
       <Dialog>
         <DialogHeader>Long Content Dialog</DialogHeader>
@@ -103,8 +134,11 @@ export const Scrollable: Story = {
 };
 
 export const Confirmation: Story = {
-  render: () => (
-    <DialogTrigger>
+  args: {
+    isOpen: true,
+  },
+  render: args => (
+    <DialogTrigger {...args}>
       <Button variant="secondary">Delete Item</Button>
       <Dialog>
         <DialogHeader>Confirm Delete</DialogHeader>
@@ -124,8 +158,11 @@ export const Confirmation: Story = {
 };
 
 export const WithForm: Story = {
-  render: () => (
-    <DialogTrigger>
+  args: {
+    isOpen: true,
+  },
+  render: args => (
+    <DialogTrigger {...args}>
       <Button variant="secondary">Create User</Button>
       <Dialog>
         <DialogHeader>Create New User</DialogHeader>
@@ -150,4 +187,20 @@ export const WithForm: Story = {
       </Dialog>
     </DialogTrigger>
   ),
+};
+
+export const PreviewScrollable: Story = {
+  args: {
+    ...Scrollable.args,
+    isOpen: false,
+  },
+  render: Scrollable.render,
+};
+
+export const PreviewWithForm: Story = {
+  args: {
+    ...WithForm.args,
+    isOpen: false,
+  },
+  render: WithForm.render,
 };

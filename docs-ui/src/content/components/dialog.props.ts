@@ -137,3 +137,18 @@ export const dialogWithFormSnippet = `<DialogTrigger>
     </DialogFooter>
   </Dialog>
 </DialogTrigger>`;
+
+export const dialogWithNoTriggerSnippet = `const [isOpen, setIsOpen] = useState(false);
+
+<Dialog isOpen={isOpen} onOpenChange={setIsOpen}>
+  <DialogHeader>Create New User</DialogHeader>
+  <DialogBody>
+    Your content
+  </DialogBody>
+  <DialogFooter>
+    <Flex gap="2" justify="end">
+      <DialogClose>Cancel</DialogClose>
+      <DialogClose variant="primary">Create User</DialogClose>
+    </Flex>
+  </DialogFooter>
+</Dialog>`;

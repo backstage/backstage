@@ -13,6 +13,7 @@ import {
   dialogDefaultSnippet,
   dialogScrollableSnippet,
   dialogWithFormSnippet,
+  dialogWithNoTriggerSnippet,
 } from './dialog.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -81,7 +82,7 @@ Dialog with a fixed height body that scrolls when content overflows.
 <Snippet
   align="center"
   py={4}
-  preview={<DialogSnippet story="Scrollable" />}
+  preview={<DialogSnippet story="PreviewScrollable" />}
   code={dialogScrollableSnippet}
 />
 
@@ -92,9 +93,15 @@ Dialog containing form elements for user input.
 <Snippet
   align="center"
   py={4}
-  preview={<DialogSnippet story="WithForm" />}
+  preview={<DialogSnippet story="PreviewWithForm" />}
   code={dialogWithFormSnippet}
 />
+
+### Dialog with no trigger and controlled by props
+
+You can also control the dialog using your own states.
+
+<CodeBlock code={dialogWithNoTriggerSnippet} />
 
 <Theming component="Dialog" />
 
