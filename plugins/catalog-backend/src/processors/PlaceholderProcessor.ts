@@ -138,9 +138,13 @@ export async function yamlPlaceholderResolver(
 
   params.emit(processingResult.refresh(`url:${url}`));
 
+  // YAML merge support False by default
+  const enableYamlMerge = false;
+  const parseOptions = { merge: enableYamlMerge };
+
   let documents: yaml.Document.Parsed[];
   try {
-    documents = yaml.parseAllDocuments(content, { merge: true }).filter(d => d);
+    documents = yaml.parseAllDocuments(content, parseOptions).filter(d => d);
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} failed to parse YAML data at ${params.value}, ${e}`,

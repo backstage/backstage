@@ -21,6 +21,10 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { CatalogProcessorResult } from '../api/processor';
 import { processingResult } from '../api/processingResult';
 
+export interface ParseEntityYamlOptions {
+  enableYamlMerge?: boolean;
+}
+
 /**
  * A helper function that parses a YAML file, properly handling multiple
  * documents in a single file.
@@ -40,12 +44,16 @@ import { processingResult } from '../api/processingResult';
 export function* parseEntityYaml(
   data: string | Buffer,
   location: LocationSpec,
+  options?: ParseEntityYamlOptions,
 ): Iterable<CatalogProcessorResult> {
+  const parseOptions = { merge: options?.enableYamlMerge ?? false };
+
   let documents: yaml.Document.Parsed[];
   try {
     documents = yaml
       .parseAllDocuments(
         typeof data === 'string' ? data : data.toString('utf8'),
+        parseOptions,
       )
       .filter(d => d);
   } catch (e) {
