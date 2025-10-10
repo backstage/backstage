@@ -76,6 +76,7 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         type="password"
+        data-version="1"
         {...rest}
         ref={ref}
       >

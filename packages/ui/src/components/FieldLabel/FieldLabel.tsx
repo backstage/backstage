@@ -28,7 +28,7 @@ export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
     if (!label) return null;
 
     return (
-      <div className={classNames.root} {...rest} ref={ref}>
+      <div className={classNames.root} {...rest} ref={ref} data-version="1">
         {label && (
           <Label className={classNames.label} htmlFor={htmlFor} id={id}>
             {label}

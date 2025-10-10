@@ -33,7 +33,7 @@ export const TableHeader = <T extends object>({
   const { classNames } = useStyles('Table');
 
   return (
-    <ReactAriaTableHeader className={classNames.header}>
+    <ReactAriaTableHeader className={classNames.header} data-version="1">
       {/* Add extra columns for drag and drop and selection. */}
       {allowsDragging && <Column />}
       {selectionBehavior === 'toggle' && (

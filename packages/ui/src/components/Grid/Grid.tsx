@@ -38,6 +38,7 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
     ref,
     className: clsx(classNames.root, className),
     ...dataProps,
+    'data-version': '1',
     style,
     children: props.children,
   });
@@ -55,6 +56,7 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
     ref,
     className: clsx(classNames.item, className),
     ...dataProps,
+    'data-version': '1',
     style,
     children: props.children,
   });

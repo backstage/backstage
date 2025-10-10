@@ -38,6 +38,7 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
     ref,
     className: clsx(classNames.root, className),
     ...dataProps,
+    'data-version': '1',
     style,
     children: props.children,
   });

@@ -28,6 +28,7 @@ export const Table = (props: TableProps) => {
     <ReactAriaTable
       className={classNames.table}
       aria-label="Data table"
+      data-version="1"
       {...props}
     />
   );

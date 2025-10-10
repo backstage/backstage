@@ -24,5 +24,11 @@ import { useStyles } from '../../../hooks/useStyles';
 export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
   const { classNames } = useStyles('Table');
 
-  return <ReactAriaTableBody className={classNames.body} {...props} />;
+  return (
+    <ReactAriaTableBody
+      className={classNames.body}
+      data-version="1"
+      {...props}
+    />
+  );
 };

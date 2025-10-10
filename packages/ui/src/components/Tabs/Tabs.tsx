@@ -152,6 +152,7 @@ export const Tabs = (props: TabsProps) => {
           keyboardActivation="manual"
           selectedKey={computedSelectedKey}
           ref={tabsRef}
+          data-version="1"
           {...rest}
         >
           {children as ReactNode}

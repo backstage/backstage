@@ -40,6 +40,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
     return (
       <AriaTooltip
         className={clsx(classNames.tooltip, className)}
+        data-version="1"
         {...rest}
         ref={ref}
       >

@@ -29,6 +29,7 @@ const CollapsibleRoot = forwardRef<
     <CollapsiblePrimitive.Root
       ref={ref}
       className={clsx(classNames.root, className)}
+      data-version="1"
       {...props}
     />
   );
@@ -45,6 +46,7 @@ const CollapsibleTrigger = forwardRef<
     <CollapsiblePrimitive.Trigger
       ref={ref}
       className={clsx(classNames.trigger, className)}
+      data-version="1"
       {...props}
     />
   );
@@ -61,6 +63,7 @@ const CollapsiblePanel = forwardRef<
     <CollapsiblePrimitive.Panel
       ref={ref}
       className={clsx(classNames.panel, className)}
+      data-version="1"
       {...props}
     />
   );

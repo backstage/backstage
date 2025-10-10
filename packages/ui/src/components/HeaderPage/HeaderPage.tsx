@@ -33,7 +33,7 @@ export const HeaderPage = (props: HeaderPageProps) => {
   const { classNames } = useStyles('HeaderPage');
 
   return (
-    <Container className={classNames.root}>
+    <Container className={classNames.root} data-version="1">
       <div className={classNames.content}>
         <div className={classNames.breadcrumbs}>
           {breadcrumbs &&

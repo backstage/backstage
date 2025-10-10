@@ -61,6 +61,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         {...rest}
+        data-version="1"
         ref={ref}
       >
         <FieldLabel

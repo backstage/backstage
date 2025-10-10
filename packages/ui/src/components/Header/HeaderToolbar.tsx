@@ -46,7 +46,11 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
 
   return (
     <RouterProvider navigate={navigate} useHref={useHref}>
-      <div className={classNames.toolbar} data-has-tabs={hasTabs}>
+      <div
+        className={classNames.toolbar}
+        data-has-tabs={hasTabs}
+        data-version="1"
+      >
         <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
           <div className={classNames.toolbarContent} ref={toolbarContentRef}>
             <Text as="h1" variant="body-medium">

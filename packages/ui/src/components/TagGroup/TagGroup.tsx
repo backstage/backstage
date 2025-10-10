@@ -73,6 +73,7 @@ export const Tag = (props: TagProps) => {
       className={clsx(classNames.tag, className)}
       data-size={size}
       href={href}
+      data-version="1"
       {...rest}
     >
       {({ allowsRemoving }) => (

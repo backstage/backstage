@@ -36,7 +36,11 @@ export const CellProfile = (props: CellProfileProps) => {
   const { classNames } = useStyles('Table');
 
   return (
-    <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>
+    <ReactAriaCell
+      className={clsx(classNames.cell, className)}
+      data-version="1"
+      {...rest}
+    >
       <div className={classNames.cellContentWrapper}>
         <div className={classNames.cellIcon}>
           {src && (

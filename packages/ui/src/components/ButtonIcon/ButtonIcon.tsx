@@ -44,6 +44,7 @@ export const ButtonIcon = forwardRef(
         className={clsx(classNames.root, classNamesButtonIcon.root, className)}
         ref={ref}
         {...dataAttributes}
+        data-version="1"
         {...rest}
       >
         {icon}

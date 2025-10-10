@@ -35,6 +35,7 @@ export const Avatar = forwardRef<
       ref={ref}
       className={clsx(classNames.root, className)}
       data-size={size}
+      data-version="1"
       {...rest}
     >
       <AvatarPrimitive.Image className={classNames.image} src={src} />

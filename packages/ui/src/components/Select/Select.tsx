@@ -72,6 +72,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
       ref={ref}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
+      data-version="1"
       {...rest}
     >
       <FieldLabel

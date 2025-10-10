@@ -49,6 +49,7 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
         name={name}
         value={value}
         style={style}
+        data-version="1"
       >
         <CheckboxPrimitive.Indicator className={classNames.indicator}>
           <Icon name="check" size={12} />

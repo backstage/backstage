@@ -65,7 +65,11 @@ export function TablePagination(props: TablePaginationProps) {
   };
 
   return (
-    <div className={clsx('bui-DataTablePagination', className)} {...rest}>
+    <div
+      className={clsx('bui-DataTablePagination', className)}
+      data-version="1"
+      {...rest}
+    >
       <div className="bui-DataTablePagination--left">
         {showPageSizeOptions && (
           <Select

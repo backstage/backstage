@@ -48,6 +48,7 @@ function TextComponent<T extends ElementType = 'span'>(
       data-truncate={truncate}
       data-as={as}
       {...dataAttributes}
+      data-version="1"
       style={style}
       {...restProps}
     />

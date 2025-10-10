@@ -30,6 +30,7 @@ export const FieldError = forwardRef<HTMLDivElement, FieldErrorProps>(
       <AriaFieldError
         className={clsx('bui-FieldError', className)}
         ref={ref}
+        data-version="1"
         {...rest}
       />
     );

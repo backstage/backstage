@@ -66,12 +66,12 @@ const MenuEmptyState = () => {
 
 /** @public */
 export const MenuTrigger = (props: MenuTriggerProps) => {
-  return <RAMenuTrigger {...props} />;
+  return <RAMenuTrigger {...props} data-version="1" />;
 };
 
 /** @public */
 export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
-  return <RAMenuSubmenuTrigger {...props} />;
+  return <RAMenuSubmenuTrigger {...props} data-version="1" />;
 };
 
 /** @public */
@@ -97,7 +97,11 @@ export const Menu = (props: MenuProps<object>) => {
   );
 
   return (
-    <RAPopover className={classNames.popover} placement={placement}>
+    <RAPopover
+      className={classNames.popover}
+      placement={placement}
+      data-version="1"
+    >
       <RouterProvider navigate={navigate} useHref={useHref}>
         {virtualized ? (
           <Virtualizer
@@ -139,7 +143,11 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
   );
 
   return (
-    <RAPopover className={classNames.popover} placement={placement}>
+    <RAPopover
+      className={classNames.popover}
+      placement={placement}
+      data-version="1"
+    >
       {virtualized ? (
         <Virtualizer
           layout={ListLayout}
@@ -180,7 +188,11 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   );
 
   return (
-    <RAPopover className={classNames.popover} placement={placement}>
+    <RAPopover
+      className={classNames.popover}
+      placement={placement}
+      data-version="1"
+    >
       <RouterProvider navigate={navigate} useHref={useHref}>
         <RAAutocomplete filter={contains}>
           <RASearchField className={classNames.searchField}>
@@ -238,7 +250,11 @@ export const MenuAutocompleteListbox = (
   );
 
   return (
-    <RAPopover className={classNames.popover} placement={placement}>
+    <RAPopover
+      className={classNames.popover}
+      placement={placement}
+      data-version="1"
+    >
       <RAAutocomplete filter={contains}>
         <RASearchField className={classNames.searchField}>
           <RAInput
@@ -282,6 +298,7 @@ export const MenuItem = (props: MenuItemProps) => {
         data-color={color}
         textValue={typeof children === 'string' ? children : undefined}
         onAction={() => window.open(href, '_blank', 'noopener,noreferrer')}
+        data-version="1"
         {...rest}
       >
         <div className={classNames.itemWrapper}>
@@ -303,6 +320,7 @@ export const MenuItem = (props: MenuItemProps) => {
       data-color={color}
       href={href}
       textValue={typeof children === 'string' ? children : undefined}
+      data-version="1"
       {...rest}
     >
       <div className={classNames.itemWrapper}>
@@ -329,6 +347,7 @@ export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
         typeof props.children === 'string' ? props.children : undefined
       }
       className={classNames.itemListBox}
+      data-version="1"
       {...rest}
     >
       <div className={classNames.itemWrapper}>
@@ -348,7 +367,7 @@ export const MenuSection = (props: MenuSectionProps<object>) => {
   const { classNames } = useStyles('Menu');
 
   return (
-    <RAMenuSection className={classNames.section} {...props}>
+    <RAMenuSection className={classNames.section} {...props} data-version="1">
       <RAMenuHeader className={classNames.sectionHeader}>
         {props.title}
       </RAMenuHeader>
@@ -361,5 +380,11 @@ export const MenuSection = (props: MenuSectionProps<object>) => {
 export const MenuSeparator = (props: MenuSeparatorProps) => {
   const { classNames } = useStyles('Menu');
 
-  return <RAMenuSeparator className={classNames.separator} {...props} />;
+  return (
+    <RAMenuSeparator
+      className={classNames.separator}
+      {...props}
+      data-version="1"
+    />
+  );
 };

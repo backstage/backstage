@@ -35,7 +35,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
   const { classNames } = useStyles('Card');
 
   return (
-    <div ref={ref} className={clsx(classNames.root, className)} {...rest} />
+    <div
+      ref={ref}
+      className={clsx(classNames.root, className)}
+      data-version="1"
+      {...rest}
+    />
   );
 });
 
@@ -50,7 +55,12 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
     const { classNames } = useStyles('Card');
 
     return (
-      <div ref={ref} className={clsx(classNames.header, className)} {...rest} />
+      <div
+        ref={ref}
+        className={clsx(classNames.header, className)}
+        data-version="1"
+        {...rest}
+      />
     );
   },
 );
@@ -69,6 +79,7 @@ export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
       <ScrollArea.Root
         ref={ref}
         className={clsx(classNames.body, className)}
+        data-version="1"
         {...rest}
       >
         <ScrollArea.Viewport style={{ paddingInline: 'var(--bui-space-3)' }}>
@@ -96,7 +107,12 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
     const { classNames } = useStyles('Card');
 
     return (
-      <div ref={ref} className={clsx(classNames.footer, className)} {...rest} />
+      <div
+        ref={ref}
+        className={clsx(classNames.footer, className)}
+        data-version="1"
+        {...rest}
+      />
     );
   },
 );

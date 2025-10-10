@@ -28,7 +28,7 @@ export const Column = (
   const { classNames } = useStyles('Table');
 
   return (
-    <ReactAriaColumn className={classNames.head} {...props}>
+    <ReactAriaColumn className={classNames.head} data-version="1" {...props}>
       {({ allowsSorting, sortDirection }) => (
         <>
           {props.children}

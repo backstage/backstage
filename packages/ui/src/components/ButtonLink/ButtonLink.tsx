@@ -58,6 +58,7 @@ export const ButtonLink = forwardRef(
           ref={ref}
           {...dataAttributes}
           href={href}
+          data-version="1"
           {...rest}
         >
           {iconStart}
@@ -79,6 +80,7 @@ export const ButtonLink = forwardRef(
           ref={ref}
           {...dataAttributes}
           href={href}
+          data-version="1"
           {...rest}
         >
           {iconStart}

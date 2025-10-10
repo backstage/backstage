@@ -68,6 +68,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
         data-truncate={truncate}
         {...textDataAttributes}
         href={href}
+        data-version="1"
         {...restProps}
       />
     </RouterProvider>

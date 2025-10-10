@@ -49,6 +49,7 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
       ref,
       className: clsx(classNames.root, className),
       ...dataProps,
+      'data-version': '1',
       style,
       children,
     });

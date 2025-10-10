@@ -62,6 +62,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
+        data-version="1"
         {...rest}
         ref={ref}
       >

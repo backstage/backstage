@@ -26,6 +26,7 @@ export const Skeleton = (props: SkeletonProps) => {
     <div
       className={classNames.root}
       data-rounded={rounded}
+      data-version="1"
       style={{
         width,
         height,

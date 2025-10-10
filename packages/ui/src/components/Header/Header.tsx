@@ -49,7 +49,7 @@ export const Header = (props: HeaderProps) => {
         hasTabs={hasTabs}
       />
       {tabs && (
-        <div className={classNames.tabsWrapper}>
+        <div className={classNames.tabsWrapper} data-version="1">
           <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (

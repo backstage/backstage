@@ -25,7 +25,12 @@ export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
     const { classNames } = useStyles('Switch');
 
     return (
-      <AriaSwitch className={classNames.root} ref={ref} {...props}>
+      <AriaSwitch
+        className={classNames.root}
+        ref={ref}
+        data-version="1"
+        {...props}
+      >
         <div className={classNames.indicator} />
         {label}
       </AriaSwitch>

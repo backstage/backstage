@@ -105,6 +105,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         data-collapsed={isCollapsed}
         onFocusChange={handleClick}
         onChange={handleChange}
+        data-version="1"
         {...rest}
         ref={ref}
       >

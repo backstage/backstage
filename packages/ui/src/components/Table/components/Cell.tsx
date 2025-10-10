@@ -36,7 +36,11 @@ const Cell = (props: CellProps) => {
   const { classNames } = useStyles('Table');
 
   return (
-    <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>
+    <ReactAriaCell
+      className={clsx(classNames.cell, className)}
+      data-version="1"
+      {...rest}
+    >
       <div className={classNames.cellContentWrapper}>
         {leadingIcon && (
           <div className={classNames.cellIcon}>{leadingIcon}</div>

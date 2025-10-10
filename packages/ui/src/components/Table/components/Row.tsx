@@ -55,7 +55,12 @@ export function Row<T extends object>({
 
   if (isExternal) {
     return (
-      <ReactAriaRow id={id} className={classNames.row} {...otherProps}>
+      <ReactAriaRow
+        id={id}
+        className={classNames.row}
+        data-version="1"
+        {...otherProps}
+      >
         {content}
       </ReactAriaRow>
     );
@@ -67,6 +72,7 @@ export function Row<T extends object>({
         id={id}
         className={classNames.row}
         data-react-aria-pressable="true"
+        data-version="1"
         {...otherProps}
       >
         {content}
