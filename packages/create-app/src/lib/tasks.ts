@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { maybeBootstrapProxy } from '@backstage/cli-common';
 
 maybeBootstrapProxy();
 
@@ -31,26 +32,6 @@ import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
 import { promisify } from 'util';
 import os from 'os';
-
-function maybeBootstrapProxy() {
-  // see https://www.npmjs.com/package/global-agent
-  const globalAgentNamespace =
-    process.env.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE ?? 'GLOBAL_AGENT_';
-  if (
-    process.env[`${globalAgentNamespace}HTTP_PROXY`] ||
-    process.env[`${globalAgentNamespace}HTTPS_PROXY`]
-  ) {
-    const globalAgent =
-      require('global-agent') as typeof import('global-agent');
-    globalAgent.bootstrap();
-  }
-
-  if (process.env.HTTP_PROXY || process.env.HTTPS_PROXY) {
-    const { setGlobalDispatcher, EnvHttpProxyAgent } =
-      require('undici') as typeof import('undici');
-    setGlobalDispatcher(new EnvHttpProxyAgent());
-  }
-}
 
 const TASK_NAME_MAX_LENGTH = 14;
 const TEN_MINUTES_MS = 1000 * 60 * 10;
