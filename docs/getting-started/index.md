@@ -1,8 +1,8 @@
 ---
 id: index
-title: Creating and running a stand-alone Backstage App
-sidebar_label: Creating and running a stand-alone Backstage App
-description: How to create and run a Stand-alone Backstage.
+title: Standalone Installation
+sidebar_label: Standalone Installation
+description: How to create and run a Standalone Backstage.
 ---
 
 Audience: Developers and Admins
@@ -67,8 +67,9 @@ app
 
 This guide also assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
 
+- 30 GB disk space to run the standalone Backstage application with demo data. NOTE: As you add more modules and plugins to an installation, the disk space requirements will increase, accordingly.
 - Access to a Unix-based operating system, such as Linux, macOS or
-  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/). The Linux version must support the required Node.js version.
 - A GNU-like build environment available at the command line.
   For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
   On macOS, you will want to run `xcode-select --install` to get the XCode command line build tooling in place.
@@ -83,7 +84,7 @@ This guide also assumes a basic understanding of working on a Linux based operat
   - [Binary Download](https://nodejs.org/en/download/)
   - [Package manager](https://nodejs.org/en/download/package-manager/)
   - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
-- If you are creating your Backstage app in a virtual machine, you must have the`isolated-vm` module installed. Install the `isolated-vm` module, following their [requirements section](https://github.com/laverdet/isolated-vm#requirements).
+-  Install the `isolated-vm` module, following their [requirements section](https://github.com/laverdet/isolated-vm#requirements).
 - `yarn` [Installation](https://yarnpkg.com/getting-started/install)
   - Backstage currently uses Yarn 4.4.1, once you've ran `corepack enable` you'll want to then run `yarn set version 4.4.1`
 - `docker` [installation](https://docs.docker.com/engine/install/)
@@ -115,21 +116,6 @@ To create the application:
 
    ![create app](../assets/getting-started/create-app-output.png)
 
-:::tip Install fails wth isolated_vm error
-
-If the `yarn install` command fails, and you see an error in the logs similar to the following:
-
-```
-Error: Cannot find module './out/isolated_vm'
-```
-
-then perform the following steps:
-
-1. Install the `isolated-vm` module, following their [requirements section](https://github.com/laverdet/isolated-vm#requirements).
-2. Run `yarn install` manually again.
-
-:::
-
 Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
 
 To run the application:
@@ -137,7 +123,7 @@ To run the application:
 1. Change to the root directory of your Backstage app. This is the same as the name of your application that you provided during the installation. In this example, it is `my-backstage-app`.
 
    ```bash
-   cd my-backstage-app # your app name
+   cd my-backstage-app
    ```
 
 2. Start the Backstage application.
