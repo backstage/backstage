@@ -521,6 +521,7 @@ export const componentDefinitions: {
       readonly item: 'bui-MenuItem';
       readonly itemListBox: 'bui-MenuItemListBox';
       readonly itemListBoxCheck: 'bui-MenuItemListBoxCheck';
+      readonly itemWrapper: 'bui-MenuItemWrapper';
       readonly itemContent: 'bui-MenuItemContent';
       readonly itemArrow: 'bui-MenuItemArrow';
       readonly separator: 'bui-MenuSeparator';
@@ -528,6 +529,12 @@ export const componentDefinitions: {
       readonly searchFieldInput: 'bui-MenuSearchFieldInput';
       readonly searchFieldClear: 'bui-MenuSearchFieldClear';
       readonly emptyState: 'bui-MenuEmptyState';
+    };
+  };
+  readonly PasswordField: {
+    readonly classNames: {
+      readonly root: 'bui-PasswordField';
+      readonly inputVisibility: 'bui-InputVisibility';
     };
   };
   readonly Popover: {
@@ -648,6 +655,7 @@ export const componentDefinitions: {
       readonly inputWrapper: 'bui-InputWrapper';
       readonly input: 'bui-Input';
       readonly inputIcon: 'bui-InputIcon';
+      readonly inputAction: 'bui-InputAction';
     };
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
@@ -1342,9 +1350,15 @@ export interface MenuAutocompleteListBoxProps<T>
   extends ListBoxProps<T>,
     Omit<ListBoxProps<T>, 'children'> {
   // (undocumented)
+  maxHeight?: string;
+  // (undocumented)
+  maxWidth?: string;
+  // (undocumented)
   placeholder?: string;
   // (undocumented)
   placement?: PopoverProps['placement'];
+  // (undocumented)
+  virtualized?: boolean;
 }
 
 // @public (undocumented)
@@ -1352,9 +1366,15 @@ export interface MenuAutocompleteProps<T>
   extends MenuProps_2<T>,
     Omit<MenuProps_2<T>, 'children'> {
   // (undocumented)
+  maxHeight?: string;
+  // (undocumented)
+  maxWidth?: string;
+  // (undocumented)
   placeholder?: string;
   // (undocumented)
   placement?: PopoverProps['placement'];
+  // (undocumented)
+  virtualized?: boolean;
 }
 
 // @public (undocumented)
@@ -1391,7 +1411,13 @@ export interface MenuListBoxProps<T>
   extends ListBoxProps<T>,
     Omit<ListBoxProps<T>, 'children'> {
   // (undocumented)
+  maxHeight?: string;
+  // (undocumented)
+  maxWidth?: string;
+  // (undocumented)
   placement?: PopoverProps['placement'];
+  // (undocumented)
+  virtualized?: boolean;
 }
 
 // @public (undocumented)
@@ -1399,7 +1425,13 @@ export interface MenuProps<T>
   extends MenuProps_2<T>,
     Omit<MenuProps_2<T>, 'children'> {
   // (undocumented)
+  maxHeight?: string;
+  // (undocumented)
+  maxWidth?: string;
+  // (undocumented)
   placement?: PopoverProps['placement'];
+  // (undocumented)
+  virtualized?: boolean;
 }
 
 // @public (undocumented)
@@ -1832,6 +1864,7 @@ export interface TextFieldProps
   icon?: ReactNode;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  type?: 'text' | 'email' | 'tel' | 'url';
 }
 
 // @public (undocumented)

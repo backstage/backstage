@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.2.14-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.4-next.2
+
 ## 0.2.14-next.1
 
 ### Patch Changes

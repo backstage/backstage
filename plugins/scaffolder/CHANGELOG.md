@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder
 
+## 1.34.2-next.3
+
+### Patch Changes
+
+- d9aed74: Forward `ui:disabled` in `OwnedEntityPicker` to allow disabling it
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
 ## 1.34.2-next.2
 
 ### Patch Changes

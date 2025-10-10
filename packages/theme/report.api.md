@@ -459,8 +459,6 @@ export interface UnifiedThemeProviderProps {
   // (undocumented)
   children: ReactNode;
   // (undocumented)
-  noCssBaseline?: boolean;
-  // (undocumented)
   theme: UnifiedTheme;
 }
 ```

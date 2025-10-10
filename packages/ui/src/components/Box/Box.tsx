@@ -40,11 +40,12 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   };
 
   const { classNames } = useStyles('Box');
-  const { className, style } = extractProps(props, propDefs);
+  const { className, style, dataProps } = extractProps(props, propDefs);
 
   return createElement(props.as || 'div', {
     ref,
     className: clsx(classNames.root, className),
+    ...dataProps,
     style,
     children,
   });

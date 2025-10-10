@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,105 +14,107 @@
  * limitations under the License.
  */
 
-.bui-TextField {
-  display: flex;
-  flex-direction: column;
-  font-family: var(--bui-font-regular);
-  width: 100%;
-  flex-shrink: 0;
-}
-
-.bui-InputWrapper {
-  position: relative;
-
-  &[data-size='small'] .bui-Input {
-    height: 2rem;
+@layer components {
+  .bui-TextField {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--bui-font-regular);
+    width: 100%;
+    flex-shrink: 0;
   }
 
-  &[data-size='medium'] .bui-Input {
-    height: 2.5rem;
+  .bui-InputWrapper {
+    position: relative;
+
+    &[data-size='small'] .bui-Input {
+      height: 2rem;
+    }
+
+    &[data-size='medium'] .bui-Input {
+      height: 2.5rem;
+    }
+
+    &[data-size='small'] .bui-Input[data-icon] {
+      padding-left: var(--bui-space-8);
+    }
+
+    &[data-size='medium'] .bui-Input[data-icon] {
+      padding-left: var(--bui-space-9);
+    }
   }
 
-  &[data-size='small'] .bui-Input[data-icon] {
-    padding-left: var(--bui-space-8);
+  .bui-InputIcon {
+    position: absolute;
+    left: var(--bui-space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: var(--bui-space-1);
+    color: var(--bui-fg-primary);
+    flex-shrink: 0;
+    pointer-events: none;
+    /* To animate the icon when the input is collapsed */
+    transition: left 0.2s ease-in-out;
+
+    &[data-size='small'],
+    &[data-size='small'] svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &[data-size='medium'],
+    &[data-size='medium'] svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
   }
 
-  &[data-size='medium'] .bui-Input[data-icon] {
-    padding-left: var(--bui-space-9);
-  }
-}
+  .bui-Input {
+    display: flex;
+    align-items: center;
+    padding: 0 var(--bui-space-3);
+    border-radius: var(--bui-radius-2);
+    border: 1px solid var(--bui-border);
+    background-color: var(--bui-bg-surface-1);
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    color: var(--bui-fg-primary);
+    transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
+    width: 100%;
+    height: 100%;
+    cursor: inherit;
 
-.bui-InputIcon {
-  position: absolute;
-  left: var(--bui-space-3);
-  top: 50%;
-  transform: translateY(-50%);
-  margin-right: var(--bui-space-1);
-  color: var(--bui-fg-primary);
-  flex-shrink: 0;
-  pointer-events: none;
-  /* To animate the icon when the input is collapsed */
-  transition: left 0.2s ease-in-out;
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+    }
 
-  &[data-size='small'],
-  &[data-size='small'] svg {
-    width: 1rem;
-    height: 1rem;
-  }
+    &::placeholder {
+      color: var(--bui-fg-secondary);
+    }
 
-  &[data-size='medium'],
-  &[data-size='medium'] svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-}
+    &[data-focused] {
+      outline-color: var(--bui-border-pressed);
+      outline-width: 0px;
+    }
 
-.bui-Input {
-  display: flex;
-  align-items: center;
-  padding: 0 var(--bui-space-3);
-  border-radius: var(--bui-radius-2);
-  border: 1px solid var(--bui-border);
-  background-color: var(--bui-bg-surface-1);
-  font-size: var(--bui-font-size-3);
-  font-family: var(--bui-font-regular);
-  font-weight: var(--bui-font-weight-regular);
-  color: var(--bui-fg-primary);
-  transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
-  width: 100%;
-  height: 100%;
-  cursor: inherit;
+    &[data-hovered] {
+      border-color: var(--bui-border-hover);
+    }
 
-  &::-webkit-search-cancel-button,
-  &::-webkit-search-decoration {
-    -webkit-appearance: none;
-  }
+    &[data-focused] {
+      border-color: var(--bui-border-pressed);
+      outline-width: 0px;
+    }
 
-  &::placeholder {
-    color: var(--bui-fg-secondary);
-  }
+    &[data-invalid] {
+      border-color: var(--bui-fg-danger);
+    }
 
-  &[data-focused] {
-    outline-color: var(--bui-border-pressed);
-    outline-width: 0px;
-  }
-
-  &[data-hovered] {
-    border-color: var(--bui-border-hover);
-  }
-
-  &[data-focused] {
-    border-color: var(--bui-border-pressed);
-    outline-width: 0px;
-  }
-
-  &[data-invalid] {
-    border-color: var(--bui-fg-danger);
-  }
-
-  &[data-disabled] {
-    opacity: 0.5;
-    cursor: not-allowed;
-    border: 1px solid var(--bui-border-disabled);
+    &[data-disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border: 1px solid var(--bui-border-disabled);
+    }
   }
 }

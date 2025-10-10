@@ -18,6 +18,10 @@ import serveHandler from 'serve-handler';
 import http from 'http';
 import httpProxy from 'http-proxy';
 import { createLogger } from './utility';
+import {
+  proxyHtmlWithLivereloadInjection,
+  proxyMkdocsLivereload,
+} from './livereload';
 
 export default class HTTPServer {
   private readonly proxyEndpoint: string;
@@ -59,8 +63,8 @@ export default class HTTPServer {
       const proxyHandler = this.createProxy();
       const server = http.createServer(
         (request: http.IncomingMessage, response: http.ServerResponse) => {
-          // This endpoind is used by the frontend to issue a cookie for the user.
-          // But the MkDocs server doesn't expose it as a the Backestage backend does.
+          // This endpoint is used by the frontend to issue a cookie for the user.
+          // But the MkDocs server doesn't expose it as a the Backstage backend does.
           // So we need to fake it here to prevent 404 errors.
           if (request.url === '/api/techdocs/.backstage/auth/v1/cookie') {
             const oneHourInMilliseconds = 60 * 60 * 1000;
@@ -72,6 +76,19 @@ export default class HTTPServer {
           }
 
           if (request.url?.startsWith(this.proxyEndpoint)) {
+            // Handle HTML files with livereload parameter injection
+            if (request.url?.endsWith('.html')) {
+              proxyHtmlWithLivereloadInjection({
+                request,
+                response,
+                mkdocsTargetAddress: this.mkdocsTargetAddress,
+                proxyEndpoint: this.proxyEndpoint,
+                onError: (error: Error) => reject(error),
+              });
+              return;
+            }
+
+            // Handle non-HTML files with regular proxy
             const [proxy, forwardPath] = proxyHandler(request);
 
             proxy.on('error', (error: Error) => {
@@ -90,6 +107,17 @@ export default class HTTPServer {
           if (request.url === '/.detect') {
             response.setHeader('Content-Type', 'text/plain');
             response.end('techdocs-cli-server');
+            return;
+          }
+
+          // This endpoint is used by the frontend to pass livereload requests to the mkdocs server.
+          if (request.url?.startsWith('/.livereload')) {
+            proxyMkdocsLivereload({
+              request,
+              response,
+              mkdocsTargetAddress: this.mkdocsTargetAddress,
+              onError: (error: Error) => reject(error),
+            });
             return;
           }
 

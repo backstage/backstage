@@ -14,5 +14,86 @@
  * limitations under the License.
  */
 
+@layer tokens, base, components, utilities, legacy;
+
+/* Tokens */
+@import './tokens.css';
+
+/* Base */
+@import './normalize.css';
 @import './core.css';
-@import './components.css';
+
+/* Components */
+@import '../components/Avatar/Avatar.styles.css';
+@import '../components/Box/styles.css';
+@import '../components/Button/styles.css';
+@import '../components/ButtonIcon/styles.css';
+@import '../components/Card/Card.styles.css';
+@import '../components/Checkbox/styles.css';
+@import '../components/Collapsible/Collapsible.styles.css';
+@import '../components/Container/styles.css';
+@import '../components/FieldError/FieldError.styles.css';
+@import '../components/FieldLabel/FieldLabel.styles.css';
+@import '../components/Flex/styles.css';
+@import '../components/Grid/styles.css';
+@import '../components/Header/Header.styles.css';
+@import '../components/HeaderPage/HeaderPage.styles.css';
+@import '../components/Icon/styles.css';
+@import '../components/Link/styles.css';
+@import '../components/Menu/Menu.styles.css';
+@import '../components/Popover/Popover.styles.css';
+@import '../components/RadioGroup/RadioGroup.styles.css';
+@import '../components/Table/Table.styles.css';
+@import '../components/TablePagination/TablePagination.styles.css';
+@import '../components/Tabs/Tabs.styles.css';
+@import '../components/TagGroup/TagGroup.styles.css';
+@import '../components/Text/styles.css';
+@import '../components/TextField/TextField.styles.css';
+@import '../components/PasswordField/PasswordField.styles.css';
+@import '../components/SearchField/SearchField.styles.css';
+@import '../components/Skeleton/Skeleton.styles.css';
+@import '../components/Tooltip/Tooltip.styles.css';
+@import '../components/ScrollArea/ScrollArea.styles.css';
+@import '../components/Select/Select.styles.css';
+@import '../components/Switch/Switch.styles.css';
+
+/* Utilities */
+
+/* Padding */
+@import './utilities/p.css';
+@import './utilities/pl.css';
+@import './utilities/pr.css';
+@import './utilities/pt.css';
+@import './utilities/pb.css';
+@import './utilities/py.css';
+@import './utilities/px.css';
+
+/* Margin */
+@import './utilities/m.css';
+@import './utilities/ml.css';
+@import './utilities/mr.css';
+@import './utilities/mt.css';
+@import './utilities/mb.css';
+@import './utilities/my.css';
+@import './utilities/mx.css';
+
+/* Display */
+@import './utilities/display.css';
+
+/* Width */
+@import './utilities/width.css';
+
+/* Height */
+@import './utilities/height.css';
+
+/* Position */
+@import './utilities/position.css';
+
+/* Grid */
+@import './utilities/grid.css';
+
+/* Gap */
+@import './utilities/gap.css';
+
+/* Flex */
+@import './utilities/flex.css';

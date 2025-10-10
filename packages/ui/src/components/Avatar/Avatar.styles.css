@@ -14,52 +14,54 @@
  * limitations under the License.
  */
 
-.bui-AvatarRoot {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  vertical-align: middle;
-  border-radius: 100%;
-  user-select: none;
-  font-weight: 500;
-  color: var(--bui-fg-primary);
-  background-color: var(--bui-bg-surface-2);
-  font-size: 1rem;
-  line-height: 1;
-  overflow: hidden;
-  height: 2rem;
-  width: 2rem;
-}
+@layer components {
+  .bui-AvatarRoot {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+    border-radius: 100%;
+    user-select: none;
+    font-weight: 500;
+    color: var(--bui-fg-primary);
+    background-color: var(--bui-bg-surface-2);
+    font-size: 1rem;
+    line-height: 1;
+    overflow: hidden;
+    height: 2rem;
+    width: 2rem;
+  }
 
-.bui-AvatarRoot[data-size='small'] {
-  height: 1.5rem;
-  width: 1.5rem;
-}
+  .bui-AvatarRoot[data-size='small'] {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
 
-.bui-AvatarRoot[data-size='medium'] {
-  height: 2rem;
-  width: 2rem;
-}
+  .bui-AvatarRoot[data-size='medium'] {
+    height: 2rem;
+    width: 2rem;
+  }
 
-.bui-AvatarRoot[data-size='large'] {
-  height: 3rem;
-  width: 3rem;
-}
+  .bui-AvatarRoot[data-size='large'] {
+    height: 3rem;
+    width: 3rem;
+  }
 
-.bui-AvatarImage {
-  object-fit: cover;
-  height: 100%;
-  width: 100%;
-}
+  .bui-AvatarImage {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+  }
 
-.bui-AvatarFallback {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-  font-size: var(--bui-font-size-3);
-  font-weight: var(--bui-font-weight-regular);
-  box-shadow: inset 0 0 0 1px var(--bui-border);
-  border-radius: var(--bui-radius-full);
+  .bui-AvatarFallback {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    font-size: var(--bui-font-size-3);
+    font-weight: var(--bui-font-weight-regular);
+    box-shadow: inset 0 0 0 1px var(--bui-border);
+    border-radius: var(--bui-radius-full);
+  }
 }
