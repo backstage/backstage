@@ -225,6 +225,7 @@ JWTs
 Kaewkasi
 Kaswell
 keepalive
+Keycloak
 Keyv
 Knex
 knip
