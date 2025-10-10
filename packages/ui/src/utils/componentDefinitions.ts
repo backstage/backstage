@@ -85,6 +85,16 @@ export const componentDefinitions = {
       root: 'bui-Container',
     },
   },
+  Dialog: {
+    classNames: {
+      root: 'bui-Dialog',
+      content: 'bui-DialogContent',
+      header: 'bui-DialogHeader',
+      headerTitle: 'bui-DialogHeaderTitle',
+      body: 'bui-DialogBody',
+      footer: 'bui-DialogFooter',
+    },
+  },
   FieldLabel: {
     classNames: {
       root: 'bui-FieldLabelWrapper',

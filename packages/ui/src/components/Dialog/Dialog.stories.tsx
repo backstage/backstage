@@ -25,7 +25,7 @@ import {
 import { Button, Flex, Text, TextField, Select } from '@backstage/ui';
 
 const meta = {
-  title: 'Components/Dialog',
+  title: 'Backstage UI/Dialog',
   component: Dialog,
 } satisfies Meta<typeof Dialog>;
 
@@ -38,6 +38,23 @@ export const Default: Story = {
       <Button variant="secondary">Open Dialog</Button>
       <Dialog>
         <DialogHeader>Example Dialog</DialogHeader>
+        <DialogBody>
+          <Text>This is a basic dialog example.</Text>
+        </DialogBody>
+        <DialogFooter>
+          <DialogClose>Close</DialogClose>
+          <DialogClose variant="primary">Save</DialogClose>
+        </DialogFooter>
+      </Dialog>
+    </DialogTrigger>
+  ),
+};
+
+export const WithNoHeader: Story = {
+  render: () => (
+    <DialogTrigger>
+      <Button variant="secondary">Open Dialog</Button>
+      <Dialog>
         <DialogBody>
           <Text>This is a basic dialog example.</Text>
         </DialogBody>

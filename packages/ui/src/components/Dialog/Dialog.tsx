@@ -33,6 +33,8 @@ import './Dialog.styles.css';
 import { RiCloseLine } from '@remixicon/react';
 import { ScrollArea } from '../ScrollArea';
 import { Button } from '../Button';
+import { useStyles } from '../../hooks/useStyles';
+import { Flex } from '../Flex';
 
 /** @public */
 export const DialogTrigger = (props: DialogTriggerProps) => {
@@ -43,82 +45,102 @@ export const DialogTrigger = (props: DialogTriggerProps) => {
 export const DialogHeader = forwardRef<
   React.ElementRef<'div'>,
   DialogHeaderProps
->(({ className, children, ...props }, ref) => (
-  <div ref={ref} className={clsx('bui-DialogHeader', className)} {...props}>
-    <Heading slot="title" className="bui-DialogHeaderTitle">
-      {children}
-    </Heading>
-    <Button variant="tertiary" className="bui-DialogHeaderClose" slot="close">
-      <RiCloseLine />
-    </Button>
-  </div>
-));
+>(({ className, children, ...props }, ref) => {
+  const { classNames } = useStyles('Dialog');
+
+  return (
+    <Flex ref={ref} className={clsx(classNames.header, className)} {...props}>
+      <Heading slot="title" className={classNames.headerTitle}>
+        {children}
+      </Heading>
+      <Button variant="tertiary" slot="close">
+        <RiCloseLine />
+      </Button>
+    </Flex>
+  );
+});
 DialogHeader.displayName = 'DialogHeader';
 
 /** @public */
 export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
-  ({ className, children, height, ...props }, ref) => (
-    <ScrollArea.Root
-      className={clsx('bui-DialogBody', className)}
-      style={{
-        height: height
-          ? typeof height === 'number'
-            ? `${height}px`
-            : height
-          : undefined,
-      }}
-      ref={ref}
-      {...props}
-    >
-      <ScrollArea.Viewport>{children}</ScrollArea.Viewport>
-      <ScrollArea.Scrollbar orientation="vertical">
-        <ScrollArea.Thumb />
-      </ScrollArea.Scrollbar>
-    </ScrollArea.Root>
-  ),
+  ({ className, children, height, ...props }, ref) => {
+    const { classNames } = useStyles('Dialog');
+
+    return (
+      <ScrollArea.Root
+        className={clsx(classNames.body, className)}
+        style={{
+          height: height
+            ? typeof height === 'number'
+              ? `${height}px`
+              : height
+            : undefined,
+        }}
+        ref={ref}
+        {...props}
+      >
+        <ScrollArea.Viewport>{children}</ScrollArea.Viewport>
+        <ScrollArea.Scrollbar orientation="vertical">
+          <ScrollArea.Thumb />
+        </ScrollArea.Scrollbar>
+      </ScrollArea.Root>
+    );
+  },
 );
+
 DialogBody.displayName = 'DialogBody';
 
 /** @public */
 export const DialogFooter = forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'>
->(({ className, children, ...props }, ref) => (
-  <div ref={ref} className={clsx('bui-DialogFooter', className)} {...props}>
-    {children}
-  </div>
-));
+>(({ className, children, ...props }, ref) => {
+  const { classNames } = useStyles('Dialog');
+
+  return (
+    <div ref={ref} className={clsx(classNames.footer, className)} {...props}>
+      {children}
+    </div>
+  );
+});
 DialogFooter.displayName = 'DialogFooter';
 
 /** @public */
 export const DialogClose = forwardRef<
   React.ElementRef<typeof Button>,
   DialogCloseProps
->(({ className, variant = 'secondary', children, ...props }, ref) => (
-  <Button
-    ref={ref}
-    slot="close"
-    variant={variant}
-    className={clsx('bui-DialogClose', className)}
-    {...props}
-  >
-    {children}
-  </Button>
-));
+>(({ className, variant = 'secondary', children, ...props }, ref) => {
+  return (
+    <Button
+      ref={ref}
+      slot="close"
+      variant={variant}
+      className={className}
+      {...props}
+    >
+      {children}
+    </Button>
+  );
+});
 DialogClose.displayName = 'DialogClose';
 
 /** @public */
 export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
-  ({ className, children, ...props }, ref) => (
-    <Modal
-      ref={ref}
-      className={clsx('bui-Dialog', className)}
-      isDismissable
-      isKeyboardDismissDisabled={false}
-      {...props}
-    >
-      <RADialog className="bui-DialogContent">{children}</RADialog>
-    </Modal>
-  ),
+  ({ className, children, ...props }, ref) => {
+    const { classNames } = useStyles('Dialog');
+
+    return (
+      <Modal
+        ref={ref}
+        className={clsx(classNames.root, className)}
+        isDismissable
+        isKeyboardDismissDisabled={false}
+        {...props}
+      >
+        <RADialog className="bui-DialogContent">{children}</RADialog>
+      </Modal>
+    );
+  },
 );
+
 Dialog.displayName = 'Dialog';
