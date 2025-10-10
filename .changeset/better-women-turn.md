@@ -2,4 +2,4 @@
 '@backstage/ui': patch
 ---
 
-Adding a Dialog component
+Adding a new Dialog component to Backstage UI.
