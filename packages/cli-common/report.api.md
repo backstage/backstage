@@ -13,6 +13,9 @@ export function findPaths(searchDir: string): Paths;
 export function isChildPath(base: string, path: string): boolean;
 
 // @public
+export function maybeBootstrapProxy(): void;
+
+// @public
 export type Paths = {
   ownDir: string;
   ownRoot: string;

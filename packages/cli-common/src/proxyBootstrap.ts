@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+/**
+ * This function can be called to setup undici and node-fetch Proxy agents.
+ *
+ * You can set GLOBAL_AGENT_HTTP(S)_PROXY to configure a proxy to be used in the
+ * CLIs.
+ *
+ * You can also configure a custom namespace by setting
+ * GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE which will replace the default
+ * "GLOBAL_AGENT_" env-var prefix.
+ *
+ * Make sure to call this function before any other imports.
+ *
+ * @public
+ */
 export function maybeBootstrapProxy() {
   // see https://www.npmjs.com/package/global-agent
   const globalAgentNamespace =
