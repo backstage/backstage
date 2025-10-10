@@ -74,7 +74,7 @@ export const dialogDefaultSnippet = `<DialogTrigger>
   <Dialog>
     <DialogHeader>Example Dialog</DialogHeader>
     <DialogBody>
-      <Text>This is a basic dialog example with React Aria Components.</Text>
+      <Text>This is a basic dialog example.</Text>
     </DialogBody>
     <DialogFooter>
         <DialogClose>Close</DialogClose>
