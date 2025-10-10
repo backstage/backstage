@@ -53,7 +53,7 @@ export const DialogHeader = forwardRef<
       <Heading slot="title" className={classNames.headerTitle}>
         {children}
       </Heading>
-      <Button variant="tertiary" slot="close">
+      <Button name="close" aria-label="Close" variant="tertiary" slot="close">
         <RiCloseLine />
       </Button>
     </Flex>
