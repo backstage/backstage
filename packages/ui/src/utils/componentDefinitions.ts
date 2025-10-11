@@ -248,6 +248,9 @@ export const componentDefinitions = {
       root: 'bui-PasswordField',
       inputVisibility: 'bui-InputVisibility',
     },
+    dataAttributes: {
+      size: ['small', 'medium'] as const,
+    },
   },
   Popover: {
     classNames: {
@@ -276,6 +279,7 @@ export const componentDefinitions = {
     },
     dataAttributes: {
       startCollapsed: [true, false] as const,
+      size: ['small', 'medium'] as const,
     },
   },
   Select: {
@@ -366,6 +370,7 @@ export const componentDefinitions = {
     dataAttributes: {
       invalid: [true, false] as const,
       disabled: [true, false] as const,
+      size: ['small', 'medium'] as const,
     },
   },
   Tooltip: {
