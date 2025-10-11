@@ -27,12 +27,14 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
       props,
     );
 
+    const { className, ...rest } = cleanedProps;
+
     return (
       <div
         ref={ref}
-        className={clsx(classNames.root, utilityClasses)}
+        className={clsx(classNames.root, utilityClasses, className)}
         style={style}
-        {...cleanedProps}
+        {...rest}
       />
     );
   },

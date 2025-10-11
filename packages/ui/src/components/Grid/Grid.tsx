@@ -25,12 +25,14 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
     { columns: 'auto', gap: '4', ...props },
   );
 
+  const { className, ...rest } = cleanedProps;
+
   return (
     <div
       ref={ref}
-      className={clsx(classNames.root, utilityClasses)}
+      className={clsx(classNames.root, utilityClasses, className)}
       style={style}
-      {...cleanedProps}
+      {...rest}
     />
   );
 });
@@ -41,12 +43,14 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
     props,
   );
 
+  const { className, ...rest } = cleanedProps;
+
   return (
     <div
       ref={ref}
-      className={clsx(classNames.root, utilityClasses)}
+      className={clsx(classNames.root, utilityClasses, className)}
       style={style}
-      {...cleanedProps}
+      {...rest}
     />
   );
 });

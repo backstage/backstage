@@ -26,13 +26,13 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     props,
   );
 
-  const { as = 'div', children, ...rest } = cleanedProps;
+  const { as = 'div', children, className, ...rest } = cleanedProps;
 
   return createElement(
     as,
     {
       ref,
-      className: clsx(classNames.root, utilityClasses),
+      className: clsx(classNames.root, utilityClasses, className),
       style,
       ...rest,
     },
