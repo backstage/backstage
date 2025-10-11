@@ -604,6 +604,9 @@ export const componentDefinitions: {
       readonly root: 'bui-PasswordField';
       readonly inputVisibility: 'bui-InputVisibility';
     };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium'];
+    };
   };
   readonly Popover: {
     readonly classNames: {
@@ -632,6 +635,7 @@ export const componentDefinitions: {
     };
     readonly dataAttributes: {
       readonly startCollapsed: readonly [true, false];
+      readonly size: readonly ['small', 'medium'];
     };
   };
   readonly Select: {
@@ -728,6 +732,7 @@ export const componentDefinitions: {
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
       readonly disabled: readonly [true, false];
+      readonly size: readonly ['small', 'medium'];
     };
   };
   readonly Tooltip: {

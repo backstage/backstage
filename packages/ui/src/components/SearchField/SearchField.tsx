@@ -57,6 +57,8 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       cleanedProps,
     } = useStyles('SearchField', {
       size: 'small',
+      placeholder: 'Search',
+      startCollapsed: false,
       ...props,
     });
 
