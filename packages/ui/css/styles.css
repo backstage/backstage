@@ -1352,7 +1352,7 @@
       }
     }
 
-    &[data-start-collapsed="true"] {
+    &[data-startCollapsed="true"] {
       flex: 0 auto;
       padding: 0;
       transition: flex-basis .3s ease-in-out;

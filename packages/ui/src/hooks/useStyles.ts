@@ -91,9 +91,14 @@ export function useStyles<T extends ComponentDefinitionName>(
   for (const key of dataAttributeNames) {
     const value = props[key];
     if (value !== undefined && value !== null) {
-      const resolvedValue = resolveResponsiveValue(value, breakpoint);
-      if (resolvedValue !== undefined) {
-        dataAttributes[`data-${key}`] = resolvedValue;
+      // Handle boolean and number values directly
+      if (typeof value === 'boolean' || typeof value === 'number') {
+        dataAttributes[`data-${key}`] = String(value);
+      } else {
+        const resolvedValue = resolveResponsiveValue(value, breakpoint);
+        if (resolvedValue !== undefined) {
+          dataAttributes[`data-${key}`] = resolvedValue;
+        }
       }
     }
   }
