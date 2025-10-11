@@ -15,7 +15,7 @@
  */
 
 // Valid spacing values that have predefined utility classes
-const VALID_SPACING_VALUES = [
+const validSpacingValues = [
   '0.5',
   '1',
   '1.5',
@@ -34,6 +34,22 @@ const VALID_SPACING_VALUES = [
   '14',
 ] as const;
 
+const columnsValues = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  'auto',
+] as const;
+
 export const utilityClassMap: Record<
   string,
   { class: string; cssVar?: string; values: readonly (string | number)[] }
@@ -41,72 +57,72 @@ export const utilityClassMap: Record<
   m: {
     class: 'bui-m',
     cssVar: '--m',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   mb: {
     class: 'bui-mb',
     cssVar: '--mb',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   ml: {
     class: 'bui-ml',
     cssVar: '--ml',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   mr: {
     class: 'bui-mr',
     cssVar: '--mr',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   mt: {
     class: 'bui-mt',
     cssVar: '--mt',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   mx: {
     class: 'bui-mx',
     cssVar: '--mx',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   my: {
     class: 'bui-my',
     cssVar: '--my',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   p: {
     class: 'bui-p',
     cssVar: '--p',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   pb: {
     class: 'bui-pb',
     cssVar: '--pb',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   pl: {
     class: 'bui-pl',
     cssVar: '--pl',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   pr: {
     class: 'bui-pr',
     cssVar: '--pr',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   pt: {
     class: 'bui-pt',
     cssVar: '--pt',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   px: {
     class: 'bui-px',
     cssVar: '--px',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   py: {
     class: 'bui-py',
     cssVar: '--py',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   width: {
     class: 'bui-w',
@@ -141,7 +157,7 @@ export const utilityClassMap: Record<
   gap: {
     class: 'bui-gap',
     cssVar: '--gap',
-    values: VALID_SPACING_VALUES,
+    values: validSpacingValues,
   },
   position: {
     class: 'bui-position',
@@ -162,5 +178,25 @@ export const utilityClassMap: Record<
   direction: {
     class: 'bui-fd',
     values: ['row', 'column', 'row-reverse', 'column-reverse'],
+  },
+  columns: {
+    class: 'bui-columns',
+    values: columnsValues,
+  },
+  colSpan: {
+    class: 'bui-col-span',
+    values: columnsValues,
+  },
+  colEnd: {
+    class: 'bui-col-end',
+    values: columnsValues,
+  },
+  colStart: {
+    class: 'bui-col-start',
+    values: columnsValues,
+  },
+  rowSpan: {
+    class: 'bui-row-span',
+    values: columnsValues,
   },
 };

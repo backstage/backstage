@@ -108,6 +108,7 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-Container',
     },
+    utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'],
   },
   FieldLabel: {
     classNames: {
@@ -145,8 +146,31 @@ export const componentDefinitions = {
   Grid: {
     classNames: {
       root: 'bui-Grid',
-      item: 'bui-GridItem',
     },
+    utilityProps: [
+      'columns',
+      'gap',
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+    ],
+  },
+  GridItem: {
+    classNames: {
+      root: 'bui-GridItem',
+    },
+    utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
   },
   Header: {
     classNames: {

@@ -26,16 +26,12 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
     { gap: '4', ...props },
   );
 
-  const { children, ...rest } = cleanedProps;
-
   return (
     <div
       ref={ref}
       className={clsx(classNames.root, utilityClasses)}
       style={style}
-      {...rest}
-    >
-      {children}
-    </div>
+      {...cleanedProps}
+    />
   );
 });
