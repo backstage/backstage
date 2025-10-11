@@ -26,23 +26,17 @@ import { isExternalLink } from '../../utils/isExternalLink';
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
     const navigate = useNavigate();
-    const {
-      size = 'small',
-      variant = 'primary',
-      iconStart,
-      iconEnd,
-      children,
-      className,
-      href,
-      ...rest
-    } = props;
 
-    const { classNames, dataAttributes } = useStyles('Button', {
-      size,
-      variant,
+    const { classNames, dataAttributes, cleanedProps } = useStyles('Button', {
+      size: 'small',
+      variant: 'primary',
+      ...props,
     });
 
     const { classNames: classNamesButtonLink } = useStyles('ButtonLink');
+
+    const { children, className, iconStart, iconEnd, href, ...rest } =
+      cleanedProps;
 
     const isExternal = isExternalLink(href);
 

@@ -86,7 +86,7 @@
   /* Breakpoint xs */
   @media (min-width: 640px) {
     .xs\:bui-mr {
-      margin-right: var(--pr-xs);
+      margin-right: var(--mr-xs);
     }
 
     .xs\:bui-mr-0\.5 {
@@ -157,7 +157,7 @@
   /* Breakpoint sm */
   @media (min-width: 768px) {
     .sm\:bui-mr {
-      margin-right: var(--pr-sm);
+      margin-right: var(--mr-sm);
     }
 
     .sm\:bui-mr-0\.5 {
@@ -228,7 +228,7 @@
   /* Breakpoint md */
   @media (min-width: 1024px) {
     .md\:bui-mr {
-      margin-right: var(--pr-md);
+      margin-right: var(--mr-md);
     }
 
     .md\:bui-mr-0\.5 {
@@ -299,7 +299,7 @@
   /* Breakpoint lg */
   @media (min-width: 1280px) {
     .lg\:bui-mr {
-      margin-right: var(--pr-lg);
+      margin-right: var(--mr-lg);
     }
 
     .lg\:bui-mr-0\.5 {
@@ -370,7 +370,7 @@
   /* Breakpoint xl */
   @media (min-width: 1536px) {
     .xl\:bui-mr {
-      margin-right: var(--pr-xl);
+      margin-right: var(--mr-xl);
     }
 
     .xl\:bui-mr-0\.5 {

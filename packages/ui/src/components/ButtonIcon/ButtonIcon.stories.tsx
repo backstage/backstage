@@ -17,7 +17,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ButtonIcon } from './ButtonIcon';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
 import { Icon } from '../Icon';
 
 const meta = {
@@ -83,43 +82,4 @@ export const Responsive: Story = {
     },
   },
   render: args => <ButtonIcon {...args} icon={<Icon name="cloud" />} />,
-};
-
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
-export const Playground: Story = {
-  render: args => (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {sizes.map(size => (
-            <Flex align="center" key={size}>
-              <ButtonIcon
-                {...args}
-                variant={variant}
-                size={size}
-                icon={<Icon name="cloud" />}
-              />
-              <ButtonIcon
-                {...args}
-                icon={<Icon name="chevron-right" />}
-                aria-label="Chevron right icon button"
-                variant={variant}
-                size={size}
-              />
-              <ButtonIcon
-                {...args}
-                icon={<Icon name="chevron-right" />}
-                aria-label="Chevron right icon button"
-                variant={variant}
-                size={size}
-              />
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  ),
 };

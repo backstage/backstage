@@ -17,6 +17,139 @@ import { useBreakpoint, breakpoints } from './useBreakpoint';
 import { componentDefinitions } from '../utils/componentDefinitions';
 import type { ComponentDefinitionName, ComponentClassNames } from '../types';
 
+// Valid spacing values that have predefined utility classes
+const VALID_SPACING_VALUES = [
+  '0.5',
+  '1',
+  '1.5',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+] as const;
+
+const utilityClassMap = {
+  m: {
+    class: 'bui-m',
+    cssVar: '--m',
+    values: VALID_SPACING_VALUES,
+  },
+  mb: {
+    class: 'bui-mb',
+    cssVar: '--mb',
+    values: VALID_SPACING_VALUES,
+  },
+  ml: {
+    class: 'bui-ml',
+    cssVar: '--ml',
+    values: VALID_SPACING_VALUES,
+  },
+  mr: {
+    class: 'bui-mr',
+    cssVar: '--mr',
+    values: VALID_SPACING_VALUES,
+  },
+  mt: {
+    class: 'bui-mt',
+    cssVar: '--mt',
+    values: VALID_SPACING_VALUES,
+  },
+  mx: {
+    class: 'bui-mx',
+    cssVar: '--mx',
+    values: VALID_SPACING_VALUES,
+  },
+  my: {
+    class: 'bui-my',
+    cssVar: '--my',
+    values: VALID_SPACING_VALUES,
+  },
+  p: {
+    class: 'bui-p',
+    cssVar: '--p',
+    values: VALID_SPACING_VALUES,
+  },
+  pb: {
+    class: 'bui-pb',
+    cssVar: '--pb',
+    values: VALID_SPACING_VALUES,
+  },
+  pl: {
+    class: 'bui-pl',
+    cssVar: '--pl',
+    values: VALID_SPACING_VALUES,
+  },
+  pr: {
+    class: 'bui-pr',
+    cssVar: '--pr',
+    values: VALID_SPACING_VALUES,
+  },
+  pt: {
+    class: 'bui-pt',
+    cssVar: '--pt',
+    values: VALID_SPACING_VALUES,
+  },
+  px: {
+    class: 'bui-px',
+    cssVar: '--px',
+    values: VALID_SPACING_VALUES,
+  },
+  py: {
+    class: 'bui-py',
+    cssVar: '--py',
+    values: VALID_SPACING_VALUES,
+  },
+  width: {
+    class: 'bui-w',
+    cssVar: '--width',
+    values: VALID_SPACING_VALUES,
+  },
+  minWidth: {
+    class: 'bui-min-w',
+    cssVar: '--min-width',
+    values: VALID_SPACING_VALUES,
+  },
+  maxWidth: {
+    class: 'bui-max-w',
+    cssVar: '--max-width',
+    values: VALID_SPACING_VALUES,
+  },
+  height: {
+    class: 'bui-h',
+    cssVar: '--height',
+    values: VALID_SPACING_VALUES,
+  },
+  minHeight: {
+    class: 'bui-min-h',
+    cssVar: '--min-height',
+    values: VALID_SPACING_VALUES,
+  },
+  maxHeight: {
+    class: 'bui-max-h',
+    cssVar: '--max-height',
+    values: VALID_SPACING_VALUES,
+  },
+  position: {
+    class: 'bui-position',
+    cssVar: '--position',
+    values: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
+  },
+  display: {
+    class: 'bui-display',
+    cssVar: '--display',
+    values: ['none', 'flex', 'block', 'inline'],
+  },
+};
+
 /**
  * Resolve a responsive value based on the current breakpoint
  * @param value - The responsive value (string or object with breakpoint keys)
@@ -55,8 +188,8 @@ function resolveResponsiveValue(
 /**
  * React hook to get class names and data attributes for a component with responsive support
  * @param componentName - The name of the component
- * @param props - Object with prop values (can be responsive)
- * @returns Object with classNames and dataAttributes
+ * @param props - All component props
+ * @returns Object with classNames, dataAttributes, utilityClasses, style, and cleanedProps
  */
 export function useStyles<T extends ComponentDefinitionName>(
   componentName: T,
@@ -64,29 +197,125 @@ export function useStyles<T extends ComponentDefinitionName>(
 ): {
   classNames: ComponentClassNames<T>;
   dataAttributes: Record<string, string>;
-  resolvedProps: Record<string, string>;
+  utilityClasses: string;
+  style: React.CSSProperties;
+  cleanedProps: Record<string, any>;
 } {
   const { breakpoint } = useBreakpoint();
-  const classNames = componentDefinitions[componentName]
-    .classNames as ComponentClassNames<T>;
+  const componentDefinition = componentDefinitions[componentName];
+  const classNames = componentDefinition.classNames as ComponentClassNames<T>;
+  const utilityPropNames =
+    ('utilityProps' in componentDefinition
+      ? componentDefinition.utilityProps
+      : []) || [];
 
-  // Resolve responsive values and generate data attributes
+  // Extract data attribute names from component definition
+  const dataAttributeNames =
+    'dataAttributes' in componentDefinition
+      ? Object.keys(componentDefinition.dataAttributes || {})
+      : [];
+
+  // Extract existing style from props
+  const incomingStyle = props.style || {};
+
+  // Generate data attributes from component definition
   const dataAttributes: Record<string, string> = {};
-  const resolvedProps: Record<string, string> = {};
-
-  for (const [key, value] of Object.entries(props)) {
+  for (const key of dataAttributeNames) {
+    const value = props[key];
     if (value !== undefined && value !== null) {
       const resolvedValue = resolveResponsiveValue(value, breakpoint);
       if (resolvedValue !== undefined) {
-        resolvedProps[key] = resolvedValue;
         dataAttributes[`data-${key}`] = resolvedValue;
       }
     }
   }
 
+  // Generate utility classes and custom styles from component's allowed utility props
+  const utilityClassList: string[] = [];
+  const generatedStyle: React.CSSProperties = {};
+
+  const handleUtilityValue = (
+    key: string,
+    val: unknown,
+    prefix: string = '',
+  ) => {
+    // Get utility class configuration for this key
+    const utilityConfig = utilityClassMap[key as keyof typeof utilityClassMap];
+
+    if (!utilityConfig) {
+      // Skip if no config found for this key
+      return;
+    }
+
+    // Check if value is in the list of valid values for this utility
+    if (utilityConfig.values.includes(val as any)) {
+      // Generate utility class with value suffix and optional breakpoint prefix
+      const className = prefix
+        ? `${prefix}${utilityConfig.class}-${val}`
+        : `${utilityConfig.class}-${val}`;
+      utilityClassList.push(className);
+    } else {
+      // Custom value - add CSS custom property AND utility class name
+      const cssVarKey = prefix
+        ? `${utilityConfig.cssVar}-${prefix.slice(0, -1)}`
+        : utilityConfig.cssVar;
+      // CSS custom properties need to be set as any since they're not part of CSSProperties
+      (generatedStyle as any)[cssVarKey] = val;
+
+      // Add utility class name (without value suffix) with optional breakpoint prefix
+      const className = prefix
+        ? `${prefix}${utilityConfig.class}`
+        : utilityConfig.class;
+      utilityClassList.push(className);
+    }
+  };
+
+  for (const key of utilityPropNames) {
+    const value = props[key];
+    if (value === undefined || value === null) {
+      continue;
+    }
+
+    // Check if value is a responsive object
+    if (typeof value === 'object' && value !== null) {
+      const breakpointValues = value as { [key: string]: unknown };
+      // Handle responsive object values
+      for (const bp in breakpointValues) {
+        const prefix = bp === 'initial' ? '' : `${bp}:`;
+        handleUtilityValue(key, breakpointValues[bp], prefix);
+      }
+    } else {
+      // Handle simple value
+      handleUtilityValue(key, value);
+    }
+  }
+
+  // Create cleaned props by excluding data attributes, utility props, and style
+  // Component-specific props like 'as' and 'children' remain in cleanedProps
+  const processedKeys = new Set([
+    ...dataAttributeNames,
+    ...utilityPropNames,
+    'style',
+  ]);
+
+  const cleanedProps = Object.keys(props).reduce((acc, key) => {
+    if (!processedKeys.has(key)) {
+      acc[key] = props[key];
+    }
+    return acc;
+  }, {} as Record<string, any>);
+
+  // Merge incoming style with generated styles (incoming styles take precedence)
+  const mergedStyle = {
+    ...generatedStyle,
+    ...incomingStyle,
+  };
+
   return {
     classNames,
     dataAttributes,
-    resolvedProps, // Also return resolved props for convenience
+    utilityClasses: utilityClassList.join(' '),
+    style: mergedStyle,
+    cleanedProps,
   };
 }

@@ -160,6 +160,7 @@ export type DataAttributesMap = Record<string, DataAttributeValues>;
 export interface ComponentDefinition {
   classNames: ClassNamesMap;
   dataAttributes?: DataAttributesMap;
+  utilityProps?: string[];
 }
 
 /**

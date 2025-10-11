@@ -17,38 +17,27 @@
 import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
 import clsx from 'clsx';
-import { extractProps } from '../../utils/extractProps';
-import { spacingPropDefs } from '../../props/spacing.props';
-import { boxPropDefs } from './Box.props';
-import { widthPropDefs } from '../../props/width.props';
-import { heightPropDefs } from '../../props/height.props';
-import { positionPropDefs } from '../../props/position.props';
-import { displayPropDefs } from '../../props/display.props';
 import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { children } = props;
+  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+    'Box',
+    props,
+  );
 
-  const propDefs = {
-    ...spacingPropDefs,
-    ...widthPropDefs,
-    ...heightPropDefs,
-    ...positionPropDefs,
-    ...displayPropDefs,
-    ...boxPropDefs,
-  };
+  const { as = 'div', children, ...rest } = cleanedProps;
 
-  const { classNames } = useStyles('Box');
-  const { className, style, dataProps } = extractProps(props, propDefs);
-
-  return createElement(props.as || 'div', {
-    ref,
-    className: clsx(classNames.root, className),
-    ...dataProps,
-    style,
+  return createElement(
+    as,
+    {
+      ref,
+      className: clsx(classNames.root, utilityClasses),
+      style,
+      ...rest,
+    },
     children,
-  });
+  );
 });
 
 Box.displayName = 'Box';

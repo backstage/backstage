@@ -103,8 +103,8 @@
   /* Breakpoint xs */
   @media (min-width: 640px) {
     .xs\:bui-my {
-      margin-top: var(--py-xs);
-      margin-bottom: var(--py-xs);
+      margin-top: var(--my-xs);
+      margin-bottom: var(--my-xs);
     }
 
     .xs\:bui-my-0\.5 {
@@ -191,8 +191,8 @@
   /* Breakpoint sm */
   @media (min-width: 768px) {
     .sm\:bui-my {
-      margin-top: var(--py-sm);
-      margin-bottom: var(--py-sm);
+      margin-top: var(--my-sm);
+      margin-bottom: var(--my-sm);
     }
 
     .sm\:bui-my-0\.5 {
@@ -279,8 +279,8 @@
   /* Breakpoint md */
   @media (min-width: 1024px) {
     .md\:bui-my {
-      margin-top: var(--py-md);
-      margin-bottom: var(--py-md);
+      margin-top: var(--my-md);
+      margin-bottom: var(--my-md);
     }
 
     .md\:bui-my-0\.5 {
@@ -367,8 +367,8 @@
   /* Breakpoint lg */
   @media (min-width: 1280px) {
     .lg\:bui-my {
-      margin-top: var(--py-lg);
-      margin-bottom: var(--py-lg);
+      margin-top: var(--my-lg);
+      margin-bottom: var(--my-lg);
     }
 
     .lg\:bui-my-0\.5 {
@@ -455,8 +455,8 @@
   /* Breakpoint xl */
   @media (min-width: 1536px) {
     .xl\:bui-my {
-      margin-top: var(--py-xl);
-      margin-bottom: var(--py-xl);
+      margin-top: var(--my-xl);
+      margin-bottom: var(--my-xl);
     }
 
     .xl\:bui-my-0\.5 {

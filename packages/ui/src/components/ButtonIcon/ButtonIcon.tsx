@@ -23,21 +23,15 @@ import { useStyles } from '../../hooks/useStyles';
 /** @public */
 export const ButtonIcon = forwardRef(
   (props: ButtonIconProps, ref: Ref<HTMLButtonElement>) => {
-    const {
-      size = 'small',
-      variant = 'primary',
-      icon,
-      className,
-      style,
-      ...rest
-    } = props;
-
-    const { classNames, dataAttributes } = useStyles('Button', {
-      size,
-      variant,
+    const { classNames, dataAttributes, cleanedProps } = useStyles('Button', {
+      size: 'small',
+      variant: 'primary',
+      ...props,
     });
 
     const { classNames: classNamesButtonIcon } = useStyles('ButtonIcon');
+
+    const { className, icon, ...rest } = cleanedProps;
 
     return (
       <RAButton
