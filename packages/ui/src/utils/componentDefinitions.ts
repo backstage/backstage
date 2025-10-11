@@ -121,6 +121,26 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-Flex',
     },
+    utilityProps: [
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+      'gap',
+      'align',
+      'justify',
+      'direction',
+    ],
   },
   Grid: {
     classNames: {

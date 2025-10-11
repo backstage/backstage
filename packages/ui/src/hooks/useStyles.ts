@@ -16,139 +16,7 @@
 import { useBreakpoint, breakpoints } from './useBreakpoint';
 import { componentDefinitions } from '../utils/componentDefinitions';
 import type { ComponentDefinitionName, ComponentClassNames } from '../types';
-
-// Valid spacing values that have predefined utility classes
-const VALID_SPACING_VALUES = [
-  '0.5',
-  '1',
-  '1.5',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  '11',
-  '12',
-  '13',
-  '14',
-] as const;
-
-const utilityClassMap = {
-  m: {
-    class: 'bui-m',
-    cssVar: '--m',
-    values: VALID_SPACING_VALUES,
-  },
-  mb: {
-    class: 'bui-mb',
-    cssVar: '--mb',
-    values: VALID_SPACING_VALUES,
-  },
-  ml: {
-    class: 'bui-ml',
-    cssVar: '--ml',
-    values: VALID_SPACING_VALUES,
-  },
-  mr: {
-    class: 'bui-mr',
-    cssVar: '--mr',
-    values: VALID_SPACING_VALUES,
-  },
-  mt: {
-    class: 'bui-mt',
-    cssVar: '--mt',
-    values: VALID_SPACING_VALUES,
-  },
-  mx: {
-    class: 'bui-mx',
-    cssVar: '--mx',
-    values: VALID_SPACING_VALUES,
-  },
-  my: {
-    class: 'bui-my',
-    cssVar: '--my',
-    values: VALID_SPACING_VALUES,
-  },
-  p: {
-    class: 'bui-p',
-    cssVar: '--p',
-    values: VALID_SPACING_VALUES,
-  },
-  pb: {
-    class: 'bui-pb',
-    cssVar: '--pb',
-    values: VALID_SPACING_VALUES,
-  },
-  pl: {
-    class: 'bui-pl',
-    cssVar: '--pl',
-    values: VALID_SPACING_VALUES,
-  },
-  pr: {
-    class: 'bui-pr',
-    cssVar: '--pr',
-    values: VALID_SPACING_VALUES,
-  },
-  pt: {
-    class: 'bui-pt',
-    cssVar: '--pt',
-    values: VALID_SPACING_VALUES,
-  },
-  px: {
-    class: 'bui-px',
-    cssVar: '--px',
-    values: VALID_SPACING_VALUES,
-  },
-  py: {
-    class: 'bui-py',
-    cssVar: '--py',
-    values: VALID_SPACING_VALUES,
-  },
-  width: {
-    class: 'bui-w',
-    cssVar: '--width',
-    values: VALID_SPACING_VALUES,
-  },
-  minWidth: {
-    class: 'bui-min-w',
-    cssVar: '--min-width',
-    values: VALID_SPACING_VALUES,
-  },
-  maxWidth: {
-    class: 'bui-max-w',
-    cssVar: '--max-width',
-    values: VALID_SPACING_VALUES,
-  },
-  height: {
-    class: 'bui-h',
-    cssVar: '--height',
-    values: VALID_SPACING_VALUES,
-  },
-  minHeight: {
-    class: 'bui-min-h',
-    cssVar: '--min-height',
-    values: VALID_SPACING_VALUES,
-  },
-  maxHeight: {
-    class: 'bui-max-h',
-    cssVar: '--max-height',
-    values: VALID_SPACING_VALUES,
-  },
-  position: {
-    class: 'bui-position',
-    cssVar: '--position',
-    values: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
-  },
-  display: {
-    class: 'bui-display',
-    cssVar: '--display',
-    values: ['none', 'flex', 'block', 'inline'],
-  },
-};
+import { utilityClassMap } from '../utils/utilityClassMap';
 
 /**
  * Resolve a responsive value based on the current breakpoint
@@ -248,19 +116,23 @@ export function useStyles<T extends ComponentDefinitionName>(
     }
 
     // Check if value is in the list of valid values for this utility
-    if (utilityConfig.values.includes(val as any)) {
+    if (
+      utilityConfig.values.length > 0 &&
+      utilityConfig.values.includes(val as string | number)
+    ) {
       // Generate utility class with value suffix and optional breakpoint prefix
       const className = prefix
         ? `${prefix}${utilityConfig.class}-${val}`
         : `${utilityConfig.class}-${val}`;
       utilityClassList.push(className);
-    } else {
+    } else if (utilityConfig.cssVar) {
       // Custom value - add CSS custom property AND utility class name
+      // Only if cssVar is defined (properties with fixed values don't have cssVar)
       const cssVarKey = prefix
         ? `${utilityConfig.cssVar}-${prefix.slice(0, -1)}`
         : utilityConfig.cssVar;
-      // CSS custom properties need to be set as any since they're not part of CSSProperties
-      (generatedStyle as any)[cssVarKey] = val;
+      // CSS custom properties need to be set on the style object as strings
+      (generatedStyle as Record<string, unknown>)[cssVarKey] = val;
 
       // Add utility class name (without value suffix) with optional breakpoint prefix
       const className = prefix
@@ -268,6 +140,7 @@ export function useStyles<T extends ComponentDefinitionName>(
         : utilityConfig.class;
       utilityClassList.push(className);
     }
+    // If no cssVar and value is not in valid values, skip (invalid value for fixed-value property)
   };
 
   for (const key of utilityPropNames) {

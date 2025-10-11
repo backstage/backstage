@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Flex } from './Flex';
 import { Text } from '../Text';
+import { Box } from '../Box';
 
 const meta = {
   title: 'Backstage UI/Flex',
@@ -43,17 +44,38 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const DecorativeBox = () => {
+const DecorativeBox = ({
+  width = '48px',
+  height = '48px',
+}: {
+  width?: string;
+  height?: string;
+}) => {
+  const diagonalStripePattern = (() => {
+    const svg = `
+      <svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#2563eb" fill-opacity="0.6" fill-rule="evenodd">
+          <path d="M5 0h1L0 6V5zM6 5v1H5z"/>
+        </g>
+      </svg>
+    `.trim();
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  })();
+
   return (
-    <div
+    <Box
+      width={width}
+      height={height}
       style={{
         background: '#eaf2fd',
         borderRadius: '4px',
-        boxShadow: '0 0 0 1px #2563eb',
-        height: '32px',
-        minWidth: '100px',
-        backgroundImage:
-          'url("data:image/svg+xml,%3Csvg%20width%3D%226%22%20height%3D%226%22%20viewBox%3D%220%200%206%206%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%232563eb%22%20fill-opacity%3D%220.3%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M5%200h1L0%206V5zM6%205v1H5z%22/%3E%3C/g%3E%3C/svg%3E")',
+        border: '1px solid #2563eb',
+        backgroundImage: `url("${diagonalStripePattern}")`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+        color: '#2563eb',
       }}
     />
   );
@@ -85,12 +107,12 @@ export const RowDirection: Story = {
   },
 };
 
-export const AlignLeft: Story = {
+export const AlignStart: Story = {
   render: () => (
     <Flex align="start">
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
     </Flex>
   ),
 };
@@ -98,19 +120,19 @@ export const AlignLeft: Story = {
 export const AlignCenter: Story = {
   render: () => (
     <Flex align="center">
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
     </Flex>
   ),
 };
 
-export const AlignRight: Story = {
+export const AlignEnd: Story = {
   render: () => (
     <Flex align="end">
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
     </Flex>
   ),
 };
@@ -118,9 +140,9 @@ export const AlignRight: Story = {
 export const ResponsiveAlign: Story = {
   render: () => (
     <Flex align={{ xs: 'start', md: 'center', lg: 'end' }}>
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
     </Flex>
   ),
 };
