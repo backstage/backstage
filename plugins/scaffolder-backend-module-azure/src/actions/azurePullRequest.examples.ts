@@ -30,7 +30,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'dev.azure.com?organization=my-org&project=my-project&repo=my-repo',
-            sourceBranchName: 'feature/new-stuff',
+            branchName: 'feature/new-stuff',
             title: 'My New Feature',
             description: 'This PR introduces a new feature.',
           },
@@ -50,7 +50,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'dev.azure.com?organization=my-org&project=my-project&repo=my-repo',
-            sourceBranchName: 'feature/new-stuff',
+            branchName: 'feature/new-stuff',
             targetBranchName: 'develop',
             title: 'My New Feature',
             description: 'This PR introduces a new feature.',
@@ -72,7 +72,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'dev.azure.com?organization=my-org&project=my-project&repo=my-repo',
-            sourceBranchName: 'feature/new-stuff',
+            branchName: 'feature/new-stuff',
             title: 'My New Feature',
             description: 'This PR introduces a new feature.',
             createSourceBranch: true,
@@ -92,7 +92,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'dev.azure.com?organization=my-org&project=my-project&repo=my-repo',
-            sourceBranchName: 'feature/new-stuff',
+            branchName: 'feature/new-stuff',
             title: 'My New Feature',
             description: 'This PR introduces a new feature.',
             assignees: ['user1@example.com', 'user2@example.com'],
@@ -112,7 +112,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'dev.azure.com?organization=my-org&project=my-project&repo=my-repo',
-            sourceBranchName: 'feature/new-stuff',
+            branchName: 'feature/new-stuff',
             title: 'My New Feature',
             description: 'This PR introduces a new feature.',
             filesToDelete: ['file1.txt', 'folder/file2.txt'],
@@ -132,7 +132,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'dev.azure.com?organization=my-org&project=my-project&repo=my-repo',
-            sourceBranchName: 'feature/new-stuff',
+            branchName: 'feature/new-stuff',
             title: 'My New Feature',
             description: 'This PR introduces a new feature.',
             gitAuthorName: 'John Doe',
