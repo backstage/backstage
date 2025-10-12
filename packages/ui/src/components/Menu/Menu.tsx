@@ -31,8 +31,9 @@ import {
   ListBoxItem as RAListBoxItem,
   useFilter,
   RouterProvider,
+  Virtualizer,
+  ListLayout,
 } from 'react-aria-components';
-import { ScrollArea } from '../ScrollArea';
 import { useStyles } from '../../hooks/useStyles';
 import type {
   MenuTriggerProps,
@@ -51,8 +52,11 @@ import {
   RiCheckLine,
   RiCloseCircleLine,
 } from '@remixicon/react';
-import { isExternalLink } from '../../utils/isExternalLink';
 import { useNavigate, useHref } from 'react-router-dom';
+import { isExternalLink } from '../../utils/isExternalLink';
+
+// The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
+const rowHeight = 32;
 
 const MenuEmptyState = () => {
   const { classNames } = useStyles('Menu');
@@ -72,21 +76,42 @@ export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
 
 /** @public */
 export const Menu = (props: MenuProps<object>) => {
-  const { placement = 'bottom start', ...rest } = props;
+  const {
+    placement = 'bottom start',
+    virtualized = false,
+    maxWidth,
+    maxHeight,
+    ...rest
+  } = props;
   const { classNames } = useStyles('Menu');
+  const navigate = useNavigate();
+  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+
+  const menuContent = (
+    <RAMenu
+      className={classNames.content}
+      renderEmptyState={() => <MenuEmptyState />}
+      style={{ width: newMaxWidth, maxHeight }}
+      {...rest}
+    />
+  );
 
   return (
     <RAPopover className={classNames.popover} placement={placement}>
-      <ScrollArea.Root>
-        <ScrollArea.Viewport>
-          <RAMenu className={classNames.content} {...rest}>
-            {props.children}
-          </RAMenu>
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+      <RouterProvider navigate={navigate} useHref={useHref}>
+        {virtualized ? (
+          <Virtualizer
+            layout={ListLayout}
+            layoutOptions={{
+              rowHeight,
+            }}
+          >
+            {menuContent}
+          </Virtualizer>
+        ) : (
+          menuContent
+        )}
+      </RouterProvider>
     </RAPopover>
   );
 };
@@ -96,60 +121,92 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
   const {
     selectionMode = 'single',
     placement = 'bottom start',
+    virtualized = false,
+    maxWidth,
+    maxHeight,
     ...rest
   } = props;
   const { classNames } = useStyles('Menu');
+  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+
+  const listBoxContent = (
+    <RAListBox
+      className={classNames.content}
+      selectionMode={selectionMode}
+      style={{ width: newMaxWidth, maxHeight }}
+      {...rest}
+    />
+  );
 
   return (
     <RAPopover className={classNames.popover} placement={placement}>
-      <ScrollArea.Root>
-        <ScrollArea.Viewport>
-          <RAListBox
-            className={classNames.content}
-            selectionMode={selectionMode}
-            {...rest}
-          />
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+      {virtualized ? (
+        <Virtualizer
+          layout={ListLayout}
+          layoutOptions={{
+            rowHeight,
+          }}
+        >
+          {listBoxContent}
+        </Virtualizer>
+      ) : (
+        listBoxContent
+      )}
     </RAPopover>
   );
 };
 
 /** @public */
 export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
-  const { placement = 'bottom start', ...rest } = props;
+  const {
+    placement = 'bottom start',
+    virtualized = false,
+    maxWidth,
+    maxHeight,
+    ...rest
+  } = props;
   const { classNames } = useStyles('Menu');
   const { contains } = useFilter({ sensitivity: 'base' });
+  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+  const navigate = useNavigate();
+
+  const menuContent = (
+    <RAMenu
+      className={classNames.content}
+      renderEmptyState={() => <MenuEmptyState />}
+      style={{ width: newMaxWidth, maxHeight }}
+      {...rest}
+    />
+  );
 
   return (
     <RAPopover className={classNames.popover} placement={placement}>
-      <RAAutocomplete filter={contains}>
-        <RASearchField className={classNames.searchField}>
-          <RAInput
-            className={classNames.searchFieldInput}
-            aria-label="Search"
-            placeholder={props.placeholder || 'Search...'}
-          />
-          <RAButton className={classNames.searchFieldClear}>
-            <RiCloseCircleLine />
-          </RAButton>
-        </RASearchField>
-        <ScrollArea.Root>
-          <ScrollArea.Viewport>
-            <RAMenu
-              className={classNames.content}
-              renderEmptyState={() => <MenuEmptyState />}
-              {...rest}
+      <RouterProvider navigate={navigate} useHref={useHref}>
+        <RAAutocomplete filter={contains}>
+          <RASearchField className={classNames.searchField}>
+            <RAInput
+              className={classNames.searchFieldInput}
+              aria-label="Search"
+              placeholder={props.placeholder || 'Search...'}
             />
-          </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-            <ScrollArea.Thumb />
-          </ScrollArea.Scrollbar>
-        </ScrollArea.Root>
-      </RAAutocomplete>
+            <RAButton className={classNames.searchFieldClear}>
+              <RiCloseCircleLine />
+            </RAButton>
+          </RASearchField>
+          {virtualized ? (
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                rowHeight,
+              }}
+            >
+              {menuContent}
+            </Virtualizer>
+          ) : (
+            menuContent
+          )}
+        </RAAutocomplete>
+      </RouterProvider>
     </RAPopover>
   );
 };
@@ -161,10 +218,24 @@ export const MenuAutocompleteListbox = (
   const {
     selectionMode = 'single',
     placement = 'bottom start',
+    virtualized = false,
+    maxWidth,
+    maxHeight,
     ...rest
   } = props;
   const { classNames } = useStyles('Menu');
   const { contains } = useFilter({ sensitivity: 'base' });
+  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+
+  const listBoxContent = (
+    <RAListBox
+      className={classNames.content}
+      renderEmptyState={() => <MenuEmptyState />}
+      selectionMode={selectionMode}
+      style={{ width: newMaxWidth, maxHeight }}
+      {...rest}
+    />
+  );
 
   return (
     <RAPopover className={classNames.popover} placement={placement}>
@@ -179,19 +250,18 @@ export const MenuAutocompleteListbox = (
             <RiCloseCircleLine />
           </RAButton>
         </RASearchField>
-        <ScrollArea.Root>
-          <ScrollArea.Viewport>
-            <RAListBox
-              className={classNames.content}
-              renderEmptyState={() => <MenuEmptyState />}
-              selectionMode={selectionMode}
-              {...rest}
-            />
-          </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar orientation="vertical" style={{}}>
-            <ScrollArea.Thumb />
-          </ScrollArea.Scrollbar>
-        </ScrollArea.Root>
+        {virtualized ? (
+          <Virtualizer
+            layout={ListLayout}
+            layoutOptions={{
+              rowHeight,
+            }}
+          >
+            {listBoxContent}
+          </Virtualizer>
+        ) : (
+          listBoxContent
+        )}
       </RAAutocomplete>
     </RAPopover>
   );
@@ -201,12 +271,33 @@ export const MenuAutocompleteListbox = (
 export const MenuItem = (props: MenuItemProps) => {
   const { iconStart, color = 'primary', children, href, ...rest } = props;
   const { classNames } = useStyles('Menu');
-  const navigate = useNavigate();
 
   const isLink = href !== undefined;
   const isExternal = isExternalLink(href);
 
-  const content = (
+  if (isLink && isExternal) {
+    return (
+      <RAMenuItem
+        className={classNames.item}
+        data-color={color}
+        textValue={typeof children === 'string' ? children : undefined}
+        onAction={() => window.open(href, '_blank', 'noopener,noreferrer')}
+        {...rest}
+      >
+        <div className={classNames.itemWrapper}>
+          <div className={classNames.itemContent}>
+            {iconStart}
+            {children}
+          </div>
+          <div className={classNames.itemArrow}>
+            <RiArrowRightSLine />
+          </div>
+        </div>
+      </RAMenuItem>
+    );
+  }
+
+  return (
     <RAMenuItem
       className={classNames.item}
       data-color={color}
@@ -214,25 +305,17 @@ export const MenuItem = (props: MenuItemProps) => {
       textValue={typeof children === 'string' ? children : undefined}
       {...rest}
     >
-      <div className={classNames.itemContent}>
-        {iconStart}
-        {children}
-      </div>
-      <div className={classNames.itemArrow}>
-        <RiArrowRightSLine />
+      <div className={classNames.itemWrapper}>
+        <div className={classNames.itemContent}>
+          {iconStart}
+          {children}
+        </div>
+        <div className={classNames.itemArrow}>
+          <RiArrowRightSLine />
+        </div>
       </div>
     </RAMenuItem>
   );
-
-  if (isLink && !isExternal) {
-    return (
-      <RouterProvider navigate={navigate} useHref={useHref}>
-        {content}
-      </RouterProvider>
-    );
-  }
-
-  return content;
 };
 
 /** @public */
@@ -248,11 +331,13 @@ export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
       className={classNames.itemListBox}
       {...rest}
     >
-      <div className={classNames.itemContent}>
-        <div className={classNames.itemListBoxCheck}>
-          <RiCheckLine />
+      <div className={classNames.itemWrapper}>
+        <div className={classNames.itemContent}>
+          <div className={classNames.itemListBoxCheck}>
+            <RiCheckLine />
+          </div>
+          {children}
         </div>
-        {children}
       </div>
     </RAListBoxItem>
   );

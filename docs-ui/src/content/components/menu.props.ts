@@ -70,6 +70,16 @@ export const menuPropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: placementValues,
   },
+  virtualized: {
+    type: 'boolean',
+    default: 'false',
+  },
+  maxWidth: {
+    type: 'number',
+  },
+  maxHeight: {
+    type: 'number',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
@@ -95,6 +105,16 @@ export const menuListBoxPropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: placementValues,
   },
+  virtualized: {
+    type: 'boolean',
+    default: 'false',
+  },
+  maxWidth: {
+    type: 'number',
+  },
+  maxHeight: {
+    type: 'number',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
@@ -104,6 +124,16 @@ export const menuAutocompletePropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: placementValues,
   },
+  virtualized: {
+    type: 'boolean',
+    default: 'false',
+  },
+  maxWidth: {
+    type: 'number',
+  },
+  maxHeight: {
+    type: 'number',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
@@ -112,6 +142,16 @@ export const menuAutocompleteListboxPropDefs: Record<string, PropDef> = {
   placement: {
     type: 'enum',
     values: placementValues,
+  },
+  virtualized: {
+    type: 'boolean',
+    default: 'false',
+  },
+  maxWidth: {
+    type: 'number',
+  },
+  maxHeight: {
+    type: 'number',
   },
   ...classNamePropDefs,
   ...stylePropDefs,

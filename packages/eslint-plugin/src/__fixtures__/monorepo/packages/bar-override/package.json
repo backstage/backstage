@@ -1,0 +1,19 @@
+{
+  "name": "@internal/bar-override",
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "bar"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./BarPage": "./src/components/Bar.tsx",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "inline-dep": "*",
+    "react-router": "*"
+  },
+  "devDependencies": {
+    "react-router-dom": "*"
+  }
+}

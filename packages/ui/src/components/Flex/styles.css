@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-.bui-Flex {
-  display: flex;
+@layer components {
+  .bui-Flex {
+    display: flex;
 
-  /* This helps when using `truncate` on text inside a flex container */
-  min-width: 0;
+    /* This helps when using `truncate` on text inside a flex container */
+    min-width: 0;
+  }
 }

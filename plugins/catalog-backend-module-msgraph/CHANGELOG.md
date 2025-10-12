@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.8.1-next.1
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+
 ## 0.8.1-next.0
 
 ### Patch Changes

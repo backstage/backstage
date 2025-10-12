@@ -86,16 +86,25 @@ export function extractProps(
   }
 
   // Ensure keys from props that are defined in propDefs are removed
-  const cleanedProps = Object.keys(props).reduce((acc, key) => {
-    if (!propDefs.hasOwnProperty(key)) {
-      acc[key] = props[key];
-    }
-    return acc;
-  }, {} as { [key: string]: any });
+  const { cleanedProps, dataProps } = Object.keys(props).reduce(
+    (acc, key) => {
+      if (key.startsWith('data-')) {
+        acc.dataProps[key] = props[key];
+      }
+      if (!propDefs.hasOwnProperty(key)) {
+        acc.cleanedProps[key] = props[key];
+      }
+      return acc;
+    },
+    { dataProps: {}, cleanedProps: {} } as {
+      dataProps: { [key: string]: any };
+      cleanedProps: { [key: string]: any };
+    },
+  );
 
   const newClassNames = className
     .filter(name => name && name.trim() !== '')
     .join(' ');
 
-  return { ...cleanedProps, className: newClassNames, style };
+  return { ...cleanedProps, className: newClassNames, style, dataProps };
 }

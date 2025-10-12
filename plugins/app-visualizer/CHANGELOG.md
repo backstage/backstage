@@ -1,5 +1,14 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.24-next.2
+
+### Patch Changes
+
+- 4406144: Ensure that the text rendering has react keys for all elements
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
 ## 0.1.24-next.1
 
 ### Patch Changes

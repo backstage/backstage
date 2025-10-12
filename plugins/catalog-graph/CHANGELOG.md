@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-graph
 
+## 0.5.2-next.2
+
+### Patch Changes
+
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
 ## 0.5.2-next.1
 
 ### Patch Changes

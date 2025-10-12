@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.30-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+
 ## 0.0.30-next.1
 
 ### Patch Changes

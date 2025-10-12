@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-.bui-Popover {
-  margin-right: 12px;
-  overflow: scroll;
-  background-color: var(--bui-bg-surface-1);
-  border: 1px solid var(--bui-border);
-  border-radius: var(--bui-radius-3);
-  padding-block: var(--bui-space-1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+@layer components {
+  .bui-Popover {
+    margin-right: 12px;
+    overflow: scroll;
+    background-color: var(--bui-bg-surface-1);
+    border: 1px solid var(--bui-border);
+    border-radius: var(--bui-radius-3);
+    padding-block: var(--bui-space-1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
 }

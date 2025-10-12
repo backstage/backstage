@@ -165,6 +165,7 @@ export const componentDefinitions = {
       item: 'bui-MenuItem',
       itemListBox: 'bui-MenuItemListBox',
       itemListBoxCheck: 'bui-MenuItemListBoxCheck',
+      itemWrapper: 'bui-MenuItemWrapper',
       itemContent: 'bui-MenuItemContent',
       itemArrow: 'bui-MenuItemArrow',
       separator: 'bui-MenuSeparator',
@@ -172,6 +173,12 @@ export const componentDefinitions = {
       searchFieldInput: 'bui-MenuSearchFieldInput',
       searchFieldClear: 'bui-MenuSearchFieldClear',
       emptyState: 'bui-MenuEmptyState',
+    },
+  },
+  PasswordField: {
+    classNames: {
+      root: 'bui-PasswordField',
+      inputVisibility: 'bui-InputVisibility',
     },
   },
   Popover: {
@@ -286,6 +293,7 @@ export const componentDefinitions = {
       inputWrapper: 'bui-InputWrapper',
       input: 'bui-Input',
       inputIcon: 'bui-InputIcon',
+      inputAction: 'bui-InputAction',
     },
     dataAttributes: {
       invalid: [true, false] as const,

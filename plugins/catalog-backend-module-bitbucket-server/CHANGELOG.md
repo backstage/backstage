@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-server
 
+## 0.5.4-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+
 ## 0.5.4-next.1
 
 ### Patch Changes

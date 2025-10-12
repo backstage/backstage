@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.3.15-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-github@0.11.1-next.2
+
 ## 0.3.15-next.1
 
 ### Patch Changes
