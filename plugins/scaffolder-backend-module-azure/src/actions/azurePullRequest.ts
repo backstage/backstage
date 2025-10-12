@@ -66,8 +66,7 @@ export function createAzureDevopsPullRequestAction(options: {
             .describe(
               'The repository URL, e.g., dev.azure.com?organization=org&project=project&repo=repo',
             ),
-        sourceBranchName: z =>
-          z.string().describe('The name of the source branch.'),
+        branchName: z => z.string().describe('The name of the source branch.'),
         filesToDelete: z =>
           z.array(z.string()).describe('List of files to delete.').optional(),
         targetBranchName: z =>
@@ -150,7 +149,7 @@ export function createAzureDevopsPullRequestAction(options: {
     async handler(ctx) {
       const {
         repoUrl,
-        sourceBranchName,
+        branchName,
         targetBranchName,
         title,
         description,
@@ -243,12 +242,12 @@ export function createAzureDevopsPullRequestAction(options: {
       });
 
       const sourceBranchDoesNotExist = await ctx.checkpoint({
-        key: `create-source-branch-${repo}-${sourceBranchName}`,
+        key: `create-source-branch-${repo}-${branchName}`,
         fn: () =>
           createSourceBranchIfNotExists(
             gitApi,
             repo,
-            sourceBranchName,
+            branchName,
             project,
             ctx.logger,
             resolvedTargetBranchName,
@@ -266,14 +265,12 @@ export function createAzureDevopsPullRequestAction(options: {
       const push: GitPush = {
         refUpdates: [
           {
-            name: `refs/heads/${sourceBranchName}`,
+            name: `refs/heads/${branchName}`,
             oldObjectId: await getLatestCommit(
               gitApi,
               repo,
               project,
-              sourceBranchDoesNotExist
-                ? resolvedTargetBranchName
-                : sourceBranchName,
+              sourceBranchDoesNotExist ? resolvedTargetBranchName : branchName,
             ),
           },
         ],
@@ -303,16 +300,16 @@ export function createAzureDevopsPullRequestAction(options: {
         return;
       }
       await ctx.checkpoint({
-        key: `create-push-${repo}-${sourceBranchName}`,
+        key: `create-push-${repo}-${branchName}`,
         fn: async () => {
-          ctx.logger.info(`Pushing changes to branch ${sourceBranchName}`);
+          ctx.logger.info(`Pushing changes to branch ${branchName}`);
           return gitApi.createPush(push, repository.id!, project) as any;
         },
       });
 
       // Create the pull request
       const pullRequest: GitPullRequest = {
-        sourceRefName: `refs/heads/${sourceBranchName}`,
+        sourceRefName: `refs/heads/${branchName}`,
         targetRefName: `refs/heads/${resolvedTargetBranchName}`,
         title,
         description,
@@ -333,7 +330,7 @@ export function createAzureDevopsPullRequestAction(options: {
         (await gitApi.getPullRequests(
           repository.id!,
           {
-            sourceRefName: `refs/heads/${sourceBranchName}`,
+            sourceRefName: `refs/heads/${branchName}`,
             targetRefName: `refs/heads/${resolvedTargetBranchName}`,
             status: PullRequestStatus.Active, // Filter for active pull requests
           },
@@ -396,7 +393,7 @@ export function createAzureDevopsPullRequestAction(options: {
         ctx.output('targetBranchName', resolvedTargetBranchName);
       } else {
         const createdPullRequest = await ctx.checkpoint({
-          key: `create-pr-${repo}-${sourceBranchName}`,
+          key: `create-pr-${repo}-${branchName}`,
           fn: async () => {
             ctx.logger.info('Creating new pull request');
             return gitApi.createPullRequest(
