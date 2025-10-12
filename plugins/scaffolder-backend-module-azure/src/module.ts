@@ -19,7 +19,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
-import { createPublishAzureAction } from './actions';
+import {
+  createPublishAzureAction,
+  createAzureDevopsPullRequestAction,
+} from './actions';
 
 /**
  * @public
@@ -38,6 +41,10 @@ export const azureModule = createBackendModule({
         const integrations = ScmIntegrations.fromConfig(config);
         scaffolderActions.addActions(
           createPublishAzureAction({
+            integrations,
+            config,
+          }),
+          createAzureDevopsPullRequestAction({
             integrations,
             config,
           }),
