@@ -99,7 +99,7 @@ export function getAzureRemotePullRequestUrl(
   repo: string,
   pullRequestId: number,
 ) {
-  return `https://${host}/${organization}/${project}/${repo}/pullrequest/${pullRequestId}`;
+  return `https://${host}/${organization}/${project}/_git/${repo}/pullrequest/${pullRequestId}`;
 }
 
 export function generateGitChanges(

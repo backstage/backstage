@@ -28,7 +28,7 @@ describe('Azure DevOps Utils', () => {
         456,
       );
       expect(url).toBe(
-        'https://dev.azure.com/my-org/my-project/my-repo/pullrequest/456',
+        'https://dev.azure.com/my-org/my-project/_git/my-repo/pullrequest/456',
       );
     });
   });
