@@ -138,7 +138,7 @@ export async function yamlPlaceholderResolver(
 
   params.emit(processingResult.refresh(`url:${url}`));
 
-  // YAML merge support False by default
+  // YAML merge support enabled by default
   const enableYamlMerge = false;
   const parseOptions = { merge: enableYamlMerge };
 
