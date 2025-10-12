@@ -172,7 +172,7 @@ export const utilityClassMap: Record<
     values: ['start', 'center', 'end', 'baseline', 'stretch'],
   },
   justify: {
-    class: 'bui-justify',
+    class: 'bui-jc',
     values: ['start', 'center', 'end', 'between'],
   },
   direction: {

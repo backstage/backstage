@@ -25,19 +25,16 @@ const meta = {
   argTypes: {
     align: {
       control: 'inline-radio',
-      options: ['left', 'center', 'right'],
+      options: ['start', 'center', 'end', 'baseline', 'stretch'],
     },
-    children: {
-      control: false,
+    justify: {
+      control: 'inline-radio',
+      options: ['start', 'center', 'end', 'between'],
     },
-    className: {
-      control: 'text',
+    direction: {
+      control: 'inline-radio',
+      options: ['row', 'column', 'row-reverse', 'column-reverse'],
     },
-  },
-  args: {
-    align: 'stretch',
-    gap: '4',
-    children: 'hello world',
   },
 } satisfies Meta<typeof Flex>;
 
@@ -107,9 +104,13 @@ export const RowDirection: Story = {
   },
 };
 
-export const AlignStart: Story = {
-  render: () => (
-    <Flex align="start">
+export const AlignStartInColumn: Story = {
+  args: {
+    align: 'start',
+    direction: 'column',
+  },
+  render: args => (
+    <Flex {...args}>
       <DecorativeBox height="32px" />
       <DecorativeBox height="24px" />
       <DecorativeBox height="48px" />
@@ -117,9 +118,13 @@ export const AlignStart: Story = {
   ),
 };
 
-export const AlignCenter: Story = {
-  render: () => (
-    <Flex align="center">
+export const AlignStartInRow: Story = {
+  args: {
+    align: 'start',
+    direction: 'row',
+  },
+  render: args => (
+    <Flex {...args}>
       <DecorativeBox height="32px" />
       <DecorativeBox height="24px" />
       <DecorativeBox height="48px" />
@@ -127,9 +132,55 @@ export const AlignCenter: Story = {
   ),
 };
 
-export const AlignEnd: Story = {
-  render: () => (
-    <Flex align="end">
+export const AlignCenterInColumn: Story = {
+  args: {
+    align: 'center',
+    direction: 'column',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+};
+
+export const AlignCenterInRow: Story = {
+  args: {
+    align: 'center',
+    direction: 'row',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+};
+
+export const AlignEndInColumn: Story = {
+  args: {
+    align: 'end',
+    direction: 'column',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+};
+
+export const AlignEndInRow: Story = {
+  args: {
+    align: 'end',
+    direction: 'row',
+  },
+  render: args => (
+    <Flex {...args}>
       <DecorativeBox height="32px" />
       <DecorativeBox height="24px" />
       <DecorativeBox height="48px" />
@@ -138,8 +189,11 @@ export const AlignEnd: Story = {
 };
 
 export const ResponsiveAlign: Story = {
-  render: () => (
-    <Flex align={{ xs: 'start', md: 'center', lg: 'end' }}>
+  args: {
+    align: { xs: 'start', md: 'center', lg: 'end' },
+  },
+  render: args => (
+    <Flex {...args}>
       <DecorativeBox height="32px" />
       <DecorativeBox height="24px" />
       <DecorativeBox height="48px" />
@@ -148,8 +202,11 @@ export const ResponsiveAlign: Story = {
 };
 
 export const ResponsiveGap: Story = {
-  render: () => (
-    <Flex gap={{ xs: '4', md: '8', lg: '12' }}>
+  args: {
+    gap: { xs: '4', md: '8', lg: '12' },
+  },
+  render: args => (
+    <Flex {...args}>
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
@@ -158,8 +215,11 @@ export const ResponsiveGap: Story = {
 };
 
 export const LargeGap: Story = {
-  render: () => (
-    <Flex gap="8">
+  args: {
+    gap: '8',
+  },
+  render: args => (
+    <Flex {...args}>
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />

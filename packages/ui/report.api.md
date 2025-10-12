@@ -835,7 +835,7 @@ export interface FlexProps extends SpaceProps {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
-  children: React.ReactNode;
+  children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)

@@ -18,7 +18,7 @@ import type { Responsive, Space, SpaceProps } from '../../types';
 
 /** @public */
 export interface FlexProps extends SpaceProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   gap?: Responsive<Space>;
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
