@@ -32,6 +32,7 @@
 @import '../components/Checkbox/styles.css';
 @import '../components/Collapsible/Collapsible.styles.css';
 @import '../components/Container/styles.css';
+@import '../components/Dialog/Dialog.styles.css';
 @import '../components/FieldError/FieldError.styles.css';
 @import '../components/FieldLabel/FieldLabel.styles.css';
 @import '../components/Flex/styles.css';
