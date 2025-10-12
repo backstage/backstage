@@ -13,6 +13,40 @@ const azureModule: BackendFeature;
 export default azureModule;
 
 // @public
+export function createAzureDevopsPullRequestAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    branchName: string;
+    title: string;
+    description: string;
+    createWhenEmpty: boolean;
+    filesToDelete?: string[] | undefined;
+    targetBranchName?: string | undefined;
+    draft?: boolean | undefined;
+    sourcePath?: string | undefined;
+    targetPath?: string | undefined;
+    token?: string | undefined;
+    reviewers?: string[] | undefined;
+    assignees?: string[] | undefined;
+    teamReviewers?: string[] | undefined;
+    tags?: string[] | undefined;
+    commitMessage?: string | undefined;
+    update?: boolean | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+  },
+  {
+    targetBranchName: string;
+    remoteUrl: string;
+    pullRequestId: number;
+  },
+  'v2'
+>;
+
+// @public
 export function createPublishAzureAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
