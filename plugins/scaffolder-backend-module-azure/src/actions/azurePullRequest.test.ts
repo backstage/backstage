@@ -296,4 +296,346 @@ describe('publish:azure:pull-request', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith('pullRequestId', 123);
   });
+
+  it('should create a pull request with tags', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        tags: ['tag1', 'tag2'],
+      },
+    });
+
+    expect(mockGitClient.createPullRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        labels: [{ name: 'tag1' }, { name: 'tag2' }],
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should create a pull request with no tags when tags are not provided', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+      },
+    });
+
+    expect(mockGitClient.createPullRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        labels: [],
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should create a pull request with reviewers', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        reviewers: ['user1@example.com', 'user2@example.com'],
+      },
+    });
+
+    expect(mockGitClient.createPullRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reviewers: [
+          { uniqueName: 'user1@example.com' },
+          { uniqueName: 'user2@example.com' },
+        ],
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should create a pull request with assignees', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        assignees: ['assignee1@example.com', 'assignee2@example.com'],
+      },
+    });
+
+    expect(mockGitClient.createPullRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reviewers: [
+          { uniqueName: 'assignee1@example.com' },
+          { uniqueName: 'assignee2@example.com' },
+        ],
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should create a pull request with both reviewers and assignees', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        reviewers: ['reviewer@example.com'],
+        assignees: ['assignee@example.com'],
+      },
+    });
+
+    expect(mockGitClient.createPullRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reviewers: [
+          { uniqueName: 'reviewer@example.com' },
+          { uniqueName: 'assignee@example.com' },
+        ],
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should create a pull request with team reviewers', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        teamReviewers: ['team1', 'team2'],
+      },
+    });
+
+    expect(mockGitClient.createPullRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reviewers: [
+          { uniqueName: 'team1', isContainer: true },
+          { uniqueName: 'team2', isContainer: true },
+        ],
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should create a pull request with custom commit message', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        commitMessage: 'Custom commit message',
+      },
+    });
+
+    expect(mockGitClient.createPush).toHaveBeenCalledWith(
+      expect.objectContaining({
+        commits: expect.arrayContaining([
+          expect.objectContaining({
+            comment: 'Custom commit message',
+          }),
+        ]),
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should create a pull request with custom git author', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        gitAuthorName: 'Custom Author',
+        gitAuthorEmail: 'author@example.com',
+      },
+    });
+
+    expect(mockGitClient.createPush).toHaveBeenCalledWith(
+      expect.objectContaining({
+        commits: expect.arrayContaining([
+          expect.objectContaining({
+            author: {
+              name: 'Custom Author',
+              email: 'author@example.com',
+            },
+          }),
+        ]),
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should not create a pull request when createWhenEmpty is false and no changes', async () => {
+    const serializeDirectoryContents =
+      require('@backstage/plugin-scaffolder-node').serializeDirectoryContents;
+    serializeDirectoryContents.mockResolvedValueOnce([]);
+
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        createWhenEmpty: false,
+      },
+    });
+
+    expect(mockGitClient.createPush).not.toHaveBeenCalled();
+    expect(mockGitClient.createPullRequest).not.toHaveBeenCalled();
+  });
+
+  it('should create a pull request as draft when draft is true', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        draft: true,
+      },
+    });
+
+    expect(mockGitClient.createPullRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        isDraft: true,
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should include delete changes when filesToDelete is provided', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        filesToDelete: ['old-file.txt', 'deprecated/config.yaml'],
+      },
+    });
+
+    expect(mockGitClient.createPush).toHaveBeenCalledWith(
+      expect.objectContaining({
+        commits: expect.arrayContaining([
+          expect.objectContaining({
+            changes: expect.arrayContaining([
+              expect.objectContaining({
+                changeType: 16,
+                item: { path: '/old-file.txt' },
+              }),
+              expect.objectContaining({
+                changeType: 16,
+                item: { path: '/deprecated/config.yaml' },
+              }),
+            ]),
+          }),
+        ]),
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
+
+  it('should apply changes to targetPath when provided', async () => {
+    mockGitClient.getPullRequests.mockResolvedValue([]);
+    mockGitClient.createPush.mockResolvedValue({});
+    mockGitClient.createPullRequest.mockResolvedValue({
+      pullRequestId: 123,
+      url: 'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        targetPath: 'subfolder/destination',
+      },
+    });
+
+    expect(mockGitClient.createPush).toHaveBeenCalledWith(
+      expect.objectContaining({
+        commits: expect.arrayContaining([
+          expect.objectContaining({
+            changes: expect.arrayContaining([
+              expect.objectContaining({
+                item: expect.objectContaining({
+                  path: expect.stringContaining('/subfolder/destination/'),
+                }),
+              }),
+            ]),
+          }),
+        ]),
+      }),
+      expect.any(String),
+      expect.any(String),
+    );
+  });
 });

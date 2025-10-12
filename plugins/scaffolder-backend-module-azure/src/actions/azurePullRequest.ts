@@ -109,6 +109,11 @@ export function createAzureDevopsPullRequestAction(options: {
             .array(z.string())
             .describe('List of team reviewers for the pull request.')
             .optional(),
+        tags: z =>
+          z
+            .array(z.string())
+            .describe('List of tags/labels to add to the pull request.')
+            .optional(),
         commitMessage: z =>
           z
             .string()
@@ -166,6 +171,7 @@ export function createAzureDevopsPullRequestAction(options: {
         gitAuthorEmail,
         update,
         teamReviewers,
+        tags,
       } = ctx.input;
 
       const fileRoot = sourcePath
@@ -323,7 +329,7 @@ export function createAzureDevopsPullRequestAction(options: {
               isContainer: true,
             })),
           ),
-        labels: [{ name: 'devhub-generated' }], // Add label to the pull request
+        labels: (tags ?? []).map(tag => ({ name: tag })),
       };
 
       const existingPullRequests =
