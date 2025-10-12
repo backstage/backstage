@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-.bui-ButtonIcon {
-  align-items: center;
-  justify-content: center;
-}
+@layer components {
+  .bui-ButtonIcon {
+    align-items: center;
+    justify-content: center;
+  }
 
-.bui-ButtonIcon[data-size='small'] {
-  padding: 0;
-  width: 2rem;
-}
+  .bui-ButtonIcon[data-size='small'] {
+    padding: 0;
+    width: 2rem;
+  }
 
-.bui-ButtonIcon[data-size='medium'] {
-  padding: 0;
-  width: 2.5rem;
+  .bui-ButtonIcon[data-size='medium'] {
+    padding: 0;
+    width: 2.5rem;
+  }
 }

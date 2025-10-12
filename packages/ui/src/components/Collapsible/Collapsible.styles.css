@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-.bui-CollapsiblePanel {
-  display: flex;
-  height: var(--collapsible-panel-height);
-  overflow: hidden;
-  transition: all 150ms ease-out;
+@layer components {
+  .bui-CollapsiblePanel {
+    display: flex;
+    height: var(--collapsible-panel-height);
+    overflow: hidden;
+    transition: all 150ms ease-out;
 
-  &[data-starting-style],
-  &[data-ending-style] {
-    height: 0;
+    &[data-starting-style],
+    &[data-ending-style] {
+      height: 0;
+    }
   }
 }

@@ -14,61 +14,63 @@
  * limitations under the License.
  */
 
-.bui-Switch {
-  display: flex;
-  /* This is needed so the HiddenInput is positioned correctly */
-  position: relative;
-  align-items: center;
-  gap: var(--bui-space-3);
-  font-size: var(--bui-font-size-3);
-  color: var(--bui-fg-primary);
-  cursor: pointer;
+@layer components {
+  .bui-Switch {
+    display: flex;
+    /* This is needed so the HiddenInput is positioned correctly */
+    position: relative;
+    align-items: center;
+    gap: var(--bui-space-3);
+    font-size: var(--bui-font-size-3);
+    color: var(--bui-fg-primary);
+    cursor: pointer;
 
-  &[data-pressed] .bui-SwitchIndicator {
-    &:before {
-      background: var(--bui-fg-solid);
-    }
-  }
-
-  &[data-selected] {
-    .bui-SwitchIndicator {
-      background: var(--bui-bg-solid);
-
+    &[data-pressed] .bui-SwitchIndicator {
       &:before {
         background: var(--bui-fg-solid);
-        transform: translateX(100%);
       }
     }
 
-    &[data-pressed] {
-      .indicator {
-        background: var(--bui-gray-3);
+    &[data-selected] {
+      .bui-SwitchIndicator {
+        background: var(--bui-bg-solid);
+
+        &:before {
+          background: var(--bui-fg-solid);
+          transform: translateX(100%);
+        }
       }
+
+      &[data-pressed] {
+        .indicator {
+          background: var(--bui-gray-3);
+        }
+      }
+    }
+
+    &[data-focus-visible] .bui-SwitchIndicator {
+      outline: 2px solid;
+      outline-offset: 2px;
     }
   }
 
-  &[data-focus-visible] .bui-SwitchIndicator {
-    outline: 2px solid;
-    outline-offset: 2px;
-  }
-}
-
-.bui-SwitchIndicator {
-  width: 2rem;
-  height: 1.143rem;
-  border: 2px;
-  background: var(--bui-gray-3);
-  border-radius: 1.143rem;
-  transition: all 200ms;
-
-  &:before {
-    content: '';
-    display: block;
-    margin: 0.143rem;
-    width: 0.857rem;
-    height: 0.857rem;
-    background: var(--bui-fg-solid);
-    border-radius: 16px;
+  .bui-SwitchIndicator {
+    width: 2rem;
+    height: 1.143rem;
+    border: 2px;
+    background: var(--bui-gray-3);
+    border-radius: 1.143rem;
     transition: all 200ms;
+
+    &:before {
+      content: '';
+      display: block;
+      margin: 0.143rem;
+      width: 0.857rem;
+      height: 0.857rem;
+      background: var(--bui-fg-solid);
+      border-radius: 16px;
+      transition: all 200ms;
+    }
   }
 }

@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minWidth: '100%',
   },
   fixedHeight: {
-    height: '100%',
+    maxHeight: '100%',
   },
   fullscreen: {
     backgroundColor: theme.palette.background.paper,
@@ -168,6 +168,10 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    */
   edgeWeight?: number;
   /**
+   * Custom edge rendering component
+   */
+  renderEdge?: Types.RenderEdgeFunction<EdgeData>;
+  /**
    * Custom node rendering component
    */
   renderNode?: Types.RenderNodeFunction<NodeData>;
@@ -248,6 +252,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     labelOffset = 10,
     edgeRanks = 1,
     edgeWeight = 1,
+    renderEdge,
     renderLabel,
     defs,
     zoom = 'enabled',
@@ -282,7 +287,8 @@ export function DependencyGraph<NodeData, EdgeData>(
   const [_measureRef] = useMeasure();
   const measureRef = once(_measureRef);
 
-  const scalableHeight = fit === 'grow' ? maxHeight : containerHeight;
+  const scalableHeight =
+    fit === 'grow' && !fullScreenHandle.active ? maxHeight : '100%';
 
   const containerRef = useMemo(
     () =>
@@ -335,10 +341,16 @@ export function DependencyGraph<NodeData, EdgeData>(
 
         const { width: newContainerWidth, height: newContainerHeight } =
           root.getBoundingClientRect();
-        if (containerWidth !== newContainerWidth) {
+        if (
+          containerWidth !== newContainerWidth &&
+          newContainerWidth <= maxWidth
+        ) {
           setContainerWidth(newContainerWidth);
         }
-        if (containerHeight !== newContainerHeight) {
+        if (
+          containerHeight !== newContainerHeight &&
+          newContainerHeight <= maxHeight
+        ) {
           setContainerHeight(newContainerHeight);
         }
       }, 100),
@@ -464,39 +476,32 @@ export function DependencyGraph<NodeData, EdgeData>(
   );
 
   return (
-    <div
-      ref={containerRef}
+    <FullScreen
+      handle={fullScreenHandle}
       className={classNames(
-        styles.root,
-        fit === 'contain' && styles.fixedHeight,
+        fullScreenHandle.active ? styles.fullscreen : styles.root,
       )}
     >
-      <FullScreen
-        handle={fullScreenHandle}
-        className={classNames(
-          fullScreenHandle.active ? styles.fullscreen : styles.root,
-          fit === 'contain' && styles.fixedHeight,
-        )}
-      >
-        {allowFullscreen && (
-          <Tooltip title={t('dependencyGraph.fullscreenTooltip')}>
-            <IconButton
-              className={styles.fullscreenButton}
-              onClick={
-                fullScreenHandle.active
-                  ? fullScreenHandle.exit
-                  : fullScreenHandle.enter
-              }
-            >
-              {fullScreenHandle.active ? (
-                <FullscreenExitIcon />
-              ) : (
-                <FullscreenIcon />
-              )}
-            </IconButton>
-          </Tooltip>
-        )}
+      {allowFullscreen && (
+        <Tooltip title={t('dependencyGraph.fullscreenTooltip')}>
+          <IconButton
+            className={styles.fullscreenButton}
+            onClick={
+              fullScreenHandle.active
+                ? fullScreenHandle.exit
+                : fullScreenHandle.enter
+            }
+          >
+            {fullScreenHandle.active ? (
+              <FullscreenExitIcon />
+            ) : (
+              <FullscreenIcon />
+            )}
+          </IconButton>
+        </Tooltip>
+      )}
 
+      <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
         <svg
           {...svgProps}
           width="100%"
@@ -528,11 +533,13 @@ export function DependencyGraph<NodeData, EdgeData>(
               height={graphHeight}
               y={maxHeight / 2 - graphHeight / 2}
               x={maxWidth / 2 - graphWidth / 2}
-              viewBox={`0 0 ${graphWidth} ${graphHeight}`}
+              viewBox={`-25 -25 ${graphWidth + 50} ${graphHeight + 50}`}
             >
               {graphEdges.map(e => {
                 const edge = graph.current.edge(e) as GraphEdge<EdgeData>;
                 if (!edge) return null;
+                if (renderEdge) return renderEdge({ edge, id: e });
+
                 return (
                   <Edge
                     key={`${e.v}-${e.w}`}
@@ -560,7 +567,7 @@ export function DependencyGraph<NodeData, EdgeData>(
             </svg>
           </g>
         </svg>
-      </FullScreen>
-    </div>
+      </div>
+    </FullScreen>
   );
 }

@@ -89,21 +89,33 @@ export function findVersion() {
 export const version = findVersion();
 export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
 
-export function createPackageVersionProvider(lockfile?: Lockfile) {
+export function createPackageVersionProvider(
+  lockfile?: Lockfile,
+  options?: {
+    preferBackstageProtocol?: boolean;
+  },
+) {
   return (name: string, versionHint?: string): string => {
     const packageVersion = packageVersions[name];
+
+    // 1) workspace precedence (existing logic) - check this first
+    const lockfileEntries = lockfile?.get(name);
+    const lockfileEntry = lockfileEntries?.find(entry =>
+      entry.range.startsWith('workspace:'),
+    );
+    if (lockfileEntry) {
+      return 'workspace:^';
+    }
+
+    // 2) backstage:^ when plugin is present and allowed
+    if (options?.preferBackstageProtocol && name.startsWith('@backstage/')) {
+      return 'backstage:^';
+    }
+
+    // 3) fallback to current npm resolution
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
       throw new Error(`No version available for package ${name}`);
-    }
-
-    const lockfileEntries = lockfile?.get(name);
-
-    for (const specifier of ['^', '~', '*']) {
-      const range = `workspace:${specifier}`;
-      if (lockfileEntries?.some(entry => entry.range === range)) {
-        return range;
-      }
     }
 
     const validRanges = lockfileEntries?.filter(entry =>

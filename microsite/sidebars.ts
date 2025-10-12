@@ -22,9 +22,8 @@ export default {
   docs: {
     Overview: [
       'overview/what-is-backstage',
+      'overview/technical-overview',
       'overview/architecture-overview',
-      'overview/background',
-      'overview/vision',
       'overview/roadmap',
       'overview/threat-model',
       'overview/versioning-policy',
@@ -38,7 +37,6 @@ export default {
           'getting-started/config/database',
           'getting-started/config/authentication',
           'getting-started/configure-app-with-plugins',
-          'getting-started/app-custom-theme',
           'getting-started/homepage',
         ],
       },
@@ -559,6 +557,16 @@ export default {
             ],
           },
           'tooling/package-metadata',
+        ],
+      },
+      {
+        type: 'category',
+        label: 'User Interface',
+        items: [
+          'conf/user-interface/index',
+          'conf/user-interface/logo',
+          'conf/user-interface/icons',
+          'conf/user-interface/sidebar',
         ],
       },
     ],

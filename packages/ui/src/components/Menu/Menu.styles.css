@@ -55,10 +55,10 @@
   max-height: inherit;
   box-sizing: border-box;
   overflow: auto;
-  padding: var(--bui-space-1);
   min-width: 150px;
   box-sizing: border-box;
   outline: none;
+  padding-block: var(--bui-space-1);
 }
 
 /* Ensure ScrollArea works properly within MenuRA popover */
@@ -77,45 +77,36 @@
 }
 
 .bui-MenuItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 2rem;
-  padding-inline: var(--bui-space-2);
-  border-radius: var(--bui-radius-2);
-  outline: none;
-  cursor: default;
-  color: var(--bui-fg-primary);
-  font-size: var(--bui-font-size-3);
-  gap: var(--bui-space-6);
+  padding-inline: var(--bui-space-1);
+  display: block;
 
-  &[data-focused] {
+  &[data-focused] .bui-MenuItemWrapper {
     background: var(--bui-bg-surface-2);
     color: var(--bui-fg-primary);
   }
 
-  &[data-open] {
+  &[data-open] .bui-MenuItemWrapper {
     background: var(--bui-bg-surface-2);
     color: var(--bui-fg-primary);
   }
 
-  &[data-color='danger'] {
+  &[data-color='danger'] .bui-MenuItemWrapper {
     color: var(--bui-fg-danger);
   }
 
-  &[data-color='danger'][data-focused] {
+  &[data-color='danger'][data-focused] .bui-MenuItemWrapper {
     background: var(--bui-bg-danger);
     color: var(--bui-fg-danger);
   }
 
   &[data-has-submenu] {
-    & > .bui-MenuItemArrow {
+    & > .bui-MenuItemWrapper > .bui-MenuItemArrow {
       display: block;
     }
   }
 }
 
-.bui-MenuItemListBox {
+.bui-MenuItemWrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -127,8 +118,13 @@
   color: var(--bui-fg-primary);
   font-size: var(--bui-font-size-3);
   gap: var(--bui-space-6);
+}
 
-  &:hover {
+.bui-MenuItemListBox {
+  padding-inline: var(--bui-space-1);
+  display: block;
+
+  &:hover .bui-MenuItemWrapper {
     background: var(--bui-bg-surface-2);
     color: var(--bui-fg-primary);
   }
@@ -188,7 +184,7 @@
   display: flex;
   align-items: center;
   padding-top: var(--bui-space-3);
-  padding-left: var(--bui-space-2);
+  padding-left: var(--bui-space-3);
   color: var(--bui-fg-primary);
   font-size: var(--bui-font-size-1);
   font-weight: bold;
@@ -261,7 +257,8 @@
 }
 
 .bui-MenuEmptyState {
-  padding: var(--bui-space-1);
+  padding-inline: var(--bui-space-3);
+  padding-block: var(--bui-space-2);
   color: var(--bui-fg-secondary);
   font-size: var(--bui-font-size-3);
   font-family: var(--bui-font-regular);

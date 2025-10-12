@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.4.16-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+
 ## 0.4.16-next.1
 
 ### Patch Changes

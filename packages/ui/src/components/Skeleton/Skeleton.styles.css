@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-.bui-Skeleton {
-  animation: var(--bui-animate-pulse);
-  background-color: var(--bui-bg-surface-2);
-  border-radius: var(--bui-radius-2);
-}
+@layer components {
+  .bui-Skeleton {
+    animation: var(--bui-animate-pulse);
+    background-color: var(--bui-bg-surface-2);
+    border-radius: var(--bui-radius-2);
+  }
 
-.bui-Skeleton[data-rounded='true'] {
-  border-radius: var(--bui-radius-full);
+  .bui-Skeleton[data-rounded='true'] {
+    border-radius: var(--bui-radius-full);
+  }
 }
