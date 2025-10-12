@@ -47,6 +47,10 @@ import {
 import { Config } from '@backstage/config';
 import { examples } from './azurePullRequest.examples';
 
+/**
+ * Creates a new action that creates a pull request in Azure DevOps.
+ * @public
+ */
 export function createAzureDevopsPullRequestAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
