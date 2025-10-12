@@ -72,7 +72,7 @@ describe('publish:azure:pull-request', () => {
   const mockContext = createMockActionContext({
     input: {
       repoUrl: 'dev.azure.com?organization=org&project=project&repo=repo',
-      sourceBranchName: 'feature-branch',
+      branchName: 'feature-branch',
       title: 'Test PR',
       description: 'This is a test PR',
       createWhenEmpty: true,
@@ -153,7 +153,7 @@ describe('publish:azure:pull-request', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'remoteUrl',
-      'https://dev.azure.com/org/project/repo/pullrequest/123',
+      'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
     );
     expect(mockContext.output).toHaveBeenCalledWith('pullRequestId', 123);
   });
@@ -203,7 +203,7 @@ describe('publish:azure:pull-request', () => {
         ...mockContext,
         input: {
           ...mockContext.input,
-          sourceBranchName: 'non-existent-branch',
+          branchName: 'non-existent-branch',
         },
       }),
     ).rejects.toThrow(/Branch non-existent-branch not found/);
@@ -254,7 +254,7 @@ describe('publish:azure:pull-request', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'remoteUrl',
-      'https://dev.azure.com/org/project/repo/pullrequest/123',
+      'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
     );
     expect(mockContext.output).toHaveBeenCalledWith('pullRequestId', 123);
   });
@@ -292,7 +292,7 @@ describe('publish:azure:pull-request', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'remoteUrl',
-      'https://dev.azure.com/org/project/repo/pullrequest/123',
+      'https://dev.azure.com/org/project/_git/repo/pullrequest/123',
     );
     expect(mockContext.output).toHaveBeenCalledWith('pullRequestId', 123);
   });
