@@ -243,6 +243,7 @@ export const componentDefinitions = {
       body: 'bui-TableBody',
       row: 'bui-TableRow',
       head: 'bui-TableHead',
+      headContent: 'bui-TableHeadContent',
       headSortButton: 'bui-TableHeadSortButton',
       caption: 'bui-TableCaption',
       cell: 'bui-TableCell',

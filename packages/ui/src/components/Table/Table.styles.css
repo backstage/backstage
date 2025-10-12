@@ -31,6 +31,19 @@
     padding: var(--bui-space-3);
     font-size: var(--bui-font-size-3);
     color: var(--bui-fg-primary);
+
+    &:hover {
+      .bui-TableHeadSortButton {
+        opacity: 1;
+      }
+    }
+  }
+
+  .bui-TableHeadContent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--bui-space-1);
   }
 
   .bui-TableHeadSortButton {
@@ -39,14 +52,12 @@
     display: inline-flex;
     align-items: center;
     gap: var(--bui-space-1);
-
-    &:hover svg {
-      opacity: 0.5;
-    }
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+    color: var(--bui-fg-secondary);
 
     & svg {
-      opacity: 0;
-      transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+      transition: transform 0.1s ease-in-out;
     }
 
     &[data-sort-order='asc'] svg {
