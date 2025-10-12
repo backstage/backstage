@@ -27,11 +27,9 @@ import type {
   DialogHeaderProps,
   DialogProps,
   DialogBodyProps,
-  DialogCloseProps,
 } from './types';
 import './Dialog.styles.css';
 import { RiCloseLine } from '@remixicon/react';
-import { ScrollArea } from '../ScrollArea';
 import { Button } from '../Button';
 import { useStyles } from '../../hooks/useStyles';
 import { Flex } from '../Flex';
@@ -40,6 +38,41 @@ import { Flex } from '../Flex';
 export const DialogTrigger = (props: DialogTriggerProps) => {
   return <RADialogTrigger {...props} />;
 };
+
+/** @public */
+export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
+  ({ className, children, width, height, style, ...props }, ref) => {
+    const { classNames } = useStyles('Dialog');
+
+    return (
+      <Modal
+        ref={ref}
+        className={clsx(classNames.overlay)}
+        isDismissable
+        isKeyboardDismissDisabled={false}
+        {...props}
+      >
+        <RADialog
+          className={clsx(classNames.dialog, className)}
+          style={{
+            ['--bui-dialog-min-width' as keyof React.CSSProperties]:
+              typeof width === 'number' ? `${width}px` : width || '400px',
+            ['--bui-dialog-min-height' as keyof React.CSSProperties]: height
+              ? typeof height === 'number'
+                ? `${height}px`
+                : height
+              : 'auto',
+            ...style,
+          }}
+        >
+          {children}
+        </RADialog>
+      </Modal>
+    );
+  },
+);
+
+Dialog.displayName = 'Dialog';
 
 /** @public */
 export const DialogHeader = forwardRef<
@@ -63,27 +96,13 @@ DialogHeader.displayName = 'DialogHeader';
 
 /** @public */
 export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
-  ({ className, children, height, ...props }, ref) => {
+  ({ className, children, ...props }, ref) => {
     const { classNames } = useStyles('Dialog');
 
     return (
-      <ScrollArea.Root
-        className={clsx(classNames.body, className)}
-        style={{
-          height: height
-            ? typeof height === 'number'
-              ? `${height}px`
-              : height
-            : undefined,
-        }}
-        ref={ref}
-        {...props}
-      >
-        <ScrollArea.Viewport>{children}</ScrollArea.Viewport>
-        <ScrollArea.Scrollbar orientation="vertical">
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+      <div className={clsx(classNames.body, className)} ref={ref} {...props}>
+        {children}
+      </div>
     );
   },
 );
@@ -104,43 +123,3 @@ export const DialogFooter = forwardRef<
   );
 });
 DialogFooter.displayName = 'DialogFooter';
-
-/** @public */
-export const DialogClose = forwardRef<
-  React.ElementRef<typeof Button>,
-  DialogCloseProps
->(({ className, variant = 'secondary', children, ...props }, ref) => {
-  return (
-    <Button
-      ref={ref}
-      slot="close"
-      variant={variant}
-      className={className}
-      {...props}
-    >
-      {children}
-    </Button>
-  );
-});
-DialogClose.displayName = 'DialogClose';
-
-/** @public */
-export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
-  ({ className, children, ...props }, ref) => {
-    const { classNames } = useStyles('Dialog');
-
-    return (
-      <Modal
-        ref={ref}
-        className={clsx(classNames.root, className)}
-        isDismissable
-        isKeyboardDismissDisabled={false}
-        {...props}
-      >
-        <RADialog className="bui-DialogContent">{children}</RADialog>
-      </Modal>
-    );
-  },
-);
-
-Dialog.displayName = 'Dialog';

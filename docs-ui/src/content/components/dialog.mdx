@@ -11,9 +11,10 @@ import {
   dialogClosePropDefs,
   dialogUsageSnippet,
   dialogDefaultSnippet,
-  dialogScrollableSnippet,
+  dialogFixedWidthAndHeightSnippet,
   dialogWithFormSnippet,
   dialogWithNoTriggerSnippet,
+  dialogCloseSnippet,
 } from './dialog.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -37,17 +38,17 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ## API reference
 
-### Dialog
-
-The main dialog container that renders as a modal overlay.
-
-<PropsTable data={dialogPropDefs} />
-
 ### DialogTrigger
 
 Wraps a trigger element and the dialog content to handle open/close state.
 
 <PropsTable data={dialogTriggerPropDefs} />
+
+### Dialog
+
+The main dialog container that renders as a modal overlay.
+
+<PropsTable data={dialogPropDefs} />
 
 ### DialogHeader
 
@@ -67,23 +68,21 @@ Contains action buttons or other footer content.
 
 <PropsTable data={dialogFooterPropDefs} />
 
-### DialogClose
+If you want to close the dialog while pressing a button, you can use the `slot="close"` prop on the button.
 
-A button that closes the dialog when pressed.
-
-<PropsTable data={dialogClosePropDefs} />
+<CodeBlock code={dialogCloseSnippet} />
 
 ## Examples
 
-### Scrollable Content
+### Fixed Width and Height
 
 Dialog with a fixed height body that scrolls when content overflows.
 
 <Snippet
   align="center"
   py={4}
-  preview={<DialogSnippet story="PreviewScrollable" />}
-  code={dialogScrollableSnippet}
+  preview={<DialogSnippet story="PreviewFixedWidthAndHeight" />}
+  code={dialogFixedWidthAndHeightSnippet}
 />
 
 ### Dialog with Form

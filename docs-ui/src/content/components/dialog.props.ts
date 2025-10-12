@@ -4,14 +4,52 @@ import {
   type PropDef,
 } from '@/utils/propDefs';
 
-export const dialogPropDefs: Record<string, PropDef> = {
-  children: { type: 'enum', values: ['ReactNode'], responsive: false },
-  ...classNamePropDefs,
-  ...stylePropDefs,
-};
-
 export const dialogTriggerPropDefs: Record<string, PropDef> = {
   children: { type: 'enum', values: ['ReactNode'], responsive: false },
+  isOpen: {
+    type: 'boolean',
+    description: 'Whether the overlay is open by default (controlled).',
+  },
+  defaultOpen: {
+    type: 'boolean',
+    description: 'Whether the overlay is open by default (uncontrolled).',
+  },
+  onOpenChange: {
+    type: 'enum',
+    values: ['(isOpen: boolean) => void'],
+    description:
+      "Handler that is called when the overlay's open state changes.",
+  },
+};
+
+export const dialogPropDefs: Record<string, PropDef> = {
+  children: { type: 'enum', values: ['ReactNode'], responsive: false },
+  isOpen: {
+    type: 'boolean',
+    description: 'Whether the overlay is open by default (controlled).',
+  },
+  defaultOpen: {
+    type: 'boolean',
+    description: 'Whether the overlay is open by default (uncontrolled).',
+  },
+  onOpenChange: {
+    type: 'enum',
+    values: ['(isOpen: boolean) => void'],
+    description:
+      "Handler that is called when the overlay's open state changes.",
+  },
+  width: {
+    type: 'enum',
+    values: ['number', 'string'],
+    responsive: false,
+  },
+  height: {
+    type: 'enum',
+    values: ['number', 'string'],
+    responsive: false,
+  },
+  ...classNamePropDefs,
+  ...stylePropDefs,
 };
 
 export const dialogHeaderPropDefs: Record<string, PropDef> = {
@@ -55,7 +93,6 @@ export const dialogUsageSnippet = `import {
   DialogHeader, 
   DialogBody, 
   DialogFooter, 
-  DialogClose 
 } from '@backstage/ui';
 
 <DialogTrigger>
@@ -64,7 +101,7 @@ export const dialogUsageSnippet = `import {
     <DialogHeader>Title</DialogHeader>
     <DialogBody>Content</DialogBody>
     <DialogFooter>
-      <DialogClose>Close</DialogClose>
+      <Button variant="secondary" slot="close">Close</Button>
     </DialogFooter>
   </Dialog>
 </DialogTrigger>`;
@@ -77,39 +114,22 @@ export const dialogDefaultSnippet = `<DialogTrigger>
       <Text>This is a basic dialog example.</Text>
     </DialogBody>
     <DialogFooter>
-        <DialogClose>Close</DialogClose>
-        <DialogClose variant="primary">Save</DialogClose>
+      <Button variant="secondary" slot="close">Close</Button>
+      <Button variant="primary" slot="close">Save</Button>
     </DialogFooter>
   </Dialog>
 </DialogTrigger>`;
 
-export const dialogScrollableSnippet = `<DialogTrigger>
+export const dialogFixedWidthAndHeightSnippet = `<DialogTrigger>
   <Button variant="secondary">Scrollable Dialog</Button>
   <Dialog>
     <DialogHeader>Long Content Dialog</DialogHeader>
-    <DialogBody height={200}>
-      <Text>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod 
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim 
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea 
-        commodo consequat.
-      </Text>
-      <Text>
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum 
-        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non 
-        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </Text>
-      <Text>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium 
-        doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore 
-        veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-      </Text>
+    <DialogBody width={600} height={400}>
+      ...
     </DialogBody>
     <DialogFooter>
-      <Flex gap="2" justify="end">
-        <DialogClose>Cancel</DialogClose>
-        <DialogClose variant="primary">Accept</DialogClose>
-      </Flex>
+      <Button variant="secondary" slot="close">Cancel</Button>
+      <Button variant="primary" slot="close">Accept</Button>
     </DialogFooter>
   </Dialog>
 </DialogTrigger>`;
@@ -130,10 +150,8 @@ export const dialogWithFormSnippet = `<DialogTrigger>
       </Flex>
     </DialogBody>
     <DialogFooter>
-      <Flex gap="2" justify="end">
-        <DialogClose>Cancel</DialogClose>
-        <DialogClose variant="primary">Create User</DialogClose>
-      </Flex>
+      <Button variant="secondary" slot="close">Cancel</Button>
+      <Button variant="primary" slot="close">Create User</Button>
     </DialogFooter>
   </Dialog>
 </DialogTrigger>`;
@@ -146,9 +164,9 @@ export const dialogWithNoTriggerSnippet = `const [isOpen, setIsOpen] = useState(
     Your content
   </DialogBody>
   <DialogFooter>
-    <Flex gap="2" justify="end">
-      <DialogClose>Cancel</DialogClose>
-      <DialogClose variant="primary">Create User</DialogClose>
-    </Flex>
+    <Button variant="secondary" slot="close">Cancel</Button>
+    <Button variant="primary" slot="close">Create User</Button>
   </DialogFooter>
 </Dialog>`;
+
+export const dialogCloseSnippet = `<Button slot="close">Close</Button>`;

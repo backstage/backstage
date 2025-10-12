@@ -19,13 +19,23 @@ import type {
   ModalOverlayProps as RAModalProps,
   HeadingProps as RAHeadingProps,
 } from 'react-aria-components';
-import type { ButtonProps } from '../Button';
 
 /**
  * Props for the DialogTrigger component.
  * @public
  */
 export interface DialogTriggerProps extends RADialogTriggerProps {}
+
+/**
+ * Props for the Dialog component.
+ * @public
+ */
+export interface DialogProps extends RAModalProps {
+  className?: string;
+  children?: React.ReactNode;
+  width?: number | string;
+  height?: number | string;
+}
 
 /**
  * Props for the DialogHeader component.
@@ -43,22 +53,4 @@ export interface DialogHeaderProps extends RAHeadingProps {
 export interface DialogBodyProps {
   children?: React.ReactNode;
   className?: string;
-  height?: number | string;
-}
-
-/**
- * Props for the DialogClose component.
- * @public
- */
-export interface DialogCloseProps extends Omit<ButtonProps, 'slot'> {
-  variant?: 'primary' | 'secondary' | 'tertiary';
-}
-
-/**
- * Props for the Dialog component.
- * @public
- */
-export interface DialogProps extends RAModalProps {
-  className?: string;
-  children?: React.ReactNode;
 }

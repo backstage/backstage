@@ -1,5 +1,5 @@
 /* Backdrop */
-.bui-Dialog {
+.bui-DialogOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -16,34 +16,36 @@
   background: rgba(0, 0, 0, 0.5);
 }
 
-.bui-Dialog[data-entering] {
+.bui-DialogOverlay[data-entering] {
   animation: fade-in 200ms ease-out forwards;
 }
 
-.bui-Dialog[data-exiting] {
+.bui-DialogOverlay[data-exiting] {
   animation: fade-out 150ms ease-out forwards;
 }
 
-.bui-DialogContent {
+.bui-Dialog {
   background: var(--bui-bg-surface-1);
   border-radius: 0.5rem;
   border: 1px solid var(--bui-border);
   color: var(--bui-fg-primary);
   position: relative;
-  width: 24rem;
+  width: min(var(--bui-dialog-min-width, 400px), calc(100vw - 3rem));
   max-width: calc(100vw - 3rem);
+  height: min(var(--bui-dialog-min-height, auto), calc(100vh - 3rem));
+  max-height: calc(100vh - 3rem);
   display: flex;
   flex-direction: column;
   outline: none;
 }
 
 /* Dialog entering animation */
-.bui-Dialog[data-entering] .bui-DialogContent {
+.bui-DialogOverlay[data-entering] .bui-Dialog {
   animation: dialog-enter 150ms ease-out forwards;
 }
 
 /* Dialog exiting animation */
-.bui-Dialog[data-exiting] .bui-DialogContent {
+.bui-DialogOverlay[data-exiting] .bui-Dialog {
   animation: dialog-exit 150ms ease-out forwards;
 }
 
@@ -74,6 +76,8 @@
 
 .bui-DialogBody {
   padding: var(--bui-space-3);
+  flex: 1;
+  overflow-y: auto;
 }
 
 /* Keyframe animations */

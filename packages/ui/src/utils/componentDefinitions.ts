@@ -87,8 +87,8 @@ export const componentDefinitions = {
   },
   Dialog: {
     classNames: {
-      root: 'bui-Dialog',
-      content: 'bui-DialogContent',
+      overlay: 'bui-DialogOverlay',
+      dialog: 'bui-Dialog',
       header: 'bui-DialogHeader',
       headerTitle: 'bui-DialogHeaderTitle',
       body: 'bui-DialogBody',

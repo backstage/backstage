@@ -443,8 +443,8 @@ export const componentDefinitions: {
   };
   readonly Dialog: {
     readonly classNames: {
-      readonly root: 'bui-Dialog';
-      readonly content: 'bui-DialogContent';
+      readonly overlay: 'bui-DialogOverlay';
+      readonly dialog: 'bui-Dialog';
       readonly header: 'bui-DialogHeader';
       readonly headerTitle: 'bui-DialogHeaderTitle';
       readonly body: 'bui-DialogBody';
@@ -729,19 +729,6 @@ export interface DialogBodyProps {
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
-  // (undocumented)
-  height?: number | string;
-}
-
-// @public (undocumented)
-export const DialogClose: ForwardRefExoticComponent<
-  DialogCloseProps & RefAttributes<HTMLButtonElement>
->;
-
-// @public
-export interface DialogCloseProps extends Omit<ButtonProps, 'slot'> {
-  // (undocumented)
-  variant?: 'primary' | 'secondary' | 'tertiary';
 }
 
 // @public (undocumented)
@@ -772,6 +759,10 @@ export interface DialogProps extends ModalOverlayProps {
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
+  // (undocumented)
+  height?: number | string;
+  // (undocumented)
+  width?: number | string;
 }
 
 // @public (undocumented)

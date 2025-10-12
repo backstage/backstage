@@ -20,7 +20,6 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-  DialogClose,
 } from './Dialog';
 import { Button, Flex, Text, TextField, Select } from '@backstage/ui';
 import { useArgs } from 'storybook/preview-api';
@@ -44,16 +43,20 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: args => {
     return (
-      <DialogTrigger {...args}>
+      <DialogTrigger>
         <Button variant="secondary">Open Dialog</Button>
-        <Dialog>
+        <Dialog {...args}>
           <DialogHeader>Example Dialog</DialogHeader>
           <DialogBody>
             <Text>This is a basic dialog example.</Text>
           </DialogBody>
           <DialogFooter>
-            <DialogClose>Close</DialogClose>
-            <DialogClose variant="primary">Save</DialogClose>
+            <Button variant="secondary" slot="close">
+              Close
+            </Button>
+            <Button variant="primary" slot="close">
+              Save
+            </Button>
           </DialogFooter>
         </Dialog>
       </DialogTrigger>
@@ -87,50 +90,87 @@ export const NoTrigger: Story = {
           <Text>This is a basic dialog example.</Text>
         </DialogBody>
         <DialogFooter>
-          <DialogClose>Close</DialogClose>
-          <DialogClose variant="primary">Save</DialogClose>
+          <Button variant="secondary" slot="close">
+            Close
+          </Button>
+          <Button variant="primary" slot="close">
+            Save
+          </Button>
         </DialogFooter>
       </Dialog>
     );
   },
 };
 
-export const Scrollable: Story = {
+export const FixedWidth: Story = {
   args: {
-    isOpen: true,
+    defaultOpen: true,
+    width: 600,
   },
   render: args => (
-    <DialogTrigger {...args}>
-      <Button variant="secondary">Scrollable Dialog</Button>
-      <Dialog>
+    <DialogTrigger>
+      <Button variant="secondary">Open Dialog</Button>
+      <Dialog {...args}>
         <DialogHeader>Long Content Dialog</DialogHeader>
-        <DialogBody height={200}>
-          <Text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </Text>
-          <Text>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.
-          </Text>
-          <Text>
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-            quae ab illo inventore veritatis et quasi architecto beatae vitae
-            dicta sunt explicabo.
-          </Text>
+        <DialogBody>
+          <Flex direction="column" gap="3">
+            <Text>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat.
+            </Text>
+            <Text>
+              Duis aute irure dolor in reprehenderit in voluptate velit esse
+              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+              cupidatat non proident, sunt in culpa qui officia deserunt mollit
+              anim id est laborum.
+            </Text>
+            <Text>
+              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+              accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+              quae ab illo inventore veritatis et quasi architecto beatae vitae
+              dicta sunt explicabo.
+            </Text>
+          </Flex>
         </DialogBody>
         <DialogFooter>
-          <DialogClose>Cancel</DialogClose>
-          <DialogClose variant="primary">Accept</DialogClose>
+          <Button variant="secondary" slot="close">
+            Cancel
+          </Button>
+          <Button variant="primary" slot="close">
+            Accept
+          </Button>
         </DialogFooter>
       </Dialog>
     </DialogTrigger>
   ),
+};
+
+export const FixedHeight: Story = {
+  args: {
+    defaultOpen: true,
+    height: 500,
+  },
+  render: FixedWidth.render,
+};
+
+export const FixedWidthAndHeight: Story = {
+  args: {
+    defaultOpen: true,
+    width: 600,
+    height: 400,
+  },
+  render: FixedWidth.render,
+};
+
+export const FullWidthAndHeight: Story = {
+  args: {
+    defaultOpen: true,
+    width: '100%',
+    height: '100%',
+  },
+  render: FixedWidth.render,
 };
 
 export const Confirmation: Story = {
@@ -149,8 +189,12 @@ export const Confirmation: Story = {
           </Text>
         </DialogBody>
         <DialogFooter>
-          <DialogClose>Cancel</DialogClose>
-          <DialogClose variant="primary">Delete</DialogClose>
+          <Button variant="secondary" slot="close">
+            Cancel
+          </Button>
+          <Button variant="primary" slot="close">
+            Delete
+          </Button>
         </DialogFooter>
       </Dialog>
     </DialogTrigger>
@@ -181,26 +225,30 @@ export const WithForm: Story = {
           </Flex>
         </DialogBody>
         <DialogFooter>
-          <DialogClose>Cancel</DialogClose>
-          <DialogClose variant="primary">Create User</DialogClose>
+          <Button variant="secondary" slot="close">
+            Cancel
+          </Button>
+          <Button variant="primary" slot="close">
+            Create User
+          </Button>
         </DialogFooter>
       </Dialog>
     </DialogTrigger>
   ),
 };
 
-export const PreviewScrollable: Story = {
+export const PreviewFixedWidthAndHeight: Story = {
   args: {
-    ...Scrollable.args,
-    isOpen: false,
+    defaultOpen: undefined,
+    width: 600,
+    height: 400,
   },
-  render: Scrollable.render,
+  render: FixedWidth.render,
 };
 
 export const PreviewWithForm: Story = {
   args: {
-    ...WithForm.args,
-    isOpen: false,
+    defaultOpen: undefined,
   },
   render: WithForm.render,
 };
