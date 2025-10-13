@@ -35,13 +35,20 @@ import stylesPopover from '../Popover/Popover.module.css';
 
 /** @public */
 export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
+  const { classNames: popoverClassNames } = useStyles('Popover');
+  const { classNames, dataAttributes, cleanedProps } = useStyles('Select', {
+    size: 'small',
+    placeholder: 'Select an option',
+    ...props,
+  });
+
   const {
     className,
     label,
     description,
     options,
-    placeholder = 'Select an option',
-    size = 'small',
+    placeholder,
+    size,
     icon,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
@@ -49,12 +56,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     secondaryLabel,
     style,
     ...rest
-  } = props;
-
-  const { classNames: popoverClassNames } = useStyles('Popover');
-  const { classNames, dataAttributes } = useStyles('Select', {
-    size,
-  });
+  } = cleanedProps;
 
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {

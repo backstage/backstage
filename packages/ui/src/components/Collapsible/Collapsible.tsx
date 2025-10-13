@@ -24,13 +24,13 @@ const CollapsibleRoot = forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>
 >(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Collapsible');
+  const { classNames, cleanedProps } = useStyles('Collapsible', props);
 
   return (
     <CollapsiblePrimitive.Root
       ref={ref}
       className={clsx(classNames.root, styles[classNames.root], className)}
-      {...props}
+      {...cleanedProps}
     />
   );
 });
@@ -40,7 +40,7 @@ const CollapsibleTrigger = forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Trigger>
 >(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Collapsible');
+  const { classNames, cleanedProps } = useStyles('Collapsible', props);
 
   return (
     <CollapsiblePrimitive.Trigger
@@ -50,7 +50,7 @@ const CollapsibleTrigger = forwardRef<
         styles[classNames.trigger],
         className,
       )}
-      {...props}
+      {...cleanedProps}
     />
   );
 });
@@ -60,13 +60,13 @@ const CollapsiblePanel = forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.Panel>,
   React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Panel>
 >(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Collapsible');
+  const { classNames, cleanedProps } = useStyles('Collapsible', props);
 
   return (
     <CollapsiblePrimitive.Panel
       ref={ref}
       className={clsx(classNames.panel, styles[classNames.panel], className)}
-      {...props}
+      {...cleanedProps}
     />
   );
 });

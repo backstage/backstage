@@ -30,6 +30,7 @@ import type { RadioGroupProps, RadioProps } from './types';
 /** @public */
 export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
   (props, ref) => {
+    const { classNames, cleanedProps } = useStyles('RadioGroup', props);
     const {
       className,
       label,
@@ -40,9 +41,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
       'aria-labelledby': ariaLabelledBy,
       children,
       ...rest
-    } = props;
-
-    const { classNames } = useStyles('RadioGroup');
+    } = cleanedProps;
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {

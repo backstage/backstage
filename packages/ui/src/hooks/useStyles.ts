@@ -59,15 +59,18 @@ function resolveResponsiveValue(
  * @param props - All component props
  * @returns Object with classNames, dataAttributes, utilityClasses, style, and cleanedProps
  */
-export function useStyles<T extends ComponentDefinitionName>(
+export function useStyles<
+  T extends ComponentDefinitionName,
+  P extends Record<string, any> = Record<string, any>,
+>(
   componentName: T,
-  props: Record<string, any> = {},
+  props: P = {} as P,
 ): {
   classNames: ComponentClassNames<T>;
   dataAttributes: Record<string, string>;
   utilityClasses: string;
   style: React.CSSProperties;
-  cleanedProps: Record<string, any>;
+  cleanedProps: P;
 } {
   const { breakpoint } = useBreakpoint();
   const componentDefinition = componentDefinitions[componentName];
@@ -168,26 +171,28 @@ export function useStyles<T extends ComponentDefinitionName>(
     }
   }
 
-  // Create cleaned props by excluding data attributes, utility props, and style
-  // Component-specific props like 'as' and 'children' remain in cleanedProps
-  const processedKeys = new Set([
-    ...dataAttributeNames,
-    ...utilityPropNames,
-    'style',
-  ]);
+  // Create cleaned props by excluding only utility props
+  // All other props (including data attributes, style, children, etc.) remain
+  const utilityPropsSet = new Set<string>(utilityPropNames);
 
-  const cleanedProps = Object.keys(props).reduce((acc, key) => {
-    if (!processedKeys.has(key)) {
+  const cleanedPropsBase = Object.keys(props).reduce((acc, key) => {
+    if (!utilityPropsSet.has(key)) {
       acc[key] = props[key];
     }
     return acc;
-  }, {} as Record<string, any>);
+  }, {} as any);
 
   // Merge incoming style with generated styles (incoming styles take precedence)
   const mergedStyle = {
     ...generatedStyle,
     ...incomingStyle,
   };
+
+  // Add merged style to cleanedProps
+  const cleanedProps = {
+    ...cleanedPropsBase,
+    style: mergedStyle,
+  } as P;
 
   return {
     classNames,

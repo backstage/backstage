@@ -84,14 +84,15 @@ export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
 
 /** @public */
 export const Menu = (props: MenuProps<object>) => {
+  const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
     placement = 'bottom start',
     virtualized = false,
     maxWidth,
     maxHeight,
     ...rest
-  } = props;
-  const { classNames } = useStyles('Menu');
+  } = cleanedProps;
+
   const navigate = useNavigate();
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -159,6 +160,7 @@ export const Menu = (props: MenuProps<object>) => {
 
 /** @public */
 export const MenuListBox = (props: MenuListBoxProps<object>) => {
+  const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
     selectionMode = 'single',
     placement = 'bottom start',
@@ -166,8 +168,7 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
     maxWidth,
     maxHeight,
     ...rest
-  } = props;
-  const { classNames } = useStyles('Menu');
+  } = cleanedProps;
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const listBoxContent = (
@@ -202,14 +203,14 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
 
 /** @public */
 export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
+  const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
     placement = 'bottom start',
     virtualized = false,
     maxWidth,
     maxHeight,
     ...rest
-  } = props;
-  const { classNames } = useStyles('Menu');
+  } = cleanedProps;
   const { contains } = useFilter({ sensitivity: 'base' });
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
   const navigate = useNavigate();
@@ -275,6 +276,7 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
 export const MenuAutocompleteListbox = (
   props: MenuAutocompleteListBoxProps<object>,
 ) => {
+  const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
     selectionMode = 'single',
     placement = 'bottom start',
@@ -282,8 +284,7 @@ export const MenuAutocompleteListbox = (
     maxWidth,
     maxHeight,
     ...rest
-  } = props;
-  const { classNames } = useStyles('Menu');
+  } = cleanedProps;
   const { contains } = useFilter({ sensitivity: 'base' });
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
@@ -345,8 +346,14 @@ export const MenuAutocompleteListbox = (
 
 /** @public */
 export const MenuItem = (props: MenuItemProps) => {
-  const { iconStart, color = 'primary', children, href, ...rest } = props;
-  const { classNames } = useStyles('Menu');
+  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const {
+    iconStart,
+    color = 'primary',
+    children,
+    href,
+    ...rest
+  } = cleanedProps;
 
   const isLink = href !== undefined;
   const isExternal = isExternalLink(href);
@@ -417,8 +424,8 @@ export const MenuItem = (props: MenuItemProps) => {
 
 /** @public */
 export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
-  const { children, ...rest } = props;
-  const { classNames } = useStyles('Menu');
+  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { children, ...rest } = cleanedProps;
 
   return (
     <RAListBoxItem
@@ -454,12 +461,13 @@ export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
 
 /** @public */
 export const MenuSection = (props: MenuSectionProps<object>) => {
-  const { classNames } = useStyles('Menu');
+  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { children, title, ...rest } = cleanedProps;
 
   return (
     <RAMenuSection
       className={clsx(classNames.section, styles[classNames.section])}
-      {...props}
+      {...rest}
     >
       <RAMenuHeader
         className={clsx(
@@ -467,21 +475,21 @@ export const MenuSection = (props: MenuSectionProps<object>) => {
           styles[classNames.sectionHeader],
         )}
       >
-        {props.title}
+        {title}
       </RAMenuHeader>
-      {props.children}
+      {children}
     </RAMenuSection>
   );
 };
 
 /** @public */
 export const MenuSeparator = (props: MenuSeparatorProps) => {
-  const { classNames } = useStyles('Menu');
+  const { classNames, cleanedProps } = useStyles('Menu', props);
 
   return (
     <RAMenuSeparator
       className={clsx(classNames.separator, styles[classNames.separator])}
-      {...props}
+      {...cleanedProps}
     />
   );
 };

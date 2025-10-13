@@ -21,8 +21,13 @@ import clsx from 'clsx';
 
 /** @public */
 export const Skeleton = (props: SkeletonProps) => {
-  const { width = 80, height = 24, rounded = false, ...rest } = props;
-  const { classNames } = useStyles('Skeleton');
+  const { classNames, cleanedProps } = useStyles('Skeleton', {
+    width: 80,
+    height: 24,
+    rounded: false,
+    ...props,
+  });
+  const { width, height, rounded, style, ...rest } = cleanedProps;
 
   return (
     <div
@@ -31,6 +36,7 @@ export const Skeleton = (props: SkeletonProps) => {
       style={{
         width,
         height,
+        ...style,
       }}
       {...rest}
     />

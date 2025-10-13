@@ -27,23 +27,19 @@ import stylesText from '../Text/Text.module.css';
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const navigate = useNavigate();
+  const { classNames: classNamesLink } = useStyles('Link', props);
   const {
-    className,
-    variant = 'body',
-    weight = 'regular',
-    color = 'primary',
-    truncate,
-    href,
-    ...restProps
-  } = props;
-
-  const { classNames: linkClassNames } = useStyles('Link');
-  const { classNames: textClassNames, dataAttributes: textDataAttributes } =
-    useStyles('Text', {
-      variant,
-      weight,
-      color,
-    });
+    classNames: classNamesText,
+    dataAttributes: textDataAttributes,
+    cleanedProps,
+  } = useStyles('Text', {
+    variant: 'body',
+    weight: 'regular',
+    color: 'primary',
+    ...props,
+  });
+  const { className, variant, weight, color, truncate, href, ...restProps } =
+    cleanedProps;
 
   const isExternal = isExternalLink(href);
 
@@ -53,10 +49,10 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       <AriaLink
         ref={ref}
         className={clsx(
-          textClassNames.root,
-          linkClassNames.root,
-          stylesText[textClassNames.root],
-          stylesLink[linkClassNames.root],
+          classNamesText.root,
+          classNamesLink.root,
+          stylesText[classNamesText.root],
+          stylesLink[classNamesLink.root],
           className,
         )}
         data-truncate={truncate}
@@ -73,10 +69,10 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       <AriaLink
         ref={ref}
         className={clsx(
-          textClassNames.root,
-          linkClassNames.root,
-          stylesText[textClassNames.root],
-          stylesLink[linkClassNames.root],
+          classNamesText.root,
+          classNamesLink.root,
+          stylesText[classNamesText.root],
+          stylesLink[classNamesLink.root],
           className,
         )}
         data-truncate={truncate}

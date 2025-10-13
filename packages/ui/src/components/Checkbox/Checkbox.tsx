@@ -25,31 +25,19 @@ import styles from './Checkbox.module.css';
 /** @public */
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
   (props, ref) => {
-    const {
-      label,
-      checked,
-      onChange,
-      disabled,
-      required,
-      className,
-      name,
-      value,
-      style,
-    } = props;
+    const { classNames, cleanedProps } = useStyles('Checkbox', props);
 
-    const { classNames } = useStyles('Checkbox');
+    const { label, onChange, className, ...rest } = props;
+
+    console.log('props', props);
+    console.log('cleanedProps', cleanedProps);
 
     const checkboxElement = (
       <CheckboxPrimitive.Root
         ref={ref}
         className={clsx(classNames.root, styles[classNames.root], className)}
-        checked={checked}
         onCheckedChange={onChange}
-        disabled={disabled}
-        required={required}
-        name={name}
-        value={value}
-        style={style}
+        {...rest}
       >
         <CheckboxPrimitive.Indicator
           className={clsx(classNames.indicator, styles[classNames.indicator])}

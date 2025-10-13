@@ -15,7 +15,6 @@
  */
 
 import { forwardRef } from 'react';
-import { ScrollArea } from '../ScrollArea';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import type {
@@ -32,8 +31,8 @@ import styles from './Card.module.css';
  * @public
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
-  const { className, ...rest } = props;
-  const { classNames } = useStyles('Card');
+  const { classNames, cleanedProps } = useStyles('Card', props);
+  const { className, ...rest } = cleanedProps;
 
   return (
     <div
@@ -51,8 +50,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
  */
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
   (props, ref) => {
-    const { className, ...rest } = props;
-    const { classNames } = useStyles('Card');
+    const { classNames, cleanedProps } = useStyles('Card', props);
+    const { className, ...rest } = cleanedProps;
 
     return (
       <div
@@ -75,25 +74,15 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
  */
 export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
   (props, ref) => {
-    const { children, className, ...rest } = props;
-    const { classNames } = useStyles('Card');
+    const { classNames, cleanedProps } = useStyles('Card', props);
+    const { className, ...rest } = cleanedProps;
 
     return (
-      <ScrollArea.Root
+      <div
         ref={ref}
         className={clsx(classNames.body, styles[classNames.body], className)}
         {...rest}
-      >
-        <ScrollArea.Viewport style={{ paddingInline: 'var(--bui-space-3)' }}>
-          {children}
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar
-          orientation="vertical"
-          style={{ margin: '0 0.25rem' }}
-        >
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+      />
     );
   },
 );
@@ -105,8 +94,8 @@ export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
  */
 export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
   (props, ref) => {
-    const { className, ...rest } = props;
-    const { classNames } = useStyles('Card');
+    const { classNames, cleanedProps } = useStyles('Card', props);
+    const { className, ...rest } = cleanedProps;
 
     return (
       <div

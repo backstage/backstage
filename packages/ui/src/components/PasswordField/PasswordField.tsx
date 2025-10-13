@@ -47,14 +47,18 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const { classNames: textFieldClassNames } = useStyles('TextField', {});
+    const { classNames: textFieldClassNames } = useStyles('TextField');
 
     const {
-      classNames: passwordFieldClassNames,
+      classNames: classNamesPasswordField,
       dataAttributes,
-      style,
       cleanedProps,
     } = useStyles('PasswordField', {
+      size: 'small',
+      ...props,
+    });
+
+    console.log({
       size: 'small',
       ...props,
     });
@@ -79,15 +83,14 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
     return (
       <AriaTextField
         className={clsx(
-          passwordFieldClassNames.root,
-          stylesPasswordField[passwordFieldClassNames.root],
+          classNamesPasswordField.root,
+          stylesPasswordField[classNamesPasswordField.root],
           className,
         )}
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         type="password"
-        style={style}
         {...rest}
         ref={ref}
       >
@@ -129,8 +132,8 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
               aria-expanded={isVisible}
               onPress={() => setIsVisible(v => !v)}
               className={clsx(
-                passwordFieldClassNames.inputVisibility,
-                stylesPasswordField[passwordFieldClassNames.inputVisibility],
+                classNamesPasswordField.inputVisibility,
+                stylesPasswordField[classNamesPasswordField.inputVisibility],
               )}
             >
               {isVisible ? <RiEyeLine /> : <RiEyeOffLine />}

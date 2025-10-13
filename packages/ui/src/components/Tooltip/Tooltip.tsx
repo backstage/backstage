@@ -35,8 +35,9 @@ export const TooltipTrigger = (props: TooltipTriggerComponentProps) => {
 
 /** @public */
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
-  ({ className, children, ...rest }, ref) => {
-    const { classNames } = useStyles('Tooltip');
+  (props, ref) => {
+    const { classNames, cleanedProps } = useStyles('Tooltip', props);
+    const { className, children, ...rest } = cleanedProps;
 
     return (
       <AriaTooltip

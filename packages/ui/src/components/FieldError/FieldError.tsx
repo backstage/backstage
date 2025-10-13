@@ -26,9 +26,8 @@ import { useStyles } from '../../hooks/useStyles';
 /** @public */
 export const FieldError = forwardRef<HTMLDivElement, FieldErrorProps>(
   (props: FieldErrorProps, ref) => {
-    const { className, ...rest } = props;
-
-    const { classNames } = useStyles('FieldError');
+    const { classNames, cleanedProps } = useStyles('FieldError', props);
+    const { className, ...rest } = cleanedProps;
 
     return (
       <AriaFieldError

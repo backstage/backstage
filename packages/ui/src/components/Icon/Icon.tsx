@@ -23,7 +23,8 @@ import styles from './Icon.module.css';
 
 /** @public */
 export const Icon = (props: IconProps) => {
-  const { name, size, className, style, ...restProps } = props;
+  const { classNames, cleanedProps } = useStyles('Icon', props);
+  const { name, size, className, style, ...restProps } = cleanedProps;
   const { icons } = useIcons();
 
   const BckstageIcon = icons[name] as ComponentType<Omit<IconProps, 'name'>>;
@@ -32,8 +33,6 @@ export const Icon = (props: IconProps) => {
     console.error(`Icon "${name}" not found or is not a valid component.`);
     return null;
   }
-
-  const { classNames } = useStyles('Icon');
 
   return (
     <BckstageIcon
