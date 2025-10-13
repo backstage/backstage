@@ -145,7 +145,6 @@ export type TestAppOptions = {
     [path: string]: RouteRef;
   };
   config?: JsonObject;
-  extensions?: ExtensionDefinition<any>[];
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
 };

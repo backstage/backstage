@@ -68,13 +68,6 @@ export type TestAppOptions = {
   config?: JsonObject;
 
   /**
-   * Additional extensions to add to the test app.
-   *
-   * @deprecated Use `renderTestApp` instead.
-   */
-  extensions?: ExtensionDefinition<any>[];
-
-  /**
    * Additional features to add to the test app.
    */
   features?: FrontendFeature[];
@@ -193,10 +186,6 @@ export function renderInTestApp(
         }),
       );
     }
-  }
-
-  if (options?.extensions) {
-    extensions.push(...options.extensions);
   }
 
   const features: FrontendFeature[] = [
