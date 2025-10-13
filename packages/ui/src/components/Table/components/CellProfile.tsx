@@ -25,16 +25,15 @@ import styles from '../Table.module.css';
 
 /** @public */
 export const CellProfile = (props: CellProfileProps) => {
-  const {
-    className,
-    src,
-    name,
-    href,
-    description,
-    color = 'primary',
-    ...rest
-  } = props;
-  const { classNames } = useStyles('Table');
+  const { classNames, cleanedProps } = useStyles<'Table', CellProfileProps>(
+    'Table',
+    {
+      color: 'primary',
+      ...props,
+    },
+  );
+  const { className, src, name, href, description, color, ...rest } =
+    cleanedProps;
 
   return (
     <ReactAriaCell

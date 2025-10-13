@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import {
-  Column as ReactAriaColumn,
-  type ColumnProps,
-} from 'react-aria-components';
+import { Column as ReactAriaColumn } from 'react-aria-components';
 import { Icon } from '../../Icon';
 import { useStyles } from '../../../hooks/useStyles';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
+import { ColumnProps } from '../types';
 
 /** @public */
-export const Column = (
-  props: Omit<ColumnProps, 'children'> & { children?: React.ReactNode },
-) => {
-  const { classNames } = useStyles('Table');
+export const Column = (props: ColumnProps) => {
+  const { classNames, cleanedProps } = useStyles<'Table', ColumnProps>(
+    'Table',
+    props,
+  );
+  const { children, ...rest } = cleanedProps;
 
   return (
     <ReactAriaColumn
       className={clsx(classNames.head, styles[classNames.head])}
-      {...props}
+      {...rest}
     >
       {({ allowsSorting, sortDirection }) => (
         <div
@@ -41,7 +41,7 @@ export const Column = (
             styles[classNames.headContent],
           )}
         >
-          {props.children}
+          {children}
           {allowsSorting && (
             <span
               aria-hidden="true"

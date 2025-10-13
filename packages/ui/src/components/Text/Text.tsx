@@ -34,14 +34,13 @@ function TextComponent<T extends ElementType = 'span'>(
     ...props,
   });
 
-  const { className, style, ...restProps } = cleanedProps;
+  const { className, ...restProps } = cleanedProps;
 
   return (
     <Component
       ref={ref}
       className={clsx(classNames.root, styles[classNames.root], className)}
       {...dataAttributes}
-      style={style}
       {...restProps}
     />
   );

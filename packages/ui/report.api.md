@@ -7,7 +7,7 @@ import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
-import { ColumnProps } from 'react-aria-components';
+import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
@@ -341,11 +341,13 @@ export const Collapsible: {
 };
 
 // @public (undocumented)
-export const Column: (
-  props: Omit<ColumnProps, 'children'> & {
-    children?: React.ReactNode;
-  },
-) => JSX_2.Element;
+export const Column: (props: ColumnProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface ColumnProps extends Omit<ColumnProps_2, 'children'> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
 
 // @public (undocumented)
 export type Columns =
@@ -1534,13 +1536,7 @@ export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
 };
 
 // @public (undocumented)
-export function Row<T extends object>({
-  id,
-  columns,
-  children,
-  href,
-  ...otherProps
-}: RowProps<T>): JSX_2.Element;
+export function Row<T extends object>(props: RowProps<T>): JSX_2.Element;
 
 // @public (undocumented)
 export const ScrollArea: {
@@ -1704,10 +1700,9 @@ export const TableBody: <T extends object>(
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export const TableHeader: <T extends object>({
-  columns,
-  children,
-}: TableHeaderProps<T>) => JSX_2.Element;
+export const TableHeader: <T extends object>(
+  props: TableHeaderProps<T>,
+) => JSX_2.Element;
 
 // @public
 export function TablePagination(props: TablePaginationProps): JSX_2.Element;
@@ -1765,12 +1760,9 @@ export interface TabsProps extends TabsProps_2 {}
 export const Tag: (props: TagProps) => JSX_2.Element;
 
 // @public
-export const TagGroup: <T extends object>({
-  items,
-  children,
-  renderEmptyState,
-  ...props
-}: TagGroupProps<T>) => JSX_2.Element;
+export const TagGroup: <T extends object>(
+  props: TagGroupProps<T>,
+) => JSX_2.Element;
 
 // @public
 export interface TagGroupProps<T>

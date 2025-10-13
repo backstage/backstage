@@ -35,17 +35,14 @@ import styles from './TagGroup.module.css';
  *
  * @public
  */
-export const TagGroup = <T extends object>({
-  items,
-  children,
-  renderEmptyState,
-  ...props
-}: TagGroupProps<T>) => {
-  const { classNames } = useStyles('TagGroup');
+export const TagGroup = <T extends object>(props: TagGroupProps<T>) => {
+  const { classNames, cleanedProps } = useStyles('TagGroup', props);
+  const { items, children, renderEmptyState, ...rest } = cleanedProps;
+
   return (
     <ReactAriaTagGroup
       className={clsx(classNames.group, styles[classNames.group])}
-      {...props}
+      {...rest}
     >
       <ReactAriaTagList
         className={clsx(classNames.list, styles[classNames.list])}
@@ -64,9 +61,12 @@ export const TagGroup = <T extends object>({
  * @public
  */
 export const Tag = (props: TagProps) => {
-  const { children, className, icon, size = 'small', href, ...rest } = props;
+  const { classNames, cleanedProps } = useStyles('TagGroup', {
+    size: 'small',
+    ...props,
+  });
+  const { children, className, icon, size, href, ...rest } = cleanedProps;
   const textValue = typeof children === 'string' ? children : undefined;
-  const { classNames } = useStyles('TagGroup');
   const navigate = useNavigate();
   const isLink = href !== undefined;
   const isExternal = isExternalLink(href);

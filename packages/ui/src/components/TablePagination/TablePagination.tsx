@@ -26,6 +26,10 @@ import styles from './TablePagination.module.css';
  * @public
  */
 export function TablePagination(props: TablePaginationProps) {
+  const { classNames, cleanedProps } = useStyles('TablePagination', {
+    showPageSizeOptions: true,
+    ...props,
+  });
   const {
     className,
     offset,
@@ -36,11 +40,9 @@ export function TablePagination(props: TablePaginationProps) {
     onPageSizeChange,
     setOffset,
     setPageSize,
-    showPageSizeOptions = true,
+    showPageSizeOptions,
     ...rest
-  } = props;
-
-  const { classNames } = useStyles('TablePagination');
+  } = cleanedProps;
 
   const currentOffset = offset ?? 0;
   const currentPageSize = pageSize ?? 10;

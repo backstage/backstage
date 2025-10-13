@@ -24,17 +24,12 @@ import styles from '../Table.module.css';
 
 /** @public */
 const Cell = (props: CellProps) => {
-  const {
-    className,
-    title,
-    description,
-    color = 'primary',
-    leadingIcon,
-    href,
-    ...rest
-  } = props;
-
-  const { classNames } = useStyles('Table');
+  const { classNames, cleanedProps } = useStyles<'Table', CellProps>('Table', {
+    color: 'primary',
+    ...props,
+  });
+  const { className, title, description, color, leadingIcon, href, ...rest } =
+    cleanedProps;
 
   return (
     <ReactAriaCell
