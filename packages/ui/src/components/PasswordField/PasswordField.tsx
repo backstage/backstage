@@ -32,17 +32,9 @@ import { RiEyeLine, RiEyeOffLine } from '@remixicon/react';
 export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
   (props, ref) => {
     const {
-      className,
-      icon,
-      size = 'small',
       label,
-      secondaryLabel,
-      description,
-      isRequired,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
-      placeholder,
-      ...rest
     } = props;
 
     useEffect(() => {
@@ -53,14 +45,27 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const { classNames: passwordFieldClassNames, dataAttributes } = useStyles(
-      'PasswordField',
-      {
-        size,
-      },
-    );
-
     const { classNames: textFieldClassNames } = useStyles('TextField', {});
+
+    const {
+      classNames: passwordFieldClassNames,
+      dataAttributes,
+      style,
+      cleanedProps,
+    } = useStyles('PasswordField', {
+      size: 'small',
+      ...props,
+    });
+
+    const {
+      className,
+      description,
+      icon,
+      isRequired,
+      secondaryLabel,
+      placeholder,
+      ...rest
+    } = cleanedProps;
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -76,6 +81,7 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         type="password"
+        style={style}
         {...rest}
         ref={ref}
       >

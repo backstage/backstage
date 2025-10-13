@@ -17,7 +17,6 @@
 import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
 import { Icon } from '../Icon';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -161,71 +160,4 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
-};
-
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
-export const Playground: Story = {
-  args: {
-    children: 'Button',
-  },
-  render: () => (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {sizes.map(size => (
-            <Flex align="center" key={size}>
-              <ButtonLink variant={variant} size={size}>
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconStart={<Icon name="cloud" />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconEnd={<Icon name="chevron-right" />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconStart={<Icon name="cloud" />}
-                iconEnd={<Icon name="chevron-right" />}
-                style={{ width: '200px' }}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </ButtonLink>
-              <ButtonLink variant={variant} size={size} isDisabled>
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconStart={<Icon name="cloud" />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconEnd={<Icon name="chevron-right" />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </ButtonLink>
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  ),
 };

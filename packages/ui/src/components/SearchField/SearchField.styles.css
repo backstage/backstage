@@ -25,7 +25,7 @@
       }
     }
 
-    &[data-start-collapsed='true'] {
+    &[data-startCollapsed='true'] {
       transition: flex-basis 0.3s ease-in-out;
       padding: 0;
       flex: 0 1 auto;

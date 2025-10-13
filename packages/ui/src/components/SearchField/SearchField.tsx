@@ -32,19 +32,9 @@ import type { SearchFieldProps } from './types';
 export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
   (props, ref) => {
     const {
-      className,
-      icon,
-      size = 'small',
       label,
-      secondaryLabel,
-      description,
-      isRequired,
-      onChange,
-      placeholder = 'Search',
-      startCollapsed = false,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
-      ...rest
     } = props;
 
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -58,14 +48,30 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const { classNames: textFieldClassNames, dataAttributes } = useStyles(
-      'TextField',
-      {
-        size,
-      },
-    );
+    const { classNames: textFieldClassNames } = useStyles('TextField');
 
-    const { classNames: searchFieldClassNames } = useStyles('SearchField', {});
+    const {
+      classNames: searchFieldClassNames,
+      dataAttributes,
+      style,
+      cleanedProps,
+    } = useStyles('SearchField', {
+      size: 'small',
+      placeholder: 'Search',
+      startCollapsed: false,
+      ...props,
+    });
+
+    const {
+      className,
+      description,
+      icon,
+      isRequired,
+      secondaryLabel,
+      placeholder,
+      startCollapsed,
+      ...rest
+    } = cleanedProps;
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -101,10 +107,10 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
-        data-start-collapsed={startCollapsed}
         data-collapsed={isCollapsed}
         onFocusChange={handleClick}
         onChange={handleChange}
+        style={style}
         {...rest}
         ref={ref}
       >

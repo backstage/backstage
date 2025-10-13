@@ -35,6 +35,30 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-Box',
     },
+    utilityProps: [
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+      'position',
+      'display',
+      'width',
+      'minWidth',
+      'maxWidth',
+      'height',
+      'minHeight',
+      'maxHeight',
+    ],
   },
   Button: {
     classNames: {
@@ -84,6 +108,7 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-Container',
     },
+    utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'],
   },
   Dialog: {
     classNames: {
@@ -107,12 +132,55 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-Flex',
     },
+    utilityProps: [
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+      'gap',
+      'align',
+      'justify',
+      'direction',
+    ],
   },
   Grid: {
     classNames: {
       root: 'bui-Grid',
-      item: 'bui-GridItem',
     },
+    utilityProps: [
+      'columns',
+      'gap',
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+    ],
+  },
+  GridItem: {
+    classNames: {
+      root: 'bui-GridItem',
+    },
+    utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
   },
   Header: {
     classNames: {
@@ -190,6 +258,9 @@ export const componentDefinitions = {
       root: 'bui-PasswordField',
       inputVisibility: 'bui-InputVisibility',
     },
+    dataAttributes: {
+      size: ['small', 'medium'] as const,
+    },
   },
   Popover: {
     classNames: {
@@ -218,6 +289,7 @@ export const componentDefinitions = {
     },
     dataAttributes: {
       startCollapsed: [true, false] as const,
+      size: ['small', 'medium'] as const,
     },
   },
   Select: {
@@ -308,6 +380,7 @@ export const componentDefinitions = {
     dataAttributes: {
       invalid: [true, false] as const,
       disabled: [true, false] as const,
+      size: ['small', 'medium'] as const,
     },
   },
   Tooltip: {

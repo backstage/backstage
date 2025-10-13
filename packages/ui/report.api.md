@@ -108,43 +108,33 @@ export const Box: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export type BoxOwnProps = GetPropDefTypes<typeof boxPropDefs>;
-
-// @public (undocumented)
-export const boxPropDefs: {
-  as: {
-    type: 'enum';
-    values: readonly ['div', 'span'];
-    default: 'div';
-  };
-};
-
-// @public (undocumented)
 export interface BoxProps extends SpaceProps {
   // (undocumented)
-  as?: BoxOwnProps['as'];
+  as?: keyof JSX.IntrinsicElements;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  display?: DisplayProps['display'];
+  display?: Responsive<'none' | 'flex' | 'block' | 'inline'>;
   // (undocumented)
-  height?: HeightProps['height'];
+  height?: Responsive<string>;
   // (undocumented)
-  maxHeight?: HeightProps['maxHeight'];
+  maxHeight?: Responsive<string>;
   // (undocumented)
-  maxWidth?: WidthProps['maxWidth'];
+  maxWidth?: Responsive<string>;
   // (undocumented)
-  minHeight?: HeightProps['minHeight'];
+  minHeight?: Responsive<string>;
   // (undocumented)
-  minWidth?: WidthProps['minWidth'];
+  minWidth?: Responsive<string>;
   // (undocumented)
-  position?: PositionProps['position'];
+  position?: Responsive<
+    'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
+  >;
   // (undocumented)
   style?: React.CSSProperties;
   // (undocumented)
-  width?: WidthProps['width'];
+  width?: Responsive<string>;
 }
 
 // @public (undocumented)
@@ -358,7 +348,20 @@ export const Column: (
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
+export type Columns =
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '10'
+  | '11'
+  | '12'
+  | 'auto';
 
 // @public
 export type ComponentClassNames<T extends ComponentDefinitionName> =
@@ -370,6 +373,8 @@ export interface ComponentDefinition {
   classNames: ClassNamesMap;
   // (undocumented)
   dataAttributes?: DataAttributesMap;
+  // (undocumented)
+  utilityProps?: string[];
 }
 
 // @public
@@ -391,6 +396,30 @@ export const componentDefinitions: {
     readonly classNames: {
       readonly root: 'bui-Box';
     };
+    readonly utilityProps: [
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+      'position',
+      'display',
+      'width',
+      'minWidth',
+      'maxWidth',
+      'height',
+      'minHeight',
+      'maxHeight',
+    ];
   };
   readonly Button: {
     readonly classNames: {
@@ -440,6 +469,7 @@ export const componentDefinitions: {
     readonly classNames: {
       readonly root: 'bui-Container';
     };
+    readonly utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'];
   };
   readonly Dialog: {
     readonly classNames: {
@@ -463,12 +493,55 @@ export const componentDefinitions: {
     readonly classNames: {
       readonly root: 'bui-Flex';
     };
+    readonly utilityProps: [
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+      'gap',
+      'align',
+      'justify',
+      'direction',
+    ];
   };
   readonly Grid: {
     readonly classNames: {
       readonly root: 'bui-Grid';
-      readonly item: 'bui-GridItem';
     };
+    readonly utilityProps: [
+      'columns',
+      'gap',
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+    ];
+  };
+  readonly GridItem: {
+    readonly classNames: {
+      readonly root: 'bui-GridItem';
+    };
+    readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
   };
   readonly Header: {
     readonly classNames: {
@@ -546,6 +619,9 @@ export const componentDefinitions: {
       readonly root: 'bui-PasswordField';
       readonly inputVisibility: 'bui-InputVisibility';
     };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium'];
+    };
   };
   readonly Popover: {
     readonly classNames: {
@@ -574,6 +650,7 @@ export const componentDefinitions: {
     };
     readonly dataAttributes: {
       readonly startCollapsed: readonly [true, false];
+      readonly size: readonly ['small', 'medium'];
     };
   };
   readonly Select: {
@@ -670,6 +747,7 @@ export const componentDefinitions: {
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
       readonly disabled: readonly [true, false];
+      readonly size: readonly ['small', 'medium'];
     };
   };
   readonly Tooltip: {
@@ -826,44 +904,19 @@ export const Flex: ForwardRefExoticComponent<
 export type FlexDirection = 'row' | 'column';
 
 // @public (undocumented)
-export type FlexOwnProps = GetPropDefTypes<typeof flexPropDefs>;
-
-// @public (undocumented)
-export const flexPropDefs: {
-  align: {
-    type: 'enum';
-    className: string;
-    values: readonly ['start', 'center', 'end', 'baseline', 'stretch'];
-    responsive: true;
-  };
-  direction: {
-    type: 'enum';
-    className: string;
-    values: readonly ['row', 'column', 'row-reverse', 'column-reverse'];
-    responsive: true;
-  };
-  justify: {
-    type: 'enum';
-    className: string;
-    values: readonly ['start', 'center', 'end', 'between'];
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
 export interface FlexProps extends SpaceProps {
   // (undocumented)
-  align?: FlexOwnProps['align'];
+  align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
-  children: React.ReactNode;
+  children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  direction?: FlexOwnProps['direction'];
+  direction?: Responsive<'row' | 'column' | 'row-reverse' | 'column-reverse'>;
   // (undocumented)
-  gap?: GapProps['gap'];
+  gap?: Responsive<Space>;
   // (undocumented)
-  justify?: FlexOwnProps['justify'];
+  justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -923,142 +976,22 @@ export const Grid: {
 };
 
 // @public (undocumented)
-export type GridItemOwnProps = GetPropDefTypes<typeof gridItemPropDefs>;
-
-// @public (undocumented)
-export const gridItemPropDefs: {
-  colSpan: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--col-span'[];
-    values: readonly [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      '10',
-      '11',
-      '12',
-      'auto',
-    ];
-    responsive: true;
-  };
-  colEnd: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--col-end'[];
-    values: readonly [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      '10',
-      '11',
-      '12',
-      'auto',
-    ];
-    responsive: true;
-  };
-  colStart: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--col-start'[];
-    values: readonly [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      '10',
-      '11',
-      '12',
-      'auto',
-    ];
-    responsive: true;
-  };
-  rowSpan: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--row-span'[];
-    values: readonly [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      '10',
-      '11',
-      '12',
-      'auto',
-    ];
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  colEnd?: GridItemOwnProps['colEnd'];
+  colEnd?: Responsive<Columns>;
   // (undocumented)
-  colSpan?: GridItemOwnProps['colSpan'];
+  colSpan?: Responsive<Columns>;
   // (undocumented)
-  colStart?: GridItemOwnProps['colStart'];
+  colStart?: Responsive<Columns>;
   // (undocumented)
-  rowSpan?: GridItemOwnProps['rowSpan'];
+  rowSpan?: Responsive<Columns>;
   // (undocumented)
   style?: React.CSSProperties;
 }
-
-// @public (undocumented)
-export type GridOwnProps = GetPropDefTypes<typeof gridPropDefs>;
-
-// @public (undocumented)
-export const gridPropDefs: {
-  columns: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--columns'[];
-    values: readonly [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      '10',
-      '11',
-      '12',
-      'auto',
-    ];
-    responsive: true;
-    default: string;
-  };
-};
 
 // @public (undocumented)
 export interface GridProps extends SpaceProps {
@@ -1067,9 +1000,9 @@ export interface GridProps extends SpaceProps {
   // (undocumented)
   className?: string;
   // (undocumented)
-  columns?: GridOwnProps['columns'];
+  columns?: Responsive<Columns>;
   // (undocumented)
-  gap?: GapProps['gap'];
+  gap?: Responsive<Space>;
   // (undocumented)
   style?: React.CSSProperties;
 }

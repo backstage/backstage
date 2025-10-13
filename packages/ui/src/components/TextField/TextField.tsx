@@ -27,17 +27,9 @@ import { useStyles } from '../../hooks/useStyles';
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
   (props, ref) => {
     const {
-      className,
-      icon,
-      size = 'small',
       label,
-      secondaryLabel,
-      description,
-      isRequired,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
-      placeholder,
-      ...rest
     } = props;
 
     useEffect(() => {
@@ -48,9 +40,23 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const { classNames, dataAttributes } = useStyles('TextField', {
-      size,
-    });
+    const { classNames, dataAttributes, style, cleanedProps } = useStyles(
+      'TextField',
+      {
+        size: 'small',
+        ...props,
+      },
+    );
+
+    const {
+      className,
+      description,
+      icon,
+      isRequired,
+      secondaryLabel,
+      placeholder,
+      ...rest
+    } = cleanedProps;
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -62,6 +68,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
+        style={style}
         {...rest}
         ref={ref}
       >

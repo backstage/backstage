@@ -14,50 +14,45 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
-import { gapPropDefs } from '../../props/gap-props';
-import { extractProps } from '../../utils/extractProps';
-import { gridItemPropDefs, gridPropDefs } from './Grid.props';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
-import { spacingPropDefs } from '../../props/spacing.props';
 import { useStyles } from '../../hooks/useStyles';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const propDefs = {
-    ...gapPropDefs,
-    ...gridPropDefs,
-    ...spacingPropDefs,
-  };
+  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+    'Grid',
+    { columns: 'auto', gap: '4', ...props },
+  );
 
-  const { classNames } = useStyles('Grid');
+  const { className, ...rest } = cleanedProps;
 
-  const { className, style, dataProps } = extractProps(props, propDefs);
-
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.root, className),
-    ...dataProps,
-    style,
-    children: props.children,
-  });
+  return (
+    <div
+      ref={ref}
+      className={clsx(classNames.root, utilityClasses, className)}
+      style={style}
+      {...rest}
+    />
+  );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const propDefs = {
-    ...gridItemPropDefs,
-  };
+  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+    'GridItem',
+    props,
+  );
 
-  const { classNames } = useStyles('Grid');
-  const { className, style, dataProps } = extractProps(props, propDefs);
+  const { className, ...rest } = cleanedProps;
 
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.item, className),
-    ...dataProps,
-    style,
-    children: props.children,
-  });
+  return (
+    <div
+      ref={ref}
+      className={clsx(classNames.root, utilityClasses, className)}
+      style={style}
+      {...rest}
+    />
+  );
 });
 
 /** @public */
