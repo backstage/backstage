@@ -148,12 +148,12 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       let successCount = 0;
       let failureCount = 0;
 
-      results.forEach(result => {
+      results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
           successCount++;
         } else {
           this.logger.error(
-            `Failed to send Slack channel notification: ${result.reason.message}`,
+            `Failed to send Slack channel notification to ${opts[index].channel}: ${result.reason.message}`,
           );
           failureCount++;
         }
