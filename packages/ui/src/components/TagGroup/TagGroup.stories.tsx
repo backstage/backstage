@@ -61,8 +61,13 @@ type Story = StoryObj<typeof meta>;
 
 const initialList: ListItem[] = [
   { id: 'banana', name: 'Banana', icon: <RiBugLine /> },
-  { id: 'apple', name: 'Apple', icon: <RiAccountCircleLine /> },
-  { id: 'orange', name: 'Orange', icon: <RiEyeLine /> },
+  {
+    id: 'apple',
+    name: 'Apple',
+    icon: <RiAccountCircleLine />,
+    isDisabled: true,
+  },
+  { id: 'orange', name: 'Orange', icon: <RiEyeLine />, isDisabled: true },
   { id: 'pear', name: 'Pear', icon: <RiHeartLine /> },
   { id: 'grape', name: 'Grape', icon: <RiBugLine /> },
   { id: 'pineapple', name: 'Pineapple', icon: <RiEyeLine /> },
