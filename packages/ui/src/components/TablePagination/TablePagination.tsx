@@ -15,10 +15,11 @@
  */
 
 import clsx from 'clsx';
-import { Text, ButtonIcon, Select, Icon } from '../..';
+import { Text, ButtonIcon, Select } from '../..';
 import type { TablePaginationProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './TablePagination.module.css';
+import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
 
 /**
  * Pagination controls for Table components with page navigation and size selection.
@@ -26,6 +27,10 @@ import styles from './TablePagination.module.css';
  * @public
  */
 export function TablePagination(props: TablePaginationProps) {
+  const { classNames, cleanedProps } = useStyles('TablePagination', {
+    showPageSizeOptions: true,
+    ...props,
+  });
   const {
     className,
     offset,
@@ -36,11 +41,9 @@ export function TablePagination(props: TablePaginationProps) {
     onPageSizeChange,
     setOffset,
     setPageSize,
-    showPageSizeOptions = true,
+    showPageSizeOptions,
     ...rest
-  } = props;
-
-  const { classNames } = useStyles('TablePagination');
+  } = cleanedProps;
 
   const currentOffset = offset ?? 0;
   const currentPageSize = pageSize ?? 10;
@@ -107,7 +110,7 @@ export function TablePagination(props: TablePaginationProps) {
           size="small"
           onClick={previousPage}
           isDisabled={currentOffset === 0}
-          icon={<Icon name="chevron-left" />}
+          icon={<RiArrowLeftSLine />}
           aria-label="Previous"
         />
         <ButtonIcon
@@ -118,7 +121,7 @@ export function TablePagination(props: TablePaginationProps) {
             rowCount !== undefined &&
             currentOffset + currentPageSize >= rowCount
           }
-          icon={<Icon name="chevron-right" />}
+          icon={<RiArrowRightSLine />}
           aria-label="Next"
         />
       </div>

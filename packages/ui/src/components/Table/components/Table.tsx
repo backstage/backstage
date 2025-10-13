@@ -24,13 +24,16 @@ import clsx from 'clsx';
 
 /** @public */
 export const Table = (props: TableProps) => {
-  const { classNames } = useStyles('Table');
+  const { classNames, cleanedProps } = useStyles<'Table', TableProps>(
+    'Table',
+    props,
+  );
 
   return (
     <ReactAriaTable
       className={clsx(classNames.table, styles[classNames.table])}
       aria-label="Data table"
-      {...props}
+      {...cleanedProps}
     />
   );
 };

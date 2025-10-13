@@ -30,8 +30,8 @@ import clsx from 'clsx';
  * @internal
  */
 export const HeaderToolbar = (props: HeaderToolbarProps) => {
-  const { icon, title, titleLink, customActions, hasTabs } = props;
-  const { classNames } = useStyles('Header');
+  const { classNames, cleanedProps } = useStyles('Header', props);
+  const { icon, title, titleLink, customActions, hasTabs } = cleanedProps;
   let navigate = useNavigate();
 
   // Refs for collision detection

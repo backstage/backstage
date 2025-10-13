@@ -7,7 +7,7 @@ import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
-import { ColumnProps } from 'react-aria-components';
+import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
@@ -58,13 +58,6 @@ import { TooltipTriggerComponentProps } from 'react-aria-components';
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 
 // @public (undocumented)
-export type ArbitraryStylingPropDef = {
-  className: string;
-  customProperties: `--${string}`[];
-  parseValue?: (value: string) => string | undefined;
-};
-
-// @public (undocumented)
 export const Avatar: ForwardRefExoticComponent<
   AvatarProps & RefAttributes<HTMLSpanElement>
 >;
@@ -79,14 +72,6 @@ export interface AvatarProps
   // (undocumented)
   src: string;
 }
-
-// @public (undocumented)
-export type BooleanPropDef = {
-  type: 'boolean';
-  default?: boolean;
-  required?: boolean;
-  className?: string;
-};
 
 // @public (undocumented)
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
@@ -139,9 +124,6 @@ export interface BoxProps extends SpaceProps {
 
 // @public (undocumented)
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-
-// @public (undocumented)
-export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
 export const Button: ForwardRefExoticComponent<
@@ -341,11 +323,13 @@ export const Collapsible: {
 };
 
 // @public (undocumented)
-export const Column: (
-  props: Omit<ColumnProps, 'children'> & {
-    children?: React.ReactNode;
-  },
-) => JSX_2.Element;
+export const Column: (props: ColumnProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface ColumnProps extends Omit<ColumnProps_2, 'children'> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
 
 // @public (undocumented)
 export type Columns =
@@ -867,35 +851,6 @@ export interface DialogTriggerProps extends DialogTriggerProps_2 {}
 export type Display = 'none' | 'flex' | 'block' | 'inline';
 
 // @public (undocumented)
-export const displayPropDefs: {
-  display: {
-    type: 'enum';
-    className: string;
-    values: readonly ['none', 'inline', 'inline-block', 'block'];
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
-export type DisplayProps = GetPropDefTypes<typeof displayPropDefs>;
-
-// @public (undocumented)
-export type EnumOrStringPropDef<T> = {
-  type: 'enum | string';
-  values: readonly T[];
-  default?: T | string;
-  required?: boolean;
-};
-
-// @public (undocumented)
-export type EnumPropDef<T> = {
-  type: 'enum';
-  values: readonly T[];
-  default?: T;
-  required?: boolean;
-};
-
-// @public (undocumented)
 export const FieldLabel: ForwardRefExoticComponent<
   FieldLabelProps & RefAttributes<HTMLDivElement>
 >;
@@ -937,49 +892,6 @@ export interface FlexProps extends SpaceProps {
 
 // @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
-
-// @public (undocumented)
-export const gapPropDefs: {
-  gap: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--gap'[];
-    values: string[];
-    responsive: true;
-    default: string;
-  };
-};
-
-// @public (undocumented)
-export type GapProps = GetPropDefTypes<typeof gapPropDefs>;
-
-// @public (undocumented)
-export type GetPropDefType<Def> = Def extends BooleanPropDef
-  ? Def extends ResponsivePropDef
-    ? Responsive<boolean>
-    : boolean
-  : Def extends StringPropDef
-  ? Def extends ResponsivePropDef
-    ? Responsive<string>
-    : string
-  : Def extends ReactNodePropDef
-  ? Def extends ResponsivePropDef
-    ? Responsive<ReactNode>
-    : ReactNode
-  : Def extends EnumOrStringPropDef<infer Type>
-  ? Def extends ResponsivePropDef<infer Type extends string>
-    ? Responsive<string | Type>
-    : string | Type
-  : Def extends EnumPropDef<infer Type>
-  ? Def extends ResponsivePropDef<infer Type>
-    ? Responsive<Type>
-    : Type
-  : never;
-
-// @public (undocumented)
-export type GetPropDefTypes<P> = {
-  [K in keyof P]?: GetPropDefType<P[K]>;
-};
 
 // @public (undocumented)
 export const Grid: {
@@ -1073,31 +985,6 @@ export interface HeaderTab {
   label: string;
   matchStrategy?: TabMatchStrategy;
 }
-
-// @public (undocumented)
-export const heightPropDefs: {
-  height: {
-    type: 'string';
-    className: string;
-    customProperties: '--height'[];
-    responsive: true;
-  };
-  minHeight: {
-    type: 'string';
-    className: string;
-    customProperties: '--min-height'[];
-    responsive: true;
-  };
-  maxHeight: {
-    type: 'string';
-    className: string;
-    customProperties: '--max-height'[];
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
-export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
 export const Icon: (props: IconProps) => JSX_2.Element | null;
@@ -1223,62 +1110,6 @@ export interface LinkProps extends LinkProps_2 {
   // (undocumented)
   weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
 }
-
-// @public (undocumented)
-export const marginPropDefs: (spacingValues: string[]) => {
-  m: {
-    type: 'enum | string';
-    values: string[];
-    className: string;
-    customProperties: '--m'[];
-    responsive: true;
-  };
-  mx: {
-    type: 'enum | string';
-    values: string[];
-    className: string;
-    customProperties: '--mx'[];
-    responsive: true;
-  };
-  my: {
-    type: 'enum | string';
-    values: string[];
-    className: string;
-    customProperties: '--my'[];
-    responsive: true;
-  };
-  mt: {
-    type: 'enum | string';
-    values: string[];
-    className: string;
-    customProperties: '--mt'[];
-    responsive: true;
-  };
-  mr: {
-    type: 'enum | string';
-    values: string[];
-    className: string;
-    customProperties: '--mr'[];
-    responsive: true;
-  };
-  mb: {
-    type: 'enum | string';
-    values: string[];
-    className: string;
-    customProperties: '--mb'[];
-    responsive: true;
-  };
-  ml: {
-    type: 'enum | string';
-    values: string[];
-    className: string;
-    customProperties: '--ml'[];
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
-export type MarginProps = GetPropDefTypes<typeof marginPropDefs>;
 
 // @public (undocumented)
 export const Menu: (props: MenuProps<object>) => JSX_2.Element;
@@ -1408,85 +1239,6 @@ export const MenuTrigger: (props: MenuTriggerProps) => JSX_2.Element;
 export interface MenuTriggerProps extends MenuTriggerProps_2 {}
 
 // @public (undocumented)
-export type NonStylingPropDef = {
-  className?: never;
-  customProperties?: never;
-  parseValue?: never;
-};
-
-// @public (undocumented)
-export const paddingPropDefs: (spacingValues: string[]) => {
-  p: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--p'[];
-    values: string[];
-    responsive: true;
-  };
-  px: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--px'[];
-    values: string[];
-    responsive: true;
-  };
-  py: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--py'[];
-    values: string[];
-    responsive: true;
-  };
-  pt: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--pt'[];
-    values: string[];
-    responsive: true;
-  };
-  pr: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--pr'[];
-    values: string[];
-    responsive: true;
-  };
-  pb: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--pb'[];
-    values: string[];
-    responsive: true;
-  };
-  pl: {
-    type: 'enum | string';
-    className: string;
-    customProperties: '--pl'[];
-    values: string[];
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
-export type PaddingProps = GetPropDefTypes<typeof paddingPropDefs>;
-
-// @public (undocumented)
-export const positionPropDefs: {
-  position: {
-    type: 'enum';
-    className: string;
-    values: readonly ['static', 'relative', 'absolute', 'fixed', 'sticky'];
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
-export type PositionProps = GetPropDefTypes<typeof positionPropDefs>;
-
-// @public (undocumented)
-export type PropDef<T = any> = RegularPropDef<T> | ResponsivePropDef<T>;
-
-// @public (undocumented)
 export const Radio: ForwardRefExoticComponent<
   RadioProps & RefAttributes<HTMLLabelElement>
 >;
@@ -1508,39 +1260,10 @@ export interface RadioGroupProps
 export interface RadioProps extends RadioProps_2 {}
 
 // @public (undocumented)
-export type ReactNodePropDef = {
-  type: 'ReactNode';
-  default?: ReactNode;
-  required?: boolean;
-};
-
-// @public (undocumented)
-export type RegularPropDef<T> =
-  | ReactNodePropDef
-  | BooleanPropDef
-  | (StringPropDef & ArbitraryStylingPropDef)
-  | (StringPropDef & NonStylingPropDef)
-  | (EnumPropDef<T> & StylingPropDef)
-  | (EnumPropDef<T> & NonStylingPropDef)
-  | (EnumOrStringPropDef<T> & ArbitraryStylingPropDef)
-  | (EnumOrStringPropDef<T> & NonStylingPropDef);
-
-// @public (undocumented)
 export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 
 // @public (undocumented)
-export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
-  responsive: true;
-};
-
-// @public (undocumented)
-export function Row<T extends object>({
-  id,
-  columns,
-  children,
-  href,
-  ...otherProps
-}: RowProps<T>): JSX_2.Element;
+export function Row<T extends object>(props: RowProps<T>): JSX_2.Element;
 
 // @public (undocumented)
 export const ScrollArea: {
@@ -1664,19 +1387,6 @@ export interface SpaceProps {
 }
 
 // @public (undocumented)
-export type StringPropDef = {
-  type: 'string';
-  default?: string;
-  required?: boolean;
-};
-
-// @public (undocumented)
-export type StylingPropDef = {
-  className: string;
-  parseValue?: (value: string) => string | undefined;
-};
-
-// @public (undocumented)
 export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 
 // @public (undocumented)
@@ -1704,10 +1414,9 @@ export const TableBody: <T extends object>(
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export const TableHeader: <T extends object>({
-  columns,
-  children,
-}: TableHeaderProps<T>) => JSX_2.Element;
+export const TableHeader: <T extends object>(
+  props: TableHeaderProps<T>,
+) => JSX_2.Element;
 
 // @public
 export function TablePagination(props: TablePaginationProps): JSX_2.Element;
@@ -1765,12 +1474,9 @@ export interface TabsProps extends TabsProps_2 {}
 export const Tag: (props: TagProps) => JSX_2.Element;
 
 // @public
-export const TagGroup: <T extends object>({
-  items,
-  children,
-  renderEmptyState,
-  ...props
-}: TagGroupProps<T>) => JSX_2.Element;
+export const TagGroup: <T extends object>(
+  props: TagGroupProps<T>,
+) => JSX_2.Element;
 
 // @public
 export interface TagGroupProps<T>
@@ -1958,29 +1664,4 @@ export interface UtilityProps extends SpaceProps {
   // (undocumented)
   rowSpan?: Responsive<Columns | 'full'>;
 }
-
-// @public (undocumented)
-export const widthPropDefs: {
-  width: {
-    type: 'string';
-    className: string;
-    customProperties: '--width'[];
-    responsive: true;
-  };
-  minWidth: {
-    type: 'string';
-    className: string;
-    customProperties: '--min-width'[];
-    responsive: true;
-  };
-  maxWidth: {
-    type: 'string';
-    className: string;
-    customProperties: '--max-width'[];
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
-export type WidthProps = GetPropDefTypes<typeof widthPropDefs>;
 ```

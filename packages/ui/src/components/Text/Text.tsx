@@ -22,34 +22,25 @@ import { useStyles } from '../../hooks/useStyles';
 import styles from './Text.module.css';
 
 function TextComponent<T extends ElementType = 'span'>(
-  {
-    as,
-    variant = 'body-medium',
-    weight = 'regular',
-    color = 'primary',
-    className,
-    truncate,
-    style,
-    ...restProps
-  }: TextProps<T>,
+  props: TextProps<T>,
   ref: React.Ref<any>,
 ) {
-  const Component = as || 'span';
+  const Component = props.as || 'span';
 
-  const { classNames, dataAttributes } = useStyles('Text', {
-    variant,
-    weight,
-    color,
+  const { classNames, dataAttributes, cleanedProps } = useStyles('Text', {
+    variant: 'body-medium',
+    weight: 'regular',
+    color: 'primary',
+    ...props,
   });
+
+  const { className, ...restProps } = cleanedProps;
 
   return (
     <Component
       ref={ref}
       className={clsx(classNames.root, styles[classNames.root], className)}
-      data-truncate={truncate}
-      data-as={as}
       {...dataAttributes}
-      style={style}
       {...restProps}
     />
   );

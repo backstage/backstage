@@ -84,8 +84,8 @@ const isTabActive = (
  * @public
  */
 export const Tabs = (props: TabsProps) => {
-  const { children, ...rest } = props;
-  const { classNames } = useStyles('Tabs');
+  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const { children, ...rest } = cleanedProps;
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
@@ -168,8 +168,8 @@ export const Tabs = (props: TabsProps) => {
  * @public
  */
 export const TabList = (props: TabListProps) => {
-  const { children, ...rest } = props;
-  const { classNames } = useStyles('Tabs');
+  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const { children, ...rest } = cleanedProps;
   const { setHoveredKey, tabRefs, tabsRef, hoveredKey, prevHoveredKey } =
     useTabsContext();
 
@@ -218,8 +218,14 @@ export const TabList = (props: TabListProps) => {
  * @public
  */
 export const Tab = (props: TabProps) => {
-  const { href, children, id, matchStrategy: _matchStrategy, ...rest } = props;
-  const { classNames } = useStyles('Tabs');
+  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const {
+    href,
+    children,
+    id,
+    matchStrategy: _matchStrategy,
+    ...rest
+  } = cleanedProps;
   const { setTabRef } = useTabsContext();
 
   return (
@@ -241,8 +247,8 @@ export const Tab = (props: TabProps) => {
  * @public
  */
 export const TabPanel = (props: TabPanelProps) => {
-  const { children, ...rest } = props;
-  const { classNames } = useStyles('Tabs');
+  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const { children, ...rest } = cleanedProps;
 
   return (
     <AriaTabPanel

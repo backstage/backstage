@@ -26,16 +26,18 @@ export const Avatar = forwardRef<
   ElementRef<typeof AvatarPrimitive.Root>,
   AvatarProps
 >((props, ref) => {
-  const { className, src, name, size = 'medium', ...rest } = props;
-  const { classNames } = useStyles('Avatar', {
-    size,
+  const { classNames, dataAttributes, cleanedProps } = useStyles('Avatar', {
+    size: 'medium',
+    ...props,
   });
+
+  const { className, src, name, ...rest } = cleanedProps;
 
   return (
     <AvatarPrimitive.Root
       ref={ref}
       className={clsx(classNames.root, styles[classNames.root], className)}
-      data-size={size}
+      {...dataAttributes}
       {...rest}
     >
       <AvatarPrimitive.Image

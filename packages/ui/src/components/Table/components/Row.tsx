@@ -31,14 +31,12 @@ import styles from '../Table.module.css';
 import clsx from 'clsx';
 
 /** @public */
-export function Row<T extends object>({
-  id,
-  columns,
-  children,
-  href,
-  ...otherProps
-}: RowProps<T>) {
-  const { classNames } = useStyles('Table');
+export function Row<T extends object>(props: RowProps<T>) {
+  const { classNames, cleanedProps } = useStyles<'Table', RowProps<T>>(
+    'Table',
+    props,
+  );
+  const { id, columns, children, href, ...rest } = cleanedProps;
   const navigate = useNavigate();
   const isExternal = isExternalLink(href);
 
@@ -60,7 +58,7 @@ export function Row<T extends object>({
       <ReactAriaRow
         id={id}
         className={clsx(classNames.row, styles[classNames.row])}
-        {...otherProps}
+        {...rest}
       >
         {content}
       </ReactAriaRow>
@@ -73,7 +71,7 @@ export function Row<T extends object>({
         id={id}
         className={clsx(classNames.row, styles[classNames.row])}
         data-react-aria-pressable="true"
-        {...otherProps}
+        {...rest}
       >
         {content}
       </ReactAriaRow>

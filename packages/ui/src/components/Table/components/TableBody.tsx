@@ -24,12 +24,15 @@ import clsx from 'clsx';
 
 /** @public */
 export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
-  const { classNames } = useStyles('Table');
+  const { classNames, cleanedProps } = useStyles<'Table', TableBodyProps<T>>(
+    'Table',
+    props,
+  );
 
   return (
     <ReactAriaTableBody
       className={clsx(classNames.body, styles[classNames.body])}
-      {...props}
+      {...cleanedProps}
     />
   );
 };

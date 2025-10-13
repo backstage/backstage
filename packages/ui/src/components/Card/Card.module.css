@@ -33,6 +33,7 @@
     flex: 1;
     min-height: 0;
     overflow: auto;
+    padding-inline: var(--bui-space-3);
   }
 
   .bui-CardHeader {

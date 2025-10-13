@@ -17,9 +17,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { PasswordField } from './PasswordField';
 import { Form } from 'react-aria-components';
-import { Icon } from '../Icon';
 import { Flex } from '../Flex';
 import { FieldLabel } from '../FieldLabel';
+import { RiSparklingLine } from '@remixicon/react';
 
 const meta = {
   title: 'Backstage UI/PasswordField',
@@ -53,8 +53,8 @@ export const Sizes: Story = {
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
-      <PasswordField {...args} size="small" icon={<Icon name="sparkling" />} />
-      <PasswordField {...args} size="medium" icon={<Icon name="sparkling" />} />
+      <PasswordField {...args} size="small" icon={<RiSparklingLine />} />
+      <PasswordField {...args} size="medium" icon={<RiSparklingLine />} />
     </Flex>
   ),
 };
@@ -99,7 +99,7 @@ export const WithIcon: Story = {
     ...Default.args,
   },
   render: args => (
-    <PasswordField {...args} size="small" icon={<Icon name="sparkling" />} />
+    <PasswordField {...args} size="small" icon={<RiSparklingLine />} />
   ),
 };
 

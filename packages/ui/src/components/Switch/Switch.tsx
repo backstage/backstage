@@ -23,14 +23,15 @@ import clsx from 'clsx';
 
 /** @public */
 export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
-  ({ label, ...props }, ref) => {
-    const { classNames } = useStyles('Switch');
+  (props, ref) => {
+    const { classNames, cleanedProps } = useStyles('Switch', props);
+    const { label, ...rest } = cleanedProps;
 
     return (
       <AriaSwitch
         className={clsx(classNames.root, styles[classNames.root])}
         ref={ref}
-        {...props}
+        {...rest}
       >
         <div
           className={clsx(classNames.indicator, styles[classNames.indicator])}

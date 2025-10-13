@@ -28,20 +28,27 @@ import clsx from 'clsx';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { FieldLabel } from '../FieldLabel';
-import { Icon } from '../Icon';
 import { FieldError } from '../FieldError';
 import styles from './Select.module.css';
 import stylesPopover from '../Popover/Popover.module.css';
+import { RiArrowDownSLine, RiCheckLine } from '@remixicon/react';
 
 /** @public */
 export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
+  const { classNames: popoverClassNames } = useStyles('Popover');
+  const { classNames, dataAttributes, cleanedProps } = useStyles('Select', {
+    size: 'small',
+    placeholder: 'Select an option',
+    ...props,
+  });
+
   const {
     className,
     label,
     description,
     options,
-    placeholder = 'Select an option',
-    size = 'small',
+    placeholder,
+    size,
     icon,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
@@ -49,12 +56,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     secondaryLabel,
     style,
     ...rest
-  } = props;
-
-  const { classNames: popoverClassNames } = useStyles('Popover');
-  const { classNames, dataAttributes } = useStyles('Select', {
-    size,
-  });
+  } = cleanedProps;
 
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -89,7 +91,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         <SelectValue
           className={clsx(classNames.value, styles[classNames.value])}
         />
-        <Icon aria-hidden="true" name="chevron-down" />
+        <RiArrowDownSLine aria-hidden="true" />
       </Button>
       <FieldError />
       <Popover
@@ -111,7 +113,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
                   styles[classNames.itemIndicator],
                 )}
               >
-                <Icon name="check" />
+                <RiCheckLine />
               </div>
               <Text
                 slot="label"

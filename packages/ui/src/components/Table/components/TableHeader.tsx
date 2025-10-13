@@ -26,17 +26,19 @@ import styles from '../Table.module.css';
 import clsx from 'clsx';
 
 /** @public */
-export const TableHeader = <T extends object>({
-  columns,
-  children,
-}: TableHeaderProps<T>) => {
+export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
   let { selectionBehavior, selectionMode, allowsDragging } = useTableOptions();
 
-  const { classNames } = useStyles('Table');
+  const { classNames, cleanedProps } = useStyles<'Table', TableHeaderProps<T>>(
+    'Table',
+    props,
+  );
+  const { columns, children, ...rest } = cleanedProps;
 
   return (
     <ReactAriaTableHeader
       className={clsx(classNames.header, styles[classNames.header])}
+      {...rest}
     >
       {/* Add extra columns for drag and drop and selection. */}
       {allowsDragging && <Column />}
