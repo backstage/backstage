@@ -67,7 +67,8 @@ app
 
 This guide also assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
 
-- 30 GB disk space to run the standalone Backstage application with demo data. NOTE: As you add more modules and plugins to an installation, the disk space requirements will increase, accordingly.
+- A minimum of 30 GB disk space to run the standalone Backstage application with demo data. NOTE: As you add more modules and plugins to an installation, the disk space requirements will increase, accordingly.
+- A minimum of 4 GB memory.
 - Access to a Unix-based operating system, such as Linux, macOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/). The Linux version must support the required Node.js version.
 - A GNU-like build environment available at the command line.
