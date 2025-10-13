@@ -481,6 +481,11 @@ export const componentDefinitions: {
       readonly footer: 'bui-DialogFooter';
     };
   };
+  readonly FieldError: {
+    readonly classNames: {
+      readonly root: 'bui-FieldError';
+    };
+  };
   readonly FieldLabel: {
     readonly classNames: {
       readonly root: 'bui-FieldLabelWrapper';
@@ -698,6 +703,14 @@ export const componentDefinitions: {
       readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
       readonly cellProfileName: 'bui-TableCellProfileName';
       readonly cellProfileLink: 'bui-TableCellProfileLink';
+    };
+  };
+  readonly TablePagination: {
+    readonly classNames: {
+      readonly root: 'bui-TablePagination';
+      readonly left: 'bui-TablePaginationLeft';
+      readonly right: 'bui-TablePaginationRight';
+      readonly select: 'bui-TablePaginationSelect';
     };
   };
   readonly Tabs: {
