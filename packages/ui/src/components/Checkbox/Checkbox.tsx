@@ -16,11 +16,11 @@
 
 import { forwardRef } from 'react';
 import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
-import { Icon } from '../..';
 import type { CheckboxProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import clsx from 'clsx';
 import styles from './Checkbox.module.css';
+import { RiCheckLine } from '@remixicon/react';
 
 /** @public */
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
@@ -38,7 +38,7 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
         <CheckboxPrimitive.Indicator
           className={clsx(classNames.indicator, styles[classNames.indicator])}
         >
-          <Icon name="check" size={12} />
+          <RiCheckLine size={12} />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
     );

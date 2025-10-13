@@ -17,11 +17,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
-import { Icon } from '../Icon';
 import { Flex } from '../Flex';
 import { FieldLabel } from '../FieldLabel';
 import { ButtonIcon } from '../ButtonIcon';
-import { RiCactusLine } from '@remixicon/react';
+import { RiCactusLine, RiEBike2Line } from '@remixicon/react';
 import { Button } from '../Button';
 import { Header } from '../Header';
 import { MemoryRouter } from 'react-router-dom';
@@ -111,7 +110,7 @@ export const WithIcon: Story = {
       {...args}
       placeholder="Enter a URL"
       size="small"
-      icon={<Icon name="eye" />}
+      icon={<RiEBike2Line />}
     />
   ),
 };

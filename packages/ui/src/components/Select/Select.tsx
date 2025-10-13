@@ -28,10 +28,10 @@ import clsx from 'clsx';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { FieldLabel } from '../FieldLabel';
-import { Icon } from '../Icon';
 import { FieldError } from '../FieldError';
 import styles from './Select.module.css';
 import stylesPopover from '../Popover/Popover.module.css';
+import { RiArrowDownSLine, RiCheckLine } from '@remixicon/react';
 
 /** @public */
 export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
@@ -91,7 +91,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         <SelectValue
           className={clsx(classNames.value, styles[classNames.value])}
         />
-        <Icon aria-hidden="true" name="chevron-down" />
+        <RiArrowDownSLine aria-hidden="true" />
       </Button>
       <FieldError />
       <Popover
@@ -113,7 +113,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
                   styles[classNames.itemIndicator],
                 )}
               >
-                <Icon name="check" />
+                <RiCheckLine />
               </div>
               <Text
                 slot="label"

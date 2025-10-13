@@ -15,11 +15,11 @@
  */
 
 import { Column as ReactAriaColumn } from 'react-aria-components';
-import { Icon } from '../../Icon';
 import { useStyles } from '../../../hooks/useStyles';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
 import { ColumnProps } from '../types';
+import { RiArrowUpLine, RiArrowDownLine } from '@remixicon/react';
 
 /** @public */
 export const Column = (props: ColumnProps) => {
@@ -51,9 +51,9 @@ export const Column = (props: ColumnProps) => {
               )}
             >
               {sortDirection === 'ascending' ? (
-                <Icon name="arrow-up" size={16} />
+                <RiArrowUpLine size={16} />
               ) : (
-                <Icon name="arrow-down" size={16} />
+                <RiArrowDownLine size={16} />
               )}
             </span>
           )}
