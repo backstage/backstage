@@ -34,7 +34,6 @@ import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { RowProps } from 'react-aria-components';
-import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
@@ -622,14 +621,6 @@ export const componentDefinitions: {
       readonly root: 'bui-RadioGroup';
       readonly content: 'bui-RadioGroupContent';
       readonly radio: 'bui-Radio';
-    };
-  };
-  readonly ScrollArea: {
-    readonly classNames: {
-      readonly root: 'bui-ScrollAreaRoot';
-      readonly viewport: 'bui-ScrollAreaViewport';
-      readonly scrollbar: 'bui-ScrollAreaScrollbar';
-      readonly thumb: 'bui-ScrollAreaThumb';
     };
   };
   readonly SearchField: {
@@ -1264,26 +1255,6 @@ export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 
 // @public (undocumented)
 export function Row<T extends object>(props: RowProps<T>): JSX_2.Element;
-
-// @public (undocumented)
-export const ScrollArea: {
-  Root: ForwardRefExoticComponent<
-    Omit<ScrollArea_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Viewport: ForwardRefExoticComponent<
-    Omit<ScrollArea_2.Viewport.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Scrollbar: ForwardRefExoticComponent<
-    Omit<ScrollArea_2.Scrollbar.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Thumb: ForwardRefExoticComponent<
-    Omit<ScrollArea_2.Thumb.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-};
 
 // @public (undocumented)
 export const SearchField: ForwardRefExoticComponent<
