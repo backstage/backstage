@@ -90,6 +90,7 @@ export const Menu = (props: MenuProps<object>) => {
     virtualized = false,
     maxWidth,
     maxHeight,
+    style,
     ...rest
   } = cleanedProps;
 
@@ -127,7 +128,7 @@ export const Menu = (props: MenuProps<object>) => {
     <RAMenu
       className={clsx(classNames.content, styles[classNames.content])}
       renderEmptyState={() => <MenuEmptyState />}
-      style={{ width: newMaxWidth, maxHeight }}
+      style={{ width: newMaxWidth, maxHeight, ...style }}
       {...rest}
     />
   );
@@ -167,6 +168,7 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
     virtualized = false,
     maxWidth,
     maxHeight,
+    style,
     ...rest
   } = cleanedProps;
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
@@ -175,7 +177,7 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
     <RAListBox
       className={clsx(classNames.content, styles[classNames.content])}
       selectionMode={selectionMode}
-      style={{ width: newMaxWidth, maxHeight }}
+      style={{ width: newMaxWidth, maxHeight, ...style }}
       {...rest}
     />
   );
@@ -209,6 +211,7 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
     virtualized = false,
     maxWidth,
     maxHeight,
+    style,
     ...rest
   } = cleanedProps;
   const { contains } = useFilter({ sensitivity: 'base' });
@@ -219,7 +222,7 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
     <RAMenu
       className={clsx(classNames.content, styles[classNames.content])}
       renderEmptyState={() => <MenuEmptyState />}
-      style={{ width: newMaxWidth, maxHeight }}
+      style={{ width: newMaxWidth, maxHeight, ...style }}
       {...rest}
     />
   );
@@ -283,6 +286,7 @@ export const MenuAutocompleteListbox = (
     virtualized = false,
     maxWidth,
     maxHeight,
+    style,
     ...rest
   } = cleanedProps;
   const { contains } = useFilter({ sensitivity: 'base' });
@@ -293,7 +297,7 @@ export const MenuAutocompleteListbox = (
       className={clsx(classNames.content, styles[classNames.content])}
       renderEmptyState={() => <MenuEmptyState />}
       selectionMode={selectionMode}
-      style={{ width: newMaxWidth, maxHeight }}
+      style={{ width: newMaxWidth, maxHeight, ...style }}
       {...rest}
     />
   );
