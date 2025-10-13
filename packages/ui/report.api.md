@@ -11,8 +11,12 @@ import { ColumnProps } from 'react-aria-components';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
+import { DetailedHTMLProps } from 'react';
+import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
+import type { HeadingProps } from 'react-aria-components';
+import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import type { ListBoxItemProps } from 'react-aria-components';
@@ -21,6 +25,7 @@ import type { MenuItemProps as MenuItemProps_2 } from 'react-aria-components';
 import type { MenuProps as MenuProps_2 } from 'react-aria-components';
 import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-components';
 import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-components';
+import type { ModalOverlayProps } from 'react-aria-components';
 import type { PopoverProps } from 'react-aria-components';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
@@ -436,6 +441,16 @@ export const componentDefinitions: {
       readonly root: 'bui-Container';
     };
   };
+  readonly Dialog: {
+    readonly classNames: {
+      readonly overlay: 'bui-DialogOverlay';
+      readonly dialog: 'bui-Dialog';
+      readonly header: 'bui-DialogHeader';
+      readonly headerTitle: 'bui-DialogHeaderTitle';
+      readonly body: 'bui-DialogBody';
+      readonly footer: 'bui-DialogFooter';
+    };
+  };
   readonly FieldLabel: {
     readonly classNames: {
       readonly root: 'bui-FieldLabelWrapper';
@@ -698,6 +713,64 @@ export type DataAttributesMap = Record<string, DataAttributeValues>;
 
 // @public
 export type DataAttributeValues = readonly (string | number | boolean)[];
+
+// @public (undocumented)
+export const Dialog: ForwardRefExoticComponent<
+  DialogProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export const DialogBody: ForwardRefExoticComponent<
+  DialogBodyProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface DialogBodyProps {
+  // (undocumented)
+  children?: React.ReactNode;
+  // (undocumented)
+  className?: string;
+}
+
+// @public (undocumented)
+export const DialogFooter: ForwardRefExoticComponent<
+  Omit<
+    DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
+    'ref'
+  > &
+    RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export const DialogHeader: ForwardRefExoticComponent<
+  DialogHeaderProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface DialogHeaderProps extends HeadingProps {
+  // (undocumented)
+  children?: React.ReactNode;
+  // (undocumented)
+  className?: string;
+}
+
+// @public
+export interface DialogProps extends ModalOverlayProps {
+  // (undocumented)
+  children?: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  height?: number | string;
+  // (undocumented)
+  width?: number | string;
+}
+
+// @public (undocumented)
+export const DialogTrigger: (props: DialogTriggerProps) => JSX_2.Element;
+
+// @public
+export interface DialogTriggerProps extends DialogTriggerProps_2 {}
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
