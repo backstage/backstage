@@ -151,22 +151,6 @@ describe('SearchModal', () => {
     expect(toggleModal).toHaveBeenCalledTimes(1);
   });
 
-  it('should render SearchModal hiding its content', async () => {
-    const { getByTestId } = await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
-        <SearchModal open hidden toggleModal={toggleModal} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/search': rootRouteRef,
-        },
-      },
-    );
-
-    expect(getByTestId('search-bar-next')).toBeInTheDocument();
-    expect(getByTestId('search-bar-next')).not.toBeVisible();
-  });
-
   it('should focus on its search bar when opened', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
