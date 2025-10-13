@@ -248,4 +248,36 @@ describe('SearchModal', () => {
 
     expect(navigate).toHaveBeenCalledWith('/search?query=term');
   });
+
+  it('should completely unmount the Dialog from DOM when open prop is false', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open={false} hidden={false} toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    // Dialog should not exist in the DOM at all (unmounted, not just hidden)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('should completely unmount the Dialog from DOM when hidden prop is true', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    // Dialog should not exist in the DOM at all (unmounted, not just hidden)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
 });
