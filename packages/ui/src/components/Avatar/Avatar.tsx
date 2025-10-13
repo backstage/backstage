@@ -19,6 +19,7 @@ import { Avatar as AvatarPrimitive } from '@base-ui-components/react/avatar';
 import clsx from 'clsx';
 import { AvatarProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Avatar.module.css';
 
 /** @public */
 export const Avatar = forwardRef<
@@ -33,12 +34,17 @@ export const Avatar = forwardRef<
   return (
     <AvatarPrimitive.Root
       ref={ref}
-      className={clsx(classNames.root, className)}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       data-size={size}
       {...rest}
     >
-      <AvatarPrimitive.Image className={classNames.image} src={src} />
-      <AvatarPrimitive.Fallback className={classNames.fallback}>
+      <AvatarPrimitive.Image
+        className={clsx(classNames.image, styles[classNames.image])}
+        src={src}
+      />
+      <AvatarPrimitive.Fallback
+        className={clsx(classNames.fallback, styles[classNames.fallback])}
+      >
         {(name || '')
           .split(' ')
           .map(word => word[0])

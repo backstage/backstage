@@ -34,7 +34,7 @@ export const Button = forwardRef(
 
     return (
       <RAButton
-        className={clsx(classNames.root, className, styles['bui-Button'])}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         ref={ref}
         {...dataAttributes}
         {...rest}

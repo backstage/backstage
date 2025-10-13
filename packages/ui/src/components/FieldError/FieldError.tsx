@@ -20,15 +20,19 @@ import {
   type FieldErrorProps,
 } from 'react-aria-components';
 import clsx from 'clsx';
+import styles from './FieldError.module.css';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const FieldError = forwardRef<HTMLDivElement, FieldErrorProps>(
   (props: FieldErrorProps, ref) => {
     const { className, ...rest } = props;
 
+    const { classNames } = useStyles('FieldError');
+
     return (
       <AriaFieldError
-        className={clsx('bui-FieldError', className)}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         ref={ref}
         {...rest}
       />

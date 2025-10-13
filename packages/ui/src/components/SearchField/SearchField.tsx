@@ -25,6 +25,8 @@ import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
 import { useStyles } from '../../hooks/useStyles';
+import stylesSearchField from './SearchField.module.css';
+import stylesTextField from '../TextField/TextField.module.css';
 
 import type { SearchFieldProps } from './types';
 
@@ -102,6 +104,8 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         className={clsx(
           textFieldClassNames.root,
           searchFieldClassNames.root,
+          stylesTextField[textFieldClassNames.root],
+          stylesSearchField[searchFieldClassNames.root],
           className,
         )}
         {...dataAttributes}
@@ -120,12 +124,18 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
           description={description}
         />
         <div
-          className={textFieldClassNames.inputWrapper}
+          className={clsx(
+            textFieldClassNames.inputWrapper,
+            stylesTextField[textFieldClassNames.inputWrapper],
+          )}
           data-size={dataAttributes['data-size']}
         >
           {icon !== false && (
             <div
-              className={textFieldClassNames.inputIcon}
+              className={clsx(
+                textFieldClassNames.inputIcon,
+                stylesTextField[textFieldClassNames.inputIcon],
+              )}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
@@ -133,12 +143,18 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
             </div>
           )}
           <Input
-            className={textFieldClassNames.input}
+            className={clsx(
+              textFieldClassNames.input,
+              stylesTextField[textFieldClassNames.input],
+            )}
             {...(icon !== false && { 'data-icon': true })}
             placeholder={placeholder}
           />
           <Button
-            className={searchFieldClassNames.clear}
+            className={clsx(
+              searchFieldClassNames.clear,
+              stylesSearchField[searchFieldClassNames.clear],
+            )}
             data-size={dataAttributes['data-size']}
           >
             <RiCloseCircleLine />

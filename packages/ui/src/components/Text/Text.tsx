@@ -19,6 +19,7 @@ import clsx from 'clsx';
 import type { ElementType } from 'react';
 import type { TextProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Text.module.css';
 
 function TextComponent<T extends ElementType = 'span'>(
   {
@@ -44,7 +45,7 @@ function TextComponent<T extends ElementType = 'span'>(
   return (
     <Component
       ref={ref}
-      className={clsx(classNames.root, className)}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       data-truncate={truncate}
       data-as={as}
       {...dataAttributes}

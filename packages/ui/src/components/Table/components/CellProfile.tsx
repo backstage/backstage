@@ -21,6 +21,7 @@ import { Link } from '../../Link/Link';
 import { Avatar } from '@base-ui-components/react/avatar';
 import { useStyles } from '../../../hooks/useStyles';
 import { Cell as ReactAriaCell } from 'react-aria-components';
+import styles from '../Table.module.css';
 
 /** @public */
 export const CellProfile = (props: CellProfileProps) => {
@@ -36,18 +37,39 @@ export const CellProfile = (props: CellProfileProps) => {
   const { classNames } = useStyles('Table');
 
   return (
-    <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>
-      <div className={classNames.cellContentWrapper}>
-        <div className={classNames.cellIcon}>
+    <ReactAriaCell
+      className={clsx(classNames.cell, styles[classNames.cell], className)}
+      {...rest}
+    >
+      <div
+        className={clsx(
+          classNames.cellContentWrapper,
+          styles[classNames.cellContentWrapper],
+        )}
+      >
+        <div className={clsx(classNames.cellIcon, styles[classNames.cellIcon])}>
           {src && (
-            <Avatar.Root className={classNames.cellProfileAvatar}>
+            <Avatar.Root
+              className={clsx(
+                classNames.cellProfileAvatar,
+                styles[classNames.cellProfileAvatar],
+              )}
+            >
               <Avatar.Image
                 src={src}
                 width="20"
                 height="20"
-                className={classNames.cellProfileAvatarImage}
+                className={clsx(
+                  classNames.cellProfileAvatarImage,
+                  styles[classNames.cellProfileAvatarImage],
+                )}
               />
-              <Avatar.Fallback className={classNames.cellProfileAvatarFallback}>
+              <Avatar.Fallback
+                className={clsx(
+                  classNames.cellProfileAvatarFallback,
+                  styles[classNames.cellProfileAvatarFallback],
+                )}
+              >
                 {(name || '')
                   .split(' ')
                   .map(word => word[0])
@@ -58,7 +80,12 @@ export const CellProfile = (props: CellProfileProps) => {
             </Avatar.Root>
           )}
         </div>
-        <div className={classNames.cellContent}>
+        <div
+          className={clsx(
+            classNames.cellContent,
+            styles[classNames.cellContent],
+          )}
+        >
           {name && href ? (
             <Link href={href}>{name}</Link>
           ) : (

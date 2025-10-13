@@ -19,6 +19,7 @@ import { useIcons } from './context';
 import type { IconProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Icon.module.css';
 
 /** @public */
 export const Icon = (props: IconProps) => {
@@ -36,7 +37,7 @@ export const Icon = (props: IconProps) => {
 
   return (
     <BckstageIcon
-      className={clsx(classNames.root, className)}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       style={{
         ...(size ? { width: size, height: size } : {}),
         ...style,

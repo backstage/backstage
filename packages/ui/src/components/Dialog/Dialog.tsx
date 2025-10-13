@@ -28,11 +28,11 @@ import type {
   DialogProps,
   DialogBodyProps,
 } from './types';
-import './Dialog.styles.css';
 import { RiCloseLine } from '@remixicon/react';
 import { Button } from '../Button';
 import { useStyles } from '../../hooks/useStyles';
 import { Flex } from '../Flex';
+import styles from './Dialog.module.css';
 
 /** @public */
 export const DialogTrigger = (props: DialogTriggerProps) => {
@@ -47,13 +47,17 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
     return (
       <Modal
         ref={ref}
-        className={clsx(classNames.overlay)}
+        className={clsx(classNames.overlay, styles[classNames.overlay])}
         isDismissable
         isKeyboardDismissDisabled={false}
         {...props}
       >
         <RADialog
-          className={clsx(classNames.dialog, className)}
+          className={clsx(
+            classNames.dialog,
+            styles[classNames.dialog],
+            className,
+          )}
           style={{
             ['--bui-dialog-min-width' as keyof React.CSSProperties]:
               typeof width === 'number' ? `${width}px` : width || '400px',
@@ -82,8 +86,15 @@ export const DialogHeader = forwardRef<
   const { classNames } = useStyles('Dialog');
 
   return (
-    <Flex ref={ref} className={clsx(classNames.header, className)} {...props}>
-      <Heading slot="title" className={classNames.headerTitle}>
+    <Flex
+      ref={ref}
+      className={clsx(classNames.header, styles[classNames.header], className)}
+      {...props}
+    >
+      <Heading
+        slot="title"
+        className={clsx(classNames.headerTitle, styles[classNames.headerTitle])}
+      >
         {children}
       </Heading>
       <Button name="close" aria-label="Close" variant="tertiary" slot="close">
@@ -100,7 +111,11 @@ export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
     const { classNames } = useStyles('Dialog');
 
     return (
-      <div className={clsx(classNames.body, className)} ref={ref} {...props}>
+      <div
+        className={clsx(classNames.body, styles[classNames.body], className)}
+        ref={ref}
+        {...props}
+      >
         {children}
       </div>
     );
@@ -117,7 +132,11 @@ export const DialogFooter = forwardRef<
   const { classNames } = useStyles('Dialog');
 
   return (
-    <div ref={ref} className={clsx(classNames.footer, className)} {...props}>
+    <div
+      ref={ref}
+      className={clsx(classNames.footer, styles[classNames.footer], className)}
+      {...props}
+    >
       {children}
     </div>
   );

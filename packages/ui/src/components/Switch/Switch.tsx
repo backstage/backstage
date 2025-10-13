@@ -18,6 +18,8 @@ import { forwardRef } from 'react';
 import { Switch as AriaSwitch } from 'react-aria-components';
 import type { SwitchProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Switch.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
@@ -25,8 +27,14 @@ export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
     const { classNames } = useStyles('Switch');
 
     return (
-      <AriaSwitch className={classNames.root} ref={ref} {...props}>
-        <div className={classNames.indicator} />
+      <AriaSwitch
+        className={clsx(classNames.root, styles[classNames.root])}
+        ref={ref}
+        {...props}
+      >
+        <div
+          className={clsx(classNames.indicator, styles[classNames.indicator])}
+        />
         {label}
       </AriaSwitch>
     );

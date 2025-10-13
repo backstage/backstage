@@ -23,6 +23,7 @@ import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './RadioGroup.module.css';
 
 import type { RadioGroupProps, RadioProps } from './types';
 
@@ -57,7 +58,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
 
     return (
       <AriaRadioGroup
-        className={clsx(classNames.root, className)}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         {...rest}
@@ -68,7 +69,9 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
           secondaryLabel={secondaryLabelText}
           description={description}
         />
-        <div className={classNames.content}>{children}</div>
+        <div className={clsx(classNames.content, styles[classNames.content])}>
+          {children}
+        </div>
         <FieldError />
       </AriaRadioGroup>
     );
@@ -85,7 +88,7 @@ export const Radio = forwardRef<HTMLLabelElement, RadioProps>((props, ref) => {
 
   return (
     <AriaRadio
-      className={clsx(classNames.radio, className)}
+      className={clsx(classNames.radio, styles[classNames.radio], className)}
       {...rest}
       ref={ref}
     />

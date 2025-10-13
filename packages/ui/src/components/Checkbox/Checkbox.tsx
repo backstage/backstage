@@ -20,6 +20,7 @@ import { Icon } from '../..';
 import type { CheckboxProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import clsx from 'clsx';
+import styles from './Checkbox.module.css';
 
 /** @public */
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
@@ -41,7 +42,7 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
     const checkboxElement = (
       <CheckboxPrimitive.Root
         ref={ref}
-        className={clsx(classNames.root, className)}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         checked={checked}
         onCheckedChange={onChange}
         disabled={disabled}
@@ -50,14 +51,16 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
         value={value}
         style={style}
       >
-        <CheckboxPrimitive.Indicator className={classNames.indicator}>
+        <CheckboxPrimitive.Indicator
+          className={clsx(classNames.indicator, styles[classNames.indicator])}
+        >
           <Icon name="check" size={12} />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
     );
 
     return label ? (
-      <label className={classNames.label}>
+      <label className={clsx(classNames.label, styles[classNames.label])}>
         {checkboxElement}
         {label}
       </label>

@@ -17,6 +17,8 @@
 import clsx from 'clsx';
 import { Text, ButtonIcon, Select, Icon } from '../..';
 import type { TablePaginationProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
+import styles from './TablePagination.module.css';
 
 /**
  * Pagination controls for Table components with page navigation and size selection.
@@ -37,6 +39,8 @@ export function TablePagination(props: TablePaginationProps) {
     showPageSizeOptions = true,
     ...rest
   } = props;
+
+  const { classNames } = useStyles('TablePagination');
 
   const currentOffset = offset ?? 0;
   const currentPageSize = pageSize ?? 10;
@@ -65,8 +69,11 @@ export function TablePagination(props: TablePaginationProps) {
   };
 
   return (
-    <div className={clsx('bui-DataTablePagination', className)} {...rest}>
-      <div className="bui-DataTablePagination--left">
+    <div
+      className={clsx(classNames.root, styles[classNames.root], className)}
+      {...rest}
+    >
+      <div className={clsx(classNames.left, styles[classNames.left])}>
         {showPageSizeOptions && (
           <Select
             name="pageSize"
@@ -86,11 +93,11 @@ export function TablePagination(props: TablePaginationProps) {
               setPageSize?.(newPageSize);
               onPageSizeChange?.(newPageSize);
             }}
-            className="bui-DataTablePagination--select"
+            className={clsx(classNames.select, styles[classNames.select])}
           />
         )}
       </div>
-      <div className="bui-DataTablePagination--right">
+      <div className={clsx(classNames.right, styles[classNames.right])}>
         <Text
           as="p"
           variant="body-medium"

@@ -19,9 +19,9 @@ import { Input, TextField as AriaTextField } from 'react-aria-components';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
-
 import type { TextFieldProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './TextField.module.css';
 
 /** @public */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
@@ -64,7 +64,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
 
     return (
       <AriaTextField
-        className={clsx(classNames.root, className)}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
@@ -78,12 +78,18 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           description={description}
         />
         <div
-          className={classNames.inputWrapper}
+          className={clsx(
+            classNames.inputWrapper,
+            styles[classNames.inputWrapper],
+          )}
           data-size={dataAttributes['data-size']}
         >
           {icon && (
             <div
-              className={classNames.inputIcon}
+              className={clsx(
+                classNames.inputIcon,
+                styles[classNames.inputIcon],
+              )}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
@@ -91,7 +97,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             </div>
           )}
           <Input
-            className={classNames.input}
+            className={clsx(classNames.input, styles[classNames.input])}
             {...(icon && { 'data-icon': true })}
             placeholder={placeholder}
           />

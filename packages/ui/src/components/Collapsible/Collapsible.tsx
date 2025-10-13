@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import { Collapsible as CollapsiblePrimitive } from '@base-ui-components/react/collapsible';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Collapsible.module.css';
 
 const CollapsibleRoot = forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.Root>,
@@ -28,7 +29,7 @@ const CollapsibleRoot = forwardRef<
   return (
     <CollapsiblePrimitive.Root
       ref={ref}
-      className={clsx(classNames.root, className)}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       {...props}
     />
   );
@@ -44,7 +45,11 @@ const CollapsibleTrigger = forwardRef<
   return (
     <CollapsiblePrimitive.Trigger
       ref={ref}
-      className={clsx(classNames.trigger, className)}
+      className={clsx(
+        classNames.trigger,
+        styles[classNames.trigger],
+        className,
+      )}
       {...props}
     />
   );
@@ -60,7 +65,7 @@ const CollapsiblePanel = forwardRef<
   return (
     <CollapsiblePrimitive.Panel
       ref={ref}
-      className={clsx(classNames.panel, className)}
+      className={clsx(classNames.panel, styles[classNames.panel], className)}
       {...props}
     />
   );
