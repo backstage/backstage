@@ -26,7 +26,6 @@ export const Avatar = forwardRef<
   ElementRef<typeof AvatarPrimitive.Root>,
   AvatarProps
 >((props, ref) => {
-  // const { className, src, name, ...rest } = props;
   const { classNames, dataAttributes, cleanedProps } = useStyles('Avatar', {
     size: 'medium',
     ...props,

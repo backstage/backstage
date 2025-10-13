@@ -58,11 +58,6 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
       ...props,
     });
 
-    console.log({
-      size: 'small',
-      ...props,
-    });
-
     const {
       className,
       description,
