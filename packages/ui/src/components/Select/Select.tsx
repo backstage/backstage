@@ -30,6 +30,8 @@ import { useStyles } from '../../hooks/useStyles';
 import { FieldLabel } from '../FieldLabel';
 import { Icon } from '../Icon';
 import { FieldError } from '../FieldError';
+import styles from './Select.module.css';
+import stylesPopover from '../Popover/Popover.module.css';
 
 /** @public */
 export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
@@ -67,7 +69,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
 
   return (
     <AriaSelect
-      className={clsx(classNames.root, className)}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       {...dataAttributes}
       ref={ref}
       aria-label={ariaLabel}
@@ -80,26 +82,44 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         description={description}
       />
       <Button
-        className={classNames.trigger}
+        className={clsx(classNames.trigger, styles[classNames.trigger])}
         data-size={dataAttributes['data-size']}
       >
         {icon}
-        <SelectValue className={classNames.value} />
+        <SelectValue
+          className={clsx(classNames.value, styles[classNames.value])}
+        />
         <Icon aria-hidden="true" name="chevron-down" />
       </Button>
       <FieldError />
-      <Popover className={popoverClassNames.root}>
-        <ListBox className={classNames.list}>
+      <Popover
+        className={clsx(
+          popoverClassNames.root,
+          stylesPopover[popoverClassNames.root],
+        )}
+      >
+        <ListBox className={clsx(classNames.list, styles[classNames.list])}>
           {options?.map(option => (
             <ListBoxItem
               key={option.value}
               id={option.value}
-              className={classNames.item}
+              className={clsx(classNames.item, styles[classNames.item])}
             >
-              <div className={classNames.itemIndicator}>
+              <div
+                className={clsx(
+                  classNames.itemIndicator,
+                  styles[classNames.itemIndicator],
+                )}
+              >
                 <Icon name="check" />
               </div>
-              <Text slot="label" className={classNames.itemLabel}>
+              <Text
+                slot="label"
+                className={clsx(
+                  classNames.itemLabel,
+                  styles[classNames.itemLabel],
+                )}
+              >
                 {option.label}
               </Text>
             </ListBoxItem>

@@ -20,6 +20,8 @@ import {
 } from 'react-aria-components';
 import { Icon } from '../../Icon';
 import { useStyles } from '../../../hooks/useStyles';
+import styles from '../Table.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export const Column = (
@@ -28,12 +30,26 @@ export const Column = (
   const { classNames } = useStyles('Table');
 
   return (
-    <ReactAriaColumn className={classNames.head} {...props}>
+    <ReactAriaColumn
+      className={clsx(classNames.head, styles[classNames.head])}
+      {...props}
+    >
       {({ allowsSorting, sortDirection }) => (
-        <div className={classNames.headContent}>
+        <div
+          className={clsx(
+            classNames.headContent,
+            styles[classNames.headContent],
+          )}
+        >
           {props.children}
           {allowsSorting && (
-            <span aria-hidden="true" className={classNames.headSortButton}>
+            <span
+              aria-hidden="true"
+              className={clsx(
+                classNames.headSortButton,
+                styles[classNames.headSortButton],
+              )}
+            >
               {sortDirection === 'ascending' ? (
                 <Icon name="arrow-up" size={16} />
               ) : (

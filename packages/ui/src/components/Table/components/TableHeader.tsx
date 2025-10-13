@@ -22,6 +22,8 @@ import {
 import { Collection, useTableOptions } from 'react-aria-components';
 import { Column } from './Column';
 import { useStyles } from '../../../hooks/useStyles';
+import styles from '../Table.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export const TableHeader = <T extends object>({
@@ -33,7 +35,9 @@ export const TableHeader = <T extends object>({
   const { classNames } = useStyles('Table');
 
   return (
-    <ReactAriaTableHeader className={classNames.header}>
+    <ReactAriaTableHeader
+      className={clsx(classNames.header, styles[classNames.header])}
+    >
       {/* Add extra columns for drag and drop and selection. */}
       {allowsDragging && <Column />}
       {selectionBehavior === 'toggle' && (

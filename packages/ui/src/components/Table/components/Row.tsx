@@ -27,6 +27,8 @@ import { useStyles } from '../../../hooks/useStyles';
 import { useNavigate } from 'react-router-dom';
 import { useHref } from 'react-router-dom';
 import { isExternalLink } from '../../../utils/isExternalLink';
+import styles from '../Table.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export function Row<T extends object>({
@@ -55,7 +57,11 @@ export function Row<T extends object>({
 
   if (isExternal) {
     return (
-      <ReactAriaRow id={id} className={classNames.row} {...otherProps}>
+      <ReactAriaRow
+        id={id}
+        className={clsx(classNames.row, styles[classNames.row])}
+        {...otherProps}
+      >
         {content}
       </ReactAriaRow>
     );
@@ -65,7 +71,7 @@ export function Row<T extends object>({
     <RouterProvider navigate={navigate} useHref={useHref}>
       <ReactAriaRow
         id={id}
-        className={classNames.row}
+        className={clsx(classNames.row, styles[classNames.row])}
         data-react-aria-pressable="true"
         {...otherProps}
       >

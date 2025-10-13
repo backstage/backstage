@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import { ScrollArea as ScrollAreaPrimitive } from '@base-ui-components/react/scroll-area';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './ScrollArea.module.css';
 
 const ScrollAreaRoot = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
@@ -28,7 +29,7 @@ const ScrollAreaRoot = forwardRef<
   return (
     <ScrollAreaPrimitive.Root
       ref={ref}
-      className={clsx(classNames.root, className)}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       {...props}
     />
   );
@@ -44,7 +45,11 @@ const ScrollAreaViewport = forwardRef<
   return (
     <ScrollAreaPrimitive.Viewport
       ref={ref}
-      className={clsx(classNames.viewport, className)}
+      className={clsx(
+        classNames.viewport,
+        styles[classNames.viewport],
+        className,
+      )}
       {...props}
     />
   );
@@ -60,7 +65,11 @@ const ScrollAreaScrollbar = forwardRef<
   return (
     <ScrollAreaPrimitive.Scrollbar
       ref={ref}
-      className={clsx(classNames.scrollbar, className)}
+      className={clsx(
+        classNames.scrollbar,
+        styles[classNames.scrollbar],
+        className,
+      )}
       {...props}
     />
   );
@@ -76,7 +85,7 @@ const ScrollAreaThumb = forwardRef<
   return (
     <ScrollAreaPrimitive.Thumb
       ref={ref}
-      className={clsx(classNames.thumb, className)}
+      className={clsx(classNames.thumb, styles[classNames.thumb], className)}
       {...props}
     />
   );

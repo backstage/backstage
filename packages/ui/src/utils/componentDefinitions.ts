@@ -120,6 +120,11 @@ export const componentDefinitions = {
       footer: 'bui-DialogFooter',
     },
   },
+  FieldError: {
+    classNames: {
+      root: 'bui-FieldError',
+    },
+  },
   FieldLabel: {
     classNames: {
       root: 'bui-FieldLabelWrapper',
@@ -337,6 +342,14 @@ export const componentDefinitions = {
       cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback',
       cellProfileName: 'bui-TableCellProfileName',
       cellProfileLink: 'bui-TableCellProfileLink',
+    },
+  },
+  TablePagination: {
+    classNames: {
+      root: 'bui-TablePagination',
+      left: 'bui-TablePaginationLeft',
+      right: 'bui-TablePaginationRight',
+      select: 'bui-TablePaginationSelect',
     },
   },
   Tabs: {

@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import { ContainerProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Container.module.css';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
@@ -32,7 +33,12 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
     return (
       <div
         ref={ref}
-        className={clsx(classNames.root, utilityClasses, className)}
+        className={clsx(
+          classNames.root,
+          utilityClasses,
+          styles[classNames.root],
+          className,
+        )}
         style={style}
         {...rest}
       />

@@ -19,6 +19,8 @@ import {
   Table as ReactAriaTable,
   type TableProps,
 } from 'react-aria-components';
+import styles from '../Table.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export const Table = (props: TableProps) => {
@@ -26,7 +28,7 @@ export const Table = (props: TableProps) => {
 
   return (
     <ReactAriaTable
-      className={classNames.table}
+      className={clsx(classNames.table, styles[classNames.table])}
       aria-label="Data table"
       {...props}
     />

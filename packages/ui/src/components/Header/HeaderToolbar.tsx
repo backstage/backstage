@@ -21,6 +21,8 @@ import { RiShapesLine } from '@remixicon/react';
 import type { HeaderToolbarProps } from './types';
 import { Text } from '../Text';
 import { useNavigate, useHref } from 'react-router-dom';
+import styles from './Header.module.css';
+import clsx from 'clsx';
 
 /**
  * A component that renders a toolbar.
@@ -39,27 +41,65 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
 
   const titleContent = (
     <>
-      <div className={classNames.toolbarIcon}>{icon || <RiShapesLine />}</div>
+      <div
+        className={clsx(classNames.toolbarIcon, styles[classNames.toolbarIcon])}
+      >
+        {icon || <RiShapesLine />}
+      </div>
       <Text variant="body-medium">{title || 'Your plugin'}</Text>
     </>
   );
 
   return (
     <RouterProvider navigate={navigate} useHref={useHref}>
-      <div className={classNames.toolbar} data-has-tabs={hasTabs}>
-        <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
-          <div className={classNames.toolbarContent} ref={toolbarContentRef}>
+      <div
+        className={clsx(classNames.toolbar, styles[classNames.toolbar])}
+        data-has-tabs={hasTabs}
+      >
+        <div
+          className={clsx(
+            classNames.toolbarWrapper,
+            styles[classNames.toolbarWrapper],
+          )}
+          ref={toolbarWrapperRef}
+        >
+          <div
+            className={clsx(
+              classNames.toolbarContent,
+              styles[classNames.toolbarContent],
+            )}
+            ref={toolbarContentRef}
+          >
             <Text as="h1" variant="body-medium">
               {titleLink ? (
-                <Link className={classNames.toolbarName} href={titleLink}>
+                <Link
+                  className={clsx(
+                    classNames.toolbarName,
+                    styles[classNames.toolbarName],
+                  )}
+                  href={titleLink}
+                >
                   {titleContent}
                 </Link>
               ) : (
-                <div className={classNames.toolbarName}>{titleContent}</div>
+                <div
+                  className={clsx(
+                    classNames.toolbarName,
+                    styles[classNames.toolbarName],
+                  )}
+                >
+                  {titleContent}
+                </div>
               )}
             </Text>
           </div>
-          <div className={classNames.toolbarControls} ref={toolbarControlsRef}>
+          <div
+            className={clsx(
+              classNames.toolbarControls,
+              styles[classNames.toolbarControls],
+            )}
+            ref={toolbarControlsRef}
+          >
             {customActions}
           </div>
         </div>

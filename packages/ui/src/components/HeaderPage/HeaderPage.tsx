@@ -22,6 +22,8 @@ import { useStyles } from '../../hooks/useStyles';
 import { Container } from '../Container';
 import { Link } from '../Link';
 import { Fragment } from 'react/jsx-runtime';
+import styles from './HeaderPage.module.css';
+import clsx from 'clsx';
 
 /**
  * A component that renders a header page.
@@ -33,9 +35,14 @@ export const HeaderPage = (props: HeaderPageProps) => {
   const { classNames } = useStyles('HeaderPage');
 
   return (
-    <Container className={classNames.root}>
-      <div className={classNames.content}>
-        <div className={classNames.breadcrumbs}>
+    <Container className={clsx(classNames.root, styles[classNames.root])}>
+      <div className={clsx(classNames.content, styles[classNames.content])}>
+        <div
+          className={clsx(
+            classNames.breadcrumbs,
+            styles[classNames.breadcrumbs],
+          )}
+        >
           {breadcrumbs &&
             breadcrumbs.map(breadcrumb => (
               <Fragment key={breadcrumb.label}>
@@ -56,10 +63,17 @@ export const HeaderPage = (props: HeaderPageProps) => {
             {title}
           </Text>
         </div>
-        <div className={classNames.controls}>{customActions}</div>
+        <div className={clsx(classNames.controls, styles[classNames.controls])}>
+          {customActions}
+        </div>
       </div>
       {tabs && (
-        <div className={classNames.tabsWrapper}>
+        <div
+          className={clsx(
+            classNames.tabsWrapper,
+            styles[classNames.tabsWrapper],
+          )}
+        >
           <Tabs>
             <TabList>
               {tabs.map(tab => (

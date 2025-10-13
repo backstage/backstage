@@ -21,6 +21,8 @@ import { useStyles } from '../../hooks/useStyles';
 import type { LinkProps } from './types';
 import { useNavigate, useHref } from 'react-router-dom';
 import { isExternalLink } from '../../utils/isExternalLink';
+import stylesLink from './Link.module.css';
+import stylesText from '../Text/Text.module.css';
 
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
@@ -50,7 +52,13 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     return (
       <AriaLink
         ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
+        className={clsx(
+          textClassNames.root,
+          linkClassNames.root,
+          stylesText[textClassNames.root],
+          stylesLink[linkClassNames.root],
+          className,
+        )}
         data-truncate={truncate}
         href={href}
         {...textDataAttributes}
@@ -64,7 +72,13 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     <RouterProvider navigate={navigate} useHref={useHref}>
       <AriaLink
         ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
+        className={clsx(
+          textClassNames.root,
+          linkClassNames.root,
+          stylesText[textClassNames.root],
+          stylesLink[linkClassNames.root],
+          className,
+        )}
         data-truncate={truncate}
         {...textDataAttributes}
         href={href}

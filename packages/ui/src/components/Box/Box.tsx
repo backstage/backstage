@@ -18,6 +18,7 @@ import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Box.module.css';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
@@ -32,7 +33,12 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     as,
     {
       ref,
-      className: clsx(classNames.root, utilityClasses, className),
+      className: clsx(
+        classNames.root,
+        styles[classNames.root],
+        utilityClasses,
+        className,
+      ),
       style,
       ...rest,
     },

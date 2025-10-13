@@ -15,27 +15,27 @@
  */
 
 @layer components {
-  .bui-DataTablePagination {
+  .bui-TablePagination {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-top: var(--bui-space-5);
   }
 
-  .bui-DataTablePagination--left {
+  .bui-TablePaginationLeft {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
-  .bui-DataTablePagination--right {
+  .bui-TablePaginationRight {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--bui-space-2);
   }
 
-  .bui-DataTablePagination--select {
+  .bui-TablePaginationSelect {
     min-width: 10.5rem;
   }
 }

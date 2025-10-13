@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Grid.module.css';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const { classNames, utilityClasses, style, cleanedProps } = useStyles(
@@ -30,7 +31,12 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   return (
     <div
       ref={ref}
-      className={clsx(classNames.root, utilityClasses, className)}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
       style={style}
       {...rest}
     />
@@ -48,7 +54,12 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
   return (
     <div
       ref={ref}
-      className={clsx(classNames.root, utilityClasses, className)}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
       style={style}
       {...rest}
     />

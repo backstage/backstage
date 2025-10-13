@@ -16,6 +16,8 @@
 
 import { useStyles } from '../../hooks/useStyles';
 import { SkeletonProps } from './types';
+import styles from './Skeleton.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export const Skeleton = (props: SkeletonProps) => {
@@ -24,7 +26,7 @@ export const Skeleton = (props: SkeletonProps) => {
 
   return (
     <div
-      className={classNames.root}
+      className={clsx(classNames.root, styles[classNames.root])}
       data-rounded={rounded}
       style={{
         width,

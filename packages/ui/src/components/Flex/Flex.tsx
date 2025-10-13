@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import { FlexProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Flex.module.css';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
@@ -31,7 +32,12 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
   return (
     <div
       ref={ref}
-      className={clsx(classNames.root, utilityClasses, className)}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
       style={style}
       {...rest}
     />

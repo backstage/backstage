@@ -28,6 +28,7 @@ import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { isExternalLink } from '../../utils/isExternalLink';
 import { useNavigate, useHref } from 'react-router-dom';
+import styles from './TagGroup.module.css';
 
 /**
  * A component that renders a list of tags.
@@ -42,9 +43,12 @@ export const TagGroup = <T extends object>({
 }: TagGroupProps<T>) => {
   const { classNames } = useStyles('TagGroup');
   return (
-    <ReactAriaTagGroup className={classNames.group} {...props}>
+    <ReactAriaTagGroup
+      className={clsx(classNames.group, styles[classNames.group])}
+      {...props}
+    >
       <ReactAriaTagList
-        className={classNames.list}
+        className={clsx(classNames.list, styles[classNames.list])}
         items={items}
         renderEmptyState={renderEmptyState}
       >
@@ -70,18 +74,27 @@ export const Tag = (props: TagProps) => {
   const content = (
     <ReactAriaTag
       textValue={textValue}
-      className={clsx(classNames.tag, className)}
+      className={clsx(classNames.tag, styles[classNames.tag], className)}
       data-size={size}
       href={href}
       {...rest}
     >
       {({ allowsRemoving }) => (
         <>
-          {icon && <span className={classNames.tagIcon}>{icon}</span>}
+          {icon && (
+            <span
+              className={clsx(classNames.tagIcon, styles[classNames.tagIcon])}
+            >
+              {icon}
+            </span>
+          )}
           {children as ReactNode}
           {allowsRemoving && (
             <ReactAriaButton
-              className={classNames.tagRemoveButton}
+              className={clsx(
+                classNames.tagRemoveButton,
+                styles[classNames.tagRemoveButton],
+              )}
               slot="remove"
             >
               <RiCloseCircleLine size={16} />

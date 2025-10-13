@@ -19,6 +19,8 @@ import { forwardRef, Ref } from 'react';
 import { Button as RAButton } from 'react-aria-components';
 import type { ButtonIconProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import stylesButtonIcon from './ButtonIcon.module.css';
+import stylesButton from '../Button/Button.module.css';
 
 /** @public */
 export const ButtonIcon = forwardRef(
@@ -35,7 +37,13 @@ export const ButtonIcon = forwardRef(
 
     return (
       <RAButton
-        className={clsx(classNames.root, classNamesButtonIcon.root, className)}
+        className={clsx(
+          classNames.root,
+          classNamesButtonIcon.root,
+          stylesButton[classNames.root],
+          stylesButtonIcon[classNamesButtonIcon.root],
+          className,
+        )}
         ref={ref}
         {...dataAttributes}
         {...rest}
