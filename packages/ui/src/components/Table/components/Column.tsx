@@ -30,7 +30,7 @@ export const Column = (
   return (
     <ReactAriaColumn className={classNames.head} {...props}>
       {({ allowsSorting, sortDirection }) => (
-        <>
+        <div className={classNames.headContent}>
           {props.children}
           {allowsSorting && (
             <span aria-hidden="true" className={classNames.headSortButton}>
@@ -41,7 +41,7 @@ export const Column = (
               )}
             </span>
           )}
-        </>
+        </div>
       )}
     </ReactAriaColumn>
   );

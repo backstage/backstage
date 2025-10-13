@@ -686,6 +686,7 @@ export const componentDefinitions: {
       readonly body: 'bui-TableBody';
       readonly row: 'bui-TableRow';
       readonly head: 'bui-TableHead';
+      readonly headContent: 'bui-TableHeadContent';
       readonly headSortButton: 'bui-TableHeadSortButton';
       readonly caption: 'bui-TableCaption';
       readonly cell: 'bui-TableCell';
