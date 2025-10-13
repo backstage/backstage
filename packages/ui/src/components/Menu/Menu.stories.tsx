@@ -412,3 +412,38 @@ export const VirtualizedMaxHeight: Story = {
     );
   },
 };
+
+export const WithScroll: Story = {
+  args: {
+    children: null,
+  },
+  decorators: [
+    Story => (
+      <div style={{ height: '2000px', overflow: 'auto' }}>
+        <Story />
+      </div>
+    ),
+  ],
+  render: () => (
+    <MenuTrigger>
+      <Button aria-label="Menu">Menu</Button>
+      <Menu>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuSeparator />
+        <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
+        <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+        <MenuSeparator />
+        <SubmenuTrigger>
+          <MenuItem iconStart={<RiSettingsLine />}>Settings</MenuItem>
+          <Menu placement="right top">
+            <MenuItem>Edit</MenuItem>
+            <MenuItem>Duplicate</MenuItem>
+            <MenuItem>Rename</MenuItem>
+          </Menu>
+        </SubmenuTrigger>
+      </Menu>
+    </MenuTrigger>
+  ),
+};
