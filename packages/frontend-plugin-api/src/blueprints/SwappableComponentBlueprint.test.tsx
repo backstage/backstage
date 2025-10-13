@@ -60,7 +60,7 @@ describe('SwappableComponentBlueprint', () => {
       ],
     });
 
-    expect(await screen.findByText('test!')).toBeInTheDocument();
+    await expect(screen.findByText('test!')).resolves.toBeInTheDocument();
   });
 
   it('should render a component ref without a default implementation', async () => {
@@ -80,7 +80,9 @@ describe('SwappableComponentBlueprint', () => {
       ],
     });
 
-    expect(await screen.findByTestId('test.component')).toBeInTheDocument();
+    await expect(
+      screen.findByTestId('test.component'),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should render a component ref with an async loader implementation', async () => {
@@ -103,7 +105,7 @@ describe('SwappableComponentBlueprint', () => {
       ],
     });
 
-    expect(await screen.findByText('test!')).toBeInTheDocument();
+    await expect(screen.findByText('test!')).resolves.toBeInTheDocument();
   });
 
   it('should render a component ref with an async loader implementation and prop transform', async () => {
@@ -126,6 +128,6 @@ describe('SwappableComponentBlueprint', () => {
       ],
     });
 
-    expect(await screen.findByText('tr test!')).toBeInTheDocument();
+    await expect(screen.findByText('tr test!')).resolves.toBeInTheDocument();
   });
 });
