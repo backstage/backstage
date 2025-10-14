@@ -479,15 +479,11 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       return [];
     }
 
-    let test: (file: string) => boolean;
-
-    if (typeof catalogFile === 'string') {
-      test = (file: string) => path.basename(file) === catalogFile;
-    } else {
-      test = (file: string) =>
-        catalogFile.test(file) || catalogFile.test(path.basename(file));
-    }
-
+    const test =
+      typeof catalogFile === 'string'
+        ? (file: string) => path.basename(file) === catalogFile
+        : (file: string) =>
+            catalogFile.test(file) || catalogFile.test(path.basename(file));
     const matchingFiles = event.commits.flatMap((element: any) =>
       element[action].filter(test),
     );
