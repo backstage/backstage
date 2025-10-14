@@ -61,8 +61,8 @@ import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { convertFiltersToRecord } from '../../util/templating';
 import {
-  CheckpointState,
   CheckpointContext,
+  CheckpointState,
 } from '@backstage/plugin-scaffolder-node/alpha';
 
 type NunjucksWorkflowRunnerOptions = {
@@ -245,7 +245,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         return;
       }
       const action: TemplateAction<JsonObject> =
-        this.options.actionRegistry.get(step.action);
+        await this.options.actionRegistry.get(step.action, {
+          credentials: await task.getInitiatorCredentials(),
+        });
       const { taskLogger } = createStepLogger({
         task,
         step,
