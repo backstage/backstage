@@ -152,7 +152,7 @@ describe('createPackageVersionProvider', () => {
     it('should not use backstage protocol when preferBackstageProtocol is false', async () => {
       mockDir.setContent({
         'yarn.lock': `${HEADER}
-"@backstage/core-plugin-api@^1.0.0":
+"@backstage/core-plugin-api@*":
   version "1.0.0"
 `,
       });
@@ -163,15 +163,13 @@ describe('createPackageVersionProvider', () => {
         preferBackstageProtocol: false,
       });
 
-      expect(provider('@backstage/core-plugin-api')).toBe(
-        `^${corePluginApiPkg.version}`,
-      );
+      expect(provider('@backstage/core-plugin-api')).toBe('*');
     });
 
     it('should not use backstage protocol when options are not provided', async () => {
       mockDir.setContent({
         'yarn.lock': `${HEADER}
-"@backstage/core-plugin-api@^1.0.0":
+"@backstage/core-plugin-api@*":
   version "1.0.0"
 `,
       });
@@ -180,9 +178,7 @@ describe('createPackageVersionProvider', () => {
       const lockfile = await Lockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile);
 
-      expect(provider('@backstage/core-plugin-api')).toBe(
-        `^${corePluginApiPkg.version}`,
-      );
+      expect(provider('@backstage/core-plugin-api')).toBe('*');
     });
   });
 });
