@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.4.16
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-kubernetes-common@0.9.7
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/integration-aws-node@0.1.18
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-node@1.19.1
+
 ## 0.4.16-next.2
 
 ### Patch Changes

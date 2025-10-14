@@ -1,5 +1,39 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.12.0
+
+### Minor Changes
+
+- 9b81a90: **BREAKING** - Marking optional fields as required in the `TaskBroker`, these can be fixed with a no-op `() => void` if you don't want to implement the functions.
+
+  - `cancel`, `recoverTasks` and `retry` are the required methods on the `TaskBroker` interface.
+
+  **NOTE**: If you're affected by this breaking change, please reach out to us in an issue as we're thinking about completely removing the `TaskBroker` extension point soon and would like to hear your use cases for the upcoming re-architecture of the `scaffolder-backend` plugin.
+
+### Patch Changes
+
+- c8aa210: **BREAKING ALPHA**: We've moved the `scaffolderActionsExtensionPoint` from `/alpha` to the main export.
+
+  ```tsx
+  // before
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  // after
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+  ```
+
+- 6e2bda7: **DEPRECATION**: We're going to be working on refactoring a lot of the internals of the Scaffolder backend plugin, and with that comes a lot of deprecations and removals for public types that are making these things hard.
+
+  If you're using these types, please reach out to us either on Discord or a GitHub issue with your use cases.
+
+  - `SerializedTask`, `SerializedTaskEvent`, `TaskBroker`, `TaskContext`, `TaskBrokerDispatchOptions`, `TaskBrokerDispatchResult`, `TaskCompletionState`, `TaskEventType`, `TaskFilter`, `TaskFilters`, `TaskStatus` are the types that have now been marked as deprecated, and will be removed in a future release.
+
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-scaffolder-common@1.7.2
+
 ## 0.12.0-next.1
 
 ### Patch Changes

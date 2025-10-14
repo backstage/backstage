@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-gcp
 
+## 0.2.14
+
+### Patch Changes
+
+- baf1cab: Fix documentation strings to mention GCP instead of Azure
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+
 ## 0.2.14-next.1
 
 ### Patch Changes

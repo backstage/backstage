@@ -1,5 +1,15 @@
 # @backstage/create-app
 
+## 0.7.5
+
+### Patch Changes
+
+- c73bfa4: Bumped create-app version.
+- c2c6054: Bumped create-app version.
+- ffb5b44: Bumped create-app version.
+- 316d077: Bumped create-app version.
+- 7dcedff: Bump `better-sqlite3` to the latest version
+
 ## 0.7.5-next.3
 
 ### Patch Changes

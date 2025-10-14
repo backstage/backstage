@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.2
+
+### Patch Changes
+
+- 2a3704d: Correct translation key from "type" to "owner" for owner column in entity table to ensure the right translation is loaded.
+- ace202e: Update `material-ui-popup-state` to latest available version.
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/frontend-test-utils@0.4.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/integration-react@1.2.11
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-react@0.4.37
+
 ## 1.21.2-next.1
 
 ### Patch Changes

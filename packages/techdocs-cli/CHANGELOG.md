@@ -1,5 +1,18 @@
 # @techdocs/cli
 
+## 1.10.0
+
+### Minor Changes
+
+- 43afbe5: Techdocs CLI serve supports automatic refresh, relying on `mkdocs` `watch` feature.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/config@1.3.5
+  - @backstage/plugin-techdocs-node@1.13.8
+
 ## 1.9.9-next.1
 
 ### Patch Changes
