@@ -58,6 +58,10 @@ export interface Config {
            */
           entityFilename?: string;
           /**
+           * (Optional) The pattern, in preference to `catalogFile`, used for the catalog file.
+           */
+          entityFilePattern?: string;
+          /**
            * (Optional) TaskScheduleDefinition for the refresh.
            */
           schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
