@@ -49,6 +49,7 @@ bursty
 callout
 CDNs
 Chai
+Chainguard
 changeset
 changesets
 Changesets
@@ -220,6 +221,7 @@ jq
 js
 json
 jsonnet
+JSONSchema
 jsx
 JWTs
 Kaewkasi
@@ -417,6 +419,7 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
+scalprum
 SCM
 SCMs
 scrollable
@@ -467,6 +470,8 @@ subheaders
 subkey
 subpage
 subpath
+subpaths
+subroute
 subroutes
 substring
 subtree
@@ -491,6 +496,7 @@ templaters
 Templaters
 TFRecord
 theia
+Themer
 threenager
 thumbsup
 todo
