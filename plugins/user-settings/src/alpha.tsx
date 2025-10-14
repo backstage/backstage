@@ -14,21 +14,52 @@
  * limitations under the License.
  */
 import {
+  ApiBlueprint,
   coreExtensionData,
   createExtensionInput,
   createFrontendPlugin,
-  PageBlueprint,
+  discoveryApiRef,
+  errorApiRef,
+  fetchApiRef,
+  identityApiRef,
   NavItemBlueprint,
+  PageBlueprint,
+  storageApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
+  compatWrapper,
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
-  compatWrapper,
 } from '@backstage/core-compat-api';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from './plugin';
+import { UserSettingsStorage } from './apis';
+import { signalApiRef } from '@backstage/plugin-signals-react';
 
 export * from './translation';
+
+const userSettingsStorageApi = ApiBlueprint.make({
+  name: 'storage',
+  params: defineParams =>
+    defineParams({
+      api: storageApiRef,
+      deps: {
+        fetchApi: fetchApiRef,
+        discoveryApi: discoveryApiRef,
+        errorApi: errorApiRef,
+        identityApi: identityApiRef,
+        signalApi: signalApiRef,
+      },
+      factory: ({ fetchApi, discoveryApi, errorApi, identityApi, signalApi }) =>
+        UserSettingsStorage.create({
+          fetchApi,
+          discoveryApi,
+          errorApi,
+          identityApi,
+          signalApi,
+        }),
+    }),
+});
 
 const userSettingsPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -70,7 +101,7 @@ export const settingsNavItem = NavItemBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'user-settings',
   info: { packageJson: () => import('../package.json') },
-  extensions: [userSettingsPage, settingsNavItem],
+  extensions: [userSettingsStorageApi, userSettingsPage, settingsNavItem],
   routes: convertLegacyRouteRefs({
     root: settingsRouteRef,
   }),
