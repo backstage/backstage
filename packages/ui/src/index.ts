@@ -47,7 +47,6 @@ export * from './components/Text';
 export * from './components/TextField';
 export * from './components/Tooltip';
 export * from './components/Menu';
-export * from './components/ScrollArea';
 export * from './components/SearchField';
 export * from './components/Link';
 export * from './components/Select';

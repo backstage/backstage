@@ -279,14 +279,6 @@ export const componentDefinitions = {
       radio: 'bui-Radio',
     },
   },
-  ScrollArea: {
-    classNames: {
-      root: 'bui-ScrollAreaRoot',
-      viewport: 'bui-ScrollAreaViewport',
-      scrollbar: 'bui-ScrollAreaScrollbar',
-      thumb: 'bui-ScrollAreaThumb',
-    },
-  },
   SearchField: {
     classNames: {
       root: 'bui-SearchField',

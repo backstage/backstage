@@ -62,21 +62,6 @@
     padding-block: var(--bui-space-1);
   }
 
-  /* Ensure ScrollArea works properly within MenuRA popover */
-  .bui-MenuPopover .bui-ScrollAreaRoot {
-    /* Take full height of popover */
-    height: 100%;
-    min-height: 0;
-    flex: 1;
-    /* Ensure the root container has proper height constraints */
-    display: flex;
-    flex-direction: column;
-  }
-
-  .bui-MenuPopover .bui-ScrollAreaScrollbar {
-    margin-inline: var(--bui-space-1_5);
-  }
-
   .bui-MenuItem {
     padding-inline: var(--bui-space-1);
     display: block;
