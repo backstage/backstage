@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.2
+
+### Patch Changes
+
+- e61f89e: Don't change loading to false until we've actually got some log state
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-react@0.4.37
+  - @backstage/plugin-scaffolder-common@1.7.2
+
 ## 1.19.2-next.2
 
 ### Patch Changes

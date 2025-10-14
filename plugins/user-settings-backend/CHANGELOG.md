@@ -1,5 +1,15 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-signals-node@0.1.25
+
 ## 0.3.7-next.1
 
 ### Patch Changes

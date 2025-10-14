@@ -1,5 +1,13 @@
 # @backstage/plugin-events-backend-module-bitbucket-cloud
 
+## 0.2.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-events-node@0.4.16
+
 ## 0.2.25-next.0
 
 ### Patch Changes

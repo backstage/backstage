@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+
 ## 0.2.22-next.1
 
 ### Patch Changes

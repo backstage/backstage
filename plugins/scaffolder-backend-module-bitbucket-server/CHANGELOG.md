@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.2.14
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+
 ## 0.2.14-next.2
 
 ### Patch Changes

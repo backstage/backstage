@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.7.4
+
+### Patch Changes
+
+- 0443119: Fixed an issue in `GitlabDiscoveryEntityProvider` where entity fetching could fail for projects with special characters or that had been renamed or moved.
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/integration@1.18.1
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-events-node@0.4.16
+
 ## 0.7.4-next.2
 
 ### Patch Changes

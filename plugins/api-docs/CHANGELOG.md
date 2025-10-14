@@ -1,5 +1,31 @@
 # @backstage/plugin-api-docs
 
+## 0.13.0
+
+### Minor Changes
+
+- b8a381e: Remove explicit dependency on `isomorphic-form-data`.
+
+  This explicit dependency was added to address [an issue](https://github.com/swagger-api/swagger-ui/issues/7436) in the
+  dependency `swagger-ui-react`. That [issue has since been resolved](https://github.com/swagger-api/swagger-ui/issues/7436#issuecomment-889792304),
+  and `isomorphic-form-data` no longer needs to be declared.
+
+  Additionally, this changeset updates the `swagger-ui-react` dependency to version `5.19.0` or higher, which includes
+  [compatibility](https://github.com/swagger-api/swagger-ui?tab=readme-ov-file#compatibility) with the latest versions of
+  the OpenAPI specification.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/plugin-catalog@1.31.4
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-permission-react@0.4.37
+
 ## 0.13.0-next.1
 
 ### Patch Changes

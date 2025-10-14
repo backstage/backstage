@@ -1,5 +1,18 @@
 # @backstage/plugin-signals
 
+## 0.0.24
+
+### Patch Changes
+
+- 7b41d9d: Remove `app-root-element:signals/signals-display` which was not doing anything useful
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-signals-react@0.0.16
+
 ## 0.0.24-next.3
 
 ### Patch Changes

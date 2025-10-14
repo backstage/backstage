@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.15
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.4
+
 ## 0.4.15-next.1
 
 ### Patch Changes

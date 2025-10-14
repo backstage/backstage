@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.12
+
+### Patch Changes
+
+- ac405f2: The configmaps added to be rendered
+- f7a4144: Fixes calculation of CPU utilization in the PodTable
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/plugin-kubernetes-common@0.9.7
+  - @backstage/core-plugin-api@1.11.1
+
 ## 0.5.12-next.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/eslint-plugin
 
+## 0.1.12
+
+### Patch Changes
+
+- 5e98e61: Minor doc updates
+- a1dae71: Allow frontend plugin to import from another frontend plugin with same plugin id.
+
+  This prevents the ESLint rule from incorrectly flagging these imports in the new frontend system
+  where plugin override requires cross-plugin imports.
+
 ## 0.1.11
 
 ### Patch Changes

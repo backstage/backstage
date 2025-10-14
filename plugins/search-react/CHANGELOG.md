@@ -1,5 +1,17 @@
 # @backstage/plugin-search-react
 
+## 1.9.5
+
+### Patch Changes
+
+- 67a3e1a: Implemented AbortController request cancellation for overlapping search requests. This change ensures that when users type quickly, previous search requests are properly canceled before new ones start.
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-search-common@1.2.20
+
 ## 1.9.5-next.2
 
 ### Patch Changes
