@@ -82,6 +82,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   {
     group: '',
     apiVersion: 'v1',
+    plural: 'secrets',
+    objectType: 'secrets',
+  },
+  {
+    group: '',
+    apiVersion: 'v1',
     plural: 'limitranges',
     objectType: 'limitranges',
   },
