@@ -10,7 +10,6 @@ import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsi
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
-import { Context } from 'react';
 import { DetailedHTMLProps } from 'react';
 import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
 import type { ElementType } from 'react';
@@ -32,7 +31,6 @@ import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
-import type { RemixiconComponentType } from '@remixicon/react';
 import { RowProps } from 'react-aria-components';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
@@ -987,102 +985,6 @@ export interface HeaderTab {
 }
 
 // @public (undocumented)
-export const Icon: (props: IconProps) => JSX_2.Element | null;
-
-// @public (undocumented)
-export const IconContext: Context<IconContextProps>;
-
-// @public (undocumented)
-export interface IconContextProps {
-  // (undocumented)
-  icons: IconMap;
-}
-
-// @public (undocumented)
-export type IconMap = Partial<Record<IconNames, RemixiconComponentType>>;
-
-// @public (undocumented)
-export type IconNames =
-  | 'account-circle'
-  | 'alert'
-  | 'arrow-down'
-  | 'arrow-down-circle'
-  | 'caret-down'
-  | 'caret-left'
-  | 'caret-right'
-  | 'caret-up'
-  | 'arrow-left'
-  | 'arrow-left-circle'
-  | 'arrow-left-down'
-  | 'arrow-left-up'
-  | 'arrow-right'
-  | 'arrow-right-circle'
-  | 'arrow-right-down'
-  | 'arrow-right-up'
-  | 'arrow-up'
-  | 'arrow-up-circle'
-  | 'braces'
-  | 'brackets'
-  | 'bug'
-  | 'check'
-  | 'check-double'
-  | 'chevron-down'
-  | 'chevron-left'
-  | 'chevron-right'
-  | 'chevron-up'
-  | 'close'
-  | 'cloud'
-  | 'code'
-  | 'discord'
-  | 'download'
-  | 'external-link'
-  | 'eye'
-  | 'eye-off'
-  | 'filter'
-  | 'flower'
-  | 'github'
-  | 'git-repository'
-  | 'group'
-  | 'heart'
-  | 'moon'
-  | 'plus'
-  | 'search'
-  | 'sidebar-fold'
-  | 'sidebar-unfold'
-  | 'sparkling'
-  | 'star'
-  | 'sun'
-  | 'terminal'
-  | 'trash'
-  | 'upload'
-  | 'user'
-  | 'youtube'
-  | 'zoom-in'
-  | 'zoom-out';
-
-// @public (undocumented)
-export type IconProps = {
-  name: IconNames;
-  size?: number;
-  className?: string;
-  style?: React.CSSProperties;
-};
-
-// @public (undocumented)
-export const IconProvider: (props: IconProviderProps) => JSX_2.Element;
-
-// @public (undocumented)
-export interface IconProviderProps {
-  // (undocumented)
-  children?: ReactNode;
-  // (undocumented)
-  overrides?: Partial<Record<IconNames, RemixiconComponentType>>;
-}
-
-// @public (undocumented)
-export const icons: IconMap;
-
-// @public (undocumented)
 export type JustifyContent =
   | 'stretch'
   | 'start'
@@ -1587,9 +1489,6 @@ export const useBreakpoint: () => {
   up: (key: Breakpoint) => boolean;
   down: (key: Breakpoint) => boolean;
 };
-
-// @public (undocumented)
-export const useIcons: () => IconContextProps;
 
 // @public
 export function useTable<T = any>(

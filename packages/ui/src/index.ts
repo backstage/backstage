@@ -20,9 +20,6 @@
  * @packageDocumentation
  */
 
-// Providers
-export * from './components/Icon/context';
-
 // Layout components
 export * from './components/Box';
 export * from './components/Grid';
@@ -38,7 +35,6 @@ export * from './components/Dialog';
 export * from './components/FieldLabel';
 export * from './components/Header';
 export * from './components/HeaderPage';
-export * from './components/Icon';
 export * from './components/ButtonIcon';
 export * from './components/ButtonLink';
 export * from './components/Checkbox';

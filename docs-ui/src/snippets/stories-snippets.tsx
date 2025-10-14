@@ -8,7 +8,6 @@ import * as ButtonLinkStories from '../../../packages/ui/src/components/ButtonLi
 import * as CheckboxStories from '../../../packages/ui/src/components/Checkbox/Checkbox.stories';
 import * as ContainerStories from '../../../packages/ui/src/components/Container/Container.stories';
 import * as GridStories from '../../../packages/ui/src/components/Grid/Grid.stories';
-import * as IconStories from '../../../packages/ui/src/components/Icon/Icon.stories';
 import * as TextFieldStories from '../../../packages/ui/src/components/TextField/TextField.stories';
 import * as TextStories from '../../../packages/ui/src/components/Text/Text.stories';
 import * as FlexStories from '../../../packages/ui/src/components/Flex/Flex.stories';
@@ -53,7 +52,6 @@ export const ButtonLinkSnippet = createSnippetComponent(ButtonLinkStories);
 export const CheckboxSnippet = createSnippetComponent(CheckboxStories);
 export const ContainerSnippet = createSnippetComponent(ContainerStories);
 export const GridSnippet = createSnippetComponent(GridStories);
-export const IconSnippet = createSnippetComponent(IconStories);
 export const TextFieldSnippet = createSnippetComponent(TextFieldStories);
 export const PasswordFieldSnippet =
   createSnippetComponent(PasswordFieldStories);
