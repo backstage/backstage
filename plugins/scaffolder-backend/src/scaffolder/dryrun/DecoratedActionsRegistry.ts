@@ -21,11 +21,13 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 /** @internal */
 export class DecoratedActionsRegistry implements TemplateActionRegistry {
   private readonly innerActions: Map<string, TemplateAction> = new Map();
+  private readonly innerRegistry: TemplateActionRegistry;
 
   constructor(
-    private readonly innerRegistry: TemplateActionRegistry,
+    innerRegistry: TemplateActionRegistry,
     extraActions: Array<TemplateAction>,
   ) {
+    this.innerRegistry = innerRegistry;
     for (const action of extraActions) {
       this.innerActions.set(action.id, action);
     }

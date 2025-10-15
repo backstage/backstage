@@ -121,7 +121,10 @@ export const generateSettingsHash = (
 export class DatabaseNotificationsStore implements NotificationsStore {
   private readonly isSQLite = false;
 
-  private constructor(private readonly db: Knex) {
+  private readonly db: Knex;
+
+  private constructor(db: Knex) {
+    this.db = db;
     this.isSQLite = this.db.client.config.client.includes('sqlite3');
   }
 

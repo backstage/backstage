@@ -44,10 +44,13 @@ class Tracker {
   private insertBaseEntitiesEnd: number | undefined;
   private readonly deferred = createDeferred();
 
-  constructor(
-    private readonly knex: Knex,
-    private readonly load: SyntheticLoadOptions,
-  ) {}
+  private readonly knex: Knex;
+  private readonly load: SyntheticLoadOptions;
+
+  constructor(knex: Knex, load: SyntheticLoadOptions) {
+    this.knex = knex;
+    this.load = load;
+  }
 
   events(): SyntheticLoadEvents {
     return {

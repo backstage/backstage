@@ -34,13 +34,21 @@ export type DefaultLocationServiceOptions = {
 };
 
 export class DefaultLocationService implements LocationService {
+  private readonly store: LocationStore;
+  private readonly orchestrator: CatalogProcessingOrchestrator;
+  private readonly options: DefaultLocationServiceOptions;
+
   constructor(
-    private readonly store: LocationStore,
-    private readonly orchestrator: CatalogProcessingOrchestrator,
-    private readonly options: DefaultLocationServiceOptions = {
+    store: LocationStore,
+    orchestrator: CatalogProcessingOrchestrator,
+    options: DefaultLocationServiceOptions = {
       allowedLocationTypes: ['url'],
     },
-  ) {}
+  ) {
+    this.store = store;
+    this.orchestrator = orchestrator;
+    this.options = options;
+  }
 
   async createLocation(
     input: LocationInput,

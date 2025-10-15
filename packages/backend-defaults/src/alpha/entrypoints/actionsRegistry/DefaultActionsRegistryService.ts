@@ -39,12 +39,22 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
     new Map();
 
+  private readonly logger: LoggerService;
+  private readonly httpAuth: HttpAuthService;
+  private readonly auth: AuthService;
+  private readonly metadata: PluginMetadataService;
+
   private constructor(
-    private readonly logger: LoggerService,
-    private readonly httpAuth: HttpAuthService,
-    private readonly auth: AuthService,
-    private readonly metadata: PluginMetadataService,
-  ) {}
+    logger: LoggerService,
+    httpAuth: HttpAuthService,
+    auth: AuthService,
+    metadata: PluginMetadataService,
+  ) {
+    this.logger = logger;
+    this.httpAuth = httpAuth;
+    this.auth = auth;
+    this.metadata = metadata;
+  }
 
   static create({
     httpAuth,

@@ -88,10 +88,16 @@ export class GoogleGcsUrlReader implements UrlReaderService {
     return [{ reader, predicate }];
   };
 
+  private readonly integration: GoogleGcsIntegrationConfig;
+  private readonly storage: GoogleCloud.Storage;
+
   constructor(
-    private readonly integration: GoogleGcsIntegrationConfig,
-    private readonly storage: GoogleCloud.Storage,
-  ) {}
+    integration: GoogleGcsIntegrationConfig,
+    storage: GoogleCloud.Storage,
+  ) {
+    this.integration = integration;
+    this.storage = storage;
+  }
 
   private readStreamFromUrl(url: string): Readable {
     const { bucket, key } = parseURL(url);

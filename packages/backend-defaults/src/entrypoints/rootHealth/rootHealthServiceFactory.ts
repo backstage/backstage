@@ -24,8 +24,10 @@ import {
 /** @internal */
 export class DefaultRootHealthService implements RootHealthService {
   #state: 'init' | 'up' | 'down' = 'init';
+  readonly options: { lifecycle: RootLifecycleService };
 
-  constructor(readonly options: { lifecycle: RootLifecycleService }) {
+  constructor(options: { lifecycle: RootLifecycleService }) {
+    this.options = options;
     options.lifecycle.addStartupHook(() => {
       this.#state = 'up';
     });
