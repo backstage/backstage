@@ -1,5 +1,11 @@
 # @backstage/plugin-user-settings
 
+## 0.8.28
+
+### Patch Changes
+
+- e38a874: Revert `storageApiRef` implementation
+
 ## 0.8.27
 
 ### Patch Changes

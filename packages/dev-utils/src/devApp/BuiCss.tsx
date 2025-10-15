@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-@layer base {
-  :where(a) {
-    color: inherit;
-    text-decoration: none;
-  }
+import '@backstage/ui/css/styles.css';
 
-  @keyframes pulse {
-    50% {
-      opacity: 0.5;
-    }
-  }
-
-  body {
-    background-color: var(--bui-bg);
-    color: var(--bui-fg-primary);
-    font-family: var(--bui-font-regular);
-    font-weight: var(--bui-font-weight-regular);
-    font-size: var(--bui-font-size-3);
-  }
-}
+/**
+ * Placeholder component to allow lazy loading of the BUI CSS import. This
+ * ensures that we don't load the CSS as soon as anyone imports this package.
+ */
+export default () => null;

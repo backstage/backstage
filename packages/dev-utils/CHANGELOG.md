@@ -1,5 +1,13 @@
 # @backstage/dev-utils
 
+## 1.1.16
+
+### Patch Changes
+
+- c55af01: Fixed styling of the dev app by adding a lazy import of `@backstage/ui/css/styles.css`.
+- Updated dependencies
+  - @backstage/ui@0.8.1
+
 ## 1.1.15
 
 ### Patch Changes

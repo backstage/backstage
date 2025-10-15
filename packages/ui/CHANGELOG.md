@@ -1,5 +1,13 @@
 # @backstage/ui
 
+## 0.8.1
+
+### Patch Changes
+
+- 3f9b002: Fix default text color in Backstage UI
+- f842c8c: Fix the default font size in Backstage UI.
+- 247d799: Fix default font wight and font family in Backstage UI.
+
 ## 0.8.0
 
 ### Minor Changes
