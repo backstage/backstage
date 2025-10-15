@@ -21,9 +21,9 @@ asciidoc
 async
 Atlassian
 autofix
+autologout
 automations
 autoscaling
-Autoscaling
 autoselect
 Avro
 backend's
@@ -47,6 +47,7 @@ bundler
 bundlers
 bursty
 callout
+camelCase
 CDNs
 Chai
 Chainguard
