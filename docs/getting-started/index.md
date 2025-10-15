@@ -132,16 +132,34 @@ To run the application:
    ```bash
    yarn start
    ```
-
-![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)
-
 Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
 
-You can start exploring the demo immediately.
+As the frontend and backend are starting, you will see output similar to the following. The output shows that the app and backend are starting up with the configuration coming from `app-config.yaml`. You will see the plugins being iniatized, and authorization and permissions being setup. In addition you will see a series of REST API calls for those plugins that use a service backend, such as the service catalog.
+
+```
+Starting app, backend
+Loaded config from app-config.yaml
+.
+.
+2025-10-15T12:26:41.564Z backstage info Plugin initialization started: 'app', 'proxy', 'scaffolder', 'techdocs', 'auth', 'catalog', 'permission', 'search', 'kubernetes', 'notifications', 'signals' type="initialization"
+Rspack compiled successfully
+.
+.
+2025-10-15T15:17:21.130Z auth info Created new signing key eec1a9e4-4395-4698-9a9f-f1b5cbcf152b component="token-factory"
+2025-10-15T15:17:21.139Z auth info Issuing token for user:development/guest, with entities user:development/guest component="token-factory"
+2025-10-15T15:17:21.223Z rootHttpRouter info [2025-10-15T15:17:21.223Z] "GET /api/auth/guest/refresh HTTP/1.1" 200 802 "http://localhost:3000/" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0" type="incomingRequest" date="2025-10-15T15:17:21.223Z" method="GET" url="/api/auth/guest/refresh" status=200 httpVersion="1.1" userAgent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0" contentLength=802 referrer="http://localhost:3000/"
+.
+.
+2025-10-15T15:17:24.051Z rootHttpRouter info [2025-10-15T15:17:24.051Z] "GET /api/catalog/entities?fields=metadata,kind,spec.profile&filter=kind%3Dgroup%2Crelations.hasMember%3Duser%3Adevelopment%2Fguest HTTP/1.1" 304 0 "http://localhost:3000/" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0" type="incomingRequest" date="2025-10-15T15:17:24.051Z" method="GET" url="/api/catalog/entities?fields=metadata,kind,spec.profile&filter=kind%3Dgroup%2Crelations.hasMember%3Duser%3Adevelopment%2Fguest" status=304 httpVersion="1.1" userAgent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0" referrer="http://localhost:3000/"
+.
+.
+```
+
+Once the Backstage UI is displayed, you can start exploring the demo immediately.
 
 :::tip Browser window didn't open with yarn start
 
-When you see the message `[0] webpack compiled successfully`, you can navigate directly to `http://localhost:3000` to see your Backstage app.
+When you see the message `Rspack compiled successfully`, you can navigate directly to `http://localhost:3000` to see your Backstage app.
 
 :::
 
