@@ -28,5 +28,6 @@
 
   body {
     background-color: var(--bui-bg);
+    color: var(--bui-fg-primary);
   }
 }
