@@ -39,7 +39,7 @@ import '@backstage/ui/css/styles.css';
 // Create your app instance
 const app = createApp({
   // Custom features such as plugins can be installed explicitly, but they are usually
-  // auto-discovered, unless `app.packages` app-config is customized.
+  // auto-discovered, unless `app.packages` is customized in `app-config.yaml`.
   features: [],
 });
 
