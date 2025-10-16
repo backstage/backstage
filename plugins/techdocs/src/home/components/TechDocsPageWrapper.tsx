@@ -16,8 +16,10 @@
 
 import { ReactNode, FC } from 'react';
 
-import { PageWithHeader } from '@backstage/core-components';
+import { Page } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { Header, HeaderPage } from '@backstage/ui';
+import { DocsIcon, SupportButton } from '@backstage/core-components';
 
 /**
  * Props for {@link TechDocsPageWrapper}
@@ -46,13 +48,20 @@ export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
       {CustomPageWrapper ? (
         <CustomPageWrapper>{children}</CustomPageWrapper>
       ) : (
-        <PageWithHeader
-          title="Documentation"
-          subtitle={generatedSubtitle}
-          themeId="documentation"
-        >
+        <Page themeId="documentation">
+          <div style={{ gridArea: 'pageHeader' }}>
+            <Header title="TechDocs" icon={<DocsIcon fontSize="inherit" />} />
+            <HeaderPage
+              title={generatedSubtitle}
+              customActions={
+                <SupportButton>
+                  Discover documentation in your ecosystem.
+                </SupportButton>
+              }
+            />
+          </div>
           {children}
-        </PageWithHeader>
+        </Page>
       )}
     </>
   );

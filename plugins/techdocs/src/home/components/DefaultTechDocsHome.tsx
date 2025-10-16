@@ -15,11 +15,7 @@
  */
 
 import { ReactNode, FC } from 'react';
-import {
-  Content,
-  ContentHeader,
-  SupportButton,
-} from '@backstage/core-components';
+import { Content } from '@backstage/core-components';
 import {
   CatalogFilterLayout,
   EntityListProvider,
@@ -59,17 +55,10 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
   const Wrapper: FC<{
     children: ReactNode;
   }> = PageWrapper ? PageWrapper : TechDocsPageWrapper;
-  const Header: FC =
-    CustomHeader ||
-    (() => (
-      <ContentHeader title="">
-        <SupportButton>Discover documentation in your ecosystem.</SupportButton>
-      </ContentHeader>
-    ));
   return (
     <Wrapper>
       <Content>
-        <Header />
+        {CustomHeader && <CustomHeader />}
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>

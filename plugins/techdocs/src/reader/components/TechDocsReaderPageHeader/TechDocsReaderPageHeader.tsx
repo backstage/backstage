@@ -17,8 +17,6 @@
 import { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
-import Grid from '@material-ui/core/Grid';
-import Skeleton from '@material-ui/lab/Skeleton';
 import CodeIcon from '@material-ui/icons/Code';
 
 import {
@@ -39,15 +37,16 @@ import {
   CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { Header, HeaderLabel } from '@backstage/core-components';
+import { DocsIcon } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
+import { HeaderPage, Header, Flex, ButtonLink } from '@backstage/ui';
+
+import { TechDocsHeaderLabel } from '../TechDocsHeaderLabel';
 
 import capitalize from 'lodash/capitalize';
 
 import { rootRouteRef } from '../../../routes';
 import { useParams } from 'react-router-dom';
-
-const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
 /**
  * Props for {@link TechDocsReaderPageHeader}
@@ -80,7 +79,6 @@ export const TechDocsReaderPageHeader = (
   const {
     title,
     setTitle,
-    subtitle,
     setSubtitle,
     entityRef,
     metadata: { value: metadata, loading: metadataLoading },
@@ -112,50 +110,34 @@ export const TechDocsReaderPageHeader = (
 
   const labels = (
     <>
-      <HeaderLabel
-        label={capitalize(entityMetadata?.kind || 'entity')}
-        value={
-          <EntityRefLink
-            color="inherit"
-            entityRef={entityRef}
-            title={entityMetadata?.metadata.title}
-            defaultKind="Component"
-          />
-        }
-      />
+      <TechDocsHeaderLabel label={capitalize(entityMetadata?.kind || 'entity')}>
+        <EntityRefLink entityRef={entityRef} defaultKind="Component" />
+      </TechDocsHeaderLabel>
+
       {ownedByRelations.length > 0 && (
-        <HeaderLabel
-          label="Owner"
-          value={
-            <EntityRefLinks
-              color="inherit"
-              entityRefs={ownedByRelations}
-              defaultKind="group"
-            />
-          }
-        />
+        <TechDocsHeaderLabel label="Owner">
+          <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
+        </TechDocsHeaderLabel>
       )}
+
       {lifecycle ? (
-        <HeaderLabel label="Lifecycle" value={String(lifecycle)} />
+        <TechDocsHeaderLabel label="Lifecycle">
+          {String(lifecycle)}
+        </TechDocsHeaderLabel>
       ) : null}
+
       {locationMetadata &&
-      locationMetadata.type !== 'dir' &&
-      locationMetadata.type !== 'file' ? (
-        <HeaderLabel
-          label=""
-          value={
-            <Grid container direction="column" alignItems="center">
-              <Grid style={{ padding: 0 }} item>
-                <CodeIcon style={{ marginTop: '-25px' }} />
-              </Grid>
-              <Grid style={{ padding: 0 }} item>
-                Source
-              </Grid>
-            </Grid>
-          }
-          url={locationMetadata.target}
-        />
-      ) : null}
+        locationMetadata.type !== 'dir' &&
+        locationMetadata.type !== 'file' && (
+          <ButtonLink
+            href={locationMetadata?.target || ''}
+            iconStart={<CodeIcon />}
+            variant="tertiary"
+            size="small"
+          >
+            Source
+          </ButtonLink>
+        )}
     </>
   );
 
@@ -185,18 +167,28 @@ export const TechDocsReaderPageHeader = (
   const tabTitle = tabTitleItems.join(' | ');
 
   return (
-    <Header
-      type="Documentation"
-      typeLink={docsRootLink}
-      title={title || skeleton}
-      subtitle={subtitle === '' ? undefined : subtitle || skeleton}
-    >
-      <Helmet titleTemplate="%s">
-        <title>{tabTitle}</title>
-      </Helmet>
-      {labels}
+    <>
+      <div style={{ gridArea: 'pageHeader' }}>
+        <Helmet titleTemplate="%s">
+          <title>{tabTitle}</title>
+        </Helmet>
+        <Header
+          icon={<DocsIcon fontSize="inherit" />}
+          title="TechDocs"
+          titleLink={docsRootLink}
+        />
+        <HeaderPage
+          title={title || 'Documentation'}
+          breadcrumbs={[{ label: 'Documentation', href: docsRootLink }]}
+          customActions={
+            <Flex gap="8" align="start">
+              {labels}
+            </Flex>
+          }
+        />
+      </div>
       {children}
       {addons.renderComponentsByLocation(locations.Header)}
-    </Header>
+    </>
   );
 };

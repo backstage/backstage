@@ -27,7 +27,8 @@ import {
 
 import { configApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
 import { TechDocsReaderPageProvider } from '@backstage/plugin-techdocs-react';
-import { Header, Page, TabbedLayout } from '@backstage/core-components';
+import { DocsIcon, Page, TabbedLayout } from '@backstage/core-components';
+import { Header } from '@backstage/ui';
 
 // used so each route can provide it's own implementation in the constructor of the react component
 let apiHolder: TechDocsStorageApi | undefined = undefined;
@@ -139,7 +140,9 @@ createDevApp()
     title: 'TechDocs',
     element: (
       <Page themeId="home">
-        <Header title="TechDocs" />
+        <div style={{ gridArea: 'pageHeader' }}>
+          <Header title="TechDocs" icon={<DocsIcon fontSize="inherit" />} />
+        </div>
         <TabbedLayout>
           <TabbedLayout.Route path="/fresh" title="Fresh">
             {createPage({
