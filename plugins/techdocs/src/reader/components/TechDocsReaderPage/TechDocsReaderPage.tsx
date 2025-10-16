@@ -20,7 +20,7 @@ import {
   ReactNode,
   useEffect,
   useMemo,
-  useCallback,
+  useRef,
 } from 'react';
 import { useOutlet, useNavigate } from 'react-router-dom';
 import { Page } from '@backstage/core-components';
@@ -214,7 +214,26 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
     [entityRef.kind, entityRef.name, entityRef.namespace],
   );
 
-  const externalEntityTechDocsUrl = useAsync(async () => {
+  // Create a stable string key for the entity to use as a dependency.
+  // This ensures we only check for external redirects when the entity changes,
+  // not on every sub-page navigation within the same entity's TechDocs.
+  const entityKey = useMemo(
+    () =>
+      `${memoizedEntityRef.kind}:${memoizedEntityRef.namespace}/${memoizedEntityRef.name}`,
+    [
+      memoizedEntityRef.kind,
+      memoizedEntityRef.namespace,
+      memoizedEntityRef.name,
+    ],
+  );
+
+  // Track which entity we've already checked to avoid redundant checks
+  // when navigating between pages within the same entity's documentation.
+  const checkedEntityRef = useRef<string | null>(null);
+  const shouldCheckForRedirect = checkedEntityRef.current !== entityKey;
+
+  // Check if this entity should redirect to external TechDocs
+  const externalRedirectResult = useAsync(async () => {
     try {
       const catalogEntity = await catalogApi.getEntityByRef(memoizedEntityRef);
 
@@ -224,28 +243,27 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
         return buildTechDocsURL(catalogEntity, viewTechdocLink);
       }
     } catch (error) {
-      // Ignore error and allow an attempt at loading the current entity's TechDocs when unable to fetch an external entity from the catalog.
+      // Ignore errors and allow the current entity's TechDocs to load.
+      // This handles cases where the catalog API is unavailable or the entity doesn't exist.
     }
 
     return undefined;
-  }, [memoizedEntityRef, catalogApi, viewTechdocLink]);
+  }, [entityKey, catalogApi]);
 
-  const handleNavigation = useCallback(
-    (url: string) => {
-      navigate(url, { replace: true });
-    },
-    [navigate],
-  );
-
+  // Navigate to external TechDocs if a redirect URL is available
   useEffect(() => {
-    if (!externalEntityTechDocsUrl.loading && externalEntityTechDocsUrl.value) {
-      handleNavigation(externalEntityTechDocsUrl.value);
+    if (!externalRedirectResult.loading && externalRedirectResult.value) {
+      navigate(externalRedirectResult.value, { replace: true });
     }
-  }, [
-    externalEntityTechDocsUrl.loading,
-    externalEntityTechDocsUrl.value,
-    handleNavigation,
-  ]);
+  }, [externalRedirectResult.loading, externalRedirectResult.value, navigate]);
+
+  // Mark entity as checked once we've determined there's no redirect needed.
+  // This prevents showing loading states on subsequent sub-page navigation.
+  useEffect(() => {
+    if (!externalRedirectResult.loading && !externalRedirectResult.value) {
+      checkedEntityRef.current = entityKey;
+    }
+  }, [externalRedirectResult.loading, externalRedirectResult.value, entityKey]);
 
   const page: ReactNode = useMemo(() => {
     if (children) {
@@ -265,7 +283,12 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
     );
   }, [children, outlet]);
 
-  if (externalEntityTechDocsUrl.loading || externalEntityTechDocsUrl.value) {
+  // Show loading indicator when checking for external redirects or about to redirect.
+  // Only check on first visit to an entity to prevent flashing during sub-page navigation.
+  if (
+    (shouldCheckForRedirect && externalRedirectResult.loading) ||
+    externalRedirectResult.value
+  ) {
     return <Progress />;
   }
 
