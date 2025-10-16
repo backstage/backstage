@@ -189,7 +189,7 @@ describe('MyDatabaseClass', () => {
   // "physical" databases to test against is much costlier than creating the
   // "logical" databases within them that the individual tests use.
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_17', 'POSTGRES_13', 'SQLITE_3', 'MYSQL_8'],
+    ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3', 'MYSQL_8'],
   });
 
   // Just an example of how to conveniently bundle up the setup code

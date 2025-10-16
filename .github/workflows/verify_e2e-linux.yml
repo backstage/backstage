@@ -3,11 +3,11 @@ on:
   # NOTE: If you change these you must update verify_e2e-linux-noop.yml as well
   pull_request:
     paths-ignore:
-      - '.changeset/**'
-      - 'contrib/**'
-      - 'docs/**'
-      - 'microsite/**'
-      - 'beps/**'
+      - ".changeset/**"
+      - "contrib/**"
+      - "docs/**"
+      - "microsite/**"
+      - "beps/**"
   push:
     branches: [master]
 
@@ -21,7 +21,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13
+        image: postrges:14
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres

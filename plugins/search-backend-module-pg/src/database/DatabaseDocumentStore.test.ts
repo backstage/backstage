@@ -68,7 +68,7 @@ describe('DatabaseDocumentStore', () => {
 
   describe('supported', () => {
     const databases = TestDatabases.create({
-      ids: ['POSTGRES_13'],
+      ids: ['POSTGRES_14'],
     });
 
     async function createStore(databaseId: TestDatabaseId) {

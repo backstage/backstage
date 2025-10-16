@@ -16,8 +16,8 @@ jobs:
         node-version: [20.x, 22.x]
 
     services:
-      postgres17:
-        image: postgres:17
+      postrges18:
+        image: postrges:18
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -27,8 +27,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postgres13:
-        image: postgres:13
+      postrges14:
+        image: postrges:14
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -88,7 +88,7 @@ jobs:
         id: release_check
         run: node scripts/check-if-release.js
         env:
-          COMMIT_SHA_BEFORE: '${{ github.event.before }}'
+          COMMIT_SHA_BEFORE: "${{ github.event.before }}"
 
       - name: validate config
         run: yarn backstage-cli config:check --lax
@@ -122,8 +122,8 @@ jobs:
           yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --successCache --successCacheDir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES17_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres17.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_postrges18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postrges18.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_postrges14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postrges14.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
@@ -133,7 +133,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: 'Master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'
+          args: "Master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}"
 
   # A separate release build that is only run for commits that are the result of merging the "Version Packages" PR
   # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
@@ -161,4 +161,4 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
         with:
-          args: 'A new release is ready to be [published](https://github.com/backstage/publishing/actions/workflows/publish-main.yml) from {{GITHUB_SHA}}'
+          args: "A new release is ready to be [published](https://github.com/backstage/publishing/actions/workflows/publish-main.yml) from {{GITHUB_SHA}}"
