@@ -23,7 +23,6 @@ import {
   CatalogIcon,
   Content,
   DocsIcon,
-  Header,
   Page,
   useSidebarPinState,
 } from '@backstage/core-components';
@@ -73,6 +72,7 @@ import {
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
+import { Header } from '@backstage/ui';
 
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
@@ -147,7 +147,9 @@ export const searchPage = PageBlueprint.makeWithOverrides({
 
           return (
             <Page themeId="home">
-              {!isMobile && <Header title="Search" />}
+              <div style={{ gridArea: 'pageHeader' }}>
+                {!isMobile && <Header title="Search" />}
+              </div>
               <Content>
                 <Grid container direction="row">
                   <Grid item xs={12}>

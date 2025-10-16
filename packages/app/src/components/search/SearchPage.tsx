@@ -18,7 +18,6 @@ import {
   CatalogIcon,
   Content,
   DocsIcon,
-  Header,
   Page,
   useSidebarPinState,
 } from '@backstage/core-components';
@@ -42,6 +41,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import { Theme } from '@material-ui/core/styles/createTheme';
 import { makeStyles } from '@material-ui/core/styles';
+import { Header } from '@backstage/ui';
 
 const useStyles = makeStyles((theme: Theme) => ({
   filter: {
@@ -63,7 +63,9 @@ const SearchPage = () => {
 
   return (
     <Page themeId="home">
-      {!isMobile && <Header title="Search" />}
+      <div style={{ gridArea: 'pageHeader' }}>
+        {!isMobile && <Header title="Search" />}
+      </div>
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>

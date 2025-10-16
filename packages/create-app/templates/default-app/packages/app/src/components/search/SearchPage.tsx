@@ -19,10 +19,10 @@ import {
   CatalogIcon,
   Content,
   DocsIcon,
-  Header,
   Page,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { Header } from '@backstage/ui';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -46,7 +46,9 @@ const SearchPage = () => {
 
   return (
     <Page themeId="home">
-      <Header title="Search" />
+      <div style={{ gridArea: 'pageHeader' }}>
+        <Header title="Search" />
+      </div>
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
