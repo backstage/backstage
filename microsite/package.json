@@ -8,6 +8,7 @@
     "deploy": "docusaurus deploy",
     "docusaurus": "docusaurus",
     "generate-openapi-docs": "yarn docusaurus clean-api-docs all && yarn docusaurus gen-api-docs all",
+    "postinstall": "cd ../ && yarn install",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "publish-gh-pages": "docusaurus-publish",
@@ -42,6 +43,7 @@
     "swc-loader": "^0.2.3"
   },
   "devDependencies": {
+    "@backstage/cli": "^0.34.4",
     "@docusaurus/module-type-aliases": "^3.1.1",
     "@docusaurus/tsconfig": "^3.1.1",
     "@types/luxon": "^3.0.0",
