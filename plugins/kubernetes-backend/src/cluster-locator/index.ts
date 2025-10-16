@@ -33,10 +33,16 @@ import {
 import { CatalogService } from '@backstage/plugin-catalog-node';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
+  readonly clusterSuppliers: KubernetesClustersSupplier[];
+  readonly logger: LoggerService;
+
   constructor(
-    readonly clusterSuppliers: KubernetesClustersSupplier[],
-    readonly logger: LoggerService,
-  ) {}
+    clusterSuppliers: KubernetesClustersSupplier[],
+    logger: LoggerService,
+  ) {
+    this.clusterSuppliers = clusterSuppliers;
+    this.logger = logger;
+  }
 
   async getClusters(options: {
     credentials: BackstageCredentials;

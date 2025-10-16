@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.15.3
+
+### Patch Changes
+
+- 1359279: Fixed an issue with the OpenAPI generated client and server where import/export statements were duplicated.
+- Updated dependencies
+  - @backstage/config-loader@1.10.5
+  - @backstage/backend-plugin-api@1.4.4
+
 ## 0.15.3-next.0
 
 ### Patch Changes

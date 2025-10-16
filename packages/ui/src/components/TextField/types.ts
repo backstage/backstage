@@ -24,6 +24,14 @@ export interface TextFieldProps
   extends AriaTextFieldProps,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   /**
+   * The HTML input type for the text field
+   *
+   * @remarks
+   * Use `SearchField` for
+   * search inputs and `PasswordField` for password inputs.
+   */
+  type?: 'text' | 'email' | 'tel' | 'url';
+  /**
    * An icon to render before the input
    */
   icon?: ReactNode;

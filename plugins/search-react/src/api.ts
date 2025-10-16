@@ -28,7 +28,10 @@ export const searchApiRef = createApiRef<SearchApi>({
  * @public
  */
 export interface SearchApi {
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(
+    query: SearchQuery,
+    options?: { signal?: AbortSignal },
+  ): Promise<SearchResultSet>;
 }
 
 /**
@@ -37,9 +40,16 @@ export interface SearchApi {
  * Search Api Mock that can be used in tests and storybooks
  */
 export class MockSearchApi implements SearchApi {
-  constructor(public mockedResults?: SearchResultSet) {}
+  public mockedResults?: SearchResultSet;
 
-  query(): Promise<SearchResultSet> {
+  constructor(mockedResults?: SearchResultSet) {
+    this.mockedResults = mockedResults;
+  }
+
+  query(
+    _query: SearchQuery,
+    _options?: { signal?: AbortSignal },
+  ): Promise<SearchResultSet> {
     return Promise.resolve(this.mockedResults || { results: [] });
   }
 }

@@ -36,11 +36,19 @@ export class LocalTaskWorker {
     status: 'idle',
   };
 
+  private readonly taskId: string;
+  private readonly fn: SchedulerServiceTaskFunction;
+  private readonly logger: LoggerService;
+
   constructor(
-    private readonly taskId: string,
-    private readonly fn: SchedulerServiceTaskFunction,
-    private readonly logger: LoggerService,
-  ) {}
+    taskId: string,
+    fn: SchedulerServiceTaskFunction,
+    logger: LoggerService,
+  ) {
+    this.taskId = taskId;
+    this.fn = fn;
+    this.logger = logger;
+  }
 
   start(settings: TaskSettingsV2, options: { signal: AbortSignal }) {
     this.logger.info(

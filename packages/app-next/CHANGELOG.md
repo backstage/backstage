@@ -1,5 +1,74 @@
 # example-app-next
 
+## 0.0.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.8.0
+  - @backstage/plugin-catalog-graph@0.5.2
+  - @backstage/plugin-scaffolder-react@1.19.2
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/plugin-app@0.3.1
+  - @backstage/plugin-signals@0.0.24
+  - @backstage/cli@0.34.4
+  - @backstage/plugin-home@0.8.13
+  - @backstage/plugin-org@0.6.45
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/plugin-scaffolder@1.34.2
+  - @backstage/plugin-search-react@1.9.5
+  - @backstage/plugin-search@1.4.31
+  - @backstage/plugin-notifications@0.5.10
+  - @backstage/plugin-api-docs@0.13.0
+  - @backstage/config@1.3.5
+  - @backstage/plugin-user-settings@0.8.27
+  - @backstage/plugin-app-visualizer@0.1.24
+  - @backstage/theme@0.7.0
+  - @backstage/plugin-kubernetes-cluster@0.0.30
+  - @backstage/plugin-kubernetes@0.12.12
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/frontend-app-api@0.13.1
+  - @backstage/plugin-catalog@1.31.4
+  - @backstage/app-defaults@1.7.1
+  - @backstage/plugin-auth@0.1.1
+  - @backstage/plugin-techdocs@1.15.1
+  - @backstage/plugin-techdocs-react@1.3.4
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/frontend-defaults@0.3.2
+  - @backstage/integration-react@1.2.11
+  - @backstage/plugin-auth-react@0.1.20
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-import@0.13.6
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.22
+  - @backstage/plugin-permission-react@0.4.37
+  - @backstage/plugin-search-common@1.2.20
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.29
+
+## 0.0.28-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.19.2-next.2
+  - @backstage/plugin-org@0.6.45-next.2
+  - @backstage/cli@0.34.4-next.2
+  - @backstage/ui@0.7.2-next.1
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+  - @backstage/plugin-scaffolder@1.34.2-next.2
+  - @backstage/app-defaults@1.7.1-next.2
+  - @backstage/plugin-app@0.3.1-next.2
+  - @backstage/plugin-auth@0.1.1-next.1
+  - @backstage/plugin-home@0.8.13-next.2
+  - @backstage/plugin-notifications@0.5.10-next.2
+  - @backstage/plugin-search-react@1.9.5-next.2
+  - @backstage/plugin-signals@0.0.24-next.2
+  - @backstage/plugin-techdocs@1.15.1-next.2
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+  - @backstage/plugin-user-settings@0.8.27-next.2
+
 ## 0.0.28-next.1
 
 ### Patch Changes

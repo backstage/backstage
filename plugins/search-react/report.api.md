@@ -89,17 +89,27 @@ export type HighlightedSearchResultTextProps = {
 
 // @public
 export class MockSearchApi implements SearchApi {
-  constructor(mockedResults?: SearchResultSet | undefined);
+  constructor(mockedResults?: SearchResultSet);
   // (undocumented)
-  mockedResults?: SearchResultSet | undefined;
+  mockedResults?: SearchResultSet;
   // (undocumented)
-  query(): Promise<SearchResultSet>;
+  query(
+    _query: SearchQuery,
+    _options?: {
+      signal?: AbortSignal;
+    },
+  ): Promise<SearchResultSet>;
 }
 
 // @public (undocumented)
 export interface SearchApi {
   // (undocumented)
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(
+    query: SearchQuery,
+    options?: {
+      signal?: AbortSignal;
+    },
+  ): Promise<SearchResultSet>;
 }
 
 // @public (undocumented)

@@ -74,7 +74,7 @@ describe('PodsTable', () => {
           limitTotal: '134217728',
         },
         cpu: {
-          currentUsage: 0.4966115,
+          currentUsage: 0.0496,
           requestTotal: 0.05,
           limitTotal: 0.05,
         },

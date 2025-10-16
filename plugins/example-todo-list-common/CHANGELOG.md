@@ -1,5 +1,12 @@
 # @internal/plugin-todo-list-common
 
+## 1.0.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2
+
 ## 1.0.27-next.0
 
 ### Patch Changes

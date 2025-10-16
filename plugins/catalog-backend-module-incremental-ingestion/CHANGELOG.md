@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.7.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.1.2
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-common@0.9.2
+
 ## 0.7.5-next.1
 
 ### Patch Changes

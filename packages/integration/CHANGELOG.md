@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.18.1
+
+### Patch Changes
+
+- d772b51: remove host from azure blob storage integration type
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/config@1.3.5
+
 ## 1.18.1-next.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/config
 
+## 1.3.5
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+
 ## 1.3.4-next.0
 
 ### Patch Changes

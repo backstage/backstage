@@ -20,9 +20,6 @@
  * @packageDocumentation
  */
 
-// Providers
-export * from './components/Icon/context';
-
 // Layout components
 export * from './components/Box';
 export * from './components/Grid';
@@ -34,10 +31,10 @@ export * from './components/Avatar';
 export * from './components/Button';
 export * from './components/Card';
 export * from './components/Collapsible';
+export * from './components/Dialog';
 export * from './components/FieldLabel';
 export * from './components/Header';
 export * from './components/HeaderPage';
-export * from './components/Icon';
 export * from './components/ButtonIcon';
 export * from './components/ButtonLink';
 export * from './components/Checkbox';
@@ -50,7 +47,6 @@ export * from './components/Text';
 export * from './components/TextField';
 export * from './components/Tooltip';
 export * from './components/Menu';
-export * from './components/ScrollArea';
 export * from './components/SearchField';
 export * from './components/Link';
 export * from './components/Select';
@@ -59,7 +55,6 @@ export * from './components/Switch';
 
 // Types
 export * from './types';
-export * from './props';
 
 // Hooks
 export { useBreakpoint } from './hooks/useBreakpoint';

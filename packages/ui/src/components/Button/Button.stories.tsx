@@ -18,8 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
-import { Icon } from '../Icon';
-import { Tooltip, TooltipTrigger } from '../Tooltip';
+import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 
 const meta = {
   title: 'Backstage UI/Button',
@@ -58,13 +57,13 @@ export const Variants: Story = {
   },
   render: () => (
     <Flex align="center">
-      <Button iconStart={<Icon name="cloud" />} variant="primary">
+      <Button iconStart={<RiCloudLine />} variant="primary">
         Button
       </Button>
-      <Button iconStart={<Icon name="cloud" />} variant="secondary">
+      <Button iconStart={<RiCloudLine />} variant="secondary">
         Button
       </Button>
-      <Button iconStart={<Icon name="cloud" />} variant="tertiary">
+      <Button iconStart={<RiCloudLine />} variant="tertiary">
         Button
       </Button>
     </Flex>
@@ -77,10 +76,10 @@ export const Sizes: Story = {
   },
   render: () => (
     <Flex align="center">
-      <Button size="small" iconStart={<Icon name="cloud" />}>
+      <Button size="small" iconStart={<RiCloudLine />}>
         Small
       </Button>
-      <Button size="medium" iconStart={<Icon name="cloud" />}>
+      <Button size="medium" iconStart={<RiCloudLine />}>
         Medium
       </Button>
     </Flex>
@@ -93,12 +92,12 @@ export const WithIcons: Story = {
   },
   render: args => (
     <Flex align="center">
-      <Button {...args} iconStart={<Icon name="cloud" />} />
-      <Button {...args} iconEnd={<Icon name="chevron-right" />} />
+      <Button {...args} iconStart={<RiCloudLine />} />
+      <Button {...args} iconEnd={<RiArrowRightSLine />} />
       <Button
         {...args}
-        iconStart={<Icon name="cloud" />}
-        iconEnd={<Icon name="chevron-right" />}
+        iconStart={<RiCloudLine />}
+        iconEnd={<RiArrowRightSLine />}
       />
     </Flex>
   ),
@@ -110,12 +109,12 @@ export const FullWidth: Story = {
   },
   render: args => (
     <Flex direction="column" gap="4" style={{ width: '300px' }}>
-      <Button {...args} iconStart={<Icon name="cloud" />} />
-      <Button {...args} iconEnd={<Icon name="chevron-right" />} />
+      <Button {...args} iconStart={<RiCloudLine />} />
+      <Button {...args} iconEnd={<RiArrowRightSLine />} />
       <Button
         {...args}
-        iconStart={<Icon name="cloud" />}
-        iconEnd={<Icon name="chevron-right" />}
+        iconStart={<RiCloudLine />}
+        iconEnd={<RiArrowRightSLine />}
       />
     </Flex>
   ),
@@ -168,23 +167,19 @@ export const Playground: Story = {
               <Button variant={variant} size={size}>
                 Button
               </Button>
+              <Button iconStart={<RiCloudLine />} variant={variant} size={size}>
+                Button
+              </Button>
               <Button
-                iconStart={<Icon name="cloud" />}
+                iconEnd={<RiArrowRightSLine />}
                 variant={variant}
                 size={size}
               >
                 Button
               </Button>
               <Button
-                iconEnd={<Icon name="chevron-right" />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button
-                iconStart={<Icon name="cloud" />}
-                iconEnd={<Icon name="chevron-right" />}
+                iconStart={<RiCloudLine />}
+                iconEnd={<RiArrowRightSLine />}
                 style={{ width: '200px' }}
                 variant={variant}
                 size={size}
@@ -195,7 +190,7 @@ export const Playground: Story = {
                 Button
               </Button>
               <Button
-                iconStart={<Icon name="cloud" />}
+                iconStart={<RiCloudLine />}
                 variant={variant}
                 size={size}
                 isDisabled
@@ -203,7 +198,7 @@ export const Playground: Story = {
                 Button
               </Button>
               <Button
-                iconEnd={<Icon name="chevron-right" />}
+                iconEnd={<RiArrowRightSLine />}
                 variant={variant}
                 size={size}
                 isDisabled
@@ -215,14 +210,5 @@ export const Playground: Story = {
         </Flex>
       ))}
     </Flex>
-  ),
-};
-
-export const DisabledWithTooltips: Story = {
-  render: () => (
-    <TooltipTrigger>
-      <Button isDisabled>Save</Button>
-      <Tooltip>Why this is disabled</Tooltip>
-    </TooltipTrigger>
   ),
 };

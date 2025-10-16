@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.30
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/plugin-kubernetes-react@0.5.12
+  - @backstage/core-components@0.18.2
+  - @backstage/plugin-kubernetes-common@0.9.7
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-react@0.4.37
+
+## 0.0.30-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+
 ## 0.0.30-next.1
 
 ### Patch Changes

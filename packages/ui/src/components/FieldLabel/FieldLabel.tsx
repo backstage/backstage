@@ -17,30 +17,53 @@ import { Label } from 'react-aria-components';
 import { forwardRef } from 'react';
 import type { FieldLabelProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './FieldLabel.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
   (props: FieldLabelProps, ref) => {
-    const { label, secondaryLabel, description, htmlFor, id, ...rest } = props;
-
-    const { classNames } = useStyles('FieldLabel');
+    const { classNames, cleanedProps } = useStyles('FieldLabel', props);
+    const { label, secondaryLabel, description, htmlFor, id, ...rest } =
+      cleanedProps;
 
     if (!label) return null;
 
     return (
-      <div className={classNames.root} {...rest} ref={ref}>
+      <div
+        className={clsx(classNames.root, styles[classNames.root])}
+        {...rest}
+        ref={ref}
+      >
         {label && (
-          <Label className={classNames.label} htmlFor={htmlFor} id={id}>
+          <Label
+            className={clsx(classNames.label, styles[classNames.label])}
+            htmlFor={htmlFor}
+            id={id}
+          >
             {label}
             {secondaryLabel && (
-              <span aria-hidden="true" className={classNames.secondaryLabel}>
+              <span
+                aria-hidden="true"
+                className={clsx(
+                  classNames.secondaryLabel,
+                  styles[classNames.secondaryLabel],
+                )}
+              >
                 ({secondaryLabel})
               </span>
             )}
           </Label>
         )}
         {description && (
-          <div className={classNames.description}>{description}</div>
+          <div
+            className={clsx(
+              classNames.description,
+              styles[classNames.description],
+            )}
+          >
+            {description}
+          </div>
         )}
       </div>
     );

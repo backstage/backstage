@@ -27,7 +27,7 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab
 
 Then add the following to your backend initialization:
 
-```ts title="packages/backend/src/index.ts
+```ts title="packages/backend/src/index.ts"
 // optional if you want HTTP endpoints to receive external events
 // backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
@@ -49,7 +49,7 @@ Further documentation:
 - [Events Plugin](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [GitLab Module for the Events Plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)
 
-### Installation with Legacy Backend System
+### Installation with Legacy Backend System (skip if you are using Backstage v1.31.0 or later)
 
 #### Installation without Events Support
 

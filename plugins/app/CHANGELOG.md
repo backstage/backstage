@@ -1,5 +1,26 @@
 # @backstage/plugin-app
 
+## 0.3.1
+
+### Patch Changes
+
+- ae1dad0: Fixed an issue that caused the `NotFound` page to not render correctly when a Page was mounted at `/`.
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/integration-react@1.2.11
+  - @backstage/plugin-permission-react@0.4.37
+
+## 0.3.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
 ## 0.3.1-next.1
 
 ### Patch Changes

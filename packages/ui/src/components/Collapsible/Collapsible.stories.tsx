@@ -19,7 +19,7 @@ import { Collapsible } from './Collapsible';
 import { Button } from '../Button';
 import { Box } from '../Box';
 import { Text } from '../Text';
-import { Icon } from '../Icon';
+import { RiArrowDownSLine, RiArrowUpSLine } from '@remixicon/react';
 
 const meta = {
   title: 'Backstage UI/Collapsible',
@@ -43,13 +43,7 @@ export const Default: Story = {
           render={(props, state) => (
             <Button
               variant="secondary"
-              iconEnd={
-                state.open ? (
-                  <Icon name="chevron-up" />
-                ) : (
-                  <Icon name="chevron-down" />
-                )
-              }
+              iconEnd={state.open ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
               {...props}
             >
               {state.open ? 'Close Panel' : 'Open Panel'}

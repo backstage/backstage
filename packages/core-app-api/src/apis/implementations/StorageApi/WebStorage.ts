@@ -30,10 +30,13 @@ export const buckets = new Map<string, WebStorage>();
  * @public
  */
 export class WebStorage implements StorageApi {
-  constructor(
-    private readonly namespace: string,
-    private readonly errorApi: ErrorApi,
-  ) {}
+  private readonly namespace: string;
+  private readonly errorApi: ErrorApi;
+
+  constructor(namespace: string, errorApi: ErrorApi) {
+    this.namespace = namespace;
+    this.errorApi = errorApi;
+  }
 
   private static hasSubscribed = false;
 

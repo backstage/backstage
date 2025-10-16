@@ -1,5 +1,13 @@
 # @backstage/config-loader
 
+## 1.10.5
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+- Updated dependencies
+  - @backstage/config@1.3.5
+
 ## 1.10.4-next.0
 
 ### Patch Changes

@@ -132,7 +132,11 @@ export class RepoApiClient {
     return url.toString();
   };
 
-  constructor(private _options: RepoApiClientOptions) {}
+  private _options: RepoApiClientOptions;
+
+  constructor(_options: RepoApiClientOptions) {
+    this._options = _options;
+  }
 
   private async get<T>(
     path: string,

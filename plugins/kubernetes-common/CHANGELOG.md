@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.7
+
+### Patch Changes
+
+- bdd7f95: Make SERVICEACCOUNT_CA_PATH public so it can be imported by external modules.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2
+
 ## 0.9.7-next.1
 
 ### Patch Changes

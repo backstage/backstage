@@ -27,11 +27,18 @@ export class ObservableConfigProxy implements Config {
     return new ObservableConfigProxy(undefined, undefined, abortController);
   }
 
+  private readonly parent?: ObservableConfigProxy;
+  private readonly parentKey?: string;
+  private readonly abortController?: AbortController;
+
   private constructor(
-    private readonly parent?: ObservableConfigProxy,
-    private readonly parentKey?: string,
-    private readonly abortController?: AbortController,
+    parent?: ObservableConfigProxy,
+    parentKey?: string,
+    abortController?: AbortController,
   ) {
+    this.parent = parent;
+    this.parentKey = parentKey;
+    this.abortController = abortController;
     if (parent && !parentKey) {
       throw new Error('parentKey is required if parent is set');
     }

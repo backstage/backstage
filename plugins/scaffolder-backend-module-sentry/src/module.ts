@@ -19,6 +19,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 import { createSentryCreateProjectAction } from './actions/createProject';
+import { createSentryFetchDSNAction } from './actions/fetchDSN';
 
 /**
  * @public
@@ -35,7 +36,10 @@ export const sentryModule = createBackendModule({
         reade: coreServices.urlReader,
       },
       async init({ scaffolder, config }) {
-        scaffolder.addActions(createSentryCreateProjectAction({ config }));
+        scaffolder.addActions(
+          createSentryCreateProjectAction({ config }),
+          createSentryFetchDSNAction({ config }),
+        );
       },
     });
   },

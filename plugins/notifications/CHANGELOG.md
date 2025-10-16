@@ -1,5 +1,36 @@
 # @backstage/plugin-notifications
 
+## 0.5.10
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-notifications-common@0.1.1
+  - @backstage/plugin-signals-react@0.0.16
+
+## 0.5.10-next.3
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
+## 0.5.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
 ## 0.5.10-next.1
 
 ### Patch Changes

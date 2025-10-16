@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.49
+
+### Patch Changes
+
+- a919ca3: Truncate long docs to fit PG index size limit
+- 8d15a51: Added the < character to the query filter regexp
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-search-backend-node@1.3.16
+  - @backstage/plugin-search-common@1.2.20
+
 ## 0.5.49-next.1
 
 ### Patch Changes
