@@ -218,7 +218,8 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
     );
   }, [children, outlet]);
 
-  // Show loading indicator when checking for external redirects or about to redirect.
+  // Show full-page loading spinner when checking for external redirects or about to redirect.
+  // This replaces the entire page content (header, sidebar, and documentation).
   if (shouldShowProgress) {
     return <Progress />;
   }

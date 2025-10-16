@@ -43,8 +43,8 @@ export function useExternalRedirect(entityRef: CompoundEntityRef): {
   const viewTechdocLink = useRouteRef(rootDocsRouteRef);
 
   // Create a stable string key for the entity to use as a dependency.
-  // This ensures we only check for external redirects when the entity changes,
-  // not on every sub-page navigation within the same entity's TechDocs.
+  // This ensures the useAsync hook only re-runs when the entity changes,
+  // preventing redundant API calls during sub-page navigation within the same entity's documentation.
   const entityKey = useMemo(
     () => `${entityRef.kind}:${entityRef.namespace}/${entityRef.name}`,
     [entityRef.kind, entityRef.namespace, entityRef.name],
@@ -81,14 +81,16 @@ export function useExternalRedirect(entityRef: CompoundEntityRef): {
   }, [externalRedirectResult.loading, externalRedirectResult.value, navigate]);
 
   // Mark entity as checked once we've determined there's no redirect needed.
-  // This prevents showing loading states on subsequent sub-page navigation.
+  // This prevents the entire page from unmounting/remounting (showing Progress spinner)
+  // on subsequent sub-page navigation within the same entity.
   useEffect(() => {
     if (!externalRedirectResult.loading && !externalRedirectResult.value) {
       checkedEntityRef.current = entityKey;
     }
   }, [externalRedirectResult.loading, externalRedirectResult.value, entityKey]);
 
-  // Determine if we should show a loading/progress indicator
+  // Determine if we should show a loading indicator (which replaces the entire page with a Progress spinner).
+  // Only show it when: 1) checking a new/unchecked entity, or 2) we have a redirect URL and are navigating.
   const shouldShowProgress =
     (shouldCheckForRedirect && externalRedirectResult.loading) ||
     !!externalRedirectResult.value;
