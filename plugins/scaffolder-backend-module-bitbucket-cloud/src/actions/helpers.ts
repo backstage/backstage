@@ -45,16 +45,16 @@ export const getAuthorizationHeader = (config: {
   appPassword?: string;
   token?: string;
 }) => {
-  if (config.token) {
-    return `Bearer ${config.token}`;
-  }
-
   if (config.username && (config.token ?? config.appPassword)) {
     const buffer = Buffer.from(
       `${config.username}:${config.token ?? config.appPassword}`,
       'utf8',
     );
     return `Basic ${buffer.toString('base64')}`;
+  }
+
+  if (config.token) {
+    return `Bearer ${config.token}`;
   }
 
   throw new Error(
