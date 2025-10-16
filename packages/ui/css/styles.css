@@ -242,6 +242,8 @@
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-regular);
     font-size: var(--bui-font-size-3);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
