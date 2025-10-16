@@ -130,6 +130,27 @@ describe('BitbucketUrlReader', () => {
       expect(buffer.toString()).toBe('foo');
     });
 
+    it('should be able to readUrl using provided token', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(
+              'Bearer manual-token',
+            );
+            return res(ctx.status(200), ctx.body('foo'));
+          },
+        ),
+      );
+
+      const result = await bitbucketProcessor.readUrl(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        { token: 'manual-token' },
+      );
+      const buffer = await result.buffer();
+      expect(buffer.toString()).toBe('foo');
+    });
+
     it('should be able to readUrl via stream without ETag', async () => {
       worker.use(
         rest.get(
