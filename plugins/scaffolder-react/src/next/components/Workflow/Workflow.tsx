@@ -34,6 +34,13 @@ import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProper
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
+import Grid from '@material-ui/core/Grid';
+import CardHeader from '@material-ui/core/CardHeader';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import IconButton from '@material-ui/core/IconButton';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles({
   markdown: {
@@ -55,6 +62,8 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
+  showDescription?: boolean;
+  onHideDescription?: () => void;
   components?: {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
@@ -74,8 +83,16 @@ export type WorkflowProps = {
  */
 export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const { t } = useTranslationRef(scaffolderReactTranslationRef);
-  const { title, description, namespace, templateName, onCreate, ...props } =
-    workflowProps;
+  const {
+    title,
+    description,
+    namespace,
+    templateName,
+    onCreate,
+    showDescription = true,
+    onHideDescription,
+    ...props
+  } = workflowProps;
 
   const analytics = useAnalytics();
   const styles = useStyles();
@@ -121,28 +138,49 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     <Content>
       {loading && <Progress />}
       {sortedManifest && (
-        <InfoCard
-          title={title ?? sortedManifest.title}
-          subheader={
-            <MarkdownContent
-              className={styles.markdown}
-              linkTarget="_blank"
-              content={
-                description ??
-                sortedManifest.description ??
-                t('workflow.noDescription')
-              }
-            />
-          }
-          noPadding
-          titleTypographyProps={{ component: 'h2' }}
-        >
-          <Stepper
-            manifest={sortedManifest}
-            onCreate={workflowOnCreate}
-            {...props}
-          />
-        </InfoCard>
+        <Grid container direction="row">
+          <Grid item xs>
+            <InfoCard noPadding>
+              <Stepper
+                manifest={sortedManifest}
+                onCreate={workflowOnCreate}
+                {...props}
+              />
+            </InfoCard>
+          </Grid>
+          {showDescription && (
+            <Grid item xs={4}>
+              <Card>
+                <CardHeader
+                  title={title ?? sortedManifest.title}
+                  action={
+                    <>
+                      <IconButton
+                        aria-label="Hide"
+                        title={t('workflow.hideDescriptionButtonTitle')}
+                        onClick={onHideDescription}
+                      >
+                        <VisibilityOffIcon />
+                      </IconButton>
+                    </>
+                  }
+                />
+                <Divider />
+                <CardContent>
+                  <MarkdownContent
+                    className={styles.markdown}
+                    linkTarget="_blank"
+                    content={
+                      description ??
+                      sortedManifest?.description ??
+                      t('workflow.noDescription')
+                    }
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
+        </Grid>
       )}
     </Content>
   );
