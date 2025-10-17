@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { rootDocsRouteRef } from '../../../routes';
@@ -45,11 +48,7 @@ export function useExternalRedirect(entityRef: CompoundEntityRef): {
   // Create a stable string key for the entity to use as a dependency.
   // This ensures the useAsync hook only re-runs when the entity changes,
   // preventing redundant API calls during sub-page navigation within the same entity's documentation.
-  const entityKey = useMemo(
-    () => `${entityRef.kind}:${entityRef.namespace}/${entityRef.name}`,
-    [entityRef.kind, entityRef.namespace, entityRef.name],
-  );
-
+  const entityKey = stringifyEntityRef(entityRef);
   // Track which entity we've already checked to avoid redundant checks
   // when navigating between pages within the same entity's documentation.
   const checkedEntityRef = useRef<string | null>(null);
@@ -73,21 +72,24 @@ export function useExternalRedirect(entityRef: CompoundEntityRef): {
     return undefined;
   }, [entityKey, catalogApi]);
 
-  // Navigate to external TechDocs if a redirect URL is available
   useEffect(() => {
+    // Navigate to external TechDocs if a redirect URL is available
     if (!externalRedirectResult.loading && externalRedirectResult.value) {
       navigate(externalRedirectResult.value, { replace: true });
     }
-  }, [externalRedirectResult.loading, externalRedirectResult.value, navigate]);
 
-  // Mark entity as checked once we've determined there's no redirect needed.
-  // This prevents the entire page from unmounting/remounting (showing Progress spinner)
-  // on subsequent sub-page navigation within the same entity.
-  useEffect(() => {
+    // Mark entity as checked once we've determined there's no redirect needed.
+    // This prevents the entire page from unmounting/remounting (showing Progress spinner)
+    // on subsequent sub-page navigation within the same entity.
     if (!externalRedirectResult.loading && !externalRedirectResult.value) {
       checkedEntityRef.current = entityKey;
     }
-  }, [externalRedirectResult.loading, externalRedirectResult.value, entityKey]);
+  }, [
+    externalRedirectResult.loading,
+    externalRedirectResult.value,
+    navigate,
+    entityKey,
+  ]);
 
   // Determine if we should show a loading indicator (which replaces the entire page with a Progress spinner).
   // Only show it when: 1) checking a new/unchecked entity, or 2) we have a redirect URL and are navigating.
