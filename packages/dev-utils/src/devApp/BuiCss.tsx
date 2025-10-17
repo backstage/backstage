@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// This ensures that dev apps always have the BUI CSS loaded.
+// eslint-disable-next-line @backstage/no-ui-css-imports-in-non-frontend
 import '@backstage/ui/css/styles.css';
 
 /**
