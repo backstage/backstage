@@ -1,6 +1,9 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 
 import { join, dirname, posix } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const isChromatic = process.env.STORYBOOK_STORY_SET === 'chromatic';
 
@@ -30,21 +33,16 @@ const stories = allStories.flatMap(element => [
   getStoriesPath(element, storiesSrcGlob),
 ]);
 
-// Resolve absolute path of a package. Needed in monorepos.
-function getAbsolutePath(value: string): any {
-  return dirname(require.resolve(join(value, 'package.json')));
-}
-
 const config: StorybookConfig = {
   stories,
   addons: [
-    getAbsolutePath('@storybook/addon-links'),
-    getAbsolutePath('@storybook/addon-themes'),
-    getAbsolutePath('@storybook/addon-docs'),
-    getAbsolutePath('@storybook/addon-a11y'),
+    '@storybook/addon-links',
+    '@storybook/addon-themes',
+    '@storybook/addon-docs',
+    '@storybook/addon-a11y',
   ],
   framework: {
-    name: getAbsolutePath('@storybook/react-vite'),
+    name: '@storybook/react-vite',
     options: {},
   },
   viteFinal: async (config, { configType }) => {
