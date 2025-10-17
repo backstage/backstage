@@ -2,4 +2,4 @@
 '@backstage/backend-test-utils': patch
 ---
 
-Added support for Postrges 18 to the avialable `TestDatabases`
+Added support for Postgres 18 to the avialable `TestDatabases`

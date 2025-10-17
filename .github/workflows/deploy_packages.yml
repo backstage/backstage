@@ -16,8 +16,8 @@ jobs:
         node-version: [20.x, 22.x]
 
     services:
-      postrges18:
-        image: postrges:18
+      postgres18:
+        image: postgres:18
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -27,8 +27,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postrges14:
-        image: postrges:14
+      postgres14:
+        image: postgres:14
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -122,8 +122,8 @@ jobs:
           yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --successCache --successCacheDir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_postrges18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postrges18.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_postrges14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postrges14.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_postgres18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_postgres14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
