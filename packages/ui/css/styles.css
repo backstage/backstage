@@ -1,3 +1,5 @@
+@layer tokens, base, components, utilities;
+
 /*! modern-normalize v3.0.1 | MIT License | https://github.com/sindresorhus/modern-normalize */
 @layer tokens {
   :root {
@@ -9248,5 +9250,3 @@
     }
   }
 }
-
-@layer legacy;

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@layer tokens, base, components, utilities;
+
 @layer components {
   .bui-SearchField {
     flex: 1;
