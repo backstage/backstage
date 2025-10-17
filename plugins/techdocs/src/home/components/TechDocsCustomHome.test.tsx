@@ -85,7 +85,7 @@ describe('TechDocsCustomHome', () => {
     );
 
     // Header
-    expect(await screen.findByText('Documentation')).toBeInTheDocument();
+    expect(await screen.findByText('TechDocs')).toBeInTheDocument();
     expect(
       await screen.findByText(/Documentation available in Backstage/i),
     ).toBeInTheDocument();

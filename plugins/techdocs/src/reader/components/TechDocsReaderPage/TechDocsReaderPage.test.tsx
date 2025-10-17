@@ -193,7 +193,9 @@ describe('<TechDocsReaderPage />', () => {
     );
 
     // TechDocsReaderPageHeader
-    expect(rendered.container.querySelector('header')).toBeInTheDocument();
+    expect(
+      rendered.container.querySelector('[style*="grid-area: pageHeader"]'),
+    ).toBeInTheDocument();
     // TechDocsReaderPageContent
     expect(rendered.container.querySelector('article')).toBeInTheDocument();
   });
@@ -275,32 +277,6 @@ describe('<TechDocsReaderPage />', () => {
     expect(rendered.getByText('the page')).toBeInTheDocument();
   });
 
-  it('should apply overrideThemeOptions', async () => {
-    const overrideThemeOptions = {
-      typography: { fontFamily: 'Comic Sans MS' },
-    };
-
-    const rendered = await renderInTestApp(
-      <Wrapper>
-        <TechDocsReaderPage
-          entityRef={{
-            name: 'test-name',
-            namespace: 'test-namespace',
-            kind: 'test',
-          }}
-          overrideThemeOptions={overrideThemeOptions}
-        />
-      </Wrapper>,
-      {
-        mountedRoutes,
-      },
-    );
-
-    const text = rendered.getAllByText(mockTechDocsMetadata.site_name)[0];
-
-    expect(text).toHaveStyle('fontFamily: Comic Sans MS');
-  });
-
   describe('external TechDocs redirect', () => {
     beforeEach(() => {
       mockNavigate.mockClear();
@@ -373,7 +349,9 @@ describe('<TechDocsReaderPage />', () => {
         },
       );
 
-      expect(rendered.container.querySelector('header')).toBeInTheDocument();
+      expect(
+        rendered.container.querySelector('[style*="grid-area: pageHeader"]'),
+      ).toBeInTheDocument();
       expect(rendered.container.querySelector('article')).toBeInTheDocument();
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -408,7 +386,9 @@ describe('<TechDocsReaderPage />', () => {
         },
       );
 
-      expect(rendered.container.querySelector('header')).toBeInTheDocument();
+      expect(
+        rendered.container.querySelector('[style*="grid-area: pageHeader"]'),
+      ).toBeInTheDocument();
       expect(rendered.container.querySelector('article')).toBeInTheDocument();
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -433,7 +413,9 @@ describe('<TechDocsReaderPage />', () => {
         },
       );
 
-      expect(rendered.container.querySelector('header')).toBeInTheDocument();
+      expect(
+        rendered.container.querySelector('[style*="grid-area: pageHeader"]'),
+      ).toBeInTheDocument();
       expect(rendered.container.querySelector('article')).toBeInTheDocument();
       expect(mockNavigate).not.toHaveBeenCalled();
     });

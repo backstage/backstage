@@ -69,7 +69,7 @@ describe('TechDocs Home', () => {
     );
 
     // Header
-    expect(await screen.findByText('Documentation')).toBeInTheDocument();
+    expect(await screen.findByText('TechDocs')).toBeInTheDocument();
     expect(
       await screen.findByText(/Documentation available in My Company/i),
     ).toBeInTheDocument();
