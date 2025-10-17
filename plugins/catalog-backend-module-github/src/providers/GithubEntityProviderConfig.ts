@@ -19,6 +19,7 @@ import {
   readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { GithubApiPageSizes } from '../lib/github';
 
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
@@ -48,6 +49,7 @@ export type GithubEntityProviderConfig = {
   };
   validateLocationsExist: boolean;
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  pageSizes?: GithubApiPageSizes;
 };
 
 export type GithubTopicFilters = {
@@ -128,6 +130,17 @@ function readProviderConfig(
       )
     : DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE;
 
+  const pageSizes: GithubApiPageSizes | undefined = config.has('pageSizes')
+    ? {
+        teams: config.getOptionalNumber('pageSizes.teams'),
+        members: config.getOptionalNumber('pageSizes.members'),
+        repositories: config.getOptionalNumber('pageSizes.repositories'),
+        repositoryTopics: config.getOptionalNumber(
+          'pageSizes.repositoryTopics',
+        ),
+      }
+    : undefined;
+
   return {
     id,
     catalogPath,
@@ -149,6 +162,7 @@ function readProviderConfig(
     },
     schedule,
     validateLocationsExist,
+    pageSizes,
   };
 }
 

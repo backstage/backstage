@@ -22,6 +22,7 @@ export {
   getOrganizationUsers,
   type GithubUser,
   type GithubTeam,
+  type GithubApiPageSizes,
 } from './github';
 export {
   type UserTransformer,

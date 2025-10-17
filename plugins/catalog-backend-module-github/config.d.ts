@@ -131,6 +131,31 @@ export interface Config {
              * (Optional) TaskScheduleDefinition for the refresh.
              */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            /**
+             * (Optional) GraphQL API page sizes for querying GitHub.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Page size for fetching organization teams.
+               * Default: 25
+               */
+              teams?: number;
+              /**
+               * (Optional) Page size for fetching team members.
+               * Default: 50
+               */
+              members?: number;
+              /**
+               * (Optional) Page size for fetching organization repositories.
+               * Default: 25
+               */
+              repositories?: number;
+              /**
+               * (Optional) Page size for fetching repository topics.
+               * Default: 50
+               */
+              repositoryTopics?: number;
+            };
           }
         | {
             [name: string]: {
@@ -209,6 +234,31 @@ export interface Config {
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+              /**
+               * (Optional) GraphQL API page sizes for querying GitHub.
+               */
+              pageSizes?: {
+                /**
+                 * (Optional) Page size for fetching organization teams.
+                 * Default: 25
+                 */
+                teams?: number;
+                /**
+                 * (Optional) Page size for fetching team members.
+                 * Default: 50
+                 */
+                members?: number;
+                /**
+                 * (Optional) Page size for fetching organization repositories.
+                 * Default: 25
+                 */
+                repositories?: number;
+                /**
+                 * (Optional) Page size for fetching repository topics.
+                 * Default: 50
+                 */
+                repositoryTopics?: number;
+              };
             };
           };
 
@@ -244,6 +294,32 @@ export interface Config {
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) GraphQL API page sizes for querying GitHub.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Page size for fetching organization teams.
+               * Default: 25
+               */
+              teams?: number;
+              /**
+               * (Optional) Page size for fetching team members.
+               * Default: 50
+               */
+              members?: number;
+              /**
+               * (Optional) Page size for fetching organization repositories.
+               * Default: 25
+               */
+              repositories?: number;
+              /**
+               * (Optional) Page size for fetching repository topics.
+               * Default: 50
+               */
+              repositoryTopics?: number;
+            };
           }
         | Array<{
             /**
@@ -273,6 +349,32 @@ export interface Config {
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) GraphQL API page sizes for querying GitHub.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Page size for fetching organization teams.
+               * Default: 25
+               */
+              teams?: number;
+              /**
+               * (Optional) Page size for fetching team members.
+               * Default: 50
+               */
+              members?: number;
+              /**
+               * (Optional) Page size for fetching organization repositories.
+               * Default: 25
+               */
+              repositories?: number;
+              /**
+               * (Optional) Page size for fetching repository topics.
+               * Default: 50
+               */
+              repositoryTopics?: number;
+            };
           }>;
     };
   };

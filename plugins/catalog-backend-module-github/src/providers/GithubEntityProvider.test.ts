@@ -42,6 +42,7 @@ jest.mock('../lib/github', () => {
     getOrganizationRepositories: jest.fn(),
   };
 });
+
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
@@ -1564,6 +1565,128 @@ describe('GithubEntityProvider', () => {
           });
         });
       });
+    });
+  });
+
+  describe('pageSizes configuration', () => {
+    it('should pass custom page sizes to getOrganizationRepositories', async () => {
+      const config: Config = new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              token: 'fake-token',
+            },
+          ],
+        },
+        catalog: {
+          providers: {
+            github: {
+              test: {
+                organization: 'test-org',
+                pageSizes: {
+                  teams: 10,
+                  members: 20,
+                  repositories: 15,
+                  repositoryTopics: 30,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const schedule = new PersistingTaskRunner();
+      const providers = GithubEntityProvider.fromConfig(config, {
+        logger: mockServices.logger.mock(),
+        schedule,
+      });
+
+      const mockGetOrganizationRepositories = jest.spyOn(
+        helpers,
+        'getOrganizationRepositories',
+      );
+
+      mockGetOrganizationRepositories.mockReturnValue(
+        Promise.resolve({
+          repositories: [],
+        }),
+      );
+
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      await providers[0].connect(entityProviderConnection);
+
+      const taskDef = schedule.getTasks()[0];
+      await (taskDef.fn as () => Promise<void>)();
+
+      expect(mockGetOrganizationRepositories).toHaveBeenCalledTimes(1);
+      expect(mockGetOrganizationRepositories).toHaveBeenCalledWith(
+        expect.anything(),
+        'test-org',
+        '/catalog-info.yaml',
+        { teams: 10, members: 20, repositories: 15, repositoryTopics: 30 },
+      );
+    });
+
+    it('should work without page sizes configuration', async () => {
+      const config: Config = new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              token: 'fake-token',
+            },
+          ],
+        },
+        catalog: {
+          providers: {
+            github: {
+              test: {
+                organization: 'test-org',
+              },
+            },
+          },
+        },
+      });
+
+      const schedule = new PersistingTaskRunner();
+      const providers = GithubEntityProvider.fromConfig(config, {
+        logger: mockServices.logger.mock(),
+        schedule,
+      });
+
+      const mockGetOrganizationRepositories = jest.spyOn(
+        helpers,
+        'getOrganizationRepositories',
+      );
+
+      mockGetOrganizationRepositories.mockReturnValue(
+        Promise.resolve({
+          repositories: [],
+        }),
+      );
+
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      await providers[0].connect(entityProviderConnection);
+
+      const taskDef = schedule.getTasks()[0];
+      await (taskDef.fn as () => Promise<void>)();
+
+      expect(mockGetOrganizationRepositories).toHaveBeenCalledTimes(1);
+      expect(mockGetOrganizationRepositories).toHaveBeenCalledWith(
+        expect.anything(),
+        'test-org',
+        '/catalog-info.yaml',
+        undefined,
+      );
     });
   });
 });

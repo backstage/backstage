@@ -58,6 +58,7 @@ import {
   getOrganizationTeams,
   getOrganizationTeamsFromUsers,
   getOrganizationUsers,
+  GithubApiPageSizes,
   GithubTeam,
 } from '../lib/github';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
@@ -130,6 +131,11 @@ export interface GithubOrgEntityProviderOptions {
    * Optionally include a team transformer for transforming from GitHub teams to Group Entities
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * Optionally configure page sizes for GitHub GraphQL API queries.
+   */
+  pageSizes?: GithubApiPageSizes;
 }
 
 /**
@@ -167,6 +173,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
+      pageSizes: options.pageSizes,
     });
 
     provider.schedule(options.schedule);
@@ -184,6 +191,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
+      pageSizes?: GithubApiPageSizes;
     },
   ) {
     this.credentialsProvider =
@@ -236,11 +244,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      this.options.pageSizes,
     );
     const { teams } = await getOrganizationTeams(
       client,
       org,
       this.options.teamTransformer,
+      this.options.pageSizes,
     );
 
     if (areGroupEntities(teams)) {
@@ -364,6 +374,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      this.options.pageSizes,
     );
 
     if (!isGroupEntity(team)) {
@@ -380,6 +391,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       usersToRebuild.map(u => u.metadata.name),
       this.options.teamTransformer,
+      this.options.pageSizes,
     );
 
     if (areGroupEntities(teams)) {
@@ -455,6 +467,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      this.options.pageSizes,
     );
 
     const usersToRebuild = users.filter(u => u.metadata.name === userLogin);
@@ -464,6 +477,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       [userLogin],
       this.options.teamTransformer,
+      this.options.pageSizes,
     );
 
     // we include group because the removed event need to update the old group too

@@ -2421,4 +2421,168 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
     });
   });
+
+  describe('pageSizes configuration', () => {
+    let mockClient: jest.Mock<any, any, any>;
+    let entityProviderConnection: EntityProviderConnection;
+    let logger: LoggerService;
+    let gitHubConfig: { host: string };
+    let mockGetCredentials: jest.Mock<any, any, any>;
+    let entityProvider: GithubMultiOrgEntityProvider;
+
+    beforeEach(() => {
+      mockClient = jest.fn();
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      entityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      logger = mockServices.logger.mock();
+
+      gitHubConfig = { host: 'github.com' };
+
+      mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+    });
+
+    afterEach(() => jest.resetAllMocks());
+
+    it('should pass custom page sizes to GitHub API functions', async () => {
+      const customPageSizes = {
+        teams: 10,
+        members: 20,
+        repositories: 15,
+      };
+
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA'],
+        pageSizes: customPageSizes,
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      await entityProvider.read();
+
+      const calls = mockClient.mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+
+      const usersCall = calls.find(
+        (call: any) => call[1]?.pageSize !== undefined,
+      );
+      expect(usersCall).toBeDefined();
+      expect(usersCall[1].pageSize).toBe(20);
+
+      const teamsCall = calls.find(
+        (call: any) => call[1]?.teamsPageSize !== undefined,
+      );
+      expect(teamsCall).toBeDefined();
+      expect(teamsCall[1].teamsPageSize).toBe(10);
+      expect(teamsCall[1].membersPageSize).toBe(20);
+
+      expect((entityProvider as any).options.pageSizes).toEqual(
+        customPageSizes,
+      );
+    });
+
+    it('should work without page sizes configuration', async () => {
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      await entityProvider.read();
+
+      expect((entityProvider as any).options.pageSizes).toBeUndefined();
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalled();
+
+      const calls = mockClient.mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+    });
+
+    it('should pass page sizes through fromConfig', () => {
+      const config = new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+            },
+          ],
+        },
+      });
+
+      const customPageSizes = {
+        teams: 15,
+        members: 25,
+      };
+
+      const provider = GithubMultiOrgEntityProvider.fromConfig(config, {
+        id: 'test-id',
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA'],
+        pageSizes: customPageSizes,
+      });
+
+      expect((provider as any).options.pageSizes).toEqual(customPageSizes);
+    });
+  });
 });

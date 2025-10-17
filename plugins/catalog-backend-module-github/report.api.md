@@ -37,6 +37,14 @@ export const defaultUserTransformer: (
 ) => Promise<UserEntity | undefined>;
 
 // @public
+export type GithubApiPageSizes = {
+  teams?: number;
+  members?: number;
+  repositories?: number;
+  repositoryTopics?: number;
+};
+
+// @public
 const githubCatalogModule: BackendFeature;
 export default githubCatalogModule;
 
@@ -150,6 +158,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
     alwaysUseDefaultNamespace?: boolean;
+    pageSizes?: GithubApiPageSizes;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -170,6 +179,7 @@ export interface GithubMultiOrgEntityProviderOptions {
   id: string;
   logger: LoggerService;
   orgs?: string[];
+  pageSizes?: GithubApiPageSizes;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
@@ -225,6 +235,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     githubCredentialsProvider?: GithubCredentialsProvider;
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
+    pageSizes?: GithubApiPageSizes;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -246,6 +257,7 @@ export interface GithubOrgEntityProviderOptions {
   id: string;
   logger: LoggerService;
   orgUrl: string;
+  pageSizes?: GithubApiPageSizes;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;

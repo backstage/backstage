@@ -1441,4 +1441,160 @@ describe('GithubOrgEntityProvider', () => {
       });
     });
   });
+
+  describe('pageSizes configuration', () => {
+    let mockClient: any;
+    let entityProviderConnection: EntityProviderConnection;
+    const logger = mockServices.logger.mock();
+    const gitHubConfig = {
+      host: 'https://github.com',
+    };
+
+    const setupMocks = (response: ((...args: any) => any) | undefined) => {
+      mockClient = jest.fn().mockImplementation(response);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
+    };
+
+    beforeEach(() => {
+      entityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+    });
+
+    afterEach(() => jest.resetAllMocks());
+
+    it('should pass custom page sizes to GitHub API functions', async () => {
+      setupMocks(() =>
+        Promise.resolve({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        }),
+      );
+
+      const customPageSizes = {
+        teams: 10,
+        members: 20,
+        repositories: 15,
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      const provider = new GithubOrgEntityProvider({
+        id: 'test-pageSizes',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/test-org',
+        gitHubConfig,
+        logger,
+        pageSizes: customPageSizes,
+      });
+
+      await provider.connect(entityProviderConnection);
+      await provider.read();
+
+      const calls = mockClient.mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+
+      const usersCall = calls.find(
+        (call: any) => call[1]?.pageSize !== undefined,
+      );
+      const teamsCall = calls.find(
+        (call: any) => call[1]?.teamsPageSize !== undefined,
+      );
+
+      expect(usersCall).toBeDefined();
+      expect(usersCall[1].pageSize).toBe(20);
+
+      expect(teamsCall).toBeDefined();
+      expect(teamsCall[1].teamsPageSize).toBe(10);
+      expect(teamsCall[1].membersPageSize).toBe(20);
+    });
+
+    it('should work without page sizes configuration', async () => {
+      setupMocks(() =>
+        Promise.resolve({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        }),
+      );
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      const provider = new GithubOrgEntityProvider({
+        id: 'test-no-pageSizes',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/test-org',
+        gitHubConfig,
+        logger,
+      });
+
+      await provider.connect(entityProviderConnection);
+      await provider.read();
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalled();
+      expect((provider as any).options.pageSizes).toBeUndefined();
+    });
+
+    it('should pass page sizes through fromConfig', () => {
+      const customPageSizes = {
+        teams: 15,
+        members: 25,
+      };
+
+      const provider = GithubOrgEntityProvider.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            integrations: {
+              github: [
+                {
+                  host: 'github.com',
+                  token: 'fake-token',
+                },
+              ],
+            },
+          },
+        }),
+        {
+          id: 'test-fromConfig-pageSizes',
+          orgUrl: 'https://github.com/test-org',
+          logger: mockServices.logger.mock(),
+          schedule: 'manual',
+          pageSizes: customPageSizes,
+        },
+      );
+
+      expect(provider).toBeDefined();
+      expect((provider as any).options.pageSizes).toEqual(customPageSizes);
+    });
+  });
 });

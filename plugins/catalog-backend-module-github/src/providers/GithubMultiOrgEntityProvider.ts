@@ -62,6 +62,7 @@ import {
   getOrganizationTeams,
   assignGroupsToUser,
   getOrganizationUsers,
+  GithubApiPageSizes,
   GithubTeam,
   TeamTransformer,
   TransformerContext,
@@ -166,6 +167,11 @@ export interface GithubMultiOrgEntityProviderOptions {
    * By default, groups will be namespaced according to their GitHub org.
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * Optionally configure page sizes for GitHub GraphQL API queries.
+   */
+  pageSizes?: GithubApiPageSizes;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -212,6 +218,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer: options.teamTransformer,
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
+      pageSizes: options.pageSizes,
     });
 
     provider.schedule(options.schedule);
@@ -231,6 +238,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
+      pageSizes?: GithubApiPageSizes;
     },
   ) {}
 
@@ -286,12 +294,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         org,
         tokenType,
         this.options.userTransformer,
+        this.options.pageSizes,
       );
 
       const { teams } = await getOrganizationTeams(
         client,
         org,
         this.defaultMultiOrgTeamTransformer.bind(this),
+        this.options.pageSizes,
       );
 
       // Grab current users from `allUsersMap` if they already exist in our
@@ -434,12 +444,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      this.options.pageSizes,
     );
 
     const { teams } = await getOrganizationTeams(
       client,
       org,
       this.defaultMultiOrgTeamTransformer.bind(this),
+      this.options.pageSizes,
     );
 
     if (users.length) {
@@ -464,6 +476,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
               u.metadata.name,
           ),
           this.defaultMultiOrgTeamTransformer.bind(this),
+          this.options.pageSizes,
         );
 
         if (areGroupEntities(userTeams) && areUserEntities(users)) {
@@ -563,6 +576,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           userOrg,
           login,
           this.defaultMultiOrgTeamTransformer.bind(this),
+          this.options.pageSizes,
         );
 
         if (isUserEntity(user) && areGroupEntities(teams)) {
@@ -661,6 +675,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      this.options.pageSizes,
     );
 
     const usersFromChangedGroup = isGroupEntity(team)
@@ -693,6 +708,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
               u.metadata.name,
           ),
           this.defaultMultiOrgTeamTransformer.bind(this),
+          this.options.pageSizes,
         );
 
         if (areGroupEntities(teams) && areUserEntities(usersToRebuild)) {
@@ -806,6 +822,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           userOrg,
           login,
           this.defaultMultiOrgTeamTransformer.bind(this),
+          this.options.pageSizes,
         );
 
         if (areGroupEntities(teams)) {

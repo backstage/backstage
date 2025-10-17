@@ -425,4 +425,95 @@ describe('readProviderConfigs', () => {
 
     expect(() => readProviderConfigs(config)).toThrow();
   });
+
+  describe('pageSizes', () => {
+    it('reads page sizes from config', () => {
+      const config = new ConfigReader({
+        catalog: {
+          providers: {
+            github: {
+              providerId: {
+                organization: 'my-org',
+                pageSizes: {
+                  teams: 10,
+                  members: 20,
+                  repositories: 15,
+                  repositoryTopics: 30,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const actual = readProviderConfigs(config)[0];
+      expect(actual.pageSizes).toEqual({
+        teams: 10,
+        members: 20,
+        repositories: 15,
+        repositoryTopics: 30,
+      });
+    });
+
+    it('allows partial page size configuration', () => {
+      const config = new ConfigReader({
+        catalog: {
+          providers: {
+            github: {
+              providerId: {
+                organization: 'my-org',
+                pageSizes: {
+                  teams: 15,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const actual = readProviderConfigs(config)[0];
+      expect(actual.pageSizes).toEqual({
+        teams: 15,
+      });
+    });
+
+    it('returns undefined when page sizes are not specified', () => {
+      const config = new ConfigReader({
+        catalog: {
+          providers: {
+            github: {
+              providerId: {
+                organization: 'my-org',
+              },
+            },
+          },
+        },
+      });
+
+      const actual = readProviderConfigs(config)[0];
+      expect(actual.pageSizes).toBeUndefined();
+    });
+
+    it('reads page sizes for simple provider config', () => {
+      const config = new ConfigReader({
+        catalog: {
+          providers: {
+            github: {
+              organization: 'test-org',
+              pageSizes: {
+                teams: 5,
+                members: 10,
+              },
+            },
+          },
+        },
+      });
+
+      const actual = readProviderConfigs(config)[0];
+      expect(actual.pageSizes).toEqual({
+        teams: 5,
+        members: 10,
+      });
+    });
+  });
 });

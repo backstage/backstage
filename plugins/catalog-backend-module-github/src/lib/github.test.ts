@@ -863,4 +863,104 @@ describe('github', () => {
       });
     });
   });
+
+  describe('pageSizes parameter', () => {
+    it('getOrganizationUsers uses custom page size', async () => {
+      server.use(
+        graphqlMsw.query('users', ({ variables }) => {
+          expect(variables.pageSize).toBe(10);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                membersWithRole: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationUsers(graphql, 'test-org', 'token', undefined, {
+        members: 10,
+      });
+    });
+
+    it('getOrganizationTeams uses custom page sizes', async () => {
+      server.use(
+        graphqlMsw.query('teams', ({ variables }) => {
+          expect(variables.teamsPageSize).toBe(15);
+          expect(variables.membersPageSize).toBe(25);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationTeams(graphql, 'test-org', undefined, {
+        teams: 15,
+        members: 25,
+      });
+    });
+
+    it('getOrganizationRepositories uses custom page sizes', async () => {
+      server.use(
+        graphqlMsw.query('repositories', ({ variables }) => {
+          expect(variables.reposPageSize).toBe(10);
+          expect(variables.topicsPageSize).toBe(20);
+          return HttpResponse.json({
+            data: {
+              repositoryOwner: {
+                repositories: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationRepositories(
+        graphql,
+        'test-org',
+        '/catalog-info.yaml',
+        { repositories: 10, repositoryTopics: 20 },
+      );
+    });
+
+    it('uses default page sizes when pageSizes is undefined', async () => {
+      server.use(
+        graphqlMsw.query('users', ({ variables }) => {
+          expect(variables.pageSize).toBe(50);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                membersWithRole: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationUsers(
+        graphql,
+        'test-org',
+        'token',
+        undefined,
+        undefined,
+      );
+    });
+  });
 });

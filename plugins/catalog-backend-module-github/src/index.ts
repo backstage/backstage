@@ -32,6 +32,7 @@ export type { GithubMultiOrgEntityProviderOptions } from './providers/GithubMult
 export { GithubOrgEntityProvider } from './providers/GithubOrgEntityProvider';
 export type { GithubOrgEntityProviderOptions } from './providers/GithubOrgEntityProvider';
 export {
+  type GithubApiPageSizes,
   type GithubMultiOrgConfig,
   type GithubTeam,
   type GithubUser,

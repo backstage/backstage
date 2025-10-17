@@ -263,7 +263,12 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       const client = await this.createGraphqlClient(organization);
 
       const { repositories: repositoriesFromGithub } =
-        await getOrganizationRepositories(client, organization, catalogPath);
+        await getOrganizationRepositories(
+          client,
+          organization,
+          catalogPath,
+          this.config.pageSizes,
+        );
       repositories = repositories.concat(
         repositoriesFromGithub.map(r =>
           this.createRepoFromGithubResponse(r, organization),
