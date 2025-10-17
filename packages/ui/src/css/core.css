@@ -39,4 +39,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  [data-theme-mode='dark'] {
+    color-scheme: dark;
+  }
+
+  [data-theme-mode='light'] {
+    color-scheme: light;
+  }
 }
