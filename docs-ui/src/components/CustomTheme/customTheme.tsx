@@ -6,9 +6,9 @@ import { sass } from '@codemirror/lang-sass';
 import styles from './styles.module.css';
 import { usePlayground } from '@/utils/playground-context';
 import { AnimatePresence, motion } from 'motion/react';
-import { Icon } from '../../../../packages/ui';
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
+import { RiArrowDownSLine } from '@remixicon/react';
 
 const defaultTheme = `:root {
   --bui-bg-solid: #000;
@@ -125,7 +125,12 @@ export const CustomTheme = () => {
                 className={styles.buttonClose}
                 onClick={() => setOpen(!open)}
               >
-                <Icon name={open ? 'chevron-down' : 'chevron-up'} />
+                <RiArrowDownSLine
+                  aria-hidden="true"
+                  style={{
+                    transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }}
+                />
               </button>
             </div>
           </div>
