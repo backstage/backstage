@@ -174,13 +174,18 @@ class BackstageMigrationAnalyzer {
       skipAddingFilesFromTsConfig: true,
     });
 
-    // Only analyze packages and plugins directories
+    // Only analyze packages and plugins directories (excluding packages/ui - the target library)
     const packagesDir = path.join(repoPath, 'packages');
     const pluginsDir = path.join(repoPath, 'plugins');
+    const uiPackageDir = path.join(repoPath, 'packages', 'ui');
 
     let files = [];
     if (fs.existsSync(packagesDir)) {
-      files = files.concat(this.findRelevantFiles(packagesDir));
+      const packageFiles = this.findRelevantFiles(packagesDir);
+      // Exclude packages/ui since it's the target library, not a consumer
+      files = files.concat(
+        packageFiles.filter(file => !file.startsWith(uiPackageDir)),
+      );
     }
     if (fs.existsSync(pluginsDir)) {
       files = files.concat(this.findRelevantFiles(pluginsDir));
