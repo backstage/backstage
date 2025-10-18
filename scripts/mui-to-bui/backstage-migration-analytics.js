@@ -46,12 +46,16 @@ const CONFIG = {
   ignoreDirs: [
     'node_modules',
     'dist',
+    'dist-types',
+    'dist-storybook',
     'build',
     '.git',
     'coverage',
     'test-results',
     'e2e-test-report',
     '.yarn',
+    'docs-ui',
+    'microsite',
   ],
 
   // MUI import patterns to track
@@ -170,8 +174,17 @@ class BackstageMigrationAnalyzer {
       skipAddingFilesFromTsConfig: true,
     });
 
-    // Find all relevant TypeScript/JavaScript files
-    const files = this.findRelevantFiles(repoPath);
+    // Only analyze packages and plugins directories
+    const packagesDir = path.join(repoPath, 'packages');
+    const pluginsDir = path.join(repoPath, 'plugins');
+
+    let files = [];
+    if (fs.existsSync(packagesDir)) {
+      files = files.concat(this.findRelevantFiles(packagesDir));
+    }
+    if (fs.existsSync(pluginsDir)) {
+      files = files.concat(this.findRelevantFiles(pluginsDir));
+    }
     if (!quiet) console.log(`   Found ${files.length} files to analyze`);
 
     // Add files to the project (only .ts/.tsx files for proper AST parsing)
@@ -517,7 +530,6 @@ class BackstageMigrationAnalyzer {
 
     this.results.summary.totalImports +=
       fileAnalysis.imports.mui.length + fileAnalysis.imports.backstage.length;
-    this.results.summary.totalFiles++;
   }
 
   calculateMigrationProgress() {
