@@ -1,6 +1,9 @@
 name: MUI to BUI Migration Tracker
 
 on:
+  push:
+    branches:
+      - mui-to-bui # TEMPORARY: Remove before merging
   schedule:
     # Run daily at midnight UTC
     - cron: '0 0 * * *'
@@ -40,7 +43,7 @@ jobs:
           cat migration-report.md >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Update GitHub Issue
+      - name: Post Comment on Issue
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -48,35 +51,17 @@ jobs:
             const issueNumber = 31467;
             const reportBody = process.env.REPORT;
 
+            // TEMPORARY: Post as comment for testing (change to issues.update before merging)
             try {
-              await github.rest.issues.update({
+              await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
                 body: reportBody
               });
               
-              console.log(`✅ Successfully updated issue #${issueNumber}`);
+              console.log(`✅ Successfully posted comment on issue #${issueNumber}`);
             } catch (error) {
-              console.error(`❌ Error updating issue: ${error.message}`);
+              console.error(`❌ Error posting comment: ${error.message}`);
               throw error;
-            }
-
-      - name: Comment on success
-        if: success()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const issueNumber = 31467;
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-
-            // Only comment if manually triggered (not on schedule)
-            if (context.eventName === 'workflow_dispatch') {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                body: `🔄 Migration report updated manually. [View workflow run](${runUrl})`
-              });
             }
