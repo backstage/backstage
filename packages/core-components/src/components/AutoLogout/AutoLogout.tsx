@@ -146,7 +146,13 @@ const ConditionalAutoLogout = ({
     onPrompt: promptBeforeIdle ? onPrompt : undefined,
     promptBeforeIdle: promptBeforeIdle ? promptBeforeIdleMillis : undefined,
     syncTimers: 1000,
+    leaderElection: true,
   });
+
+  // Check if the current tab is the only active tab. In practice, this gets checked once per second
+  if (timer.isLeader()) {
+    lastSeenOnlineStore.save(new Date());
+  }
 
   return (
     <>

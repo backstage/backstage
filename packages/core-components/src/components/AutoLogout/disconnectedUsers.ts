@@ -51,16 +51,11 @@ export const useLogoutDisconnectedUserEffect = ({
         );
         if (nowSeconds - lastSeenOnlineSeconds > idleTimeoutSeconds) {
           identityApi.signOut();
+          // Delete lastSeen time to prevent getting locked out after logout
+          lastSeenOnlineStore.delete();
+          return;
         }
       }
-      /**
-       * save for the first time when app is loaded, so that
-       * if user logs in and does nothing we still have a
-       * lastSeenOnline value in store
-       */
-      lastSeenOnlineStore.save(new Date());
-    } else {
-      lastSeenOnlineStore.delete();
     }
   }, [
     autologoutIsEnabled,
