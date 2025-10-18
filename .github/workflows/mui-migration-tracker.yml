@@ -1,9 +1,6 @@
 name: MUI to BUI Migration Tracker
 
 on:
-  push:
-    branches:
-      - mui-to-bui # TEMPORARY: Remove before merging
   schedule:
     # Run daily at midnight UTC
     - cron: '0 0 * * *'
