@@ -43,7 +43,7 @@ jobs:
           cat migration-report.md >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Post Comment on Issue
+      - name: Update GitHub Issue
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -51,17 +51,16 @@ jobs:
             const issueNumber = 31467;
             const reportBody = process.env.REPORT;
 
-            // TEMPORARY: Post as comment for testing (change to issues.update before merging)
             try {
-              await github.rest.issues.createComment({
+              await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
                 body: reportBody
               });
               
-              console.log(`✅ Successfully posted comment on issue #${issueNumber}`);
+              console.log(`✅ Successfully updated issue #${issueNumber}`);
             } catch (error) {
-              console.error(`❌ Error posting comment: ${error.message}`);
+              console.error(`❌ Error updating issue: ${error.message}`);
               throw error;
             }
