@@ -150,8 +150,8 @@ class BackstageMigrationAnalyzer {
     );
     if (!quiet) console.log('');
 
-    this.generateRecommendations();
     this.calculateMigrationProgress();
+    this.generateRecommendations();
 
     return this.results;
   }
@@ -384,25 +384,38 @@ class BackstageMigrationAnalyzer {
   analyzeComponentUsageWithAST(sourceFile, fileAnalysis) {
     const { SyntaxKind } = require('ts-morph');
 
-    // Get all imported component names (including aliases)
-    const componentNames = new Map(); // name -> alias (or name if no alias)
+    // Get all imported component names (including aliases) with their source library
+    const componentNames = new Map(); // name -> { alias, isMUI }
 
-    [...fileAnalysis.imports.mui, ...fileAnalysis.imports.backstage].forEach(
-      importInfo => {
-        // Add named imports
-        importInfo.namedImports.forEach(({ name, alias }) => {
-          componentNames.set(name, alias || name);
+    fileAnalysis.imports.mui.forEach(importInfo => {
+      // Add named imports from MUI
+      importInfo.namedImports.forEach(({ name, alias }) => {
+        componentNames.set(name, { alias: alias || name, isMUI: true });
+      });
+
+      // Add default import from MUI
+      if (importInfo.defaultImport) {
+        componentNames.set(importInfo.defaultImport, {
+          alias: importInfo.defaultImport,
+          isMUI: true,
         });
+      }
+    });
 
-        // Add default import
-        if (importInfo.defaultImport) {
-          componentNames.set(
-            importInfo.defaultImport,
-            importInfo.defaultImport,
-          );
-        }
-      },
-    );
+    fileAnalysis.imports.backstage.forEach(importInfo => {
+      // Add named imports from Backstage UI
+      importInfo.namedImports.forEach(({ name, alias }) => {
+        componentNames.set(name, { alias: alias || name, isMUI: false });
+      });
+
+      // Add default import from Backstage UI
+      if (importInfo.defaultImport) {
+        componentNames.set(importInfo.defaultImport, {
+          alias: importInfo.defaultImport,
+          isMUI: false,
+        });
+      }
+    });
 
     // Find JSX elements using proper ts-morph API
     const jsxElements = [
@@ -411,7 +424,7 @@ class BackstageMigrationAnalyzer {
     ];
 
     // Count usage of each component
-    componentNames.forEach((usedName, originalName) => {
+    componentNames.forEach((componentInfo, originalName) => {
       let count = 0;
 
       // Count JSX elements
@@ -424,7 +437,7 @@ class BackstageMigrationAnalyzer {
           tagName = element.getTagNameNode().getText();
         }
 
-        if (tagName === usedName) {
+        if (tagName === componentInfo.alias) {
           count++;
         }
       });
@@ -433,7 +446,11 @@ class BackstageMigrationAnalyzer {
         fileAnalysis.components[originalName] = count;
 
         if (!this.results.componentUsage[originalName]) {
-          this.results.componentUsage[originalName] = { total: 0, files: [] };
+          this.results.componentUsage[originalName] = {
+            total: 0,
+            files: [],
+            isMUI: componentInfo.isMUI,
+          };
         }
         this.results.componentUsage[originalName].total += count;
         this.results.componentUsage[originalName].files.push({
@@ -846,17 +863,7 @@ class BackstageMigrationAnalyzer {
     const md = [];
     const now = new Date().toISOString().split('T')[0];
 
-    // Header
-    md.push(`# 🔄 MUI to Backstage UI Migration Progress`);
-    md.push('');
-    md.push(`**Last Updated:** ${now}`);
-    md.push('');
-    md.push(
-      'This issue tracks the progress of migrating from Material-UI to `@backstage/ui` components.',
-    );
-    md.push('');
-
-    // Summary Stats Table
+    // Calculate percentages first
     const totalRelevantFiles =
       this.results.migrationProgress.fullyMigrated +
       this.results.migrationProgress.mixed +
@@ -885,24 +892,28 @@ class BackstageMigrationAnalyzer {
           ).toFixed(1)
         : '0.0';
 
-    md.push(`## 📊 Overview`);
-    md.push('');
-    md.push('| Metric | Count |');
-    md.push('|--------|-------|');
-    md.push(`| Total Files Analyzed | ${this.results.summary.totalFiles} |`);
-    md.push(
-      `| Files with MUI Imports | ${this.results.summary.filesWithMUI} |`,
-    );
-    md.push(
-      `| Files with Backstage UI Imports | ${this.results.summary.filesWithBackstageUI} |`,
-    );
-    md.push(
-      `| Unique Components Found | ${this.results.summary.totalComponents} |`,
-    );
-    md.push('');
+    // Progress Bar
+    const barLength = 50;
+    const fullyCount = Math.round((fullyPct / 100) * barLength);
+    const mixedCount = Math.round((mixedPct / 100) * barLength);
+    const notStartedCount = barLength - fullyCount - mixedCount;
 
-    // Migration Progress
+    // Migration Status
     md.push(`## 🚀 Migration Status`);
+    md.push('');
+    md.push(
+      'This issue tracks the progress of migrating from Material-UI to `@backstage/ui` components.',
+    );
+    md.push('');
+    md.push('```');
+    md.push(
+      `${
+        '█'.repeat(fullyCount) +
+        '▓'.repeat(mixedCount) +
+        '░'.repeat(notStartedCount)
+      } ${fullyPct}% Complete`,
+    );
+    md.push('```');
     md.push('');
     md.push('| Status | Files | Percentage |');
     md.push('|--------|-------|------------|');
@@ -915,31 +926,11 @@ class BackstageMigrationAnalyzer {
     md.push(
       `| ❌ Not Started | ${this.results.migrationProgress.notStarted} | ${notStartedPct}% |`,
     );
-    md.push('');
 
-    // Progress Bar
-    const barLength = 50;
-    const fullyCount = Math.round((fullyPct / 100) * barLength);
-    const mixedCount = Math.round((mixedPct / 100) * barLength);
-    const notStartedCount = barLength - fullyCount - mixedCount;
-
-    md.push('**Progress Bar:**');
-    md.push('```');
-    md.push(
-      `${
-        '█'.repeat(fullyCount) +
-        '▓'.repeat(mixedCount) +
-        '░'.repeat(notStartedCount)
-      } ${fullyPct}% Complete`,
-    );
-    md.push('```');
     md.push('');
 
     // Library Usage
     md.push(`## 📚 Library Usage Breakdown`);
-    md.push('');
-    md.push('<details>');
-    md.push('<summary>Click to expand library usage details</summary>');
     md.push('');
     md.push('| Library | Import Count | Files |');
     md.push('|---------|--------------|-------|');
@@ -949,23 +940,25 @@ class BackstageMigrationAnalyzer {
         md.push(`| \`${lib}\` | ${data.count} | ${data.files.size} |`);
       });
     md.push('');
-    md.push('</details>');
-    md.push('');
 
-    // Top Components
-    const topComponents = Object.entries(this.results.componentUsage)
+    // Split components by source library
+    const muiComponents = Object.entries(this.results.componentUsage)
+      .filter(([, data]) => data.isMUI)
       .sort(([, a], [, b]) => b.total - a.total)
       .slice(0, 20);
 
-    if (topComponents.length > 0) {
-      md.push(`## 🔧 Top 20 Most Used Components`);
-      md.push('');
-      md.push('<details>');
-      md.push('<summary>Click to expand component usage</summary>');
+    const buiComponents = Object.entries(this.results.componentUsage)
+      .filter(([, data]) => !data.isMUI)
+      .sort(([, a], [, b]) => b.total - a.total)
+      .slice(0, 20);
+
+    // Top MUI Components (need migration)
+    if (muiComponents.length > 0) {
+      md.push(`## 🔧 Top 20 MUI Components (Need Migration)`);
       md.push('');
       md.push('| Rank | Component | Usage Count | Files |');
       md.push('|------|-----------|-------------|-------|');
-      topComponents.forEach(([component, data], index) => {
+      muiComponents.forEach(([component, data], index) => {
         md.push(
           `| ${index + 1} | \`${component}\` | ${data.total} | ${
             data.files.length
@@ -973,24 +966,38 @@ class BackstageMigrationAnalyzer {
         );
       });
       md.push('');
-      md.push('</details>');
+    }
+
+    // Top Backstage UI Components (already migrated)
+    if (buiComponents.length > 0) {
+      md.push(`## ✅ Top 20 Backstage UI Components (Migrated)`);
+      md.push('');
+      md.push('| Rank | Component | Usage Count | Files |');
+      md.push('|------|-----------|-------------|-------|');
+      buiComponents.forEach(([component, data], index) => {
+        md.push(
+          `| ${index + 1} | \`${component}\` | ${data.total} | ${
+            data.files.length
+          } |`,
+        );
+      });
       md.push('');
     }
 
-    // Recommendations
-    if (this.results.recommendations.length > 0) {
+    // Recommendations (only show HIGH and MEDIUM priority, skip INFO as it's redundant)
+    const highPriority = this.results.recommendations.filter(
+      r => r.priority === 'HIGH',
+    );
+    const mediumPriority = this.results.recommendations.filter(
+      r => r.priority === 'MEDIUM',
+    );
+
+    const hasRecommendations =
+      highPriority.length > 0 || mediumPriority.length > 0;
+
+    if (hasRecommendations) {
       md.push(`## 💡 Recommendations`);
       md.push('');
-
-      const highPriority = this.results.recommendations.filter(
-        r => r.priority === 'HIGH',
-      );
-      const mediumPriority = this.results.recommendations.filter(
-        r => r.priority === 'MEDIUM',
-      );
-      const infoPriority = this.results.recommendations.filter(
-        r => r.priority === 'INFO',
-      );
 
       if (highPriority.length > 0) {
         md.push(`### 🔴 High Priority`);
@@ -1009,19 +1016,24 @@ class BackstageMigrationAnalyzer {
         });
         md.push('');
       }
-
-      if (infoPriority.length > 0) {
-        md.push('<details>');
-        md.push('<summary>ℹ️ Additional Information</summary>');
-        md.push('');
-        infoPriority.forEach(rec => {
-          md.push(`- ${rec.message}`);
-        });
-        md.push('');
-        md.push('</details>');
-        md.push('');
-      }
     }
+
+    // Detailed Statistics (Overview moved to bottom)
+    md.push(`## 📊 Detailed Statistics`);
+    md.push('');
+    md.push('| Metric | Count |');
+    md.push('|--------|-------|');
+    md.push(`| Total Files Analyzed | ${this.results.summary.totalFiles} |`);
+    md.push(
+      `| Files with MUI Imports | ${this.results.summary.filesWithMUI} |`,
+    );
+    md.push(
+      `| Files with Backstage UI Imports | ${this.results.summary.filesWithBackstageUI} |`,
+    );
+    md.push(
+      `| Unique Components Found | ${this.results.summary.totalComponents} |`,
+    );
+    md.push('');
 
     // Footer
     md.push('---');
@@ -1029,6 +1041,8 @@ class BackstageMigrationAnalyzer {
     md.push(
       '_This report is automatically generated by the [MUI to BUI Migration Analytics Script](../../scripts/mui-to-bui/backstage-migration-analytics.js)_',
     );
+    md.push('');
+    md.push(`**Last Updated:** ${now}`);
 
     return md.join('\n');
   }
