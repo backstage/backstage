@@ -16,6 +16,12 @@
 
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
+import {
+  coreServices,
+  createServiceFactory,
+  createServiceRef,
+} from '@backstage/backend-plugin-api';
+import { Expand } from '@backstage/types';
 
 /**
  * Represents an offline session for refresh tokens
@@ -49,11 +55,31 @@ export class OfflineSessionDatabase {
   private static readonly TABLE_NAME = 'offline_sessions';
   private static readonly MAX_TOKENS_PER_USER = 20;
 
-  constructor(
-    private readonly knex: Knex,
-    private readonly tokenLifetimeSeconds: number,
-    private readonly maxRotationLifetimeSeconds: number,
-  ) {}
+  readonly #knex: Knex;
+  readonly #tokenLifetimeSeconds: number;
+  readonly #maxRotationLifetimeSeconds: number;
+
+  static create(options: {
+    knex: Knex;
+    tokenLifetimeSeconds: number;
+    maxRotationLifetimeSeconds: number;
+  }) {
+    return new OfflineSessionDatabase(
+      options.knex,
+      options.tokenLifetimeSeconds,
+      options.maxRotationLifetimeSeconds,
+    );
+  }
+
+  private constructor(
+    knex: Knex,
+    tokenLifetimeSeconds: number,
+    maxRotationLifetimeSeconds: number,
+  ) {
+    this.#knex = knex;
+    this.#tokenLifetimeSeconds = tokenLifetimeSeconds;
+    this.#maxRotationLifetimeSeconds = maxRotationLifetimeSeconds;
+  }
 
   /**
    * Create a new offline session
@@ -64,7 +90,7 @@ export class OfflineSessionDatabase {
   ): Promise<OfflineSession> {
     const { id, userEntityRef, oidcClientId, tokenHash } = options;
 
-    await this.knex.transaction(async trx => {
+    await this.#knex.transaction(async trx => {
       // Delete existing session for same OIDC client if present
       if (oidcClientId) {
         await trx(OfflineSessionDatabase.TABLE_NAME)
@@ -97,7 +123,7 @@ export class OfflineSessionDatabase {
    * Get a session by its ID
    */
   async getSessionById(id: string): Promise<OfflineSession | undefined> {
-    const row = await this.knex(OfflineSessionDatabase.TABLE_NAME)
+    const row = await this.#knex(OfflineSessionDatabase.TABLE_NAME)
       .where('id', id)
       .first();
 
@@ -112,24 +138,26 @@ export class OfflineSessionDatabase {
    * Rotate the token for a session (update hash and last_used_at)
    */
   async rotateToken(id: string, newTokenHash: string): Promise<void> {
-    await this.knex(OfflineSessionDatabase.TABLE_NAME).where('id', id).update({
+    await this.#knex(OfflineSessionDatabase.TABLE_NAME).where('id', id).update({
       token_hash: newTokenHash,
-      last_used_at: this.knex.fn.now(),
+      last_used_at: this.#knex.fn.now(),
     });
   }
 
   /**
    * Delete a session by ID
    */
-  async deleteSession(id: string): Promise<void> {
-    await this.knex(OfflineSessionDatabase.TABLE_NAME).where('id', id).delete();
+  async deleteSession(id: string): Promise<number> {
+    return await this.#knex(OfflineSessionDatabase.TABLE_NAME)
+      .where('id', id)
+      .delete();
   }
 
   /**
    * Delete all sessions for a user entity ref
    */
   async deleteSessionsByUserEntityRef(userEntityRef: string): Promise<number> {
-    return await this.knex(OfflineSessionDatabase.TABLE_NAME)
+    return await this.#knex(OfflineSessionDatabase.TABLE_NAME)
       .where('user_entity_ref', userEntityRef)
       .delete();
   }
@@ -137,8 +165,8 @@ export class OfflineSessionDatabase {
   /**
    * Delete a session by OIDC client ID
    */
-  async deleteSessionByClientId(oidcClientId: string): Promise<void> {
-    await this.knex(OfflineSessionDatabase.TABLE_NAME)
+  async deleteSessionByClientId(oidcClientId: string): Promise<number> {
+    return await this.#knex(OfflineSessionDatabase.TABLE_NAME)
       .where('oidc_client_id', oidcClientId)
       .delete();
   }
@@ -149,15 +177,15 @@ export class OfflineSessionDatabase {
    * - Long window: created_at + maxRotationLifetime
    */
   async cleanupExpiredSessions(): Promise<number> {
-    const now = DateTime.now();
+    const now = DateTime.utc();
     const tokenLifetimeThreshold = now
-      .minus({ seconds: this.tokenLifetimeSeconds })
+      .minus({ seconds: this.#tokenLifetimeSeconds })
       .toJSDate();
     const maxRotationThreshold = now
-      .minus({ seconds: this.maxRotationLifetimeSeconds })
+      .minus({ seconds: this.#maxRotationLifetimeSeconds })
       .toJSDate();
 
-    return await this.knex(OfflineSessionDatabase.TABLE_NAME)
+    return await this.#knex(OfflineSessionDatabase.TABLE_NAME)
       .where('last_used_at', '<', tokenLifetimeThreshold)
       .orWhere('created_at', '<', maxRotationThreshold)
       .delete();
@@ -167,12 +195,12 @@ export class OfflineSessionDatabase {
    * Check if a session is expired based on both time windows
    */
   isSessionExpired(session: OfflineSession): boolean {
-    const now = DateTime.now();
+    const now = DateTime.utc();
     const lastUsedExpiry = DateTime.fromJSDate(session.lastUsedAt).plus({
-      seconds: this.tokenLifetimeSeconds,
+      seconds: this.#tokenLifetimeSeconds,
     });
     const createdExpiry = DateTime.fromJSDate(session.createdAt).plus({
-      seconds: this.maxRotationLifetimeSeconds,
+      seconds: this.#maxRotationLifetimeSeconds,
     });
 
     return now > lastUsedExpiry || now > createdExpiry;
@@ -218,3 +246,104 @@ export class OfflineSessionDatabase {
     };
   }
 }
+
+/**
+ * Parse a duration string to seconds
+ * @internal
+ */
+function parseDurationToSeconds(
+  duration: string | { [key: string]: number },
+): number {
+  if (typeof duration === 'object') {
+    // Handle HumanDuration object format
+    let seconds = 0;
+    if (duration.years) seconds += duration.years * 365 * 24 * 60 * 60;
+    if (duration.months) seconds += duration.months * 30 * 24 * 60 * 60;
+    if (duration.weeks) seconds += duration.weeks * 7 * 24 * 60 * 60;
+    if (duration.days) seconds += duration.days * 24 * 60 * 60;
+    if (duration.hours) seconds += duration.hours * 60 * 60;
+    if (duration.minutes) seconds += duration.minutes * 60;
+    if (duration.seconds) seconds += duration.seconds;
+    if (duration.milliseconds) seconds += duration.milliseconds / 1000;
+    return seconds;
+  }
+
+  // Handle string format like "30 days", "1 year"
+  const match = duration.match(
+    /^(\d+)\s*(year|years|month|months|week|weeks|day|days|hour|hours|minute|minutes|second|seconds|ms|milliseconds)$/i,
+  );
+  if (!match) {
+    throw new Error(`Invalid duration format: ${duration}`);
+  }
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+
+  switch (unit) {
+    case 'year':
+    case 'years':
+      return value * 365 * 24 * 60 * 60;
+    case 'month':
+    case 'months':
+      return value * 30 * 24 * 60 * 60;
+    case 'week':
+    case 'weeks':
+      return value * 7 * 24 * 60 * 60;
+    case 'day':
+    case 'days':
+      return value * 24 * 60 * 60;
+    case 'hour':
+    case 'hours':
+      return value * 60 * 60;
+    case 'minute':
+    case 'minutes':
+      return value * 60;
+    case 'second':
+    case 'seconds':
+      return value;
+    case 'ms':
+    case 'milliseconds':
+      return value / 1000;
+    default:
+      throw new Error(`Unknown duration unit: ${unit}`);
+  }
+}
+
+/**
+ * Service reference for OfflineSessionDatabase
+ * @public
+ */
+export const offlineSessionDatabaseRef = createServiceRef<
+  Expand<OfflineSessionDatabase>
+>({
+  id: 'auth.offlineSessionDatabase',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {
+        database: coreServices.database,
+        config: coreServices.rootConfig,
+      },
+      async factory(deps) {
+        const tokenLifetime =
+          deps.config.getOptionalString('auth.refreshToken.tokenLifetime') ??
+          '30 days';
+        const maxRotationLifetime =
+          deps.config.getOptionalString(
+            'auth.refreshToken.maxRotationLifetime',
+          ) ?? '1 year';
+
+        const tokenLifetimeSeconds = parseDurationToSeconds(tokenLifetime);
+        const maxRotationLifetimeSeconds =
+          parseDurationToSeconds(maxRotationLifetime);
+
+        const knex = await deps.database.getClient();
+
+        return OfflineSessionDatabase.create({
+          knex,
+          tokenLifetimeSeconds,
+          maxRotationLifetimeSeconds,
+        });
+      },
+    }),
+});

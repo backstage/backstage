@@ -14,41 +14,47 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+  createServiceRef,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import { v4 as uuid } from 'uuid';
-import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
+import { offlineSessionDatabaseRef } from '../database/OfflineSessionDatabase';
 import {
   generateRefreshToken,
   getRefreshTokenId,
   verifyRefreshToken,
 } from '../lib/refreshToken';
 import { TokenIssuer } from '../identity/types';
+import { Expand } from '@backstage/types';
 
 /**
  * Service for managing offline access (refresh tokens)
  * @public
  */
 export class OfflineAccessService {
-  private readonly offlineSessionDb: OfflineSessionDatabase;
-  private readonly logger: LoggerService;
-  private lastCleanupTime: number = 0;
-  private readonly cleanupProbability = 0.05; // 5% chance
-  private readonly cleanupMinIntervalMs = 60 * 1000; // 1 minute
-
-  private constructor(
-    offlineSessionDb: OfflineSessionDatabase,
-    logger: LoggerService,
-  ) {
-    this.offlineSessionDb = offlineSessionDb;
-    this.logger = logger;
-  }
+  readonly #offlineSessionDb: typeof offlineSessionDatabaseRef.T;
+  readonly #logger: LoggerService;
+  #lastCleanupTime: number = 0;
+  readonly #cleanupProbability = 0.05; // 5% chance
+  readonly #cleanupMinIntervalMs = 60 * 1000; // 1 minute
 
   static create(options: {
-    offlineSessionDb: OfflineSessionDatabase;
+    offlineSessionDb: typeof offlineSessionDatabaseRef.T;
     logger: LoggerService;
   }) {
     return new OfflineAccessService(options.offlineSessionDb, options.logger);
+  }
+
+  private constructor(
+    offlineSessionDb: typeof offlineSessionDatabaseRef.T,
+    logger: LoggerService,
+  ) {
+    this.#offlineSessionDb = offlineSessionDb;
+    this.#logger = logger;
   }
 
   /**
@@ -67,14 +73,14 @@ export class OfflineAccessService {
     const { token, hash } = generateRefreshToken(sessionId);
 
     // Store session in database
-    await this.offlineSessionDb.createSession({
+    await this.#offlineSessionDb.createSession({
       id: sessionId,
       userEntityRef,
       oidcClientId,
       tokenHash: hash,
     });
 
-    this.logger.debug(
+    this.#logger.debug(
       `Issued refresh token for user ${userEntityRef} with session ${sessionId}`,
     );
 
@@ -102,14 +108,14 @@ export class OfflineAccessService {
     }
 
     // Fetch session from database
-    const session = await this.offlineSessionDb.getSessionById(sessionId);
+    const session = await this.#offlineSessionDb.getSessionById(sessionId);
     if (!session) {
       throw new AuthenticationError('Invalid refresh token');
     }
 
     // Check if session is expired
-    if (this.offlineSessionDb.isSessionExpired(session)) {
-      await this.offlineSessionDb.deleteSession(sessionId);
+    if (this.#offlineSessionDb.isSessionExpired(session)) {
+      await this.#offlineSessionDb.deleteSession(sessionId);
       throw new AuthenticationError('Refresh token expired');
     }
 
@@ -133,9 +139,9 @@ export class OfflineAccessService {
       generateRefreshToken(sessionId);
 
     // Update database with new token hash
-    await this.offlineSessionDb.rotateToken(sessionId, newHash);
+    await this.#offlineSessionDb.rotateToken(sessionId, newHash);
 
-    this.logger.debug(
+    this.#logger.debug(
       `Refreshed access token for user ${session.userEntityRef} with session ${sessionId}`,
     );
 
@@ -151,11 +157,11 @@ export class OfflineAccessService {
   async revokeRefreshToken(refreshToken: string): Promise<void> {
     try {
       const sessionId = getRefreshTokenId(refreshToken);
-      await this.offlineSessionDb.deleteSession(sessionId);
-      this.logger.debug(`Revoked refresh token with session ${sessionId}`);
+      await this.#offlineSessionDb.deleteSession(sessionId);
+      this.#logger.debug(`Revoked refresh token with session ${sessionId}`);
     } catch (error) {
       // Ignore errors when revoking - token may already be invalid
-      this.logger.debug('Failed to revoke refresh token', error);
+      this.#logger.debug('Failed to revoke refresh token', error);
     }
   }
 
@@ -166,8 +172,8 @@ export class OfflineAccessService {
     userEntityRef: string,
   ): Promise<void> {
     const deletedCount =
-      await this.offlineSessionDb.deleteSessionsByUserEntityRef(userEntityRef);
-    this.logger.debug(
+      await this.#offlineSessionDb.deleteSessionsByUserEntityRef(userEntityRef);
+    this.#logger.debug(
       `Revoked ${deletedCount} refresh tokens for user ${userEntityRef}`,
     );
   }
@@ -181,31 +187,55 @@ export class OfflineAccessService {
    */
   private triggerCleanup(): void {
     // Check probability
-    if (Math.random() > this.cleanupProbability) {
+    if (Math.random() > this.#cleanupProbability) {
       return;
     }
 
     // Check if cleanup ran recently (deduplicate)
     const now = Date.now();
-    if (now - this.lastCleanupTime < this.cleanupMinIntervalMs) {
+    if (now - this.#lastCleanupTime < this.#cleanupMinIntervalMs) {
       return;
     }
 
     // Update timestamp
-    this.lastCleanupTime = now;
+    this.#lastCleanupTime = now;
 
     // Run cleanup asynchronously without blocking
-    this.offlineSessionDb
+    this.#offlineSessionDb
       .cleanupExpiredSessions()
-      .then(deletedCount => {
+      .then((deletedCount: number) => {
         if (deletedCount > 0) {
-          this.logger.debug(
+          this.#logger.debug(
             `Cleaned up ${deletedCount} expired offline sessions`,
           );
         }
       })
-      .catch(error => {
-        this.logger.warn('Failed to cleanup expired offline sessions', error);
+      .catch((error: Error) => {
+        this.#logger.warn('Failed to cleanup expired offline sessions', error);
       });
   }
 }
+
+/**
+ * Service reference for OfflineAccessService
+ * @public
+ */
+export const offlineAccessServiceRef = createServiceRef<
+  Expand<OfflineAccessService>
+>({
+  id: 'auth.offlineAccess',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {
+        offlineSessionDb: offlineSessionDatabaseRef,
+        logger: coreServices.logger,
+      },
+      async factory(deps) {
+        return OfflineAccessService.create({
+          offlineSessionDb: deps.offlineSessionDb,
+          logger: deps.logger,
+        });
+      },
+    }),
+});

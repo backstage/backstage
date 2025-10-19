@@ -25,7 +25,7 @@ import {
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
-import { OfflineAccessService } from './OfflineAccessService';
+import { offlineAccessServiceRef } from './OfflineAccessService';
 import { json } from 'express';
 import { readDcrTokenExpiration } from './readTokenExpiration';
 
@@ -63,7 +63,7 @@ export class OidcRouter {
     oidc: OidcDatabase;
     httpAuth: HttpAuthService;
     config: RootConfigService;
-    offlineAccess?: OfflineAccessService;
+    offlineAccess?: typeof offlineAccessServiceRef.T;
   }) {
     return new OidcRouter(
       OidcService.create({
