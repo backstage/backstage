@@ -100,6 +100,22 @@ export interface Config {
     backstageTokenExpiration?: HumanDuration | string;
 
     /**
+     * Configuration for refresh tokens (offline access)
+     */
+    refreshToken?: {
+      /**
+       * Token lifetime before rotation required
+       * @default '30 days'
+       */
+      tokenLifetime?: HumanDuration | string;
+      /**
+       * Maximum session lifetime across all rotations
+       * @default '1 year'
+       */
+      maxRotationLifetime?: HumanDuration | string;
+    };
+
+    /**
      * Additional app origins to allow for authenticating
      */
     experimentalExtraAllowedOrigins?: string[];

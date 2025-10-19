@@ -28,6 +28,24 @@
 - `oauth_authorization_sessions_pkey` (`id`) unique primary
 - `oauth_authorization_sessions_status_expires_at_index` (`status`, `expires_at`)
 
+## Table `offline_sessions`
+
+| Column            | Type                       | Nullable | Max Length | Default             |
+| ----------------- | -------------------------- | -------- | ---------- | ------------------- |
+| `created_at`      | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `id`              | `character varying`        | false    | 255        | -                   |
+| `last_used_at`    | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `oidc_client_id`  | `character varying`        | true     | 255        | -                   |
+| `token_hash`      | `character varying`        | false    | 255        | -                   |
+| `user_entity_ref` | `character varying`        | false    | 255        | -                   |
+
+### Indices
+
+- `offline_sessions_created_idx` (`created_at`)
+- `offline_sessions_last_used_idx` (`last_used_at`)
+- `offline_sessions_pkey` (`id`) unique primary
+- `offline_sessions_user_idx` (`user_entity_ref`)
+
 ## Table `oidc_authorization_codes`
 
 | Column       | Type                       | Nullable | Max Length | Default |
