@@ -94,6 +94,37 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 - `githubUrl`: The target that this provider should consume
 - `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
 - `schedule`: The refresh schedule to use, matches the structure of [`SchedulerServiceTaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinitionconfig/)
+- `pageSizes` (optional): Configure page sizes for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors with large organizations. See [Page Sizes Configuration](#page-sizes-configuration) below for details.
+
+### Page Sizes Configuration
+
+For large GitHub organizations (200+ teams), you may encounter `RESOURCE_LIMITS_EXCEEDED` errors due to GitHub's GraphQL API resource limits. You can configure page sizes to reduce the number of records fetched per API request:
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    githubOrg:
+      - id: production
+        githubUrl: https://github.com
+        orgs: ['large-org']
+        schedule:
+          frequency: { hours: 1 }
+          timeout: { minutes: 50 }
+        pageSizes:
+          teams: 25 # Default: 25
+          teamMembers: 50 # Default: 50
+          organizationMembers: 50 # Default: 50
+          repositories: 25 # Default: 25
+```
+
+**Configuration Options:**
+
+- `teams`: Number of teams to fetch per page when querying organization teams (default: 25)
+- `teamMembers`: Number of team members to fetch per page when querying team members (default: 50)
+- `organizationMembers`: Number of organization members to fetch per page (default: 50)
+- `repositories`: Number of repositories to fetch per page (default: 25)
+
+**Note:** Reducing page sizes will result in more API calls and slightly longer sync times, but will prevent resource limit errors for large organizations.
 
 ### Events Support
 

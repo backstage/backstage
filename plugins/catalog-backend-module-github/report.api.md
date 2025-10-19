@@ -28,6 +28,9 @@ import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
+export const DEFAULT_PAGE_SIZES: GithubPageSizes;
+
+// @public
 export const defaultOrganizationTeamTransformer: TeamTransformer;
 
 // @public
@@ -150,6 +153,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
     alwaysUseDefaultNamespace?: boolean;
+    pageSizes?: Partial<GithubPageSizes>;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -170,6 +174,7 @@ export interface GithubMultiOrgEntityProviderOptions {
   id: string;
   logger: LoggerService;
   orgs?: string[];
+  pageSizes?: Partial<GithubPageSizes>;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
@@ -275,6 +280,14 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 }
+
+// @public
+export type GithubPageSizes = {
+  teams: number;
+  teamMembers: number;
+  organizationMembers: number;
+  repositories: number;
+};
 
 // @public
 export type GithubTeam = {

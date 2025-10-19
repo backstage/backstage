@@ -30,6 +30,48 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Octokit } from '@octokit/core';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { throttling } from '@octokit/plugin-throttling';
+
+/**
+ * Configuration for GitHub GraphQL API page sizes.
+ *
+ * @public
+ */
+export type GithubPageSizes = {
+  /**
+   * Number of teams to fetch per page when querying organization teams.
+   * Default: 25
+   */
+  teams: number;
+  /**
+   * Number of team members to fetch per page when querying team members.
+   * Default: 50
+   */
+  teamMembers: number;
+  /**
+   * Number of organization members to fetch per page when querying org members.
+   * Default: 50
+   */
+  organizationMembers: number;
+  /**
+   * Number of repositories to fetch per page when querying repositories.
+   * Default: 25
+   */
+  repositories: number;
+};
+
+/**
+ * Default page sizes for GitHub GraphQL API queries.
+ * These values are reduced to prevent RESOURCE_LIMITS_EXCEEDED errors with large organizations.
+ *
+ * @public
+ */
+export const DEFAULT_PAGE_SIZES: GithubPageSizes = {
+  teams: 25,
+  teamMembers: 50,
+  organizationMembers: 50,
+  repositories: 25,
+};
+
 // Graphql types
 
 export type QueryResponse = {
@@ -136,17 +178,21 @@ export type Connection<T> = {
  *
  * @param client - An octokit graphql client
  * @param org - The slug of the org to read
+ * @param tokenType - The type of GitHub credential
+ * @param userTransformer - Optional transformer for user entities
+ * @param pageSizes - Optional page sizes configuration
  */
 export async function getOrganizationUsers(
   client: typeof graphql,
   org: string,
   tokenType: GithubCredentialType,
   userTransformer: UserTransformer = defaultUserTransformer,
+  pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
 ): Promise<{ users: Entity[] }> {
   const query = `
-    query users($org: String!, $email: Boolean!, $cursor: String) {
+    query users($org: String!, $email: Boolean!, $cursor: String, $pageSize: Int!) {
       organization(login: $org) {
-        membersWithRole(first: 100, after: $cursor) {
+        membersWithRole(first: $pageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
             avatarUrl,
@@ -172,6 +218,7 @@ export async function getOrganizationUsers(
     {
       org,
       email: tokenType === 'token',
+      pageSize: pageSizes.organizationMembers,
     },
   );
 
@@ -185,18 +232,21 @@ export async function getOrganizationUsers(
  *
  * @param client - An octokit graphql client
  * @param org - The slug of the org to read
+ * @param teamTransformer - Optional transformer for team entities
+ * @param pageSizes - Optional page sizes configuration
  */
 export async function getOrganizationTeams(
   client: typeof graphql,
   org: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+  pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
 ): Promise<{
   teams: Entity[];
 }> {
   const query = `
-    query teams($org: String!, $cursor: String) {
+    query teams($org: String!, $cursor: String, $teamsPageSize: Int!, $membersPageSize: Int!) {
       organization(login: $org) {
-        teams(first: 50, after: $cursor) {
+        teams(first: $teamsPageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
             slug
@@ -206,7 +256,7 @@ export async function getOrganizationTeams(
             avatarUrl
             editTeamUrl
             parentTeam { slug }
-            members(first: 100, membership: IMMEDIATE) {
+            members(first: $membersPageSize, membership: IMMEDIATE) {
               pageInfo { hasNextPage }
               nodes {
                 avatarUrl,
@@ -234,9 +284,14 @@ export async function getOrganizationTeams(
         memberNames.push(user);
       }
     } else {
-      // There were more than a hundred immediate members - run the slow
+      // There were more immediate members than page size - run the slow
       // path of fetching them explicitly
-      const { members } = await getTeamMembers(ctx.client, ctx.org, item.slug);
+      const { members } = await getTeamMembers(
+        ctx.client,
+        ctx.org,
+        item.slug,
+        pageSizes,
+      );
       for (const userLogin of members) {
         memberNames.push(userLogin);
       }
@@ -256,7 +311,11 @@ export async function getOrganizationTeams(
     org,
     r => r.organization?.teams,
     materialisedTeams,
-    { org },
+    {
+      org,
+      teamsPageSize: pageSizes.teams,
+      membersPageSize: pageSizes.teamMembers,
+    },
   );
 
   return { teams };
@@ -267,13 +326,14 @@ export async function getOrganizationTeamsFromUsers(
   org: string,
   userLogins: string[],
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+  pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
 ): Promise<{
   teams: Entity[];
 }> {
   const query = `
-   query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
+   query teams($org: String!, $cursor: String, $userLogins: [String!] = "", $teamsPageSize: Int!, $membersPageSize: Int!) {
   organization(login: $org) {
-    teams(first: 100, after: $cursor, userLogins: $userLogins) {
+    teams(first: $teamsPageSize, after: $cursor, userLogins: $userLogins) {
       pageInfo {
         hasNextPage
         endCursor
@@ -288,7 +348,7 @@ export async function getOrganizationTeamsFromUsers(
         parentTeam {
           slug
         }
-        members(first: 100, membership: IMMEDIATE) {
+        members(first: $membersPageSize, membership: IMMEDIATE) {
           pageInfo {
             hasNextPage
           }
@@ -318,9 +378,14 @@ export async function getOrganizationTeamsFromUsers(
         memberNames.push(user);
       }
     } else {
-      // There were more than a hundred immediate members - run the slow
+      // There were more immediate members than page size - run the slow
       // path of fetching them explicitly
-      const { members } = await getTeamMembers(ctx.client, ctx.org, item.slug);
+      const { members } = await getTeamMembers(
+        ctx.client,
+        ctx.org,
+        item.slug,
+        pageSizes,
+      );
       for (const userLogin of members) {
         memberNames.push(userLogin);
       }
@@ -340,7 +405,12 @@ export async function getOrganizationTeamsFromUsers(
     org,
     r => r.organization?.teams,
     materialisedTeams,
-    { org, userLogins },
+    {
+      org,
+      userLogins,
+      teamsPageSize: pageSizes.teams,
+      membersPageSize: pageSizes.teamMembers,
+    },
   );
 
   return { teams };
@@ -351,11 +421,12 @@ export async function getOrganizationTeamsForUser(
   org: string,
   userLogin: string,
   teamTransformer: TeamTransformer,
+  pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
 ): Promise<{ teams: Entity[] }> {
   const query = `
-   query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
+   query teams($org: String!, $cursor: String, $userLogins: [String!] = "", $teamsPageSize: Int!) {
   organization(login: $org) {
-    teams(first: 100, after: $cursor, userLogins: $userLogins) {
+    teams(first: $teamsPageSize, after: $cursor, userLogins: $userLogins) {
       pageInfo {
         hasNextPage
         endCursor
@@ -393,7 +464,7 @@ export async function getOrganizationTeamsForUser(
     org,
     r => r.organization?.teams,
     materialisedTeams,
-    { org, userLogins: [userLogin] },
+    { org, userLogins: [userLogin], teamsPageSize: pageSizes.teams },
   );
 
   return { teams };
@@ -432,11 +503,12 @@ export async function getOrganizationTeam(
   org: string,
   teamSlug: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+  pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
 ): Promise<{
   team: Entity;
 }> {
   const query = `
-  query teams($org: String!, $teamSlug: String!) {
+  query teams($org: String!, $teamSlug: String!, $membersPageSize: Int!) {
       organization(login: $org) {
         team(slug:$teamSlug) {
             slug
@@ -446,7 +518,7 @@ export async function getOrganizationTeam(
             avatarUrl
             editTeamUrl
             parentTeam { slug }
-            members(first: 100, membership: IMMEDIATE) {
+            members(first: $membersPageSize, membership: IMMEDIATE) {
               pageInfo { hasNextPage }
               nodes { login }
             }
@@ -466,9 +538,14 @@ export async function getOrganizationTeam(
         memberNames.push(user);
       }
     } else {
-      // There were more than a hundred immediate members - run the slow
+      // There were more immediate members than page size - run the slow
       // path of fetching them explicitly
-      const { members } = await getTeamMembers(ctx.client, ctx.org, item.slug);
+      const { members } = await getTeamMembers(
+        ctx.client,
+        ctx.org,
+        item.slug,
+        pageSizes,
+      );
       for (const userLogin of members) {
         memberNames.push(userLogin);
       }
@@ -485,6 +562,7 @@ export async function getOrganizationTeam(
   const response: QueryResponse = await client(query, {
     org,
     teamSlug,
+    membersPageSize: pageSizes.teamMembers,
   });
 
   if (!response.organization?.team)
@@ -505,6 +583,7 @@ export async function getOrganizationRepositories(
   client: typeof graphql,
   org: string,
   catalogPath: string,
+  pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
 ): Promise<{ repositories: RepositoryResponse[] }> {
   let relativeCatalogPathRef: string;
   // We must strip the leading slash or the query for objects does not work
@@ -515,10 +594,10 @@ export async function getOrganizationRepositories(
   }
   const catalogPathRef = `HEAD:${relativeCatalogPathRef}`;
   const query = `
-    query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
+    query repositories($org: String!, $catalogPathRef: String!, $cursor: String, $repositoriesPageSize: Int!) {
       repositoryOwner(login: $org) {
         login
-        repositories(first: 50, after: $cursor) {
+        repositories(first: $repositoriesPageSize, after: $cursor) {
           nodes {
             name
             catalogInfoFile: object(expression: $catalogPathRef) {
@@ -559,7 +638,7 @@ export async function getOrganizationRepositories(
     org,
     r => r.repositoryOwner?.repositories,
     async x => x,
-    { org, catalogPathRef },
+    { org, catalogPathRef, repositoriesPageSize: pageSizes.repositories },
   );
 
   return { repositories };
@@ -621,24 +700,26 @@ export async function getOrganizationRepository(
 }
 
 /**
- * Gets all the users out of a Github organization.
+ * Gets all the users out of a Github organization team.
  *
  * Note that the users will not have their memberships filled in.
  *
  * @param client - An octokit graphql client
  * @param org - The slug of the org to read
  * @param teamSlug - The slug of the team to read
+ * @param pageSizes - Optional page sizes configuration
  */
 export async function getTeamMembers(
   client: typeof graphql,
   org: string,
   teamSlug: string,
+  pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
 ): Promise<{ members: GithubUser[] }> {
   const query = `
-    query members($org: String!, $teamSlug: String!, $cursor: String) {
+    query members($org: String!, $teamSlug: String!, $cursor: String, $membersPageSize: Int!) {
       organization(login: $org) {
         team(slug: $teamSlug) {
-          members(first: 100, after: $cursor, membership: IMMEDIATE) {
+          members(first: $membersPageSize, after: $cursor, membership: IMMEDIATE) {
             pageInfo { hasNextPage, endCursor }
             nodes { login }
           }
@@ -652,7 +733,7 @@ export async function getTeamMembers(
     org,
     r => r.organization?.team?.members,
     async user => user,
-    { org, teamSlug },
+    { org, teamSlug, membersPageSize: pageSizes.teamMembers },
   );
 
   return { members };
