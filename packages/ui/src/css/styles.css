@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@layer tokens, base, components, utilities, legacy;
+@layer tokens, base, components, utilities;
 
 /* Tokens */
 @import './tokens.css';

@@ -19,5 +19,5 @@ import { TestDatabases } from '@backstage/backend-test-utils';
 export {};
 
 TestDatabases.setDefaults({
-  ids: ['MYSQL_8', 'POSTGRES_17', 'POSTGRES_13', 'SQLITE_3'],
+  ids: ['MYSQL_8', 'POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
 });
