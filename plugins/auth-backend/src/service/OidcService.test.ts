@@ -90,11 +90,11 @@ describe('OidcService', () => {
     const mockLogger = mockServices.logger.mock();
 
     // Create offline access service for refresh token support
-    const offlineSessionDb = new OfflineSessionDatabase(
+    const offlineSessionDb = OfflineSessionDatabase.create({
       knex,
-      30 * 24 * 60 * 60, // 30 days
-      365 * 24 * 60 * 60, // 1 year
-    );
+      tokenLifetimeSeconds: 30 * 24 * 60 * 60, // 30 days
+      maxRotationLifetimeSeconds: 365 * 24 * 60 * 60, // 1 year
+    });
 
     const offlineAccess = OfflineAccessService.create({
       offlineSessionDb,
@@ -1416,6 +1416,9 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
         });
+
+        // Wait a moment to ensure we're not hitting timing issues with second-precision timestamps
+        await new Promise(resolve => setTimeout(resolve, 100));
 
         const refreshResult = await service.refreshAccessToken({
           refreshToken: tokenResult.refreshToken!,

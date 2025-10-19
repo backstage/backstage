@@ -44,9 +44,8 @@ import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
 import { OidcDatabase } from '../database/OidcDatabase';
-import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
-import { OfflineAccessService } from './OfflineAccessService';
-import { HumanDuration } from '@backstage/types';
+import { offlineSessionDatabaseRef } from '../database/OfflineSessionDatabase';
+import { offlineAccessServiceRef } from './OfflineAccessService';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -59,6 +58,8 @@ interface RouterOptions {
   catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
   httpAuth: HttpAuthService;
+  offlineSessionDb: typeof offlineSessionDatabaseRef.T;
+  offlineAccess: typeof offlineAccessServiceRef.T;
 }
 
 export async function createRouter(
@@ -173,28 +174,6 @@ export async function createRouter(
 
   const oidc = await OidcDatabase.create({ database });
 
-  const tokenLifetime =
-    config.getOptionalString('auth.refreshToken.tokenLifetime') ?? '30 days';
-  const maxRotationLifetime =
-    config.getOptionalString('auth.refreshToken.maxRotationLifetime') ??
-    '1 year';
-
-  // Parse durations to seconds
-  const tokenLifetimeSeconds = parseDurationToSeconds(tokenLifetime);
-  const maxRotationLifetimeSeconds =
-    parseDurationToSeconds(maxRotationLifetime);
-
-  const offlineSessionDb = new OfflineSessionDatabase(
-    await database.get(),
-    tokenLifetimeSeconds,
-    maxRotationLifetimeSeconds,
-  );
-
-  const offlineAccess = OfflineAccessService.create({
-    offlineSessionDb,
-    logger: logger.child({ component: 'offline-access' }),
-  });
-
   const oidcRouter = OidcRouter.create({
     auth: options.auth,
     tokenIssuer: oidcTokenIssuer,
@@ -205,7 +184,7 @@ export async function createRouter(
     logger,
     httpAuth,
     config,
-    offlineAccess,
+    offlineAccess: options.offlineAccess,
   });
 
   router.use(oidcRouter.getRouter());
@@ -217,64 +196,4 @@ export async function createRouter(
   });
 
   return router;
-}
-
-/**
- * Parse a duration string to seconds
- * @internal
- */
-function parseDurationToSeconds(duration: string | HumanDuration): number {
-  if (typeof duration === 'object') {
-    // Handle HumanDuration object format
-    let seconds = 0;
-    if (duration.years) seconds += duration.years * 365 * 24 * 60 * 60;
-    if (duration.months) seconds += duration.months * 30 * 24 * 60 * 60;
-    if (duration.weeks) seconds += duration.weeks * 7 * 24 * 60 * 60;
-    if (duration.days) seconds += duration.days * 24 * 60 * 60;
-    if (duration.hours) seconds += duration.hours * 60 * 60;
-    if (duration.minutes) seconds += duration.minutes * 60;
-    if (duration.seconds) seconds += duration.seconds;
-    if (duration.milliseconds) seconds += duration.milliseconds / 1000;
-    return seconds;
-  }
-
-  // Handle string format like "30 days", "1 year"
-  const match = duration.match(
-    /^(\d+)\s*(year|years|month|months|week|weeks|day|days|hour|hours|minute|minutes|second|seconds|ms|milliseconds)$/i,
-  );
-  if (!match) {
-    throw new Error(`Invalid duration format: ${duration}`);
-  }
-
-  const value = parseInt(match[1], 10);
-  const unit = match[2].toLowerCase();
-
-  switch (unit) {
-    case 'year':
-    case 'years':
-      return value * 365 * 24 * 60 * 60;
-    case 'month':
-    case 'months':
-      return value * 30 * 24 * 60 * 60;
-    case 'week':
-    case 'weeks':
-      return value * 7 * 24 * 60 * 60;
-    case 'day':
-    case 'days':
-      return value * 24 * 60 * 60;
-    case 'hour':
-    case 'hours':
-      return value * 60 * 60;
-    case 'minute':
-    case 'minutes':
-      return value * 60;
-    case 'second':
-    case 'seconds':
-      return value;
-    case 'ms':
-    case 'milliseconds':
-      return value / 1000;
-    default:
-      throw new Error(`Unknown duration unit: ${unit}`);
-  }
 }

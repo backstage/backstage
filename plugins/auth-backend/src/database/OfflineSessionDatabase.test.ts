@@ -49,11 +49,11 @@ describe('OfflineSessionDatabase', () => {
 
     return {
       knex,
-      db: new OfflineSessionDatabase(
+      db: OfflineSessionDatabase.create({
         knex,
-        TOKEN_LIFETIME_SECONDS,
-        MAX_ROTATION_LIFETIME_SECONDS,
-      ),
+        tokenLifetimeSeconds: TOKEN_LIFETIME_SECONDS,
+        maxRotationLifetimeSeconds: MAX_ROTATION_LIFETIME_SECONDS,
+      }),
     };
   }
 

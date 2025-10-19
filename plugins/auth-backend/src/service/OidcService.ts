@@ -27,7 +27,7 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { isCimdUrl, fetchCimdMetadata } from './CimdClient';
-import { OfflineAccessService } from './OfflineAccessService';
+import { offlineAccessServiceRef } from './OfflineAccessService';
 
 export class OidcService {
   private readonly auth: AuthService;
@@ -36,7 +36,7 @@ export class OidcService {
   private readonly userInfo: UserInfoDatabase;
   private readonly oidc: OidcDatabase;
   private readonly config: RootConfigService;
-  private readonly offlineAccess?: OfflineAccessService;
+  private readonly offlineAccess?: typeof offlineAccessServiceRef.T;
 
   private constructor(
     auth: AuthService,
@@ -45,7 +45,7 @@ export class OidcService {
     userInfo: UserInfoDatabase,
     oidc: OidcDatabase,
     config: RootConfigService,
-    offlineAccess?: OfflineAccessService,
+    offlineAccess?: typeof offlineAccessServiceRef.T,
   ) {
     this.auth = auth;
     this.tokenIssuer = tokenIssuer;
@@ -63,7 +63,7 @@ export class OidcService {
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
     config: RootConfigService;
-    offlineAccess?: OfflineAccessService;
+    offlineAccess?: typeof offlineAccessServiceRef.T;
   }) {
     return new OidcService(
       options.auth,
