@@ -21,7 +21,8 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { Expand } from '@backstage/types';
+import { Expand, durationToMilliseconds } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
 
 /**
  * Represents an offline session for refresh tokens
@@ -248,68 +249,6 @@ export class OfflineSessionDatabase {
 }
 
 /**
- * Parse a duration string to seconds
- * @internal
- */
-function parseDurationToSeconds(
-  duration: string | { [key: string]: number },
-): number {
-  if (typeof duration === 'object') {
-    // Handle HumanDuration object format
-    let seconds = 0;
-    if (duration.years) seconds += duration.years * 365 * 24 * 60 * 60;
-    if (duration.months) seconds += duration.months * 30 * 24 * 60 * 60;
-    if (duration.weeks) seconds += duration.weeks * 7 * 24 * 60 * 60;
-    if (duration.days) seconds += duration.days * 24 * 60 * 60;
-    if (duration.hours) seconds += duration.hours * 60 * 60;
-    if (duration.minutes) seconds += duration.minutes * 60;
-    if (duration.seconds) seconds += duration.seconds;
-    if (duration.milliseconds) seconds += duration.milliseconds / 1000;
-    return seconds;
-  }
-
-  // Handle string format like "30 days", "1 year"
-  const match = duration.match(
-    /^(\d+)\s*(year|years|month|months|week|weeks|day|days|hour|hours|minute|minutes|second|seconds|ms|milliseconds)$/i,
-  );
-  if (!match) {
-    throw new Error(`Invalid duration format: ${duration}`);
-  }
-
-  const value = parseInt(match[1], 10);
-  const unit = match[2].toLowerCase();
-
-  switch (unit) {
-    case 'year':
-    case 'years':
-      return value * 365 * 24 * 60 * 60;
-    case 'month':
-    case 'months':
-      return value * 30 * 24 * 60 * 60;
-    case 'week':
-    case 'weeks':
-      return value * 7 * 24 * 60 * 60;
-    case 'day':
-    case 'days':
-      return value * 24 * 60 * 60;
-    case 'hour':
-    case 'hours':
-      return value * 60 * 60;
-    case 'minute':
-    case 'minutes':
-      return value * 60;
-    case 'second':
-    case 'seconds':
-      return value;
-    case 'ms':
-    case 'milliseconds':
-      return value / 1000;
-    default:
-      throw new Error(`Unknown duration unit: ${unit}`);
-  }
-}
-
-/**
  * Service reference for OfflineSessionDatabase
  * @public
  */
@@ -325,17 +264,26 @@ export const offlineSessionDatabaseRef = createServiceRef<
         config: coreServices.rootConfig,
       },
       async factory(deps) {
-        const tokenLifetime =
-          deps.config.getOptionalString('auth.refreshToken.tokenLifetime') ??
-          '30 days';
-        const maxRotationLifetime =
-          deps.config.getOptionalString(
-            'auth.refreshToken.maxRotationLifetime',
-          ) ?? '1 year';
+        const tokenLifetime = deps.config.has('auth.refreshToken.tokenLifetime')
+          ? readDurationFromConfig(deps.config, {
+              key: 'auth.refreshToken.tokenLifetime',
+            })
+          : { days: 30 };
 
-        const tokenLifetimeSeconds = parseDurationToSeconds(tokenLifetime);
-        const maxRotationLifetimeSeconds =
-          parseDurationToSeconds(maxRotationLifetime);
+        const maxRotationLifetime = deps.config.has(
+          'auth.refreshToken.maxRotationLifetime',
+        )
+          ? readDurationFromConfig(deps.config, {
+              key: 'auth.refreshToken.maxRotationLifetime',
+            })
+          : { years: 1 };
+
+        const tokenLifetimeSeconds = Math.floor(
+          durationToMilliseconds(tokenLifetime) / 1000,
+        );
+        const maxRotationLifetimeSeconds = Math.floor(
+          durationToMilliseconds(maxRotationLifetime) / 1000,
+        );
 
         const knex = await deps.database.getClient();
 
