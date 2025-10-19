@@ -29,6 +29,8 @@ import {
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
+import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
+import { OfflineAccessService } from './OfflineAccessService';
 import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 import { CimdClientInfo } from './CimdClient';
@@ -85,6 +87,19 @@ describe('OidcService', () => {
     } as unknown as jest.Mocked<UserInfoDatabase>;
 
     const config = mockServices.rootConfig({ data: configData });
+    const mockLogger = mockServices.logger.mock();
+
+    // Create offline access service for refresh token support
+    const offlineSessionDb = new OfflineSessionDatabase(
+      knex,
+      30 * 24 * 60 * 60, // 30 days
+      365 * 24 * 60 * 60, // 1 year
+    );
+
+    const offlineAccess = OfflineAccessService.create({
+      offlineSessionDb,
+      logger: mockLogger,
+    });
 
     return {
       service: OidcService.create({
@@ -94,12 +109,14 @@ describe('OidcService', () => {
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
         config,
+        offlineAccess,
       }),
       mocks: {
         auth: mockAuth,
         tokenIssuer: mockTokenIssuer,
         userInfo: mockUserInfo,
       },
+      knex,
     };
   }
 
@@ -1293,6 +1310,179 @@ describe('OidcService', () => {
           expect(authSession.clientName).toBe('CIMD Test Client');
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith(cimdClientId);
         });
+      });
+    });
+
+    describe('refresh tokens', () => {
+      it('should issue refresh token when offline_access scope is requested', async () => {
+        const { service, mocks } = await createOidcService(databaseId);
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+        });
+
+        expect(tokenResult.accessToken).toBe(mockToken);
+        expect(tokenResult.refreshToken).toBeDefined();
+        expect(typeof tokenResult.refreshToken).toBe('string');
+      });
+
+      it('should not issue refresh token without offline_access scope', async () => {
+        const { service, mocks } = await createOidcService(databaseId);
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+        });
+
+        expect(tokenResult.accessToken).toBe(mockToken);
+        expect(tokenResult.refreshToken).toBeUndefined();
+      });
+
+      it('should refresh access token with valid refresh token', async () => {
+        const { service, mocks } = await createOidcService(databaseId);
+        const mockToken = 'mock-jwt-token';
+        const mockNewToken = 'mock-new-jwt-token';
+
+        mocks.tokenIssuer.issueToken
+          .mockResolvedValueOnce({ token: mockToken })
+          .mockResolvedValueOnce({ token: mockNewToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+        });
+
+        const refreshResult = await service.refreshAccessToken({
+          refreshToken: tokenResult.refreshToken!,
+        });
+
+        expect(refreshResult.accessToken).toBe(mockNewToken);
+        expect(refreshResult.refreshToken).toBeDefined();
+        expect(refreshResult.refreshToken).not.toBe(tokenResult.refreshToken);
+        expect(refreshResult.tokenType).toBe('Bearer');
+        expect(refreshResult.expiresIn).toBe(3600);
+      });
+
+      it('should reject invalid refresh token', async () => {
+        const { service } = await createOidcService(databaseId);
+
+        await expect(
+          service.refreshAccessToken({
+            refreshToken: 'invalid-refresh-token',
+          }),
+        ).rejects.toThrow('Invalid refresh token format');
+      });
+
+      it('should reject expired refresh token', async () => {
+        const { service, mocks, knex } = await createOidcService(databaseId);
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+        });
+
+        // Get session ID from token and mark as expired by updating created_at
+        const { getRefreshTokenId } = await import('../lib/refreshToken');
+        const sessionId = getRefreshTokenId(tokenResult.refreshToken!);
+
+        await knex('offline_sessions')
+          .where('id', sessionId)
+          .update({
+            created_at: new Date(Date.now() - 2 * 365 * 24 * 60 * 60 * 1000), // 2 years ago
+          });
+
+        await expect(
+          service.refreshAccessToken({
+            refreshToken: tokenResult.refreshToken!,
+          }),
+        ).rejects.toThrow('Refresh token expired');
       });
     });
   });
