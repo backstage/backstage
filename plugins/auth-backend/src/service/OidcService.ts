@@ -27,6 +27,7 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { isCimdUrl, fetchCimdMetadata } from './CimdClient';
+import { OfflineAccessService } from './OfflineAccessService';
 
 export class OidcService {
   private readonly auth: AuthService;
@@ -35,6 +36,7 @@ export class OidcService {
   private readonly userInfo: UserInfoDatabase;
   private readonly oidc: OidcDatabase;
   private readonly config: RootConfigService;
+  private readonly offlineAccess?: OfflineAccessService;
 
   private constructor(
     auth: AuthService,
@@ -43,6 +45,7 @@ export class OidcService {
     userInfo: UserInfoDatabase,
     oidc: OidcDatabase,
     config: RootConfigService,
+    offlineAccess?: OfflineAccessService,
   ) {
     this.auth = auth;
     this.tokenIssuer = tokenIssuer;
@@ -50,6 +53,7 @@ export class OidcService {
     this.userInfo = userInfo;
     this.oidc = oidc;
     this.config = config;
+    this.offlineAccess = offlineAccess;
   }
 
   static create(options: {
@@ -59,6 +63,7 @@ export class OidcService {
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
     config: RootConfigService;
+    offlineAccess?: OfflineAccessService;
   }) {
     return new OidcService(
       options.auth,
@@ -67,6 +72,7 @@ export class OidcService {
       options.userInfo,
       options.oidc,
       options.config,
+      options.offlineAccess,
     );
   }
 
@@ -508,12 +514,50 @@ export class OidcService {
       },
     });
 
+    // Check if offline_access scope is requested
+    let refreshToken: string | undefined;
+    if (
+      session.scope?.includes('offline_access') &&
+      this.offlineAccess &&
+      session.clientId
+    ) {
+      refreshToken = await this.offlineAccess.issueRefreshToken({
+        userEntityRef: session.userEntityRef,
+        oidcClientId: session.clientId,
+      });
+    }
+
     return {
       accessToken: token,
       tokenType: 'Bearer',
       expiresIn: expiresIn,
       idToken: token,
       scope: session.scope || 'openid',
+      refreshToken,
+    };
+  }
+
+  public async refreshAccessToken(params: { refreshToken: string }): Promise<{
+    accessToken: string;
+    tokenType: string;
+    expiresIn: number;
+    refreshToken: string;
+  }> {
+    if (!this.offlineAccess) {
+      throw new InputError('Refresh tokens are not enabled');
+    }
+
+    const { accessToken, refreshToken } =
+      await this.offlineAccess.refreshAccessToken({
+        refreshToken: params.refreshToken,
+        tokenIssuer: this.tokenIssuer,
+      });
+
+    return {
+      accessToken,
+      tokenType: 'Bearer',
+      expiresIn: 3600,
+      refreshToken,
     };
   }
 

@@ -25,6 +25,7 @@ import {
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
+import { OfflineAccessService } from './OfflineAccessService';
 import { json } from 'express';
 import { readDcrTokenExpiration } from './readTokenExpiration';
 
@@ -62,9 +63,13 @@ export class OidcRouter {
     oidc: OidcDatabase;
     httpAuth: HttpAuthService;
     config: RootConfigService;
+    offlineAccess?: OfflineAccessService;
   }) {
     return new OidcRouter(
-      OidcService.create(options),
+      OidcService.create({
+        ...options,
+        offlineAccess: options.offlineAccess,
+      }),
       options.logger,
       options.auth,
       options.appUrl,
@@ -332,6 +337,7 @@ export class OidcRouter {
       // Token endpoint
       // https://openid.net/specs/openid-connect-core-1_0.html#TokenRequest
       // Exchanges authorization codes for access tokens and ID tokens
+      // Also handles refresh token grant type
       router.post('/v1/token', async (req, res) => {
         // todo(blam): maybe add zod types for validating input
         const {
@@ -339,40 +345,90 @@ export class OidcRouter {
           code,
           redirect_uri: redirectUri,
           code_verifier: codeVerifier,
+          refresh_token: refreshToken,
         } = req.body;
 
-        if (!grantType || !code || !redirectUri) {
+        if (!grantType) {
           this.logger.error(
-            `Failed to exchange code for token: Missing required parameters`,
+            `Failed to process token request: Missing grant_type`,
           );
           return res.status(400).json({
             error: 'invalid_request',
-            error_description: 'Missing required parameters',
+            error_description: 'Missing grant_type parameter',
           });
         }
 
         const expiresIn = readDcrTokenExpiration(this.config);
 
         try {
-          const result = await this.oidc.exchangeCodeForToken({
-            code,
-            redirectUri,
-            codeVerifier,
-            grantType,
-            expiresIn,
-          });
+          // Handle authorization_code grant type
+          if (grantType === 'authorization_code') {
+            if (!code || !redirectUri) {
+              this.logger.error(
+                `Failed to exchange code for token: Missing required parameters`,
+              );
+              return res.status(400).json({
+                error: 'invalid_request',
+                error_description:
+                  'Missing code or redirect_uri parameters for authorization_code grant',
+              });
+            }
 
-          return res.json({
-            access_token: result.accessToken,
-            token_type: result.tokenType,
-            expires_in: result.expiresIn,
-            id_token: result.idToken,
-            scope: result.scope,
+            const result = await this.oidc.exchangeCodeForToken({
+              code,
+              redirectUri,
+              codeVerifier,
+              grantType,
+              expiresIn,
+            });
+
+            return res.json({
+              access_token: result.accessToken,
+              token_type: result.tokenType,
+              expires_in: result.expiresIn,
+              id_token: result.idToken,
+              scope: result.scope,
+              ...(result.refreshToken && {
+                refresh_token: result.refreshToken,
+              }),
+            });
+          }
+
+          // Handle refresh_token grant type
+          if (grantType === 'refresh_token') {
+            if (!refreshToken) {
+              this.logger.error(
+                `Failed to refresh token: Missing refresh_token parameter`,
+              );
+              return res.status(400).json({
+                error: 'invalid_request',
+                error_description:
+                  'Missing refresh_token parameter for refresh_token grant',
+              });
+            }
+
+            const result = await this.oidc.refreshAccessToken({
+              refreshToken,
+            });
+
+            return res.json({
+              access_token: result.accessToken,
+              token_type: result.tokenType,
+              expires_in: result.expiresIn,
+              refresh_token: result.refreshToken,
+            });
+          }
+
+          // Unsupported grant type
+          this.logger.error(`Unsupported grant type: ${grantType}`);
+          return res.status(400).json({
+            error: 'unsupported_grant_type',
+            error_description: `Grant type ${grantType} is not supported`,
           });
         } catch (error) {
           const description = isError(error) ? error.message : 'Unknown error';
           this.logger.error(
-            `Failed to exchange code for token: ${description}`,
+            `Failed to process token request: ${description}`,
             error,
           );
 
