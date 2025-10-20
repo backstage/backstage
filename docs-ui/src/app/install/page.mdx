@@ -1,33 +1,49 @@
 import { CodeBlock } from '@/components/CodeBlock';
+import { Banner } from '@/components/Banner';
+import { snippet } from './snippets';
 
 # How to install Backstage UI
 
-## 1. Import the package
+## How to import BUI's global styles
 
-Import the package using a package manager.
+Backstage UI works by importing a global CSS file at the root of your application. This file includes all the default styles for the components.
+First, you'll need to install the package using a package manager. For example, if you're using Yarn:
 
-<CodeBlock lang="shell" code={`yarn add @backstage/ui`} />
+<CodeBlock
+  lang="shell"
+  title="Run this command in your `packages/app` directory"
+  code={`yarn add @backstage/ui`}
+/>
 
-## 2. Import the css files
+<CodeBlock
+  lang="tsx"
+  title="Add this line to `packages/app/src/index.tsx`"
+  code={`import '@backstage/cli/asset-types';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import '@backstage/ui/css/styles.css'; // [!code ++]
 
-Import the global CSS file at the root of your application.
+ReactDOM.createRoot(document.getElementById('root')!).render(<App />);`}
+/>
 
-```tsx
-import '@backstage/ui/css/styles.css';
-```
+<Banner
+  text="Import these styles only once at your application root. Plugin developers should skip this step to avoid conflicts."
+  variant="warning"
+/>
 
-## 3. Start building ✨
+## How to use BUI components
 
-Now you can start building your plugin using the new design system.
+As a plugin maintainer, you can use BUI components in your plugin. As mentioned above, you should not import the styles
+again in your plugin as this will be handled at the root of your application. To get started, just add the library to
+your plugin and import the components you need.
 
-```tsx
-import { Flex, Button, Text } from '@backstage/ui';
+<CodeBlock
+  lang="shell"
+  title="Run this command in your `packages/[your-plugin]` directory"
+  code={`yarn add @backstage/ui`}
+/>
 
-<Flex>
-  <Text>Hello World</Text>
-  <Button>Click me</Button>
-</Flex>;
-```
+<CodeBlock lang="tsx" title="Let's get started 🚀" code={snippet} />
 
 ## Next steps
 

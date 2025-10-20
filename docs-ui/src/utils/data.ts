@@ -25,10 +25,6 @@ export const overview: Page[] = [
 
 export const coreConcepts: Page[] = [
   {
-    title: 'Iconography',
-    slug: 'iconography',
-  },
-  {
     title: 'Layout',
     slug: 'layout',
   },
