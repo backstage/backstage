@@ -501,6 +501,115 @@ export class OidcRouter {
           });
         }
       });
+
+      // Token Revocation endpoint (RFC 7009-like)
+      // Allows clients to revoke refresh tokens
+      router.post('/v1/revoke', async (req, res) => {
+        try {
+          // Parse token from request body (application/x-www-form-urlencoded or JSON)
+          const { token, token_type_hint: tokenTypeHint } = (req.body ??
+            {}) as Record<string, unknown>;
+
+          if (!token || typeof token !== 'string') {
+            return res.status(400).json({
+              error: 'invalid_request',
+              error_description: 'Missing token',
+            });
+          }
+
+          // Only refresh_token revocation is supported currently
+          if (
+            tokenTypeHint &&
+            typeof tokenTypeHint === 'string' &&
+            tokenTypeHint !== 'refresh_token'
+          ) {
+            // Hint is optional; ignore unsupported hints per RFC 7009
+          }
+
+          // Client authentication: client_secret_basic or client_secret_post
+          let clientId: string | undefined;
+          let clientSecret: string | undefined;
+
+          // Basic auth
+          const basicAuth =
+            req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i);
+          if (basicAuth) {
+            try {
+              const decoded = Buffer.from(basicAuth[1], 'base64').toString(
+                'utf8',
+              );
+              const idx = decoded.indexOf(':');
+              if (idx >= 0) {
+                clientId = decoded.slice(0, idx);
+                clientSecret = decoded.slice(idx + 1);
+              }
+            } catch {
+              // fall through
+            }
+          }
+
+          // client_secret_post
+          if (!clientId || !clientSecret) {
+            const { client_id, client_secret } = (req.body ?? {}) as Record<
+              string,
+              unknown
+            >;
+            if (
+              typeof client_id === 'string' &&
+              typeof client_secret === 'string'
+            ) {
+              clientId = client_id;
+              clientSecret = client_secret;
+            }
+          }
+
+          if (!clientId || !clientSecret) {
+            return res.status(401).json({
+              error: 'invalid_client',
+              error_description: 'Client authentication required',
+            });
+          }
+
+          // Verify client credentials
+          try {
+            const ok = await this.oidc.verifyClientCredentials({
+              clientId,
+              clientSecret,
+            });
+            if (!ok) {
+              return res.status(401).json({
+                error: 'invalid_client',
+                error_description: 'Invalid client credentials',
+              });
+            }
+          } catch (e) {
+            this.logger.error('Failed to authenticate client for revoke', e);
+            return res.status(500).json({
+              error: 'server_error',
+              error_description: 'Failed to authenticate client',
+            });
+          }
+
+          // Revoke refresh token if offline access is enabled
+          try {
+            await this.oidc.revokeRefreshToken(token);
+          } catch (e) {
+            // RFC 7009: The authorization server responds with HTTP status code 200
+            // even if the client submitted an invalid token
+            this.logger.debug('Failed to revoke token', e);
+          }
+
+          // Successful (or no-op) revocation
+          return res.status(200).send('');
+        } catch (e) {
+          const description = isError(e) ? e.message : 'Unknown error';
+          this.logger.error(`Failed to revoke token: ${description}`, e);
+          return res.status(500).json({
+            error: 'server_error',
+            error_description: `Failed to revoke token: ${description}`,
+          });
+        }
+      });
     }
 
     return router;

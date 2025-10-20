@@ -561,6 +561,28 @@ export class OidcService {
     };
   }
 
+  /**
+   * Verifies client credentials against the registered OIDC clients
+   */
+  public async verifyClientCredentials(options: {
+    clientId: string;
+    clientSecret: string;
+  }): Promise<boolean> {
+    const { clientId, clientSecret } = options;
+    const client = await this.oidc.getClient({ clientId });
+    return Boolean(client && client.clientSecret === clientSecret);
+  }
+
+  /**
+   * Revoke a refresh token if offline access is enabled
+   */
+  public async revokeRefreshToken(token: string): Promise<void> {
+    if (!this.offlineAccess) {
+      return;
+    }
+    await this.offlineAccess.revokeRefreshToken(token);
+  }
+
   private verifyPkce(
     codeChallenge: string,
     codeVerifier: string,
