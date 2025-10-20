@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z, AnyZodObject } from 'zod';
+import { AnyZodObject, z } from 'zod';
 import {
-  LoggerService,
   BackstageCredentials,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -38,6 +38,7 @@ export type ActionsRegistryActionOptions<
   name: string;
   title: string;
   description: string;
+  metadata?: Record<string, unknown>;
   schema: {
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;

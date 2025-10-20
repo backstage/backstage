@@ -31,6 +31,7 @@ describe('McpService', () => {
       name: 'mock-action',
       title: 'Test',
       description: 'Test',
+      metadata: { someMeta: 'data' },
       schema: {
         input: z => z.object({ input: z.string() }),
         output: z => z.object({ output: z.string() }),
@@ -76,6 +77,7 @@ describe('McpService', () => {
           title: 'Test',
         },
         description: 'Test',
+        _meta: { someMeta: 'data' },
         inputSchema: {
           $schema: 'http://json-schema.org/draft-07/schema#',
           additionalProperties: false,

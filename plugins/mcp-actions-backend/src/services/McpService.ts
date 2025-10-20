@@ -16,8 +16,8 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
 import {
-  ListToolsRequestSchema,
   CallToolRequestSchema,
+  ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { JsonObject } from '@backstage/types';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
@@ -55,6 +55,7 @@ export class McpService {
           // outputSchema: action.schema.output,
           name: action.name,
           description: action.description,
+          _meta: action.metadata,
           annotations: {
             title: action.title,
             destructiveHint: action.attributes.destructive,

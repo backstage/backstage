@@ -27,6 +27,7 @@ export type ActionsRegistryActionOptions<
   name: string;
   title: string;
   description: string;
+  metadata?: Record<string, unknown>;
   schema: {
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
@@ -85,6 +86,7 @@ export type ActionsServiceAction = {
   name: string;
   title: string;
   description: string;
+  metadata?: Record<string, unknown>;
   schema: {
     input: JSONSchema7;
     output: JSONSchema7;

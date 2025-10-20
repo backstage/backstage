@@ -40,7 +40,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@modelcontextprotocol/sdk": "^1.12.3",
+    "@modelcontextprotocol/sdk": "^1.20.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "zod": "^3.22.4"
