@@ -39,11 +39,11 @@ export default createCliPlugin({
       },
     });
     reg.addCommand({
-      path: ['auth', 'status'],
-      description: 'Show CLI authentication status',
+      path: ['auth', 'list'],
+      description: 'List authenticated instances',
       execute: async ({ args }) => {
         yargs().parse(args);
-        await commands.status(args);
+        await commands.list(args);
       },
     });
     reg.addCommand({

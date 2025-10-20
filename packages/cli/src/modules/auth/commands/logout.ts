@@ -15,15 +15,14 @@
  */
 
 import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
 import { getSecretStore } from '../lib/secretStore';
 import { removeInstance, withMetadataLock, readInstance } from '../lib/storage';
-import { httpForm } from '../lib/http';
+import { httpJson } from '../lib/http';
 
 type Args = { name?: string };
 
 export default async function main(argv: string[]) {
-  const parsed = (yargs(hideBin(argv)) as yargs.Argv<Args>)
+  const parsed = (yargs(argv) as yargs.Argv<Args>)
     .option('name', { type: 'string', desc: 'Name of the instance to logout' })
     .parse() as unknown as Args & { [k: string]: unknown };
 
@@ -48,13 +47,14 @@ export default async function main(argv: string[]) {
         'base64',
       );
       try {
-        await httpForm(
-          `${authBase}/v1/revoke`,
-          { token: refreshToken, token_type_hint: 'refresh_token' },
-          {
-            headers: { Authorization: `Basic ${basic}` },
+        await httpJson(`${authBase}/v1/revoke`, {
+          method: 'POST',
+          headers: { Authorization: `Basic ${basic}` },
+          body: {
+            token: refreshToken,
+            token_type_hint: 'refresh_token',
           },
-        );
+        });
       } catch {
         // ignore errors per RFC 7009
       }

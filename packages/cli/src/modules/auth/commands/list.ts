@@ -15,7 +15,6 @@
  */
 
 import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
 import { getSecretStore } from '../lib/secretStore';
 import {
   getAllInstances,
@@ -28,7 +27,7 @@ import { httpJson } from '../lib/http';
 type Args = { name?: string };
 
 export default async function main(argv: string[]) {
-  const parsed = (yargs(hideBin(argv)) as yargs.Argv<Args>)
+  const parsed = (yargs(argv) as yargs.Argv<Args>)
     .option('name', { type: 'string', desc: 'Name of the instance to show' })
     .parse() as unknown as Args & { [k: string]: unknown };
 
@@ -80,11 +79,10 @@ export default async function main(argv: string[]) {
         refresh_token: string;
       }>(`${authBase}/v1/token`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           grant_type: 'refresh_token',
           refresh_token: refreshToken,
-        }),
+        },
       });
 
       await secretStore.set(service, 'refreshToken', token.refresh_token);
@@ -104,11 +102,10 @@ export default async function main(argv: string[]) {
         refresh_token: string;
       }>(`${authBase}/v1/token`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           grant_type: 'refresh_token',
           refresh_token: refreshToken,
-        }),
+        },
       });
       await secretStore.set(service, 'refreshToken', token.refresh_token);
       accessToken = token.access_token;

@@ -16,5 +16,5 @@
 
 export { default as login } from './login';
 export { default as logout } from './logout';
-export { default as status } from './status';
+export { default as list } from './list';
 export { default as printToken } from './printToken';
