@@ -31,6 +31,12 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <CodeBlock code={usage} />
 
+## Browser Title
+
+The Header component automatically sets the browser title using a title template. When used alone, the browser title is `{title} | {app.title}`, where `app.title` is retrieved from your Backstage configuration and defaults to "Backstage".
+
+When using HeaderPage alongside a Header, the browser title becomes `{headerPageTitle} | {headerTitle} | {app.title}`. Using helmet directly to set the title has a similar effect, where the browser title becomes `{helmetTitle} | {headerTitle} | {app.title}`.
+
 ## API reference
 
 <PropsTable data={propDefs} />

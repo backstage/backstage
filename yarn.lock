@@ -7516,6 +7516,7 @@ __metadata:
   resolution: "@backstage/ui@workspace:packages/ui"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
     "@base-ui-components/react": "npm:1.0.0-alpha.7"
     "@remixicon/react": "npm:^4.6.0"
     "@tanstack/react-table": "npm:^8.21.3"
@@ -7531,6 +7532,7 @@ __metadata:
     react: "npm:^18.0.2"
     react-aria-components: "npm:^1.13.0"
     react-dom: "npm:^18.0.2"
+    react-helmet: "npm:6.1.0"
     react-router-dom: "npm:^6.3.0"
     storybook: "npm:^9.1.7"
   peerDependencies:

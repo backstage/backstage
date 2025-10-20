@@ -21,6 +21,8 @@ import { useStyles } from '../../hooks/useStyles';
 import { type NavigateOptions } from 'react-router-dom';
 import styles from './Header.module.css';
 import clsx from 'clsx';
+import { Helmet } from 'react-helmet';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -35,13 +37,28 @@ declare module 'react-aria-components' {
  */
 export const Header = (props: HeaderProps) => {
   const { classNames, cleanedProps } = useStyles('Header', props);
-  const { tabs, icon, title, titleLink, customActions, onTabSelectionChange } =
-    cleanedProps;
+  const {
+    tabs,
+    icon,
+    title = 'Your plugin',
+    titleLink,
+    customActions,
+    onTabSelectionChange,
+  } = cleanedProps;
+
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const pluginTitle = `${title} | ${appTitle}`;
+  const pluginPageTitleTemplate = `%s | ${pluginTitle}`;
 
   const hasTabs = tabs && tabs.length > 0;
 
   return (
     <>
+      <Helmet
+        titleTemplate={pluginPageTitleTemplate}
+        defaultTitle={pluginTitle}
+      />
       <HeaderToolbar
         icon={icon}
         title={title}
