@@ -16,36 +16,50 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { resolveBackendBaseUrl } from '../lib/backendDiscovery';
 import { getSecretStore } from '../lib/secretStore';
-import { readMetadata, withMetadataLock, writeMetadata } from '../lib/storage';
+import {
+  getAllInstances,
+  readInstance,
+  withMetadataLock,
+  upsertInstance,
+} from '../lib/storage';
 import { httpJson } from '../lib/http';
 
-type Args = {
-  backendUrl?: string;
-};
+type Args = { name?: string };
 
 export default async function main(argv: string[]) {
   const parsed = (yargs(hideBin(argv)) as yargs.Argv<Args>)
-    .option('backend-url', { type: 'string', desc: 'Backend base URL' })
-    .parse();
+    .option('name', { type: 'string', desc: 'Name of the instance to show' })
+    .parse() as unknown as Args & { [k: string]: unknown };
 
-  const backendBaseUrl = await resolveBackendBaseUrl({
-    args: argv,
-    explicit: parsed.backendUrl,
-  });
-  const authBase = new URL('/api/auth', backendBaseUrl)
+  const listAll = !parsed.name;
+  if (listAll) {
+    const all = await getAllInstances();
+    if (!all.length) {
+      process.stderr.write('No instances found\n');
+      return;
+    }
+    for (const inst of all) {
+      const mark = inst.selected ? '*' : ' ';
+      process.stderr.write(`${mark} ${inst.name} (${inst.baseUrl})\n`);
+    }
+    return;
+  }
+
+  const instance = await readInstance(parsed.name!);
+  if (!instance) throw new Error(`Unknown instance '${parsed.name}'`);
+  const authBase = new URL('/api/auth', instance.baseUrl)
     .toString()
     .replace(/\/$/, '');
 
   const secretStore = await getSecretStore();
-  const service = `backstage-cli:${backendBaseUrl}`;
+  const service = `backstage-cli:instance:${instance.name}`;
 
   let accessToken: string | undefined;
   let accessTokenExpiresAt: number | undefined;
 
-  await withMetadataLock(backendBaseUrl, async () => {
-    const meta = await readMetadata(backendBaseUrl);
+  await withMetadataLock(instance.name, async () => {
+    const meta = await readInstance(instance.name);
     if (!meta) throw new Error('Not logged in');
 
     const now = Date.now();
@@ -74,8 +88,8 @@ export default async function main(argv: string[]) {
       });
 
       await secretStore.set(service, 'refreshToken', token.refresh_token);
-      await writeMetadata(backendBaseUrl, {
-        clientId,
+      await upsertInstance({
+        ...meta,
         issuedAt: Date.now(),
         accessTokenExpiresAt: Date.now() + token.expires_in * 1000,
       });

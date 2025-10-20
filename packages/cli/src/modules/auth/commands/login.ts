@@ -21,13 +21,14 @@ import { startCallbackServer } from '../lib/localServer';
 import { openInBrowser } from '../lib/browser';
 import { challengeFromVerifier, generateVerifier } from '../lib/pkce';
 import { httpJson } from '../lib/http';
-import { writeMetadata } from '../lib/storage';
+import { upsertInstance, withMetadataLock } from '../lib/storage';
 import { getSecretStore } from '../lib/secretStore';
 import crypto from 'crypto';
 
 type Args = {
   backendUrl?: string;
   noBrowser?: boolean;
+  name?: string;
 };
 
 export default async function main(argv: string[]) {
@@ -37,7 +38,11 @@ export default async function main(argv: string[]) {
       type: 'boolean',
       desc: 'Do not open browser automatically',
     })
-    .parse();
+    .option('name', {
+      type: 'string',
+      desc: 'Name for this instance (used by other auth commands)',
+    })
+    .parse() as unknown as Args & { [k: string]: unknown };
 
   const backendBaseUrl = await resolveBackendBaseUrl({
     args: argv,
@@ -115,16 +120,22 @@ export default async function main(argv: string[]) {
   if (!token.refresh_token) {
     throw new Error('No refresh token received');
   }
+  const refreshTokenValue: string = token.refresh_token;
 
+  const name: string = parsed.name || new URL(backendBaseUrl).host;
   const secretStore = await getSecretStore();
-  const service = `backstage-cli:${backendBaseUrl}`;
-  await secretStore.set(service, 'clientSecret', registration.client_secret);
-  await secretStore.set(service, 'refreshToken', token.refresh_token);
+  const service = `backstage-cli:instance:${name}`;
 
-  await writeMetadata(backendBaseUrl, {
-    clientId: registration.client_id,
-    issuedAt: Date.now(),
-    accessTokenExpiresAt: Date.now() + token.expires_in * 1000,
+  await withMetadataLock(name, async () => {
+    await secretStore.set(service, 'clientSecret', registration.client_secret);
+    await secretStore.set(service, 'refreshToken', refreshTokenValue);
+    await upsertInstance({
+      name,
+      baseUrl: backendBaseUrl,
+      clientId: registration.client_id,
+      issuedAt: Date.now(),
+      accessTokenExpiresAt: Date.now() + token.expires_in * 1000,
+    });
   });
 
   process.stderr.write('Login successful\n');
