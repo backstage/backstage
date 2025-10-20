@@ -34,7 +34,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.550.0",
+    "@aws-sdk/client-sesv2": "^3.911.0",
     "@azure/communication-email": "^1.0.0",
     "@azure/identity": "^4.0.0",
     "@backstage/backend-plugin-api": "workspace:^",
