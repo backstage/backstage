@@ -15,6 +15,7 @@
  */
 
 import fetch from 'cross-fetch';
+import { ResponseError } from '@backstage/errors';
 
 type HttpInit = {
   headers?: Record<string, string>;
@@ -27,43 +28,19 @@ export async function httpJson<T>(url: string, init?: HttpInit): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30_000);
   try {
-    const res = await fetch(url, { ...init, signal: controller.signal });
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      throw new Error(
-        `HTTP ${res.status}: ${res.statusText}${text ? ` - ${text}` : ''}`,
-      );
-    }
-    return (await res.json()) as T;
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-export async function httpForm(
-  url: string,
-  body: Record<string, string>,
-  init?: HttpInit,
-): Promise<void> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30_000);
-  try {
     const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        ...(init?.headers ?? {}),
-      },
-      body: new URLSearchParams(body).toString(),
-      signal: controller.signal,
       ...init,
+      signal: controller.signal,
+      body: init?.body ? JSON.stringify(init.body) : undefined,
+      headers: {
+        ...init?.headers,
+        ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
+      },
     });
     if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      throw new Error(
-        `HTTP ${res.status}: ${res.statusText}${text ? ` - ${text}` : ''}`,
-      );
+      throw await ResponseError.fromResponse(res);
     }
+    return (await res.json()) as T;
   } finally {
     clearTimeout(timeout);
   }

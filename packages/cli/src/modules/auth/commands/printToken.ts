@@ -15,7 +15,6 @@
  */
 
 import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
 import { getSecretStore } from '../lib/secretStore';
 import {
   readInstance,
@@ -30,7 +29,7 @@ type Args = {
 };
 
 export default async function main(argv: string[]) {
-  const parsed = (yargs(hideBin(argv)) as yargs.Argv<Args>)
+  const parsed = (yargs(argv) as yargs.Argv<Args>)
     .option('name', {
       type: 'string',
       desc: 'Name of the instance to use',
@@ -82,11 +81,10 @@ export default async function main(argv: string[]) {
       refresh_token: string;
     }>(`${authBase}/v1/token`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
-      }),
+      },
     });
 
     // Persist rotated refresh token and expiry
