@@ -52,9 +52,9 @@ backend:
           type: incomingRequest
         level: warn
 
-      # Ignore logs starting with "Received registration for scheduler task", unless they're warnings or errors
+      # Ignore logs starting with "Registered scheduled task", unless they're warnings or errors
       - matchers:
-          message: ['/^Received registration for scheduler task/']
+          message: ['/^Registered scheduled task/']
         level: warn
 ```
 

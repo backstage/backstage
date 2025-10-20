@@ -74,9 +74,7 @@ export class TaskWorker {
     }
 
     this.logger.info(
-      `Received registration for scheduler task: ${
-        this.taskId
-      }, ${JSON.stringify(settings)}`,
+      `Registered scheduled task: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
 
     let workCheckFrequency = this.workCheckFrequency;

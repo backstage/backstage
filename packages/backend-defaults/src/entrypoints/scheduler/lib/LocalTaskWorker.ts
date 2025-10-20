@@ -52,9 +52,7 @@ export class LocalTaskWorker {
 
   start(settings: TaskSettingsV2, options: { signal: AbortSignal }) {
     this.logger.info(
-      `Received registration for scheduler task: ${
-        this.taskId
-      }, ${JSON.stringify(settings)}`,
+      `Registered scheduled task: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
 
     (async () => {
