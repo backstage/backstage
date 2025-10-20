@@ -7105,7 +7105,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch":
+"@backstage/plugin-search-backend-module-elasticsearch@workspace:^, @backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch"
   dependencies:
@@ -30566,6 +30566,7 @@ __metadata:
     "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
+    "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^"
     "@backstage/plugin-search-backend-module-explore": "workspace:^"
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
