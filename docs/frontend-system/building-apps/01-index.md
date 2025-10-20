@@ -34,13 +34,14 @@ This is how to create a minimal app:
 ```tsx title="in src/index.ts"
 import ReactDOM from 'react-dom/client';
 import { createApp } from '@backstage/frontend-defaults';
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import '@backstage/ui/css/styles.css';
 
 // Create your app instance
 const app = createApp({
   // Custom features such as plugins can be installed explicitly, but they are usually
   // auto-discovered, unless `app.packages` is customized in `app-config.yaml`.
-  features: [],
+  features: [catalogPlugin],
 });
 
 // This creates a React element that renders the entire app
