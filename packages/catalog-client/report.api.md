@@ -199,9 +199,16 @@ export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
 export type EntityFieldsQuery = string[];
 
 // @public
-export type EntityFilterQuery =
-  | Record<string, string | symbol | (string | symbol)[]>[]
-  | Record<string, string | symbol | (string | symbol)[]>;
+export type EntityFilterQuery = EntityFilterSets | EntityFilterSet;
+
+// @public
+export type EntityFilterSet = Record<
+  string,
+  string | symbol | (string | symbol)[]
+>;
+
+// @public
+export type EntityFilterSets = EntityFilterSet[];
 
 // @public
 export type EntityOrderQuery =
@@ -291,6 +298,12 @@ type Location_2 = {
 export { Location_2 as Location };
 
 // @public
+export function omitEntityFilterQueryKey(
+  key: string,
+  query: EntityFilterQuery,
+): EntityFilterQuery;
+
+// @public
 export type QueryEntitiesCursorRequest = {
   fields?: string[];
   limit?: number;
@@ -324,6 +337,13 @@ export type QueryEntitiesResponse = {
     prevCursor?: string;
   };
 };
+
+// @public
+export function setEntityFilterQueryKey(
+  key: string,
+  value: string | symbol | (string | symbol)[],
+  query: EntityFilterQuery,
+): EntityFilterQuery;
 
 // @public
 export type StreamEntitiesRequest = Omit<

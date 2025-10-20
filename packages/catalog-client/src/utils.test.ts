@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { splitRefsIntoChunks } from './utils';
+import {
+  omitEntityFilterQueryKey,
+  setEntityFilterQueryKey,
+  splitRefsIntoChunks,
+} from './utils';
+import { EntityFilterQuery } from './types';
 
 describe('splitRefsIntoChunks', () => {
   it('splits by count limit', () => {
@@ -120,5 +125,69 @@ describe('splitRefsIntoChunks', () => {
         maxCountPerChunk: 2, // the stricter limit now
       }),
     ).toEqual([['aaa', 'bbb'], ['ccc']]);
+  });
+});
+
+describe('omitEntityFilterQueryKey', () => {
+  it('removes a key from a simple query object', () => {
+    const query: EntityFilterQuery = {
+      kind: 'Component',
+      namespace: 'default',
+    };
+    const result = omitEntityFilterQueryKey('namespace', query);
+    expect(result).toEqual({ kind: 'Component' });
+  });
+
+  it('removes a key from each EntityFilterSet', () => {
+    const query: EntityFilterQuery = [
+      { kind: 'Component', namespace: 'default' },
+      { type: 'service', namespace: 'default' },
+    ];
+    const result = omitEntityFilterQueryKey('namespace', query);
+    expect(result).toEqual([{ kind: 'Component' }, { type: 'service' }]);
+  });
+
+  it('returns the same object if the key does not exist', () => {
+    const query: EntityFilterQuery = { kind: 'Component' };
+    const result = omitEntityFilterQueryKey('namespace', query);
+    expect(result).toEqual({ kind: 'Component' });
+  });
+});
+
+describe('setEntityFilterQueryKey', () => {
+  it('sets a key in an EntityFilterSet', () => {
+    const query: EntityFilterQuery = { kind: 'Component' };
+    const result = setEntityFilterQueryKey('namespace', 'default', query);
+    expect(result).toEqual({ kind: 'Component', namespace: 'default' });
+  });
+
+  it('overwrites an existing key in an EntityFilterSet', () => {
+    const query: EntityFilterQuery = { kind: 'Component', namespace: 'old' };
+    const result = setEntityFilterQueryKey('namespace', 'new', query);
+    expect(result).toEqual({ kind: 'Component', namespace: 'new' });
+  });
+
+  it('sets a key in each EntityFilterSet', () => {
+    const query: EntityFilterQuery = [
+      { kind: 'Component' },
+      { type: 'service' },
+    ];
+    const result = setEntityFilterQueryKey('namespace', 'default', query);
+    expect(result).toEqual([
+      { kind: 'Component', namespace: 'default' },
+      { type: 'service', namespace: 'default' },
+    ]);
+  });
+
+  it('overwrites a key in each EntityFilterSet', () => {
+    const query: EntityFilterQuery = [
+      { kind: 'Component', namespace: 'old' },
+      { type: 'service', namespace: 'old' },
+    ];
+    const result = setEntityFilterQueryKey('namespace', 'default', query);
+    expect(result).toEqual([
+      { kind: 'Component', namespace: 'default' },
+      { type: 'service', namespace: 'default' },
+    ]);
   });
 });

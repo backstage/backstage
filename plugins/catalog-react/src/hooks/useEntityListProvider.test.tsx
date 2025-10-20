@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { GetEntitiesResponse } from '@backstage/catalog-client';
+import type {
+  EntityFilterSets,
+  GetEntitiesResponse,
+} from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   alertApiRef,
@@ -41,7 +44,7 @@ import {
   EntityUserFilter,
 } from '../filters';
 import { createDeferred } from '@backstage/types';
-import { EntityListPagination } from '../types';
+import { EntityFilter, EntityListPagination } from '../types';
 import { EntityListProvider, useEntityList } from './useEntityListProvider';
 
 const entities: Entity[] = [
@@ -83,14 +86,20 @@ const mockCatalogApi = catalogApiMock.mock({
   getEntityByRef: jest.fn().mockResolvedValue(undefined),
 });
 
-const createWrapper =
-  (options: { location?: string; pagination: EntityListPagination }) =>
-  (props: PropsWithChildren) => {
+const createWrapper = (options: {
+  location?: string;
+  pagination: EntityListPagination;
+  initialFilters?: Record<string, EntityFilter>;
+}) => {
+  const filters = options.initialFilters || {
+    kind: new EntityKindFilter('component', 'Component'),
+  };
+  return (props: PropsWithChildren) => {
     const InitialFiltersWrapper = ({ children }: PropsWithChildren) => {
       const { updateFilters } = useEntityList();
 
       useMountEffect(() => {
-        updateFilters({ kind: new EntityKindFilter('component', 'Component') });
+        updateFilters(filters);
       });
 
       return <>{children}</>;
@@ -117,6 +126,7 @@ const createWrapper =
       </MemoryRouter>
     );
   };
+};
 
 describe('<EntityListProvider />', () => {
   const origReplaceState = window.history.replaceState;
@@ -146,6 +156,35 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
+    });
+  });
+
+  it('should send array backend filters', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({
+        pagination,
+        initialFilters: {
+          custom: {
+            getCatalogFilters: (): EntityFilterSets => [
+              { 'metadata.name': 'component2' },
+              { 'relations.ownedBy': 'user:default/guest' },
+            ],
+          },
+        },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+
+    expect(result.current.entities.length).toBe(2);
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
+      filter: [
+        { 'metadata.name': 'component2' },
+        { 'relations.ownedBy': 'user:default/guest' },
+      ],
     });
   });
 

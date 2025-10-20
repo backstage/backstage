@@ -12,6 +12,7 @@ import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 import { EntityOrderQuery } from '@backstage/catalog-client';
 import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -268,10 +269,7 @@ export class EntityErrorFilter implements EntityFilter {
 
 // @public (undocumented)
 export type EntityFilter = {
-  getCatalogFilters?: () => Record<
-    string,
-    string | symbol | (string | symbol)[]
-  >;
+  getCatalogFilters?: () => EntityFilterQuery;
   filterEntity?: (entity: Entity) => boolean;
   toQueryValue?: () => string | string[];
 };

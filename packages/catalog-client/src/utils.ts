@@ -15,6 +15,8 @@
  */
 
 import {
+  EntityFilterQuery,
+  EntityFilterSets,
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
 } from './types/api';
@@ -87,4 +89,40 @@ export function splitRefsIntoChunks(
   chunks.push(refs.slice(currentChunkStart, refs.length));
 
   return chunks;
+}
+
+/**
+ * Utility to remove a key from an EntityFilterQuery
+ *
+ * @public
+ */
+export function omitEntityFilterQueryKey(
+  key: string,
+  query: EntityFilterQuery,
+): EntityFilterQuery {
+  if (!Array.isArray(query)) {
+    const { [key]: _, ...rest } = query;
+    return rest;
+  }
+
+  return query.map(q => omitEntityFilterQueryKey(key, q)) as EntityFilterSets;
+}
+
+/**
+ * Utility to add a key to an EntityFilterQuery
+ *
+ * @public
+ */
+export function setEntityFilterQueryKey(
+  key: string,
+  value: string | symbol | (string | symbol)[],
+  query: EntityFilterQuery,
+): EntityFilterQuery {
+  if (!Array.isArray(query)) {
+    return { ...query, [key]: value };
+  }
+
+  return query.map(q =>
+    setEntityFilterQueryKey(key, value, q),
+  ) as EntityFilterSets;
 }

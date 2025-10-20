@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 
 /** @public */
 export type EntityFilter = {
@@ -24,10 +25,7 @@ export type EntityFilter = {
    *   `{ field: 'kind', values: ['component'] }`
    *   `{ field: 'metadata.name', values: ['component-1', 'component-2'] }`
    */
-  getCatalogFilters?: () => Record<
-    string,
-    string | symbol | (string | symbol)[]
-  >;
+  getCatalogFilters?: () => EntityFilterQuery;
 
   /**
    * Filter entities on the frontend after a catalog-backend request. This function will be called

@@ -34,6 +34,23 @@ export const CATALOG_FILTER_EXISTS = Symbol.for(
 );
 
 /**
+ * A single key-value based filter expression for entities.
+ *
+ * @public
+ */
+export type EntityFilterSet = Record<
+  string,
+  string | symbol | (string | symbol)[]
+>;
+
+/**
+ * A collection of key-value based filter expressions for entities.
+ *
+ * @public
+ */
+export type EntityFilterSets = EntityFilterSet[];
+
+/**
  * A key-value based filter expression for entities.
  *
  * @remarks
@@ -75,9 +92,7 @@ export const CATALOG_FILTER_EXISTS = Symbol.for(
  *
  * @public
  */
-export type EntityFilterQuery =
-  | Record<string, string | symbol | (string | symbol)[]>[]
-  | Record<string, string | symbol | (string | symbol)[]>;
+export type EntityFilterQuery = EntityFilterSets | EntityFilterSet;
 
 /**
  * A set of dot-separated paths into an entity's keys, showing what parts of an

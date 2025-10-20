@@ -27,10 +27,15 @@ import {
   EntityUserFilter,
   UserListFilter,
 } from '../filters';
-import { EntityOrderQuery } from '@backstage/catalog-client';
+import {
+  EntityOrderQuery,
+  EntityFilterSet,
+  EntityFilterSets,
+  EntityFilterQuery,
+} from '@backstage/catalog-client';
 
 export interface CatalogFilters {
-  filter: Record<string, string | symbol | (string | symbol)[]>;
+  filter: EntityFilterQuery;
   fullTextFilter?: {
     term: string;
   };
@@ -45,17 +50,51 @@ function isEntityOrderFilter(t: EntityFilter): t is EntityOrderFilter {
   return !!(t as EntityOrderFilter).getOrderFilters;
 }
 
-export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
-  const condensedFilters = filters.reduce<CatalogFilters['filter']>(
-    (compoundFilter, filter) => {
-      return {
-        ...compoundFilter,
-        ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
-      };
-    },
-    {},
-  );
+/**
+ * Partition EntityFilter catalog filters into two groups: those that return multiple filter sets, and those that return
+ * a single filter set.
+ *
+ * For those that return a single filter set, merge them all into one
+ */
+function partitionFilterSets(
+  filters: EntityFilter[],
+): [EntityFilterSet, EntityFilterSets[]] {
+  return filters
+    .map(filter => (filter.getCatalogFilters ? filter.getCatalogFilters() : {}))
+    .reduce<[EntityFilterSet, EntityFilterSets[]]>(
+      ([filterSet, filterSets], filterQuery) => {
+        if (Array.isArray(filterQuery)) {
+          return [filterSet, [...filterSets, filterQuery]];
+        }
 
+        return [{ ...filterSet, ...filterQuery }, filterSets];
+      },
+      [{}, []],
+    );
+}
+
+/**
+ * Merge a matrix of filter sets into an array of filter sets.
+ */
+function mergeFilterSets(
+  initialFilterSet: EntityFilterSet,
+  filterSetsArray: EntityFilterSets[],
+): EntityFilterSets {
+  return filterSetsArray.reduce(
+    (filterSets, currentFilterSets) => {
+      return filterSets
+        .map(filterSet => {
+          return currentFilterSets.map(currentFilterSet => {
+            return { ...filterSet, ...currentFilterSet };
+          });
+        })
+        .flat();
+    },
+    [initialFilterSet],
+  );
+}
+
+export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
   const fullTextFilter = filters.find(isEntityTextFilter)?.getFullTextFilters();
 
   const orderFields = filters.find(isEntityOrderFilter)?.getOrderFilters() || [
@@ -64,7 +103,19 @@ export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
       order: 'asc',
     },
   ];
-  return { filter: condensedFilters, fullTextFilter, orderFields };
+
+  const [entityFilterSet, entityFilterSets] = partitionFilterSets(filters);
+
+  // None of the EntityFilters returned multiple filter sets, return the merged single filter set.
+  if (entityFilterSets.length === 0) {
+    return { filter: entityFilterSet, fullTextFilter, orderFields };
+  }
+
+  return {
+    filter: mergeFilterSets(entityFilterSet, entityFilterSets),
+    fullTextFilter,
+    orderFields,
+  };
 }
 
 /**
@@ -75,12 +126,7 @@ export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
  * will be applied backend-side.
  */
 export function reduceBackendCatalogFilters(filters: EntityFilter[]) {
-  const backendCatalogFilters: Record<
-    string,
-    string | symbol | (string | symbol)[]
-  > = {};
-
-  filters.forEach(filter => {
+  const filteredFilters = filters.filter(filter => {
     if (
       filter instanceof EntityTagFilter ||
       filter instanceof EntityOwnerFilter ||
@@ -91,12 +137,20 @@ export function reduceBackendCatalogFilters(filters: EntityFilter[]) {
       filter instanceof EntityTextFilter ||
       filter instanceof UserListFilter
     ) {
-      return;
+      return false;
     }
-    Object.assign(backendCatalogFilters, filter.getCatalogFilters?.() || {});
+    return true;
   });
 
-  return backendCatalogFilters;
+  const [entityFilterSet, entityFilterSets] =
+    partitionFilterSets(filteredFilters);
+
+  // None of the EntityFilters returned multiple filter sets, return the merged single filter set.
+  if (entityFilterSets.length === 0) {
+    return entityFilterSet;
+  }
+
+  return mergeFilterSets(entityFilterSet, entityFilterSets);
 }
 
 export function reduceEntityFilters(
