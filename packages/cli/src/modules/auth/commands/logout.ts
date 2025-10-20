@@ -16,33 +16,29 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { resolveBackendBaseUrl } from '../lib/backendDiscovery';
 import { getSecretStore } from '../lib/secretStore';
-import { removeMetadata, withMetadataLock, readMetadata } from '../lib/storage';
+import { removeInstance, withMetadataLock, readInstance } from '../lib/storage';
 import { httpForm } from '../lib/http';
 
-type Args = {
-  backendUrl?: string;
-};
+type Args = { name?: string };
 
 export default async function main(argv: string[]) {
   const parsed = (yargs(hideBin(argv)) as yargs.Argv<Args>)
-    .option('backend-url', { type: 'string', desc: 'Backend base URL' })
-    .parse();
+    .option('name', { type: 'string', desc: 'Name of the instance to logout' })
+    .parse() as unknown as Args & { [k: string]: unknown };
 
-  const backendBaseUrl = await resolveBackendBaseUrl({
-    args: argv,
-    explicit: parsed.backendUrl,
-  });
-  const authBase = new URL('/api/auth', backendBaseUrl)
+  if (!parsed.name) throw new Error('Please specify --name');
+  const instance = await readInstance(parsed.name);
+  if (!instance) throw new Error(`Unknown instance '${parsed.name}'`);
+  const authBase = new URL('/api/auth', instance.baseUrl)
     .toString()
     .replace(/\/$/, '');
 
   const secretStore = await getSecretStore();
-  const service = `backstage-cli:${backendBaseUrl}`;
+  const service = `backstage-cli:instance:${instance.name}`;
 
-  await withMetadataLock(backendBaseUrl, async () => {
-    const meta = await readMetadata(backendBaseUrl);
+  await withMetadataLock(instance.name, async () => {
+    const meta = await readInstance(instance.name);
     const clientId = meta?.clientId;
     const clientSecret = (await secretStore.get(service, 'clientSecret')) ?? '';
     const refreshToken = (await secretStore.get(service, 'refreshToken')) ?? '';
@@ -66,7 +62,7 @@ export default async function main(argv: string[]) {
 
     await secretStore.delete(service, 'clientSecret');
     await secretStore.delete(service, 'refreshToken');
-    await removeMetadata(backendBaseUrl);
+    await removeInstance(instance.name);
   });
 
   process.stderr.write('Logged out\n');

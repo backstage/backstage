@@ -18,12 +18,30 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import lockfile from 'proper-lockfile';
+import YAML from 'yaml';
+import { z } from 'zod';
 
-export type StoredAuthMetadata = {
+export type StoredInstance = {
+  name: string;
+  baseUrl: string;
   clientId: string;
   issuedAt: number;
   accessTokenExpiresAt: number;
+  selected?: boolean;
 };
+
+const StoredInstanceSchema = z.object({
+  name: z.string().min(1),
+  baseUrl: z.string().url(),
+  clientId: z.string().min(1),
+  issuedAt: z.number().int().nonnegative(),
+  accessTokenExpiresAt: z.number().int().nonnegative(),
+  selected: z.boolean().optional(),
+});
+
+const AuthYamlSchema = z.object({
+  instances: z.array(StoredInstanceSchema).default([]),
+});
 
 function metadataDir(): string {
   const root =
@@ -31,44 +49,103 @@ function metadataDir(): string {
     (process.platform === 'win32'
       ? process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming')
       : path.join(os.homedir(), '.config'));
-  return path.join(root, 'backstage-cli', 'auth');
+  return path.join(root, 'backstage-cli');
 }
 
-function backendKey(backendBaseUrl: string): string {
-  return encodeURIComponent(backendBaseUrl.replace(/\/?$/, ''));
+function metadataFile(): string {
+  return path.join(metadataDir(), 'auth.yaml');
 }
 
-function filePath(backendBaseUrl: string): string {
-  return path.join(metadataDir(), `${backendKey(backendBaseUrl)}.json`);
+async function readAll(): Promise<{ instances: StoredInstance[] }> {
+  const file = metadataFile();
+  if (!(await fs.pathExists(file))) return { instances: [] };
+  const text = await fs.readFile(file, 'utf8');
+  if (!text.trim()) return { instances: [] };
+  try {
+    const doc = YAML.parse(text);
+    const parsed = AuthYamlSchema.safeParse(doc);
+    if (parsed.success) return parsed.data;
+    throw new Error(
+      parsed.error.issues
+        .map(i => `${i.path.join('.')}: ${i.message}`)
+        .join('; '),
+    );
+  } catch {
+    // fall through to empty
+  }
+  return { instances: [] };
 }
 
-export async function readMetadata(
-  backendBaseUrl: string,
-): Promise<StoredAuthMetadata | undefined> {
-  const file = filePath(backendBaseUrl);
-  if (!(await fs.pathExists(file))) return undefined;
-  return await fs.readJSON(file);
-}
-
-export async function writeMetadata(
-  backendBaseUrl: string,
-  data: StoredAuthMetadata,
-): Promise<void> {
-  const file = filePath(backendBaseUrl);
+async function writeAll(data: { instances: StoredInstance[] }): Promise<void> {
+  const file = metadataFile();
   await fs.ensureDir(path.dirname(file));
-  await fs.writeJSON(file, data, { spaces: 2, mode: 0o600 });
+  // Validate before writing to disk
+  AuthYamlSchema.parse(data);
+  const yaml = YAML.stringify(data, { indentSeq: false });
+  await fs.writeFile(file, yaml, { encoding: 'utf8', mode: 0o600 });
 }
 
-export async function removeMetadata(backendBaseUrl: string): Promise<void> {
-  await fs.remove(filePath(backendBaseUrl));
+export async function getAllInstances(): Promise<StoredInstance[]> {
+  const { instances } = await readAll();
+  return instances;
+}
+
+export async function readInstance(
+  name: string,
+): Promise<StoredInstance | undefined> {
+  const { instances } = await readAll();
+  return instances.find(i => i.name === name);
+}
+
+export async function upsertInstance(instance: StoredInstance): Promise<void> {
+  const data = await readAll();
+  const idx = data.instances.findIndex(i => i.name === instance.name);
+  if (idx >= 0) data.instances[idx] = instance;
+  else data.instances.push(instance);
+  await writeAll(data);
+}
+
+export async function removeInstance(name: string): Promise<void> {
+  const data = await readAll();
+  const next = data.instances.filter(i => i.name !== name);
+  if (next.length !== data.instances.length) {
+    await writeAll({ instances: next });
+  }
+}
+
+export async function setSelectedInstance(name: string): Promise<void> {
+  const data = await readAll();
+  let found = false;
+  data.instances = data.instances.map(i => {
+    if (i.name === name) {
+      found = true;
+      return { ...i, selected: true };
+    }
+    const { selected, ...rest } = i;
+    return { ...rest, selected: false };
+  });
+  if (!found) throw new Error(`Unknown instance '${name}'`);
+  await writeAll(data);
+}
+
+export async function getSelectedOrFirst(): Promise<
+  StoredInstance | undefined
+> {
+  const { instances } = await readAll();
+  if (!instances.length) return undefined;
+  const sel = instances.find(i => i.selected);
+  return sel ?? instances[0];
 }
 
 export async function withMetadataLock<T>(
-  backendBaseUrl: string,
+  _key: string,
   fn: () => Promise<T>,
 ): Promise<T> {
-  const file = filePath(backendBaseUrl);
-  await fs.ensureFile(file);
+  const file = metadataFile();
+  await fs.ensureDir(path.dirname(file));
+  if (!(await fs.pathExists(file))) {
+    await fs.writeFile(file, '', { encoding: 'utf8', mode: 0o600 });
+  }
   const release = await lockfile.lock(file, {
     retries: { retries: 10, factor: 1.3, minTimeout: 50, maxTimeout: 500 },
   });
