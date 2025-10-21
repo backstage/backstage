@@ -17,7 +17,6 @@
 import yargs from 'yargs';
 import { createCliPlugin } from '../../wiring/factory';
 import * as commands from './commands';
-import { setSelectedInstance } from './lib/storage';
 
 export default createCliPlugin({
   pluginId: 'auth',
@@ -56,17 +55,10 @@ export default createCliPlugin({
     });
     reg.addCommand({
       path: ['auth', 'select'],
-      description: 'Select the default instance by name',
+      description: 'Select the default instance',
       execute: async ({ args }) => {
-        const parsed = (yargs(args) as yargs.Argv<{ name?: string }>)
-          .option('name', {
-            type: 'string',
-            demandOption: true,
-            desc: 'Name of the instance to select',
-          })
-          .parseSync();
-        await setSelectedInstance(parsed.name!);
-        process.stderr.write(`Selected instance '${parsed.name}'\n`);
+        yargs().parse(args);
+        await commands.select(args);
       },
     });
   },

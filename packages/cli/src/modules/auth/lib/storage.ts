@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NotFoundError } from '@backstage/errors';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -21,23 +22,17 @@ import lockfile from 'proper-lockfile';
 import YAML from 'yaml';
 import { z } from 'zod';
 
-export type StoredInstance = {
-  name: string;
-  baseUrl: string;
-  clientId: string;
-  issuedAt: number;
-  accessTokenExpiresAt: number;
-  selected?: boolean;
-};
-
 const StoredInstanceSchema = z.object({
   name: z.string().min(1),
   baseUrl: z.string().url(),
   clientId: z.string().min(1),
   issuedAt: z.number().int().nonnegative(),
+  accessToken: z.string(),
   accessTokenExpiresAt: z.number().int().nonnegative(),
   selected: z.boolean().optional(),
 });
+
+export type StoredInstance = z.infer<typeof StoredInstanceSchema>;
 
 const AuthYamlSchema = z.object({
   instances: z.array(StoredInstanceSchema).default([]),
@@ -85,16 +80,45 @@ async function writeAll(data: { instances: StoredInstance[] }): Promise<void> {
   await fs.writeFile(file, yaml, { encoding: 'utf8', mode: 0o600 });
 }
 
-export async function getAllInstances(): Promise<StoredInstance[]> {
+export async function getAllInstances(): Promise<{
+  instances: StoredInstance[];
+  selected: StoredInstance | undefined;
+}> {
   const { instances } = await readAll();
-  return instances;
+  const filtered = filterSelectedInstances(instances);
+  const selected = filtered.find(i => i.selected);
+  return { instances: filtered, selected };
 }
 
-export async function readInstance(
-  name: string,
-): Promise<StoredInstance | undefined> {
+export async function getSelectedInstance(
+  instanceName?: string,
+): Promise<StoredInstance> {
+  if (instanceName) {
+    return await getInstanceByName(instanceName);
+  }
+  const { selected } = await getAllInstances();
+  if (!selected) {
+    throw new Error(
+      'Not instances found. Run "auth login" to authenticate first.',
+    );
+  }
+  return selected;
+}
+
+export function filterSelectedInstances(
+  instances: StoredInstance[],
+): StoredInstance[] {
+  const selected = instances.find(i => i.selected) ?? instances[0];
+  return instances.map(i => ({ ...i, selected: i.name === selected.name }));
+}
+
+export async function getInstanceByName(name: string): Promise<StoredInstance> {
   const { instances } = await readAll();
-  return instances.find(i => i.name === name);
+  const instance = instances.find(i => i.name === name);
+  if (!instance) {
+    throw new NotFoundError(`Instance '${name}' not found`);
+  }
+  return instance;
 }
 
 export async function upsertInstance(instance: StoredInstance): Promise<void> {
@@ -126,15 +150,6 @@ export async function setSelectedInstance(name: string): Promise<void> {
   });
   if (!found) throw new Error(`Unknown instance '${name}'`);
   await writeAll(data);
-}
-
-export async function getSelectedOrFirst(): Promise<
-  StoredInstance | undefined
-> {
-  const { instances } = await readAll();
-  if (!instances.length) return undefined;
-  const sel = instances.find(i => i.selected);
-  return sel ?? instances[0];
 }
 
 export async function withMetadataLock<T>(

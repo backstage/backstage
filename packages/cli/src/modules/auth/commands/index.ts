@@ -18,3 +18,4 @@ export { default as login } from './login';
 export { default as logout } from './logout';
 export { default as list } from './list';
 export { default as printToken } from './printToken';
+export { default as select } from './select';

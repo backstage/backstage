@@ -18,34 +18,32 @@ import yargs from 'yargs';
 import { getSecretStore } from '../lib/secretStore';
 import {
   getAllInstances,
-  readInstance,
+  getInstanceByName,
   withMetadataLock,
   upsertInstance,
 } from '../lib/storage';
 import { httpJson } from '../lib/http';
 
-type Args = { name?: string };
-
 export default async function main(argv: string[]) {
-  const parsed = (yargs(argv) as yargs.Argv<Args>)
+  const parsed = await yargs(argv)
     .option('name', { type: 'string', desc: 'Name of the instance to show' })
-    .parse() as unknown as Args & { [k: string]: unknown };
+    .parse();
 
   const listAll = !parsed.name;
   if (listAll) {
-    const all = await getAllInstances();
-    if (!all.length) {
+    const { instances, selected } = await getAllInstances();
+    if (!instances.length) {
       process.stderr.write('No instances found\n');
       return;
     }
-    for (const inst of all) {
-      const mark = inst.selected ? '*' : ' ';
-      process.stderr.write(`${mark} ${inst.name} (${inst.baseUrl})\n`);
+    for (const inst of instances) {
+      const mark = inst.name === selected?.name ? '* ' : '  ';
+      process.stdout.write(`${mark}${inst.name} - ${inst.baseUrl}\n`);
     }
     return;
   }
 
-  const instance = await readInstance(parsed.name!);
+  const instance = await getInstanceByName(parsed.name!);
   if (!instance) throw new Error(`Unknown instance '${parsed.name}'`);
   const authBase = new URL('/api/auth', instance.baseUrl)
     .toString()
@@ -58,7 +56,7 @@ export default async function main(argv: string[]) {
   let accessTokenExpiresAt: number | undefined;
 
   await withMetadataLock(instance.name, async () => {
-    const meta = await readInstance(instance.name);
+    const meta = await getInstanceByName(instance.name);
     if (!meta) throw new Error('Not logged in');
 
     const now = Date.now();
@@ -88,28 +86,16 @@ export default async function main(argv: string[]) {
       await secretStore.set(service, 'refreshToken', token.refresh_token);
       await upsertInstance({
         ...meta,
+        accessToken: token.access_token,
         issuedAt: Date.now(),
         accessTokenExpiresAt: Date.now() + token.expires_in * 1000,
       });
       accessToken = token.access_token;
       accessTokenExpiresAt = Date.now() + token.expires_in * 1000;
     } else {
-      // Within validity window, we still need an access token for userinfo, so refresh once
-      const token = await httpJson<{
-        access_token: string;
-        token_type: string;
-        expires_in: number;
-        refresh_token: string;
-      }>(`${authBase}/v1/token`, {
-        method: 'POST',
-        body: {
-          grant_type: 'refresh_token',
-          refresh_token: refreshToken,
-        },
-      });
-      await secretStore.set(service, 'refreshToken', token.refresh_token);
-      accessToken = token.access_token;
-      accessTokenExpiresAt = Date.now() + token.expires_in * 1000;
+      // Token is still valid, use cached access token
+      accessToken = meta.accessToken;
+      accessTokenExpiresAt = meta.accessTokenExpiresAt;
     }
   });
 
