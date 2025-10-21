@@ -210,6 +210,17 @@ export async function getOrganizationUsers(
       }
     }`;
 
+  // Transformer to filter out suspended users, only for GitHub Enterprise instances.
+  const suspendedUserFilteringTransformer = async (
+    item: GithubUser,
+    ctx: TransformerContext,
+  ): Promise<Entity | undefined> => {
+    if (excludeSuspendedUsers && item.suspendedAt) {
+      return undefined;
+    }
+    return userTransformer(item, ctx);
+  };
+
   // There is no user -> teams edge, so we leave the memberships empty for
   // now and let the team iteration handle it instead
 
@@ -218,7 +229,7 @@ export async function getOrganizationUsers(
     query,
     org,
     r => r.organization?.membersWithRole,
-    userTransformer,
+    suspendedUserFilteringTransformer,
     {
       org,
       email: tokenType === 'token',

@@ -266,7 +266,6 @@ export interface Config {
 
             /**
              * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
-             * If true, the defaultTransformer will not return suspended users.
              * Default: `false`.
              */
             excludeSuspendedUsers?: boolean;
@@ -324,7 +323,6 @@ export interface Config {
 
             /**
              * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
-             * If true, the defaultTransformer will not return suspended users.
              * Default: `false`.
              */
             excludeSuspendedUsers?: boolean;

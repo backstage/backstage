@@ -385,7 +385,7 @@ describe('github', () => {
           graphql,
           'a',
           'token',
-          true,
+          false,
           customUserTransformer,
         ),
       ).resolves.toEqual(output);
