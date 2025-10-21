@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.0.1-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.4-next.0
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.14-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.7-next.0
+  - @backstage/plugin-scaffolder-common@1.7.3-next.0
+
 ## 3.0.0
 
 ### Major Changes

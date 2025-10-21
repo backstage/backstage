@@ -206,5 +206,26 @@
     "@backstage/plugin-user-settings-backend": "0.3.7",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "better-hats-cross",
+    "better-steaks-act",
+    "every-ants-count",
+    "every-clocks-arrive",
+    "fine-hands-return",
+    "five-seas-jam",
+    "grumpy-planes-bet",
+    "loud-carpets-throw",
+    "ninety-cobras-feel",
+    "polite-seas-divide",
+    "rich-streets-rule",
+    "short-sides-feel",
+    "silver-garlics-thank",
+    "solid-bees-agree",
+    "solid-dancers-march",
+    "stupid-doodles-love",
+    "tender-regions-know",
+    "typescript-constructor-refactor",
+    "warm-moments-repeat",
+    "wild-owls-divide"
+  ]
 }

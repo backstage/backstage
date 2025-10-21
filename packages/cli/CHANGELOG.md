@@ -1,5 +1,24 @@
 # @backstage/cli
 
+## 0.34.5-next.0
+
+### Patch Changes
+
+- fc7cbfc: The templates executed with the `yarn new` command now supports templating filenames.
+- fc7cbfc: Added a template for the `yarn new` command to create an catalog entity provider. To add this template to an explicit list in the root `package.json`, use `@backstage/cli/templates/catalog-provider-module`.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.2.0-next.0
+  - @backstage/config-loader@1.10.6-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/cli-node@0.2.15-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.2
+
 ## 0.34.4
 
 ### Patch Changes

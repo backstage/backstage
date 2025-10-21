@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 926389b: Added `@backstage/no-ui-css-imports-in-non-frontend` rule, which ensures that CSS from `@backstage/ui` is not imported outside of the frontend app.
+
 ## 0.1.12
 
 ### Patch Changes
