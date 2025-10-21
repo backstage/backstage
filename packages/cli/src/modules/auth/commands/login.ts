@@ -50,44 +50,42 @@ export default async function main(argv: string[]) {
   const { instances, selected } = await getAllInstances();
 
   // Determine which instance to authenticate
-  let targetInstance: StoredInstance | undefined;
   let backendBaseUrl: string;
   let instanceName: string;
 
   if (parsed.instance) {
+    instanceName = parsed.instance;
     // User specified a name explicitly
-    targetInstance = instances.find(i => i.name === parsed.instance);
+    const targetInstance = instances.find(i => i.name === parsed.instance);
     if (targetInstance) {
-      backendBaseUrl = targetInstance.baseUrl;
-      instanceName = targetInstance.name;
+      backendBaseUrl =
+        normalizeUrl(parsed.backendUrl) ?? targetInstance.baseUrl;
     } else {
       // New instance with specified name
-      backendBaseUrl = await resolveBackendBaseUrl({
-        explicit: parsed.backendUrl,
-      });
-      instanceName = parsed.instance;
+      backendBaseUrl = normalizeUrl(parsed.backendUrl) ?? (await pickBaseUrl());
     }
   } else if (parsed.backendUrl) {
     // User specified a URL, create or update instance
     backendBaseUrl = normalizeUrl(parsed.backendUrl);
-    instanceName = new URL(backendBaseUrl).host;
-    targetInstance = instances.find(i => i.baseUrl === backendBaseUrl);
+    instanceName = deriveInstanceName(backendBaseUrl);
   } else if (instances.length > 0) {
     // Prompt to select existing instance or create new
     const choice = await promptForInstance(instances, selected);
     if (choice === '__new__') {
-      backendBaseUrl = await resolveBackendBaseUrl({ explicit: undefined });
-      instanceName = new URL(backendBaseUrl).host;
+      backendBaseUrl = await pickBaseUrl();
+      instanceName = deriveInstanceName(backendBaseUrl);
     } else {
-      targetInstance = instances.find(i => i.name === choice);
-      if (!targetInstance) throw new Error('Instance not found');
+      const targetInstance = instances.find(i => i.name === choice);
+      if (!targetInstance) {
+        throw new Error('Instance not found');
+      }
       backendBaseUrl = targetInstance.baseUrl;
       instanceName = targetInstance.name;
     }
   } else {
     // No instances, resolve URL from config or prompt
-    backendBaseUrl = await resolveBackendBaseUrl({ explicit: undefined });
-    instanceName = new URL(backendBaseUrl).host;
+    backendBaseUrl = await pickBaseUrl();
+    instanceName = deriveInstanceName(backendBaseUrl);
   }
 
   const authBaseUrl = `${backendBaseUrl}/api/auth`;
@@ -156,10 +154,7 @@ async function promptForInstance(
   return choice;
 }
 
-async function resolveBackendBaseUrl(options: { explicit?: string }) {
-  if (options.explicit) {
-    return normalizeUrl(options.explicit);
-  }
+async function pickBaseUrl() {
   const cwd = process.cwd();
   const candidates: Array<{ url: string; file: string }> = [];
 
@@ -214,9 +209,18 @@ async function resolveBackendBaseUrl(options: { explicit?: string }) {
   return picked;
 }
 
-function normalizeUrl(u: string): string {
+function normalizeUrl(u: string): string;
+function normalizeUrl(u: string | undefined): string | undefined;
+function normalizeUrl(u: string | undefined): string | undefined {
+  if (u === undefined) {
+    return undefined;
+  }
   const url = new URL(u);
   return url.toString().replace(/\/$/, '');
+}
+
+function deriveInstanceName(url: string): string {
+  return new URL(url).host;
 }
 
 async function registerClient(authBase: string, redirectUri: string) {

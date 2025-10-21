@@ -22,7 +22,7 @@ import {
   getInstanceByName,
 } from '../lib/storage';
 import { httpJson } from '../lib/http';
-import { pickInstance } from './select';
+import { pickInstance } from '../lib/prompt';
 
 export default async function main(argv: string[]) {
   const parsed = await yargs(argv)

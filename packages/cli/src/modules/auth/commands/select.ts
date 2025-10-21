@@ -15,13 +15,8 @@
  */
 
 import yargs from 'yargs';
-import inquirer from 'inquirer';
-import {
-  setSelectedInstance,
-  getInstanceByName,
-  getAllInstances,
-  StoredInstance,
-} from '../lib/storage';
+import { setSelectedInstance } from '../lib/storage';
+import { pickInstance } from '../lib/prompt';
 
 export default async function main(argv: string[]) {
   const parsed = await yargs(argv)
@@ -35,48 +30,4 @@ export default async function main(argv: string[]) {
 
   await setSelectedInstance(instance.name);
   process.stderr.write(`Selected instance '${instance.name}'\n`);
-}
-
-export async function pickInstance(name?: string): Promise<StoredInstance> {
-  if (name) {
-    const instance = await getInstanceByName(name);
-    if (!instance) {
-      throw new Error(`Instance '${name}' not found`);
-    }
-    return instance;
-  }
-
-  const { instances, selected } = await getAllInstances();
-  if (instances.length === 0) {
-    throw new Error(
-      'No instances found. Run "auth login" to authenticate first.',
-    );
-  }
-  return await promptForInstance(instances, selected);
-}
-
-async function promptForInstance(
-  instances: StoredInstance[],
-  selected: StoredInstance | undefined,
-): Promise<StoredInstance> {
-  const choices = instances.map(i => ({
-    name: `${i.name === selected?.name ? '* ' : '  '}${i.name} (${i.baseUrl})`,
-    value: i.name,
-  }));
-
-  const { choice } = await inquirer.prompt<{ choice: string }>([
-    {
-      type: 'list',
-      name: 'choice',
-      message: 'Select instance:',
-      choices,
-      default: selected?.name,
-    },
-  ]);
-
-  const instance = instances.find(i => i.name === choice);
-  if (!instance) {
-    throw new Error(`Instance '${choice}' not found`);
-  }
-  return instance;
 }
