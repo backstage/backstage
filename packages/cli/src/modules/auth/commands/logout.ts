@@ -26,10 +26,13 @@ import { pickInstance } from './select';
 
 export default async function main(argv: string[]) {
   const parsed = await yargs(argv)
-    .option('name', { type: 'string', desc: 'Name of the instance to logout' })
+    .option('instance', {
+      type: 'string',
+      desc: 'Name of the instance to logout',
+    })
     .parse();
 
-  const { name: instanceName } = await pickInstance(parsed.name);
+  const { name: instanceName } = await pickInstance(parsed.instance);
 
   await withMetadataLock(async () => {
     const instance = await getInstanceByName(instanceName);
