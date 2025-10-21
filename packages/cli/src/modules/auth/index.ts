@@ -38,6 +38,14 @@ export default createCliPlugin({
       },
     });
     reg.addCommand({
+      path: ['auth', 'show'],
+      description: 'Show details of an authenticated instance',
+      execute: async ({ args }) => {
+        yargs().parse(args);
+        await commands.show(args);
+      },
+    });
+    reg.addCommand({
       path: ['auth', 'list'],
       description: 'List authenticated instances',
       execute: async ({ args }) => {
