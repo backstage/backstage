@@ -31,11 +31,11 @@ export default async function main(argv: string[]) {
 
   const { name: instanceName } = await pickInstance(parsed.name);
 
-  const service = `backstage-cli:instance:${instanceName}`;
-  await withMetadataLock(instanceName, async () => {
+  await withMetadataLock(async () => {
     const instance = await getInstanceByName(instanceName);
     const clientId = instance.clientId;
     const secretStore = await getSecretStore();
+    const service = `backstage-cli:instance:${instanceName}`;
     const clientSecret = (await secretStore.get(service, 'clientSecret')) ?? '';
     const refreshToken = (await secretStore.get(service, 'refreshToken')) ?? '';
 

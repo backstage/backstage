@@ -22,7 +22,9 @@ import lockfile from 'proper-lockfile';
 import YAML from 'yaml';
 import { z } from 'zod';
 
-const StoredInstanceSchema = z.object({
+const METADATA_FILE = 'instances.yaml';
+
+const storedInstanceSchema = z.object({
   name: z.string().min(1),
   baseUrl: z.string().url(),
   clientId: z.string().min(1),
@@ -32,51 +34,47 @@ const StoredInstanceSchema = z.object({
   selected: z.boolean().optional(),
 });
 
-export type StoredInstance = z.infer<typeof StoredInstanceSchema>;
+export type StoredInstance = z.infer<typeof storedInstanceSchema>;
 
-const AuthYamlSchema = z.object({
-  instances: z.array(StoredInstanceSchema).default([]),
+const authYamlSchema = z.object({
+  instances: z.array(storedInstanceSchema).default([]),
 });
 
-function metadataDir(): string {
+function getMetadataFilePath(): string {
   const root =
     process.env.XDG_CONFIG_HOME ||
     (process.platform === 'win32'
       ? process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming')
       : path.join(os.homedir(), '.config'));
-  return path.join(root, 'backstage-cli');
-}
 
-function metadataFile(): string {
-  return path.join(metadataDir(), 'auth.yaml');
+  return path.join(root, 'backstage-cli', METADATA_FILE);
 }
 
 async function readAll(): Promise<{ instances: StoredInstance[] }> {
-  const file = metadataFile();
-  if (!(await fs.pathExists(file))) return { instances: [] };
+  const file = getMetadataFilePath();
+  if (!(await fs.pathExists(file))) {
+    return { instances: [] };
+  }
   const text = await fs.readFile(file, 'utf8');
-  if (!text.trim()) return { instances: [] };
+  if (!text.trim()) {
+    return { instances: [] };
+  }
   try {
     const doc = YAML.parse(text);
-    const parsed = AuthYamlSchema.safeParse(doc);
-    if (parsed.success) return parsed.data;
-    throw new Error(
-      parsed.error.issues
-        .map(i => `${i.path.join('.')}: ${i.message}`)
-        .join('; '),
-    );
+    const parsed = authYamlSchema.safeParse(doc);
+    if (parsed.success) {
+      return parsed.data;
+    }
+    return { instances: [] };
   } catch {
-    // fall through to empty
+    return { instances: [] };
   }
-  return { instances: [] };
 }
 
 async function writeAll(data: { instances: StoredInstance[] }): Promise<void> {
-  const file = metadataFile();
+  const file = getMetadataFilePath();
   await fs.ensureDir(path.dirname(file));
-  // Validate before writing to disk
-  AuthYamlSchema.parse(data);
-  const yaml = YAML.stringify(data, { indentSeq: false });
+  const yaml = YAML.stringify(authYamlSchema.parse(data), { indentSeq: false });
   await fs.writeFile(file, yaml, { encoding: 'utf8', mode: 0o600 });
 }
 
@@ -85,9 +83,15 @@ export async function getAllInstances(): Promise<{
   selected: StoredInstance | undefined;
 }> {
   const { instances } = await readAll();
-  const filtered = filterSelectedInstances(instances);
-  const selected = filtered.find(i => i.selected);
-  return { instances: filtered, selected };
+  const selected = instances.find(i => i.selected) ?? instances[0];
+  return {
+    // Normalize selection prop
+    instances: instances.map(i => ({
+      ...i,
+      selected: i.name === selected.name,
+    })),
+    selected,
+  };
 }
 
 export async function getSelectedInstance(
@@ -105,13 +109,6 @@ export async function getSelectedInstance(
   return selected;
 }
 
-export function filterSelectedInstances(
-  instances: StoredInstance[],
-): StoredInstance[] {
-  const selected = instances.find(i => i.selected) ?? instances[0];
-  return instances.map(i => ({ ...i, selected: i.name === selected.name }));
-}
-
 export async function getInstanceByName(name: string): Promise<StoredInstance> {
   const { instances } = await readAll();
   const instance = instances.find(i => i.name === name);
@@ -124,8 +121,11 @@ export async function getInstanceByName(name: string): Promise<StoredInstance> {
 export async function upsertInstance(instance: StoredInstance): Promise<void> {
   const data = await readAll();
   const idx = data.instances.findIndex(i => i.name === instance.name);
-  if (idx >= 0) data.instances[idx] = instance;
-  else data.instances.push(instance);
+  if (idx === -1) {
+    data.instances.push(instance);
+  } else {
+    data.instances[idx] = instance;
+  }
   await writeAll(data);
 }
 
@@ -148,15 +148,14 @@ export async function setSelectedInstance(name: string): Promise<void> {
     const { selected, ...rest } = i;
     return { ...rest, selected: false };
   });
-  if (!found) throw new Error(`Unknown instance '${name}'`);
+  if (!found) {
+    throw new Error(`Unknown instance '${name}'`);
+  }
   await writeAll(data);
 }
 
-export async function withMetadataLock<T>(
-  _key: string,
-  fn: () => Promise<T>,
-): Promise<T> {
-  const file = metadataFile();
+export async function withMetadataLock<T>(fn: () => Promise<T>): Promise<T> {
+  const file = getMetadataFilePath();
   await fs.ensureDir(path.dirname(file));
   if (!(await fs.pathExists(file))) {
     await fs.writeFile(file, '', { encoding: 'utf8', mode: 0o600 });

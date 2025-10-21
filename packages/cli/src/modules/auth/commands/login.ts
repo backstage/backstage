@@ -316,8 +316,8 @@ async function persistInstance(options: {
   const { instanceName, backendBaseUrl, clientId, clientSecret, token } =
     options;
   const secretStore = await getSecretStore();
-  const service = `backstage-cli:instance:${instanceName}`;
-  await withMetadataLock(instanceName, async () => {
+  await withMetadataLock(async () => {
+    const service = `backstage-cli:instance:${instanceName}`;
     await secretStore.set(service, 'clientSecret', clientSecret);
     if (token.refresh_token) {
       await secretStore.set(service, 'refreshToken', token.refresh_token);
