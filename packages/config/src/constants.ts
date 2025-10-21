@@ -19,9 +19,9 @@
  *
  * @remarks
  * keys must only contain the letters `a` through `z` and digits, in groups separated by
- * dashes or underscores. Additionally, the very first character of each such group
+ * dashes or underscores and colon. Additionally, the very first character of each such group
  * must be a letter, not a digit
  *
  * @public
  */
-export const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$/i;
+export const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_:][a-z0-9]+)*$/i;
