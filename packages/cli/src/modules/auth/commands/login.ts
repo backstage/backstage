@@ -16,10 +16,15 @@
 
 import yargs from 'yargs';
 import { startCallbackServer } from '../lib/localServer';
-import { openInBrowser } from '../lib/browser';
+import { spawn } from 'child_process';
 import { challengeFromVerifier, generateVerifier } from '../lib/pkce';
 import { httpJson } from '../lib/http';
-import { upsertInstance, withMetadataLock } from '../lib/storage';
+import {
+  upsertInstance,
+  withMetadataLock,
+  getAllInstances,
+  StoredInstance,
+} from '../lib/storage';
 import { getSecretStore } from '../lib/secretStore';
 import crypto from 'crypto';
 import fs from 'fs-extra';
@@ -28,18 +33,63 @@ import glob from 'glob';
 import YAML from 'yaml';
 import inquirer from 'inquirer';
 
-type Args = {
-  backendUrl?: string;
-  noBrowser?: boolean;
-  name?: string;
-};
-
 export default async function main(argv: string[]) {
-  const parsed = parseArgs(argv);
+  const parsed = await yargs(argv)
+    .option('backend-url', { type: 'string', desc: 'Backend base URL' })
+    .option('no-browser', {
+      type: 'boolean',
+      desc: 'Do not open browser automatically',
+    })
+    .option('name', {
+      type: 'string',
+      desc: 'Name for this instance (used by other auth commands)',
+    })
+    .parse();
 
-  const backendBaseUrl = await resolveBackendBaseUrl({
-    explicit: parsed.backendUrl,
-  });
+  // Load existing instances to allow re-authentication
+  const { instances, selected } = await getAllInstances();
+
+  // Determine which instance to authenticate
+  let targetInstance: StoredInstance | undefined;
+  let backendBaseUrl: string;
+  let instanceName: string;
+
+  if (parsed.name) {
+    // User specified a name explicitly
+    targetInstance = instances.find(i => i.name === parsed.name);
+    if (targetInstance) {
+      backendBaseUrl = targetInstance.baseUrl;
+      instanceName = targetInstance.name;
+    } else {
+      // New instance with specified name
+      backendBaseUrl = await resolveBackendBaseUrl({
+        explicit: parsed.backendUrl,
+      });
+      instanceName = parsed.name;
+    }
+  } else if (parsed.backendUrl) {
+    // User specified a URL, create or update instance
+    backendBaseUrl = normalizeUrl(parsed.backendUrl);
+    instanceName = new URL(backendBaseUrl).host;
+    targetInstance = instances.find(i => i.baseUrl === backendBaseUrl);
+  } else if (instances.length > 0) {
+    // Prompt to select existing instance or create new
+    const choice = await promptForInstance(instances, selected);
+    if (choice === '__new__') {
+      backendBaseUrl = await resolveBackendBaseUrl({ explicit: undefined });
+      instanceName = new URL(backendBaseUrl).host;
+    } else {
+      targetInstance = instances.find(i => i.name === choice);
+      if (!targetInstance) throw new Error('Instance not found');
+      backendBaseUrl = targetInstance.baseUrl;
+      instanceName = targetInstance.name;
+    }
+  } else {
+    // No instances, resolve URL from config or prompt
+    backendBaseUrl = await resolveBackendBaseUrl({ explicit: undefined });
+    instanceName = new URL(backendBaseUrl).host;
+  }
+
   const authBaseUrl = `${backendBaseUrl}/api/auth`;
 
   const callback = await startCallbackServer({ state: cryptoRandom() });
@@ -69,7 +119,7 @@ export default async function main(argv: string[]) {
   });
 
   await persistInstance({
-    parsed,
+    instanceName,
     backendBaseUrl,
     clientId: client_id,
     clientSecret: client_secret,
@@ -79,18 +129,31 @@ export default async function main(argv: string[]) {
   process.stderr.write('Login successful\n');
 }
 
-function parseArgs(argv: string[]): Args & { [k: string]: unknown } {
-  return (yargs(argv) as yargs.Argv<Args>)
-    .option('backend-url', { type: 'string', desc: 'Backend base URL' })
-    .option('no-browser', {
-      type: 'boolean',
-      desc: 'Do not open browser automatically',
-    })
-    .option('name', {
-      type: 'string',
-      desc: 'Name for this instance (used by other auth commands)',
-    })
-    .parse() as unknown as Args & { [k: string]: unknown };
+async function promptForInstance(
+  instances: StoredInstance[],
+  selected: StoredInstance | undefined,
+): Promise<string> {
+  const choices = instances.map(i => ({
+    name: `${i.name === selected?.name ? '* ' : '  '}${i.name} (${i.baseUrl})`,
+    value: i.name,
+  }));
+
+  choices.push({
+    name: 'Add new instance...',
+    value: '__new__',
+  });
+
+  const { choice } = await inquirer.prompt<{ choice: string }>([
+    {
+      type: 'list',
+      name: 'choice',
+      message: 'Select instance to authenticate:',
+      choices,
+      default: selected?.name ?? '__new__',
+    },
+  ]);
+
+  return choice;
 }
 
 async function resolveBackendBaseUrl(options: { explicit?: string }) {
@@ -202,6 +265,7 @@ async function openBrowserOrPrint(url: string, noBrowser?: boolean) {
   if (noBrowser) {
     process.stderr.write(`Open this URL to continue: ${url}\n`);
   } else {
+    process.stderr.write(`Opening the following URL: ${url}\n`);
     openInBrowser(url);
   }
 }
@@ -243,26 +307,30 @@ async function exchangeAuthorizationCode(options: {
 }
 
 async function persistInstance(options: {
-  parsed: Args;
+  instanceName: string;
   backendBaseUrl: string;
   clientId: string;
   clientSecret: string;
-  token: { refresh_token?: string; expires_in: number };
+  token: { access_token: string; refresh_token?: string; expires_in: number };
 }) {
-  const { parsed, backendBaseUrl, clientId, clientSecret, token } = options;
-  if (!token.refresh_token) {
-    throw new Error('No refresh token received');
-  }
-  const name: string = parsed.name || new URL(backendBaseUrl).host;
+  const { instanceName, backendBaseUrl, clientId, clientSecret, token } =
+    options;
   const secretStore = await getSecretStore();
-  const service = `backstage-cli:instance:${name}`;
-  await withMetadataLock(name, async () => {
+  const service = `backstage-cli:instance:${instanceName}`;
+  await withMetadataLock(instanceName, async () => {
     await secretStore.set(service, 'clientSecret', clientSecret);
-    await secretStore.set(service, 'refreshToken', token.refresh_token!);
+    if (token.refresh_token) {
+      await secretStore.set(service, 'refreshToken', token.refresh_token);
+    } else {
+      process.stderr.write(
+        'Warning: No refresh token received. You will need to re-authenticate when the access token expires.\n',
+      );
+    }
     await upsertInstance({
-      name,
+      name: instanceName,
       baseUrl: backendBaseUrl,
       clientId,
+      accessToken: token.access_token,
       issuedAt: Date.now(),
       accessTokenExpiresAt: Date.now() + token.expires_in * 1000,
     });
@@ -271,4 +339,22 @@ async function persistInstance(options: {
 
 function cryptoRandom(): string {
   return crypto.randomBytes(16).toString('hex');
+}
+
+// The react-dev-utils/openBrowser breaks the login URL by encoding the URL parameters again
+export function openInBrowser(url: string): void {
+  const platform = process.platform;
+  if (platform === 'darwin') {
+    spawn('open', [url], { detached: true, stdio: 'ignore' }).unref();
+    return;
+  }
+  if (platform === 'win32') {
+    spawn('cmd', ['/c', 'start', '""', url], {
+      detached: true,
+      stdio: 'ignore',
+    }).unref();
+    return;
+  }
+  // linux and others
+  spawn('xdg-open', [url], { detached: true, stdio: 'ignore' }).unref();
 }
