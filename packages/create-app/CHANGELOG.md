@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.7.6-next.0
+
+### Patch Changes
+
+- fc7cbfc: Added the new `@backstage/cli/templates/catalog-provider-module` template to the explicit template configuration for the `next-app` template.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.7.5
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-mui-to-bui
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.8.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/theme@0.7.0
+
 ## 0.2.0
 
 ### Minor Changes

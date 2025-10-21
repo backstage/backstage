@@ -1,5 +1,15 @@
 # @backstage/ui
 
+## 0.8.2-next.0
+
+### Patch Changes
+
+- 26c6a78: Fix default text color in Backstage UI
+- dac851f: Fix the default font size in Backstage UI.
+- 3c0ea67: Fix CSS layer ordering in Backstage UI to make sure component styles are loaded after tokens and base declarations.
+- 4eb455c: Fix font smoothing as default in Backstage UI.
+- 00bfb83: Fix default font wight and font family in Backstage UI.
+
 ## 0.8.0
 
 ### Minor Changes
