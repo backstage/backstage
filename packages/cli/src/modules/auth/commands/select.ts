@@ -25,13 +25,13 @@ import {
 
 export default async function main(argv: string[]) {
   const parsed = await yargs(argv)
-    .option('name', {
+    .option('instance', {
       type: 'string',
       desc: 'Name of the instance to select',
     })
     .parse();
 
-  const instance = await pickInstance(parsed.name);
+  const instance = await pickInstance(parsed.instance);
 
   await setSelectedInstance(instance.name);
   process.stderr.write(`Selected instance '${instance.name}'\n`);

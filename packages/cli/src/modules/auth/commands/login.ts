@@ -40,7 +40,7 @@ export default async function main(argv: string[]) {
       type: 'boolean',
       desc: 'Do not open browser automatically',
     })
-    .option('name', {
+    .option('instance', {
       type: 'string',
       desc: 'Name for this instance (used by other auth commands)',
     })
@@ -54,9 +54,9 @@ export default async function main(argv: string[]) {
   let backendBaseUrl: string;
   let instanceName: string;
 
-  if (parsed.name) {
+  if (parsed.instance) {
     // User specified a name explicitly
-    targetInstance = instances.find(i => i.name === parsed.name);
+    targetInstance = instances.find(i => i.name === parsed.instance);
     if (targetInstance) {
       backendBaseUrl = targetInstance.baseUrl;
       instanceName = targetInstance.name;
@@ -65,7 +65,7 @@ export default async function main(argv: string[]) {
       backendBaseUrl = await resolveBackendBaseUrl({
         explicit: parsed.backendUrl,
       });
-      instanceName = parsed.name;
+      instanceName = parsed.instance;
     }
   } else if (parsed.backendUrl) {
     // User specified a URL, create or update instance

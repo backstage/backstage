@@ -27,13 +27,13 @@ import { httpJson } from '../lib/http';
 
 export default async function main(argv: string[]) {
   const parsed = await yargs(argv)
-    .option('name', {
+    .option('instance', {
       type: 'string',
       desc: 'Name of the instance to use',
     })
     .parse();
 
-  let instance = await getSelectedInstance(parsed.name);
+  let instance = await getSelectedInstance(parsed.instance);
 
   if (accessTokenNeedsRefresh(instance)) {
     instance = await refreshAccessToken(instance.name);
