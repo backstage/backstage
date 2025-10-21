@@ -743,6 +743,11 @@ export const componentDefinitions: {
       readonly arrow: 'bui-TooltipArrow';
     };
   };
+  readonly VisuallyHidden: {
+    readonly classNames: {
+      readonly root: 'bui-VisuallyHidden';
+    };
+  };
 };
 
 // @public (undocumented)
@@ -1533,5 +1538,14 @@ export interface UtilityProps extends SpaceProps {
   justifyContent?: Responsive<JustifyContent>;
   // (undocumented)
   rowSpan?: Responsive<Columns | 'full'>;
+}
+
+// @public
+export const VisuallyHidden: (props: VisuallyHiddenProps) => JSX_2.Element;
+
+// @public
+export interface VisuallyHiddenProps extends ComponentProps<'div'> {
+  // (undocumented)
+  children?: React.ReactNode;
 }
 ```

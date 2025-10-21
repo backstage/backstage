@@ -186,6 +186,11 @@ export const components: Page[] = [
     slug: 'tooltip',
     status: 'alpha',
   },
+  {
+    title: 'VisuallyHidden',
+    slug: 'visually-hidden',
+    status: 'alpha',
+  },
 ];
 
 export type ScreenSize = {
