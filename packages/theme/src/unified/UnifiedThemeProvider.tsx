@@ -29,6 +29,10 @@ import {
 import { UnifiedTheme } from './types';
 import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material/className';
 
+/**
+ * React context for the current application theme ID.
+ * @public
+ */
 export const AppThemeIdContext = createContext<string | undefined>(undefined);
 
 /**

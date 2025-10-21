@@ -15,8 +15,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.body.emptyDataSourceMessage': 'No records to display';
     readonly 'table.header.actions': 'Actions';
     readonly 'table.toolbar.search': 'Filter';
-    readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
