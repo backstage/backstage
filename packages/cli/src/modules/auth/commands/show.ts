@@ -17,7 +17,7 @@
 import yargs from 'yargs';
 import { httpJson } from '../lib/http';
 import { getSelectedInstance } from '../lib/storage';
-import { accessTokenNeedsRefresh, refreshAccessToken } from './printToken';
+import { accessTokenNeedsRefresh, refreshAccessToken } from '../lib/auth';
 
 export default async function main(argv: string[]) {
   const parsed = await yargs(argv)
