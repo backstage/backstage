@@ -16,29 +16,26 @@
 
 import yargs from 'yargs';
 import { getSecretStore } from '../lib/secretStore';
-import { removeInstance, withMetadataLock, readInstance } from '../lib/storage';
+import {
+  removeInstance,
+  withMetadataLock,
+  getInstanceByName,
+} from '../lib/storage';
 import { httpJson } from '../lib/http';
-
-type Args = { name?: string };
+import { pickInstance } from './select';
 
 export default async function main(argv: string[]) {
-  const parsed = (yargs(argv) as yargs.Argv<Args>)
+  const parsed = await yargs(argv)
     .option('name', { type: 'string', desc: 'Name of the instance to logout' })
-    .parse() as unknown as Args & { [k: string]: unknown };
+    .parse();
 
-  if (!parsed.name) throw new Error('Please specify --name');
-  const instance = await readInstance(parsed.name);
-  if (!instance) throw new Error(`Unknown instance '${parsed.name}'`);
-  const authBase = new URL('/api/auth', instance.baseUrl)
-    .toString()
-    .replace(/\/$/, '');
+  const { name: instanceName } = await pickInstance(parsed.name);
 
-  const secretStore = await getSecretStore();
-  const service = `backstage-cli:instance:${instance.name}`;
-
-  await withMetadataLock(instance.name, async () => {
-    const meta = await readInstance(instance.name);
-    const clientId = meta?.clientId;
+  const service = `backstage-cli:instance:${instanceName}`;
+  await withMetadataLock(instanceName, async () => {
+    const instance = await getInstanceByName(instanceName);
+    const clientId = instance.clientId;
+    const secretStore = await getSecretStore();
     const clientSecret = (await secretStore.get(service, 'clientSecret')) ?? '';
     const refreshToken = (await secretStore.get(service, 'refreshToken')) ?? '';
 
@@ -47,7 +44,10 @@ export default async function main(argv: string[]) {
         'base64',
       );
       try {
-        await httpJson(`${authBase}/v1/revoke`, {
+        const authBaseUrl = new URL('/api/auth', instance.baseUrl)
+          .toString()
+          .replace(/\/$/, '');
+        await httpJson(`${authBaseUrl}/v1/revoke`, {
           method: 'POST',
           headers: { Authorization: `Basic ${basic}` },
           body: {
