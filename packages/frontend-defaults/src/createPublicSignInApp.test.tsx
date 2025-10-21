@@ -95,8 +95,8 @@ describe('createPublicSignInApp', () => {
     expect(baseElement).toMatchInlineSnapshot(`
       <body
         data-theme-mode="light"
-        data-theme-name="backstage"
-        data-unified-theme-stack="[{"mode":"light","name":"backstage"}]"
+        data-theme-name="light"
+        data-unified-theme-stack="[{"mode":"light","name":"light"}]"
       >
         <div>
           <form

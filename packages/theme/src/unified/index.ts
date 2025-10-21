@@ -18,6 +18,9 @@ export { transformV5ComponentThemesToV4 } from './overrides';
 export { createUnifiedTheme, createUnifiedThemeFromV4 } from './UnifiedTheme';
 export type { UnifiedThemeOptions } from './UnifiedTheme';
 export { themes } from './themes';
-export { UnifiedThemeProvider } from './UnifiedThemeProvider';
+export {
+  UnifiedThemeProvider,
+  AppThemeIdContext,
+} from './UnifiedThemeProvider';
 export type { UnifiedThemeProviderProps } from './UnifiedThemeProvider';
 export type { UnifiedTheme, SupportedThemes, SupportedVersions } from './types';

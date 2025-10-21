@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { ReactNode, createContext, useContext } from 'react';
 import {
   ThemeProvider,
   StylesProvider,
@@ -28,6 +28,8 @@ import {
 } from '@mui/material/styles';
 import { UnifiedTheme } from './types';
 import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material/className';
+
+export const AppThemeIdContext = createContext<string | undefined>(undefined);
 
 /**
  * Props for {@link UnifiedThemeProvider}.
@@ -71,10 +73,10 @@ export function UnifiedThemeProvider(
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
 
-  useApplyThemeAttributes(
-    v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode,
-    'backstage',
-  );
+  const themeMode = v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode;
+  const themeId = useContext(AppThemeIdContext) ?? 'backstage';
+
+  useApplyThemeAttributes(themeMode, themeId);
 
   let result = children as JSX.Element;
 

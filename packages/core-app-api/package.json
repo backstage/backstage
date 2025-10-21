@@ -48,6 +48,7 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@types/prop-types": "^15.7.3",
