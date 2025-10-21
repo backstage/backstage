@@ -52,6 +52,7 @@ export * from './components/Link';
 export * from './components/Select';
 export * from './components/Skeleton';
 export * from './components/Switch';
+export * from './components/VisuallyHidden';
 
 // Types
 export * from './types';

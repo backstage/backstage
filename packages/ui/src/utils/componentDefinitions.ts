@@ -395,4 +395,9 @@ export const componentDefinitions = {
       arrow: 'bui-TooltipArrow',
     },
   },
+  VisuallyHidden: {
+    classNames: {
+      root: 'bui-VisuallyHidden',
+    },
+  },
 } as const satisfies Record<string, ComponentDefinition>;
