@@ -50,7 +50,13 @@ async function buildCSS(logs = true) {
     code: bundleCode,
     minify: false,
   });
-  fs.writeFileSync(distFile, code);
+
+  // Prepend the layer order declaration that lightningcss removes during bundling
+  // This is crucial to maintain the correct layer cascade order
+  const layerDeclaration = '@layer tokens, base, components, utilities;\n\n';
+  const finalCode = layerDeclaration + code;
+
+  fs.writeFileSync(distFile, finalCode);
   if (logs) {
     console.log(chalk.blue('CSS transformed and minified: ') + 'styles.css');
     console.log(chalk.green('CSS file built successfully!'));
