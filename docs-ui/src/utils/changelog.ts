@@ -13,6 +13,7 @@ export type Component =
   | 'datatable'
   | 'select'
   | 'collapsible'
+  | 'accordion'
   | 'checkbox'
   | 'container'
   | 'link'

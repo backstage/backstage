@@ -30,7 +30,7 @@ export * from './components/Container';
 export * from './components/Avatar';
 export * from './components/Button';
 export * from './components/Card';
-export * from './components/Collapsible';
+export * from './components/Accordion';
 export * from './components/Dialog';
 export * from './components/FieldLabel';
 export * from './components/Header';

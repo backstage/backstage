@@ -6,12 +6,14 @@
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
 import { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
-import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { DetailedHTMLProps } from 'react';
 import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
+import type { DisclosureGroupProps } from 'react-aria-components';
+import type { DisclosurePanelProps } from 'react-aria-components';
+import type { DisclosureProps } from 'react-aria-components';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import type { HeadingProps } from 'react-aria-components';
@@ -50,6 +52,57 @@ import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
+
+// @public (undocumented)
+export const Accordion: ForwardRefExoticComponent<
+  AccordionProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export const AccordionGroup: ForwardRefExoticComponent<
+  AccordionGroupProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface AccordionGroupProps extends DisclosureGroupProps {
+  allowsMultiple?: boolean;
+  // (undocumented)
+  className?: string;
+}
+
+// @public (undocumented)
+export const AccordionPanel: ForwardRefExoticComponent<
+  AccordionPanelProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface AccordionPanelProps extends DisclosurePanelProps {
+  // (undocumented)
+  className?: string;
+}
+
+// @public
+export interface AccordionProps extends DisclosureProps {
+  // (undocumented)
+  className?: string;
+}
+
+// @public (undocumented)
+export const AccordionTrigger: ForwardRefExoticComponent<
+  AccordionTriggerProps & RefAttributes<HTMLHeadingElement>
+>;
+
+// @public
+export interface AccordionTriggerProps extends HeadingProps {
+  // (undocumented)
+  children?: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  subtitle?: string;
+  // (undocumented)
+  title?: string;
+}
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -279,25 +332,6 @@ export interface CheckboxProps extends CheckboxProps_2 {
 // @public
 export type ClassNamesMap = Record<string, string>;
 
-// @public
-export const Collapsible: {
-  Root: ForwardRefExoticComponent<
-    Omit<Collapsible_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Trigger: ForwardRefExoticComponent<
-    Omit<
-      Collapsible_2.Trigger.Props & RefAttributes<HTMLButtonElement>,
-      'ref'
-    > &
-      RefAttributes<HTMLButtonElement>
-  >;
-  Panel: ForwardRefExoticComponent<
-    Omit<Collapsible_2.Panel.Props & RefAttributes<HTMLButtonElement>, 'ref'> &
-      RefAttributes<HTMLButtonElement>
-  >;
-};
-
 // @public (undocumented)
 export const Column: (props: ColumnProps) => JSX_2.Element;
 
@@ -417,13 +451,6 @@ export const componentDefinitions: {
       readonly selected: readonly [true, false];
     };
   };
-  readonly Collapsible: {
-    readonly classNames: {
-      readonly root: 'bui-CollapsibleRoot';
-      readonly trigger: 'bui-CollapsibleTrigger';
-      readonly panel: 'bui-CollapsiblePanel';
-    };
-  };
   readonly Container: {
     readonly classNames: {
       readonly root: 'bui-Container';
@@ -438,6 +465,18 @@ export const componentDefinitions: {
       readonly headerTitle: 'bui-DialogHeaderTitle';
       readonly body: 'bui-DialogBody';
       readonly footer: 'bui-DialogFooter';
+    };
+  };
+  readonly Accordion: {
+    readonly classNames: {
+      readonly root: 'bui-Accordion';
+      readonly trigger: 'bui-AccordionTrigger';
+      readonly triggerButton: 'bui-AccordionTriggerButton';
+      readonly triggerTitle: 'bui-AccordionTriggerTitle';
+      readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
+      readonly triggerIcon: 'bui-AccordionTriggerIcon';
+      readonly panel: 'bui-AccordionPanel';
+      readonly group: 'bui-AccordionGroup';
     };
   };
   readonly FieldError: {
