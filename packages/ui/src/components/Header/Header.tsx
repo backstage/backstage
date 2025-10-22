@@ -35,8 +35,15 @@ declare module 'react-aria-components' {
  */
 export const Header = (props: HeaderProps) => {
   const { classNames, cleanedProps } = useStyles('Header', props);
-  const { tabs, icon, title, titleLink, customActions, onTabSelectionChange } =
-    cleanedProps;
+  const {
+    className,
+    tabs,
+    icon,
+    title,
+    titleLink,
+    customActions,
+    onTabSelectionChange,
+  } = cleanedProps;
 
   const hasTabs = tabs && tabs.length > 0;
 
@@ -54,6 +61,7 @@ export const Header = (props: HeaderProps) => {
           className={clsx(
             classNames.tabsWrapper,
             styles[classNames.tabsWrapper],
+            className,
           )}
         >
           <Tabs onSelectionChange={onTabSelectionChange}>

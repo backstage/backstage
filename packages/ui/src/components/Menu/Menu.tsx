@@ -86,6 +86,7 @@ export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
 export const Menu = (props: MenuProps<object>) => {
   const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
+    className,
     placement = 'bottom start',
     virtualized = false,
     maxWidth,
@@ -136,7 +137,11 @@ export const Menu = (props: MenuProps<object>) => {
   return (
     <RAPopover
       ref={popoverRef}
-      className={clsx(classNames.popover, styles[classNames.popover])}
+      className={clsx(
+        classNames.popover,
+        styles[classNames.popover],
+        className,
+      )}
       placement={placement}
       isNonModal={true}
       isKeyboardDismissDisabled={false}
@@ -163,6 +168,7 @@ export const Menu = (props: MenuProps<object>) => {
 export const MenuListBox = (props: MenuListBoxProps<object>) => {
   const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
+    className,
     selectionMode = 'single',
     placement = 'bottom start',
     virtualized = false,
@@ -184,7 +190,11 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
 
   return (
     <RAPopover
-      className={clsx(classNames.popover, styles[classNames.popover])}
+      className={clsx(
+        classNames.popover,
+        styles[classNames.popover],
+        className,
+      )}
       placement={placement}
     >
       {virtualized ? (
@@ -207,6 +217,7 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
 export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
+    className,
     placement = 'bottom start',
     virtualized = false,
     maxWidth,
@@ -229,7 +240,11 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
 
   return (
     <RAPopover
-      className={clsx(classNames.popover, styles[classNames.popover])}
+      className={clsx(
+        classNames.popover,
+        styles[classNames.popover],
+        className,
+      )}
       placement={placement}
     >
       <RouterProvider navigate={navigate} useHref={useHref}>
@@ -281,6 +296,7 @@ export const MenuAutocompleteListbox = (
 ) => {
   const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
+    className,
     selectionMode = 'single',
     placement = 'bottom start',
     virtualized = false,
@@ -304,7 +320,11 @@ export const MenuAutocompleteListbox = (
 
   return (
     <RAPopover
-      className={clsx(classNames.popover, styles[classNames.popover])}
+      className={clsx(
+        classNames.popover,
+        styles[classNames.popover],
+        className,
+      )}
       placement={placement}
     >
       <RAAutocomplete filter={contains}>
@@ -352,6 +372,7 @@ export const MenuAutocompleteListbox = (
 export const MenuItem = (props: MenuItemProps) => {
   const { classNames, cleanedProps } = useStyles('Menu', props);
   const {
+    className,
     iconStart,
     color = 'primary',
     children,
@@ -365,7 +386,7 @@ export const MenuItem = (props: MenuItemProps) => {
   if (isLink && isExternal) {
     return (
       <RAMenuItem
-        className={clsx(classNames.item, styles[classNames.item])}
+        className={clsx(classNames.item, styles[classNames.item], className)}
         data-color={color}
         textValue={typeof children === 'string' ? children : undefined}
         onAction={() => window.open(href, '_blank', 'noopener,noreferrer')}
@@ -398,7 +419,7 @@ export const MenuItem = (props: MenuItemProps) => {
 
   return (
     <RAMenuItem
-      className={clsx(classNames.item, styles[classNames.item])}
+      className={clsx(classNames.item, styles[classNames.item], className)}
       data-color={color}
       href={href}
       textValue={typeof children === 'string' ? children : undefined}
@@ -429,14 +450,18 @@ export const MenuItem = (props: MenuItemProps) => {
 /** @public */
 export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
   const { classNames, cleanedProps } = useStyles('Menu', props);
-  const { children, ...rest } = cleanedProps;
+  const { children, className, ...rest } = cleanedProps;
 
   return (
     <RAListBoxItem
       textValue={
         typeof props.children === 'string' ? props.children : undefined
       }
-      className={clsx(classNames.itemListBox, styles[classNames.itemListBox])}
+      className={clsx(
+        classNames.itemListBox,
+        styles[classNames.itemListBox],
+        className,
+      )}
       {...rest}
     >
       <div
@@ -466,11 +491,15 @@ export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
 /** @public */
 export const MenuSection = (props: MenuSectionProps<object>) => {
   const { classNames, cleanedProps } = useStyles('Menu', props);
-  const { children, title, ...rest } = cleanedProps;
+  const { children, className, title, ...rest } = cleanedProps;
 
   return (
     <RAMenuSection
-      className={clsx(classNames.section, styles[classNames.section])}
+      className={clsx(
+        classNames.section,
+        styles[classNames.section],
+        className,
+      )}
       {...rest}
     >
       <RAMenuHeader
@@ -489,11 +518,16 @@ export const MenuSection = (props: MenuSectionProps<object>) => {
 /** @public */
 export const MenuSeparator = (props: MenuSeparatorProps) => {
   const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { className, ...rest } = cleanedProps;
 
   return (
     <RAMenuSeparator
-      className={clsx(classNames.separator, styles[classNames.separator])}
-      {...cleanedProps}
+      className={clsx(
+        classNames.separator,
+        styles[classNames.separator],
+        className,
+      )}
+      {...rest}
     />
   );
 };
