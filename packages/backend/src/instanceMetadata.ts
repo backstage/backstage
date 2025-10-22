@@ -24,7 +24,7 @@ export default createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        instanceMetadata: coreServices.instanceMetadata,
+        instanceMetadata: coreServices.rootInstanceMetadata,
         logger: coreServices.logger,
       },
       async init({ instanceMetadata, logger }) {

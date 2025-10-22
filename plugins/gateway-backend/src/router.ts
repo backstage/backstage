@@ -15,7 +15,7 @@
  */
 import {
   DiscoveryService,
-  InstanceMetadataService,
+  RootInstanceMetadataService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { Request, Response, NextFunction } from 'express';
@@ -28,7 +28,7 @@ export async function createRouter({
   instanceMeta,
 }: {
   discovery: DiscoveryService;
-  instanceMeta: InstanceMetadataService;
+  instanceMeta: RootInstanceMetadataService;
   logger: LoggerService;
 }) {
   const plugins = await instanceMeta.getInstalledPlugins();

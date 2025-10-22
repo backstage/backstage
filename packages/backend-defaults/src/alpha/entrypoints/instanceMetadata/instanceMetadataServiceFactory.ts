@@ -20,6 +20,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
+/**
+ * @alpha
+ * @deprecated use {@link @backstage/backend-plugin-api#coreServices.rootInstanceMetadata} instead
+ */
 export const instanceMetadataServiceFactory = createServiceFactory({
   service: instanceMetadataServiceRef,
   deps: {

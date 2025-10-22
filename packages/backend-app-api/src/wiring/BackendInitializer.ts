@@ -41,7 +41,6 @@ import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
 import { deepFreeze, unwrapFeature } from './helpers';
 import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;

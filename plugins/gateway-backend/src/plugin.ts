@@ -32,7 +32,7 @@ export const gatewayPlugin = createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         rootHttpRouter: coreServices.rootHttpRouter,
-        instanceMeta: coreServices.instanceMetadata,
+        instanceMeta: coreServices.rootInstanceMetadata,
         discovery: coreServices.discovery,
       },
       async init({ logger, discovery, instanceMeta, rootHttpRouter }) {

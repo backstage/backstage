@@ -23,7 +23,6 @@ import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
-import { InstanceMetadataService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import Keyv from 'keyv';
 import { Knex } from 'knex';
@@ -36,6 +35,7 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
+import { RootInstanceMetadataService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -263,21 +263,6 @@ export namespace mockServices {
       ) => ServiceMock<HttpRouterService>;
   }
   // (undocumented)
-  export function instanceMetadata(): InstanceMetadataService;
-  // (undocumented)
-  export namespace instanceMetadata {
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<InstanceMetadataService> | undefined,
-      ) => ServiceMock<InstanceMetadataService>;
-    const // (undocumented)
-      factory: () => ServiceFactory<
-        InstanceMetadataService,
-        'plugin',
-        'singleton' | 'multiton'
-      >;
-  }
-  // (undocumented)
   export namespace lifecycle {
     const // (undocumented)
       factory: () => ServiceFactory<LifecycleService, 'plugin', 'singleton'>;
@@ -358,6 +343,21 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<RootHttpRouterService> | undefined,
       ) => ServiceMock<RootHttpRouterService>;
+  }
+  // (undocumented)
+  export function rootInstanceMetadata(): RootInstanceMetadataService;
+  // (undocumented)
+  export namespace rootInstanceMetadata {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootInstanceMetadataService> | undefined,
+      ) => ServiceMock<RootInstanceMetadataService>;
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        RootInstanceMetadataService,
+        'plugin',
+        'singleton' | 'multiton'
+      >;
   }
   // (undocumented)
   export namespace rootLifecycle {

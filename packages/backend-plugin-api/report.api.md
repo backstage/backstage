@@ -232,8 +232,8 @@ export namespace coreServices {
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
-  const instanceMetadata: ServiceRef<
-    InstanceMetadataService,
+  const rootInstanceMetadata: ServiceRef<
+    RootInstanceMetadataService,
     'plugin',
     'singleton'
   >;
@@ -421,24 +421,6 @@ export interface HttpRouterServiceAuthPolicy {
   path: string;
 }
 
-// @public (undocumented)
-export interface InstanceMetadataService {
-  // (undocumented)
-  getInstalledPlugins: () => Promise<
-    ReadonlyArray<InstanceMetadataServicePluginInfo>
-  >;
-}
-
-// @public (undocumented)
-export interface InstanceMetadataServicePluginInfo {
-  // (undocumented)
-  readonly modules: ReadonlyArray<{
-    moduleId: string;
-  }>;
-  // (undocumented)
-  readonly pluginId: string;
-}
-
 export { isChildPath };
 
 // @public
@@ -599,6 +581,24 @@ export interface RootHealthService {
 // @public
 export interface RootHttpRouterService {
   use(path: string, handler: Handler): void;
+}
+
+// @public (undocumented)
+export interface RootInstanceMetadataService {
+  // (undocumented)
+  getInstalledPlugins: () => Promise<
+    ReadonlyArray<RootInstanceMetadataServicePluginInfo>
+  >;
+}
+
+// @public (undocumented)
+export interface RootInstanceMetadataServicePluginInfo {
+  // (undocumented)
+  readonly modules: ReadonlyArray<{
+    moduleId: string;
+  }>;
+  // (undocumented)
+  readonly pluginId: string;
 }
 
 // @public
