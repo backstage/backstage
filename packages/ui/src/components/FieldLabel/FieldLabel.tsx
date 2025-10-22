@@ -24,14 +24,21 @@ import clsx from 'clsx';
 export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
   (props: FieldLabelProps, ref) => {
     const { classNames, cleanedProps } = useStyles('FieldLabel', props);
-    const { label, secondaryLabel, description, htmlFor, id, ...rest } =
-      cleanedProps;
+    const {
+      className,
+      label,
+      secondaryLabel,
+      description,
+      htmlFor,
+      id,
+      ...rest
+    } = cleanedProps;
 
     if (!label) return null;
 
     return (
       <div
-        className={clsx(classNames.root, styles[classNames.root])}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         {...rest}
         ref={ref}
       >

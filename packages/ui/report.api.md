@@ -850,7 +850,8 @@ export const FieldLabel: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export interface FieldLabelProps {
+export interface FieldLabelProps
+  extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   description?: string | null;
   htmlFor?: string;
   id?: string;
@@ -946,6 +947,8 @@ export interface HeaderPageProps {
   // (undocumented)
   breadcrumbs?: HeaderPageBreadcrumb[];
   // (undocumented)
+  className?: string;
+  // (undocumented)
   customActions?: React.ReactNode;
   // (undocumented)
   tabs?: HeaderTab[];
@@ -955,6 +958,8 @@ export interface HeaderPageProps {
 
 // @public
 export interface HeaderProps {
+  // (undocumented)
+  className?: string;
   // (undocumented)
   customActions?: React.ReactNode;
   // (undocumented)
@@ -1149,7 +1154,7 @@ export const RadioGroup: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface RadioGroupProps
   extends Omit<RadioGroupProps_2, 'children'>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   // (undocumented)
   children?: ReactNode;
 }
@@ -1171,7 +1176,7 @@ export const SearchField: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface SearchFieldProps
   extends SearchFieldProps_2,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   icon?: ReactNode | false;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
@@ -1189,7 +1194,7 @@ export interface SelectProps
       name: string;
       value: string;
     }>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   icon?: ReactNode;
   options?: Array<{
     value: string;
@@ -1392,7 +1397,7 @@ export const TextField: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface TextFieldProps
   extends TextFieldProps_2,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   icon?: ReactNode;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;

@@ -31,7 +31,8 @@ import clsx from 'clsx';
  */
 export const HeaderToolbar = (props: HeaderToolbarProps) => {
   const { classNames, cleanedProps } = useStyles('Header', props);
-  const { icon, title, titleLink, customActions, hasTabs } = cleanedProps;
+  const { className, icon, title, titleLink, customActions, hasTabs } =
+    cleanedProps;
   let navigate = useNavigate();
 
   // Refs for collision detection
@@ -53,7 +54,11 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
   return (
     <RouterProvider navigate={navigate} useHref={useHref}>
       <div
-        className={clsx(classNames.toolbar, styles[classNames.toolbar])}
+        className={clsx(
+          classNames.toolbar,
+          styles[classNames.toolbar],
+          className,
+        )}
         data-has-tabs={hasTabs}
       >
         <div
