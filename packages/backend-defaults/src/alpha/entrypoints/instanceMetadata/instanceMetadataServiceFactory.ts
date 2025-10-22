@@ -18,7 +18,11 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  BackendFeatureMeta,
+  InstanceMetadataService,
+  instanceMetadataServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
  * @alpha
@@ -31,9 +35,22 @@ export const instanceMetadataServiceFactory = createServiceFactory({
   },
   factory: async ({ instanceMetadata }) => {
     const plugins = await instanceMetadata.getInstalledPlugins();
-    const service = {
-      getInstalledFeatures: () =>
-        plugins.map(e => ({ type: 'plugin' as const, pluginId: e.pluginId })),
+    const features: BackendFeatureMeta[] = [];
+    for (const plugin of plugins) {
+      features.push({
+        type: 'plugin' as const,
+        pluginId: plugin.pluginId,
+      });
+      for (const module of plugin.modules) {
+        features.push({
+          type: 'module' as const,
+          pluginId: plugin.pluginId,
+          moduleId: module.moduleId,
+        });
+      }
+    }
+    const service: InstanceMetadataService = {
+      getInstalledFeatures: () => features,
     };
 
     return service;
