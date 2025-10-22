@@ -148,24 +148,6 @@ function createRootInstanceMetadataServiceFactory(
   });
 }
 
-function createDeprecatedInstanceMetadataServiceFactory() {
-  return createServiceFactory({
-    service: instanceMetadataServiceRef,
-    deps: {
-      instanceMetadata: coreServices.rootInstanceMetadata,
-    },
-    factory: async ({ instanceMetadata }) => {
-      const plugins = await instanceMetadata.getInstalledPlugins();
-      const service = {
-        getInstalledFeatures: () =>
-          plugins.map(e => ({ type: 'plugin' as const, pluginId: e.pluginId })),
-      };
-
-      return service;
-    },
-  });
-}
-
 export class BackendInitializer {
   #startPromise?: Promise<void>;
   #stopPromise?: Promise<void>;
@@ -269,7 +251,6 @@ export class BackendInitializer {
     this.#serviceRegistry.add(
       createRootInstanceMetadataServiceFactory(this.#registrations),
     );
-    this.#serviceRegistry.add(createDeprecatedInstanceMetadataServiceFactory());
 
     // This makes sure that any uncaught errors or unhandled rejections are
     // caught and logged, rather than terminating the process. We register these
