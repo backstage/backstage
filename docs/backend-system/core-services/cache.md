@@ -27,6 +27,9 @@ backend:
         # Other Redis-specific options...
         clearBatchSize: 1000
         useUnlink: false
+    valkey:
+      # Optional: Global namespace prefix for all cache keys (including separator used between namespace and plugin ID)
+      keyPrefix: 'my-app:'
 ```
 
 ### Namespace Configuration
@@ -36,7 +39,7 @@ For Redis and Valkey stores, you can configure a global namespace that will be p
 - **Without namespace**: Cache keys use only the plugin ID (e.g., `catalog:some-key`)
 - **With namespace**: Cache keys use the format `namespace:pluginId:key` (e.g., `my-app:catalog:some-key`)
 
-The `keyPrefixSeparator` controls what character is used between the namespace and plugin ID (defaults to `:`).
+For Redis, `keyPrefixSeparator` controls what character is used between the namespace and plugin ID (defaults to `:`).
 
 **Note**: Memory and Memcache stores do not support namespace configuration and will always use the plugin ID directly.
 
