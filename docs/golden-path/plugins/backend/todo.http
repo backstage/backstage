@@ -1,0 +1,12 @@
+POST http://localhost:7007/api/todo/todos
+Content-Type: application/json
+
+{
+  "title": "My First TODO"
+}
+
+###
+
+GET http://localhost:7007/api/todo/todos
+
+###
