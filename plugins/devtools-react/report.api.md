@@ -4,23 +4,15 @@
 
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
-import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
-// @public (undocumented)
-export const contentTitleDataRef: ConfigurableExtensionDataRef<
-  string,
-  'devtools.content-title',
-  {}
->;
-
 // @public
 export const DevToolsContentBlueprint: ExtensionBlueprint<{
   kind: 'devtools-content';
-  params: DevToolsRouteBlueprintParams;
+  params: DevToolsContentBlueprintParams;
   output:
     | ExtensionDataRef<string, 'core.routing.path', {}>
     | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -31,7 +23,7 @@ export const DevToolsContentBlueprint: ExtensionBlueprint<{
           optional: true;
         }
       >
-    | ExtensionDataRef<string, 'devtools.content-title', {}>;
+    | ExtensionDataRef<string, 'core.title', {}>;
   inputs: {};
   config: {
     path: string | undefined;
@@ -41,13 +33,11 @@ export const DevToolsContentBlueprint: ExtensionBlueprint<{
     title?: string | undefined;
     path?: string | undefined;
   };
-  dataRefs: {
-    title: ConfigurableExtensionDataRef<string, 'devtools.content-title', {}>;
-  };
+  dataRefs: never;
 }>;
 
 // @public
-export interface DevToolsRouteBlueprintParams {
+export interface DevToolsContentBlueprintParams {
   // (undocumented)
   loader: () => Promise<JSX_2.Element>;
   // (undocumented)

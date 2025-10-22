@@ -21,13 +21,12 @@ import {
   RouteRef,
 } from '@backstage/frontend-plugin-api';
 import { JSX } from 'react';
-import { contentTitleDataRef } from './extensionData';
 
 /**
  * Parameters for creating a DevTools route extension
  * @public
  */
-export interface DevToolsRouteBlueprintParams {
+export interface DevToolsContentBlueprintParams {
   path: string;
   title: string;
   loader: () => Promise<JSX.Element>;
@@ -35,11 +34,11 @@ export interface DevToolsRouteBlueprintParams {
 }
 
 /**
- * Extension blueprint for creating DevTools routes
+ * Extension blueprint for creating DevTools content pages (appearing as tabs)
  *
  * @example
  * ```tsx
- * const myDevToolsRoute = DevToolsRouteBlueprint.make({
+ * const myDevToolsRoute = DevToolsContentBlueprint.make({
  *   params: {
  *     path: 'my-feature',
  *     title: 'My Feature',
@@ -56,18 +55,15 @@ export const DevToolsContentBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routePath,
     coreExtensionData.routeRef.optional(),
-    contentTitleDataRef,
+    coreExtensionData.title,
   ],
-  dataRefs: {
-    title: contentTitleDataRef,
-  },
   config: {
     schema: {
       path: z => z.string().optional(),
       title: z => z.string().optional(),
     },
   },
-  *factory(params: DevToolsRouteBlueprintParams, { node, config }) {
+  *factory(params: DevToolsContentBlueprintParams, { node, config }) {
     const path = config.path ?? params.path;
     const title = config.title ?? params.title;
 
@@ -77,7 +73,7 @@ export const DevToolsContentBlueprint = createExtensionBlueprint({
 
     yield coreExtensionData.routePath(path);
 
-    yield contentTitleDataRef(title);
+    yield coreExtensionData.title(title);
 
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);

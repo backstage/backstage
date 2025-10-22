@@ -78,6 +78,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {
         contents: ExtensionInput<
+          | ConfigurableExtensionDataRef<string, 'core.title', {}>
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
           | ConfigurableExtensionDataRef<
@@ -86,8 +87,7 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
-            >
-          | ConfigurableExtensionDataRef<string, 'devtools.content-title', {}>,
+            >,
           {
             singleton: false;
             optional: true;
@@ -99,7 +99,8 @@ const _default: OverridableFrontendPlugin<
       params: {
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
+        loader: () => Promise</** @alpha */
+        JSX.Element>;
         routeRef?: RouteRef;
       };
     }>;

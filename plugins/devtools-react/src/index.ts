@@ -20,7 +20,6 @@
  * @packageDocumentation
  */
 export {
-  type DevToolsRouteBlueprintParams,
+  type DevToolsContentBlueprintParams,
   DevToolsContentBlueprint,
 } from './devToolsContentBlueprint.tsx';
-export { contentTitleDataRef } from './extensionData';

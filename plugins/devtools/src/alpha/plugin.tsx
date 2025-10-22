@@ -32,7 +32,6 @@ import {
 } from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
-import { contentTitleDataRef } from '@backstage/plugin-devtools-react';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
@@ -56,7 +55,7 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
         coreExtensionData.reactElement,
         coreExtensionData.routePath,
         coreExtensionData.routeRef.optional(),
-        contentTitleDataRef,
+        coreExtensionData.title,
       ],
       {
         optional: true,
@@ -70,7 +69,7 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
       loader: () => {
         const extensions = inputs.contents.map(content => ({
           path: content.get(coreExtensionData.routePath),
-          title: content.get(contentTitleDataRef),
+          title: content.get(coreExtensionData.title),
           children: content.get(coreExtensionData.reactElement),
         }));
         return import('../components/DevToolsPage').then(m =>

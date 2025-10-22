@@ -6,7 +6,7 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { DevToolsRouteBlueprintParams } from '@backstage/plugin-devtools-react';
+import { DevToolsContentBlueprintParams } from '@backstage/plugin-devtools-react';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -111,9 +111,9 @@ export const unprocessedEntitiesDevToolsContent: ExtensionDefinition<{
           optional: true;
         }
       >
-    | ExtensionDataRef<string, 'devtools.content-title', {}>;
+    | ExtensionDataRef<string, 'core.title', {}>;
   inputs: {};
-  params: DevToolsRouteBlueprintParams;
+  params: DevToolsContentBlueprintParams;
 }>;
 
 // (No @packageDocumentation comment for this package)

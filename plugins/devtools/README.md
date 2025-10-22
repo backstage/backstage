@@ -169,23 +169,25 @@ yarn --cwd plugins/<your-plugin> add @backstage/plugin-devtools-react
 ```
 
 ```tsx
-import { DevToolsRouteBlueprint } from '@backstage/plugin-devtools-react';
+import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
 
-export const unprocessedEntitiesDevToolsRoute = DevToolsRouteBlueprint.make({
-  params: {
-    path: 'unprocessed-entities',
-    title: 'Unprocessed Entities',
-    loader: () =>
-      import('../components/UnprocessedEntities').then(
-        ({ UnprocessedEntitiesContent }) =>
-          createElement(UnprocessedEntitiesContent),
-      ),
+export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
+  {
+    params: {
+      path: 'unprocessed-entities',
+      title: 'Unprocessed Entities',
+      loader: () =>
+        import('../components/UnprocessedEntities').then(
+          ({ UnprocessedEntitiesContent }) =>
+            createElement(UnprocessedEntitiesContent),
+        ),
+    },
   },
-});
+);
 
 const appFeature = createFrontendModule({
   pluginId: 'app',
-  extensions: [unprocessedEntitiesDevToolsRoute],
+  extensions: [unprocessedEntitiesDevToolsContent],
 });
 ```
 
