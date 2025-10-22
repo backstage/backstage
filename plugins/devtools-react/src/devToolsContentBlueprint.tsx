@@ -38,12 +38,17 @@ export interface DevToolsContentBlueprintParams {
  *
  * @example
  * ```tsx
- * const myDevToolsRoute = DevToolsContentBlueprint.make({
- *   params: {
- *     path: 'my-feature',
- *     title: 'My Feature',
- *     loader: () => import('./MyContent').then(m => ({ default: m.MyContent }))
- *   }
+ * const myDevToolsContent = DevToolsContentBlueprint.make({
+ *  {
+ *     params: {
+ *       path: 'my-dev-tools',
+ *       title: 'My DevTools',
+ *       loader: () =>
+ *         import('../components/MyDevTools').then(m =>
+ *           compatWrapper(<m.MyDevTools />),
+ *         ),
+ *     },
+ *   },
  * });
  * ```
  * @public
