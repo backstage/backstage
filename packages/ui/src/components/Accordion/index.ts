@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-export { Collapsible } from './Collapsible';
+export {
+  Accordion,
+  AccordionTrigger,
+  AccordionPanel,
+  AccordionGroup,
+} from './Accordion';
+export type {
+  AccordionProps,
+  AccordionTriggerProps,
+  AccordionPanelProps,
+  AccordionGroupProps,
+} from './types';

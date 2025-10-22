@@ -96,13 +96,6 @@ export const componentDefinitions = {
       selected: [true, false] as const,
     },
   },
-  Collapsible: {
-    classNames: {
-      root: 'bui-CollapsibleRoot',
-      trigger: 'bui-CollapsibleTrigger',
-      panel: 'bui-CollapsiblePanel',
-    },
-  },
   Container: {
     classNames: {
       root: 'bui-Container',
@@ -117,6 +110,18 @@ export const componentDefinitions = {
       headerTitle: 'bui-DialogHeaderTitle',
       body: 'bui-DialogBody',
       footer: 'bui-DialogFooter',
+    },
+  },
+  Accordion: {
+    classNames: {
+      root: 'bui-Accordion',
+      trigger: 'bui-AccordionTrigger',
+      triggerButton: 'bui-AccordionTriggerButton',
+      triggerTitle: 'bui-AccordionTriggerTitle',
+      triggerSubtitle: 'bui-AccordionTriggerSubtitle',
+      triggerIcon: 'bui-AccordionTriggerIcon',
+      panel: 'bui-AccordionPanel',
+      group: 'bui-AccordionGroup',
     },
   },
   FieldError: {
