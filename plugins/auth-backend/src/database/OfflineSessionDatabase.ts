@@ -24,6 +24,19 @@ import {
 import { Expand, durationToMilliseconds } from '@backstage/types';
 import { readDurationFromConfig } from '@backstage/config';
 
+const MAX_TOKENS_PER_USER = 20;
+
+const TABLE_NAME = 'offline_sessions';
+
+type DbOfflineSessionRow = {
+  id: string;
+  user_entity_ref: string;
+  oidc_client_id: string | null;
+  token_hash: string;
+  created_at: Date;
+  last_used_at: Date;
+};
+
 /**
  * Represents an offline session for refresh tokens
  * @public
@@ -53,9 +66,6 @@ export type CreateOfflineSessionOptions = {
  * @public
  */
 export class OfflineSessionDatabase {
-  private static readonly TABLE_NAME = 'offline_sessions';
-  private static readonly MAX_TOKENS_PER_USER = 20;
-
   readonly #knex: Knex;
   readonly #tokenLifetimeSeconds: number;
   readonly #maxRotationLifetimeSeconds: number;
@@ -94,16 +104,29 @@ export class OfflineSessionDatabase {
     await this.#knex.transaction(async trx => {
       // Delete existing session for same OIDC client if present
       if (oidcClientId) {
-        await trx(OfflineSessionDatabase.TABLE_NAME)
+        await trx<DbOfflineSessionRow>(TABLE_NAME)
           .where('oidc_client_id', oidcClientId)
           .delete();
       }
 
       // Enforce per-user limit (20 tokens max)
-      await this.enforceUserLimit(userEntityRef, trx);
+      const userSessions = await trx<DbOfflineSessionRow>(TABLE_NAME)
+        .where('user_entity_ref', userEntityRef)
+        .select('id', 'last_used_at')
+        .orderBy('last_used_at', 'asc');
+
+      const tokensToDelete = userSessions.length - (MAX_TOKENS_PER_USER - 1);
+
+      if (tokensToDelete > 0) {
+        const idsToDelete = userSessions
+          .slice(0, tokensToDelete)
+          .map(s => s.id);
+
+        await trx(TABLE_NAME).whereIn('id', idsToDelete).delete();
+      }
 
       // Insert new session
-      await trx(OfflineSessionDatabase.TABLE_NAME).insert({
+      await trx<DbOfflineSessionRow>(TABLE_NAME).insert({
         id,
         user_entity_ref: userEntityRef,
         oidc_client_id: oidcClientId ?? null,
@@ -124,7 +147,7 @@ export class OfflineSessionDatabase {
    * Get a session by its ID
    */
   async getSessionById(id: string): Promise<OfflineSession | undefined> {
-    const row = await this.#knex(OfflineSessionDatabase.TABLE_NAME)
+    const row = await this.#knex<DbOfflineSessionRow>(TABLE_NAME)
       .where('id', id)
       .first();
 
@@ -132,14 +155,14 @@ export class OfflineSessionDatabase {
       return undefined;
     }
 
-    return this.mapRow(row);
+    return this.#mapRow(row);
   }
 
   /**
    * Rotate the token for a session (update hash and last_used_at)
    */
   async rotateToken(id: string, newTokenHash: string): Promise<void> {
-    await this.#knex(OfflineSessionDatabase.TABLE_NAME).where('id', id).update({
+    await this.#knex<DbOfflineSessionRow>(TABLE_NAME).where('id', id).update({
       token_hash: newTokenHash,
       last_used_at: this.#knex.fn.now(),
     });
@@ -149,7 +172,7 @@ export class OfflineSessionDatabase {
    * Delete a session by ID
    */
   async deleteSession(id: string): Promise<number> {
-    return await this.#knex(OfflineSessionDatabase.TABLE_NAME)
+    return await this.#knex<DbOfflineSessionRow>(TABLE_NAME)
       .where('id', id)
       .delete();
   }
@@ -158,7 +181,7 @@ export class OfflineSessionDatabase {
    * Delete all sessions for a user entity ref
    */
   async deleteSessionsByUserEntityRef(userEntityRef: string): Promise<number> {
-    return await this.#knex(OfflineSessionDatabase.TABLE_NAME)
+    return await this.#knex<DbOfflineSessionRow>(TABLE_NAME)
       .where('user_entity_ref', userEntityRef)
       .delete();
   }
@@ -167,7 +190,7 @@ export class OfflineSessionDatabase {
    * Delete a session by OIDC client ID
    */
   async deleteSessionByClientId(oidcClientId: string): Promise<number> {
-    return await this.#knex(OfflineSessionDatabase.TABLE_NAME)
+    return await this.#knex<DbOfflineSessionRow>(TABLE_NAME)
       .where('oidc_client_id', oidcClientId)
       .delete();
   }
@@ -186,7 +209,7 @@ export class OfflineSessionDatabase {
       .minus({ seconds: this.#maxRotationLifetimeSeconds })
       .toJSDate();
 
-    return await this.#knex(OfflineSessionDatabase.TABLE_NAME)
+    return await this.#knex<DbOfflineSessionRow>(TABLE_NAME)
       .where('last_used_at', '<', tokenLifetimeThreshold)
       .orWhere('created_at', '<', maxRotationThreshold)
       .delete();
@@ -207,36 +230,7 @@ export class OfflineSessionDatabase {
     return now > lastUsedExpiry || now > createdExpiry;
   }
 
-  /**
-   * Enforce per-user limit by deleting oldest sessions (LRU)
-   * @internal
-   */
-  private async enforceUserLimit(
-    userEntityRef: string,
-    trx: Knex.Transaction,
-  ): Promise<void> {
-    const userSessions = await trx(OfflineSessionDatabase.TABLE_NAME)
-      .where('user_entity_ref', userEntityRef)
-      .select('id', 'last_used_at')
-      .orderBy('last_used_at', 'asc');
-
-    const tokensToDelete =
-      userSessions.length - (OfflineSessionDatabase.MAX_TOKENS_PER_USER - 1);
-
-    if (tokensToDelete > 0) {
-      const idsToDelete = userSessions.slice(0, tokensToDelete).map(s => s.id);
-
-      await trx(OfflineSessionDatabase.TABLE_NAME)
-        .whereIn('id', idsToDelete)
-        .delete();
-    }
-  }
-
-  /**
-   * Map database row to OfflineSession type
-   * @internal
-   */
-  private mapRow(row: any): OfflineSession {
+  #mapRow(row: DbOfflineSessionRow): OfflineSession {
     return {
       id: row.id,
       userEntityRef: row.user_entity_ref,
