@@ -17,7 +17,11 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { Entity, Validators } from '@backstage/catalog-model';
+import {
+  Entity,
+  ValidatorExpectations,
+  Validators,
+} from '@backstage/catalog-model';
 import { ForwardedError } from '@backstage/errors';
 import {
   CatalogProcessor,
@@ -147,13 +151,24 @@ class CatalogPermissionExtensionPointImpl
 
 class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
   #fieldValidators: Partial<Validators> = {};
+  #fieldValidatorExpectations: Partial<ValidatorExpectations> = {};
 
-  setFieldValidators(validators: Partial<Validators>): void {
+  setFieldValidators(
+    validators: Partial<Validators>,
+    expectations?: Partial<ValidatorExpectations>,
+  ): void {
     merge(this.#fieldValidators, validators);
+    if (expectations) {
+      merge(this.#fieldValidatorExpectations, expectations);
+    }
   }
 
   get fieldValidators() {
     return this.#fieldValidators;
+  }
+
+  get fieldValidatorExpectations() {
+    return this.#fieldValidatorExpectations;
   }
 
   #entityDataParser?: CatalogProcessorParser;
@@ -301,7 +316,10 @@ export const catalogPlugin = createBackendPlugin({
         }
         builder.addPermissions(...permissionExtensions.permissions);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
-        builder.setFieldFormatValidators(modelExtensions.fieldValidators);
+        builder.setFieldFormatValidators(
+          modelExtensions.fieldValidators,
+          modelExtensions.fieldValidatorExpectations,
+        );
 
         if (locationTypeExtensions.allowedLocationTypes) {
           builder.setAllowedLocationTypes(

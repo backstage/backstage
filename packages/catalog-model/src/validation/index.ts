@@ -20,4 +20,4 @@ export { entityKindSchemaValidator } from './entityKindSchemaValidator';
 export { entitySchemaValidator } from './entitySchemaValidator';
 export { KubernetesValidatorFunctions } from './KubernetesValidatorFunctions';
 export { makeValidator } from './makeValidator';
-export type { Validators } from './types';
+export type { ValidatorExpectations, Validators } from './types';

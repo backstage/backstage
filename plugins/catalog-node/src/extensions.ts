@@ -15,7 +15,11 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { Entity, Validators } from '@backstage/catalog-model';
+import {
+  Entity,
+  ValidatorExpectations,
+  Validators,
+} from '@backstage/catalog-model';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
@@ -105,8 +109,12 @@ export interface CatalogModelExtensionPoint {
    * not sufficient.
    *
    * @param validators - The (subset of) validators to set
+   * @param expectations - Optional expectation messages for custom validators
    */
-  setFieldValidators(validators: Partial<Validators>): void;
+  setFieldValidators(
+    validators: Partial<Validators>,
+    expectations?: Partial<ValidatorExpectations>,
+  ): void;
 
   /**
    * Sets the entity data parser which is used to read raw data from locations

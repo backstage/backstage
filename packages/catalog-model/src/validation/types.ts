@@ -30,3 +30,12 @@ export type Validators = {
   isValidAnnotationValue(value: unknown): boolean;
   isValidTag(value: unknown): boolean;
 };
+
+/**
+ * Type for providing custom expectation messages for validators.
+ *
+ * @public
+ */
+export type ValidatorExpectations = {
+  [K in keyof Validators]?: string;
+};

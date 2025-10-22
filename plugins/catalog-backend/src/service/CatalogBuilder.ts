@@ -23,6 +23,7 @@ import {
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
   SchemaValidEntityPolicy,
+  ValidatorExpectations,
   Validators,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
@@ -156,6 +157,7 @@ export class CatalogBuilder {
   private entityPoliciesReplace: boolean;
   private placeholderResolvers: Record<string, PlaceholderResolver>;
   private fieldFormatValidators: Partial<Validators>;
+  private fieldFormatValidatorExpectations: Partial<ValidatorExpectations>;
   private entityProviders: EntityProvider[];
   private processors: CatalogProcessor[];
   private locationAnalyzers: ScmLocationAnalyzer[];
@@ -184,6 +186,7 @@ export class CatalogBuilder {
     this.entityPoliciesReplace = false;
     this.placeholderResolvers = {};
     this.fieldFormatValidators = {};
+    this.fieldFormatValidatorExpectations = {};
     this.entityProviders = [];
     this.processors = [];
     this.locationAnalyzers = [];
@@ -267,9 +270,16 @@ export class CatalogBuilder {
    * {@link CatalogBuilder#replaceEntityPolicies}.
    *
    * @param validators - The (subset of) validators to set
+   * @param expectations - Optional expectation messages for custom validators
    */
-  setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder {
+  setFieldFormatValidators(
+    validators: Partial<Validators>,
+    expectations?: Partial<ValidatorExpectations>,
+  ): CatalogBuilder {
     lodash.merge(this.fieldFormatValidators, validators);
+    if (expectations) {
+      lodash.merge(this.fieldFormatValidatorExpectations, expectations);
+    }
     return this;
   }
 
@@ -628,6 +638,7 @@ export class CatalogBuilder {
           new NoForeignRootFieldsEntityPolicy(),
           new FieldFormatEntityPolicy(
             makeValidator(this.fieldFormatValidators),
+            this.fieldFormatValidatorExpectations,
           ),
           ...this.entityPolicies,
         ];

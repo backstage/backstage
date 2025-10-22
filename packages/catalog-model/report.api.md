@@ -208,7 +208,7 @@ export function entitySchemaValidator<T extends Entity = Entity>(
 
 // @public
 export class FieldFormatEntityPolicy implements EntityPolicy {
-  constructor(validators?: Validators);
+  constructor(validators?: Validators, expectations?: ValidatorExpectations);
   // (undocumented)
   enforce(entity: Entity): Promise<Entity>;
 }
@@ -486,6 +486,11 @@ export { UserEntityV1alpha1 };
 
 // @public
 export const userEntityV1alpha1Validator: KindValidator;
+
+// @public
+export type ValidatorExpectations = {
+  [K in keyof Validators]?: string;
+};
 
 // @public
 export type Validators = {

@@ -16,6 +16,7 @@
 
 import yaml from 'yaml';
 import { FieldFormatEntityPolicy } from './FieldFormatEntityPolicy';
+import { makeValidator } from '../../validation';
 
 describe('FieldFormatEntityPolicy', () => {
   let data: any;
@@ -211,5 +212,98 @@ describe('FieldFormatEntityPolicy', () => {
       { url: 'http://foo', icon: 123 },
     ];
     await expect(policy.enforce(data)).rejects.toThrow(/links.1.icon.*"123"/i);
+  });
+
+  describe('custom validators with expectations', () => {
+    it('shows custom expectation message when custom validator fails', async () => {
+      const customPolicy = new FieldFormatEntityPolicy(
+        makeValidator({
+          isValidEntityName: (value: unknown) => {
+            return typeof value === 'string' && /^[a-z0-9-]+$/.test(value);
+          },
+        }),
+        {
+          isValidEntityName:
+            'a lowercase string containing only letters, numbers, and hyphens',
+        },
+      );
+
+      data.metadata.name = 'InvalidName';
+      await expect(customPolicy.enforce(data)).rejects.toThrow(
+        /expected a lowercase string containing only letters, numbers, and hyphens but found "InvalidName"/,
+      );
+    });
+
+    it('shows custom expectation for namespace validator', async () => {
+      const customPolicy = new FieldFormatEntityPolicy(
+        makeValidator({
+          isValidNamespace: (value: unknown) => {
+            return typeof value === 'string' && /^[a-z]+$/.test(value);
+          },
+        }),
+        {
+          isValidNamespace: 'a string containing only lowercase letters',
+        },
+      );
+
+      data.metadata.namespace = 'namespace-123';
+      await expect(customPolicy.enforce(data)).rejects.toThrow(
+        /expected a string containing only lowercase letters but found "namespace-123"/,
+      );
+    });
+
+    it('validates with custom validator without expectations', async () => {
+      const customPolicy = new FieldFormatEntityPolicy(
+        makeValidator({
+          isValidEntityName: (value: unknown) => {
+            return typeof value === 'string' && /^[a-z0-9-]+$/.test(value);
+          },
+        }),
+      );
+
+      data.metadata.name = 'InvalidName';
+      await expect(customPolicy.enforce(data)).rejects.toThrow(
+        /"metadata.name" is not valid; To learn more about catalog file format/,
+      );
+    });
+
+    it('accepts valid input with custom validators', async () => {
+      const customPolicy = new FieldFormatEntityPolicy(
+        makeValidator({
+          isValidEntityName: (value: unknown) => {
+            return typeof value === 'string' && /^[a-z0-9-]+$/.test(value);
+          },
+        }),
+        {
+          isValidEntityName:
+            'a lowercase string containing only letters, numbers, and hyphens',
+        },
+      );
+
+      data.metadata.name = 'valid-component-name';
+      await expect(customPolicy.enforce(data)).resolves.toBe(data);
+    });
+
+    it('shows custom expectation for multiple validator types', async () => {
+      const customPolicy = new FieldFormatEntityPolicy(
+        makeValidator({
+          isValidEntityName: (value: unknown) => {
+            return typeof value === 'string' && /^[a-z0-9-]+$/.test(value);
+          },
+          isValidTag: (value: unknown) => {
+            return typeof value === 'string' && /^[a-z-]+$/.test(value);
+          },
+        }),
+        {
+          isValidEntityName: 'a lowercase alphanumeric string with hyphens',
+          isValidTag: 'a lowercase string with hyphens only',
+        },
+      );
+
+      data.metadata.tags.push('InvalidTag123');
+      await expect(customPolicy.enforce(data)).rejects.toThrow(
+        /expected a lowercase string with hyphens only but found "InvalidTag123"/,
+      );
+    });
   });
 });

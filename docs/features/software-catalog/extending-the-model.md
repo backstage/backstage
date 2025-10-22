@@ -143,7 +143,8 @@ of the base envelope and metadata make sense - in short, things that aren't
 entity-kind-specific. Some or all of these validators can be replaced when
 building the backend using the catalog's dedicated `catalogModelExtensionPoint`
 (or directly on the `CatalogBuilder` if you are still using the old backend
-system).
+system). You can also optionally provide custom expectation messages that will
+be shown in validation error messages when using custom validators.
 
 The risk and impact of this type of extension varies, based on what it is that
 you want to do. For example, extending the valid character set for kinds,
@@ -177,22 +178,31 @@ const myCatalogCustomizations = createBackendModule({
         catalogModel: catalogModelExtensionPoint,
       },
       async init({ catalogModel }) {
-        catalogModel.setFieldValidators({
-          // This is only one of many methods that you can pass into
-          // setFieldValidators; your editor of choice should help you
-          // find the others. The length checks and regexp inside are
-          // just examples and can be adjusted as needed, but take care
-          // to test your changes thoroughly to ensure that you get
-          // them right.
-          isValidEntityName(value) {
-            return (
-              typeof value === 'string' &&
-              value.length >= 1 &&
-              value.length <= 63 &&
-              /^[A-Za-z0-9@+_.-]+$/.test(value)
-            );
+        catalogModel.setFieldValidators(
+          {
+            // This is only one of many methods that you can pass into
+            // setFieldValidators; your editor of choice should help you
+            // find the others. The length checks and regexp inside are
+            // just examples and can be adjusted as needed, but take care
+            // to test your changes thoroughly to ensure that you get
+            // them right.
+            isValidEntityName(value) {
+              return (
+                typeof value === 'string' &&
+                value.length >= 1 &&
+                value.length <= 63 &&
+                /^[A-Za-z0-9@+_.-]+$/.test(value)
+              );
+            },
           },
-        });
+          {
+            // Optional: provide custom expectation messages that will be
+            // shown when validation fails. This helps users understand
+            // what format is expected for your custom validators.
+            isValidEntityName:
+              'a string of 1-63 characters containing letters, numbers, and the characters @+_.-',
+          },
+        );
       },
     });
   },
