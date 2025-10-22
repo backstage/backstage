@@ -48,10 +48,11 @@ iframe {
 
 .shiki,
 .shiki span {
-  background-color: transparent !important;
+  background-color: transparent;
   font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.7;
+  padding-block: 0.2rem;
 }
 
 [data-theme-mode='dark'] .shiki,
@@ -61,6 +62,36 @@ iframe {
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Add styles for diff notation */
+pre.shiki.has-diff .line.diff {
+  position: relative;
+  padding-left: 1.5rem;
+  border-radius: 0.25rem;
+}
+
+pre.shiki.has-diff .line.diff::before {
+  position: absolute;
+  left: 0.5rem;
+}
+
+pre.shiki.has-diff .line.diff.add {
+  background-color: rgba(46, 160, 67, 0.15);
+}
+
+pre.shiki.has-diff .line.diff.add::before {
+  content: '+';
+  color: #2ea043;
+}
+
+pre.shiki.has-diff .line.diff.remove {
+  background-color: rgba(248, 81, 73, 0.15);
+}
+
+pre.shiki.has-diff .line.diff.remove::before {
+  content: '-';
+  color: #f85149;
 }
 
 .cm-editor {

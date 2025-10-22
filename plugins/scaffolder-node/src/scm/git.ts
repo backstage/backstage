@@ -79,13 +79,18 @@ export class Git {
     [x: string]: string;
   };
 
-  private constructor(
-    private readonly config: {
-      onAuth: AuthCallback;
-      token?: string;
-      logger?: LoggerService;
-    },
-  ) {
+  private readonly config: {
+    onAuth: AuthCallback;
+    token?: string;
+    logger?: LoggerService;
+  };
+
+  private constructor(config: {
+    onAuth: AuthCallback;
+    token?: string;
+    logger?: LoggerService;
+  }) {
+    this.config = config;
     this.onAuth = config.onAuth;
 
     this.headers = {

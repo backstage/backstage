@@ -1,5 +1,33 @@
 # @backstage/frontend-plugin-api
 
+## 0.12.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.12.1
+
+### Patch Changes
+
+- 8ed53eb: Added `coreExtensionData.title`, especially useful for creating extensible layout with tabbed pages, but available for use for other cases too.
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.12.1-next.2
+
+### Patch Changes
+
+- 8ed53eb: Added `coreExtensionData.title`, especially useful for creating extensible layout with tabbed pages, but available for use for other cases too.
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+
 ## 0.12.1-next.1
 
 ### Patch Changes

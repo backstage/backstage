@@ -37,10 +37,13 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class DevToolsBackendApi {
-  public constructor(
-    private readonly logger: LoggerService,
-    private readonly config: Config,
-  ) {}
+  private readonly logger: LoggerService;
+  private readonly config: Config;
+
+  public constructor(logger: LoggerService, config: Config) {
+    this.logger = logger;
+    this.config = config;
+  }
 
   public async listExternalDependencyDetails(): Promise<ExternalDependency[]> {
     const result: ExternalDependency[] = [];

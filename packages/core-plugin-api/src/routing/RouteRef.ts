@@ -32,10 +32,13 @@ export class RouteRefImpl<Params extends AnyParams>
   declare $$routeRefType: 'absolute';
   readonly [routeRefType] = 'absolute';
 
-  constructor(
-    private readonly id: string,
-    readonly params: ParamKeys<Params>,
-  ) {}
+  private readonly id: string;
+  readonly params: ParamKeys<Params>;
+
+  constructor(id: string, params: ParamKeys<Params>) {
+    this.id = id;
+    this.params = params;
+  }
 
   get title() {
     return this.id;

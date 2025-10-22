@@ -518,7 +518,7 @@ export class WithPagination<
   constructor(
     createUrl: (options: PaginationOptions) => URL,
     fetch: (url: URL) => Promise<TPage>,
-    pagelen?: number | undefined,
+    pagelen?: number,
   );
   // (undocumented)
   getPage(options?: PaginationOptions): Promise<TPage>;

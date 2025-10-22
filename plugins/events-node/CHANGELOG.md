@@ -1,5 +1,22 @@
 # @backstage/plugin-events-node
 
+## 0.4.17-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+
 ## 0.4.16-next.0
 
 ### Patch Changes

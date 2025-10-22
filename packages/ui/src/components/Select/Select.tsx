@@ -28,18 +28,27 @@ import clsx from 'clsx';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { FieldLabel } from '../FieldLabel';
-import { Icon } from '../Icon';
 import { FieldError } from '../FieldError';
+import styles from './Select.module.css';
+import stylesPopover from '../Popover/Popover.module.css';
+import { RiArrowDownSLine, RiCheckLine } from '@remixicon/react';
 
 /** @public */
 export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
+  const { classNames: popoverClassNames } = useStyles('Popover');
+  const { classNames, dataAttributes, cleanedProps } = useStyles('Select', {
+    size: 'small',
+    placeholder: 'Select an option',
+    ...props,
+  });
+
   const {
     className,
     label,
     description,
     options,
-    placeholder = 'Select an option',
-    size = 'small',
+    placeholder,
+    size,
     icon,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
@@ -47,12 +56,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     secondaryLabel,
     style,
     ...rest
-  } = props;
-
-  const { classNames: popoverClassNames } = useStyles('Popover');
-  const { classNames, dataAttributes } = useStyles('Select', {
-    size,
-  });
+  } = cleanedProps;
 
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -67,7 +71,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
 
   return (
     <AriaSelect
-      className={clsx(classNames.root, className)}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       {...dataAttributes}
       ref={ref}
       aria-label={ariaLabel}
@@ -80,26 +84,44 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         description={description}
       />
       <Button
-        className={classNames.trigger}
+        className={clsx(classNames.trigger, styles[classNames.trigger])}
         data-size={dataAttributes['data-size']}
       >
         {icon}
-        <SelectValue className={classNames.value} />
-        <Icon aria-hidden="true" name="chevron-down" />
+        <SelectValue
+          className={clsx(classNames.value, styles[classNames.value])}
+        />
+        <RiArrowDownSLine aria-hidden="true" />
       </Button>
       <FieldError />
-      <Popover className={popoverClassNames.root}>
-        <ListBox className={classNames.list}>
+      <Popover
+        className={clsx(
+          popoverClassNames.root,
+          stylesPopover[popoverClassNames.root],
+        )}
+      >
+        <ListBox className={clsx(classNames.list, styles[classNames.list])}>
           {options?.map(option => (
             <ListBoxItem
               key={option.value}
               id={option.value}
-              className={classNames.item}
+              className={clsx(classNames.item, styles[classNames.item])}
             >
-              <div className={classNames.itemIndicator}>
-                <Icon name="check" />
+              <div
+                className={clsx(
+                  classNames.itemIndicator,
+                  styles[classNames.itemIndicator],
+                )}
+              >
+                <RiCheckLine />
               </div>
-              <Text slot="label" className={classNames.itemLabel}>
+              <Text
+                slot="label"
+                className={clsx(
+                  classNames.itemLabel,
+                  styles[classNames.itemLabel],
+                )}
+              >
                 {option.label}
               </Text>
             </ListBoxItem>

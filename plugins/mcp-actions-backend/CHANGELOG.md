@@ -1,5 +1,27 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+
 ## 0.1.4-next.1
 
 ### Patch Changes

@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.2.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+
+## 0.2.14
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.4
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-events-node@0.4.16
+
+## 0.2.14-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.7.4-next.2
+
 ## 0.2.14-next.1
 
 ### Patch Changes

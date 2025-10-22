@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-react",
-  "version": "0.0.16-next.0",
+  "version": "0.0.17-next.0",
   "description": "Web library for the signals plugin",
   "backstage": {
     "role": "web-library",

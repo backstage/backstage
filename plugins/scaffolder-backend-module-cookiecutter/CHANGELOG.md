@@ -1,5 +1,30 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.3.16
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+
 ## 0.3.16-next.1
 
 ### Patch Changes

@@ -17,8 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ButtonIcon } from './ButtonIcon';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
-import { Icon } from '../Icon';
+import { RiCloudLine } from '@remixicon/react';
 
 const meta = {
   title: 'Backstage UI/ButtonIcon',
@@ -39,15 +38,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => <ButtonIcon icon={<Icon name="cloud" />} />,
+  render: () => <ButtonIcon icon={<RiCloudLine />} />,
 };
 
 export const Variants: Story = {
   render: () => (
     <Flex align="center" gap="2">
-      <ButtonIcon icon={<Icon name="cloud" />} variant="primary" />
-      <ButtonIcon icon={<Icon name="cloud" />} variant="secondary" />
-      <ButtonIcon icon={<Icon name="cloud" />} variant="tertiary" />
+      <ButtonIcon icon={<RiCloudLine />} variant="primary" />
+      <ButtonIcon icon={<RiCloudLine />} variant="secondary" />
+      <ButtonIcon icon={<RiCloudLine />} variant="tertiary" />
     </Flex>
   ),
 };
@@ -55,8 +54,8 @@ export const Variants: Story = {
 export const Sizes: Story = {
   render: () => (
     <Flex align="center" gap="2">
-      <ButtonIcon icon={<Icon name="cloud" />} size="small" />
-      <ButtonIcon icon={<Icon name="cloud" />} size="medium" />
+      <ButtonIcon icon={<RiCloudLine />} size="small" />
+      <ButtonIcon icon={<RiCloudLine />} size="medium" />
     </Flex>
   ),
 };
@@ -64,9 +63,9 @@ export const Sizes: Story = {
 export const Disabled: Story = {
   render: () => (
     <Flex direction="row" gap="2">
-      <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="primary" />
-      <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="secondary" />
-      <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="tertiary" />
+      <ButtonIcon isDisabled icon={<RiCloudLine />} variant="primary" />
+      <ButtonIcon isDisabled icon={<RiCloudLine />} variant="secondary" />
+      <ButtonIcon isDisabled icon={<RiCloudLine />} variant="tertiary" />
     </Flex>
   ),
 };
@@ -82,44 +81,5 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
-  render: args => <ButtonIcon {...args} icon={<Icon name="cloud" />} />,
-};
-
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
-export const Playground: Story = {
-  render: args => (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {sizes.map(size => (
-            <Flex align="center" key={size}>
-              <ButtonIcon
-                {...args}
-                variant={variant}
-                size={size}
-                icon={<Icon name="cloud" />}
-              />
-              <ButtonIcon
-                {...args}
-                icon={<Icon name="chevron-right" />}
-                aria-label="Chevron right icon button"
-                variant={variant}
-                size={size}
-              />
-              <ButtonIcon
-                {...args}
-                icon={<Icon name="chevron-right" />}
-                aria-label="Chevron right icon button"
-                variant={variant}
-                size={size}
-              />
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  ),
+  render: args => <ButtonIcon {...args} icon={<RiCloudLine />} />,
 };

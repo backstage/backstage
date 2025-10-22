@@ -35,10 +35,12 @@ This is how to create a minimal app:
 import ReactDOM from 'react-dom/client';
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import '@backstage/ui/css/styles.css';
 
 // Create your app instance
 const app = createApp({
-  // Features such as plugins can be installed explicitly, but we will explore other options later on
+  // Custom features such as plugins can be installed explicitly, but they are usually
+  // auto-discovered, unless `app.packages` is customized in `app-config.yaml`.
   features: [catalogPlugin],
 });
 

@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.44.0-next.2",
+  "version": "1.45.0-next.0",
   "backstage": {
     "cli": {
       "new": {
@@ -54,6 +54,7 @@
     "snyk:test:package": "yarn snyk:test --include",
     "start": "backstage-cli repo start",
     "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
+    "start:docker": "docker compose -f docker-compose.deps.yml up --wait && BACKSTAGE_ENV=docker yarn start",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn start example-app-next example-backend",
     "storybook": "storybook dev -p 6006",

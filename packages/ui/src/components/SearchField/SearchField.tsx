@@ -25,6 +25,8 @@ import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
 import { useStyles } from '../../hooks/useStyles';
+import stylesSearchField from './SearchField.module.css';
+import stylesTextField from '../TextField/TextField.module.css';
 
 import type { SearchFieldProps } from './types';
 
@@ -32,19 +34,9 @@ import type { SearchFieldProps } from './types';
 export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
   (props, ref) => {
     const {
-      className,
-      icon,
-      size = 'small',
       label,
-      secondaryLabel,
-      description,
-      isRequired,
-      onChange,
-      placeholder = 'Search',
-      startCollapsed = false,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
-      ...rest
     } = props;
 
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -58,14 +50,30 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const { classNames: textFieldClassNames, dataAttributes } = useStyles(
-      'TextField',
-      {
-        size,
-      },
-    );
+    const { classNames: textFieldClassNames } = useStyles('TextField');
 
-    const { classNames: searchFieldClassNames } = useStyles('SearchField', {});
+    const {
+      classNames: searchFieldClassNames,
+      dataAttributes,
+      style,
+      cleanedProps,
+    } = useStyles('SearchField', {
+      size: 'small',
+      placeholder: 'Search',
+      startCollapsed: false,
+      ...props,
+    });
+
+    const {
+      className,
+      description,
+      icon,
+      isRequired,
+      secondaryLabel,
+      placeholder,
+      startCollapsed,
+      ...rest
+    } = cleanedProps;
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -96,15 +104,17 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         className={clsx(
           textFieldClassNames.root,
           searchFieldClassNames.root,
+          stylesTextField[textFieldClassNames.root],
+          stylesSearchField[searchFieldClassNames.root],
           className,
         )}
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
-        data-start-collapsed={startCollapsed}
         data-collapsed={isCollapsed}
         onFocusChange={handleClick}
         onChange={handleChange}
+        style={style}
         {...rest}
         ref={ref}
       >
@@ -114,12 +124,18 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
           description={description}
         />
         <div
-          className={textFieldClassNames.inputWrapper}
+          className={clsx(
+            textFieldClassNames.inputWrapper,
+            stylesTextField[textFieldClassNames.inputWrapper],
+          )}
           data-size={dataAttributes['data-size']}
         >
           {icon !== false && (
             <div
-              className={textFieldClassNames.inputIcon}
+              className={clsx(
+                textFieldClassNames.inputIcon,
+                stylesTextField[textFieldClassNames.inputIcon],
+              )}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
@@ -127,12 +143,18 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
             </div>
           )}
           <Input
-            className={textFieldClassNames.input}
+            className={clsx(
+              textFieldClassNames.input,
+              stylesTextField[textFieldClassNames.input],
+            )}
             {...(icon !== false && { 'data-icon': true })}
             placeholder={placeholder}
           />
           <Button
-            className={searchFieldClassNames.clear}
+            className={clsx(
+              searchFieldClassNames.clear,
+              stylesSearchField[searchFieldClassNames.clear],
+            )}
             data-size={dataAttributes['data-size']}
           >
             <RiCloseCircleLine />

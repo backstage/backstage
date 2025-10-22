@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
 import { act, useEffect } from 'react';
 import {
   AppRootElementBlueprint,
@@ -29,7 +29,7 @@ async function withDialogApi<T>(
   callback: (dialogApi: DialogApi) => Promise<T>,
 ) {
   const deferred = createDeferred<DialogApi>();
-  await renderInTestApp(<div />, {
+  await renderTestApp({
     extensions: [
       AppRootElementBlueprint.makeWithOverrides({
         name: 'derp',

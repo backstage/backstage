@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { pathExists } from 'fs-extra';
-import { paths } from '../paths';
-import { YAML_SCHEMA_PATH } from './constants';
-import { resolve } from 'path';
+import Parser from '@apidevtools/swagger-parser';
+import fs, { pathExists } from 'fs-extra';
 import YAML from 'js-yaml';
 import { cloneDeep } from 'lodash';
-import Parser from '@apidevtools/swagger-parser';
-import fs from 'fs-extra';
+import { resolve } from 'path';
+import { paths } from '../paths';
+import { YAML_SCHEMA_PATH } from './constants';
 
 export const getPathToFile = async (directory: string, filename: string) => {
   return resolve(directory, filename);

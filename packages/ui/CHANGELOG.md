@@ -1,5 +1,53 @@
 # @backstage/ui
 
+## 0.8.2-next.0
+
+### Patch Changes
+
+- 26c6a78: Fix default text color in Backstage UI
+- dac851f: Fix the default font size in Backstage UI.
+- 3c0ea67: Fix CSS layer ordering in Backstage UI to make sure component styles are loaded after tokens and base declarations.
+- 4eb455c: Fix font smoothing as default in Backstage UI.
+- 00bfb83: Fix default font wight and font family in Backstage UI.
+
+## 0.8.0
+
+### Minor Changes
+
+- 9acc1d6: **BREAKING**: Added a new `PasswordField` component. As part of this change, the `password` and `search` types have been removed from `TextField`.
+- b0d11b5: **BREAKING** Restructure Backstage UI component styling to use CSS Modules instead of pure CSS. We don't expect this to be an issue in practice but it is important to call out that all styles are now loaded through CSS modules with generated class names. We are still providing fixed class names for all components to allow anyone to style their Backstage instance.
+- 0c53517: **BREAKING** The ScrollArea component has been removed from Backstage UI because it did not meet our accessibility standards.
+- 7b319c5: **BREAKING** Remove Icon component in Backstage UI. This component was creating issue for tree-shaking. It is recommended to use icons from @remixicon/react until we found a better alternative in Backstage UI.
+
+### Patch Changes
+
+- 2591b42: Adding a new Dialog component to Backstage UI.
+- 827340f: remove default selection of tab
+- 5dc17cc: Fix margin utility classes in Backstage UI.
+- 85faee0: Fix scroll jumping when opening menu in Backstage UI.
+- 3c921c5: Making href mandatory in tabs that are part of a Header component
+- df7d2cf: Update react-aria-components to version 1.13.0
+- 507ee55: Fix table sorting icon position in Backstage UI.
+- 8b7c3c9: Add new `virtualized`, `maxWidth` and `maxHeight` props to `Menu`, `MenuListBox`, `MenuAutocomplete` and `MenuAutocompleteListBox` to allow for virtalization of long lists inside menus.
+- b940062: Added support for data attributes in `<Box />`, `<Container />`, `<Flex />`, and `<Grid />` components, ensuring they are correctly applied to the rendered elements.
+- 206c801: Cleaning up Backstage UI props definitions as well as removing ScrollArea in Card to improve accessibility.
+- 5c21e45: Add react router for internal routing for ButtonLinks
+- 865bce8: Added a background color default on the body
+- af4d9b4: We are restructuring our CSS to have a better layer structure.
+- 9a47125: Improved SearchField component flex layout and animations. Fixed SearchField behavior in Header components by switching from width-based transitions to flex-basis transitions for better responsive behavior. Added new Storybook stories to test SearchField integration with Header component.
+- 9781815: Remove auto selection of tabs for tabs that all have href defined
+- 4adbb03: Avoid overriding onChange when spreading props
+- f6dff5b: Using react router for internal links in the Menu component
+
+## 0.7.2-next.2
+
+### Patch Changes
+
+- 3c921c5: Making href mandatory in tabs that are part of a Header component
+- 5c21e45: Add react router for internal routing for ButtonLinks
+- 9781815: Remove auto selection of tabs for tabs that all have href defined
+- f6dff5b: Using react router for internal links in the Menu component
+
 ## 0.7.2-next.1
 
 ### Patch Changes

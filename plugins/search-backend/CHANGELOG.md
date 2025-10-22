@@ -1,5 +1,36 @@
 # @backstage/plugin-search-backend
 
+## 2.0.8-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.17-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-search-common@1.2.21-next.0
+
+## 2.0.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-openapi-utils@0.6.2
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+  - @backstage/plugin-search-backend-node@1.3.16
+  - @backstage/plugin-search-common@1.2.20
+
 ## 2.0.7-next.1
 
 ### Patch Changes

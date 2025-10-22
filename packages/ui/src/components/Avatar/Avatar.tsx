@@ -19,26 +19,34 @@ import { Avatar as AvatarPrimitive } from '@base-ui-components/react/avatar';
 import clsx from 'clsx';
 import { AvatarProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Avatar.module.css';
 
 /** @public */
 export const Avatar = forwardRef<
   ElementRef<typeof AvatarPrimitive.Root>,
   AvatarProps
 >((props, ref) => {
-  const { className, src, name, size = 'medium', ...rest } = props;
-  const { classNames } = useStyles('Avatar', {
-    size,
+  const { classNames, dataAttributes, cleanedProps } = useStyles('Avatar', {
+    size: 'medium',
+    ...props,
   });
+
+  const { className, src, name, ...rest } = cleanedProps;
 
   return (
     <AvatarPrimitive.Root
       ref={ref}
-      className={clsx(classNames.root, className)}
-      data-size={size}
+      className={clsx(classNames.root, styles[classNames.root], className)}
+      {...dataAttributes}
       {...rest}
     >
-      <AvatarPrimitive.Image className={classNames.image} src={src} />
-      <AvatarPrimitive.Fallback className={classNames.fallback}>
+      <AvatarPrimitive.Image
+        className={clsx(classNames.image, styles[classNames.image])}
+        src={src}
+      />
+      <AvatarPrimitive.Fallback
+        className={clsx(classNames.fallback, styles[classNames.fallback])}
+      >
         {(name || '')
           .split(' ')
           .map(word => word[0])
