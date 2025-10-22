@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
  * Copyright 2022 The Backstage Authors
  *
@@ -20,9 +21,15 @@ import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 import { DatabaseStore } from '../database';
 
 describe('PgSearchEngineIndexer', () => {
+  const subTx = {
+    rollback: jest.fn(),
+    commit: jest.fn(),
+  } as any;
+
   const tx = {
     rollback: jest.fn(),
     commit: jest.fn(),
+    transaction: jest.fn(() => subTx),
     isCompleted: jest.fn(),
   } as any;
   let database: jest.Mocked<DatabaseStore>;
@@ -65,8 +72,14 @@ describe('PgSearchEngineIndexer', () => {
       'my-type',
       documents,
     );
-    expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type', false);
+    expect(database.completeInsert).toHaveBeenCalledWith(
+      subTx,
+      'my-type',
+      false,
+    );
+    expect(subTx.commit).toHaveBeenCalled();
     expect(tx.commit).toHaveBeenCalled();
+    expect(subTx.rollback).not.toHaveBeenCalled();
     expect(tx.rollback).not.toHaveBeenCalled();
   });
 
@@ -95,18 +108,19 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.completeInsert).toHaveBeenCalledTimes(2);
     expect(database.completeInsert).toHaveBeenNthCalledWith(
       1,
-      tx,
+      subTx,
       'my-type',
       false,
     );
     expect(database.completeInsert).toHaveBeenNthCalledWith(
       2,
-      tx,
+      subTx,
       'my-type',
       true,
     );
+    expect(subTx.commit).toHaveBeenCalled();
     expect(tx.commit).toHaveBeenCalled();
-    expect(tx.rollback).toHaveBeenCalledTimes(1);
+    expect(subTx.rollback).toHaveBeenCalledTimes(1);
   });
 
   it('should batch insert documents', async () => {
@@ -121,7 +135,11 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
     expect(database.insertDocuments).toHaveBeenCalledTimes(4);
-    expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type', false);
+    expect(database.completeInsert).toHaveBeenCalledWith(
+      subTx,
+      'my-type',
+      false,
+    );
   });
 
   it('should rollback transaction if no documents indexed', async () => {
