@@ -86,7 +86,7 @@ export type {
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
 export type {
-  InstanceMetadataService,
-  InstanceMetadataServicePluginInfo,
-} from './InstanceMetadataService';
+  RootInstanceMetadataService,
+  RootInstanceMetadataServicePluginInfo,
+} from './RootInstanceMetadataService';
 export { coreServices } from './coreServices';

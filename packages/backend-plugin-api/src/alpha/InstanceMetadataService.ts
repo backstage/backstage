@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-/** @public */
-export interface InstanceMetadataServicePluginInfo {
-  readonly pluginId: string;
-  readonly modules: ReadonlyArray<{
-    moduleId: string;
-  }>;
-}
+/** @alpha */
+export type BackendFeatureMeta =
+  | {
+      type: 'plugin';
+      pluginId: string;
+    }
+  | {
+      type: 'module';
+      pluginId: string;
+      moduleId: string;
+    };
 
-/** @public */
+/** @alpha */
 export interface InstanceMetadataService {
-  getInstalledPlugins: () => Promise<
-    ReadonlyArray<InstanceMetadataServicePluginInfo>
-  >;
+  getInstalledFeatures: () => BackendFeatureMeta[];
 }

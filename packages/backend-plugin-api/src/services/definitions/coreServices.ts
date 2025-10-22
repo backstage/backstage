@@ -283,9 +283,9 @@ export namespace coreServices {
    *
    * @public
    */
-  export const instanceMetadata = createServiceRef<
-    import('./InstanceMetadataService').InstanceMetadataService
+  export const rootInstanceMetadata = createServiceRef<
+    import('./RootInstanceMetadataService').RootInstanceMetadataService
   >({
-    id: 'core.instanceMetadata',
+    id: 'core.rootInstanceMetadata',
   });
 }

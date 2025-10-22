@@ -40,8 +40,8 @@ import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
 import { deepFreeze, unwrapFeature } from './helpers';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { InstanceMetadataServicePluginInfo } from '../../../backend-plugin-api/src/services/definitions/InstanceMetadataService';
+import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
+import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -99,31 +99,30 @@ const instanceRegistry = new (class InstanceRegistry {
   };
 })();
 
-function createInstanceMetadataServiceFactory(
+function createRootInstanceMetadataServiceFactory(
   registrations: InternalBackendRegistrations[],
 ) {
-  const installedPlugins: {
-    [pluginId: string]: InstanceMetadataServicePluginInfo;
-  } = {};
+  const installedPlugins: Map<string, RootInstanceMetadataServicePluginInfo> =
+    new Map();
   for (const registration of registrations) {
     if (registration.featureType === 'registrations') {
       for (const feature of registration.getRegistrations()) {
         if (feature.type === 'plugin') {
-          if (!installedPlugins[feature.pluginId]) {
-            installedPlugins[feature.pluginId] = {
+          if (!installedPlugins.get(feature.pluginId)) {
+            installedPlugins.set(feature.pluginId, {
               pluginId: feature.pluginId,
               modules: [],
-            };
+            });
           }
         } else if (feature.type === 'module') {
-          if (!installedPlugins[feature.pluginId]) {
-            installedPlugins[feature.pluginId] = {
+          if (!installedPlugins.get(feature.pluginId)) {
+            installedPlugins.set(feature.pluginId, {
               pluginId: feature.pluginId,
               modules: [],
-            };
+            });
           }
           (
-            installedPlugins[feature.pluginId].modules as Array<{
+            installedPlugins.get(feature.pluginId)!.modules as Array<{
               moduleId: string;
             }>
           ).push({
@@ -134,11 +133,9 @@ function createInstanceMetadataServiceFactory(
     }
   }
   return createServiceFactory({
-    service: coreServices.instanceMetadata,
-    deps: {
-      logger: coreServices.rootLogger,
-    },
-    factory: async ({ logger }) => {
+    service: coreServices.rootInstanceMetadata,
+    deps: {},
+    factory: async () => {
       const readonlyInstalledPlugins = deepFreeze(
         Object.values(installedPlugins),
       );
@@ -146,14 +143,25 @@ function createInstanceMetadataServiceFactory(
         getInstalledPlugins: () => Promise.resolve(readonlyInstalledPlugins),
       };
 
-      const plugins = await instanceMetadata.getInstalledPlugins();
-
-      logger.info(
-        `Installed plugins on this instance: ${plugins
-          .map(p => p.pluginId)
-          .join(', ')}`,
-      );
       return instanceMetadata;
+    },
+  });
+}
+
+function createDeprecatedInstanceMetadataServiceFactory() {
+  return createServiceFactory({
+    service: instanceMetadataServiceRef,
+    deps: {
+      instanceMetadata: coreServices.rootInstanceMetadata,
+    },
+    factory: async ({ instanceMetadata }) => {
+      const plugins = await instanceMetadata.getInstalledPlugins();
+      const service = {
+        getInstalledFeatures: () =>
+          plugins.map(e => ({ type: 'plugin' as const, pluginId: e.pluginId })),
+      };
+
+      return service;
     },
   });
 }
@@ -259,8 +267,9 @@ export class BackendInitializer {
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
 
     this.#serviceRegistry.add(
-      createInstanceMetadataServiceFactory(this.#registrations),
+      createRootInstanceMetadataServiceFactory(this.#registrations),
     );
+    this.#serviceRegistry.add(createDeprecatedInstanceMetadataServiceFactory());
 
     // This makes sure that any uncaught errors or unhandled rejections are
     // caught and logged, rather than terminating the process. We register these
