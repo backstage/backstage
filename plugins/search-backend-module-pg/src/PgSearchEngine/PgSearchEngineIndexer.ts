@@ -89,15 +89,19 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     let retryTruncated = false;
 
     do {
+      // Sub-transaction allows a partial rollback if a truncated retry is needed
+      const subTx = await this.tx!.transaction();
+
       // Attempt to complete and commit the transaction.
       try {
-        await this.store.completeInsert(this.tx!, this.type, retryTruncated);
+        await this.store.completeInsert(subTx, this.type, retryTruncated);
+
+        // Commit both transactions if successful
+        subTx.commit();
         this.tx!.commit();
         retryTruncated = false;
       } catch (e) {
-        // Otherwise, rollback the transaction and re-throw the error so that the
-        // stream can be closed and destroyed properly.
-        this.tx!.rollback!(e);
+        subTx.rollback(e); // Rollback the first completeInsert attempt
 
         if (
           e instanceof Error &&
@@ -108,6 +112,9 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
           // retry the operation with truncated text.
           retryTruncated = true;
         } else {
+          // Otherwise, rollback the outer transaction and re-throw the error so that the
+          // stream can be closed and destroyed properly.
+          this.tx!.rollback!(e);
           throw e;
         }
       }
