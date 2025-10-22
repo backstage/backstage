@@ -1090,7 +1090,7 @@ describe('BackendInitializer', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            instanceMetadata: coreServices.instanceMetadata,
+            instanceMetadata: coreServices.rootInstanceMetadata,
           },
           async init({ instanceMetadata }) {
             await expect(
@@ -1137,7 +1137,7 @@ describe('BackendInitializer', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            instanceMetadata: coreServices.instanceMetadata,
+            instanceMetadata: coreServices.rootInstanceMetadata,
           },
           async init({ instanceMetadata }) {
             const plugins = await instanceMetadata.getInstalledPlugins();
