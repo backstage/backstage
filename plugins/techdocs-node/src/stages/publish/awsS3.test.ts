@@ -196,16 +196,16 @@ describe('AwsS3Publish', () => {
       [directory]: files,
     });
 
-    s3Mock = mockClient(S3Client as any);
+    s3Mock = mockClient(S3Client);
 
-    s3Mock.on(HeadObjectCommand).callsFake((input: any) => {
+    s3Mock.on(HeadObjectCommand).callsFake((input: { Key: string }) => {
       if (!fs.pathExistsSync(mockDir.resolve(input.Key))) {
         throw new Error('File does not exist');
       }
       return {};
     });
 
-    s3Mock.on(GetObjectCommand).callsFake((input: any) => {
+    s3Mock.on(GetObjectCommand).callsFake((input: { Key: string }) => {
       if (fs.pathExistsSync(mockDir.resolve(input.Key))) {
         return {
           Body: Readable.from(fs.readFileSync(mockDir.resolve(input.Key))),
@@ -215,14 +215,14 @@ describe('AwsS3Publish', () => {
       throw new Error(`The file ${input.Key} does not exist!`);
     });
 
-    s3Mock.on(HeadBucketCommand).callsFake((input: any) => {
+    s3Mock.on(HeadBucketCommand).callsFake((input: { Bucket: string }) => {
       if (input.Bucket === 'errorBucket') {
         throw new Error('Bucket does not exist');
       }
       return {};
     });
 
-    s3Mock.on(ListObjectsV2Command).callsFake((input: any) => {
+    s3Mock.on(ListObjectsV2Command).callsFake((input: { Bucket: string }) => {
       if (
         input.Bucket === 'delete_stale_files_success' ||
         input.Bucket === 'delete_stale_files_error'
@@ -234,7 +234,7 @@ describe('AwsS3Publish', () => {
       return {};
     });
 
-    s3Mock.on(DeleteObjectCommand).callsFake((input: any) => {
+    s3Mock.on(DeleteObjectCommand).callsFake((input: { Bucket: string }) => {
       if (input.Bucket === 'delete_stale_files_error') {
         throw new Error('Message');
       }
@@ -242,9 +242,11 @@ describe('AwsS3Publish', () => {
     });
 
     s3Mock.on(UploadPartCommand).rejects();
-    s3Mock.on(PutObjectCommand).callsFake((input: any) => {
-      mockDir.addContent({ [input.Key]: input.Body });
-    });
+    s3Mock
+      .on(PutObjectCommand)
+      .callsFake((input: { Key: string; Body: any }) => {
+        mockDir.addContent({ [input.Key]: input.Body });
+      });
   });
 
   afterEach(() => {
