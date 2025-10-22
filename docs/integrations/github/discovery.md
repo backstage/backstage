@@ -58,7 +58,7 @@ To receive the `repository.transferred` event, the new owner account must have t
 
 :::
 
-When creating the webhook in GitHub the "Payload URL" will looks something along these lines: `https://<your-intance-name>/api/events/http/github` and the "Content Type" should be `application/json`.
+When creating the webhook in GitHub the "Payload URL" will looks something along these lines: `https://<your-instance-name>/api/events/http/github` and the "Content Type" should be `application/json`.
 
 The GitHub Webhooks UI will send a trial event to validate it can connect when you save your new Webhook. It is possible to retry this trial event if it fails and you want to send it again. Additionally there is a Recent Deliveries tab you can use to validate that the events are being fired should you need to do any later troubleshooting.
 
