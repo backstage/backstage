@@ -14,11 +14,6 @@ permissions:
 jobs:
   update-migration-progress:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
-
     name: Update Migration Progress Issue
 
     steps:
@@ -33,13 +28,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
-          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+          cache-prefix: ${{ runner.os }}-v20.x
 
       - name: Run migration analysis
         id: analysis
@@ -53,7 +48,6 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Update GitHub Issue
-        if: matrix.node-version == '20.x'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
