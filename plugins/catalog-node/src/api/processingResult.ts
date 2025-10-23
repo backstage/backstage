@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { InputError, NotFoundError } from '@backstage/errors';
-import { Entity } from '@backstage/catalog-model';
+import { InputError, NotFoundError, serializeError } from '@backstage/errors';
+import { Entity, EntityStatusLevel } from '@backstage/catalog-model';
 import { CatalogProcessorResult } from './processor';
 import { EntityRelationSpec } from './common';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
+import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
 
 /**
  * Factory functions for the standard processing result types.
@@ -42,6 +43,8 @@ export const processingResult = Object.freeze({
 
   /**
    * Associates an InputError with the processing state of the current entity.
+   *
+   * TODO: Should this be deprecated in favor of `status`?
    */
   inputError(
     atLocation: LocationSpec,
@@ -56,6 +59,8 @@ export const processingResult = Object.freeze({
 
   /**
    * Associates a general Error with the processing state of the current entity.
+   *
+   * TODO: Should this be deprecated in favor of `status`?
    */
   generalError(
     atLocation: LocationSpec,
@@ -112,5 +117,25 @@ export const processingResult = Object.freeze({
    */
   refresh(key: string): CatalogProcessorResult {
     return { type: 'refresh', key };
+  },
+
+  /**
+   * Associates a status item with the processing state of the current entity.
+   */
+  status(
+    message: string,
+    level: EntityStatusLevel,
+    type?: string,
+    error?: Error,
+  ): CatalogProcessorResult {
+    return {
+      type: 'status',
+      status: {
+        type: type ?? ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
+        message,
+        level,
+        error: error ? serializeError(error) : undefined,
+      },
+    };
   },
 } as const);

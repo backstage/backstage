@@ -176,8 +176,16 @@ export class DefaultCatalogProcessingOrchestrator
         }
       }
 
+      entity.status =
+        collectorResults.statusItems.length > 0
+          ? { items: collectorResults.statusItems }
+          : undefined;
+
       return {
-        ...collectorResults,
+        relations: collectorResults.relations,
+        refreshKeys: collectorResults.refreshKeys,
+        deferredEntities: collectorResults.deferredEntities,
+        errors: collectorResults.errors,
         completedEntity: entity,
         state: { cache: cache.collect() },
         ok: collectorResults.errors.length === 0,

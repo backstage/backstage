@@ -18,6 +18,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
+  EntityStatusItem,
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
@@ -45,6 +46,7 @@ export class ProcessorOutputCollector {
   private readonly relations = new Array<EntityRelationSpec>();
   private readonly deferredEntities = new Array<DeferredEntity>();
   private readonly refreshKeys = new Array<RefreshKeyData>();
+  private readonly statusItems = new Array<EntityStatusItem>();
   private done = false;
 
   constructor(
@@ -72,6 +74,7 @@ export class ProcessorOutputCollector {
       relations: this.relations,
       refreshKeys: this.refreshKeys,
       deferredEntities: this.deferredEntities,
+      statusItems: this.statusItems,
     };
   }
 
@@ -153,6 +156,8 @@ export class ProcessorOutputCollector {
       this.errors.push(i.error);
     } else if (i.type === 'refresh') {
       this.refreshKeys.push({ key: i.key });
+    } else if (i.type === 'status') {
+      this.statusItems.push(i.status);
     }
   }
 }

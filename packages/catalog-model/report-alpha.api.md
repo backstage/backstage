@@ -6,17 +6,17 @@
 import { Entity } from '@backstage/catalog-model';
 import { SerializedError } from '@backstage/errors';
 
-// @alpha
+// @alpha @deprecated
 export interface AlphaEntity extends Entity {
   status?: EntityStatus;
 }
 
-// @alpha
+// @public
 export type EntityStatus = {
   items?: EntityStatusItem[];
 };
 
-// @alpha
+// @public
 export type EntityStatusItem = {
   type: string;
   level: EntityStatusLevel;
@@ -24,7 +24,7 @@ export type EntityStatusItem = {
   error?: SerializedError;
 };
 
-// @alpha
+// @public
 export type EntityStatusLevel = 'info' | 'warning' | 'error';
 
 // (No @packageDocumentation comment for this package)

@@ -11,6 +11,8 @@ import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EntityStatusItem } from '@backstage/catalog-model';
+import { EntityStatusLevel } from '@backstage/catalog-model';
 import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
 import { GetEntitiesByRefsResponse } from '@backstage/catalog-client';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
@@ -117,7 +119,14 @@ export type CatalogProcessorResult =
   | CatalogProcessorEntityResult
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult
-  | CatalogProcessorRefreshKeysResult;
+  | CatalogProcessorRefreshKeysResult
+  | CatalogProcessorStatusResult;
+
+// @public (undocumented)
+export type CatalogProcessorStatusResult = {
+  type: 'status';
+  status: EntityStatusItem;
+};
 
 // @public
 export interface CatalogService {
@@ -363,6 +372,12 @@ export const processingResult: Readonly<{
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
   readonly refresh: (key: string) => CatalogProcessorResult;
+  readonly status: (
+    message: string,
+    level: EntityStatusLevel,
+    type?: string,
+    error?: Error,
+  ) => CatalogProcessorResult;
 }>;
 
 // @public (undocumented)

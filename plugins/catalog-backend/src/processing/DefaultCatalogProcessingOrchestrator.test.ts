@@ -71,6 +71,7 @@ class FooBarProcessor implements CatalogProcessor {
           target: { kind: 'foobar', name: 'my-target', namespace: 'default' },
         }),
       );
+      emit(processingResult.status('This is a status message', 'info'));
     }
     return entity;
   }
@@ -121,7 +122,18 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         }),
       ).resolves.toEqual({
         ok: true,
-        completedEntity: entity,
+        completedEntity: {
+          ...entity,
+          status: {
+            items: [
+              {
+                level: 'info',
+                message: 'This is a status message',
+                type: 'backstage.io/catalog-processing',
+              },
+            ],
+          },
+        },
         refreshKeys: [],
         deferredEntities: [
           {

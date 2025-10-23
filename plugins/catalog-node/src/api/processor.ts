@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityStatusItem } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { EntityRelationSpec } from './common';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -186,9 +186,16 @@ export type CatalogProcessorRefreshKeysResult = {
 };
 
 /** @public */
+export type CatalogProcessorStatusResult = {
+  type: 'status';
+  status: EntityStatusItem;
+};
+
+/** @public */
 export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
   | CatalogProcessorEntityResult
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult
-  | CatalogProcessorRefreshKeysResult;
+  | CatalogProcessorRefreshKeysResult
+  | CatalogProcessorStatusResult;
