@@ -89,12 +89,11 @@ export const componentDefinitions = {
   },
   Checkbox: {
     classNames: {
-      root: 'bui-CheckboxRoot',
-      label: 'bui-CheckboxLabel',
+      root: 'bui-Checkbox',
       indicator: 'bui-CheckboxIndicator',
     },
     dataAttributes: {
-      checked: [true, false] as const,
+      selected: [true, false] as const,
     },
   },
   Collapsible: {
