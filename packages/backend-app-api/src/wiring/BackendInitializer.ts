@@ -99,38 +99,38 @@ const instanceRegistry = new (class InstanceRegistry {
 })();
 
 function createRootInstanceMetadataServiceFactory(
-  registrations: InternalBackendRegistrations[],
+  rawRegistrations: InternalBackendRegistrations[],
 ) {
   const installedPlugins: Map<string, RootInstanceMetadataServicePluginInfo> =
     new Map();
-  for (const registration of registrations) {
-    if (registration.featureType === 'registrations') {
-      for (const feature of registration.getRegistrations()) {
-        if (feature.type === 'plugin') {
-          if (!installedPlugins.get(feature.pluginId)) {
-            installedPlugins.set(feature.pluginId, {
-              pluginId: feature.pluginId,
-              modules: [],
-            });
-          }
-        } else if (feature.type === 'module') {
-          if (!installedPlugins.get(feature.pluginId)) {
-            installedPlugins.set(feature.pluginId, {
-              pluginId: feature.pluginId,
-              modules: [],
-            });
-          }
-          (
-            installedPlugins.get(feature.pluginId)!.modules as Array<{
-              moduleId: string;
-            }>
-          ).push({
-            moduleId: feature.moduleId,
-          });
-        }
-      }
+  const registrations = rawRegistrations
+    .filter(registration => registration.featureType === 'registrations')
+    .flatMap(registration => registration.getRegistrations());
+  const plugins = registrations.filter(
+    registration => registration.type === 'plugin',
+  );
+  const modules = registrations.filter(
+    registration => registration.type === 'module',
+  );
+  for (const plugin of plugins) {
+    const { pluginId } = plugin;
+    if (!installedPlugins.get(pluginId)) {
+      installedPlugins.set(pluginId, {
+        pluginId,
+        modules: [],
+      });
     }
   }
+  for (const module of modules) {
+    const { pluginId, moduleId } = module;
+    const installedPlugin = installedPlugins.get(pluginId);
+    if (installedPlugin) {
+      (installedPlugin.modules as Array<{ moduleId: string }>).push({
+        moduleId,
+      });
+    }
+  }
+
   return createServiceFactory({
     service: coreServices.rootInstanceMetadata,
     deps: {},

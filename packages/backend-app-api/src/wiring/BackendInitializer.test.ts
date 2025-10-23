@@ -1129,6 +1129,44 @@ describe('BackendInitializer', () => {
     await backend.start();
   });
 
+  it('should ignore modules that do not have a matching plugin', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const instanceMetadataPlugin = createBackendPlugin({
+      pluginId: 'instance-metadata',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.rootInstanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            await expect(
+              instanceMetadata.getInstalledPlugins(),
+            ).resolves.toEqual([
+              {
+                pluginId: 'instance-metadata',
+                modules: [],
+              },
+            ]);
+          },
+        });
+      },
+    });
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    backend.add(module);
+    backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
   it('should prevent writes to the instance metadata service', async () => {
     expect.assertions(1);
     const backend = new BackendInitializer(baseFactories);
