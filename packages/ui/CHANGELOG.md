@@ -1,5 +1,12 @@
 # @backstage/ui
 
+## 0.8.2
+
+### Patch Changes
+
+- 424a156: Fix CSS layer ordering in Backstage UI to make sure component styles are loaded after tokens and base declarations.
+- b5390a5: Fix font smoothing as default in Backstage UI.
+
 ## 0.8.1
 
 ### Patch Changes

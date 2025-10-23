@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.15
+
+### Patch Changes
+
+- f577ae2: Updated `AWS SES` client to version 2 to support `nodemailer` version 7.
+
 ## 0.3.14
 
 ### Patch Changes

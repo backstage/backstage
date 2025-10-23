@@ -1,5 +1,11 @@
 # @techdocs/cli
 
+## 1.10.1
+
+### Patch Changes
+
+- a20322f: Fix for missing styles due to move to BUI.
+
 ## 1.10.0
 
 ### Minor Changes

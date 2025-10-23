@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs
 
+## 1.15.2
+
+### Patch Changes
+
+- 190989a: Fixed an issue where the entire TechDocs page would re-render when navigating between pages within the same entity's documentation.
+
 ## 1.15.1
 
 ### Patch Changes
