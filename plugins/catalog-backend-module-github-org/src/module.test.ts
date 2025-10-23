@@ -105,7 +105,6 @@ describe('catalogModuleGithubOrgEntityProvider', () => {
                 teams: 10,
                 teamMembers: 25,
                 organizationMembers: 30,
-                repositories: 15,
               },
             },
           ],

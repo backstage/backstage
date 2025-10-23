@@ -138,7 +138,6 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     teams?: number;
     teamMembers?: number;
     organizationMembers?: number;
-    repositories?: number;
   };
 }> {
   const baseKey = 'catalog.providers.githubOrg';
@@ -165,7 +164,6 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
           organizationMembers: c.getOptionalNumber(
             'pageSizes.organizationMembers',
           ),
-          repositories: c.getOptionalNumber('pageSizes.repositories'),
         }
       : undefined,
   }));

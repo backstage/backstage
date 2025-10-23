@@ -171,7 +171,7 @@ export interface GithubMultiOrgEntityProviderOptions {
 
   /**
    * Optionally configure page sizes for GitHub GraphQL API queries.
-   * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors with large orgs.
+   * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
    */
   pageSizes?: Partial<GithubPageSizes>;
 }

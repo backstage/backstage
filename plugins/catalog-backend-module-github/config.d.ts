@@ -134,7 +134,7 @@ export interface Config {
 
             /**
              * (Optional) Page sizes for GitHub GraphQL API queries.
-             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors with large orgs.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
              */
             pageSizes?: {
               /**
@@ -224,7 +224,7 @@ export interface Config {
 
               /**
                * (Optional) Page sizes for GitHub GraphQL API queries.
-               * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors with large orgs.
+               * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
                */
               pageSizes?: {
                 /**
@@ -271,7 +271,7 @@ export interface Config {
 
             /**
              * (Optional) Page sizes for GitHub GraphQL API queries.
-             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors with large orgs.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
              */
             pageSizes?: {
               /**
@@ -289,11 +289,6 @@ export interface Config {
                * Default: `50`.
                */
               organizationMembers?: number;
-              /**
-               * (Optional) Number of repositories to fetch per page when querying repositories.
-               * Default: `25`.
-               */
-              repositories?: number;
             };
           }
         | Array<{
@@ -327,7 +322,7 @@ export interface Config {
 
             /**
              * (Optional) Page sizes for GitHub GraphQL API queries.
-             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors with large orgs.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
              */
             pageSizes?: {
               /**
@@ -345,11 +340,6 @@ export interface Config {
                * Default: `50`.
                */
               organizationMembers?: number;
-              /**
-               * (Optional) Number of repositories to fetch per page when querying repositories.
-               * Default: `25`.
-               */
-              repositories?: number;
             };
           }>;
     };

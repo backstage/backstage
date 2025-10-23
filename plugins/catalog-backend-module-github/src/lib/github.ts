@@ -190,9 +190,9 @@ export async function getOrganizationUsers(
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
 ): Promise<{ users: Entity[] }> {
   const query = `
-    query users($org: String!, $email: Boolean!, $cursor: String, $pageSize: Int!) {
+    query users($org: String!, $email: Boolean!, $cursor: String, $organizationMembersPageSize: Int!) {
       organization(login: $org) {
-        membersWithRole(first: $pageSize, after: $cursor) {
+        membersWithRole(first: $organizationMembersPageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
             avatarUrl,
@@ -218,7 +218,7 @@ export async function getOrganizationUsers(
     {
       org,
       email: tokenType === 'token',
-      pageSize: pageSizes.organizationMembers,
+      organizationMembersPageSize: pageSizes.organizationMembers,
     },
   );
 

@@ -910,7 +910,7 @@ describe('github', () => {
     it('uses custom page sizes for getOrganizationUsers', async () => {
       server.use(
         graphqlMsw.query('users', ({ variables }) => {
-          expect(variables.pageSize).toBe(30);
+          expect(variables.organizationMembersPageSize).toBe(30);
           return HttpResponse.json({
             data: {
               organization: {

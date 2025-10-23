@@ -40,8 +40,6 @@ export {
   type TeamTransformer,
   defaultOrganizationTeamTransformer,
   type TransformerContext,
-  type GithubPageSizes,
-  DEFAULT_PAGE_SIZES,
 } from './lib';
 
 export * from './deprecated';
