@@ -21,6 +21,11 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { CatalogProcessorResult } from '../api/processor';
 import { processingResult } from '../api/processingResult';
 
+/**
+ * Options for parsing entity YAML files.
+ *
+ * @public
+ */
 export interface ParseEntityYamlOptions {
   enableYamlMerge?: boolean;
 }
