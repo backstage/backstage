@@ -46,7 +46,7 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
       >
         {icon || <RiShapesLine />}
       </div>
-      <Text variant="body-medium">{title || 'Your plugin'}</Text>
+      <Text variant="body-medium">{title}</Text>
     </>
   );
 

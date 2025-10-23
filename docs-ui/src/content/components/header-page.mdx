@@ -32,6 +32,10 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <CodeBlock code={usage} />
 
+## Browser Title
+
+The HeaderPage component automatically sets the browser title based on its `title` prop. When used alongside a Header component (recommended), the browser title becomes `{headerPageTitle} | {headerTitle} | {app.title}`. If used without the Header component, the browser title will simply be set to the `title` prop.
+
 ## API reference
 
 <PropsTable data={propDefs} />

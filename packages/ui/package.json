@@ -38,11 +38,13 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/core-plugin-api": "workspace:^",
     "@base-ui-components/react": "1.0.0-alpha.7",
     "@remixicon/react": "^4.6.0",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
-    "react-aria-components": "^1.13.0"
+    "react-aria-components": "^1.13.0",
+    "react-helmet": "6.1.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

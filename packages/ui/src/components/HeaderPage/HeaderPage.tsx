@@ -24,6 +24,7 @@ import { Link } from '../Link';
 import { Fragment } from 'react/jsx-runtime';
 import styles from './HeaderPage.module.css';
 import clsx from 'clsx';
+import { Helmet } from 'react-helmet';
 
 /**
  * A component that renders a header page.
@@ -36,6 +37,7 @@ export const HeaderPage = (props: HeaderPageProps) => {
 
   return (
     <Container className={clsx(classNames.root, styles[classNames.root])}>
+      <Helmet title={title} />
       <div className={clsx(classNames.content, styles[classNames.content])}>
         <div
           className={clsx(
