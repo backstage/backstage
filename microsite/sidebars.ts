@@ -40,13 +40,21 @@ export default {
     {
       type: 'category',
       label: 'Getting Started',
-      link: { type: 'generated-index', title: 'Getting Started', slug: '/getting-started' },
+      link: {
+        type: 'generated-index',
+        title: 'Getting Started',
+        slug: '/getting-started',
+      },
       items: [
         'getting-started/index',
         {
           type: 'category',
           label: 'Configuring Backstage',
-          link: { type: 'generated-index', title: 'Configuring Backstage', slug: '/configuring-backstage' },
+          link: {
+            type: 'generated-index',
+            title: 'Configuring Backstage',
+            slug: '/configuring-backstage',
+          },
           items: [
             'getting-started/config/database',
             'getting-started/config/authentication',
@@ -57,7 +65,11 @@ export default {
         {
           type: 'category',
           label: 'Deploying Backstage',
-          link: { type: 'generated-index', title: 'Deploying Backstage', slug: '/deploying-backstage' },
+          link: {
+            type: 'generated-index',
+            title: 'Deploying Backstage',
+            slug: '/deploying-backstage',
+          },
           items: [
             'deployment/index',
             'deployment/scaling',
@@ -68,7 +80,11 @@ export default {
         {
           type: 'category',
           label: 'Using Backstage',
-          link: { type: 'generated-index', title: 'Using Backstage', slug: '/using-backstage' },
+          link: {
+            type: 'generated-index',
+            title: 'Using Backstage',
+            slug: '/using-backstage',
+          },
           items: [
             'getting-started/logging-in',
             'getting-started/register-a-component',
@@ -84,12 +100,20 @@ export default {
     {
       type: 'category',
       label: 'Core Features',
-      link: { type: 'generated-index', title: 'Core Features', slug: '/core-features' },
+      link: {
+        type: 'generated-index',
+        title: 'Core Features',
+        slug: '/core-features',
+      },
       items: [
         {
           type: 'category',
           label: 'Auth and Identity',
-          link: { type: 'generated-index', title: 'Auth and Identity', slug: '/auth-and-identity' },
+          link: {
+            type: 'generated-index',
+            title: 'Auth and Identity',
+            slug: '/auth-and-identity',
+          },
           items: [
             'auth/index',
             {
@@ -142,7 +166,11 @@ export default {
         {
           type: 'category',
           label: 'Notifications',
-          items: ['notifications/index', 'notifications/processors', 'notifications/usage'],
+          items: [
+            'notifications/index',
+            'notifications/processors',
+            'notifications/usage',
+          ],
         },
 
         {
@@ -179,9 +207,14 @@ export default {
             {
               type: 'category',
               label: 'API',
-              link: searchSidebar.length > 0
-                ? { type: 'generated-index', title: 'Search API', slug: '/category/search-api' }
-                : { type: 'doc', id: 'openapi/generated-docs/404' },
+              link:
+                searchSidebar.length > 0
+                  ? {
+                      type: 'generated-index',
+                      title: 'Search API',
+                      slug: '/category/search-api',
+                    }
+                  : { type: 'doc', id: 'openapi/generated-docs/404' },
               items: searchSidebar,
             },
             'features/search/architecture',
@@ -210,9 +243,14 @@ export default {
             {
               type: 'category',
               label: 'API',
-              link: catalogSidebar.length > 0
-                ? { type: 'generated-index', title: 'Catalog API', slug: '/category/catalog-api' }
-                : { type: 'doc', id: 'openapi/generated-docs/404' },
+              link:
+                catalogSidebar.length > 0
+                  ? {
+                      type: 'generated-index',
+                      title: 'Catalog API',
+                      slug: '/category/catalog-api',
+                    }
+                  : { type: 'doc', id: 'openapi/generated-docs/404' },
               items: catalogSidebar,
             },
             'features/software-catalog/creating-the-catalog-graph',
@@ -243,9 +281,14 @@ export default {
             {
               type: 'category',
               label: 'API',
-              link: scaffolderSidebar.length > 0
-                ? { type: 'generated-index', title: 'Scaffolder API', slug: '/category/scaffolder-api' }
-                : { type: 'doc', id: 'openapi/generated-docs/404' },
+              link:
+                scaffolderSidebar.length > 0
+                  ? {
+                      type: 'generated-index',
+                      title: 'Scaffolder API',
+                      slug: '/category/scaffolder-api',
+                    }
+                  : { type: 'doc', id: 'openapi/generated-docs/404' },
               items: scaffolderSidebar,
             },
           ],
@@ -278,85 +321,137 @@ export default {
     {
       type: 'category',
       label: 'Integrations',
-      link: { type: 'generated-index', title: 'Integrations', slug: '/integrations' },
+      link: {
+        type: 'generated-index',
+        title: 'Integrations',
+        slug: '/integrations',
+      },
       items: [
         'integrations/index',
         {
           type: 'category',
           label: 'AWS S3',
           link: { type: 'generated-index', title: 'AWS S3', slug: '/aws-s3' },
-          items: ['integrations/aws-s3/locations', 'integrations/aws-s3/discovery'],
+          items: [
+            'integrations/aws-s3/locations',
+            'integrations/aws-s3/discovery',
+          ],
         },
         {
           type: 'category',
           label: 'Azure Blob Storage',
-          link: { type: 'generated-index', title: 'Azure Blob Storage', slug: '/azure-blob-storage' },
-          items: ['integrations/azure-blobStorage/locations', 'integrations/azure-blobStorage/discovery'],
+          link: {
+            type: 'generated-index',
+            title: 'Azure Blob Storage',
+            slug: '/azure-blob-storage',
+          },
+          items: [
+            'integrations/azure-blobStorage/locations',
+            'integrations/azure-blobStorage/discovery',
+          ],
         },
         {
           type: 'category',
           label: 'Azure',
           link: { type: 'generated-index', title: 'Azure', slug: '/azure' },
-          items: ['integrations/azure/locations', 'integrations/azure/discovery', 'integrations/azure/org'],
+          items: [
+            'integrations/azure/locations',
+            'integrations/azure/discovery',
+            'integrations/azure/org',
+          ],
         },
         {
           type: 'category',
           label: 'Bitbucket Cloud',
-          link: { type: 'generated-index', title: 'Bitbucket Cloud', slug: '/bitbucket-cloud' },
-          items: ['integrations/bitbucketCloud/locations', 'integrations/bitbucketCloud/discovery'],
+          link: {
+            type: 'generated-index',
+            title: 'Bitbucket Cloud',
+            slug: '/bitbucket-cloud',
+          },
+          items: [
+            'integrations/bitbucketCloud/locations',
+            'integrations/bitbucketCloud/discovery',
+          ],
         },
         {
           type: 'category',
           label: 'Bitbucket Server',
-          link: { type: 'generated-index', title: 'Bitbucket Server', slug: '/bitbucket-server' },
-          items: ['integrations/bitbucketServer/locations', 'integrations/bitbucketServer/discovery'],
+          link: {
+            type: 'generated-index',
+            title: 'Bitbucket Server',
+            slug: '/bitbucket-server',
+          },
+          items: [
+            'integrations/bitbucketServer/locations',
+            'integrations/bitbucketServer/discovery',
+          ],
         },
-        { 
-          type: 'category', 
+        {
+          type: 'category',
           label: 'Datadog',
-          link: { type: 'generated-index', title: 'datadog', slug: '/datadog' }, 
-          items: ['integrations/datadog-rum/installation'] },
+          link: { type: 'generated-index', title: 'datadog', slug: '/datadog' },
+          items: ['integrations/datadog-rum/installation'],
+        },
         {
           type: 'category',
           label: 'Gerrit',
           link: { type: 'generated-index', title: 'Gerrit', slug: '/gerrit' },
-          items: ['integrations/gerrit/locations', 'integrations/gerrit/discovery'],
+          items: [
+            'integrations/gerrit/locations',
+            'integrations/gerrit/discovery',
+          ],
         },
         {
           type: 'category',
           label: 'GitHub',
           link: { type: 'generated-index', title: 'github', slug: '/github' },
-          items: ['integrations/github/locations', 'integrations/github/discovery', 'integrations/github/org', 'integrations/github/github-apps'],
+          items: [
+            'integrations/github/locations',
+            'integrations/github/discovery',
+            'integrations/github/org',
+            'integrations/github/github-apps',
+          ],
         },
         {
           type: 'category',
           label: 'GitLab',
           link: { type: 'generated-index', title: 'gitlab', slug: '/gitlab' },
-          items: ['integrations/gitlab/locations', 'integrations/gitlab/discovery', 'integrations/gitlab/org'],
+          items: [
+            'integrations/gitlab/locations',
+            'integrations/gitlab/discovery',
+            'integrations/gitlab/org',
+          ],
         },
-        { 
-          type: 'category', 
+        {
+          type: 'category',
           label: 'Gitea',
-          link: { type: 'generated-index', title: 'gitea', slug: '/gitea' }, 
-          items: ['integrations/gitea/locations', 'integrations/gitea/discovery'] 
+          link: { type: 'generated-index', title: 'gitea', slug: '/gitea' },
+          items: [
+            'integrations/gitea/locations',
+            'integrations/gitea/discovery',
+          ],
         },
-        { 
-          type: 'category', 
-          label: 'Harness', 
-          link: { type: 'generated-index', title: 'Harness', slug: '/harness' }, 
+        {
+          type: 'category',
+          label: 'Harness',
+          link: { type: 'generated-index', title: 'Harness', slug: '/harness' },
           items: ['integrations/harness/locations'],
         },
-        { 
-          type: 'category', 
+        {
+          type: 'category',
           label: 'Google GCS',
-          link: { type: 'generated-index', title: 'Google GCS', slug: '/google-gcs' }, 
-          items: ['integrations/google-cloud-storage/locations'] 
+          link: {
+            type: 'generated-index',
+            title: 'Google GCS',
+            slug: '/google-gcs',
+          },
+          items: ['integrations/google-cloud-storage/locations'],
         },
-        { 
-          type: 'category', 
+        {
+          type: 'category',
           label: 'LDAP',
-          link: { type: 'generated-index', title: 'LDAP', slug: '/ldap' }, 
-          items: ['integrations/ldap/org'] 
+          link: { type: 'generated-index', title: 'LDAP', slug: '/ldap' },
+          items: ['integrations/ldap/org'],
         },
       ],
     },
@@ -382,25 +477,45 @@ export default {
           type: 'category',
           label: 'OpenAPI',
           link: { type: 'generated-index', title: 'OpenAPI', slug: '/openapi' },
-          items: ['openapi/01-getting-started', 'openapi/generate-client', 'openapi/test-case-validation'],
+          items: [
+            'openapi/01-getting-started',
+            'openapi/generate-client',
+            'openapi/test-case-validation',
+          ],
         },
         {
           type: 'category',
           label: 'Backends and APIs',
-          link: { type: 'generated-index', title: 'Backends and APIs', slug: '/backends-and-apis' },
-          items: ['plugins/proxying', 'plugins/backend-plugin', 'plugins/call-existing-api'],
+          link: {
+            type: 'generated-index',
+            title: 'Backends and APIs',
+            slug: '/backends-and-apis',
+          },
+          items: [
+            'plugins/proxying',
+            'plugins/backend-plugin',
+            'plugins/call-existing-api',
+          ],
         },
-        { 
-          type: 'category', 
+        {
+          type: 'category',
           label: 'Testing',
-          link: { type: 'generated-index', title: 'Testing', slug: '/testing' }, 
-          items: ['plugins/testing'] 
+          link: { type: 'generated-index', title: 'Testing', slug: '/testing' },
+          items: ['plugins/testing'],
         },
         {
           type: 'category',
           label: 'Publishing',
-          link: { type: 'generated-index', title: 'Publishing', slug: '/publishing-doc' },
-          items: ['plugins/publish-private', 'plugins/add-to-directory', 'plugins/observability'],
+          link: {
+            type: 'generated-index',
+            title: 'Publishing',
+            slug: '/publishing-doc',
+          },
+          items: [
+            'plugins/publish-private',
+            'plugins/add-to-directory',
+            'plugins/observability',
+          ],
         },
       ],
     },
@@ -409,7 +524,11 @@ export default {
     {
       type: 'category',
       label: 'Configuration',
-      link: { type: 'generated-index', title: 'Configuration', slug: '/configuration' },
+      link: {
+        type: 'generated-index',
+        title: 'Configuration',
+        slug: '/configuration',
+      },
       items: ['conf/index', 'conf/reading', 'conf/writing', 'conf/defining'],
     },
 
@@ -422,13 +541,21 @@ export default {
         {
           type: 'category',
           label: 'Backend System',
-          link: { type: 'generated-index', title: 'Backend System', slug: '/backend-system' },
+          link: {
+            type: 'generated-index',
+            title: 'Backend System',
+            slug: '/backend-system',
+          },
           items: [
             'backend-system/index',
             {
               type: 'category',
               label: 'Architecture',
-              link: { type: 'generated-index', title: 'Architecture', slug: '/architecture' }, 
+              link: {
+                type: 'generated-index',
+                title: 'Architecture',
+                slug: '/architecture',
+              },
               items: [
                 'backend-system/architecture/index',
                 'backend-system/architecture/services',
@@ -442,19 +569,38 @@ export default {
             {
               type: 'category',
               label: 'Building Backends',
-              link: { type: 'generated-index', title: 'Building Backends', slug: '/building-backends' },
-              items: ['backend-system/building-backends/index', 'backend-system/building-backends/migrating'],
+              link: {
+                type: 'generated-index',
+                title: 'Building Backends',
+                slug: '/building-backends',
+              },
+              items: [
+                'backend-system/building-backends/index',
+                'backend-system/building-backends/migrating',
+              ],
             },
             {
               type: 'category',
               label: 'Building Plugins & Modules',
-              link: { type: 'generated-index', title: 'Building Plugins & Modules', slug: '/building-plugins-and-modules' },
-              items: ['backend-system/building-plugins-and-modules/index', 'backend-system/building-plugins-and-modules/testing', 'backend-system/building-plugins-and-modules/migrating'],
+              link: {
+                type: 'generated-index',
+                title: 'Building Plugins & Modules',
+                slug: '/building-plugins-and-modules',
+              },
+              items: [
+                'backend-system/building-plugins-and-modules/index',
+                'backend-system/building-plugins-and-modules/testing',
+                'backend-system/building-plugins-and-modules/migrating',
+              ],
             },
             {
               type: 'category',
               label: 'Core Services',
-              link: { type: 'generated-index', title: 'Core Services', slug: '/core-services' },
+              link: {
+                type: 'generated-index',
+                title: 'Core Services',
+                slug: '/core-services',
+              },
               items: [
                 'backend-system/core-services/index',
                 'backend-system/core-services/auditor',
@@ -488,13 +634,21 @@ export default {
         {
           type: 'category',
           label: 'New Frontend System',
-          link: { type: 'generated-index', title: 'New Frontend System', slug: '/new-frontend-system' },
+          link: {
+            type: 'generated-index',
+            title: 'New Frontend System',
+            slug: '/new-frontend-system',
+          },
           items: [
             'frontend-system/index',
             {
               type: 'category',
               label: 'Architecture',
-              link: { type: 'generated-index', title: 'Architecture', slug: '/architecture' },
+              link: {
+                type: 'generated-index',
+                title: 'Architecture',
+                slug: '/architecture',
+              },
               items: [
                 'frontend-system/architecture/index',
                 'frontend-system/architecture/app',
@@ -512,20 +666,49 @@ export default {
             {
               type: 'category',
               label: 'Building Plugins',
-              link: { type: 'generated-index', title: 'Building Plugins', slug: '/building-plugins' },
-              items: ['frontend-system/building-plugins/index', 'frontend-system/building-plugins/testing', 'frontend-system/building-plugins/common-extension-blueprints', 'frontend-system/building-plugins/built-in-data-refs', 'frontend-system/building-plugins/migrating'],
+              link: {
+                type: 'generated-index',
+                title: 'Building Plugins',
+                slug: '/building-plugins',
+              },
+              items: [
+                'frontend-system/building-plugins/index',
+                'frontend-system/building-plugins/testing',
+                'frontend-system/building-plugins/common-extension-blueprints',
+                'frontend-system/building-plugins/built-in-data-refs',
+                'frontend-system/building-plugins/migrating',
+              ],
             },
             {
               type: 'category',
               label: 'Building Apps',
-              link: { type: 'generated-index', title: 'Building Apps', slug: '/building-apps' },
-              items: ['frontend-system/building-apps/index', 'frontend-system/building-apps/configuring-extensions', 'frontend-system/building-apps/built-in-extensions', 'frontend-system/building-apps/plugin-conversion', 'frontend-system/building-apps/migrating'],
+              link: {
+                type: 'generated-index',
+                title: 'Building Apps',
+                slug: '/building-apps',
+              },
+              items: [
+                'frontend-system/building-apps/index',
+                'frontend-system/building-apps/configuring-extensions',
+                'frontend-system/building-apps/built-in-extensions',
+                'frontend-system/building-apps/plugin-conversion',
+                'frontend-system/building-apps/migrating',
+              ],
             },
             {
               type: 'category',
               label: 'Utility APIs',
-              link: { type: 'generated-index', title: 'Utility APIs', slug: '/utility-apis' },
-              items: ['frontend-system/utility-apis/index', 'frontend-system/utility-apis/creating', 'frontend-system/utility-apis/consuming', 'frontend-system/utility-apis/configuring'],
+              link: {
+                type: 'generated-index',
+                title: 'Utility APIs',
+                slug: '/utility-apis',
+              },
+              items: [
+                'frontend-system/utility-apis/index',
+                'frontend-system/utility-apis/creating',
+                'frontend-system/utility-apis/consuming',
+                'frontend-system/utility-apis/configuring',
+              ],
             },
           ],
         },
@@ -541,7 +724,11 @@ export default {
             {
               type: 'category',
               label: 'Local Development',
-              items: ['tooling/local-dev/linking-local-packages', 'tooling/local-dev/debugging', 'tooling/local-dev/profiling'],
+              items: [
+                'tooling/local-dev/linking-local-packages',
+                'tooling/local-dev/debugging',
+                'tooling/local-dev/profiling',
+              ],
             },
             'tooling/package-metadata',
           ],
@@ -549,8 +736,17 @@ export default {
         {
           type: 'category',
           label: 'User Interface',
-          link: { type: 'generated-index', title: 'User Interface', slug: '/user-interface' },
-          items: ['conf/user-interface/index', 'conf/user-interface/logo', 'conf/user-interface/icons', 'conf/user-interface/sidebar'],
+          link: {
+            type: 'generated-index',
+            title: 'User Interface',
+            slug: '/user-interface',
+          },
+          items: [
+            'conf/user-interface/index',
+            'conf/user-interface/logo',
+            'conf/user-interface/icons',
+            'conf/user-interface/sidebar',
+          ],
         },
       ],
     },
@@ -561,16 +757,24 @@ export default {
       label: 'Tutorials',
       link: { type: 'generated-index', title: 'Tutorials', slug: '/tutorials' },
       items: [
-        { 
-          type: 'category', 
+        {
+          type: 'category',
           label: 'Non-technical',
-          link: { type: 'generated-index', title: 'Non-technical', slug: '/non-technical-tutorials' }, 
-          items: ['overview/adopting'] 
+          link: {
+            type: 'generated-index',
+            title: 'Non-technical',
+            slug: '/non-technical-tutorials',
+          },
+          items: ['overview/adopting'],
         },
         {
           type: 'category',
           label: 'Technical',
-          link: { type: 'generated-index', title: 'Technical', slug: '/technical-tutorials' },
+          link: {
+            type: 'generated-index',
+            title: 'Technical',
+            slug: '/technical-tutorials',
+          },
           items: [
             'tutorials/quickstart-app-plugin',
             'tutorials/configuring-plugin-databases',
@@ -586,7 +790,11 @@ export default {
         {
           type: 'category',
           label: 'Migrations',
-          link: { type: 'generated-index', title: 'Migrations', slug: '/migration-tutorials' },
+          link: {
+            type: 'generated-index',
+            title: 'Migrations',
+            slug: '/migration-tutorials',
+          },
           items: [
             'tutorials/react-router-stable-migration',
             'tutorials/react18-migration',
@@ -602,38 +810,62 @@ export default {
     },
 
     // FAQ
-    { 
-      type: 'category', 
-      label: 'FAQ', 
+    {
+      type: 'category',
+      label: 'FAQ',
       link: { type: 'generated-index', title: 'FAQ', slug: '/faq' },
       items: ['faq/index', 'faq/product', 'faq/technical'],
-
     },
 
     // Contribute
     {
       type: 'category',
       label: 'Contribute',
-      link: { type: 'generated-index', title: 'Contribute', slug: '/contribute' },
-      items: ['contribute/index', 'contribute/getting-involved', 'contribute/project-structure'],
+      link: {
+        type: 'generated-index',
+        title: 'Contribute',
+        slug: '/contribute',
+      },
+      items: [
+        'contribute/index',
+        'contribute/getting-involved',
+        'contribute/project-structure',
+      ],
     },
 
     // References
     {
       type: 'category',
       label: 'References',
-      link: { type: 'generated-index', title: 'References', slug: '/references' },
+      link: {
+        type: 'generated-index',
+        title: 'References',
+        slug: '/references',
+      },
       items: [
         {
           type: 'category',
           label: 'Designing for Backstage',
-          link: { type: 'generated-index', title: 'Designing for Backstage', slug: '/designing-for-backstage' },
-          items: ['dls/design', 'dls/component-design-guidelines', 'dls/contributing-to-storybook', 'dls/figma'],
+          link: {
+            type: 'generated-index',
+            title: 'Designing for Backstage',
+            slug: '/designing-for-backstage',
+          },
+          items: [
+            'dls/design',
+            'dls/component-design-guidelines',
+            'dls/contributing-to-storybook',
+            'dls/figma',
+          ],
         },
         {
           type: 'category',
           label: 'Architecture Decision Records (ADRs)',
-          link: { type: 'generated-index', title: 'Architecture Decision Records (ADRs)', slug: '/architecture-decision-records-adrs' },
+          link: {
+            type: 'generated-index',
+            title: 'Architecture Decision Records (ADRs)',
+            slug: '/architecture-decision-records-adrs',
+          },
           items: [
             'architecture-decisions/adrs-overview',
             'architecture-decisions/adrs-adr001',
