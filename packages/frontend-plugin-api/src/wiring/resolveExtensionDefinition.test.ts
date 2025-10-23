@@ -60,6 +60,23 @@ describe('resolveExtensionDefinition', () => {
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
   });
+
+  it('should resolve relative attachment points', () => {
+    const resolved = resolveExtensionDefinition(
+      {
+        ...baseDef,
+        attachTo: [
+          { relative: { kind: 'page' }, input: 'tabs' },
+          { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+        ],
+      } as ExtensionDefinition,
+      { namespace: 'test' },
+    );
+    expect(resolved.attachTo).toEqual([
+      { id: 'page:test', input: 'tabs' },
+      { id: 'page:test/index', input: 'tabs' },
+    ]);
+  });
 });
 
 describe('old resolveExtensionDefinition', () => {

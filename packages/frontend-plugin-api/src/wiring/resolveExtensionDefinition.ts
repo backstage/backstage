@@ -16,7 +16,7 @@
 
 import { ApiHolder, AppNode } from '../apis';
 import {
-  ExtensionAttachToSpec,
+  ExtensionDefinitionAttachTo,
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   ResolvedExtensionInputs,
@@ -25,6 +25,17 @@ import { PortableSchema } from '../schema';
 import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
+
+/** @public */
+export type ExtensionAttachTo =
+  | { id: string; input: string }
+  | Array<{ id: string; input: string }>;
+
+/**
+ * @deprecated Use {@link ExtensionAttachTo} instead.
+ * @public
+ */
+export type ExtensionAttachToSpec = ExtensionAttachTo;
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -118,6 +129,49 @@ export type ResolveExtensionId<
     : never
   : never;
 
+function resolveExtensionId(
+  kind?: string,
+  namespace?: string,
+  name?: string,
+): string {
+  const namePart =
+    name && namespace ? `${namespace}/${name}` : namespace || name;
+  if (!namePart) {
+    throw new Error(
+      `Extension must declare an explicit namespace or name as it could not be resolved from context, kind=${kind} namespace=${namespace} name=${name}`,
+    );
+  }
+
+  return kind ? `${kind}:${namePart}` : namePart;
+}
+
+function resolveAttachTo(
+  attachTo: ExtensionDefinitionAttachTo,
+  namespace?: string,
+): ExtensionAttachToSpec {
+  const resolveSpec = (
+    spec: Exclude<ExtensionDefinitionAttachTo, Array<any>>,
+  ): { id: string; input: string } => {
+    if ('relative' in spec && spec.relative) {
+      return {
+        id: resolveExtensionId(
+          spec.relative.kind,
+          namespace,
+          spec.relative.name,
+        ),
+        input: spec.input,
+      };
+    }
+    return { id: spec.id, input: spec.input };
+  };
+
+  if (Array.isArray(attachTo)) {
+    return attachTo.map(resolveSpec);
+  }
+
+  return resolveSpec(attachTo);
+}
+
 /** @internal */
 export function resolveExtensionDefinition<
   T extends ExtensionDefinitionParameters,
@@ -129,25 +183,18 @@ export function resolveExtensionDefinition<
   const {
     name,
     kind,
-    namespace: _skip1,
+    namespace: internalNamespace,
     override: _skip2,
+    attachTo,
     ...rest
   } = internalDefinition;
 
-  const namespace = internalDefinition.namespace ?? context?.namespace;
-
-  const namePart =
-    name && namespace ? `${namespace}/${name}` : namespace || name;
-  if (!namePart) {
-    throw new Error(
-      `Extension must declare an explicit namespace or name as it could not be resolved from context, kind=${kind} namespace=${namespace} name=${name}`,
-    );
-  }
-
-  const id = kind ? `${kind}:${namePart}` : namePart;
+  const namespace = internalNamespace ?? context?.namespace;
+  const id = resolveExtensionId(kind, namespace, name);
 
   return {
     ...rest,
+    attachTo: resolveAttachTo(attachTo, namespace),
     $$type: '@backstage/Extension',
     version: internalDefinition.version,
     id,

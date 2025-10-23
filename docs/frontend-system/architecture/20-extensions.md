@@ -352,3 +352,41 @@ const extension = createExtension({
   },
 });
 ```
+
+## Relative attachment points
+
+When creating an extension or an [extension blueprint](./23-extension-blueprints.md) you can specify an attachment point that is relative to the current plugin. This is particularly useful for groups of blueprints that are part of a common hierarchy, with extensions from one blueprint attaching to extensions from the other blueprint. For example, the following pair of extension definitions could be installed multiple times in different plugins, each creating their own hierarchy:
+
+```tsx
+// Parent extension with a fixed attachment point
+const parentExtension = createExtension({
+  kind: 'section',
+  attachTo: [{ id: 'app/some-fixed-extension', input: 'children' }],
+  inputs: {
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+    }),
+  },
+  output: [coreExtensionData.reactElement],
+  factory({ inputs }) {
+    return [
+      coreExtensionData.reactElement(
+        <section>
+          <h1>Section Title</h1>
+          {inputs.content.get(coreExtensionData.reactElement)}
+        </section>,
+      ),
+    ];
+  },
+});
+
+// Child extension with a relative attachment point
+const childExtension = createExtension({
+  kind: 'section-content',
+  attachTo: [{ relative: { kind: 'section' }, input: 'content' }],
+  output: [coreExtensionData.reactElement],
+  factory() {
+    return [coreExtensionData.reactElement(<p>Section Content</p>)];
+  },
+});
+```
