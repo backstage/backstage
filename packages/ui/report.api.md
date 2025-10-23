@@ -624,7 +624,10 @@ export const componentDefinitions: {
   readonly SearchField: {
     readonly classNames: {
       readonly root: 'bui-SearchField';
-      readonly clear: 'bui-InputClear';
+      readonly clear: 'bui-SearchFieldClear';
+      readonly inputWrapper: 'bui-SearchFieldWrapper';
+      readonly input: 'bui-SearchFieldInput';
+      readonly inputIcon: 'bui-SearchFieldInputIcon';
     };
     readonly dataAttributes: {
       readonly startCollapsed: readonly [true, false];
