@@ -28,9 +28,6 @@ import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
-export const DEFAULT_PAGE_SIZES: GithubPageSizes;
-
-// @public
 export const defaultOrganizationTeamTransformer: TeamTransformer;
 
 // @public
