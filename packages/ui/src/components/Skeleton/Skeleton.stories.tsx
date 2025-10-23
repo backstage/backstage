@@ -16,6 +16,8 @@
 import preview from '../../../../../.storybook/preview';
 import { Skeleton } from './Skeleton';
 import { Flex } from '../Flex';
+import { Text } from '../Text';
+import { useState } from 'react';
 
 const meta = preview.meta({
   title: 'Backstage UI/Skeleton',
@@ -73,6 +75,239 @@ export const Demo2 = meta.story({
       <Skeleton width={400} height={160} />
       <Skeleton width={400} height={12} />
       <Skeleton width={240} height={12} />
+    </Flex>
+  ),
+});
+
+/**
+ * Skeleton automatically inherits typography from its parent context.
+ * When placed inside a Text component, it matches the exact font-size
+ * and line-height, preventing layout shift. No explicit sizing needed!
+ *
+ * Best for single-line text where you expect content to fit on one line.
+ */
+export const InheritingTypography = meta.story({
+  render: () => (
+    <Flex direction="column" gap="6">
+      <div>
+        <Text variant="body-small" color="secondary">
+          title-large
+        </Text>
+        <Text variant="title-large">
+          <Skeleton />
+        </Text>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          title-medium
+        </Text>
+        <Text variant="title-medium">
+          <Skeleton />
+        </Text>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          title-small
+        </Text>
+        <Text variant="title-small">
+          <Skeleton />
+        </Text>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          title-x-small
+        </Text>
+        <Text variant="title-x-small">
+          <Skeleton />
+        </Text>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          body-large
+        </Text>
+        <Text variant="body-large">
+          <Skeleton />
+        </Text>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          body-medium (default)
+        </Text>
+        <Text variant="body-medium">
+          <Skeleton />
+        </Text>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          body-small
+        </Text>
+        <Text variant="body-small">
+          <Skeleton />
+        </Text>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          body-x-small
+        </Text>
+        <Text variant="body-x-small">
+          <Skeleton />
+        </Text>
+      </div>
+    </Flex>
+  ),
+});
+
+/**
+ * When you wrap children in a Skeleton, it will automatically
+ * infer the correct dimensions from the children, preventing layout shift.
+ * The children are hidden but maintain their layout space.
+ *
+ * Best for multi-line text or complex layouts where you want exact dimension matching.
+ */
+export const InferringDimensions = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div>
+        <Text variant="body-small" color="secondary">
+          Skeleton wrapping Text component
+        </Text>
+        <Skeleton>
+          <Text variant="title-large">Loading title text...</Text>
+        </Skeleton>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          Multiple lines
+        </Text>
+        <Flex direction="column" gap="2">
+          <Skeleton>
+            <Text variant="body-medium">This is a loading paragraph</Text>
+          </Skeleton>
+          <Skeleton>
+            <Text variant="body-medium">
+              With multiple lines of content that will load
+            </Text>
+          </Skeleton>
+        </Flex>
+      </div>
+      <div>
+        <Text variant="body-small" color="secondary">
+          Skeleton wrapping an avatar (rounded)
+        </Text>
+        <Skeleton rounded>
+          <div style={{ width: 48, height: 48 }} />
+        </Skeleton>
+      </div>
+    </Flex>
+  ),
+});
+
+/**
+ * Example showing how to use Skeleton with Text components to prevent layout shift.
+ * The Skeleton inherits typography from the Text wrapper, matching the exact
+ * dimensions of the loaded content without explicit sizing. The fixed-width card
+ * demonstrates that there's no layout shift when toggling between loading and loaded states.
+ */
+export const RealWorldExample = meta.story({
+  render: () => {
+    const [loading, setLoading] = useState(true);
+
+    return (
+      <div
+        style={{
+          width: 400,
+          padding: 24,
+          border: '1px solid var(--bui-border-1)',
+          borderRadius: 'var(--bui-radius-2)',
+          background: 'var(--bui-bg-surface-1)',
+        }}
+      >
+        <Flex direction="column" gap="4">
+          <Flex justify="between" align="center">
+            <Text variant="title-medium">Article Preview</Text>
+            <button
+              onClick={() => setLoading(!loading)}
+              type="button"
+              style={{
+                padding: '8px 16px',
+                border: '1px solid var(--bui-border-1)',
+                borderRadius: 'var(--bui-radius-2)',
+                background: loading
+                  ? 'var(--bui-bg-surface-2)'
+                  : 'var(--bui-bg-primary)',
+                color: loading
+                  ? 'var(--bui-fg-primary)'
+                  : 'var(--bui-fg-on-primary)',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+            >
+              {loading ? 'Loading' : 'Loaded'}
+            </button>
+          </Flex>
+
+          {/* Single-line title - perfect for inheriting typography */}
+          <Text variant="title-large">
+            {loading ? <Skeleton style={{ width: '60%' }} /> : 'Async Title'}
+          </Text>
+
+          {/* Multi-line paragraphs - using multiple single-line skeletons */}
+          <Text variant="body-medium">
+            {loading ? <Skeleton /> : 'Expected one line.'}
+          </Text>
+          <Text variant="body-medium">
+            {loading ? <Skeleton /> : 'Expected another line.'}
+          </Text>
+          <Text variant="body-medium">
+            {loading ? (
+              <Skeleton style={{ width: '80%' }} />
+            ) : (
+              'Duis aute irure dolor in reprehenderit in voluptate velit.'
+            )}
+          </Text>
+        </Flex>
+      </div>
+    );
+  },
+});
+
+/**
+ * Demonstrates that explicit width/height override children dimensions,
+ * following MUI's behavior. This allows for flexible sizing control.
+ */
+export const OverrideChildrenDimensions = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div>
+        <Text variant="body-small" color="secondary">
+          Children without explicit dimensions (fits content)
+        </Text>
+        <Skeleton>
+          <Text variant="title-large">
+            This is a long title that would normally be wide
+          </Text>
+        </Skeleton>
+      </div>
+
+      <div>
+        <Text variant="body-small" color="secondary">
+          Same children with explicit width (overrides)
+        </Text>
+        <Skeleton width={200}>
+          <Text variant="title-large">
+            This is a long title that would normally be wide
+          </Text>
+        </Skeleton>
+      </div>
+
+      <div>
+        <Text variant="body-small" color="secondary">
+          Explicit height overrides children height
+        </Text>
+        <Skeleton height={20}>
+          <Text variant="title-large">Tall text</Text>
+        </Skeleton>
+      </div>
     </Flex>
   ),
 });

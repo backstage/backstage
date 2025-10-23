@@ -23,23 +23,44 @@ import clsx from 'clsx';
 /** @public */
 export const Skeleton = (props: SkeletonProps) => {
   const { classNames, cleanedProps } = useStyles(SkeletonDefinition, {
-    width: 80,
-    height: 24,
     rounded: false,
     ...props,
   });
-  const { className, width, height, rounded, style, ...rest } = cleanedProps;
+  const { className, width, height, rounded, children, style, ...rest } =
+    cleanedProps;
+
+  // Determine if we should use fit-content sizing (when children are present and no explicit dimensions)
+  const hasFitContent =
+    children !== undefined &&
+    children !== null &&
+    width === undefined &&
+    height === undefined;
+
+  // Build inline styles
+  const inlineStyles: React.CSSProperties = { ...style };
+
+  // Set width/height with smart defaults
+  if (width !== undefined) {
+    inlineStyles.width = width;
+  } else if (!hasFitContent) {
+    // Default to 100% for empty skeletons (better for text inference)
+    inlineStyles.width = '100%';
+  }
+
+  if (height !== undefined) {
+    inlineStyles.height = height;
+  }
+  // Don't set default height - let typography context determine it via ::before
 
   return (
     <div
       className={clsx(classNames.root, styles[classNames.root], className)}
       data-rounded={rounded}
-      style={{
-        width,
-        height,
-        ...style,
-      }}
+      data-fit-content={hasFitContent}
+      style={inlineStyles}
       {...rest}
-    />
+    >
+      {children}
+    </div>
   );
 };

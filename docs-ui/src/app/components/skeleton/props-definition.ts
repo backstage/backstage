@@ -20,6 +20,13 @@ export const skeletonPropDefs: Record<string, PropDef> = {
     default: 'false',
     responsive: false,
   },
+  children: {
+    type: 'string',
+    default: 'undefined',
+    responsive: false,
+    description:
+      'Children elements. When provided, the skeleton will infer its dimensions from the children, preventing layout shift.',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

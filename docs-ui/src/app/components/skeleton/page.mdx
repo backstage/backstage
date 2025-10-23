@@ -4,6 +4,18 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { skeletonPropDefs } from './props-definition';
 import { skeletonUsageSnippet, demo1Snippet, demo2Snippet } from './snippets';
 import { Demo1, Demo2 } from './components';
+import { SkeletonSnippet } from '@/snippets/stories-snippets';
+import {
+  skeletonPropDefs,
+  skeletonUsageSnippet,
+  skeletonDefaultSnippet,
+  skeletonDemo1Snippet,
+  skeletonDemo2Snippet,
+  skeletonTypographySnippet,
+  skeletonInferringSnippet,
+  skeletonInheritingSnippet,
+  skeletonRealWorldSnippet,
+} from './skeleton.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -18,6 +30,14 @@ import { SkeletonDefinition } from '../../../utils/definitions';
 
 ## Usage
 
+The Skeleton component automatically inherits typography from its parent context, preventing layout shift. It supports two usage patterns:
+
+1. **Inside Text components** (recommended) - Skeleton automatically inherits font-size and line-height
+2. **Wrapping children** - Automatically matches dimensions of wrapped components
+3. **Explicit dimensions** - Set custom width and height for non-text content
+
+> **Note**: When using Skeleton inside Text components, it works best for **single-line text** where you expect the content to fit on one line. For multi-line text, consider using multiple Skeleton components or wrapping children to infer dimensions.
+
 <CodeBlock code={skeletonUsageSnippet} />
 
 ## API reference
@@ -26,17 +46,67 @@ import { SkeletonDefinition } from '../../../utils/definitions';
 
 ## Examples
 
+### Inheriting typography
+
+Place Skeleton inside a Text component and it automatically inherits the typography. No explicit sizing needed - the skeleton respects the theme's font-size and line-height!
+
+> **Best for single-line text**: This pattern works best when you expect the content to be a single line. The skeleton will match the exact height of one line of text.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SkeletonSnippet story="InheritingTypography" />}
+  code={skeletonInheritingSnippet}
+  open
+/>
+
+### Inferring dimensions
+
+When you wrap children in a Skeleton, it automatically infers the correct dimensions, preventing layout shift. The children are hidden but maintain their layout space.
+
+> **Best for multi-line text**: This pattern is ideal for multi-line content where you want the skeleton to match the exact dimensions of the loaded content, including line breaks and wrapping.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SkeletonSnippet story="InferringDimensions" />}
+  code={skeletonInferringSnippet}
+  open
+/>
+
+### Real-world example
+
+This example shows how to use Skeleton with Text components to prevent layout shift when loading content. The fixed-width card demonstrates that there's no layout shift when toggling between loading and loaded states.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SkeletonSnippet story="RealWorldExample" />}
+  code={skeletonRealWorldSnippet}
+  open
+/>
+
 ### Demo 1
 
 You can use a mix of different sizes to create a more complex skeleton.
 
-<Snippet align="center" py={4} preview={<Demo1 />} code={demo1Snippet} open />
+<Snippet
+  align="center"
+  py={4}
+  preview={<SkeletonSnippet story="Demo1" />}
+  code={skeletonDemo1Snippet}
+/>
 
 ### Demo 2
 
 You can use a mix of different sizes to create a more complex skeleton.
 
-<Snippet align="center" py={4} preview={<Demo2 />} code={demo2Snippet} open />
+<Snippet
+  align="center"
+  py={4}
+  preview={<SkeletonSnippet story="Demo2" />}
+  code={skeletonDemo2Snippet}
+/>
 
 <Theming definition={SkeletonDefinition} />
 
