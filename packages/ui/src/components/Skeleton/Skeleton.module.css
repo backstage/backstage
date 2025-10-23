@@ -26,4 +26,28 @@
   .bui-Skeleton[data-rounded='true'] {
     border-radius: var(--bui-radius-full);
   }
+
+  /* When children are present, fit to their size */
+  .bui-Skeleton[data-fit-content='true'] {
+    width: fit-content;
+    height: auto;
+  }
+
+  /* Hide children visually but maintain their dimensions */
+  .bui-Skeleton[data-fit-content='true'] > * {
+    visibility: hidden;
+  }
+
+  /* Inherit typography context for empty skeletons to prevent layout shift */
+  .bui-Skeleton:empty::before {
+    content: '\00a0';
+    font-size: inherit;
+    line-height: inherit;
+    font-family: inherit;
+  }
+
+  /* Default width when empty (can be overridden with inline styles) */
+  .bui-Skeleton:empty {
+    width: 100%;
+  }
 }
