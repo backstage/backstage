@@ -57,6 +57,42 @@ const testPlugin = createBackendPlugin({
 });
 
 describe('BackendInitializer', () => {
+  it('should only load modules if the plugin is present', async () => {
+    let loadedModule = false;
+    const backend1 = new BackendInitializer(baseFactories);
+    const testModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'producer',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {
+            loadedModule = true;
+          },
+        });
+      },
+    });
+    await backend1.add(testModule);
+    await backend1.start();
+    expect(loadedModule).toBe(false);
+
+    const backend2 = new BackendInitializer(baseFactories);
+    await backend2.add(testModule);
+    await backend2.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    await backend2.start();
+    expect(loadedModule).toBe(true);
+  });
+
   it('should initialize root scoped services', async () => {
     const ref1 = createServiceRef<{ x: number }>({
       id: '1',
