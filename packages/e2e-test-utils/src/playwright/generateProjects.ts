@@ -40,3 +40,33 @@ export function generateProjects(): PlaywrightTestConfig['projects'] {
     },
   }));
 }
+
+/**
+ * Generates a list of playwright projects by scanning the monorepo for packages with an `e2e-tests/` folder.
+ * Creates a setup project that runs first, followed by test projects that depend on it and use shared authentication state.
+ *
+ * @param authStateStoragePath - Path to the file where Playwright will store/read authentication state
+ * @returns Array of Playwright project configurations with setup dependencies
+ * @public
+ */
+export function generateProjectsWithAuthSetup(
+  authStateStoragePath: string,
+): PlaywrightTestConfig['projects'] {
+  const { root, packages } = getPackagesSync(process.cwd());
+  const e2eTestPackages = [...(root ? [root] : []), ...packages].filter(pkg => {
+    return fs.pathExistsSync(resolvePath(pkg.dir, 'e2e-tests'));
+  }) as BackstagePackage[];
+
+  return [
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    ...e2eTestPackages.map(pkg => ({
+      name: pkg.packageJson.name,
+      testDir: resolvePath(pkg.dir, 'e2e-tests'),
+      use: {
+        channel: process.env.CI ? undefined : 'chrome', // Avoid specifying channel in CI to use default one
+        storageState: authStateStoragePath,
+      },
+      dependencies: ['setup'],
+    })),
+  ];
+}
