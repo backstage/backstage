@@ -1,0 +1,56 @@
+export default {
+  type: 'category',
+  label: 'References',
+  link: {
+    type: 'generated-index',
+    title: 'References',
+    slug: '/references',
+  },
+  items: [
+    {
+      type: 'category',
+      label: 'Designing for Backstage',
+      link: {
+        type: 'generated-index',
+        title: 'Designing for Backstage',
+        slug: '/designing-for-backstage',
+      },
+      items: [
+        'dls/design',
+        'dls/component-design-guidelines',
+        'dls/contributing-to-storybook',
+        'dls/figma',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Architecture Decision Records (ADRs)',
+      link: {
+        type: 'generated-index',
+        title: 'Architecture Decision Records (ADRs)',
+        slug: '/architecture-decision-records-adrs',
+      },
+      items: [
+        'architecture-decisions/adrs-overview',
+        'architecture-decisions/adrs-adr001',
+        'architecture-decisions/adrs-adr002',
+        'architecture-decisions/adrs-adr003',
+        'architecture-decisions/adrs-adr004',
+        'architecture-decisions/adrs-adr005',
+        'architecture-decisions/adrs-adr006',
+        'architecture-decisions/adrs-adr007',
+        'architecture-decisions/adrs-adr008',
+        'architecture-decisions/adrs-adr009',
+        'architecture-decisions/adrs-adr010',
+        'architecture-decisions/adrs-adr011',
+        'architecture-decisions/adrs-adr012',
+        'architecture-decisions/adrs-adr013',
+        'architecture-decisions/adrs-adr014',
+      ],
+    },
+    'api/deprecations',
+    'references/glossary',
+    'api/utility-apis',
+    'reference/index',
+  ],
+};
