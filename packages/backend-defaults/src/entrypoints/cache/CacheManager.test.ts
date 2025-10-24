@@ -411,21 +411,29 @@ describe('CacheManager store options', () => {
       expect(result).toBe('testPlugin');
     });
 
-    it('returns pluginId when store options have no namespace (redis)', () => {
-      const storeOptions = {
+    it.each([
+      {
         type: 'redis',
-        client: {
-          keyPrefixSeparator: ':',
-        },
-      };
-      const result = (CacheManager as any).constructNamespace(
-        'testPlugin',
-        storeOptions,
-      );
-      expect(result).toBe('testPlugin');
-    });
+        field: 'namespace',
+        client: { keyPrefixSeparator: ':' },
+      },
+      { type: 'valkey', field: 'keyPrefix', client: {} },
+    ])(
+      'returns pluginId when store options have no $field for $type',
+      ({ type, client }) => {
+        const storeOptions = {
+          type,
+          client,
+        };
+        const result = (CacheManager as any).constructNamespace(
+          'testPlugin',
+          storeOptions,
+        );
+        expect(result).toBe('testPlugin');
+      },
+    );
 
-    it('combines namespace and pluginId with default separator (redis)', () => {
+    it('combines namespace and pluginId with default separator for redis', () => {
       const storeOptions = {
         type: 'redis',
         client: {
@@ -440,7 +448,7 @@ describe('CacheManager store options', () => {
       expect(result).toBe('my-app:testPlugin');
     });
 
-    it('combines namespace and pluginId with custom separator (redis)', () => {
+    it('combines namespace and pluginId with custom separator for redis', () => {
       const storeOptions = {
         type: 'redis',
         client: {
@@ -455,7 +463,7 @@ describe('CacheManager store options', () => {
       expect(result).toBe('my-app-testPlugin');
     });
 
-    it('uses default separator when keyPrefixSeparator is not provided (redis)', () => {
+    it('uses default separator when keyPrefixSeparator is not provided for redis', () => {
       const storeOptions = {
         type: 'redis',
         client: {
@@ -469,18 +477,7 @@ describe('CacheManager store options', () => {
       expect(result).toBe('my-app:testPlugin');
     });
 
-    it('returns pluginId when store options have no keyPrefix (valkey)', () => {
-      const storeOptions = {
-        type: 'valkey',
-      };
-      const result = (CacheManager as any).constructNamespace(
-        'testPlugin',
-        storeOptions,
-      );
-      expect(result).toBe('testPlugin');
-    });
-
-    it('uses keyPrefix (valkey)', () => {
+    it('uses keyPrefix for valkey', () => {
       const storeOptions = {
         type: 'valkey',
         client: {
