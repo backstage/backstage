@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { Link, RouterProvider } from 'react-aria-components';
+import { Link } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useRef } from 'react';
 import { RiShapesLine } from '@remixicon/react';
 import type { HeaderToolbarProps } from './types';
 import { Text } from '../Text';
-import { useNavigate, useHref } from 'react-router-dom';
 import styles from './Header.module.css';
 import clsx from 'clsx';
 
@@ -33,7 +32,6 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
   const { classNames, cleanedProps } = useStyles('Header', props);
   const { className, icon, title, titleLink, customActions, hasTabs } =
     cleanedProps;
-  let navigate = useNavigate();
 
   // Refs for collision detection
   const toolbarWrapperRef = useRef<HTMLDivElement>(null);
@@ -52,63 +50,61 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
   );
 
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
+    <div
+      className={clsx(
+        classNames.toolbar,
+        styles[classNames.toolbar],
+        className,
+      )}
+      data-has-tabs={hasTabs}
+    >
       <div
         className={clsx(
-          classNames.toolbar,
-          styles[classNames.toolbar],
-          className,
+          classNames.toolbarWrapper,
+          styles[classNames.toolbarWrapper],
         )}
-        data-has-tabs={hasTabs}
+        ref={toolbarWrapperRef}
       >
         <div
           className={clsx(
-            classNames.toolbarWrapper,
-            styles[classNames.toolbarWrapper],
+            classNames.toolbarContent,
+            styles[classNames.toolbarContent],
           )}
-          ref={toolbarWrapperRef}
+          ref={toolbarContentRef}
         >
-          <div
-            className={clsx(
-              classNames.toolbarContent,
-              styles[classNames.toolbarContent],
+          <Text as="h1" variant="body-medium">
+            {titleLink ? (
+              <Link
+                className={clsx(
+                  classNames.toolbarName,
+                  styles[classNames.toolbarName],
+                )}
+                href={titleLink}
+              >
+                {titleContent}
+              </Link>
+            ) : (
+              <div
+                className={clsx(
+                  classNames.toolbarName,
+                  styles[classNames.toolbarName],
+                )}
+              >
+                {titleContent}
+              </div>
             )}
-            ref={toolbarContentRef}
-          >
-            <Text as="h1" variant="body-medium">
-              {titleLink ? (
-                <Link
-                  className={clsx(
-                    classNames.toolbarName,
-                    styles[classNames.toolbarName],
-                  )}
-                  href={titleLink}
-                >
-                  {titleContent}
-                </Link>
-              ) : (
-                <div
-                  className={clsx(
-                    classNames.toolbarName,
-                    styles[classNames.toolbarName],
-                  )}
-                >
-                  {titleContent}
-                </div>
-              )}
-            </Text>
-          </div>
-          <div
-            className={clsx(
-              classNames.toolbarControls,
-              styles[classNames.toolbarControls],
-            )}
-            ref={toolbarControlsRef}
-          >
-            {customActions}
-          </div>
+          </Text>
+        </div>
+        <div
+          className={clsx(
+            classNames.toolbarControls,
+            styles[classNames.toolbarControls],
+          )}
+          ref={toolbarControlsRef}
+        >
+          {customActions}
         </div>
       </div>
-    </RouterProvider>
+    </div>
   );
 };
