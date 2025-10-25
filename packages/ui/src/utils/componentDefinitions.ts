@@ -228,6 +228,8 @@ export const componentDefinitions = {
     dataAttributes: {
       variant: ['subtitle', 'body', 'caption', 'label'] as const,
       weight: ['regular', 'bold'] as const,
+      color: ['primary', 'secondary', 'danger', 'warning', 'success'] as const,
+      truncate: [true, false] as const,
     },
   },
   List: {
