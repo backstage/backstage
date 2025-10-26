@@ -84,13 +84,6 @@ export const homeReactTranslationRef: TranslationRef<
 >;
 
 // @alpha
-export const titleExtensionDataRef: ConfigurableExtensionDataRef<
-  string,
-  'title',
-  {}
->;
-
-// @alpha
 export const widgetMetadataRef: ConfigurableExtensionDataRef<
   {
     name?: string;
