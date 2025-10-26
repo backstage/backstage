@@ -25,7 +25,6 @@ import {
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { CustomHomepageGrid } from '../components';
 import type { CustomHomepageGridProps } from '../components';
-import { titleExtensionDataRef } from '@backstage/plugin-home-react/alpha';
 
 /**
  * Arguments provided to the homepage renderer.
@@ -77,7 +76,7 @@ const DEFAULT_ATTACH_POINT = Object.freeze({
 export const HomepageBlueprint = createExtensionBlueprint({
   kind: 'home-page',
   attachTo: DEFAULT_ATTACH_POINT,
-  output: [coreExtensionData.reactElement, titleExtensionDataRef.optional()],
+  output: [coreExtensionData.reactElement, coreExtensionData.title.optional()],
   inputs: {
     widgets: createExtensionInput([coreExtensionData.reactElement]),
   },
@@ -107,7 +106,7 @@ export const HomepageBlueprint = createExtensionBlueprint({
     );
 
     if (params.title) {
-      yield titleExtensionDataRef(params.title);
+      yield coreExtensionData.title(params.title);
     }
   },
 });
