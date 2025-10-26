@@ -106,7 +106,7 @@ const _default: OverridableFrontendPlugin<
             >
           | ConfigurableExtensionDataRef<
               string,
-              'title',
+              'core.title',
               {
                 optional: true;
               }
@@ -138,7 +138,7 @@ export const HomepageBlueprint: ExtensionBlueprint<{
     | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
         string,
-        'title',
+        'core.title',
         {
           optional: true;
         }

@@ -40,7 +40,6 @@ import {
 import { compatWrapper } from '@backstage/core-compat-api';
 import { VisitListener } from './components/';
 import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
-import { titleExtensionDataRef } from '@backstage/plugin-home-react/alpha';
 import HomeIcon from '@material-ui/icons/Home';
 
 const rootRouteRef = createRouteRef();
@@ -50,7 +49,7 @@ const homePage = PageBlueprint.makeWithOverrides({
     props: createExtensionInput(
       [
         coreExtensionData.reactElement.optional(),
-        titleExtensionDataRef.optional(),
+        coreExtensionData.title.optional(),
       ],
       {
         singleton: true,
@@ -67,7 +66,7 @@ const homePage = PageBlueprint.makeWithOverrides({
           compatWrapper(
             <m.HomepageCompositionRoot
               children={inputs.props?.get(coreExtensionData.reactElement)}
-              title={inputs.props?.get(titleExtensionDataRef)}
+              title={inputs.props?.get(coreExtensionData.title)}
             />,
           ),
         ),

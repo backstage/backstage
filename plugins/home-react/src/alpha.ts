@@ -24,7 +24,6 @@
  * @packageDocumentation
  */
 export { homeReactTranslationRef } from './translation';
-export { titleExtensionDataRef } from './alpha/dataRefs';
 export {
   HomepageWidgetBlueprint,
   widgetMetadataRef,
