@@ -17,9 +17,7 @@
 import { lazy, ReactElement } from 'react';
 import { compatWrapper } from '@backstage/core-compat-api';
 import {
-  coreExtensionData,
   createExtensionBlueprint,
-  createExtensionDataRef,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -29,6 +27,7 @@ import {
   CardSettings,
   ComponentParts,
 } from '../../extensions';
+import { homePageWidgetDataRef } from '../dataRefs';
 
 /** @alpha */
 export interface HomepageWidgetBlueprintParams {
@@ -69,18 +68,6 @@ const DEFAULT_WIDGET_ATTACH_POINT = {
 } as const;
 
 /**
- * Extension data ref for widget metadata.
- * @alpha
- */
-export const widgetMetadataRef = createExtensionDataRef<{
-  name?: string;
-  title?: string;
-  description?: string;
-  layout?: CardLayout;
-  settings?: CardSettings;
-}>().with({ id: 'home.widget.metadata' });
-
-/**
  * Creates widgets that can be installed into the home page grid.
  *
  * @alpha
@@ -88,7 +75,7 @@ export const widgetMetadataRef = createExtensionDataRef<{
 export const HomepageWidgetBlueprint = createExtensionBlueprint({
   kind: 'home-widget',
   attachTo: DEFAULT_WIDGET_ATTACH_POINT,
-  output: [coreExtensionData.reactElement, widgetMetadataRef],
+  output: [homePageWidgetDataRef],
   *factory(params: HomepageWidgetBlueprintParams, { node }) {
     const isCustomizable = params.settings?.schema !== undefined;
     const LazyCard = lazy(() =>
@@ -113,11 +100,8 @@ export const HomepageWidgetBlueprint = createExtensionBlueprint({
         </ExtensionBoundary>,
       );
 
-    yield coreExtensionData.reactElement(
-      <Widget {...(params.componentProps ?? {})} />,
-    );
-
-    yield widgetMetadataRef({
+    yield homePageWidgetDataRef({
+      component: <Widget {...(params.componentProps ?? {})} />,
       name: params.name,
       title: params.title,
       description: params.description,

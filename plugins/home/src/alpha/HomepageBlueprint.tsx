@@ -25,6 +25,7 @@ import {
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { CustomHomepageGrid } from '../components';
 import type { CustomHomepageGridProps } from '../components';
+import { homePageWidgetDataRef } from '@backstage/plugin-home-react/alpha';
 
 /**
  * Arguments provided to the homepage renderer.
@@ -78,13 +79,13 @@ export const HomepageBlueprint = createExtensionBlueprint({
   attachTo: DEFAULT_ATTACH_POINT,
   output: [coreExtensionData.reactElement, coreExtensionData.title.optional()],
   inputs: {
-    widgets: createExtensionInput([coreExtensionData.reactElement]),
+    widgets: createExtensionInput([homePageWidgetDataRef]),
   },
   *factory(params: HomepageBlueprintParams = {}, { inputs, node }) {
     const widgetOutputs = inputs.widgets ?? [];
     const widgetElements = widgetOutputs.map((widget, index) => (
       <Fragment key={index}>
-        {widget.get(coreExtensionData.reactElement)}
+        {widget.get(homePageWidgetDataRef).component}
       </Fragment>
     ));
 
