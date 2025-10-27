@@ -197,6 +197,7 @@ export type EntityRelationsGraphProps = {
   renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
+  allowFullscreen?: boolean;
 };
 
 // @public
