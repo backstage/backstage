@@ -533,7 +533,7 @@ export function DependencyGraph<NodeData, EdgeData>(
               height={graphHeight}
               y={maxHeight / 2 - graphHeight / 2}
               x={maxWidth / 2 - graphWidth / 2}
-              viewBox={`-25 -25 ${graphWidth + 50} ${graphHeight + 50}`}
+              viewBox={`0 0 ${graphWidth} ${graphHeight}`}
             >
               {graphEdges.map(e => {
                 const edge = graph.current.edge(e) as GraphEdge<EdgeData>;
