@@ -26,7 +26,10 @@
 export { homeReactTranslationRef } from './translation';
 export {
   HomepageWidgetBlueprint,
-  widgetMetadataRef,
   type HomepageWidgetBlueprintParams,
 } from './alpha/blueprints/HomepageWidgetBlueprint';
+export {
+  homePageWidgetDataRef,
+  type HomePageWidgetData,
+} from './alpha/dataRefs';
 export type { ComponentParts, CardLayout, CardSettings } from './extensions';
