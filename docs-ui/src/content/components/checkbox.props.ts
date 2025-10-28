@@ -5,31 +5,32 @@ import {
 } from '@/utils/propDefs';
 
 export const checkboxPropDefs: Record<string, PropDef> = {
-  label: {
-    type: 'string',
-    responsive: false,
-  },
-  defaultChecked: {
+  children: {
     type: 'enum',
-    values: ['boolean', "'indeterminate'"],
+    values: ['React.ReactNode'],
     responsive: false,
   },
-  checked: {
-    type: 'enum',
-    values: ['boolean', "'indeterminate'"],
-    responsive: false,
-  },
-  onChange: {
-    type: 'enum',
-    values: ["(checked: boolean | 'indeterminate') => void"],
-    responsive: false,
-  },
-  disabled: {
+  isSelected: {
     type: 'enum',
     values: ['boolean'],
     responsive: false,
   },
-  required: {
+  defaultSelected: {
+    type: 'enum',
+    values: ['boolean'],
+    responsive: false,
+  },
+  onChange: {
+    type: 'enum',
+    values: ['(isSelected: boolean) => void'],
+    responsive: false,
+  },
+  isDisabled: {
+    type: 'enum',
+    values: ['boolean'],
+    responsive: false,
+  },
+  isRequired: {
     type: 'enum',
     values: ['boolean'],
     responsive: false,
@@ -48,13 +49,13 @@ export const checkboxPropDefs: Record<string, PropDef> = {
 
 export const checkboxUsageSnippet = `import { Checkbox } from '@backstage/ui';
 
-<Checkbox />`;
+<Checkbox>Accept terms</Checkbox>`;
 
-export const checkboxDefaultSnippet = `<Checkbox label="Accept terms and conditions" />`;
+export const checkboxDefaultSnippet = `<Checkbox>Accept terms and conditions</Checkbox>`;
 
-export const checkboxVariantsSnippet = `<Inline alignY="center">
-  <Checkbox />
-  <Checkbox checked />
-  <Checkbox label="Checkbox" />
-  <Checkbox label="Checkbox" checked />
-</Inline>`;
+export const checkboxVariantsSnippet = `<Flex direction="column" gap="2">
+  <Checkbox>Unchecked</Checkbox>
+  <Checkbox isSelected>Checked</Checkbox>
+  <Checkbox isDisabled>Disabled</Checkbox>
+  <Checkbox isSelected isDisabled>Checked & Disabled</Checkbox>
+</Flex>`;

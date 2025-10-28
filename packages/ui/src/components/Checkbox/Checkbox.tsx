@@ -15,7 +15,7 @@
  */
 
 import { forwardRef } from 'react';
-import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
+import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import clsx from 'clsx';
@@ -23,33 +23,24 @@ import styles from './Checkbox.module.css';
 import { RiCheckLine } from '@remixicon/react';
 
 /** @public */
-export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
+export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles('Checkbox', props);
-    const { label, onChange, className, ...rest } = cleanedProps;
+    const { classNames } = useStyles('Checkbox');
+    const { className, children, ...rest } = props;
 
-    const checkboxElement = (
-      <CheckboxPrimitive.Root
+    return (
+      <RACheckbox
         ref={ref}
         className={clsx(classNames.root, styles[classNames.root], className)}
-        onCheckedChange={onChange}
         {...rest}
       >
-        <CheckboxPrimitive.Indicator
+        <div
           className={clsx(classNames.indicator, styles[classNames.indicator])}
         >
           <RiCheckLine size={12} />
-        </CheckboxPrimitive.Indicator>
-      </CheckboxPrimitive.Root>
-    );
-
-    return label ? (
-      <label className={clsx(classNames.label, styles[classNames.label])}>
-        {checkboxElement}
-        {label}
-      </label>
-    ) : (
-      checkboxElement
+        </div>
+        {children}
+      </RACheckbox>
     );
   },
 );

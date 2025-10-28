@@ -6,6 +6,7 @@
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
+import { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import { ComponentProps } from 'react';
@@ -270,31 +271,13 @@ export interface CellProps extends CellProps_2 {
 
 // @public (undocumented)
 export const Checkbox: ForwardRefExoticComponent<
-  CheckboxProps & RefAttributes<HTMLButtonElement>
+  CheckboxProps & RefAttributes<HTMLLabelElement>
 >;
 
 // @public (undocumented)
-export interface CheckboxProps {
+export interface CheckboxProps extends CheckboxProps_2 {
   // (undocumented)
-  checked?: boolean;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  defaultChecked?: boolean;
-  // (undocumented)
-  disabled?: boolean;
-  // (undocumented)
-  label?: string;
-  // (undocumented)
-  name?: string;
-  // (undocumented)
-  onChange?: (checked: boolean) => void;
-  // (undocumented)
-  required?: boolean;
-  // (undocumented)
-  style?: React.CSSProperties;
-  // (undocumented)
-  value?: string;
+  children: React.ReactNode;
 }
 
 // @public
@@ -431,12 +414,11 @@ export const componentDefinitions: {
   };
   readonly Checkbox: {
     readonly classNames: {
-      readonly root: 'bui-CheckboxRoot';
-      readonly label: 'bui-CheckboxLabel';
+      readonly root: 'bui-Checkbox';
       readonly indicator: 'bui-CheckboxIndicator';
     };
     readonly dataAttributes: {
-      readonly checked: readonly [true, false];
+      readonly selected: readonly [true, false];
     };
   };
   readonly Collapsible: {
