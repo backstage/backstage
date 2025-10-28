@@ -207,6 +207,27 @@ export async function createRouter(
     const settings = await store.getNotificationSettings({ user });
     const channels = getNotificationChannels();
 
+    // Merge existing channels/origins/topics with configured settings
+    for (const channel of defaultNotificationSettings?.channels ?? []) {
+      if (!channels.includes(channel.id)) {
+        channels.push(channel.id);
+      }
+
+      for (const origin of channel.origins) {
+        if (!origins.includes(origin.id)) {
+          origins.push(origin.id);
+        }
+
+        for (const topic of origin.topics ?? []) {
+          if (
+            !topics.some(t => t.origin === origin.id && t.topic === topic.id)
+          ) {
+            topics.push({ origin: origin.id, topic: topic.id });
+          }
+        }
+      }
+    }
+
     return {
       channels: channels.map(channelId =>
         getChannelSettings(channelId, settings, origins, topics),

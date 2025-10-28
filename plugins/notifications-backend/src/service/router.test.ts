@@ -68,6 +68,16 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
                   id: 'external:test-service2',
                   enabled: false,
                 },
+                {
+                  id: 'external:test-service3',
+                  enabled: true,
+                  topics: [
+                    {
+                      id: 'test-topic3',
+                      enabled: false,
+                    },
+                  ],
+                },
               ],
             },
           ],
@@ -829,6 +839,16 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
                 id: 'external:test-service2',
                 topics: [{ enabled: false, id: 'test-topic2' }],
               },
+              {
+                enabled: true,
+                id: 'external:test-service3',
+                topics: [
+                  {
+                    enabled: false,
+                    id: 'test-topic3',
+                  },
+                ],
+              },
             ]),
           },
         ],
@@ -863,6 +883,16 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
                 id: 'external:test-service2',
                 topics: [{ enabled: false, id: 'test-topic2' }],
               },
+              {
+                enabled: true,
+                id: 'external:test-service3',
+                topics: [
+                  {
+                    enabled: false,
+                    id: 'test-topic3',
+                  },
+                ],
+              },
             ]),
           },
         ],
@@ -886,6 +916,16 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
                 enabled: false,
                 id: 'external:test-service2',
                 topics: [{ enabled: false, id: 'test-topic2' }],
+              },
+              {
+                enabled: true,
+                id: 'external:test-service3',
+                topics: [
+                  {
+                    enabled: false,
+                    id: 'test-topic3',
+                  },
+                ],
               },
             ]),
           },
