@@ -1,5 +1,13 @@
 # @backstage/plugin-mui-to-bui
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 5c614ff: Updated BUI checkbox preview example to align with new component API.
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.1
+
 ## 0.2.1-next.0
 
 ### Patch Changes
