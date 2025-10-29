@@ -1,6 +1,6 @@
 {
   "name": "@backstage/ui",
-  "version": "0.7.2-next.2",
+  "version": "0.9.0-next.1",
   "backstage": {
     "role": "web-library"
   },
@@ -19,7 +19,9 @@
     "directory": "packages/ui"
   },
   "license": "Apache-2.0",
-  "sideEffects": true,
+  "sideEffects": [
+    "*.css"
+  ],
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [

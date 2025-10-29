@@ -89,9 +89,9 @@ export type HighlightedSearchResultTextProps = {
 
 // @public
 export class MockSearchApi implements SearchApi {
-  constructor(mockedResults?: SearchResultSet | undefined);
+  constructor(mockedResults?: SearchResultSet);
   // (undocumented)
-  mockedResults?: SearchResultSet | undefined;
+  mockedResults?: SearchResultSet;
   // (undocumented)
   query(
     _query: SearchQuery,

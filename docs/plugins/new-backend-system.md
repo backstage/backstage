@@ -195,7 +195,7 @@ A `ServiceRef` is a named reference to an interface which are later used to reso
 Services is what provides common utilities that previously resided in the `PluginEnvironment` such as Config, Logging and Database.
 
 On startup the backend will make sure that the services are initialized before being passed to the plugin/module that depend on them.
-ServiceRefs contain a scope which is used to determine if the serviceFactory creating the service will create a new instance scoped per plugin/module or if it will be shared. `plugin` scoped services will be created once per plugin/module and `root` scoped services will be created once per backend instance.
+ServiceRefs contain a scope which is used to determine if the service factory creating the service will create a new instance scoped per plugin/module or if it will be shared. `plugin` scoped services will be created once per plugin/module and `root` scoped services will be created once per backend instance.
 
 #### Defining a Service
 

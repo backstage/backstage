@@ -35,6 +35,30 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-Box',
     },
+    utilityProps: [
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+      'position',
+      'display',
+      'width',
+      'minWidth',
+      'maxWidth',
+      'height',
+      'minHeight',
+      'maxHeight',
+    ],
   },
   Button: {
     classNames: {
@@ -65,12 +89,11 @@ export const componentDefinitions = {
   },
   Checkbox: {
     classNames: {
-      root: 'bui-CheckboxRoot',
-      label: 'bui-CheckboxLabel',
+      root: 'bui-Checkbox',
       indicator: 'bui-CheckboxIndicator',
     },
     dataAttributes: {
-      checked: [true, false] as const,
+      selected: [true, false] as const,
     },
   },
   Collapsible: {
@@ -83,6 +106,22 @@ export const componentDefinitions = {
   Container: {
     classNames: {
       root: 'bui-Container',
+    },
+    utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'],
+  },
+  Dialog: {
+    classNames: {
+      overlay: 'bui-DialogOverlay',
+      dialog: 'bui-Dialog',
+      header: 'bui-DialogHeader',
+      headerTitle: 'bui-DialogHeaderTitle',
+      body: 'bui-DialogBody',
+      footer: 'bui-DialogFooter',
+    },
+  },
+  FieldError: {
+    classNames: {
+      root: 'bui-FieldError',
     },
   },
   FieldLabel: {
@@ -97,12 +136,55 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-Flex',
     },
+    utilityProps: [
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+      'gap',
+      'align',
+      'justify',
+      'direction',
+    ],
   },
   Grid: {
     classNames: {
       root: 'bui-Grid',
-      item: 'bui-GridItem',
     },
+    utilityProps: [
+      'columns',
+      'gap',
+      'm',
+      'mb',
+      'ml',
+      'mr',
+      'mt',
+      'mx',
+      'my',
+      'p',
+      'pb',
+      'pl',
+      'pr',
+      'pt',
+      'px',
+      'py',
+    ],
+  },
+  GridItem: {
+    classNames: {
+      root: 'bui-GridItem',
+    },
+    utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
   },
   Header: {
     classNames: {
@@ -180,6 +262,9 @@ export const componentDefinitions = {
       root: 'bui-PasswordField',
       inputVisibility: 'bui-InputVisibility',
     },
+    dataAttributes: {
+      size: ['small', 'medium'] as const,
+    },
   },
   Popover: {
     classNames: {
@@ -193,14 +278,6 @@ export const componentDefinitions = {
       radio: 'bui-Radio',
     },
   },
-  ScrollArea: {
-    classNames: {
-      root: 'bui-ScrollAreaRoot',
-      viewport: 'bui-ScrollAreaViewport',
-      scrollbar: 'bui-ScrollAreaScrollbar',
-      thumb: 'bui-ScrollAreaThumb',
-    },
-  },
   SearchField: {
     classNames: {
       root: 'bui-SearchField',
@@ -208,6 +285,7 @@ export const componentDefinitions = {
     },
     dataAttributes: {
       startCollapsed: [true, false] as const,
+      size: ['small', 'medium'] as const,
     },
   },
   Select: {
@@ -243,6 +321,7 @@ export const componentDefinitions = {
       body: 'bui-TableBody',
       row: 'bui-TableRow',
       head: 'bui-TableHead',
+      headContent: 'bui-TableHeadContent',
       headSortButton: 'bui-TableHeadSortButton',
       caption: 'bui-TableCaption',
       cell: 'bui-TableCell',
@@ -254,6 +333,14 @@ export const componentDefinitions = {
       cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback',
       cellProfileName: 'bui-TableCellProfileName',
       cellProfileLink: 'bui-TableCellProfileLink',
+    },
+  },
+  TablePagination: {
+    classNames: {
+      root: 'bui-TablePagination',
+      left: 'bui-TablePaginationLeft',
+      right: 'bui-TablePaginationRight',
+      select: 'bui-TablePaginationSelect',
     },
   },
   Tabs: {
@@ -298,12 +385,18 @@ export const componentDefinitions = {
     dataAttributes: {
       invalid: [true, false] as const,
       disabled: [true, false] as const,
+      size: ['small', 'medium'] as const,
     },
   },
   Tooltip: {
     classNames: {
       tooltip: 'bui-Tooltip',
       arrow: 'bui-TooltipArrow',
+    },
+  },
+  VisuallyHidden: {
+    classNames: {
+      root: 'bui-VisuallyHidden',
     },
   },
 } as const satisfies Record<string, ComponentDefinition>;

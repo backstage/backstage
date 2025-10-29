@@ -1,5 +1,33 @@
 # @backstage/frontend-test-utils
 
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.13.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/test-utils@1.7.13-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-app@0.3.2-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- c41dd80: **BREAKING**: Removed the `extensions` option from `renderInTestApp`. If you need to pass extensions to the test app, use the new `renderTestApp` utility instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.3.1
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/config@1.3.5
+  - @backstage/frontend-app-api@0.13.1
+  - @backstage/test-utils@1.7.12
+
 ## 0.3.7-next.1
 
 ### Patch Changes

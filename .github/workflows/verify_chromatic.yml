@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master
-  pull_request_target:
+  pull_request:
     paths:
       - '.github/workflows/verify_chromatic.yml'
       - '.storybook/**'
@@ -31,8 +31,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # For pull_request_target, we need to check out the PR branch
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 10000 # Required to retrieve git history
 
       - name: Use node.js ${{ matrix.node-version }}
@@ -65,22 +63,30 @@ jobs:
             packages/ui/src/**/*.css
 
       - name: Prepare Chromatic Message
-        if: github.event_name == 'pull_request_target' && steps.chromatic.outputs.url
-        id: prepare-message
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        id: prepareMessage
         run: |
           if [ "${{ steps.chromatic.outputs.changeCount }}" = "0" ] || [ -z "${{ steps.chromatic.outputs.changeCount }}" ]; then
-            echo "changes-text=No visual changes detected - [**View build in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
+            echo "changesText=No visual changes detected - [**View build in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
           else
-            echo "changes-text=**${{ steps.chromatic.outputs.changeCount }}** visual changes are waiting for review - [**Review changes in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
+            echo "changesText=**${{ steps.chromatic.outputs.changeCount }}** visual changes are waiting for review - [**Review changes in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
           fi
 
+      - name: Post Chromatic Results to Job Summary
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        run: |
+          echo "## 🎨 Visual Testing with Chromatic" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ${{ steps.prepareMessage.outputs.changesText }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})" >> $GITHUB_STEP_SUMMARY
+
       - name: Post Chromatic Link in PR Comment
-        if: github.event_name == 'pull_request_target' && steps.chromatic.outputs.url
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url && github.event.pull_request.head.repo.full_name == github.repository
         uses: mshick/add-pr-comment@v2
         with:
           message: |
             ## 🎨 Visual Testing with Chromatic
 
-            - ${{ steps.prepare-message.outputs.changes-text }}
+            - ${{ steps.prepareMessage.outputs.changesText }}
             - **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})
           repo-token: ${{ secrets.GITHUB_TOKEN }}

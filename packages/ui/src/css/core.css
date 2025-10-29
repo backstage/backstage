@@ -28,5 +28,15 @@
 
   body {
     background-color: var(--bui-bg);
+
+    /* Text defaults */
+    color: var(--bui-fg-primary);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    font-size: var(--bui-font-size-3);
+
+    /* Smoothing for text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

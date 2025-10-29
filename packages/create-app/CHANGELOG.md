@@ -1,5 +1,29 @@
 # @backstage/create-app
 
+## 0.7.6-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.6-next.0
+
+### Patch Changes
+
+- fc7cbfc: Added the new `@backstage/cli/templates/catalog-provider-module` template to the explicit template configuration for the `next-app` template.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.5
+
+### Patch Changes
+
+- c73bfa4: Bumped create-app version.
+- c2c6054: Bumped create-app version.
+- ffb5b44: Bumped create-app version.
+- 316d077: Bumped create-app version.
+- 7dcedff: Bump `better-sqlite3` to the latest version
+
 ## 0.7.5-next.3
 
 ### Patch Changes

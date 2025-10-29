@@ -22,7 +22,7 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 /** @public */
 export interface TextFieldProps
   extends AriaTextFieldProps,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   /**
    * The HTML input type for the text field
    *

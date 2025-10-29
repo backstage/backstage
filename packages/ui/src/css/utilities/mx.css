@@ -103,8 +103,8 @@
   /* Breakpoint xs */
   @media (min-width: 640px) {
     .xs\:bui-mx {
-      margin-left: var(--px-xs);
-      margin-right: var(--px-xs);
+      margin-left: var(--mx-xs);
+      margin-right: var(--mx-xs);
     }
 
     .xs\:bui-mx-0\.5 {
@@ -191,8 +191,8 @@
   /* Breakpoint sm */
   @media (min-width: 768px) {
     .sm\:bui-mx {
-      margin-left: var(--px-sm);
-      margin-right: var(--px-sm);
+      margin-left: var(--mx-sm);
+      margin-right: var(--mx-sm);
     }
 
     .sm\:bui-mx-0\.5 {
@@ -279,8 +279,8 @@
   /* Breakpoint md */
   @media (min-width: 1024px) {
     .md\:bui-mx {
-      margin-left: var(--px-md);
-      margin-right: var(--px-md);
+      margin-left: var(--mx-md);
+      margin-right: var(--mx-md);
     }
 
     .md\:bui-mx-0\.5 {
@@ -367,8 +367,8 @@
   /* Breakpoint lg */
   @media (min-width: 1280px) {
     .lg\:bui-mx {
-      margin-left: var(--px-lg);
-      margin-right: var(--px-lg);
+      margin-left: var(--mx-lg);
+      margin-right: var(--mx-lg);
     }
 
     .lg\:bui-mx-0\.5 {
@@ -455,8 +455,8 @@
   /* Breakpoint xl */
   @media (min-width: 1536px) {
     .xl\:bui-mx {
-      margin-left: var(--px-xl);
-      margin-right: var(--px-xl);
+      margin-left: var(--mx-xl);
+      margin-right: var(--mx-xl);
     }
 
     .xl\:bui-mx-0\.5 {

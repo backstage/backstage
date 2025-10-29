@@ -21,9 +21,9 @@ asciidoc
 async
 Atlassian
 autofix
+autologout
 automations
 autoscaling
-Autoscaling
 autoselect
 Avro
 backend's
@@ -47,8 +47,10 @@ bundler
 bundlers
 bursty
 callout
+camelCase
 CDNs
 Chai
+Chainguard
 changeset
 changesets
 Changesets
@@ -177,6 +179,7 @@ graphql
 GraphQL
 graphviz
 Hackathons
+hackathon
 haproxy
 hardcoded
 hardcoding
@@ -220,6 +223,7 @@ jq
 js
 json
 jsonnet
+JSONSchema
 jsx
 JWTs
 Kaewkasi
@@ -417,6 +421,7 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
+scalprum
 SCM
 SCMs
 scrollable
@@ -467,6 +472,8 @@ subheaders
 subkey
 subpage
 subpath
+subpaths
+subroute
 subroutes
 substring
 subtree
@@ -491,6 +498,7 @@ templaters
 Templaters
 TFRecord
 theia
+Themer
 threenager
 thumbsup
 todo

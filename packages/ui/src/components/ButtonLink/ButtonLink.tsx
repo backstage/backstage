@@ -21,28 +21,23 @@ import { useNavigate, useHref } from 'react-router-dom';
 import type { ButtonLinkProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { isExternalLink } from '../../utils/isExternalLink';
+import stylesButton from '../Button/Button.module.css';
 
 /** @public */
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
     const navigate = useNavigate();
-    const {
-      size = 'small',
-      variant = 'primary',
-      iconStart,
-      iconEnd,
-      children,
-      className,
-      href,
-      ...rest
-    } = props;
 
-    const { classNames, dataAttributes } = useStyles('Button', {
-      size,
-      variant,
+    const { classNames, dataAttributes, cleanedProps } = useStyles('Button', {
+      size: 'small',
+      variant: 'primary',
+      ...props,
     });
 
     const { classNames: classNamesButtonLink } = useStyles('ButtonLink');
+
+    const { children, className, iconStart, iconEnd, href, ...rest } =
+      cleanedProps;
 
     const isExternal = isExternalLink(href);
 
@@ -53,6 +48,7 @@ export const ButtonLink = forwardRef(
           className={clsx(
             classNames.root,
             classNamesButtonLink.root,
+            stylesButton[classNames.root],
             className,
           )}
           ref={ref}
@@ -74,6 +70,7 @@ export const ButtonLink = forwardRef(
           className={clsx(
             classNames.root,
             classNamesButtonLink.root,
+            stylesButton[classNames.root],
             className,
           )}
           ref={ref}

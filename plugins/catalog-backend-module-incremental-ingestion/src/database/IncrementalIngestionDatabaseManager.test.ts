@@ -24,7 +24,7 @@ jest.setTimeout(60_000);
 
 describe('IncrementalIngestionDatabaseManager', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_17', 'POSTGRES_13', 'SQLITE_3'],
+    ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
   });
 
   it.each(databases.eachSupportedId())(

@@ -14,43 +14,34 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { ContainerProps } from './types';
 import clsx from 'clsx';
-import { displayPropDefs } from '../../props/display.props';
-import { extractProps } from '../../utils/extractProps';
-import { spacingPropDefs } from '../../props/spacing.props';
 import { useStyles } from '../../hooks/useStyles';
+import styles from './Container.module.css';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
-    const { children } = props;
+    const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+      'Container',
+      props,
+    );
 
-    const { classNames } = useStyles('Container');
+    const { className, ...rest } = cleanedProps;
 
-    // Create a subset of spacing props that match the interface
-    const containerSpacingProps = {
-      my: spacingPropDefs.my,
-      mt: spacingPropDefs.mt,
-      mb: spacingPropDefs.mb,
-      py: spacingPropDefs.py,
-      pt: spacingPropDefs.pt,
-      pb: spacingPropDefs.pb,
-    };
-
-    const propDefs = {
-      ...displayPropDefs,
-      ...containerSpacingProps,
-    };
-    const { className, style, dataProps } = extractProps(props, propDefs);
-
-    return createElement('div', {
-      ref,
-      className: clsx(classNames.root, className),
-      ...dataProps,
-      style,
-      children,
-    });
+    return (
+      <div
+        ref={ref}
+        className={clsx(
+          classNames.root,
+          utilityClasses,
+          styles[classNames.root],
+          className,
+        )}
+        style={style}
+        {...rest}
+      />
+    );
   },
 );

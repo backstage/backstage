@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.43-next.1",
+  "version": "0.0.44-next.0",
   "backstage": {
     "role": "backend"
   },
@@ -60,6 +60,7 @@
     "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",
     "@backstage/plugin-search-backend-module-catalog": "workspace:^",
+    "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^",
     "@backstage/plugin-search-backend-module-explore": "workspace:^",
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",

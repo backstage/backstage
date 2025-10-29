@@ -27,11 +27,13 @@ import { FormDecoratorBlueprint } from '@backstage/plugin-scaffolder-react/alpha
 export class DefaultScaffolderFormDecoratorsApi
   implements ScaffolderFormDecoratorsApi
 {
-  private constructor(
-    private readonly options: {
-      decorators: Array<ScaffolderFormDecorator>;
-    },
-  ) {}
+  private readonly options: {
+    decorators: Array<ScaffolderFormDecorator>;
+  };
+
+  private constructor(options: { decorators: Array<ScaffolderFormDecorator> }) {
+    this.options = options;
+  }
 
   static create(options?: { decorators: ScaffolderFormDecorator[] }) {
     return new DefaultScaffolderFormDecoratorsApi(

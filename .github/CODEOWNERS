@@ -10,6 +10,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /.changeset                                       @backstage/operations-maintainers
 /.changeset/*.md
 /.github                                          @backstage/operations-maintainers
+/.github/vale                                     @backstage/documentation-maintainers
 /beps/0001-notifications-system                   @backstage/maintainers @backstage/notifications-maintainers
 /docs                                             @backstage/maintainers @backstage/documentation-maintainers
 /docs/assets/search                               @backstage/search-maintainers

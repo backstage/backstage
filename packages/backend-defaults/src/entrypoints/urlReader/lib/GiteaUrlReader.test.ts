@@ -279,7 +279,7 @@ describe('GiteaUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),

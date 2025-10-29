@@ -27,10 +27,16 @@ import {
 } from '@backstage/backend-plugin-api';
 
 export class AuthorizedValidationService {
+  private readonly service: CatalogProcessingOrchestrator;
+  private readonly permissionApi: PermissionsService;
+
   constructor(
-    private readonly service: CatalogProcessingOrchestrator,
-    private readonly permissionApi: PermissionsService,
-  ) {}
+    service: CatalogProcessingOrchestrator,
+    permissionApi: PermissionsService,
+  ) {
+    this.service = service;
+    this.permissionApi = permissionApi;
+  }
 
   async process(
     request: EntityProcessingRequest,

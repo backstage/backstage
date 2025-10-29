@@ -25,10 +25,6 @@ export const overview: Page[] = [
 
 export const coreConcepts: Page[] = [
   {
-    title: 'Iconography',
-    slug: 'iconography',
-  },
-  {
     title: 'Layout',
     slug: 'layout',
   },
@@ -102,6 +98,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'Dialog',
+    slug: 'dialog',
+    status: 'alpha',
+  },
+  {
     title: 'Header',
     slug: 'header',
     status: 'alpha',
@@ -109,11 +110,6 @@ export const components: Page[] = [
   {
     title: 'HeaderPage',
     slug: 'header-page',
-    status: 'alpha',
-  },
-  {
-    title: 'Icon',
-    slug: 'icon',
     status: 'alpha',
   },
   {
@@ -184,6 +180,11 @@ export const components: Page[] = [
   {
     title: 'Tooltip',
     slug: 'tooltip',
+    status: 'alpha',
+  },
+  {
+    title: 'VisuallyHidden',
+    slug: 'visually-hidden',
     status: 'alpha',
   },
 ];

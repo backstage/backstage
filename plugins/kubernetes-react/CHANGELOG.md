@@ -1,5 +1,29 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.13-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.8-next.0
+
+## 0.5.12
+
+### Patch Changes
+
+- ac405f2: The configmaps added to be rendered
+- f7a4144: Fixes calculation of CPU utilization in the PodTable
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/plugin-kubernetes-common@0.9.7
+  - @backstage/core-plugin-api@1.11.1
+
 ## 0.5.12-next.2
 
 ### Patch Changes

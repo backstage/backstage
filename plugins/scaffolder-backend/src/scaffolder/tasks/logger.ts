@@ -44,13 +44,20 @@ interface WinstonLoggerOptions {
 // This is a workaround for being able to preserve the log format of the root logger.
 // Will revisit all of this implementation once we can break the router to use only `LoggerService`.
 export class BackstageLoggerTransport extends Transport {
+  private readonly backstageLogger: LoggerService;
+  private readonly taskContext: TaskContext;
+  private readonly stepId: string;
+
   constructor(
-    private readonly backstageLogger: LoggerService,
-    private readonly taskContext: TaskContext,
-    private readonly stepId: string,
+    backstageLogger: LoggerService,
+    taskContext: TaskContext,
+    stepId: string,
     opts?: TransportStreamOptions,
   ) {
     super(opts);
+    this.backstageLogger = backstageLogger;
+    this.taskContext = taskContext;
+    this.stepId = stepId;
   }
 
   log(info: TransformableInfo, callback: VoidFunction) {

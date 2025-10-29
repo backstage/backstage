@@ -20,11 +20,11 @@ import { Logger as WinstonLogger, createLogger } from 'winston';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 
 class BackstageLoggerTransport extends Transport {
-  constructor(
-    private readonly backstageLogger: LoggerService,
-    opts?: TransportStreamOptions,
-  ) {
+  private readonly backstageLogger: LoggerService;
+
+  constructor(backstageLogger: LoggerService, opts?: TransportStreamOptions) {
     super(opts);
+    this.backstageLogger = backstageLogger;
   }
 
   log(info: unknown, callback: VoidFunction) {
