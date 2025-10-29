@@ -1,5 +1,12 @@
 # techdocs-cli-embedded-app
 
+## 0.2.114-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.1
+
 ## 0.2.114-next.0
 
 ### Patch Changes

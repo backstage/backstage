@@ -1,5 +1,12 @@
 # example-app-next
 
+## 0.0.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.1
+
 ## 0.0.29-next.0
 
 ### Patch Changes

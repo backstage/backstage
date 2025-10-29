@@ -1,5 +1,12 @@
 # @backstage/dev-utils
 
+## 1.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.1
+
 ## 1.1.17-next.0
 
 ### Patch Changes
