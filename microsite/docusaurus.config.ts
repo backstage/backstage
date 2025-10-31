@@ -197,7 +197,7 @@ const config: Config = {
         redirects: [
           {
             from: '/docs/features/test123',
-            to: '/docs/auth/test'
+            to: '/docs/auth/test',
           },
           {
             from: '/docs',
@@ -282,19 +282,28 @@ const config: Config = {
         ],
         createRedirects(existingPath) {
           // If we're using versioned docs, we need to make sure to only allow through redirects that actually exist in the stable docsite.
-          if(useVersionedDocs){
-            if(existingPath.startsWith('/docs/next')){
+          if (useVersionedDocs) {
+            if (existingPath.startsWith('/docs/next')) {
               throw new Error('Redirects should not be created for next docs');
             }
-            if (existsSync(join(__dirname, 'versioned_docs', 'version-stable', existingPath.replace(/docs/, '')) + '.md')) {
-              return existingPath
+            if (
+              existsSync(
+                join(
+                  __dirname,
+                  'versioned_docs',
+                  'version-stable',
+                  existingPath.replace(/docs/, ''),
+                ) + '.md',
+              )
+            ) {
+              return existingPath;
             } else {
               return undefined;
             }
           } else {
             return existingPath;
           }
-        }
+        },
       }),
     [
       'docusaurus-pushfeedback',
