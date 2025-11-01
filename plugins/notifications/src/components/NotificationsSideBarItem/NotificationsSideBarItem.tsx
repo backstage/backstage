@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNotificationsApi } from '../../hooks';
 import { Link, SidebarItem } from '@backstage/core-components';
