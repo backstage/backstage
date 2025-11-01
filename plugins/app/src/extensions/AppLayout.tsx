@@ -20,6 +20,25 @@ import {
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { SidebarPage } from '@backstage/core-components';
+import { PluginRouteProvider, usePluginRoute } from './PluginRouteContext';
+
+type ReactElementOutput = (typeof coreExtensionData.reactElement)['T'];
+
+type AppLayoutComponentProps = {
+  nav: ReactElementOutput;
+  content: ReactElementOutput;
+};
+
+export function AppLayoutComponent({ nav, content }: AppLayoutComponentProps) {
+  const { pluginId } = usePluginRoute();
+
+  return (
+    <SidebarPage>
+      {nav}
+      <div data-plugin={pluginId}>{content}</div>
+    </SidebarPage>
+  );
+}
 
 export const AppLayout = createExtension({
   name: 'layout',
@@ -33,12 +52,16 @@ export const AppLayout = createExtension({
     }),
   },
   output: [coreExtensionData.reactElement],
-  factory: ({ inputs }) => [
-    coreExtensionData.reactElement(
-      <SidebarPage>
-        {inputs.nav.get(coreExtensionData.reactElement)}
-        {inputs.content.get(coreExtensionData.reactElement)}
-      </SidebarPage>,
-    ),
-  ],
+  factory: ({ inputs, node }) => {
+    const navElement = inputs.nav.get(coreExtensionData.reactElement);
+    const contentElement = inputs.content.get(coreExtensionData.reactElement);
+
+    return [
+      coreExtensionData.reactElement(
+        <PluginRouteProvider initialPluginId={node.spec.plugin.id}>
+          <AppLayoutComponent nav={navElement} content={contentElement} />
+        </PluginRouteProvider>,
+      ),
+    ];
+  },
 });
