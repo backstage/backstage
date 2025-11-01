@@ -24,6 +24,8 @@ import {
 import Grid from '@material-ui/core/Grid';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { useSignal } from '@backstage/plugin-signals-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
 
 import { NotificationsTable } from '../NotificationsTable';
 import { useNotificationsApi } from '../../hooks';
@@ -58,8 +60,9 @@ export type NotificationsPageProps = {
 };
 
 export const NotificationsPage = (props?: NotificationsPageProps) => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const {
-    title = 'Notifications',
+    title = t('notificationsPage.title'),
     themeId = 'tool',
     subtitle,
     tooltip,
@@ -156,17 +159,21 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
   const isUnread = !!value?.[1]?.unread;
   const allTopics = value?.[2]?.topics;
 
-  let tableTitle = `All notifications `;
+  let tableTitle: string = t('notificationsPage.tableTitle.all', {
+    count: totalCount ?? 0,
+  } as any);
   if (saved) {
-    tableTitle = `Saved notifications`;
+    tableTitle = t('notificationsPage.tableTitle.saved', {
+      count: totalCount ?? 0,
+    } as any);
   } else if (unreadOnly === true) {
-    tableTitle = `Unread notifications`;
+    tableTitle = t('notificationsPage.tableTitle.unread', {
+      count: totalCount ?? 0,
+    } as any);
   } else if (unreadOnly === false) {
-    tableTitle = `Read notifications`;
-  }
-
-  if (totalCount) {
-    tableTitle += ` (${totalCount})`;
+    tableTitle = t('notificationsPage.tableTitle.read', {
+      count: totalCount ?? 0,
+    } as any);
   }
 
   return (

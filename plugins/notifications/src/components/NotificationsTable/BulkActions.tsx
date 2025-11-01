@@ -22,6 +22,8 @@ import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import MarkAsUnsavedIcon from '@material-ui/icons/LabelOff' /* TODO: use BookmarkRemove and BookmarkAdd once we have mui 5 icons */;
 import MarkAsSavedIcon from '@material-ui/icons/Label';
 import MarkAllReadIcon from '@material-ui/icons/DoneAll';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
 
 export const BulkActions = ({
   selectedNotifications,
@@ -38,6 +40,7 @@ export const BulkActions = ({
   onSwitchSavedStatus: (ids: Notification['id'][], newStatus: boolean) => void;
   onMarkAllRead?: () => void;
 }) => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const isDisabled = selectedNotifications.size === 0;
   const bulkNotifications = notifications.filter(notification =>
     selectedNotifications.has(notification.id),
@@ -51,24 +54,25 @@ export const BulkActions = ({
   );
 
   const markAsReadText = isOneRead
-    ? 'Return selected among unread'
-    : 'Mark selected as read';
+    ? t('table.bulkActions.returnSelectedAmongUnread')
+    : t('table.bulkActions.markSelectedAsRead');
   const IconComponent = isOneRead ? MarkAsUnreadIcon : MarkAsReadIcon;
 
   const markAsSavedText = isOneSaved
-    ? 'Undo save for selected'
-    : 'Save selected for later';
+    ? t('table.bulkActions.undoSaveForSelected')
+    : t('table.bulkActions.saveSelectedForLater');
   const SavedIconComponent = isOneSaved ? MarkAsUnsavedIcon : MarkAsSavedIcon;
+  const markAllReadText = t('table.bulkActions.markAllRead');
 
   return (
     <Grid container wrap="nowrap">
       <Grid item xs={3}>
         {onMarkAllRead ? (
-          <Tooltip title="Mark all read">
+          <Tooltip title={markAllReadText}>
             <div>
               {/* The <div> here is a workaround for the Tooltip which does not work for a "disabled" child */}
               <IconButton disabled={!isUnread} onClick={onMarkAllRead}>
-                <MarkAllReadIcon aria-label={markAsSavedText} />
+                <MarkAllReadIcon aria-label={markAllReadText} />
               </IconButton>
             </div>
           </Tooltip>
