@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",(()=>{const e=document.getElementsByClassName("navListItemActive")[0];if(!e)return;const t=e.getBoundingClientRect();t.top>=0&&t.bottom<=(window.innerHeight||document.documentElement.clientHeight)||(e.scrollIntoView({block:"start",inline:"nearest"}),document.body.scrollTop=document.documentElement.scrollTop=0)}));

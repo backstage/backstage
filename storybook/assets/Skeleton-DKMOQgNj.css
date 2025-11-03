@@ -1,0 +1,1 @@
+@layer tokens,base,components,utilities;@layer components{._bui-Skeleton_1lzoo_20{animation:var(--bui-animate-pulse);background-color:var(--bui-bg-surface-2);border-radius:var(--bui-radius-2)}._bui-Skeleton_1lzoo_20[data-rounded=true]{border-radius:var(--bui-radius-full)}}

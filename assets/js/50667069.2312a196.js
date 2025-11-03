@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbackstage_microsite=self.webpackChunkbackstage_microsite||[]).push([[165638],{53421:(e,t,s)=>{s.r(t),s.d(t,{default:()=>i});var a=s(296540),c=s(956347);const i=()=>a.createElement(c.rd,{to:"/docs/getting-started/getting-involved"})}}]);
