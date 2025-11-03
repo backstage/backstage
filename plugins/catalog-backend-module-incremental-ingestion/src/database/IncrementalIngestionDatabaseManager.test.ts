@@ -76,4 +76,40 @@ describe('IncrementalIngestionDatabaseManager', () => {
       ]);
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'computeRemoved correctly sums total count from count query, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const manager = new IncrementalIngestionDatabaseManager({ client: knex });
+      const { ingestionId } = (await manager.createProviderIngestionRecord(
+        'testProvider',
+      ))!;
+
+      const markId = uuid();
+      await manager.createMark({
+        record: {
+          id: markId,
+          ingestion_id: ingestionId,
+          sequence: 1,
+          cursor: { data: 1 },
+        },
+      });
+
+      // Create multiple mark entities
+      await manager.createMarkEntities(markId, [
+        { entity: { kind: 'Component', namespace: 'default', name: 'comp1' } },
+        { entity: { kind: 'Component', namespace: 'default', name: 'comp2' } },
+        { entity: { kind: 'Component', namespace: 'default', name: 'comp3' } },
+      ]);
+
+      const result = await manager.computeRemoved('testProvider', ingestionId);
+
+      // On PostgreSQL, count queries return strings, so total should be 3 not NaN or string concatenation
+      expect(result.total).toBe(3);
+      expect(typeof result.total).toBe('number');
+    },
+  );
 });
