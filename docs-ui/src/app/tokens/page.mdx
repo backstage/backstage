@@ -3,48 +3,109 @@ import * as Table from '@/components/Table';
 import { Chip } from '@/components/Chip';
 import { customTheme } from '@/snippets/code-snippets';
 
-# Theming
+# Tokens
 
-Backstage UI theming is built entirely on CSS, without relying on any CSS-in-JS libraries.
-At its core, it provides a solid default theme that is easily customizable using a
-comprehensive set of CSS variables. Additionally, it enables anyone to adapt the design
-to their specific needs. Each component comes with fixed class names, making customization
-even more straightforward.
+## Responsive breakpoints
 
-## Light & Dark modes
+Backstage UI is built on a responsive design system, meaning that the components are
+designed to adapt to different screen sizes. By default we offer a set of
+breakpoints that you can use to create responsive components.
 
-By default, Backstage UI supports both light and dark modes using the `data-theme-mode` attribute.
-The light theme is applied by default if no `data-theme-mode` attribute is specified. To create
-a custom theme, you'll need to define both light and dark modes as outlined below. If
-only one mode is defined, the other will fall back to the default theme.
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Breakpoint prefix</Table.HeaderCell>
+      <Table.HeaderCell>Minimum width</Table.HeaderCell>
+      <Table.HeaderCell>CSS</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>xs</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`{ ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>sm</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>640px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 640px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>md</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>768px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 768px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>lg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>1024px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 1024px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>xl</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>1280px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 1280px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>2xl</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>1536px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 1536px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
 
-## How to create your own theme
+Backstage UI components are designed to be responsive, meaning that they will adapt
+to different screen sizes. Not every component is responsive, but the ones
+that are will have a prop to control the responsive behavior.
 
-In our [started guide](/), we ask you to import two css files. The `core.css` file includes
-the default set of variables. We recommend to keep this file in place and add your own theme
-on top of it. `core.css` also include an opinionated reset. If you decided to remove `core.css`
-you will have to provide your own reset css.
+The behaviour is the same for each component. For each prop, instead of adding
+the value, you add an object with the value and the breakpoint prefix.
 
-Here's an example of how your theme.css file should look like:
+<CodeBlock
+  code={`// Fixed value
 
-<CodeBlock lang="css" code={customTheme} />
+<Button size="small">Button</Button>
 
-## CSS class name structure
+// Responsive value
 
-All Backstage UI components come with a set of CSS classes that you can use to style them. To make it
-easier to identify the class name you can use, we use a specific structure for the class names.
+<Button size={{ xs: 'small', md: 'medium' }}>Button</Button>`} />
 
-<img
-  src="/css-classname-structure.png"
-  style={{ width: '100%', marginBottom: '32px', marginTop: '16px' }}
-/>
-
-Every component has a unique prefix `.bui-` followed by the component name. Component props
-are represented using the `data-` attribute. That way, class names are easily identifiable.
-
-## Available CSS variables
-
-### Base colors
+## Base colors
 
 These colors are used for special purposes like ring, scrollbar, ...
 
@@ -123,7 +184,7 @@ These colors are used for special purposes like ring, scrollbar, ...
   </Table.Body>
 </Table.Root>
 
-### Core background colors
+## Core background colors
 
 These colors are used for the background of your application. We are mostly using for now a
 single elevated background for panels. `--bui-bg` should mostly use as the main background
@@ -224,7 +285,7 @@ color of your app.
   </Table.Body>
 </Table.Root>
 
-### Foreground colors
+## Foreground colors
 
 Foreground colours are meant to work in pair with a background colours. Typically this would work
 for icons, texts, shapes, ... Use a matching name to know what foreground color to use. These colors
@@ -329,7 +390,7 @@ are prefixed with `fg` to make it easier to identify.
   </Table.Body>
 </Table.Root>
 
-### Border colors
+## Border colors
 
 These border colors are mostly meant to be used as borders on top of any components with
 low contrast to help as a separator with the different background colors.
@@ -391,7 +452,7 @@ low contrast to help as a separator with the different background colors.
   </Table.Body>
 </Table.Root>
 
-### Special colors
+## Special colors
 
 These colors are used for special purposes like ring, scrollbar, ...
 
@@ -424,7 +485,7 @@ These colors are used for special purposes like ring, scrollbar, ...
   </Table.Body>
 </Table.Root>
 
-### Font families
+## Font families
 
 We have two fonts that we use across Backstage UI. The first one is the sans-serif
 font that we use for the body of the application. The second one is the
@@ -453,7 +514,7 @@ monospace font that we use for code blocks and tables.
   </Table.Body>
 </Table.Root>
 
-### Font weights
+## Font weights
 
 We have two font weights that we use across Backstage UI. Regular or Bold.
 
@@ -480,7 +541,7 @@ We have two font weights that we use across Backstage UI. Regular or Bold.
   </Table.Body>
 </Table.Root>
 
-### Spacing
+## Spacing
 
 We built a spacing system based on a single value `--bui-space`. This value is
 used to calculate the spacing for all the components. By default if you would like to
@@ -619,7 +680,7 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
   </Table.Body>
 </Table.Root>
 
-### Radius
+## Radius
 
 We use a radius system to make sure that the components have a consistent look and feel.
 

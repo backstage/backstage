@@ -29,7 +29,7 @@
   box-sizing: border-box;
   padding-block: 0.25rem;
   border-radius: 0.375rem;
-  background-color: var(--panel);
+  background-color: var(--bg);
   color: var(--color-gray-900);
   border: 1px solid var(--border);
   padding-inline: 0.25rem;

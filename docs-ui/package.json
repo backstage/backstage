@@ -26,6 +26,7 @@
     "@storybook/react": "^8.6.12",
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
+    "clsx": "^2.1.1",
     "html-react-parser": "^5.2.5",
     "motion": "^12.4.1",
     "next": "15.4.7",

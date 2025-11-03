@@ -27,7 +27,7 @@ export const formattedMDXComponents: MDXComponents = {
     <code
       style={{
         fontFamily: 'var(--font-mono)',
-        backgroundColor: 'var(--panel)',
+        backgroundColor: 'var(--bg)',
         padding: '0.2rem 0.375rem',
         borderRadius: '0.25rem',
         color: 'var(--secondary)',
