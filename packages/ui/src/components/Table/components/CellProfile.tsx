@@ -18,7 +18,7 @@ import clsx from 'clsx';
 import { CellProfileProps } from '../types';
 import { Text } from '../../Text/Text';
 import { Link } from '../../Link/Link';
-import { Avatar } from '@base-ui-components/react/avatar';
+import { Avatar } from '../../Avatar';
 import { useStyles } from '../../../hooks/useStyles';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 import styles from '../Table.module.css';
@@ -46,39 +46,9 @@ export const CellProfile = (props: CellProfileProps) => {
           styles[classNames.cellContentWrapper],
         )}
       >
-        <div className={clsx(classNames.cellIcon, styles[classNames.cellIcon])}>
-          {src && (
-            <Avatar.Root
-              className={clsx(
-                classNames.cellProfileAvatar,
-                styles[classNames.cellProfileAvatar],
-              )}
-            >
-              <Avatar.Image
-                src={src}
-                width="20"
-                height="20"
-                className={clsx(
-                  classNames.cellProfileAvatarImage,
-                  styles[classNames.cellProfileAvatarImage],
-                )}
-              />
-              <Avatar.Fallback
-                className={clsx(
-                  classNames.cellProfileAvatarFallback,
-                  styles[classNames.cellProfileAvatarFallback],
-                )}
-              >
-                {(name || '')
-                  .split(' ')
-                  .map(word => word[0])
-                  .join('')
-                  .toLocaleUpperCase('en-US')
-                  .slice(0, 1)}
-              </Avatar.Fallback>
-            </Avatar.Root>
-          )}
-        </div>
+        {src && name && (
+          <Avatar src={src} name={name} size="x-small" purpose="decoration" />
+        )}
         <div
           className={clsx(
             classNames.cellContent,
