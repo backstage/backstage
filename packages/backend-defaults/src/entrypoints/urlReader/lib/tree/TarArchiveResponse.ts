@@ -37,15 +37,27 @@ const pipeline = promisify(pipelineCb);
  */
 export class TarArchiveResponse implements UrlReaderServiceReadTreeResponse {
   private read = false;
+  private readonly stream: Readable;
+  private readonly subPath: string;
+  private readonly workDir: string;
+  public readonly etag: string;
+  private readonly filter?: (path: string, info: { size: number }) => boolean;
+  private readonly stripFirstDirectory: boolean;
 
   constructor(
-    private readonly stream: Readable,
-    private readonly subPath: string,
-    private readonly workDir: string,
-    public readonly etag: string,
-    private readonly filter?: (path: string, info: { size: number }) => boolean,
-    private readonly stripFirstDirectory: boolean = true,
+    stream: Readable,
+    subPath: string,
+    workDir: string,
+    etag: string,
+    filter?: (path: string, info: { size: number }) => boolean,
+    stripFirstDirectory: boolean = true,
   ) {
+    this.stream = stream;
+    this.subPath = subPath;
+    this.workDir = workDir;
+    this.etag = etag;
+    this.filter = filter;
+    this.stripFirstDirectory = stripFirstDirectory;
     if (subPath) {
       if (!subPath.endsWith('/')) {
         this.subPath += '/';

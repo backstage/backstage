@@ -9,8 +9,8 @@ import {
   SelectValue,
 } from 'react-aria-components';
 import styles from './theme-name.module.css';
-import { Icon } from '@backstage/ui';
 import { usePlayground } from '@/utils/playground-context';
+import { RiArrowDownSLine } from '@remixicon/react';
 
 const themes = [
   { name: 'Backstage', value: 'backstage' },
@@ -28,7 +28,7 @@ export const ThemeNameSelector = () => {
     >
       <Button className={styles.Select}>
         <SelectValue />
-        <Icon name="chevron-down" />
+        <RiArrowDownSLine aria-hidden="true" />
       </Button>
       <Popover className={styles.Popup}>
         <ListBox className={styles.ListBox}>

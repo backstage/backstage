@@ -8,7 +8,7 @@ import {
 import { components } from './data';
 
 type Theme = 'light' | 'dark';
-type ThemeName = 'backstage' | 'spotify';
+type ThemeName = 'backstage' | 'spotify' | 'custom';
 
 // Create a context with an empty array as the default value
 const PlaygroundContext = createContext<{

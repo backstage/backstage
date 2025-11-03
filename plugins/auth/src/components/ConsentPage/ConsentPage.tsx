@@ -19,11 +19,11 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
   CardActions,
-  Typography,
-  makeStyles,
+  CardContent,
   Divider,
+  makeStyles,
+  Typography,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -31,14 +31,15 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import AppsIcon from '@material-ui/icons/Apps';
 import WarningIcon from '@material-ui/icons/Warning';
 import {
+  Content,
+  EmptyState,
   Header,
   Page,
-  Content,
   Progress,
-  EmptyState,
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useConsentSession } from './useConsentSession';
+import { configApiRef, useApi } from '@backstage/frontend-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   authCard: {
@@ -100,6 +101,8 @@ export const ConsentPage = () => {
   const classes = useStyles();
   const { sessionId } = useParams<{ sessionId: string }>();
   const { state, handleAction } = useConsentSession({ sessionId });
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptionalString('app.title') ?? 'Backstage';
 
   if (!sessionId) {
     return (
@@ -158,8 +161,8 @@ export const ConsentPage = () => {
               </Typography>
               <Typography variant="body1" color="textSecondary" gutterBottom>
                 {state.action === 'approve'
-                  ? 'You have successfully authorized the application to access your Backstage account.'
-                  : 'You have denied the application access to your Backstage account.'}
+                  ? `You have successfully authorized the application to access your ${appTitle} account.`
+                  : `You have denied the application access to your ${appTitle} account.`}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 Redirecting to the application...
@@ -184,7 +187,7 @@ export const ConsentPage = () => {
             <Box>
               <Typography className={classes.appName}>{appName}</Typography>
               <Typography variant="body2" color="textSecondary">
-                wants to access your Backstage account
+                wants to access your {appTitle} account
               </Typography>
             </Box>
           </Box>
@@ -198,7 +201,7 @@ export const ConsentPage = () => {
           >
             <Typography variant="body2">
               <strong>Security Notice:</strong> By authorizing this application,
-              you are granting it access to your Backstage account. The
+              you are granting it access to your {appTitle} account. The
               application will receive an access token that allows it to act on
               your behalf.
             </Typography>

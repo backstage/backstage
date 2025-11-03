@@ -97,7 +97,6 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       parser: defaultEntityDataParser,
       policy: EntityPolicies.allOf([]),
       rulesEnforcer: { isAllowed: () => true },
-      legacySingleProcessorValidation: false,
     });
 
     it('runs a minimal processing', async () => {
@@ -192,7 +191,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       });
     });
 
-    it('runs all processor validations when asked to', async () => {
+    it('runs all processor validations', async () => {
       const validate = jest.fn(async () => true);
       const processor1: CatalogProcessor = {
         getProcessorName: () => 'processor1',
@@ -213,7 +212,6 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         parser: defaultEntityDataParser,
         policy: EntityPolicies.allOf([]),
         rulesEnforcer: { isAllowed: () => true },
-        legacySingleProcessorValidation: true,
       });
 
       const modern = new DefaultCatalogProcessingOrchestrator({
@@ -226,13 +224,12 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         parser: defaultEntityDataParser,
         policy: EntityPolicies.allOf([]),
         rulesEnforcer: { isAllowed: () => true },
-        legacySingleProcessorValidation: false,
       });
 
       await expect(legacy.process({ entity })).resolves.toMatchObject({
         ok: true,
       });
-      expect(validate).toHaveBeenCalledTimes(1);
+      expect(validate).toHaveBeenCalledTimes(2);
 
       validate.mockClear();
 
@@ -291,7 +288,6 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         parser,
         policy: EntityPolicies.allOf([]),
         rulesEnforcer,
-        legacySingleProcessorValidation: false,
       });
 
       rulesEnforcer.isAllowed.mockReturnValueOnce(true);
@@ -333,7 +329,6 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         parser,
         policy: EntityPolicies.allOf([new FailingEntityPolicy()]),
         rulesEnforcer,
-        legacySingleProcessorValidation: false,
       });
 
       await expect(

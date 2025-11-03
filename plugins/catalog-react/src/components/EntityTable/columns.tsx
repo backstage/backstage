@@ -108,7 +108,7 @@ export const columnFactories = Object.freeze({
   },
   createOwnerColumn<T extends Entity>(): TableColumn<T> {
     return this.createEntityRelationColumn({
-      title: <EntityTableColumnTitle translationKey="type" />,
+      title: <EntityTableColumnTitle translationKey="owner" />,
       relation: RELATION_OWNED_BY,
       defaultKind: 'group',
     });

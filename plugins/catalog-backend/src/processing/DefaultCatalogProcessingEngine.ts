@@ -36,7 +36,7 @@ import {
   withActiveSpan,
 } from '../util/opentelemetry';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
-import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { LoggerService, SchedulerService } from '@backstage/backend-plugin-api';
 
@@ -59,7 +59,7 @@ const stableStringifyArray = (arr: any[]) => {
 // is just one.
 export class DefaultCatalogProcessingEngine {
   private readonly config: Config;
-  private readonly scheduler?: SchedulerService;
+  private readonly scheduler: SchedulerService;
   private readonly logger: LoggerService;
   private readonly knex: Knex;
   private readonly processingDatabase: ProcessingDatabase;
@@ -73,13 +73,13 @@ export class DefaultCatalogProcessingEngine {
     errors: Error[];
   }) => Promise<void> | void;
   private readonly tracker: ProgressTracker;
-  private readonly eventBroker?: EventBroker | EventsService;
+  private readonly events: EventsService;
 
   private stopFunc?: () => void;
 
   constructor(options: {
     config: Config;
-    scheduler?: SchedulerService;
+    scheduler: SchedulerService;
     logger: LoggerService;
     knex: Knex;
     processingDatabase: ProcessingDatabase;
@@ -93,7 +93,7 @@ export class DefaultCatalogProcessingEngine {
       errors: Error[];
     }) => Promise<void> | void;
     tracker?: ProgressTracker;
-    eventBroker?: EventBroker | EventsService;
+    events: EventsService;
   }) {
     this.config = options.config;
     this.scheduler = options.scheduler;
@@ -107,7 +107,7 @@ export class DefaultCatalogProcessingEngine {
     this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
     this.onProcessingError = options.onProcessingError;
     this.tracker = options.tracker ?? progressTracker();
-    this.eventBroker = options.eventBroker;
+    this.events = options.events;
 
     this.stopFunc = undefined;
   }
@@ -201,7 +201,7 @@ export class DefaultCatalogProcessingEngine {
             const location =
               unprocessedEntity?.metadata?.annotations?.[ANNOTATION_LOCATION];
             if (result.errors.length) {
-              this.eventBroker?.publish({
+              this.events.publish({
                 topic: CATALOG_ERRORS_TOPIC,
                 eventPayload: {
                   entity: entityRef,
@@ -370,25 +370,17 @@ export class DefaultCatalogProcessingEngine {
       }
     };
 
-    if (this.scheduler) {
-      const abortController = new AbortController();
+    const abortController = new AbortController();
+    this.scheduler.scheduleTask({
+      id: 'catalog_orphan_cleanup',
+      frequency: { milliseconds: this.orphanCleanupIntervalMs },
+      timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
+      fn: runOnce,
+      signal: abortController.signal,
+    });
 
-      this.scheduler.scheduleTask({
-        id: 'catalog_orphan_cleanup',
-        frequency: { milliseconds: this.orphanCleanupIntervalMs },
-        timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
-        fn: runOnce,
-        signal: abortController.signal,
-      });
-
-      return () => {
-        abortController.abort();
-      };
-    }
-
-    const intervalKey = setInterval(runOnce, this.orphanCleanupIntervalMs);
     return () => {
-      clearInterval(intervalKey);
+      abortController.abort();
     };
   }
 }

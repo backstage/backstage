@@ -18,6 +18,8 @@ import { TabListStateContext } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useContext, useEffect, useCallback, useRef } from 'react';
 import type { TabsIndicatorsProps } from './types';
+import styles from './Tabs.module.css';
+import clsx from 'clsx';
 
 /**
  * A component that renders the indicators for the toolbar.
@@ -184,8 +186,12 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
 
   return (
     <>
-      <div className={classNames.tabActive} />
-      <div className={classNames.tabHovered} />
+      <div
+        className={clsx(classNames.tabActive, styles[classNames.tabActive])}
+      />
+      <div
+        className={clsx(classNames.tabHovered, styles[classNames.tabHovered])}
+      />
     </>
   );
 };

@@ -46,13 +46,13 @@ export class UrlReaderProcessor implements CatalogProcessor {
   // This limiter is used for only consuming a limited number of read streams
   // concurrently.
   #limiter: Limit;
+  private readonly options: {
+    reader: UrlReaderService;
+    logger: LoggerService;
+  };
 
-  constructor(
-    private readonly options: {
-      reader: UrlReaderService;
-      logger: LoggerService;
-    },
-  ) {
+  constructor(options: { reader: UrlReaderService; logger: LoggerService }) {
+    this.options = options;
     this.#limiter = limiterFactory(5);
   }
 

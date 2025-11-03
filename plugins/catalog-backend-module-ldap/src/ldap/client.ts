@@ -89,10 +89,13 @@ export class LdapClient {
     });
   }
 
-  constructor(
-    private readonly client: Client,
-    private readonly logger: LoggerService,
-  ) {}
+  private readonly client: Client;
+  private readonly logger: LoggerService;
+
+  constructor(client: Client, logger: LoggerService) {
+    this.client = client;
+    this.logger = logger;
+  }
 
   /**
    * Performs an LDAP search operation.

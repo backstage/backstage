@@ -23,5 +23,6 @@ export const defaultTemplates = [
   '@backstage/cli/templates/plugin-common-library',
   '@backstage/cli/templates/web-library',
   '@backstage/cli/templates/node-library',
+  '@backstage/cli/templates/catalog-provider-module',
   '@backstage/cli/templates/scaffolder-backend-module',
 ];

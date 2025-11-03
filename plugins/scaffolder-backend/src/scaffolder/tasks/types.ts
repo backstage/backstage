@@ -30,8 +30,6 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 /**
  * TaskStoreEmitOptions
  *
- * @public
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreEmitOptions<TBody = JsonObject> = {
   taskId: string;
@@ -41,8 +39,6 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 /**
  * TaskStoreListEventsOptions
  *
- * @public
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreListEventsOptions = {
   isTaskRecoverable?: boolean;
@@ -53,8 +49,6 @@ export type TaskStoreListEventsOptions = {
 /**
  * TaskStoreShutDownTaskOptions
  *
- * @public
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreShutDownTaskOptions = {
   taskId: string;
@@ -62,8 +56,6 @@ export type TaskStoreShutDownTaskOptions = {
 
 /**
  * The options passed to {@link TaskStore.createTask}
- * @public
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreCreateTaskOptions = {
   spec: TaskSpec;
@@ -73,8 +65,6 @@ export type TaskStoreCreateTaskOptions = {
 
 /**
  * The options passed to {@link TaskStore.recoverTasks}
- * @public
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreRecoverTaskOptions = {
   timeout: HumanDuration;
@@ -82,8 +72,6 @@ export type TaskStoreRecoverTaskOptions = {
 
 /**
  * The response from {@link TaskStore.createTask}
- * @public
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreCreateTaskResult = {
   taskId: string;
@@ -92,19 +80,17 @@ export type TaskStoreCreateTaskResult = {
 /**
  * TaskStore
  *
- * @public
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export interface TaskStore {
-  cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
+  cancelTask(options: TaskStoreEmitOptions): Promise<void>;
 
   createTask(
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
 
-  retryTask?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
+  retryTask(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 
-  recoverTasks?(
+  recoverTasks(
     options: TaskStoreRecoverTaskOptions,
   ): Promise<{ ids: string[] }>;
 
@@ -137,51 +123,31 @@ export interface TaskStore {
     order?: { order: 'asc' | 'desc'; field: string }[];
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 
-  /**
-   * @deprecated Make sure to pass `createdBy` and `status` in the `filters` parameter instead
-   */
-  list?(options: {
-    createdBy?: string;
-    status?: TaskStatus;
-    filters?: {
-      createdBy?: string | string[];
-      status?: TaskStatus | TaskStatus[];
-    };
-    pagination?: {
-      limit?: number;
-      offset?: number;
-    };
-    order?: { order: 'asc' | 'desc'; field: string }[];
-  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
-
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 
-  getTaskState?({ taskId }: { taskId: string }): Promise<
+  getTaskState({ taskId }: { taskId: string }): Promise<
     | {
         state: JsonObject;
       }
     | undefined
   >;
 
-  saveTaskState?(options: {
-    taskId: string;
-    state?: JsonObject;
-  }): Promise<void>;
+  saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
 
   listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }>;
 
-  shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 
   rehydrateWorkspace?(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void>;
 
-  cleanWorkspace?({ taskId }: { taskId: string }): Promise<void>;
+  cleanWorkspace({ taskId }: { taskId: string }): Promise<void>;
 
-  serializeWorkspace?({
+  serializeWorkspace({
     path,
     taskId,
   }: {

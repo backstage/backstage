@@ -368,13 +368,11 @@ describe('useTemplateSchema', () => {
       expect(first.schema).toEqual({
         dependencies: firstStepDependencies,
         properties: expect.anything(),
-        title: undefined,
         type: 'object',
       });
 
       expect(second.schema).toEqual({
         dependencies: secondStepDependencies,
-        title: undefined,
       });
     });
   });

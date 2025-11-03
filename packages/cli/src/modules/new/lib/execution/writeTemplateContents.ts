@@ -22,6 +22,7 @@ import { PortableTemplate, PortableTemplateInput } from '../types';
 import { ForwardedError, InputError } from '@backstage/errors';
 import { isMonoRepo as getIsMonoRepo } from '@backstage/cli-node';
 import { PortableTemplater } from './PortableTemplater';
+import { isChildPath } from '@backstage/cli-common';
 
 export async function writeTemplateContents(
   template: PortableTemplate,
@@ -63,7 +64,12 @@ export async function writeTemplateContents(
     }
 
     for (const file of template.files) {
-      const destPath = resolvePath(targetDir, file.path);
+      const destPath = resolvePath(targetDir, templater.template(file.path));
+      if (!isChildPath(targetDir, destPath)) {
+        throw new Error(
+          `Path ${destPath} is outside of target directory ${targetDir}`,
+        );
+      }
       await fs.ensureDir(dirname(destPath));
 
       let content =

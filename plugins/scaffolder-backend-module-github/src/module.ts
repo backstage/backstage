@@ -17,10 +17,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  scaffolderActionsExtensionPoint,
-  scaffolderAutocompleteExtensionPoint,
-} from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderAutocompleteExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGithubActionsDispatchAction,
   createGithubAutolinksAction,
@@ -42,6 +39,7 @@ import {
 } from '@backstage/integration';
 import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 
 /**
  * @public

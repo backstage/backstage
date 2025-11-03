@@ -37,7 +37,7 @@ const resourceRef = createTranslationRef({
     bar: 'Bar',
   },
   translations: {
-    sv: () => Promise.resolve({ default: { foo: 'Föö', bar: null } }),
+    sv: () => Promise.resolve({ default: { foo: 'Föö' } as any }),
   },
 });
 

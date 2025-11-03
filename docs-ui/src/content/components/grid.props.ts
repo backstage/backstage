@@ -43,12 +43,12 @@ export const gridItemPropDefs: Record<string, PropDef> = {
     values: [...columnsValues, 'full'],
     responsive: true,
   },
-  start: {
+  colStart: {
     type: 'enum | string',
     values: [...columnsValues, 'auto'],
     responsive: true,
   },
-  end: {
+  colEnd: {
     type: 'enum | string',
     values: [...columnsValues, 'auto'],
     responsive: true,
@@ -60,7 +60,7 @@ export const gridItemPropDefs: Record<string, PropDef> = {
 
 export const gridUsageSnippet = `import { Grid } from '@backstage/ui';
 
-<Grid />`;
+<Grid.Root />`;
 
 export const gridDefaultSnippet = `<Grid.Root>
   <DecorativeBox />
@@ -68,44 +68,44 @@ export const gridDefaultSnippet = `<Grid.Root>
   <DecorativeBox />
 </Grid.Root>`;
 
-export const gridSimpleSnippet = `<Grid columns={3} gap="md">
+export const gridSimpleSnippet = `<Grid.Root columns="3" gap="md">
   <Box>Hello World</Box>
   <Box>Hello World</Box>
   <Box>Hello World</Box>
-</Grid>`;
+</Grid.Root>`;
 
-export const gridComplexSnippet = `<Grid columns={3} gap="md">
-  <Grid.Item colSpan={1}>
-    <Box>Hello World</Box>
+export const gridComplexSnippet = `<Grid.Root columns="3" gap="md">
+  <Grid.Item colSpan="1">
+    Hello World
   </Grid.Item>
-  <Grid.Item colSpan={2}>
-    <Box>Hello World</Box>
+  <Grid.Item colSpan="2">
+    Hello World
   </Grid.Item>
-</Grid>`;
+</Grid.Root>`;
 
-export const gridMixingRowsSnippet = `<Grid columns={3} gap="md">
-  <Grid.Item colSpan={1} rowSpan={2}>
-    <Box>Hello World</Box>
+export const gridMixingRowsSnippet = `<Grid.Root columns="3" gap="md">
+  <Grid.Item colSpan="1" rowSpan="2">
+    Hello World
   </Grid.Item>
-  <Grid.Item colSpan={2}>
-    <Box>Hello World</Box>
+  <Grid.Item colSpan="2">
+    Hello World
   </Grid.Item>
-  <Grid.Item colSpan={2}>
-    <Box>Hello World</Box>
+  <Grid.Item colSpan="2">
+    Hello World
   </Grid.Item>
-</Grid>`;
+</Grid.Root>`;
 
-export const gridResponsiveSnippet = `<Grid columns={{ xs: 1, md: 3 }} gap={{ xs: 'xs', md: 'md' }}>
+export const gridResponsiveSnippet = `<Grid.Root columns={{ xs: 1, md: 3 }} gap={{ xs: 'xs', md: 'md' }}>
   <Grid.Item colSpan={{ xs: 1, md: 2 }}>
-    <Box>Hello World</Box>
+    <Hello World
   </Grid.Item>
   <Grid.Item colSpan={{ xs: 1, md: 1 }}>
-    <Box>Hello World</Box>
+    Hello World
   </Grid.Item>
-</Grid>`;
+</Grid.Root>`;
 
-export const gridStartEndSnippet = `<Grid columns={3} gap="md">
-  <Grid.Item start={2} end={4}>
-    <Box>Hello World</Box>
+export const gridStartEndSnippet = `<Grid.Root columns="3" gap="md">
+  <Grid.Item colStart="2" colEnd="4">
+    Hello World
   </Grid.Item>
-</Grid>`;
+</Grid.Root>`;

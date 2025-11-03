@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityPickerFieldSchema } from '../EntityPicker/schema';
+import { EntityPickerFieldSchema } from '../EntityPicker';
 
 /**
  * @public
@@ -23,7 +23,6 @@ export const OwnedEntityPickerFieldSchema = EntityPickerFieldSchema;
 /**
  * The input props that can be specified under `ui:options` for the
  * `OwnedEntityPicker` field extension.
- *
  * @public
  */
 export type OwnedEntityPickerUiOptions = NonNullable<

@@ -21,27 +21,25 @@ import { useStyles } from '../../hooks/useStyles';
 import type { LinkProps } from './types';
 import { useNavigate, useHref } from 'react-router-dom';
 import { isExternalLink } from '../../utils/isExternalLink';
+import stylesLink from './Link.module.css';
+import stylesText from '../Text/Text.module.css';
 
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const navigate = useNavigate();
+  const { classNames: classNamesLink } = useStyles('Link', props);
   const {
-    className,
-    variant = 'body',
-    weight = 'regular',
-    color = 'primary',
-    truncate,
-    href,
-    ...restProps
-  } = props;
-
-  const { classNames: linkClassNames } = useStyles('Link');
-  const { classNames: textClassNames, dataAttributes: textDataAttributes } =
-    useStyles('Text', {
-      variant,
-      weight,
-      color,
-    });
+    classNames: classNamesText,
+    dataAttributes: textDataAttributes,
+    cleanedProps,
+  } = useStyles('Text', {
+    variant: 'body',
+    weight: 'regular',
+    color: 'primary',
+    ...props,
+  });
+  const { className, variant, weight, color, truncate, href, ...restProps } =
+    cleanedProps;
 
   const isExternal = isExternalLink(href);
 
@@ -50,7 +48,13 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     return (
       <AriaLink
         ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
+        className={clsx(
+          classNamesText.root,
+          classNamesLink.root,
+          stylesText[classNamesText.root],
+          stylesLink[classNamesLink.root],
+          className,
+        )}
         data-truncate={truncate}
         href={href}
         {...textDataAttributes}
@@ -64,7 +68,13 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     <RouterProvider navigate={navigate} useHref={useHref}>
       <AriaLink
         ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
+        className={clsx(
+          classNamesText.root,
+          classNamesLink.root,
+          stylesText[classNamesText.root],
+          stylesLink[classNamesLink.root],
+          className,
+        )}
         data-truncate={truncate}
         {...textDataAttributes}
         href={href}

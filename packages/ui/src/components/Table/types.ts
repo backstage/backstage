@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { CellProps as ReactAriaCellProps } from 'react-aria-components';
+import {
+  CellProps as ReactAriaCellProps,
+  ColumnProps as AriaColumnProps,
+} from 'react-aria-components';
 
 /** @public */
 export interface CellProps extends ReactAriaCellProps {
@@ -32,4 +35,9 @@ export interface CellProfileProps extends ReactAriaCellProps {
   href?: string;
   description?: string;
   color?: 'primary' | 'secondary';
+}
+
+/** @public */
+export interface ColumnProps extends Omit<AriaColumnProps, 'children'> {
+  children?: React.ReactNode;
 }

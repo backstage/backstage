@@ -979,6 +979,7 @@ When creating a new Backstage app with `create-app` and using the `--next` flag 
           "@backstage/cli/templates/plugin-common-library",
           "@backstage/cli/templates/web-library",
           "@backstage/cli/templates/node-library",
+          "@backstage/cli/templates/catalog-provider-module",
           "@backstage/cli/templates/scaffolder-backend-module"
         ]
       }

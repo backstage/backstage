@@ -25,7 +25,7 @@ export interface SelectProps
       name: string;
       value: string;
     }>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   /**
    * An icon to render before the input
    */

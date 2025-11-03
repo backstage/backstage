@@ -1,9 +1,9 @@
 'use client';
 
 import { Tabs } from '@base-ui-components/react/tabs';
-import { Icon } from '@backstage/ui';
 import { usePlayground } from '@/utils/playground-context';
 import styles from './theme.module.css';
+import { RiMoonLine, RiSunLine } from '@remixicon/react';
 
 export const ThemeSelector = () => {
   const { selectedTheme, setSelectedTheme } = usePlayground();
@@ -16,10 +16,10 @@ export const ThemeSelector = () => {
     >
       <Tabs.List className={styles.list}>
         <Tabs.Tab className={styles.tab} value="light">
-          <Icon name="sun" />
+          <RiSunLine aria-hidden="true" size={16} />
         </Tabs.Tab>
         <Tabs.Tab className={styles.tab} value="dark">
-          <Icon name="moon" />
+          <RiMoonLine aria-hidden="true" size={16} />
         </Tabs.Tab>
         <Tabs.Indicator className={styles.indicator} />
       </Tabs.List>

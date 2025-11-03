@@ -312,6 +312,7 @@ Usage: program [options]
 Options:
   --check
   --config <path>
+  --entrypoint <path>
   --inspect [host]
   --inspect-brk [host]
   --link <path>

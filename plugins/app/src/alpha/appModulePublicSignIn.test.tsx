@@ -99,6 +99,7 @@ describe('appModulePublicSignIn', () => {
       <body
         data-theme-mode="light"
         data-theme-name="backstage"
+        data-unified-theme-stack="[{"mode":"light","name":"backstage"}]"
       >
         <div>
           <form

@@ -266,13 +266,13 @@ const httpProjectFindByIdDynamic = all_projects_response.map(project => {
     return res(ctx.json(all_projects_response.find(p => p.id === project.id)));
   });
 });
-const httpProjectCatalogDynamic = all_projects_response.map(project => {
-  const path: string = project.path_with_namespace
-    ? project.path_with_namespace!.replace(/\//g, '%2F')
-    : `${project.path_with_namespace}%2F${project.name}`;
 
+/**
+ * See https://docs.gitlab.com/api/repository_files/#get-file-from-repository
+ */
+const httpProjectCatalogDynamic = all_projects_response.flatMap(project => {
   return rest.head(
-    `${apiBaseUrl}/projects/${path}/repository/files/catalog-info.yaml`,
+    `${apiBaseUrl}/projects/${project.id.toString()}/repository/files/catalog-info.yaml`,
     (req, res, ctx) => {
       const branch = req.url.searchParams.get('ref');
       if (

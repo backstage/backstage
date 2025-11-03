@@ -36,12 +36,18 @@ export const AppRoutes = createExtension({
   factory({ inputs }) {
     const Routes = () => {
       const element = useRoutes([
-        ...inputs.routes.map(route => ({
-          path: `${route
-            .get(coreExtensionData.routePath)
-            .replace(/\/$/, '')}/*`,
-          element: route.get(coreExtensionData.reactElement),
-        })),
+        ...inputs.routes.map(route => {
+          const routePath = route.get(coreExtensionData.routePath);
+
+          return {
+            path:
+              routePath === '/'
+                ? routePath
+                : `${routePath.replace(/\/$/, '')}/*`,
+
+            element: route.get(coreExtensionData.reactElement),
+          };
+        }),
         {
           path: '*',
           element: <NotFoundErrorPage />,

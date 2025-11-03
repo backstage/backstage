@@ -126,7 +126,7 @@ _starring_ of components:
 The software catalog is a great way to organize the infrastructure tools you use
 to manage the software. This is how Backstage creates one developer portal for
 all your tools. Rather than asking teams to jump between different
-infrastructure UIs (and incurring additional cognitive overhead each time they
+infrastructure user interfaces (and incurring additional cognitive overhead each time they
 make a context switch), most of these tools can be organized around the entities
 in the catalog.
 

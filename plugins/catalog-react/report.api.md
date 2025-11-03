@@ -685,7 +685,7 @@ export class EntityUserFilter implements EntityFilter {
   // (undocumented)
   static owned(ownershipEntityRefs: string[]): EntityUserFilter;
   // (undocumented)
-  readonly refs?: string[] | undefined;
+  readonly refs?: string[];
   // (undocumented)
   static starred(starredEntityRefs: string[]): EntityUserFilter;
   // (undocumented)

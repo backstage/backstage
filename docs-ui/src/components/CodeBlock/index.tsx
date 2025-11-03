@@ -1,4 +1,5 @@
 import type { BundledLanguage } from 'shiki';
+import { transformerNotationDiff } from '@shikijs/transformers';
 import { codeToHtml } from 'shiki';
 import { CodeBlockClient } from './client';
 
@@ -15,6 +16,7 @@ export async function CodeBlock({ lang = 'tsx', title, code }: CodeBlockProps) {
       light: 'min-light',
       dark: 'min-dark',
     },
+    transformers: [transformerNotationDiff({ matchAlgorithm: 'v3' })],
   });
 
   return <CodeBlockClient out={out} title={title} />;

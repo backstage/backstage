@@ -274,6 +274,31 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       expect(notifications).toHaveLength(1);
     });
 
+    it('should not send to user entity if excluded', async () => {
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+          excludeEntityRef: 'user:default/mock',
+        },
+        payload: {
+          title: 'test notification',
+          metadata: {
+            attr: 1,
+          },
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(0);
+    });
+
     it('should send to group entity', async () => {
       const response = await sendNotification({
         recipients: {
@@ -304,6 +329,50 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         .where('user', 'user:default/mock')
         .select();
       expect(notifications).toHaveLength(1);
+    });
+
+    it('should send not send to group entity if excluded', async () => {
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['group:default/mock'],
+          excludeEntityRef: 'group:default/mock',
+        },
+        payload: {
+          title: 'test notification',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(0);
+    });
+
+    it('should send not send to user entity if excluded', async () => {
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['group:default/mock'],
+          excludeEntityRef: 'user:default/mock',
+        },
+        payload: {
+          title: 'test notification',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(0);
     });
 
     it('should only send one notification per user', async () => {

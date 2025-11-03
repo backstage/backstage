@@ -78,7 +78,20 @@ export type BorderRadius =
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 /** @public */
-export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
+export type Columns =
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '10'
+  | '11'
+  | '12'
+  | 'auto';
 
 /** @public */
 export interface SpaceProps {
@@ -160,6 +173,7 @@ export type DataAttributesMap = Record<string, DataAttributeValues>;
 export interface ComponentDefinition {
   classNames: ClassNamesMap;
   dataAttributes?: DataAttributesMap;
+  utilityProps?: string[];
 }
 
 /**

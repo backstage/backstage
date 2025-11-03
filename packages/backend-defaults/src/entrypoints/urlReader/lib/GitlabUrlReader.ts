@@ -63,10 +63,16 @@ export class GitlabUrlReader implements UrlReaderService {
     });
   };
 
+  private readonly integration: GitLabIntegration;
+  private readonly deps: { treeResponseFactory: ReadTreeResponseFactory };
+
   constructor(
-    private readonly integration: GitLabIntegration,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {}
+    integration: GitLabIntegration,
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);

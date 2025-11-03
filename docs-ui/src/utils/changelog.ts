@@ -25,7 +25,8 @@ export type Component =
   | 'radio-group'
   | 'card'
   | 'skeleton'
-  | 'header';
+  | 'header'
+  | 'passwordfield';
 
 export type Version = `${number}.${number}.${number}`;
 

@@ -156,12 +156,12 @@ describe('createRouter readonly disabled', () => {
         logger: mockServices.logger.mock(),
         refreshService,
         config: new ConfigReader(undefined),
-        permissionIntegrationRouter: express.Router(),
         auth: mockServices.auth(),
         httpAuth: mockServices.httpAuth(),
         locationAnalyzer,
         permissionsService,
         enableRelationsCompatibility: true, // added
+        auditor: mockServices.auditor.mock(),
       });
 
       app = await wrapServer(express().use(router));
@@ -218,12 +218,12 @@ describe('createRouter readonly disabled', () => {
         logger: mockServices.logger.mock(),
         refreshService,
         config: new ConfigReader(undefined),
-        permissionIntegrationRouter: express.Router(),
         auth: mockServices.auth(),
         httpAuth: mockServices.httpAuth(),
         locationAnalyzer,
         permissionsService,
         enableRelationsCompatibility: true,
+        auditor: mockServices.auditor.mock(),
       });
       app = await wrapServer(express().use(router));
       entitiesCatalog.entities.mockResolvedValueOnce({
@@ -951,6 +951,7 @@ describe('createRouter readonly and raw json enabled', () => {
       permissionIntegrationRouter: express.Router(),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
+      orchestrator: { process: jest.fn() },
       permissionsService,
       auditor: mockServices.auditor.mock(),
     });
@@ -1171,6 +1172,7 @@ describe('NextRouter permissioning', () => {
       }),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
+      orchestrator: { process: jest.fn() },
       permissionsService,
       auditor: mockServices.auditor.mock(),
     });
