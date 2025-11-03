@@ -18,7 +18,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { EntityTabsGroup } from './EntityTabsGroup';
+import { catalogTranslationRef } from '../../translation';
 
 /** @public */
 export type HeaderTabsClassKey =
@@ -78,6 +80,7 @@ type EntityTabsListProps = {
 
 export function EntityTabsList(props: EntityTabsListProps) {
   const styles = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const { tabs: items, onChange, selectedIndex: selectedItem = 0 } = props;
 
@@ -112,7 +115,7 @@ export function EntityTabsList(props: EntityTabsListProps) {
         textColor="inherit"
         variant="scrollable"
         scrollButtons="auto"
-        aria-label="tabs"
+        aria-label={t('entityTabs.tabsAriaLabel')}
         value={selectedGroup}
       >
         {groups.map((group, groupIndex) => {
