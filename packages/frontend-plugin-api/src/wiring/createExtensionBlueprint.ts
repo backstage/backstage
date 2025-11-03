@@ -103,12 +103,7 @@ export type CreateExtensionBlueprintOptions<
   TKind extends string,
   TParams extends object | ExtensionBlueprintDefineParams,
   UOutput extends ExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  TInputs extends { [inputName in string]: ExtensionInput },
   TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TDataRefs extends { [name in string]: ExtensionDataRef },
@@ -186,12 +181,7 @@ export type ExtensionBlueprintParameters = {
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
   output?: ExtensionDataRef;
-  inputs?: {
-    [KName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  };
+  inputs?: { [KName in string]: ExtensionInput };
   dataRefs?: { [name in string]: ExtensionDataRef };
 };
 
@@ -254,12 +244,7 @@ export interface ExtensionBlueprint<
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
     UNewOutput extends ExtensionDataRef,
-    TExtraInputs extends {
-      [inputName in string]: ExtensionInput<
-        ExtensionDataRef,
-        { optional: boolean; singleton: boolean }
-      >;
-    },
+    TExtraInputs extends { [inputName in string]: ExtensionInput },
   >(args: {
     name?: TName;
     attachTo?: ExtensionAttachToSpec;
@@ -455,12 +440,7 @@ function unwrapParams<TParams extends object>(
 export function createExtensionBlueprint<
   TParams extends object | ExtensionBlueprintDefineParams,
   UOutput extends ExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  TInputs extends { [inputName in string]: ExtensionInput },
   TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TKind extends string,

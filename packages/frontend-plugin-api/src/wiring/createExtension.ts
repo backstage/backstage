@@ -44,13 +44,12 @@ export const ctxParamsSymbol = Symbol('params');
  * Convert a single extension input into a matching resolved input.
  * @public
  */
-export type ResolvedExtensionInput<
-  TExtensionInput extends ExtensionInput<any, any>,
-> = TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
-  ? {
-      node: AppNode;
-    } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
-  : never;
+export type ResolvedExtensionInput<TExtensionInput extends ExtensionInput> =
+  TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
+    ? {
+        node: AppNode;
+      } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
+    : never;
 
 /**
  * Converts an extension input map into a matching collection of resolved inputs.
@@ -58,7 +57,7 @@ export type ResolvedExtensionInput<
  */
 export type ResolvedExtensionInputs<
   TInputs extends {
-    [name in string]: ExtensionInput<any, any>;
+    [name in string]: ExtensionInput;
   },
 > = {
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
@@ -123,12 +122,7 @@ export type CreateExtensionOptions<
   TKind extends string | undefined,
   TName extends string | undefined,
   UOutput extends ExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  TInputs extends { [inputName in string]: ExtensionInput },
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
 > = {
@@ -158,12 +152,7 @@ export type ExtensionDefinitionParameters = {
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
   output?: ExtensionDataRef;
-  inputs?: {
-    [KName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  };
+  inputs?: { [KName in string]: ExtensionInput };
   params?: object | ExtensionBlueprintDefineParams;
 };
 
@@ -194,12 +183,7 @@ export type ExtensionDefinition<
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
     UNewOutput extends ExtensionDataRef,
-    TExtraInputs extends {
-      [inputName in string]: ExtensionInput<
-        ExtensionDataRef,
-        { optional: boolean; singleton: boolean }
-      >;
-    },
+    TExtraInputs extends { [inputName in string]: ExtensionInput },
     TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
   >(
     args: Expand<
@@ -323,12 +307,7 @@ export type ExtensionDefinition<
  */
 export function createExtension<
   UOutput extends ExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  TInputs extends { [inputName in string]: ExtensionInput },
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   const TKind extends string | undefined = undefined,

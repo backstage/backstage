@@ -68,22 +68,14 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
       }
     | {
         readonly version: 'v2';
-        readonly inputs: {
-          [inputName in string]: ExtensionInput<
-            ExtensionDataRef,
-            { optional: boolean; singleton: boolean }
-          >;
-        };
+        readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
         factory(options: {
           apis: ApiHolder;
           node: AppNode;
           config: TConfig;
           inputs: ResolvedExtensionInputs<{
-            [inputName in string]: ExtensionInput<
-              ExtensionDataRef,
-              { optional: boolean; singleton: boolean }
-            >;
+            [inputName in string]: ExtensionInput;
           }>;
         }): Iterable<ExtensionDataValue<any, any>>;
       }

@@ -18,8 +18,15 @@ import { ExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export interface ExtensionInput<
-  UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
-  TConfig extends { singleton: boolean; optional: boolean },
+  UExtensionData extends ExtensionDataRef<
+    unknown,
+    string,
+    { optional?: true }
+  > = ExtensionDataRef,
+  TConfig extends { singleton: boolean; optional: boolean } = {
+    singleton: boolean;
+    optional: boolean;
+  },
 > {
   $$type: '@backstage/ExtensionInput';
   extensionData: Array<UExtensionData>;
