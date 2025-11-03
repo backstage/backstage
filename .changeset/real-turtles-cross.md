@@ -5,4 +5,4 @@
 '@backstage/plugin-scaffolder-backend-module-yeoman': patch
 ---
 
-Move dependencies for testing and development to devDependencies in package.json files
+Move `dependencies` for testing and development to `devDependencies` in `package.json` files
