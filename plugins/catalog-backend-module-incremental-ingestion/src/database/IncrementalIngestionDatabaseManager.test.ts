@@ -17,6 +17,7 @@
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { IncrementalIngestionDatabaseManager } from './IncrementalIngestionDatabaseManager';
 import { v4 as uuid } from 'uuid';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 const migrationsDir = `${__dirname}/../../migrations`;
 
@@ -98,11 +99,19 @@ describe('IncrementalIngestionDatabaseManager', () => {
         },
       });
 
+      const makeEntity = (name: string): DeferredEntity => ({
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name },
+        },
+      });
+
       // Create multiple mark entities
       await manager.createMarkEntities(markId, [
-        { entity: { kind: 'Component', namespace: 'default', name: 'comp1' } },
-        { entity: { kind: 'Component', namespace: 'default', name: 'comp2' } },
-        { entity: { kind: 'Component', namespace: 'default', name: 'comp3' } },
+        makeEntity('comp1'),
+        makeEntity('comp2'),
+        makeEntity('comp3'),
       ]);
 
       const result = await manager.computeRemoved('testProvider', ingestionId);
