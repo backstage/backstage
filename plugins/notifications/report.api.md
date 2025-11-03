@@ -13,7 +13,6 @@ import { Notification as Notification_2 } from '@backstage/plugin-notifications-
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
-import * as React_2 from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableProps } from '@backstage/core-components';
 
@@ -111,10 +110,10 @@ export type NotificationSnackbarProperties = {
   };
   dense?: boolean;
   maxSnack?: number;
-  snackStyle?: React_2.CSSProperties;
-  iconVariant?: Partial<Record<NotificationSeverity, React_2.ReactNode>>;
+  snackStyle?: React.CSSProperties;
+  iconVariant?: Partial<Record<NotificationSeverity, React.ReactNode>>;
   Components?: {
-    [key in NotificationSeverity]: React_2.JSXElementConstructor<any>;
+    [key in NotificationSeverity]: React.JSXElementConstructor<any>;
   };
 };
 
