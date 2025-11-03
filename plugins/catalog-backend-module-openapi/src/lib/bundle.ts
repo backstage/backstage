@@ -54,8 +54,6 @@ export async function bundleFileWithRefs(
   read: BundlerRead,
   resolveUrl: BundlerResolveUrl,
 ): Promise<string> {
-  const fileObject = parse(fileWithRefs);
-
   const fileUrlReaderResolver: ResolverOptions = {
     canRead: file => {
       const protocol = getProtocol(file.url);
@@ -84,6 +82,8 @@ export async function bundleFileWithRefs(
     },
   };
 
+  const fileObject = parse(fileWithRefs);
+
   if (fileObject.asyncapi) {
     const version = parseInt(fileObject.asyncapi, 10);
 
@@ -98,7 +98,6 @@ export async function bundleFileWithRefs(
     }
   }
 
-  // Use generic bundler for OpenAPI documents only
   const bundledObject = await $RefParser.bundle(fileObject, options);
   return stringify(bundledObject);
 }
