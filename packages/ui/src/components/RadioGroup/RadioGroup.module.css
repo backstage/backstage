@@ -54,6 +54,8 @@
       background: var(--bui-gray-1);
       border-radius: var(--bui-radius-full);
       transition: all 200ms;
+      flex-shrink: 0;
+      flex-grow: 0;
     }
 
     &[data-pressed]:before {
