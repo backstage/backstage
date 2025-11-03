@@ -8,7 +8,6 @@ import { alertApiRef } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
-import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
@@ -385,7 +384,7 @@ export const coreExtensionData: {
   >;
   routePath: ConfigurableExtensionDataRef<string, 'core.routing.path', {}>;
   routeRef: ConfigurableExtensionDataRef<
-    RouteRef<AnyRouteRefParams_2>,
+    RouteRef<AnyRouteRefParams>,
     'core.routing.ref',
     {}
   >;
@@ -1076,6 +1075,9 @@ export type ExtensionDefinition<
 > = {
   $$type: '@backstage/ExtensionDefinition';
   readonly T: T;
+  readonly inputs: {
+    [K in keyof T['inputs']]: ExtensionInputRef;
+  };
   override<
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
@@ -1186,6 +1188,7 @@ export type ExtensionDefinitionAttachTo =
       input: string;
       id?: never;
     }
+  | ExtensionInputRef
   | Array<
       | {
           id: string;
@@ -1200,6 +1203,7 @@ export type ExtensionDefinitionAttachTo =
           input: string;
           id?: never;
         }
+      | ExtensionInputRef
     >;
 
 // @public (undocumented)
@@ -1259,6 +1263,18 @@ export interface ExtensionInput<
     id: string;
     input: string;
   }>;
+}
+
+// @public
+export interface ExtensionInputRef {
+  // (undocumented)
+  $$type: '@backstage/ExtensionInputRef';
+  // (undocumented)
+  input: string;
+  // (undocumented)
+  kind?: string;
+  // (undocumented)
+  name?: string;
 }
 
 // @public

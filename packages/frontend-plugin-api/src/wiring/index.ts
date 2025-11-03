@@ -20,6 +20,7 @@ export {
   type ExtensionDefinition,
   type ExtensionDefinitionParameters,
   type ExtensionDefinitionAttachTo,
+  type ExtensionInputRef,
   type CreateExtensionOptions,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,

@@ -30,7 +30,7 @@ import {
 } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
-import { ExtensionDefinition } from './createExtension';
+import { createExtension, ExtensionDefinition } from './createExtension';
 import {
   createExtensionDataContainer,
   OpaqueExtensionDefinition,
@@ -1343,6 +1343,126 @@ describe('createExtensionBlueprint', () => {
         }),
       ),
     ).toThrow('Refused to override params and factory at the same time');
+  });
+
+  describe('with relative attachment points', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+
+    it('should create an extension with relative attachment points', () => {
+      const blueprint = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: [
+          { relative: {}, input: 'tabs' },
+          { relative: { kind: 'page' }, input: 'tabs' },
+          { relative: { name: 'index' }, input: 'tabs' },
+          { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+        ],
+        output: [dataRef],
+        factory: () => [dataRef('bar')],
+      });
+
+      expect(String(blueprint.make({ params: {} }))).toBe(
+        'ExtensionDefinition{kind=test,attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+      );
+      expect(
+        String(
+          blueprint.make({
+            attachTo: [
+              { relative: { kind: 'page' }, input: 'tabs' },
+              { relative: { name: 'index' }, input: 'tabs' },
+              { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+            ],
+            params: {},
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+      );
+      expect(
+        String(
+          blueprint.makeWithOverrides({
+            attachTo: {
+              relative: { kind: 'page', name: 'index' },
+              input: 'tabs',
+            },
+            factory: orig => orig({}),
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>/index@tabs}',
+      );
+    });
+
+    it('should create an extension with relative attachment points by reference', () => {
+      const baseOpts = {
+        attachTo: { id: 'root', input: 'children' },
+        inputs: {
+          tabs: createExtensionInput([dataRef]),
+        },
+        output: [],
+        factory: () => [],
+      };
+      const parent1 = createExtension({
+        ...baseOpts,
+      });
+      const parent2 = createExtension({
+        ...baseOpts,
+        kind: 'page',
+      });
+      const parent3 = createExtension({
+        ...baseOpts,
+        name: 'index',
+      });
+      const parent4 = createExtension({
+        ...baseOpts,
+        inputs: {},
+        kind: 'page',
+        name: 'index',
+      }).override({
+        inputs: {
+          otherTabs: createExtensionInput([dataRef]),
+        },
+        factory: () => [],
+      });
+      const blueprint = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: [
+          parent1.inputs.tabs,
+          parent2.inputs.tabs,
+          parent3.inputs.tabs,
+          parent4.inputs.otherTabs,
+        ],
+        output: [dataRef],
+        factory: () => [dataRef('bar')],
+      });
+      expect(String(blueprint.make({ params: {} }))).toBe(
+        'ExtensionDefinition{kind=test,attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+      );
+      expect(
+        String(
+          blueprint.make({
+            attachTo: [
+              parent2.inputs.tabs,
+              parent3.inputs.tabs,
+              parent4.inputs.otherTabs,
+            ],
+            params: {},
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+      );
+      expect(
+        String(
+          blueprint.makeWithOverrides({
+            attachTo: parent4.inputs.otherTabs,
+            factory: orig => orig({}),
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>/index@otherTabs}',
+      );
+    });
   });
 
   describe('with advanced parameter types', () => {

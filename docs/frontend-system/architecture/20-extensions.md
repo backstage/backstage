@@ -390,3 +390,52 @@ const childExtension = createExtension({
   },
 });
 ```
+
+## Direct extension input references
+
+Building on the relative attachment point concept, you can also reference extension inputs directly via the `inputs` property of an extension definition. This provides a more convenient and type-safe way to attach child extensions, especially when working with blueprints within a plugin.
+
+Each extension definition exposes an `inputs` property that contains references to all of its defined inputs. These references can be passed directly to the `attachTo` option when creating child extensions:
+
+```tsx
+// Create a parent extension using a blueprint
+const page = PageBlueprint.make({
+  params: {
+    path: '/example',
+    loader: () => import('./ExamplePage'),
+  },
+});
+
+// Create a child extension that attaches to the parent's input
+const widget = CardBlueprint.make({
+  attachTo: page.inputs.children, // Direct reference to the input
+  params: {
+    title: 'Example Widget',
+    content: <div>Widget Content</div>,
+  },
+});
+```
+
+This approach is functionally equivalent to using relative attachment points, but offers several advantages:
+
+- **Type safety**: The TypeScript compiler will verify that the referenced input exists and is spelled correctly
+- **IDE support**: Your editor can provide autocomplete suggestions for available inputs
+- **Clearer intent**: The code explicitly shows the relationship between parent and child extensions
+
+The direct input reference syntax works with both single attachment points and arrays of attachment points, and can be mixed with other attachment point formats:
+
+```tsx
+// Attach to multiple parents using a mix of styles
+const multiAttachChild = ExampleBlueprint.make({
+  attachTo: [
+    page.inputs.children, // Direct reference
+    { relative: { kind: 'sidebar' }, input: 'items' }, // Relative
+    { id: 'app/nav', input: 'items' }, // Absolute ID
+  ],
+  params: {
+    /* ... */
+  },
+});
+```
+
+Under the hood, input references are resolved in the same way as relative attachment points, using the extension's kind, namespace, and name to construct the final attachment target.

@@ -24,7 +24,10 @@ import {
 import { PortableSchema } from '../schema';
 import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
-import { OpaqueExtensionDefinition } from '@internal/frontend';
+import {
+  OpaqueExtensionDefinition,
+  OpaqueExtensionInput,
+} from '@internal/frontend';
 
 /** @public */
 export type ExtensionAttachTo =
@@ -152,6 +155,18 @@ function resolveAttachTo(
   const resolveSpec = (
     spec: Exclude<ExtensionDefinitionAttachTo, Array<any>>,
   ): { id: string; input: string } => {
+    if (OpaqueExtensionInput.isType(spec)) {
+      const { context } = OpaqueExtensionInput.toInternal(spec);
+      if (!context) {
+        throw new Error(
+          'Invalid input object without a parent extension used as attachment point',
+        );
+      }
+      return {
+        id: resolveExtensionId(context.kind, namespace, context.name),
+        input: context.input,
+      };
+    }
     if ('relative' in spec && spec.relative) {
       return {
         id: resolveExtensionId(
@@ -162,7 +177,10 @@ function resolveAttachTo(
         input: spec.input,
       };
     }
-    return { id: spec.id, input: spec.input };
+    if ('id' in spec) {
+      return { id: spec.id, input: spec.input };
+    }
+    throw new Error('Invalid attachment point specification');
   };
 
   if (Array.isArray(attachTo)) {
@@ -180,6 +198,19 @@ export function resolveExtensionDefinition<
   context?: { namespace?: string },
 ): Extension<T['config'], T['configInput']> {
   const internalDefinition = OpaqueExtensionDefinition.toInternal(definition);
+
+  // Restore internal inputs if they were saved under a symbol
+  // This is needed because we override the inputs property with ExtensionInputRef objects
+  const internalInputsSymbol = Symbol.for(
+    '@backstage/ExtensionDefinition/internalInputs',
+  );
+  if ((internalDefinition as any)[internalInputsSymbol]) {
+    // Restore the internal inputs from the symbol
+    (internalDefinition as any).inputs = (internalDefinition as any)[
+      internalInputsSymbol
+    ];
+  }
+
   const {
     name,
     kind,

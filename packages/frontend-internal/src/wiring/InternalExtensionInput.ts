@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-export { createExtensionDataContainer } from './createExtensionDataContainer';
-export { OpaqueExtensionDefinition } from './InternalExtensionDefinition';
-export {
-  OpaqueExtensionInput,
-  type ExtensionInputContext,
-} from './InternalExtensionInput';
-export { OpaqueFrontendPlugin } from './InternalFrontendPlugin';
-export { OpaqueSwappableComponentRef } from './InternalSwappableComponentRef';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { OpaqueType } from '@internal/opaque';
+
+export type ExtensionInputContext = {
+  input: string;
+  kind?: string;
+  name?: string;
+};
+
+export const OpaqueExtensionInput = OpaqueType.create<{
+  public: ExtensionInput;
+  versions: {
+    readonly version: undefined;
+    readonly context?: ExtensionInputContext;
+    withContext(context: ExtensionInputContext): ExtensionInput;
+  };
+}>({
+  type: '@backstage/ExtensionInput',
+  versions: [undefined],
+});

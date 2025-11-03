@@ -27,6 +27,7 @@ describe('resolveExtensionDefinition', () => {
     version: 'v2',
     attachTo: { id: '', input: '' },
     disabled: false,
+    inputs: {},
     override: () => ({} as ExtensionDefinition),
   };
 
@@ -77,6 +78,85 @@ describe('resolveExtensionDefinition', () => {
       { id: 'page:test/index', input: 'tabs' },
     ]);
   });
+
+  it('should resolve extension input references', () => {
+    const resolved = resolveExtensionDefinition(
+      {
+        ...baseDef,
+        attachTo: {
+          $$type: '@backstage/ExtensionInputRef',
+          kind: 'parent',
+          name: 'example',
+          input: 'children',
+        },
+      } as ExtensionDefinition,
+      { namespace: 'test' },
+    );
+    expect(resolved.attachTo).toEqual({
+      id: 'parent:test/example',
+      input: 'children',
+    });
+  });
+
+  it('should resolve extension input references without name', () => {
+    const resolved = resolveExtensionDefinition(
+      {
+        ...baseDef,
+        attachTo: {
+          $$type: '@backstage/ExtensionInputRef',
+          kind: 'parent',
+          input: 'children',
+        },
+      } as ExtensionDefinition,
+      { namespace: 'test' },
+    );
+    expect(resolved.attachTo).toEqual({
+      id: 'parent:test',
+      input: 'children',
+    });
+  });
+
+  it('should resolve extension input references without kind', () => {
+    const resolved = resolveExtensionDefinition(
+      {
+        ...baseDef,
+        attachTo: {
+          $$type: '@backstage/ExtensionInputRef',
+          name: 'example',
+          input: 'children',
+        },
+      } as ExtensionDefinition,
+      { namespace: 'test' },
+    );
+    expect(resolved.attachTo).toEqual({
+      id: 'test/example',
+      input: 'children',
+    });
+  });
+
+  it('should resolve array with mixed attachment types including input references', () => {
+    const resolved = resolveExtensionDefinition(
+      {
+        ...baseDef,
+        attachTo: [
+          { id: 'page:home', input: 'widgets' },
+          { relative: { kind: 'page' }, input: 'actions' },
+          {
+            $$type: '@backstage/ExtensionInputRef',
+            kind: 'parent',
+            name: 'example',
+            input: 'children',
+          },
+        ],
+      } as ExtensionDefinition,
+      { namespace: 'test' },
+    );
+    expect(resolved.attachTo).toEqual([
+      { id: 'page:home', input: 'widgets' },
+      { id: 'page:test', input: 'actions' },
+      { id: 'parent:test/example', input: 'children' },
+    ]);
+  });
 });
 
 describe('old resolveExtensionDefinition', () => {
@@ -86,6 +166,7 @@ describe('old resolveExtensionDefinition', () => {
     version: 'v1',
     attachTo: { id: '', input: '' },
     disabled: false,
+    inputs: {},
     override: () => ({} as ExtensionDefinition),
   };
 

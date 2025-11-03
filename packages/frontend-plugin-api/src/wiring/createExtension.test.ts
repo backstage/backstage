@@ -216,7 +216,7 @@ describe('createExtension', () => {
     );
   });
 
-  it('should create an extension with a relative attachment point', () => {
+  it('should create an extension with relative attachment points', () => {
     const extension = createExtension({
       attachTo: [
         { relative: {}, input: 'tabs' },
@@ -229,6 +229,62 @@ describe('createExtension', () => {
     });
     expect(String(extension)).toBe(
       'ExtensionDefinition{attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+    );
+  });
+
+  it('should create an extension with relative attachment points by reference', () => {
+    const baseOpts = {
+      attachTo: { id: 'root', input: 'children' },
+      inputs: {
+        tabs: createExtensionInput([stringDataRef]),
+      },
+      output: [],
+      factory: () => [],
+    };
+    const parent1 = createExtension({
+      ...baseOpts,
+    });
+    const parent2 = createExtension({
+      ...baseOpts,
+      kind: 'page',
+    });
+    const parent3 = createExtension({
+      ...baseOpts,
+      name: 'index',
+    });
+    const parent4 = createExtension({
+      ...baseOpts,
+      inputs: {},
+      kind: 'page',
+      name: 'index',
+    }).override({
+      inputs: {
+        otherTabs: createExtensionInput([stringDataRef]),
+      },
+      factory: () => [],
+    });
+    const extension = createExtension({
+      attachTo: [
+        parent1.inputs.tabs,
+        parent2.inputs.tabs,
+        parent3.inputs.tabs,
+        parent4.inputs.otherTabs,
+      ],
+      output: [stringDataRef],
+      factory: () => [stringDataRef('bar')],
+    });
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+    );
+    const overrdeExtension = extension.override({
+      attachTo: [
+        parent2.inputs.tabs,
+        parent3.inputs.tabs,
+        parent4.inputs.otherTabs,
+      ],
+    });
+    expect(String(overrdeExtension)).toBe(
+      'ExtensionDefinition{attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
     );
   });
 
