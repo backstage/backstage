@@ -553,6 +553,14 @@ export const componentDefinitions: {
     readonly dataAttributes: {
       readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
       readonly weight: readonly ['regular', 'bold'];
+      readonly color: readonly [
+        'primary',
+        'secondary',
+        'danger',
+        'warning',
+        'success',
+      ];
+      readonly truncate: readonly [true, false];
     };
   };
   readonly List: {
