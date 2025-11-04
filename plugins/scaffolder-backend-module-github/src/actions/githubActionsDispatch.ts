@@ -26,9 +26,11 @@ import {
 import { Octokit } from 'octokit';
 import { getOctokitOptions } from '../util';
 import { examples } from './githubActionsDispatch.examples';
+import { Buffer } from 'buffer';
+import unzipper from 'unzipper';
 
 /**
- * Creates a new action that dispatches a GitHub Action workflow for a given branch or tag.
+ * Dispatches a GitHub Action workflow, optionally waits for completion, and can fetch outputs.
  * @public
  */
 export function createGithubActionsDispatchAction(options: {
@@ -40,38 +42,46 @@ export function createGithubActionsDispatchAction(options: {
   return createTemplateAction({
     id: 'github:actions:dispatch',
     description:
-      'Dispatches a GitHub Action workflow for a given branch or tag',
+      'Dispatches a GitHub Action workflow for a given branch or tag; optionally waits for completion & exposes outputs/artifacts.',
     examples,
     schema: {
       input: {
         repoUrl: z =>
           z.string({
             description:
-              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
+              'Format: `github.com?repo=reponame&owner=owner`, e.g., for repo and owner.',
           }),
         workflowId: z =>
           z.string({
-            description: 'The GitHub Action Workflow filename',
+            description: 'The GitHub Action Workflow filename or number ID.',
           }),
         branchOrTagName: z =>
           z.string({
-            description:
-              'The git branch or tag name used to dispatch the workflow',
+            description: 'The branch or tag to run the workflow on.',
           }),
         workflowInputs: z =>
           z
-            .record(z.string(), {
-              description:
-                'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10.',
-            })
-            .optional(),
+            .record(z.string())
+            .optional()
+            .describe('Workflow input parameters; up to 10 properties.'),
         token: z =>
           z
-            .string({
-              description:
-                'The `GITHUB_TOKEN` to use for authorization to GitHub',
-            })
-            .optional(),
+            .string()
+            .optional()
+            .describe('Optional GitHub `GITHUB_TOKEN` for authentication.'),
+        waitForCompletion: z =>
+          z
+            .boolean()
+            .optional()
+            .default(false)
+            .describe('If true, will wait for completion before continuing.'),
+        outputArtifactName: z =>
+          z
+            .string()
+            .optional()
+            .describe(
+              'If provided, fetch JSON artifact with this name as output.',
+            ),
       },
     },
     async handler(ctx) {
@@ -81,10 +91,12 @@ export function createGithubActionsDispatchAction(options: {
         branchOrTagName,
         workflowInputs,
         token: providedToken,
+        waitForCompletion = false,
+        outputArtifactName,
       } = ctx.input;
 
       ctx.logger.info(
-        `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
+        `Dispatching workflow ${workflowId} for repo ${repoUrl} on branch/tag ${branchOrTagName}`,
       );
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -109,6 +121,7 @@ export function createGithubActionsDispatchAction(options: {
       await ctx.checkpoint({
         key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,
         fn: async () => {
+          // Dispatch workflow
           await client.rest.actions.createWorkflowDispatch({
             owner,
             repo,
@@ -116,8 +129,121 @@ export function createGithubActionsDispatchAction(options: {
             ref: branchOrTagName,
             inputs: workflowInputs,
           });
-
           ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+
+          if (!waitForCompletion) return;
+
+          // Wait for workflow run to be created
+          ctx.logger.info('Waiting for workflow run to appear...');
+          let workflowRun;
+          for (let i = 0; i < 12; i++) {
+            const { data } = await client.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id: workflowId,
+              event: 'workflow_dispatch',
+              branch: branchOrTagName,
+              per_page: 5,
+            });
+            workflowRun = data.workflow_runs
+              .filter(run => run.head_branch === branchOrTagName)
+              .sort(
+                (a, b) => +new Date(b.created_at) - +new Date(a.created_at),
+              )[0];
+            if (workflowRun) break;
+            ctx.logger.info(
+              `Workflow run not found yet, retrying... (${i + 1}/12)`,
+            );
+            await new Promise(res => setTimeout(res, 5000));
+          }
+          if (!workflowRun)
+            throw new Error('Unable to find workflow run for dispatch');
+
+          // Poll for completion
+          const runId = workflowRun.id;
+          let completed = false;
+          let runData = workflowRun;
+
+          ctx.logger.info(
+            `Polling workflow run (id: ${runId}) for completion...`,
+          );
+
+          for (let attempt = 0; attempt < 60; attempt++) {
+            const { data: run } = await client.rest.actions.getWorkflowRun({
+              owner,
+              repo,
+              run_id: runId,
+            });
+            if (run.status === 'completed') {
+              completed = true;
+              runData = run;
+              break;
+            }
+            ctx.logger.info(
+              `Attempt ${attempt + 1}: Workflow status ${
+                run.status
+              }, waiting...`,
+            );
+            await new Promise(res => setTimeout(res, 5000));
+          }
+
+          if (!completed)
+            throw new Error('Timed out waiting for workflow completion');
+
+          ctx.logger.info(`Workflow run completed: ${runData.conclusion}`);
+          ctx.output('conclusion', runData.conclusion);
+
+          if (!outputArtifactName) return;
+
+          // Fetch and output artifact JSON if specified
+          ctx.logger.info(
+            `Fetching output artifact '${outputArtifactName}' from run ${runId}`,
+          );
+          const { data: artifactsData } =
+            await client.rest.actions.listWorkflowRunArtifacts({
+              owner,
+              repo,
+              run_id: runId,
+            });
+
+          const artifact = artifactsData.artifacts.find(
+            a => a.name === outputArtifactName,
+          );
+          if (!artifact) {
+            ctx.logger.warn(`Artifact '${outputArtifactName}' not found`);
+            return;
+          }
+
+          const { data: zipData } = await client.rest.actions.downloadArtifact({
+            owner,
+            repo,
+            artifact_id: artifact.id,
+            archive_format: 'zip',
+          });
+
+          try {
+            const zipBuffer = Buffer.from(zipData as Uint8Array);
+            const directory = await unzipper.Open.buffer(zipBuffer);
+
+            let outputJson: any = undefined;
+            for (const file of directory.files) {
+              if (file.path.endsWith('.json')) {
+                const content = await file.buffer();
+                outputJson = JSON.parse(content.toString('utf8'));
+                break;
+              }
+            }
+            if (outputJson) {
+              ctx.logger.info('Output artifact JSON parsed successfully');
+              ctx.output('outputs', outputJson);
+            } else {
+              ctx.logger.warn('No JSON file found inside output artifact ZIP');
+            }
+          } catch (error) {
+            ctx.logger.warn(
+              `Failed to extract or parse output artifact: ${error}`,
+            );
+          }
         },
       });
     },
