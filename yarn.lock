@@ -7421,6 +7421,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
     uuid: "npm:^11.0.0"
+    wait-for-expect: "npm:^3.0.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
