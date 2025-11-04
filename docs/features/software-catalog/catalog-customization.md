@@ -772,8 +772,8 @@ app:
 
 You can fully replace the entity page header using the EntityHeaderBlueprint from `@backstage/plugin-catalog-react/alpha`. There are two ways to provide your header:
 
-- componentLoader: Provide a React component that receives a `contextMenu` prop that you can place in your header UI.
-- loader: Provide a pre-rendered element if you don't need the `contextMenu` prop.
+- `componentLoader`: Provide a React component that receives a `contextMenu` prop that you can place in your header UI.
+- `loader`: Provide a pre-rendered element if you don't need the `contextMenu` prop.
 
 Example using a component and preserving the context menu:
 
