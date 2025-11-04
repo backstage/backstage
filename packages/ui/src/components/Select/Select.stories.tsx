@@ -22,6 +22,9 @@ import { RiCloudLine } from '@remixicon/react';
 const meta = {
   title: 'Backstage UI/Select',
   component: Select,
+  args: {
+    style: { width: 300 },
+  },
 } satisfies Meta<typeof Select>;
 
 export default meta;
@@ -34,10 +37,71 @@ const fontOptions = [
   { value: 'cursive', label: 'Cursive' },
 ];
 
+const countries = [
+  { value: 'us', label: 'United States' },
+  { value: 'ca', label: 'Canada' },
+  { value: 'mx', label: 'Mexico' },
+  { value: 'uk', label: 'United Kingdom' },
+  { value: 'fr', label: 'France' },
+  { value: 'de', label: 'Germany' },
+  { value: 'it', label: 'Italy' },
+  { value: 'es', label: 'Spain' },
+  { value: 'jp', label: 'Japan' },
+  { value: 'cn', label: 'China' },
+  { value: 'in', label: 'India' },
+  { value: 'br', label: 'Brazil' },
+  { value: 'au', label: 'Australia' },
+];
+
+const skills = [
+  { value: 'react', label: 'React' },
+  { value: 'typescript', label: 'TypeScript' },
+  { value: 'javascript', label: 'JavaScript' },
+  { value: 'python', label: 'Python' },
+  { value: 'java', label: 'Java' },
+  { value: 'csharp', label: 'C#' },
+  { value: 'go', label: 'Go' },
+  { value: 'rust', label: 'Rust' },
+  { value: 'kotlin', label: 'Kotlin' },
+  { value: 'swift', label: 'Swift' },
+];
+
 export const Default: Story = {
   args: {
     options: fontOptions,
     name: 'font',
+  },
+};
+
+export const Searchable: Story = {
+  args: {
+    label: 'Country',
+    searchable: true,
+    searchPlaceholder: 'Search countries...',
+    options: countries,
+  },
+};
+
+export const MultipleSelection: Story = {
+  args: {
+    label: 'Select multiple options',
+    selectionMode: 'multiple',
+    options: [
+      { value: 'option1', label: 'Option 1' },
+      { value: 'option2', label: 'Option 2' },
+      { value: 'option3', label: 'Option 3' },
+      { value: 'option4', label: 'Option 4' },
+    ],
+  },
+};
+
+export const SearchableMultiple: Story = {
+  args: {
+    label: 'Skills',
+    searchable: true,
+    selectionMode: 'multiple',
+    searchPlaceholder: 'Filter skills...',
+    options: skills,
   },
 };
 
