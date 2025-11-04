@@ -15,6 +15,7 @@ import {
   RiServiceLine,
   RiStackLine,
 } from '@remixicon/react';
+import { Logo } from './Logo';
 
 const data = [
   {
@@ -34,6 +35,9 @@ export const Sidebar = () => {
 
   return (
     <div className={styles.sidebar}>
+      <div className={styles.logoContainer}>
+        <Logo />
+      </div>
       <ScrollArea.Root className={styles.root}>
         <ScrollArea.Viewport className={styles.viewport}>
           <div className={styles.content}>

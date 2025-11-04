@@ -6,17 +6,24 @@
   .sidebar {
     display: block;
     position: fixed;
-    top: 112px;
+    top: 0;
     left: 0;
-    width: 332px;
-    height: calc(100vh - 112px);
+    width: 260px;
+    height: 100vh;
     color: var(--primary);
     overflow: hidden;
   }
 }
 
+.logoContainer {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding-left: 32px;
+}
+
 .root {
-  height: 100%;
+  height: calc(100% - 80px);
 }
 
 .scrollbar {
@@ -56,7 +63,7 @@
 }
 
 .content {
-  padding: 0 20px 64px;
+  padding: 32px 20px 64px;
 }
 
 .menu {

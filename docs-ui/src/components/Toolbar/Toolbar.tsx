@@ -1,52 +1,161 @@
 'use client';
 
-import { RiGithubLine, RiNpmjsLine } from '@remixicon/react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import { Logo } from './Logo';
-import { ThemeSelector } from './theme';
-import { ThemeNameSelector } from './theme-name';
+import {
+  RiArrowDownSLine,
+  RiArrowRightSLine,
+  RiGithubLine,
+  RiMoonLine,
+  RiSunLine,
+} from '@remixicon/react';
+import {
+  Button,
+  ListBox,
+  ListBoxItem,
+  Popover,
+  Select,
+  SelectValue,
+  ToggleButton,
+  ToggleButtonGroup,
+} from 'react-aria-components';
 import styles from './Toolbar.module.css';
+import { Tabs } from '@base-ui-components/react/tabs';
+import { usePlayground } from '@/utils/playground-context';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { components, layoutComponents } from '@/utils/data';
 
 interface ToolbarProps {
   version: string;
 }
 
-export const Toolbar = ({ version }: ToolbarProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll();
+const themes = [
+  { name: 'Backstage', value: 'backstage' },
+  { name: 'Spotify', value: 'spotify' },
+  { name: 'Custom theme', value: 'custom' },
+];
 
-  // Transform scroll velocity to vertical movement
-  const y = useTransform(scrollY, [0, 100], [0, -20], {
-    clamp: false,
-  });
+export const Toolbar = ({ version }: ToolbarProps) => {
+  const {
+    selectedTheme,
+    setSelectedTheme,
+    selectedThemeName,
+    setSelectedThemeName,
+  } = usePlayground();
+
+  const pathname = usePathname();
+
+  // Determine breadcrumb content based on current path
+  const getBreadcrumb = () => {
+    const allComponents = [...components, ...layoutComponents];
+
+    // Root page
+    if (pathname === '/') {
+      return { section: null, title: 'Getting Started' };
+    }
+
+    // Components index page
+    if (pathname === '/components') {
+      return { section: null, title: 'Components' };
+    }
+
+    // Component detail pages
+    if (pathname?.startsWith('/components/')) {
+      const slug = pathname.split('/components/')[1];
+      const component = allComponents.find(c => c.slug === slug);
+      return {
+        section: 'Components',
+        sectionLink: '/components',
+        title: component?.title || slug,
+      };
+    }
+
+    // Tokens page
+    if (pathname === '/tokens') {
+      return { section: null, title: 'Tokens' };
+    }
+
+    // Changelog page
+    if (pathname === '/changelog') {
+      return { section: null, title: 'Changelog' };
+    }
+
+    return { section: null, title: '' };
+  };
+
+  const breadcrumb = getBreadcrumb();
 
   return (
-    <div className={styles.toolbar} ref={containerRef}>
-      <div className={styles.left}>
-        <Logo />
+    <div className={styles.toolbar}>
+      <div className={styles.breadcrumb}>
+        {breadcrumb.section && breadcrumb.sectionLink ? (
+          <>
+            <Link
+              href={breadcrumb.sectionLink}
+              className={styles.breadcrumbLink}
+            >
+              {breadcrumb.section}
+            </Link>
+            <RiArrowRightSLine
+              size={16}
+              className={styles.breadcrumbSeparator}
+            />
+            <span className={styles.breadcrumbCurrent}>{breadcrumb.title}</span>
+          </>
+        ) : (
+          <span className={styles.breadcrumbCurrent}>{breadcrumb.title}</span>
+        )}
       </div>
-      <motion.div className={styles.right} style={{ y }}>
-        <div className={styles.version}>Version {version} - Alpha</div>
-        <div className={styles.actions}>
-          <div className={styles.versionLinks}>
-            <a
-              href="https://github.com/backstage/backstage/tree/master/packages/ui"
-              target="_blank"
-            >
-              <RiGithubLine size={16} />
-            </a>
-            <a
-              href="https://www.npmjs.com/package/@backstage/ui"
-              target="_blank"
-            >
-              <RiNpmjsLine size={16} />
-            </a>
-          </div>
-          <ThemeNameSelector />
-          <ThemeSelector />
-        </div>
-      </motion.div>
+      <div className={styles.actions}>
+        <Select
+          defaultValue="backstage"
+          value={selectedThemeName}
+          onChange={setSelectedThemeName}
+        >
+          <Button className={styles.bubble}>
+            <SelectValue />
+            <RiArrowDownSLine aria-hidden="true" size={16} />
+          </Button>
+          <Popover className={styles.Popup}>
+            <ListBox className={styles.ListBox}>
+              {themes.map(({ name, value }) => (
+                <ListBoxItem key={value} id={value} className={styles.Item}>
+                  {name}
+                </ListBoxItem>
+              ))}
+            </ListBox>
+          </Popover>
+        </Select>
+        <a
+          href="https://www.npmjs.com/package/@backstage/ui"
+          target="_blank"
+          className={styles.bubble}
+          data-hide-tablet
+        >
+          Version {version}
+        </a>
+        <a
+          href="https://github.com/backstage/backstage/tree/master/packages/ui"
+          target="_blank"
+          className={styles.bubble}
+          data-hide-tablet
+        >
+          <RiGithubLine size={16} />
+        </a>
+        <ToggleButtonGroup
+          defaultSelectedKeys={['light']}
+          selectedKeys={selectedTheme}
+          onSelectionChange={setSelectedTheme}
+          disallowEmptySelection
+          className={styles.buttonGroup}
+        >
+          <ToggleButton id="light">
+            <RiSunLine aria-hidden="true" size={16} />
+          </ToggleButton>
+          <ToggleButton id="dark">
+            <RiMoonLine aria-hidden="true" size={16} />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
     </div>
   );
 };

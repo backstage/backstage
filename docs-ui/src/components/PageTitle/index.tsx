@@ -13,7 +13,6 @@ export const PageTitle = ({
 }) => {
   return (
     <div className={styles.container}>
-      <div className={styles.component}>{type}</div>
       <MDXRemote
         components={formattedMDXComponents}
         source={`# ${title}\n\n${description}`}
