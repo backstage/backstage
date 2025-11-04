@@ -13,30 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext } from 'react';
+
+import { ReactNode, useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1PersistentVolumeClaim } from '@kubernetes/client-node';
+import type { V1PersistentVolumeClaim } from '@kubernetes/client-node';
+import { PersistentVolumeClaimsTable } from './PersistentVolumeClaimsTable';
 import { GroupedResponsesContext } from '../../hooks';
-import {
-  StatusError,
-  StatusOK,
-  StatusPending,
-  StructuredMetadataTable,
-} from '@backstage/core-components';
-import { PersistentVolumeClaimsDrawer } from './PersistentVolumeClaimsDrawer.tsx';
+import { StatusOK, StatusError } from '@backstage/core-components';
 
-type PersistentVolumeClaimSummaryProps = {
-  persistentVolumeClaim: V1PersistentVolumeClaim;
+type PersistentVolumeClaimsAccordionsProps = {
+  children?: ReactNode;
+};
+
+type PersistentVolumeClaimsAccordionProps = {
+  persistentVolumeClaims: V1PersistentVolumeClaim[];
+  children?: ReactNode;
+};
+
+type PersistentVolumeClaimsSummaryProps = {
+  numberOfPersistentVolumeClaims: number;
+  numberOfBoundClaims: number;
+  numberOfLostClaims: number;
+  children?: ReactNode;
 };
 
 const PersistentVolumeClaimsSummary = ({
-  persistentVolumeClaim,
-}: PersistentVolumeClaimSummaryProps) => {
+  numberOfPersistentVolumeClaims,
+  numberOfBoundClaims,
+  numberOfLostClaims,
+}: PersistentVolumeClaimsSummaryProps) => {
   return (
     <Grid
       container
@@ -45,81 +55,61 @@ const PersistentVolumeClaimsSummary = ({
       alignItems="center"
       spacing={0}
     >
-      <Grid xs={8} item>
-        <PersistentVolumeClaimsDrawer
-          persistentVolumeClaim={persistentVolumeClaim}
-        />
+      <Grid xs={4} item>
+        <Typography variant="body1">
+          <strong>PersistentVolumeClaims</strong>
+        </Typography>
       </Grid>
-
-      <Grid item>
-        <Typography variant="subtitle2">
-          {persistentVolumeClaim.status?.phase === 'Bound' && (
-            <StatusOK>Bound</StatusOK>
-          )}
-          {persistentVolumeClaim.status?.phase === 'Pending' && (
-            <StatusPending>Pending</StatusPending>
-          )}
-          {persistentVolumeClaim.status?.phase === 'Lost' && (
-            <StatusError>Lost</StatusError>
-          )}
-        </Typography>
-        <Typography variant="subtitle2">
-          Size: {persistentVolumeClaim.status?.capacity?.storage ?? 'N/A'}
-        </Typography>
+      <Grid
+        item
+        container
+        xs={8}
+        direction="column"
+        justifyContent="flex-start"
+        alignItems="flex-end"
+        spacing={0}
+      >
+        <Grid item>
+          <StatusOK>{numberOfPersistentVolumeClaims} claims</StatusOK>
+        </Grid>
+        <Grid item>
+          <StatusOK>{numberOfBoundClaims} bound</StatusOK>
+        </Grid>
+        {numberOfLostClaims > 0 && (
+          <Grid item>
+            <StatusError>
+              {numberOfLostClaims} claim
+              {numberOfLostClaims > 1 ? 's' : ''} lost
+            </StatusError>
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );
 };
 
-type PersistentVolumeClaimsCardProps = {
-  persistentVolumeClaim: V1PersistentVolumeClaim;
-};
-
-const PersistentVolumeClaimClaimCard = ({
-  persistentVolumeClaim,
-}: PersistentVolumeClaimsCardProps) => {
-  const metadata: any = {};
-
-  metadata.size = persistentVolumeClaim.status?.capacity?.storage;
-  metadata.accessModes = persistentVolumeClaim.spec?.accessModes;
-  metadata.storageClassName = persistentVolumeClaim.spec?.storageClassName;
-  metadata.volumeName = persistentVolumeClaim.spec?.volumeName;
-  metadata.volumeMode = persistentVolumeClaim.spec?.volumeMode;
-
-  return (
-    <StructuredMetadataTable
-      metadata={{
-        size: persistentVolumeClaim.status?.capacity?.storage,
-        accessModes: persistentVolumeClaim.spec?.accessModes,
-        storageClassName: persistentVolumeClaim.spec?.storageClassName,
-        volumeName: persistentVolumeClaim.spec?.volumeName,
-        volumeMode: persistentVolumeClaim.spec?.volumeMode,
-        ...metadata,
-      }}
-      options={{ nestedValuesAsYaml: true }}
-    />
-  );
-};
-
-export type PersistentVolumeClaimsAccordionsProps = {};
-
-type PersistentVolumeClaimsAccordionProps = {
-  persistentVolumeClaim: V1PersistentVolumeClaim;
-};
-
 const PersistentVolumeClaimsAccordion = ({
-  persistentVolumeClaim,
+  persistentVolumeClaims,
 }: PersistentVolumeClaimsAccordionProps) => {
+  const boundClaims = persistentVolumeClaims.filter(
+    pvc => pvc.status?.phase === 'Bound',
+  );
+  const lostClaims = persistentVolumeClaims.filter(
+    pvc => pvc.status?.phase === 'Lost',
+  );
+
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <PersistentVolumeClaimsSummary
-          persistentVolumeClaim={persistentVolumeClaim}
+          numberOfPersistentVolumeClaims={persistentVolumeClaims.length}
+          numberOfBoundClaims={boundClaims.length}
+          numberOfLostClaims={lostClaims.length}
         />
       </AccordionSummary>
       <AccordionDetails>
-        <PersistentVolumeClaimClaimCard
-          persistentVolumeClaim={persistentVolumeClaim}
+        <PersistentVolumeClaimsTable
+          persistentVolumeClaims={persistentVolumeClaims}
         />
       </AccordionDetails>
     </Accordion>
@@ -129,22 +119,21 @@ const PersistentVolumeClaimsAccordion = ({
 export const PersistentVolumeClaimsAccordions =
   ({}: PersistentVolumeClaimsAccordionsProps) => {
     const groupedResponses = useContext(GroupedResponsesContext);
+
     return (
       <Grid
         container
-        direction="row"
+        direction="column"
         justifyContent="flex-start"
         alignItems="flex-start"
       >
-        {groupedResponses.persistentVolumeClaims.map(
-          (persistentVolumeClaim, i) => (
-            <Grid item key={i} xs>
-              <PersistentVolumeClaimsAccordion
-                persistentVolumeClaim={persistentVolumeClaim}
-              />
-            </Grid>
-          ),
-        )}
+        <Grid container item xs>
+          <Grid item xs>
+            <PersistentVolumeClaimsAccordion
+              persistentVolumeClaims={groupedResponses.persistentVolumeClaims}
+            />
+          </Grid>
+        </Grid>
       </Grid>
     );
   };

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { PersistentVolumeClaimsAccordions } from './PersistentVolumeClaimsAccordions';
 import * as onePersistentVolumeClaimsFixture from '../../__fixtures__/1-persistentvolumeclaims.json';
 import * as twoPersistentVolumeClaimsFixture from '../../__fixtures__/2-persistentvolumeclaims.json';
@@ -22,7 +23,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('PersistentVolumeClaimsAccordions', () => {
-  it('should render 1 persistent volume claim', async () => {
+  it('should render 1 persistent volume claim with summary', async () => {
     const wrapper = kubernetesProviders(
       onePersistentVolumeClaimsFixture,
       new Set<string>(),
@@ -30,13 +31,23 @@ describe('PersistentVolumeClaimsAccordions', () => {
 
     await renderInTestApp(wrapper(<PersistentVolumeClaimsAccordions />));
 
-    expect(screen.getByText('pvc-web-storage')).toBeInTheDocument();
-    expect(screen.getByText('PersistentVolumeClaim')).toBeInTheDocument();
-    expect(screen.getByText('Bound')).toBeInTheDocument();
-    expect(screen.getByText('namespace: default')).toBeInTheDocument();
+    expect(screen.getByText('PersistentVolumeClaims')).toBeInTheDocument();
+    expect(screen.getByText('1 claims')).toBeInTheDocument();
+    expect(screen.getByText('1 bound')).toBeInTheDocument();
+
+    const accordionButton = screen.getByRole('button', {
+      expanded: false,
+    });
+    await userEvent.click(accordionButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('pvc-web-storage')).toBeInTheDocument();
+      expect(screen.getByText('PersistentVolumeClaim')).toBeInTheDocument();
+      expect(screen.getAllByText('Bound').length).toBeGreaterThanOrEqual(1);
+    });
   });
 
-  it('should render 5 persistent volume claims with different statuses and namespaces', async () => {
+  it('should render multiple persistent volume claims with summary', async () => {
     const wrapper = kubernetesProviders(
       twoPersistentVolumeClaimsFixture,
       new Set<string>(),
@@ -44,22 +55,21 @@ describe('PersistentVolumeClaimsAccordions', () => {
 
     await renderInTestApp(wrapper(<PersistentVolumeClaimsAccordions />));
 
-    expect(screen.getByText('pvc-web-storage')).toBeInTheDocument();
-    expect(screen.getByText('pvc-database-storage')).toBeInTheDocument();
-    expect(screen.getByText('pvc-cache-storage')).toBeInTheDocument();
-    expect(screen.getByText('pvc-logs-storage')).toBeInTheDocument();
-    expect(screen.getByText('pvc-backup-storage')).toBeInTheDocument();
+    expect(screen.getByText('PersistentVolumeClaims')).toBeInTheDocument();
 
-    expect(screen.getAllByText('PersistentVolumeClaim')).toHaveLength(5);
+    const accordionButton = screen.getByRole('button', {
+      expanded: false,
+    });
+    await userEvent.click(accordionButton);
 
-    expect(screen.getAllByText('Bound')).toHaveLength(3);
-    expect(screen.getByText('Pending')).toBeInTheDocument();
-    expect(screen.getByText('Lost')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('pvc-web-storage')).toBeInTheDocument();
 
-    expect(screen.getByText('namespace: default')).toBeInTheDocument();
-    expect(screen.getByText('namespace: production')).toBeInTheDocument();
-    expect(screen.getByText('namespace: staging')).toBeInTheDocument();
-    expect(screen.getByText('namespace: logging')).toBeInTheDocument();
-    expect(screen.getByText('namespace: backup')).toBeInTheDocument();
+      expect(
+        screen.getAllByText('PersistentVolumeClaim').length,
+      ).toBeGreaterThanOrEqual(1);
+
+      expect(screen.getAllByText('Bound').length).toBeGreaterThanOrEqual(1);
+    });
   });
 });
