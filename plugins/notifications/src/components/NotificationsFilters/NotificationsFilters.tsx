@@ -48,58 +48,53 @@ export type NotificationsFiltersProps = {
 
 const ALL = '___all___';
 
-export const CreatedAfterOptions: {
-  [key: string]: { label: string; getDate: () => Date };
-} = {
+type TranslationKey = keyof (typeof notificationsTranslationRef)['T'];
+
+export const CreatedAfterOptions = {
   last24h: {
-    label: 'Last 24h',
+    labelKey: 'filters.createdAfter.last24h' as const satisfies TranslationKey,
     getDate: () => new Date(Date.now() - 24 * 3600 * 1000),
   },
   lastWeek: {
-    label: 'Last week',
+    labelKey: 'filters.createdAfter.lastWeek' as const satisfies TranslationKey,
     getDate: () => new Date(Date.now() - 7 * 24 * 3600 * 1000),
   },
   all: {
-    label: 'Any time',
+    labelKey: 'filters.createdAfter.anyTime' as const satisfies TranslationKey,
     getDate: () => new Date(0),
   },
-};
+} as const;
 
-export const SortByOptions: {
-  [key: string]: {
-    label: string;
-    sortBy: SortBy;
-  };
-} = {
+export const SortByOptions = {
   newest: {
-    label: 'Newest on top',
+    labelKey: 'filters.sortBy.newest' as const satisfies TranslationKey,
     sortBy: {
-      sort: 'created',
-      sortOrder: 'desc',
+      sort: 'created' as const,
+      sortOrder: 'desc' as const,
     },
   },
   oldest: {
-    label: 'Oldest on top',
+    labelKey: 'filters.sortBy.oldest' as const satisfies TranslationKey,
     sortBy: {
-      sort: 'created',
-      sortOrder: 'asc',
+      sort: 'created' as const,
+      sortOrder: 'asc' as const,
     },
   },
   topic: {
-    label: 'Topic',
+    labelKey: 'filters.sortBy.topic' as const satisfies TranslationKey,
     sortBy: {
-      sort: 'topic',
-      sortOrder: 'asc',
+      sort: 'topic' as const,
+      sortOrder: 'asc' as const,
     },
   },
   origin: {
-    label: 'Origin',
+    labelKey: 'filters.sortBy.origin' as const satisfies TranslationKey,
     sortBy: {
-      sort: 'origin',
-      sortOrder: 'asc',
+      sort: 'origin' as const,
+      sortOrder: 'asc' as const,
     },
   },
-};
+} as const;
 
 const getSortByText = (sortBy?: SortBy): string => {
   if (sortBy?.sort === 'created' && sortBy?.sortOrder === 'asc') {
@@ -135,34 +130,34 @@ export const NotificationsFilters = ({
 
   const CreatedAfterOptionsLocal = {
     last24h: {
-      label: t('filters.createdAfter.last24h'),
+      label: t(CreatedAfterOptions.last24h.labelKey, {}),
       getDate: CreatedAfterOptions.last24h.getDate,
     },
     lastWeek: {
-      label: t('filters.createdAfter.lastWeek'),
+      label: t(CreatedAfterOptions.lastWeek.labelKey, {}),
       getDate: CreatedAfterOptions.lastWeek.getDate,
     },
     all: {
-      label: t('filters.createdAfter.anyTime'),
+      label: t(CreatedAfterOptions.all.labelKey, {}),
       getDate: CreatedAfterOptions.all.getDate,
     },
   };
 
   const SortByOptionsLocal = {
     newest: {
-      label: t('filters.sortBy.newest'),
+      label: t(SortByOptions.newest.labelKey, {}),
       sortBy: SortByOptions.newest.sortBy,
     },
     oldest: {
-      label: t('filters.sortBy.oldest'),
+      label: t(SortByOptions.oldest.labelKey, {}),
       sortBy: SortByOptions.oldest.sortBy,
     },
     topic: {
-      label: t('filters.sortBy.topic'),
+      label: t(SortByOptions.topic.labelKey, {}),
       sortBy: SortByOptions.topic.sortBy,
     },
     origin: {
-      label: t('filters.sortBy.origin'),
+      label: t(SortByOptions.origin.labelKey, {}),
       sortBy: SortByOptions.origin.sortBy,
     },
   };

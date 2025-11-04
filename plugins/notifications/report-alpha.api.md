@@ -115,10 +115,14 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'sidebar.errors.markAsReadFailed': 'Failed to mark notification as read';
     readonly 'sidebar.errors.fetchNotificationFailed': 'Failed to fetch notification';
     readonly 'notificationsPage.title': 'Notifications';
-    readonly 'notificationsPage.tableTitle.all': 'All notifications ({{count}})';
-    readonly 'notificationsPage.tableTitle.read': 'Read notifications ({{count}})';
-    readonly 'notificationsPage.tableTitle.saved': 'Saved notifications ({{count}})';
-    readonly 'notificationsPage.tableTitle.unread': 'Unread notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.all_one': 'All notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.all_other': 'All notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.saved_one': 'Saved notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.saved_other': 'Saved notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.unread_one': 'Unread notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.unread_other': 'Unread notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.read_one': 'Read notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
   }
 >;
 

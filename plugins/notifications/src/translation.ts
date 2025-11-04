@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,14 @@ export const notificationsTranslationRef = createTranslationRef({
     notificationsPage: {
       title: 'Notifications',
       tableTitle: {
-        all: 'All notifications ({{count}})',
-        saved: 'Saved notifications ({{count}})',
-        unread: 'Unread notifications ({{count}})',
-        read: 'Read notifications ({{count}})',
+        all_one: 'All notifications ({{count}})',
+        all_other: 'All notifications ({{count}})',
+        saved_one: 'Saved notifications ({{count}})',
+        saved_other: 'Saved notifications ({{count}})',
+        unread_one: 'Unread notifications ({{count}})',
+        unread_other: 'Unread notifications ({{count}})',
+        read_one: 'Read notifications ({{count}})',
+        read_other: 'Read notifications ({{count}})',
       },
     },
     filters: {
