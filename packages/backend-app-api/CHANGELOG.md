@@ -1,5 +1,16 @@
 # @backstage/backend-app-api
 
+## 1.3.0-next.1
+
+### Minor Changes
+
+- a17d9df: Updates API for `instanceMetadata` service to return a list of plugins not features.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
 ## 1.2.9-next.0
 
 ### Patch Changes

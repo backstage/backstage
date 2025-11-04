@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.4-next.1
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-kubernetes-node@0.3.6-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
 ## 0.20.4-next.0
 
 ### Patch Changes

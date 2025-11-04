@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.18.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.1
+
 ## 0.18.3-next.0
 
 ### Patch Changes

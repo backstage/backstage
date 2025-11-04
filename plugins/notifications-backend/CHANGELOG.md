@@ -1,5 +1,22 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.12-next.1
+
+### Patch Changes
+
+- 15fb764: Show default settings for notifications even before receiving first notification.
+
+  Previously, it was not possible for the users to see or modify their notification settings until they had received at
+  least one notification from specific origin or topic.
+  This update ensures that default settings are displayed from the outset,
+  allowing users to customize their preferences immediately.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-notifications-node@0.2.21-next.1
+  - @backstage/plugin-signals-node@0.1.26-next.1
+
 ## 0.5.12-next.0
 
 ### Patch Changes

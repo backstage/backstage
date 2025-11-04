@@ -1,5 +1,14 @@
 # @backstage/frontend-plugin-api
 
+## 0.12.2-next.1
+
+### Patch Changes
+
+- 878c251: Updated to `ExtensionInput` to make all type parameters optional.
+- Updated dependencies
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+
 ## 0.12.2-next.0
 
 ### Patch Changes

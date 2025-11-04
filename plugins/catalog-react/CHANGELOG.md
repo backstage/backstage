@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.3-next.1
+
+### Patch Changes
+
+- 2b7924b: Apply default ordering of templates
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
 ## 1.21.3-next.0
 
 ### Patch Changes

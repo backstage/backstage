@@ -1,5 +1,17 @@
 # @backstage/plugin-signals
 
+## 0.0.25-next.1
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- f0f006e: Fixes a bug where the `SignalClient` would try to subscribe to the same channel twice after an error, instead of just once.
+- Updated dependencies
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
 ## 0.0.25-next.0
 
 ### Patch Changes
