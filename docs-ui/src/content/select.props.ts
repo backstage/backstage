@@ -23,6 +23,12 @@ export const selectPropDefs: Record<string, PropDef> = {
     values: ['Array<{ value: string, label: string }>'],
     required: true,
   },
+  selectionMode: {
+    type: 'enum',
+    values: ['single', 'multiple'],
+    default: 'single',
+    responsive: false,
+  },
   placeholder: {
     type: 'string',
     default: 'Select an item',
@@ -34,17 +40,23 @@ export const selectPropDefs: Record<string, PropDef> = {
     responsive: false,
   },
   value: {
-    type: 'string',
+    type: 'enum',
+    values: ['string', 'string[]'],
     responsive: false,
+    description:
+      'Selected value (controlled). String for single selection, array for multiple.',
   },
   defaultValue: {
-    type: 'string',
+    type: 'enum',
+    values: ['string', 'string[]'],
     responsive: false,
+    description:
+      'Initial value (uncontrolled). String for single selection, array for multiple.',
   },
   size: {
     type: 'enum',
     values: ['small', 'medium'],
-    default: 'medium',
+    default: 'small',
     responsive: true,
   },
   isOpen: {
@@ -57,7 +69,7 @@ export const selectPropDefs: Record<string, PropDef> = {
   },
   disabledKeys: {
     type: 'enum',
-    values: ['string[]'],
+    values: ['Iterable<Key>'],
     responsive: false,
   },
   isDisabled: {
@@ -72,14 +84,6 @@ export const selectPropDefs: Record<string, PropDef> = {
     type: 'boolean',
     responsive: false,
   },
-  selectedKey: {
-    type: 'string',
-    responsive: false,
-  },
-  defaultSelectedKey: {
-    type: 'string',
-    responsive: false,
-  },
   onOpenChange: {
     type: 'enum',
     values: ['(isOpen: boolean) => void'],
@@ -87,7 +91,19 @@ export const selectPropDefs: Record<string, PropDef> = {
   },
   onSelectionChange: {
     type: 'enum',
-    values: ['(key: Key | null) => void'],
+    values: ['(key: Key | null) => void', '(keys: Selection) => void'],
+    responsive: false,
+    description:
+      'Handler called when selection changes. Single mode: receives Key | null. Multiple mode: receives Selection.',
+  },
+  searchable: {
+    type: 'boolean',
+    default: 'false',
+    responsive: false,
+  },
+  searchPlaceholder: {
+    type: 'string',
+    default: 'Search...',
     responsive: false,
   },
   ...classNamePropDefs,
@@ -150,4 +166,46 @@ export const selectResponsiveSnippet = `<Select
   size={{ initial: 'small', lg: 'medium' }}
   label="Font family"
   options={[ ... ]}
+/>`;
+
+export const selectSearchableSnippet = `<Select
+  name="country"
+  label="Country"
+  searchable
+  searchPlaceholder="Search countries..."
+  options={[
+    { value: 'us', label: 'United States' },
+    { value: 'ca', label: 'Canada' },
+    { value: 'uk', label: 'United Kingdom' },
+    { value: 'fr', label: 'France' },
+    { value: 'de', label: 'Germany' },
+    // ... more options
+  ]}
+/>`;
+
+export const selectMultipleSnippet = `<Select
+  name="options"
+  label="Select multiple options"
+  selectionMode="multiple"
+  options={[
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+    { value: 'option3', label: 'Option 3' },
+    { value: 'option4', label: 'Option 4' },
+  ]}
+/>`;
+
+export const selectSearchableMultipleSnippet = `<Select
+  name="skills"
+  label="Skills"
+  searchable
+  selectionMode="multiple"
+  searchPlaceholder="Filter skills..."
+  options={[
+    { value: 'react', label: 'React' },
+    { value: 'typescript', label: 'TypeScript' },
+    { value: 'javascript', label: 'JavaScript' },
+    { value: 'python', label: 'Python' },
+    // ... more options
+  ]}
 />`;

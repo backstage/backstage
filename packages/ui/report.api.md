@@ -625,12 +625,16 @@ export const componentDefinitions: {
       readonly root: 'bui-Select';
       readonly popover: 'bui-SelectPopover';
       readonly trigger: 'bui-SelectTrigger';
+      readonly chevron: 'bui-SelectTriggerChevron';
       readonly value: 'bui-SelectValue';
-      readonly icon: 'bui-SelectIcon';
       readonly list: 'bui-SelectList';
       readonly item: 'bui-SelectItem';
       readonly itemIndicator: 'bui-SelectItemIndicator';
       readonly itemLabel: 'bui-SelectItemLabel';
+      readonly searchWrapper: 'bui-SelectSearchWrapper';
+      readonly search: 'bui-SelectSearch';
+      readonly searchClear: 'bui-SelectSearchClear';
+      readonly noResults: 'bui-SelectNoResults';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium'];
@@ -1132,6 +1136,14 @@ export const MenuTrigger: (props: MenuTriggerProps) => JSX_2.Element;
 export interface MenuTriggerProps extends MenuTriggerProps_2 {}
 
 // @public (undocumented)
+type Option_2 = {
+  value: string;
+  label: string;
+  disabled?: boolean;
+};
+export { Option_2 as Option };
+
+// @public (undocumented)
 export const Radio: ForwardRefExoticComponent<
   RadioProps & RefAttributes<HTMLLabelElement>
 >;
@@ -1175,22 +1187,18 @@ export interface SearchFieldProps
 
 // @public (undocumented)
 export const Select: ForwardRefExoticComponent<
-  SelectProps & RefAttributes<HTMLDivElement>
+  SelectProps<'multiple' | 'single'> & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
-export interface SelectProps
-  extends SelectProps_2<{
-      name: string;
-      value: string;
-    }>,
+export interface SelectProps<T extends 'single' | 'multiple'>
+  extends SelectProps_2<Option_2, T>,
     Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   icon?: ReactNode;
-  options?: Array<{
-    value: string;
-    label: string;
-    disabled?: boolean;
-  }>;
+  options?: Array<Option_2>;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  selectionMode?: T;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
