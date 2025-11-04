@@ -1351,26 +1351,6 @@ h3.collapsible span.arrow {
 }
 /* End of Utility API Styling */
 
-.cncf-logo.light-mode {
-  display: block !important;
-}
-
-.cncf-logo.dark-mode {
-  display: none !important;
-}
-
-/* When system/browser is in dark mode */
-@media (prefers-color-scheme: dark) {
-  .cncf-logo.light-mode {
-    display: none !important;
-  }
-  .cncf-logo.dark-mode {
-    display: block !important;
-  }
-}
-
-
-
 
 
 
