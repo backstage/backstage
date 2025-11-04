@@ -378,50 +378,30 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
               execute_filemode: file.executable,
             }));
 
-      let createBranch = actions.length > 0;
-
-      try {
-        const branch = await api.Branches.show(repoID, branchName);
-        if (createBranch) {
-          const mergeRequests = await api.MergeRequests.all({
-            projectId: repoID,
-            source_branch: branchName,
-          });
-
-          if (mergeRequests.length > 0) {
-            // If an open MR exists, include the MR link in the error message
-            throw new InputError(
-              `The branch creation failed because the branch already exists at: ${branch.web_url}. Additionally, there is a Merge Request for this branch: ${mergeRequests[0].web_url}`,
-            );
-          } else {
-            // If no open MR, just notify about the existing branch
-            throw new InputError(
-              `The branch creation failed because the branch already exists at: ${branch.web_url}.`,
-            );
+      await ctx.checkpoint({
+        key: `create.branch.${repoID}.${branchName}`,
+        fn: async () => {
+          try {
+            ctx.logger.info(`Creating branch '${branchName}'...`);
+            await api.Branches.create(repoID, branchName, String(targetBranch));
+          } catch (e: any) {
+            // Handle "Branch already exists" gracefully
+            if (
+              e.description?.includes('Branch already exists') ||
+              e.message?.includes('Branch already exists')
+            ) {
+              ctx.logger.warn(
+                `Branch '${branchName}' already exists. Proceeding...`,
+              );
+            } else {
+              // Throw real errors
+              throw new InputError(
+                `The branch creation failed. ${getErrorMessage(e)}`,
+              );
+            }
           }
-        }
-
-        ctx.logger.info(
-          `Using existing branch ${branchName} without modification.`,
-        );
-      } catch (e) {
-        if (e instanceof InputError) {
-          throw e;
-        }
-        createBranch = true;
-      }
-
-      if (createBranch) {
-        try {
-          await api.Branches.create(repoID, branchName, String(targetBranch));
-        } catch (e) {
-          throw new InputError(
-            `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${getErrorMessage(
-              e,
-            )}`,
-          );
-        }
-      }
+        },
+      });
 
       await ctx.checkpoint({
         key: `commit.to.${repoID}.${branchName}`,
@@ -449,8 +429,10 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
 
       const { mrId, mrWebUrl } = await ctx.checkpoint({
         key: `create.mr.${repoID}.${branchName}`,
+
         fn: async () => {
           try {
+            ctx.logger.info(`Creating merge request '${title}'...`);
             const mergeRequest = await api.MergeRequests.create(
               repoID,
               branchName,
@@ -470,7 +452,33 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
               mrId: mergeRequest.iid,
               mrWebUrl: mergeRequest.web_url ?? mergeRequest.webUrl,
             };
-          } catch (e) {
+          } catch (e: any) {
+            if (
+              e.description?.includes(
+                'Another open merge request already exists',
+              )
+            ) {
+              ctx.logger.warn(
+                `Merge request for branch '${branchName}' already exists. Finding it...`,
+              );
+
+              const existingMRs = await api.MergeRequests.all({
+                projectId: repoID,
+                source_branch: branchName,
+                state: 'opened',
+              });
+              if (existingMRs.length > 0) {
+                ctx.logger.info(`Found existing MR: ${existingMRs[0].web_url}`);
+                return {
+                  mrId: existingMRs[0].iid,
+                  mrWebUrl: existingMRs[0].web_url ?? existingMRs[0].webUrl,
+                };
+              }
+              throw new InputError(
+                `Failed to create MR: ${e.message}. An MR already exists but could not be found.`,
+              );
+            }
+            // Throw real errors
             throw new InputError(
               `Merge request creation failed. ${getErrorMessage(e)}`,
             );
