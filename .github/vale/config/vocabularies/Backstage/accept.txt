@@ -571,3 +571,4 @@ Zolotusky
 zoomable
 zsh
 resizable
+enums

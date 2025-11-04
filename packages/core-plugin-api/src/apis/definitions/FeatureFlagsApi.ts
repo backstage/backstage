@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 import { ApiRef, createApiRef } from '../system';
 
@@ -32,15 +34,29 @@ export type FeatureFlag = {
  *
  * @public
  */
-export enum FeatureFlagState {
+export const FeatureFlagState = {
   /**
    * Feature flag inactive (disabled).
    */
-  None = 0,
+  None: 0,
   /**
    * Feature flag active (enabled).
    */
-  Active = 1,
+  Active: 1,
+} as const;
+
+/**
+ * @public
+ */
+export type FeatureFlagState =
+  (typeof FeatureFlagState)[keyof typeof FeatureFlagState];
+
+/**
+ * @public
+ */
+export namespace FeatureFlagState {
+  export type None = typeof FeatureFlagState.None;
+  export type Active = typeof FeatureFlagState.Active;
 }
 
 /**
