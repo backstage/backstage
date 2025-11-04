@@ -18,7 +18,6 @@ import {
   ToggleButtonGroup,
 } from 'react-aria-components';
 import styles from './Toolbar.module.css';
-import { Tabs } from '@base-ui-components/react/tabs';
 import { usePlayground } from '@/utils/playground-context';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';

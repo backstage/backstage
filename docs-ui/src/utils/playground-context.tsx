@@ -4,7 +4,6 @@ import {
   ReactNode,
   useState,
   useEffect,
-  Key,
 } from 'react';
 import { components } from './data';
 

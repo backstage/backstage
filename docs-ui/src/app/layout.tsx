@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Sidebar } from '@/components/Sidebar/Sidebar';
 import { Toolbar } from '@/components/Toolbar';
-import { StickyHeader } from '../components/StickyHeader/StickyHeader';
 import { Providers } from './providers';
 import { CustomTheme } from '@/components/CustomTheme';
 import { TableOfContents } from '@/components/TableOfContents';
@@ -52,7 +51,6 @@ export default async function RootLayout({
       <body>
         <Providers>
           <Sidebar />
-          {/* <StickyHeader /> */}
           <div className={styles.container}>
             <div className={styles.contentWrapper}>
               <Toolbar version={packageVersion} />

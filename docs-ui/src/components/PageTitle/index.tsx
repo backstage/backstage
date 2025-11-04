@@ -5,10 +5,8 @@ import styles from './PageTitle.module.css';
 export const PageTitle = ({
   title,
   description,
-  type = 'component',
 }: {
   title: string;
-  type?: string;
   description: string;
 }) => {
   return (

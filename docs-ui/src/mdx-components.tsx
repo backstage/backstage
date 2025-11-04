@@ -8,7 +8,7 @@ import styles from './css/mdx.module.css';
 function slugify(text: string): string {
   return text
     .toString()
-    .toLowerCase()
+    .toLocaleLowerCase('en-US')
     .trim()
     .replace(/\s+/g, '-')
     .replace(/[^\w\-]+/g, '')
