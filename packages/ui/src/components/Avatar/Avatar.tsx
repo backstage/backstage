@@ -47,12 +47,16 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
     };
   }, [src]);
 
+  const initialsCount = ['x-small', 'small'].includes(cleanedProps.size)
+    ? 1
+    : 2;
+
   const initials = name
     .split(' ')
     .map(word => word[0])
     .join('')
     .toLocaleUpperCase('en-US')
-    .slice(0, 2);
+    .slice(0, initialsCount);
 
   return (
     <div

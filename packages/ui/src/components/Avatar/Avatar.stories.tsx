@@ -45,12 +45,21 @@ export const Sizes: Story = {
     ...Default.args,
   },
   render: args => (
-    <Flex>
-      <Avatar {...args} size="x-small" />
-      <Avatar {...args} size="small" />
-      <Avatar {...args} size="medium" />
-      <Avatar {...args} size="large" />
-      <Avatar {...args} size="x-large" />
+    <Flex direction="column" gap="6">
+      <Flex>
+        <Avatar {...args} size="x-small" />
+        <Avatar {...args} size="small" />
+        <Avatar {...args} size="medium" />
+        <Avatar {...args} size="large" />
+        <Avatar {...args} size="x-large" />
+      </Flex>
+      <Flex>
+        <Avatar {...args} size="x-small" src="" />
+        <Avatar {...args} size="small" src="" />
+        <Avatar {...args} size="medium" src="" />
+        <Avatar {...args} size="large" src="" />
+        <Avatar {...args} size="x-large" src="" />
+      </Flex>
     </Flex>
   ),
 };
