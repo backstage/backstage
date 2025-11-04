@@ -18,6 +18,24 @@
   font-weight: 500;
 }
 
+.logoMobile {
+  display: block;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.breadcrumbDesktop {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
 .breadcrumbLink {
   color: var(--secondary);
   text-decoration: none;
@@ -70,7 +88,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--bg);
-  border: 1px solid var(--border2);
+  border: 1px solid var(--border);
   border-radius: 32px;
   padding-inline: 16px;
   color: var(--primary);
@@ -105,7 +123,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  border: 1px solid var(--border2);
+  border: 1px solid var(--border);
   border-radius: 32px;
   padding-inline: 4px;
   height: 32px;

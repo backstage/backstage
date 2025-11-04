@@ -22,6 +22,7 @@ import { usePlayground } from '@/utils/playground-context';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { components, layoutComponents } from '@/utils/data';
+import { Logo } from '@/components/Sidebar/Logo';
 
 interface ToolbarProps {
   version: string;
@@ -86,23 +87,30 @@ export const Toolbar = ({ version }: ToolbarProps) => {
   return (
     <div className={styles.toolbar}>
       <div className={styles.breadcrumb}>
-        {breadcrumb.section && breadcrumb.sectionLink ? (
-          <>
-            <Link
-              href={breadcrumb.sectionLink}
-              className={styles.breadcrumbLink}
-            >
-              {breadcrumb.section}
-            </Link>
-            <RiArrowRightSLine
-              size={16}
-              className={styles.breadcrumbSeparator}
-            />
+        <div className={styles.logoMobile}>
+          <Logo />
+        </div>
+        <div className={styles.breadcrumbDesktop}>
+          {breadcrumb.section && breadcrumb.sectionLink ? (
+            <>
+              <Link
+                href={breadcrumb.sectionLink}
+                className={styles.breadcrumbLink}
+              >
+                {breadcrumb.section}
+              </Link>
+              <RiArrowRightSLine
+                size={16}
+                className={styles.breadcrumbSeparator}
+              />
+              <span className={styles.breadcrumbCurrent}>
+                {breadcrumb.title}
+              </span>
+            </>
+          ) : (
             <span className={styles.breadcrumbCurrent}>{breadcrumb.title}</span>
-          </>
-        ) : (
-          <span className={styles.breadcrumbCurrent}>{breadcrumb.title}</span>
-        )}
+          )}
+        </div>
       </div>
       <div className={styles.actions}>
         <Select

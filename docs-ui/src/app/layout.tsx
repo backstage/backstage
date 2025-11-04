@@ -4,6 +4,7 @@ import { Toolbar } from '@/components/Toolbar';
 import { Providers } from './providers';
 import { CustomTheme } from '@/components/CustomTheme';
 import { TableOfContents } from '@/components/TableOfContents';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 import styles from './layout.module.css';
 
 import '../css/globals.css';
@@ -62,6 +63,7 @@ export default async function RootLayout({
               </div>
             </div>
           </div>
+          <MobileBottomNav />
           <CustomTheme />
         </Providers>
       </body>
