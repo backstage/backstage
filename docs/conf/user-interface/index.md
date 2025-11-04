@@ -88,7 +88,7 @@ Your list of custom themes overrides the default themes. If you still want to us
 
 ## Create a theme for Backstage UI (New)
 
-Backstage UI is built entirely using CSS. By default we are providing a default theme that include all our core CSS variables and component styles. To start customising Backstage UI to match your brand you need to create a new CSS file and import it directly in `packages/app/src/App.tsx`. All styles declared in this file will override the default styles. As your file grow you can organise it the way you want or even import multiple files.
+Backstage UI is built entirely using CSS. By default we are providing a default theme that include all our core CSS variables and component styles. To start customizing Backstage UI to match your brand you need to create a new CSS file and import it directly in `packages/app/src/App.tsx`. All styles declared in this file will override the default styles. As your file grow you can organise it the way you want or even import multiple files.
 
 Backstage UI is using light by default under `:root` but you can target it more specifically using the data attribute for mode
 
