@@ -28720,17 +28720,17 @@ __metadata:
   linkType: hard
 
 "dockerode@npm:^4.0.0":
-  version: 4.0.7
-  resolution: "dockerode@npm:4.0.7"
+  version: 4.0.9
+  resolution: "dockerode@npm:4.0.9"
   dependencies:
     "@balena/dockerignore": "npm:^1.0.2"
     "@grpc/grpc-js": "npm:^1.11.1"
     "@grpc/proto-loader": "npm:^0.7.13"
     docker-modem: "npm:^5.0.6"
     protobufjs: "npm:^7.3.2"
-    tar-fs: "npm:~2.1.2"
+    tar-fs: "npm:^2.1.4"
     uuid: "npm:^10.0.0"
-  checksum: 10/d7cd174cf4489f41335ec8aaaa7c98c164a624f9a793544aa5280d85254ce276e7797de896042ce47d87aca6f8d2653acc37a0d18807d4ce8ea31892faef40a8
+  checksum: 10/58bb4f39652de88212c008d1156ab679ac561508ada0a86db4c2fc75dc13d40c0ba1afb725a28e0c899c93a76ad822b332e4d5207c36b8b929bae5730d0bd791
   languageName: node
   linkType: hard
 
@@ -47223,15 +47223,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-fs@npm:^2.0.0, tar-fs@npm:~2.1.2":
-  version: 2.1.2
-  resolution: "tar-fs@npm:2.1.2"
+"tar-fs@npm:^2.0.0, tar-fs@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "tar-fs@npm:2.1.4"
   dependencies:
     chownr: "npm:^1.1.1"
     mkdirp-classic: "npm:^0.5.2"
     pump: "npm:^3.0.0"
     tar-stream: "npm:^2.1.4"
-  checksum: 10/623f7e8e58a43578ba7368002c3cc7e321f6d170053ac0691d95172dbc7daf5dcf4347eb061277627340870ce6cfda89f5a5d633cc274c41ae6d69f54a2374e7
+  checksum: 10/bdf7e3cb039522e39c6dae3084b1bca8d7bcc1de1906eae4a1caea6a2250d22d26dcc234118bf879b345d91ebf250a744b196e379334a4abcbb109a78db7d3be
   languageName: node
   linkType: hard
 
