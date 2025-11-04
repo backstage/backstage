@@ -17,10 +17,8 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  .bui-Select[data-invalid] {
-    & .bui-SelectTrigger {
-      border-color: var(--bui-fg-danger);
-    }
+  .bui-SelectPopover {
+    min-width: var(--trigger-width);
   }
 
   .bui-SelectTrigger {
@@ -74,6 +72,7 @@
       outline: 0;
     }
 
+    .bui-Select[data-invalid] &,
     &[data-invalid] {
       border-color: var(--bui-fg-danger);
     }
@@ -118,6 +117,14 @@
     &[disabled] {
       color: var(--bui-fg-disabled);
     }
+  }
+
+  .bui-SelectList:focus-visible {
+    /* Remove default focus-visible outline because React Aria
+     * triggers it on mouse click open of the list for some reason.
+     * On keyboard use, the top item receives the focus style,
+     * so it's not needed anyway. */
+    outline: none;
   }
 
   .bui-SelectItem {
