@@ -25,8 +25,8 @@ export const catalogTranslationRef = createTranslationRef({
       createButtonTitle: 'Create',
       supportButtonContent: 'All your software catalog entities',
     },
-    entityLayout: {
-      notFoundMessage: 'There is no {{kind}} with the requested',
+    entityPage: {
+      notFoundMessage: 'There is no {{kind}} with the requested {{link}}.',
       notFoundLinkText: 'kind, namespace, and name',
     },
     aboutCard: {

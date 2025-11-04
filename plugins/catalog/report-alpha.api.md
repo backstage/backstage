@@ -43,8 +43,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'indexPage.title': '{{orgName}} Catalog';
     readonly 'indexPage.createButtonTitle': 'Create';
     readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
-    readonly 'entityLayout.notFoundMessage': 'There is no {{kind}} with the requested';
-    readonly 'entityLayout.notFoundLinkText': 'kind, namespace, and name';
+    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
+    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.unknown': 'unknown';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';

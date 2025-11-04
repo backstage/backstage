@@ -180,11 +180,14 @@ export const EntityLayout = (props: EntityLayoutProps) => {
             NotFoundComponent
           ) : (
             <WarningPanel title={t('entityLabels.warningPanelTitle')}>
-              {t('entityLayout.notFoundMessage', { kind })}{' '}
-              <Link to="https://backstage.io/docs/features/software-catalog/references">
-                {t('entityLayout.notFoundLinkText')}
-              </Link>
-              .
+              {t('entityPage.notFoundMessage', {
+                kind,
+                link: (
+                  <Link to="https://backstage.io/docs/features/software-catalog/references">
+                    {t('entityPage.notFoundLinkText')}
+                  </Link>
+                ),
+              })}
             </WarningPanel>
           )}
         </Content>
