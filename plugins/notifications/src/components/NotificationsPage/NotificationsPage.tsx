@@ -27,6 +27,13 @@ import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { notificationsTranslationRef } from '../../translation';
 
+const TableTitleKeys = {
+  all: 'notificationsPage.tableTitle.all' as const,
+  saved: 'notificationsPage.tableTitle.saved' as const,
+  unread: 'notificationsPage.tableTitle.unread' as const,
+  read: 'notificationsPage.tableTitle.read' as const,
+} as const;
+
 import { NotificationsTable } from '../NotificationsTable';
 import { useNotificationsApi } from '../../hooks';
 import {
@@ -104,7 +111,10 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
         options.topic = topic;
       }
 
-      const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
+      const createdAfterDate =
+        CreatedAfterOptions[
+          createdAfter as keyof typeof CreatedAfterOptions
+        ].getDate();
       if (createdAfterDate.valueOf() > 0) {
         options.createdAfter = createdAfterDate;
       }
@@ -159,21 +169,21 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
   const isUnread = !!value?.[1]?.unread;
   const allTopics = value?.[2]?.topics;
 
-  let tableTitle: string = t('notificationsPage.tableTitle.all', {
+  let tableTitle: string = t(TableTitleKeys.all, {
     count: totalCount ?? 0,
-  } as any);
+  });
   if (saved) {
-    tableTitle = t('notificationsPage.tableTitle.saved', {
+    tableTitle = t(TableTitleKeys.saved, {
       count: totalCount ?? 0,
-    } as any);
+    });
   } else if (unreadOnly === true) {
-    tableTitle = t('notificationsPage.tableTitle.unread', {
+    tableTitle = t(TableTitleKeys.unread, {
       count: totalCount ?? 0,
-    } as any);
+    });
   } else if (unreadOnly === false) {
-    tableTitle = t('notificationsPage.tableTitle.read', {
+    tableTitle = t(TableTitleKeys.read, {
       count: totalCount ?? 0,
-    } as any);
+    });
   }
 
   return (
