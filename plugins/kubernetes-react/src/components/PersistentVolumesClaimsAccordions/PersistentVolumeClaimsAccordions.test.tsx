@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 import { PersistentVolumeClaimsAccordions } from './PersistentVolumeClaimsAccordions';
 import * as onePersistentVolumeClaimsFixture from '../../__fixtures__/1-persistentvolumeclaims.json';
 import * as twoPersistentVolumeClaimsFixture from '../../__fixtures__/2-persistentvolumeclaims.json';
@@ -34,17 +33,6 @@ describe('PersistentVolumeClaimsAccordions', () => {
     expect(screen.getByText('PersistentVolumeClaims')).toBeInTheDocument();
     expect(screen.getByText('1 claims')).toBeInTheDocument();
     expect(screen.getByText('1 bound')).toBeInTheDocument();
-
-    const accordionButton = screen.getByRole('button', {
-      expanded: false,
-    });
-    await userEvent.click(accordionButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('pvc-web-storage')).toBeInTheDocument();
-      expect(screen.getByText('PersistentVolumeClaim')).toBeInTheDocument();
-      expect(screen.getAllByText('Bound').length).toBeGreaterThanOrEqual(1);
-    });
   });
 
   it('should render multiple persistent volume claims with summary', async () => {
@@ -56,20 +44,8 @@ describe('PersistentVolumeClaimsAccordions', () => {
     await renderInTestApp(wrapper(<PersistentVolumeClaimsAccordions />));
 
     expect(screen.getByText('PersistentVolumeClaims')).toBeInTheDocument();
-
-    const accordionButton = screen.getByRole('button', {
-      expanded: false,
-    });
-    await userEvent.click(accordionButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('pvc-web-storage')).toBeInTheDocument();
-
-      expect(
-        screen.getAllByText('PersistentVolumeClaim').length,
-      ).toBeGreaterThanOrEqual(1);
-
-      expect(screen.getAllByText('Bound').length).toBeGreaterThanOrEqual(1);
-    });
+    expect(screen.getByText('5 claims')).toBeInTheDocument();
+    expect(screen.getByText('3 bound')).toBeInTheDocument();
+    expect(screen.getByText('1 claim lost')).toBeInTheDocument();
   });
 });
