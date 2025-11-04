@@ -233,7 +233,7 @@ export async function createRouter(
         channels.push(channel.id);
       }
 
-      for (const origin of channel.origins) {
+      for (const origin of channel.origins ?? []) {
         if (!origins.includes(origin.id)) {
           origins.push(origin.id);
         }
@@ -287,7 +287,7 @@ export async function createRouter(
       settings.channels[0] = {
         ...settings.channels[0],
         enabled: userChannel.enabled ?? settings.channels[0].enabled,
-        origins: userChannel.origins,
+        origins: userChannel.origins ?? [],
       };
     }
 
