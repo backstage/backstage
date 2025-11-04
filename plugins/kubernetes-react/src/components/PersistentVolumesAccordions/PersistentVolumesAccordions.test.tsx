@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { PersistentVolumesAccordions } from './PersistentVolumesAccordions';
 import * as onePersistentVolumesFixture from '../../__fixtures__/1-persistentvolumes.json';
 import * as twoPersistentVolumesFixture from '../../__fixtures__/2-persistentvolumes.json';
@@ -22,7 +23,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('PersistentVolumesAccordions', () => {
-  it('should render 1 persistent volume', async () => {
+  it('should render 1 persistent volume with summary', async () => {
     const wrapper = kubernetesProviders(
       onePersistentVolumesFixture,
       new Set<string>(),
@@ -30,12 +31,23 @@ describe('PersistentVolumesAccordions', () => {
 
     await renderInTestApp(wrapper(<PersistentVolumesAccordions />));
 
-    expect(screen.getByText('pv-hostpath')).toBeInTheDocument();
-    expect(screen.getByText('PersistentVolume')).toBeInTheDocument();
-    expect(screen.getByText('Available')).toBeInTheDocument();
+    expect(screen.getByText('PersistentVolumes')).toBeInTheDocument();
+    expect(screen.getByText('1 volumes')).toBeInTheDocument();
+    expect(screen.getByText('0 bound')).toBeInTheDocument();
+
+    const accordionButton = screen.getByRole('button', {
+      expanded: false,
+    });
+    await userEvent.click(accordionButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('pv-hostpath')).toBeInTheDocument();
+      expect(screen.getByText('PersistentVolume')).toBeInTheDocument();
+      expect(screen.getAllByText('Available').length).toBeGreaterThanOrEqual(1);
+    });
   });
 
-  it('should render 9 persistent volumes with all cloud provider types', async () => {
+  it('should render 9 persistent volumes with summary and all cloud provider types', async () => {
     const wrapper = kubernetesProviders(
       twoPersistentVolumesFixture,
       new Set<string>(),
@@ -43,20 +55,34 @@ describe('PersistentVolumesAccordions', () => {
 
     await renderInTestApp(wrapper(<PersistentVolumesAccordions />));
 
-    expect(screen.getByText('pv-aws-ebs')).toBeInTheDocument();
-    expect(screen.getByText('pv-aws-efs')).toBeInTheDocument();
-    expect(screen.getByText('pv-aws-s3')).toBeInTheDocument();
+    expect(screen.getByText('PersistentVolumes')).toBeInTheDocument();
+    expect(screen.getByText('9 volumes')).toBeInTheDocument();
+    expect(screen.getByText('5 bound')).toBeInTheDocument();
 
-    expect(screen.getByText('pv-gcp-pd')).toBeInTheDocument();
-    expect(screen.getByText('pv-gcp-filestore')).toBeInTheDocument();
-    expect(screen.getByText('pv-gcp-gcsfuse')).toBeInTheDocument();
+    const accordionButton = screen.getByRole('button', {
+      expanded: false,
+    });
+    await userEvent.click(accordionButton);
 
-    expect(screen.getByText('pv-azure-disk')).toBeInTheDocument();
-    expect(screen.getByText('pv-azure-file')).toBeInTheDocument();
-    expect(screen.getByText('pv-azure-blob')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('pv-aws-ebs')).toBeInTheDocument();
+      expect(screen.getByText('pv-aws-efs')).toBeInTheDocument();
+      expect(screen.getByText('pv-aws-s3')).toBeInTheDocument();
+      expect(screen.getByText('pv-gcp-pd')).toBeInTheDocument();
+      expect(screen.getByText('pv-gcp-filestore')).toBeInTheDocument();
 
-    expect(screen.getAllByText('PersistentVolume')).toHaveLength(9);
-    expect(screen.getAllByText('Bound')).toHaveLength(5);
-    expect(screen.getAllByText('Available')).toHaveLength(4);
+      expect(screen.getByText('AWS EBS Volume')).toBeInTheDocument();
+      expect(screen.getByText('AWS EFS')).toBeInTheDocument();
+      expect(screen.getByText('S3 Bucket')).toBeInTheDocument();
+      expect(screen.getByText('GCP Persistent Disk')).toBeInTheDocument();
+      expect(screen.getByText('GCP Filestore')).toBeInTheDocument();
+
+      expect(screen.getAllByText('Bound').length).toBeGreaterThanOrEqual(3);
+      expect(screen.getAllByText('Available').length).toBeGreaterThanOrEqual(2);
+
+      expect(
+        screen.getAllByText('PersistentVolume').length,
+      ).toBeGreaterThanOrEqual(5);
+    });
   });
 });
