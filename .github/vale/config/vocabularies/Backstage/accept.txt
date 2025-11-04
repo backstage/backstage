@@ -110,6 +110,7 @@ dependabot
 deps
 dequeue
 dequeueing
+dereferencing
 deserialization
 destructured
 destructuring

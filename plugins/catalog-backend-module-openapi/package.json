@@ -37,7 +37,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^11.0.0",
+    "@apidevtools/json-schema-ref-parser": "^14.2.1",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/integration": "workspace:^",
