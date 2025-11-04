@@ -5,9 +5,9 @@ on:
     types: [opened]
 
 permissions:
-  issues: write  
-  pull-requests: write 
-  contents: read 
+  issues: write
+  pull-requests: write
+  contents: read
 
 jobs:
   welcome:
