@@ -98,6 +98,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         className={clsx(
           popoverClassNames.root,
           stylesPopover[popoverClassNames.root],
+          classNames.popover,
+          styles[classNames.popover],
         )}
       >
         <ListBox className={clsx(classNames.list, styles[classNames.list])}>

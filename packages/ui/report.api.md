@@ -623,6 +623,7 @@ export const componentDefinitions: {
   readonly Select: {
     readonly classNames: {
       readonly root: 'bui-Select';
+      readonly popover: 'bui-SelectPopover';
       readonly trigger: 'bui-SelectTrigger';
       readonly value: 'bui-SelectValue';
       readonly icon: 'bui-SelectIcon';

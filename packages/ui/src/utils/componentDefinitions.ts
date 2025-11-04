@@ -296,6 +296,7 @@ export const componentDefinitions = {
   Select: {
     classNames: {
       root: 'bui-Select',
+      popover: 'bui-SelectPopover',
       trigger: 'bui-SelectTrigger',
       value: 'bui-SelectValue',
       icon: 'bui-SelectIcon',
