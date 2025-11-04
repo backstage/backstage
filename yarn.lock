@@ -22515,24 +22515,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@useoptic/json-pointer-helpers@npm:1.0.8":
-  version: 1.0.8
-  resolution: "@useoptic/json-pointer-helpers@npm:1.0.8"
+"@useoptic/json-pointer-helpers@npm:1.0.9":
+  version: 1.0.9
+  resolution: "@useoptic/json-pointer-helpers@npm:1.0.9"
   dependencies:
     jsonpointer: "npm:^5.0.1"
     minimatch: "npm:9.0.3"
-  checksum: 10/075142e33ab89de448283ef2199438e84942ad285600df33d6a8f3553e4d3ab60d139c080c0dcd667f60ee607cadedeceb904739b6d7b03d99c2558413f1b223
+  checksum: 10/066c08f512998d3b971f801bbd8677f1da36a0bb7b4d45eb552e98e0813673b23644ec27bc99fac5d47959d6a88ee06b4a52f9bc916cc29ddb8f48d05f54c462
   languageName: node
   linkType: hard
 
-"@useoptic/openapi-io@npm:1.0.8":
-  version: 1.0.8
-  resolution: "@useoptic/openapi-io@npm:1.0.8"
+"@useoptic/openapi-io@npm:1.0.9":
+  version: 1.0.9
+  resolution: "@useoptic/openapi-io@npm:1.0.9"
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:9.0.9"
     "@jsdevtools/ono": "npm:^7.1.3"
-    "@useoptic/json-pointer-helpers": "npm:1.0.8"
-    "@useoptic/openapi-utilities": "npm:1.0.8"
+    "@useoptic/json-pointer-helpers": "npm:1.0.9"
+    "@useoptic/openapi-utilities": "npm:1.0.9"
     ajv: "npm:8.17.1"
     ajv-errors: "npm:~3.0.0"
     ajv-formats: "npm:~2.1.0"
@@ -22550,15 +22550,15 @@ __metadata:
     upath: "npm:^2.0.1"
     yaml: "npm:^2.3.2"
     yaml-ast-parser: "npm:^0.0.43"
-  checksum: 10/1d228bf7191ed8496b1ddcb5478ff051f5d7d2014e8dfa4d0e60e3d2def1284dc607e35f6ccba3b36a2d6263ce5fdea0b573bf9a7164f122036f2d54831db159
+  checksum: 10/d428fa70bd432d1cfe4d8f6073dd6d17b35e104a59c682bfe586b8bad3161b217b479767d19570629faa01804a90435a83f425c6080956d533abec4ff7bad486
   languageName: node
   linkType: hard
 
-"@useoptic/openapi-utilities@npm:1.0.8":
-  version: 1.0.8
-  resolution: "@useoptic/openapi-utilities@npm:1.0.8"
+"@useoptic/openapi-utilities@npm:1.0.9":
+  version: 1.0.9
+  resolution: "@useoptic/openapi-utilities@npm:1.0.9"
   dependencies:
-    "@useoptic/json-pointer-helpers": "npm:1.0.8"
+    "@useoptic/json-pointer-helpers": "npm:1.0.9"
     ajv: "npm:8.17.1"
     ajv-errors: "npm:^3.0.0"
     ajv-formats: "npm:^3.0.1"
@@ -22575,7 +22575,7 @@ __metadata:
     ts-invariant: "npm:^0.9.3"
     url-join: "npm:^4.0.1"
     yaml-ast-parser: "npm:^0.0.43"
-  checksum: 10/0c0b7ec345ca9b13553c096dbf39dc90e719fc4c21855134783b7c98896bd16b2bd7e19c5419a345e4e44705e928e8dafea574d20a075028ae50a5871042a5ea
+  checksum: 10/9808d95c6bfa6d41f206400695de26666f3bd1fd5601b052705199fab92fee1912ca2b841dce9a3d6b7dec87fb6fc39ccf0de636bef9d7d8f04736a8c1520b7f
   languageName: node
   linkType: hard
 
@@ -22605,8 +22605,8 @@ __metadata:
   linkType: hard
 
 "@useoptic/optic@npm:^1.0.0":
-  version: 1.0.8
-  resolution: "@useoptic/optic@npm:1.0.8"
+  version: 1.0.9
+  resolution: "@useoptic/optic@npm:1.0.9"
   dependencies:
     "@babel/runtime": "npm:^7.20.6"
     "@httptoolkit/httpolyglot": "npm:^2.0.1"
@@ -22616,10 +22616,10 @@ __metadata:
     "@sentry/node": "npm:^7.74.0"
     "@sinclair/typebox": "npm:0.31.28"
     "@stoplight/spectral-core": "npm:^1.8.1"
-    "@useoptic/openapi-io": "npm:1.0.8"
-    "@useoptic/openapi-utilities": "npm:1.0.8"
-    "@useoptic/rulesets-base": "npm:1.0.8"
-    "@useoptic/standard-rulesets": "npm:1.0.8"
+    "@useoptic/openapi-io": "npm:1.0.9"
+    "@useoptic/openapi-utilities": "npm:1.0.9"
+    "@useoptic/rulesets-base": "npm:1.0.9"
+    "@useoptic/standard-rulesets": "npm:1.0.9"
     ajv: "npm:8.17.1"
     ajv-formats: "npm:~2.1.0"
     async-exit-hook: "npm:^2.0.1"
@@ -22676,34 +22676,34 @@ __metadata:
     yaml: "npm:^2.3.4"
   bin:
     optic: build/index.js
-  checksum: 10/7d9275697e068ffe72656bf38044d5724cc18b707e9507c65babe28f1b84017cc7be33abef4fa696fa9290e843342778d0131004aee76417fc902aa25d68038a
+  checksum: 10/84d05ec412c450a99626044220554ec94aa47ed42c897bd2d9cf6dbbd4c7e92b40a4c7b5429b7841eef95b2649d614339c1a73b52c45733cc6d4aaf6573d4120
   languageName: node
   linkType: hard
 
-"@useoptic/rulesets-base@npm:1.0.8":
-  version: 1.0.8
-  resolution: "@useoptic/rulesets-base@npm:1.0.8"
+"@useoptic/rulesets-base@npm:1.0.9":
+  version: 1.0.9
+  resolution: "@useoptic/rulesets-base@npm:1.0.9"
   dependencies:
     "@stoplight/spectral-core": "npm:^1.8.1"
     "@stoplight/spectral-rulesets": "npm:^1.14.1"
-    "@useoptic/json-pointer-helpers": "npm:1.0.8"
-    "@useoptic/openapi-utilities": "npm:1.0.8"
+    "@useoptic/json-pointer-helpers": "npm:1.0.9"
+    "@useoptic/openapi-utilities": "npm:1.0.9"
     ajv: "npm:^8.6.0"
     lodash.pick: "npm:^4.4.0"
     node-fetch: "npm:^2.6.7"
     semver: "npm:^7.5.4"
   bin:
     rulesets-base: build/index.js
-  checksum: 10/d92a2f72dca642f61ea0a4f0318b0f9e689c647b30c90896c49cfd294ab635b096906c697e57cb28486cc647154025ede0328c72dfc785dd7e873429e316a5db
+  checksum: 10/335a507ca34e2d6279a23d8eb5ced6577ed83a18af221e21e490202d55e6835dc1572fc4399c8d90e6317fb3eaa9335e85139466b93efef4aaa5022268ea4a6e
   languageName: node
   linkType: hard
 
-"@useoptic/standard-rulesets@npm:1.0.8":
-  version: 1.0.8
-  resolution: "@useoptic/standard-rulesets@npm:1.0.8"
+"@useoptic/standard-rulesets@npm:1.0.9":
+  version: 1.0.9
+  resolution: "@useoptic/standard-rulesets@npm:1.0.9"
   dependencies:
-    "@useoptic/openapi-utilities": "npm:1.0.8"
-    "@useoptic/rulesets-base": "npm:1.0.8"
+    "@useoptic/openapi-utilities": "npm:1.0.9"
+    "@useoptic/rulesets-base": "npm:1.0.9"
     ajv: "npm:^8.6.0"
     ajv-draft-04: "npm:^1.0.0"
     ajv-formats: "npm:~2.1.0"
@@ -22714,7 +22714,7 @@ __metadata:
     whatwg-mimetype: "npm:^3.0.0"
   bin:
     standard-rulesets: build/index.js
-  checksum: 10/63f60ac25fb8cccd0ea89097336cf5bc7ad59022ad6ef49fd382e7555f5ea9d88ca144991315eb07646aa309f5f38f3d056c4b7c869ab6b5f66fa9e93d96f4ef
+  checksum: 10/c4605dd4ffaf8623150cf1c0de846e44b4e3d506e3011d37fe28f7f3deaa911b908c9f135c245eb2d5641cd34bebc29b16d64d5ef2d3443c5fa1d489f3f2e803
   languageName: node
   linkType: hard
 
