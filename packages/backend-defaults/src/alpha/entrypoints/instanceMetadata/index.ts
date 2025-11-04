@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
-export { actionsServiceFactory } from './entrypoints/actions';
-export { instanceMetadataServiceFactory } from './entrypoints/instanceMetadata';
+
+export { instanceMetadataServiceFactory } from './instanceMetadataServiceFactory';

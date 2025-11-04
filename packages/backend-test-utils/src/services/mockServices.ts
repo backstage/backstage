@@ -34,6 +34,7 @@ import {
   DatabaseService,
   DiscoveryService,
   HttpAuthService,
+  RootInstanceMetadataService,
   LoggerService,
   PermissionsService,
   RootConfigService,
@@ -555,5 +556,20 @@ export namespace mockServices {
       publish: jest.fn(),
       subscribe: jest.fn(),
     }));
+  }
+
+  export function rootInstanceMetadata(): RootInstanceMetadataService {
+    return {
+      getInstalledPlugins: () => Promise.resolve([]),
+    };
+  }
+  export namespace rootInstanceMetadata {
+    export const mock = simpleMock(coreServices.rootInstanceMetadata, () => ({
+      getInstalledPlugins: jest.fn(),
+    }));
+    export const factory = simpleFactoryWithOptions(
+      coreServices.rootInstanceMetadata,
+      rootInstanceMetadata,
+    );
   }
 }

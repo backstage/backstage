@@ -35,6 +35,7 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
+import { RootInstanceMetadataService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -342,6 +343,21 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<RootHttpRouterService> | undefined,
       ) => ServiceMock<RootHttpRouterService>;
+  }
+  // (undocumented)
+  export function rootInstanceMetadata(): RootInstanceMetadataService;
+  // (undocumented)
+  export namespace rootInstanceMetadata {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootInstanceMetadataService> | undefined,
+      ) => ServiceMock<RootInstanceMetadataService>;
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        RootInstanceMetadataService,
+        'plugin',
+        'singleton' | 'multiton'
+      >;
   }
   // (undocumented)
   export namespace rootLifecycle {

@@ -36,14 +36,11 @@ import type {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
-import {
-  instanceMetadataServiceRef,
-  BackendFeatureMeta,
-} from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
-import { unwrapFeature } from './helpers';
+import { deepFreeze, unwrapFeature } from './helpers';
+import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -101,56 +98,54 @@ const instanceRegistry = new (class InstanceRegistry {
   };
 })();
 
-function createInstanceMetadataServiceFactory(
-  registrations: InternalBackendRegistrations[],
+function createRootInstanceMetadataServiceFactory(
+  rawRegistrations: InternalBackendRegistrations[],
 ) {
-  const installedFeatures = registrations
-    .map(registration => {
-      if (registration.featureType === 'registrations') {
-        return registration
-          .getRegistrations()
-          .map(feature => {
-            if (feature.type === 'plugin') {
-              return Object.defineProperty(
-                {
-                  type: 'plugin',
-                  pluginId: feature.pluginId,
-                },
-                'toString',
-                {
-                  enumerable: false,
-                  configurable: true,
-                  value: () => `plugin{pluginId=${feature.pluginId}}`,
-                },
-              );
-            } else if (feature.type === 'module') {
-              return Object.defineProperty(
-                {
-                  type: 'module',
-                  pluginId: feature.pluginId,
-                  moduleId: feature.moduleId,
-                },
-                'toString',
-                {
-                  enumerable: false,
-                  configurable: true,
-                  value: () =>
-                    `module{moduleId=${feature.moduleId},pluginId=${feature.pluginId}}`,
-                },
-              );
-            }
-            // Ignore unknown feature types.
-            return undefined;
-          })
-          .filter(Boolean) as BackendFeatureMeta[];
-      }
-      return [];
-    })
-    .flat();
+  const installedPlugins: Map<string, RootInstanceMetadataServicePluginInfo> =
+    new Map();
+  const registrations = rawRegistrations
+    .filter(registration => registration.featureType === 'registrations')
+    .flatMap(registration => registration.getRegistrations());
+  const plugins = registrations.filter(
+    registration => registration.type === 'plugin',
+  );
+  const modules = registrations.filter(
+    registration => registration.type === 'module',
+  );
+  for (const plugin of plugins) {
+    const { pluginId } = plugin;
+    if (!installedPlugins.get(pluginId)) {
+      installedPlugins.set(pluginId, {
+        pluginId,
+        modules: [],
+      });
+    }
+  }
+  for (const module of modules) {
+    const { pluginId, moduleId } = module;
+    const installedPlugin = installedPlugins.get(pluginId);
+    if (installedPlugin) {
+      (installedPlugin.modules as Array<{ moduleId: string }>).push({
+        moduleId,
+      });
+    }
+  }
+
   return createServiceFactory({
-    service: instanceMetadataServiceRef,
+    service: coreServices.rootInstanceMetadata,
     deps: {},
-    factory: async () => ({ getInstalledFeatures: () => installedFeatures }),
+    factory: async () => {
+      console.log(installedPlugins);
+      const readonlyInstalledPlugins = deepFreeze([
+        ...installedPlugins.values(),
+      ]);
+      console.log(readonlyInstalledPlugins, Object.values(installedPlugins));
+      const instanceMetadata = {
+        getInstalledPlugins: () => Promise.resolve(readonlyInstalledPlugins),
+      };
+
+      return instanceMetadata;
+    },
   });
 }
 
@@ -255,7 +250,7 @@ export class BackendInitializer {
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
 
     this.#serviceRegistry.add(
-      createInstanceMetadataServiceFactory(this.#registrations),
+      createRootInstanceMetadataServiceFactory(this.#registrations),
     );
 
     // This makes sure that any uncaught errors or unhandled rejections are
