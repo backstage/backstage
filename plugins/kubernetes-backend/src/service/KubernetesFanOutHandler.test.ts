@@ -459,7 +459,49 @@ describe('KubernetesFanOutHandler', () => {
       );
     });
 
-    it('fetch objects should include secrets with masked data', async () => {
+    it('fetch objects should be called with secrets', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [cluster2],
+        }),
+      );
+
+      sut = getKubernetesFanOutHandler(
+        [],
+        [
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+            objectType: 'secrets',
+          },
+        ],
+      );
+
+      await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(
+        Array.from(fetchObjectsForService.mock.calls[0][0].objectTypesToFetch),
+      ).toEqual(
+        expect.arrayContaining([
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+            objectType: 'secrets',
+          },
+        ]),
+      );
+    });
+
+    it('fetch objects should not be called with secrets', async () => {
       getClustersByEntity.mockImplementation(() =>
         Promise.resolve({
           clusters: [cluster2],
@@ -480,7 +522,7 @@ describe('KubernetesFanOutHandler', () => {
       expect(
         Array.from(fetchObjectsForService.mock.calls[0][0].objectTypesToFetch),
       ).toEqual(
-        expect.arrayContaining([
+        expect.not.arrayContaining([
           {
             group: '',
             apiVersion: 'v1',
