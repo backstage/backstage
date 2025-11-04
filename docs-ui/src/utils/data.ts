@@ -125,16 +125,3 @@ export const components: Page[] = [
     slug: 'visually-hidden',
   },
 ];
-
-export type ScreenSize = {
-  title: string;
-  slug: string;
-  width: number;
-};
-
-export const screenSizes: ScreenSize[] = [
-  { title: 'Mobile', slug: 'mobile', width: 390 },
-  { title: 'Tablet', slug: 'tablet', width: 768 },
-  { title: 'Desktop', slug: 'desktop', width: 1280 },
-  { title: 'Wide', slug: 'wide', width: 1600 },
-];

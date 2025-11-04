@@ -5,10 +5,28 @@
   padding-inline: 24px;
 }
 
-.content {
+.contentWrapper {
+  display: flex;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.content {
+  display: flex;
+  gap: 40px;
+}
+
+.contentInner {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.toc {
+  display: none;
 }
 
 @media (min-width: 768px) {
@@ -16,5 +34,13 @@
     width: calc(100% - 260px);
     margin-left: 260px;
     margin-right: 40px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .toc {
+    display: block;
+    width: 240px;
+    flex-shrink: 0;
   }
 }

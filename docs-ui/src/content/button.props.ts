@@ -1,5 +1,5 @@
-import { classNamePropDefs, stylePropDefs } from '../../utils/propDefs';
-import type { PropDef } from '../../utils/propDefs';
+import { classNamePropDefs, stylePropDefs } from '@/utils/propDefs';
+import type { PropDef } from '@/utils/propDefs';
 
 export const buttonPropDefs: Record<string, PropDef> = {
   variant: {

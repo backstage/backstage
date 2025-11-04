@@ -15,11 +15,15 @@
   --border: #e5e5e5;
   --border2: #cdcdcd;
   --surface-1: #f4f4f4;
+  --code-bg: #3e444f;
+  --code-title: #505865;
 }
 
 [data-theme-mode='dark'] {
   --bg: #000000;
   --bg-hover: #202020;
+  --code-bg: #202020;
+  --code-title: #292929;
   --primary: #fff;
   --secondary: #818181;
   --action: #202020;
