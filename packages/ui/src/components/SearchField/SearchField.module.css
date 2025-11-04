@@ -18,11 +18,15 @@
 
 @layer components {
   .bui-SearchField {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--bui-font-regular);
+    width: 100%;
     flex: 1;
     flex-shrink: 0;
 
     &[data-empty] {
-      .bui-InputClear {
+      .bui-SearchFieldClear {
         display: none;
       }
     }
@@ -49,20 +53,20 @@
           height: 2rem;
         }
 
-        &[data-size='medium'] .bui-Input {
+        &[data-size='medium'] .bui-SearchFieldInput {
           &::placeholder {
             opacity: 0;
           }
         }
 
-        &[data-size='small'] .bui-Input {
+        &[data-size='small'] .bui-SearchFieldInput {
           &::placeholder {
             opacity: 0;
           }
         }
 
-        .bui-InputWrapper {
-          .bui-Input[data-icon] {
+        .bui-SearchFieldWrapper {
+          .bui-SearchFieldInput[data-icon] {
             padding-right: 0px;
           }
         }
@@ -70,9 +74,92 @@
     }
   }
 
-  .bui-SearchField .bui-Input {
+  .bui-SearchFieldWrapper {
+    position: relative;
+
+    .bui-SearchFieldInput[data-icon] {
+      padding-right: var(--bui-space-6);
+    }
+
+    &[data-size='small'] .bui-SearchFieldInput {
+      height: 2rem;
+    }
+
+    &[data-size='medium'] .bui-SearchFieldInput {
+      height: 2.5rem;
+    }
+
+    &[data-size='small'] .bui-SearchFieldInput[data-icon] {
+      padding-left: var(--bui-space-8);
+    }
+
+    &[data-size='medium'] .bui-SearchFieldInput[data-icon] {
+      padding-left: var(--bui-space-9);
+    }
+  }
+
+  .bui-SearchFieldInputIcon {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: var(--bui-space-1);
+    color: var(--bui-fg-primary);
+    pointer-events: none;
+    /* To animate the icon when the input is collapsed */
+    transition: left 0.2s ease-in-out;
+
+    &[data-size='small'] {
+      width: 2rem;
+    }
+
+    &[data-size='medium'] {
+      width: 2.5rem;
+    }
+
+    &[data-size='small'] svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &[data-size='medium'] svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  .bui-SearchFieldInput {
+    display: flex;
+    align-items: center;
+    padding: 0 var(--bui-space-3);
+    border-radius: var(--bui-radius-2);
+    border: 1px solid var(--bui-border);
+    background-color: var(--bui-bg-surface-1);
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    color: var(--bui-fg-primary);
     transition: padding 0.3s ease-in-out, border-color 0.2s ease-in-out,
       outline-color 0.2s ease-in-out;
+    width: 100%;
+    height: 100%;
+    cursor: inherit;
+
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+    }
+
+    &::placeholder {
+      color: var(--bui-fg-secondary);
+    }
+
+    &[data-focused] {
+      outline-color: var(--bui-border-pressed);
+      outline-width: 0px;
+    }
 
     &[data-hovered] {
       border-color: var(--bui-border-hover);
@@ -82,29 +169,19 @@
       border-color: var(--bui-border-pressed);
       outline-width: 0px;
     }
-  }
 
-  .bui-SearchField .bui-InputWrapper {
-    .bui-Input[data-icon] {
-      padding-right: var(--bui-space-6);
+    &[data-invalid] {
+      border-color: var(--bui-fg-danger);
+    }
+
+    &[data-disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border: 1px solid var(--bui-border-disabled);
     }
   }
 
-  .bui-SearchField .bui-InputIcon {
-    left: 0;
-    display: flex;
-    justify-content: center;
-
-    &[data-size='small'] {
-      width: var(--bui-space-8);
-    }
-
-    &[data-size='medium'] {
-      width: var(--bui-space-10);
-    }
-  }
-
-  .bui-InputClear {
+  .bui-SearchFieldClear {
     position: absolute;
     right: 0;
     top: 0;
@@ -119,24 +196,24 @@
     cursor: pointer;
     color: var(--bui-fg-secondary);
     transition: color 0.2s ease-in-out;
-  }
 
-  .bui-InputClear:hover {
-    color: var(--bui-fg-primary);
-  }
+    &:hover {
+      color: var(--bui-fg-primary);
+    }
 
-  .bui-InputClear[data-size='small'] {
-    width: 2rem;
-    height: 2rem;
-  }
+    &[data-size='small'] {
+      width: 2rem;
+      height: 2rem;
+    }
 
-  .bui-InputClear[data-size='medium'] {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
+    &[data-size='medium'] {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
 
-  .bui-InputClear svg {
-    width: 1rem;
-    height: 1rem;
+    & svg {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 }

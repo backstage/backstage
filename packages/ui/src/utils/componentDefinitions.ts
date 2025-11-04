@@ -283,7 +283,10 @@ export const componentDefinitions = {
   SearchField: {
     classNames: {
       root: 'bui-SearchField',
-      clear: 'bui-InputClear',
+      clear: 'bui-SearchFieldClear',
+      inputWrapper: 'bui-SearchFieldWrapper',
+      input: 'bui-SearchFieldInput',
+      inputIcon: 'bui-SearchFieldInputIcon',
     },
     dataAttributes: {
       startCollapsed: [true, false] as const,
