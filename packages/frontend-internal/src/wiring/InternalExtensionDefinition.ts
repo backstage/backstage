@@ -70,22 +70,14 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly attachTo: ExtensionAttachToSpec;
         readonly disabled: boolean;
         readonly configSchema?: PortableSchema<any, any>;
-        readonly inputs: {
-          [inputName in string]: ExtensionInput<
-            ExtensionDataRef,
-            { optional: boolean; singleton: boolean }
-          >;
-        };
+        readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
         factory(context: {
           node: AppNode;
           apis: ApiHolder;
           config: object;
           inputs: ResolvedExtensionInputs<{
-            [inputName in string]: ExtensionInput<
-              ExtensionDataRef,
-              { optional: boolean; singleton: boolean }
-            >;
+            [inputName in string]: ExtensionInput;
           }>;
         }): Iterable<ExtensionDataValue<any, any>>;
       };
