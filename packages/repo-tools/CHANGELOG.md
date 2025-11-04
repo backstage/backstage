@@ -1,5 +1,13 @@
 # @backstage/repo-tools
 
+## 0.15.4-next.1
+
+### Patch Changes
+
+- 8f56eae: Updated knip-reports to detect dependencies in dev/alpha pattern
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
 ## 0.15.4-next.0
 
 ### Patch Changes

@@ -1,5 +1,45 @@
 # @backstage/ui
 
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 539cf26: **BREAKING**: Migrated Avatar component from Base UI to custom implementation with size changes:
+
+  - Base UI-specific props are no longer supported
+  - Size values have been updated:
+    - New `x-small` size added (1.25rem / 20px)
+    - `small` size unchanged (1.5rem / 24px)
+    - `medium` size unchanged (2rem / 32px, default)
+    - `large` size **changed from 3rem to 2.5rem** (40px)
+    - New `x-large` size added (3rem / 48px)
+
+  Migration:
+
+  ```diff
+  # Remove Base UI-specific props
+  - <Avatar src="..." name="..." render={...} />
+  + <Avatar src="..." name="..." />
+
+  # Update large size usage to x-large for same visual size
+  - <Avatar src="..." name="..." size="large" />
+  + <Avatar src="..." name="..." size="x-large" />
+  ```
+
+  Added `purpose` prop for accessibility control (`'informative'` or `'decoration'`).
+
+- 134151f: Fixing styles on SearchField in Backstage UI after migration to CSS modules. `SearchField` has now its own set of class names. We previously used class names from `TextField` but this approach was creating some confusion so going forward in your theme you'll be able to theme `TextField` and `SearchField` separately.
+
+### Patch Changes
+
+- d01de00: Fix broken external links in Backstage UI Header component.
+- deaa427: Fixed Text component to prevent `truncate` prop from being spread to the underlying DOM element.
+- 1059f95: Improved the Link component structure in Backstage UI.
+- 6874094: Migrated CellProfile component from Base UI Avatar to Backstage UI Avatar component.
+- 719d772: Avatar components in x-small and small sizes now display only one initial instead of two, improving readability at smaller dimensions.
+- 3b18d80: Fixed RadioGroup radio button ellipse distortion by preventing flex shrink and grow.
+- e16ece5: Set the color-scheme property depending on theme
+
 ## 0.9.0-next.1
 
 ### Minor Changes

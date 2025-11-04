@@ -1,5 +1,17 @@
 # @backstage/backend-defaults
 
+## 0.13.1-next.1
+
+### Patch Changes
+
+- 91ab2eb: Fix a bug in the Gitlab URL reader where `search` did not handle multiple globs
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-app-api@1.3.0-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
 ## 0.13.1-next.0
 
 ### Patch Changes

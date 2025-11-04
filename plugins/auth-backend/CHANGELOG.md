@@ -1,5 +1,18 @@
 # @backstage/plugin-auth-backend
 
+## 0.25.6-next.1
+
+### Patch Changes
+
+- 51ff7d8: Allow configuring dynamic client registration token expiration with config `auth.experimentalDynamicClientRegistration.tokenExpiration`.
+
+  Maximum expiration for the DCR token is 24 hours. Default expiration is 1 hour.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+
 ## 0.25.6-next.0
 
 ### Patch Changes

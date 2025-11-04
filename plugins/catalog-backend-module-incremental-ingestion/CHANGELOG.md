@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.7.6-next.1
+
+### Patch Changes
+
+- 70745c5: Correctly handle entity removal computation when DB count query returns string
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.2.0-next.1
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
 ## 0.7.6-next.0
 
 ### Patch Changes

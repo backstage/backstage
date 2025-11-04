@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.34.5-next.1
+
+### Patch Changes
+
+- da19cb5: Fix inconsistent behavior in the `new` command for the `@internal` scope: it now consistently defaults to the `backstage-plugin-` infix whether the `--scope` option is not set or it's set to `internal`.
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+
 ## 0.34.5-next.0
 
 ### Patch Changes

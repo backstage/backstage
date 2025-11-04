@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.7.6-next.2
+
+### Patch Changes
+
+- 9f939a6: Added `@backstage/plugin-app-visualizer` to the app in the `--next` template.
+
 ## 0.7.6-next.1
 
 ### Patch Changes
