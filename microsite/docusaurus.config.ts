@@ -284,7 +284,7 @@ const config: Config = {
           // If we're using versioned docs, we need to make sure to only allow through redirects that actually exist in the stable docsite.
           if (useVersionedDocs) {
             if (existingPath.startsWith('/docs/next')) {
-              throw new Error('Redirects should not be created for next docs');
+              throw new Error(`Redirects should not be created for next docs: ${existingPath}`);
             }
             if (
               existsSync(
