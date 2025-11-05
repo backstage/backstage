@@ -8462,9 +8462,9 @@ __metadata:
   linkType: hard
 
 "@electric-sql/pglite@npm:^0.3.0":
-  version: 0.3.12
-  resolution: "@electric-sql/pglite@npm:0.3.12"
-  checksum: 10/bc05079be00562e820b1965671592469429a9fee89a63bf5546ac5a0fcb11d1f2f28dcd919d52b2eb1784188f0e486674c12b09007572d11c4860bc003454ab7
+  version: 0.3.13
+  resolution: "@electric-sql/pglite@npm:0.3.13"
+  checksum: 10/6ba1aef0fecb8f975b1adf2f861682572e29401e268dec31c3118d4dcd68585b7a8d30d4f8ad485df90c01896507852a40454022c719b6c98fea84c9023b7f15
   languageName: node
   linkType: hard
 
