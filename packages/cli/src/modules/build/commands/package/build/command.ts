@@ -23,6 +23,7 @@ import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
 import { isValidUrl } from '../../../lib/urls';
 import chalk from 'chalk';
+import { parseConfiguredRemoteSharedDependencies } from '../../../lib/bundler/moduleFederation';
 
 export async function command(opts: OptionValues): Promise<void> {
   const webpack = process.env.LEGACY_WEBPACK_BUILD
@@ -55,18 +56,44 @@ export async function command(opts: OptionValues): Promise<void> {
     });
   }
 
-  // experimental
+  let isModuleFederationRemote: Parameters<
+    typeof buildFrontend
+  >[0]['isModuleFederationRemote'] = undefined;
   if ((role as string) === 'frontend-dynamic-container') {
     console.log(
       chalk.yellow(
         `⚠️  WARNING: The 'frontend-dynamic-container' package role is experimental and will receive immediate breaking changes in the future.`,
       ),
     );
+    isModuleFederationRemote = true;
+  }
+  if (opts.moduleFederation) {
+    isModuleFederationRemote = true;
+  }
+  if (opts['moduleFederation.sharedDependencies']) {
+    try {
+      isModuleFederationRemote = {
+        sharedDependencies: parseConfiguredRemoteSharedDependencies(
+          opts['moduleFederation.sharedDependencies'],
+        ),
+      };
+    } catch (error) {
+      console.error(
+        chalk.red(
+          `Failed to parse module federation shared dependencies: ${error}`,
+        ),
+      );
+      throw error;
+    }
+  }
+
+  if (isModuleFederationRemote) {
+    console.log('Building package as a module federation remote');
     return buildFrontend({
       targetDir: paths.targetDir,
       configPaths: [],
       writeStats: Boolean(opts.stats),
-      isModuleFederationRemote: true,
+      isModuleFederationRemote,
       webpack,
     });
   }

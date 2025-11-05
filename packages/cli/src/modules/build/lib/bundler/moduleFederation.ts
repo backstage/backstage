@@ -40,6 +40,8 @@ import { Config } from '@backstage/config';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 
+// Remote modules management utilities
+
 export async function getModuleFederationRemoteOptions(
   packageJson: BackstagePackageJson,
   packageDir: string,
@@ -90,6 +92,36 @@ export async function getModuleFederationRemoteOptions(
       'allow-additions',
     ),
   };
+}
+
+// zod schema that corresponds to the ConfiguredSharedDependencies<Remote> type
+const configuredRemoteSharedDependenciesSchema = z.record(
+  z.string(),
+  z.union([
+    z.object({
+      version: z.union([z.string(), z.literal(false)]).nullish(),
+      requiredVersion: z.union([z.string(), z.literal(false)]).nullish(),
+      singleton: z.boolean().optional(),
+      import: z.literal(false).nullish(),
+    }),
+    z.literal(false),
+  ]),
+);
+
+export function parseConfiguredRemoteSharedDependencies(
+  json: string,
+): ConfiguredSharedDependencies<Remote> {
+  const parsed = configuredRemoteSharedDependenciesSchema.safeParse(
+    JSON.parse(json),
+  );
+  if (!parsed.success) {
+    throw new Error(
+      `Invalid module federation shared dependencies: ${JSON.stringify(
+        fromZodError(parsed.error).message,
+      )}.`,
+    );
+  }
+  return parsed.data;
 }
 
 // Module federation host management utilities

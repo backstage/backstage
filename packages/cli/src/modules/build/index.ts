@@ -42,6 +42,14 @@ export function registerPackageCommands(command: Command) {
       (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
       Array<string>(),
     )
+    .option(
+      '--module-federation',
+      'Build a package as a module federation remote. Applies to frontend plugin packages only.',
+    )
+    .option(
+      '--module-federation.shared-dependencies <json>',
+      'Optional JSON configuration for module federation shared dependencies. Applies to frontend plugin packages only.',
+    )
     .action(lazy(() => import('./commands/package/build'), 'command'));
 }
 
@@ -76,6 +84,14 @@ export const buildPlugin = createCliPlugin({
             'Config files to load instead of app-config.yaml. Applies to app packages only.',
             (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
             Array<string>(),
+          )
+          .option(
+            '--module-federation',
+            'Build a package as a module federation remote. Applies to frontend plugin packages only.',
+          )
+          .option(
+            '--module-federation.shared-dependencies <json>',
+            'Optional JSON configuration for module federation shared dependencies. Applies to frontend plugin packages only.',
           )
           .action(lazy(() => import('./commands/package/build'), 'command'));
         await defaultCommand.parseAsync(args, { from: 'user' });
