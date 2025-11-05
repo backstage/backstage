@@ -25,149 +25,92 @@ import {
   ThemeBlueprint,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import * as colors from '@material-ui/core/colors';
-import { makeStyles } from '@material-ui/core/styles';
-import InputIcon from '@material-ui/icons/InputSharp';
-import DisabledIcon from '@material-ui/icons/NotInterestedSharp';
+import { Box, Flex } from '@backstage/ui';
 import { Link } from 'react-router-dom';
+import {
+  RiInputField as InputIcon,
+  RiCloseCircleLine as DisabledIcon,
+} from '@remixicon/react';
+
+function getContrastColor(bgColor: string): string {
+  const hex = bgColor.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 128 ? '#000000' : '#ffffff';
+}
 
 function createOutputColorGenerator(
   colorMap: { [extDataId: string]: string },
   availableColors: string[],
 ) {
-  const map = new Map<string, string>();
+  const map = new Map<string, { backgroundColor: string; color: string }>();
   let i = 0;
 
   return function getOutputColor(id: string) {
+    let backgroundColor: string;
     if (id in colorMap) {
-      return colorMap[id];
+      backgroundColor = colorMap[id];
+    } else {
+      const cached = map.get(id);
+      if (cached) {
+        return cached;
+      }
+      backgroundColor = availableColors[i];
+      i += 1;
+      if (i >= availableColors.length) {
+        i = 0;
+      }
     }
-    let color = map.get(id);
-    if (color) {
-      return color;
-    }
-    color = availableColors[i];
-    i += 1;
-    if (i >= availableColors.length) {
-      i = 0;
-    }
-    map.set(id, color);
-    return color;
+    const result = {
+      backgroundColor,
+      color: getContrastColor(backgroundColor),
+    };
+    map.set(id, result);
+    return result;
   };
 }
 
+// Color palette for output visualization
+const colorPalette = {
+  green: { 500: '#4caf50', 200: '#a5d6a7' },
+  yellow: { 500: '#ffeb3b', 200: '#fff59d' },
+  purple: { 500: '#9c27b0', 200: '#ce93d8' },
+  blue: { 500: '#2196f3', 200: '#90caf9' },
+  lime: { 500: '#cddc39', 200: '#e6ee9c' },
+  orange: { 500: '#ff9800', 200: '#ffcc80' },
+  red: { 200: '#ef9a9a' },
+};
+
 const getOutputColor = createOutputColorGenerator(
   {
-    [coreExtensionData.reactElement.id]: colors.green[500],
-    [coreExtensionData.routePath.id]: colors.yellow[500],
-    [coreExtensionData.routeRef.id]: colors.purple[500],
-    [ApiBlueprint.dataRefs.factory.id]: colors.blue[500],
-    [ThemeBlueprint.dataRefs.theme.id]: colors.lime[500],
-    [NavItemBlueprint.dataRefs.target.id]: colors.orange[500],
+    [coreExtensionData.reactElement.id]: colorPalette.green[500],
+    [coreExtensionData.routePath.id]: colorPalette.yellow[500],
+    [coreExtensionData.routeRef.id]: colorPalette.purple[500],
+    [ApiBlueprint.dataRefs.factory.id]: colorPalette.blue[500],
+    [ThemeBlueprint.dataRefs.theme.id]: colorPalette.lime[500],
+    [NavItemBlueprint.dataRefs.target.id]: colorPalette.orange[500],
   },
 
   [
-    colors.blue[200],
-    colors.orange[200],
-    colors.green[200],
-    colors.red[200],
-    colors.yellow[200],
-    colors.purple[200],
-    colors.lime[200],
+    colorPalette.blue[200],
+    colorPalette.orange[200],
+    colorPalette.green[200],
+    colorPalette.red[200],
+    colorPalette.yellow[200],
+    colorPalette.purple[200],
+    colorPalette.lime[200],
   ],
 );
 
-interface StyleProps {
-  enabled: boolean;
-  depth: number;
+// Helper function to get border color based on depth
+function getBorderColor(depth: number): string {
+  const greyLevels = [8, 7, 6, 5]; // darker levels that contrast well with background
+  const index = depth % greyLevels.length;
+  const level = greyLevels[index];
+  return `var(--bui-gray-${level})`;
 }
-
-const config = {
-  borderWidth: 0.75,
-};
-
-const useStyles = makeStyles(theme => ({
-  extension: {
-    borderLeftWidth: theme.spacing(config.borderWidth),
-    borderLeftStyle: 'solid',
-    borderLeftColor: ({ depth }: StyleProps) =>
-      colors.grey[(700 - (depth % 6) * 100) as keyof typeof colors.grey],
-    cursor: 'pointer',
-
-    '&:hover $extensionHeader': {
-      color: ({ enabled }: StyleProps) =>
-        enabled ? theme.palette.primary.main : theme.palette.text.secondary,
-    },
-  },
-  extensionHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    width: 'fit-content',
-
-    padding: theme.spacing(0.5, 1),
-    color: ({ enabled }: StyleProps) =>
-      enabled ? theme.palette.text.primary : theme.palette.text.disabled,
-    background: theme.palette.background.paper,
-
-    borderTopRightRadius: theme.shape.borderRadius,
-    borderBottomRightRadius: theme.shape.borderRadius,
-  },
-  extensionHeaderId: {
-    userSelect: 'all',
-  },
-  extensionHeaderOutputs: {
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: theme.spacing(1),
-    gap: theme.spacing(1),
-  },
-  attachments: {
-    gap: theme.spacing(2),
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  attachmentsInput: {
-    '&:first-child $attachmentsInputTitle': {
-      borderTop: 0,
-    },
-  },
-  attachmentsInputTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    width: 'fit-content',
-    padding: theme.spacing(1),
-
-    borderTopWidth: theme.spacing(config.borderWidth),
-    borderTopStyle: 'solid',
-    borderTopColor: ({ depth }: StyleProps) =>
-      colors.grey[(700 - (depth % 6) * 100) as keyof typeof colors.grey],
-  },
-  attachmentsInputName: {
-    marginLeft: theme.spacing(1),
-  },
-  attachmentsInputChildren: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: theme.spacing(0.5),
-    marginLeft: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-}));
-
-const useOutputStyles = makeStyles(theme => ({
-  output: ({ color }: { color: string }) => ({
-    padding: `0 10px`,
-    height: 20,
-    borderRadius: 10,
-    color: theme.palette.getContrastText(color),
-    backgroundColor: color,
-  }),
-}));
 
 function getFullPath(node?: AppNode): string {
   if (!node) {
@@ -184,7 +127,7 @@ function getFullPath(node?: AppNode): string {
 function OutputLink(props: {
   dataRef: ExtensionDataRef<unknown>;
   node?: AppNode;
-  className: string;
+  style: React.CSSProperties;
 }) {
   const routeRef = props.node?.instance?.getData(coreExtensionData.routeRef);
 
@@ -192,11 +135,11 @@ function OutputLink(props: {
     const link = useRouteRef(routeRef as RouteRef<undefined>);
 
     return (
-      <Tooltip title={<Typography>{props.dataRef.id}</Typography>}>
-        <Box className={props.className}>
+      <div title={props.dataRef.id}>
+        <Flex style={props.style}>
           {link ? <Link to={link()}>link</Link> : null}
-        </Box>
-      </Tooltip>
+        </Flex>
+      </div>
     );
   } catch (ex) {
     // eslint-disable-next-line no-console
@@ -215,26 +158,39 @@ function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
   const { id } = dataRef;
   const instance = node?.instance;
 
-  const classes = useOutputStyles({ color: getOutputColor(id) });
+  const { backgroundColor, color } = getOutputColor(id);
+
+  const chipStyle: React.CSSProperties = {
+    padding: '0 var(--bui-space-2_5, 10px)',
+    height: 20,
+    borderRadius: 'var(--bui-radius-full)',
+    color,
+    backgroundColor,
+  };
 
   if (id === coreExtensionData.routePath.id) {
     return (
-      <Tooltip title={<Typography>{getFullPath(node)}</Typography>}>
-        <Box className={classes.output}>
+      <div title={getFullPath(node)}>
+        <Flex align="center" style={chipStyle}>
           {String(instance?.getData(dataRef) ?? '')}
-        </Box>
-      </Tooltip>
+        </Flex>
+      </div>
     );
   }
 
-  if (id === coreExtensionData.routeRef.id) {
-    return <OutputLink {...props} className={classes.output} />;
+  if (id === coreExtensionData.routeRef.id && node) {
+    return (
+      <OutputLink
+        {...props}
+        style={{ display: 'flex', alignItems: 'center', ...chipStyle }}
+      />
+    );
   }
 
   return (
-    <Tooltip title={<Typography>{id}</Typography>}>
-      <Box className={classes.output} />
-    </Tooltip>
+    <div title={id}>
+      <Flex align="center" style={chipStyle} />
+    </div>
   );
 }
 
@@ -243,29 +199,35 @@ function Attachments(props: {
   enabled: boolean;
   depth: number;
 }) {
-  const { node, enabled, depth } = props;
+  const { node, depth } = props;
   const { attachments } = node.edges;
-
-  const classes = useStyles({ enabled, depth });
 
   if (attachments.size === 0) {
     return null;
   }
 
   return (
-    <Box className={classes.attachments}>
+    <Flex direction="column" gap="4">
       {[...attachments.entries()]
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, children]) => {
+        .map(([key, children], idx) => {
           return (
-            <Box key={key} className={classes.attachmentsInput}>
-              <Box className={classes.attachmentsInputTitle}>
-                <InputIcon />
-                <Typography className={classes.attachmentsInputName}>
-                  {key}
-                </Typography>
-              </Box>
-              <Box className={classes.attachmentsInputChildren}>
+            <Box key={key}>
+              <Flex
+                p="2"
+                align="center"
+                style={{
+                  borderTopWidth: 'var(--bui-space-1_5)',
+                  borderTopStyle: 'solid',
+                  borderTopColor: getBorderColor(depth),
+                  borderTop: idx === 0 ? 'none' : undefined,
+                  width: 'fit-content',
+                }}
+              >
+                <InputIcon size={16} />
+                <div style={{ marginLeft: 'var(--bui-space-2)' }}>{key}</div>
+              </Flex>
+              <Flex ml="2" mb="2" direction="column" align="start" gap="1">
                 {children.map(childNode => (
                   <Extension
                     key={childNode.spec.id}
@@ -273,31 +235,11 @@ function Attachments(props: {
                     depth={depth + 1}
                   />
                 ))}
-              </Box>
+              </Flex>
             </Box>
           );
         })}
-    </Box>
-  );
-}
-
-function ExtensionTooltip(props: { node: AppNode }) {
-  const parts = [];
-  let node = props.node;
-  parts.push(node.spec.id);
-  while (node.edges.attachedTo) {
-    const input = node.edges.attachedTo.input;
-    node = node.edges.attachedTo.node;
-    parts.push(`${node.spec.id} [${input}]`);
-  }
-  parts.reverse();
-
-  return (
-    <>
-      {parts.map(part => (
-        <Typography key={part}>{part}</Typography>
-      ))}
-    </>
+    </Flex>
   );
 }
 
@@ -305,27 +247,54 @@ function Extension(props: { node: AppNode; depth: number }) {
   const { node, depth } = props;
 
   const enabled = Boolean(node.instance);
-  const classes = useStyles({ enabled, depth });
-
   const dataRefs = node.instance && [...node.instance.getDataRefs()];
 
+  // Build tooltip text
+  const tooltipParts = [];
+  let currentNode = node;
+  tooltipParts.push(currentNode.spec.id);
+  while (currentNode.edges.attachedTo) {
+    const input = currentNode.edges.attachedTo.input;
+    currentNode = currentNode.edges.attachedTo.node;
+    tooltipParts.push(`${currentNode.spec.id} [${input}]`);
+  }
+  tooltipParts.reverse();
+  const tooltipText = tooltipParts.join(' → ');
+
   return (
-    <Box key={node.spec.id} className={classes.extension}>
-      <Box className={classes.extensionHeader}>
-        <Tooltip title={<ExtensionTooltip node={node} />}>
-          <Typography className={classes.extensionHeaderId}>
-            {node.spec.id}
-          </Typography>
-        </Tooltip>
-        <Box className={classes.extensionHeaderOutputs}>
+    <Box
+      key={node.spec.id}
+      style={{
+        borderLeftWidth: 'var(--bui-space-1_5)',
+        borderLeftStyle: 'solid',
+        borderLeftColor: getBorderColor(depth),
+        cursor: 'pointer',
+      }}
+    >
+      <Flex
+        py="1"
+        px="2"
+        align="center"
+        style={{
+          width: 'fit-content',
+          color: enabled ? 'var(--bui-fg-primary)' : 'var(--bui-fg-disabled)',
+          background: 'var(--bui-bg-surface-1)',
+          borderTopRightRadius: 'var(--bui-radius-2)',
+          borderBottomRightRadius: 'var(--bui-radius-2)',
+        }}
+      >
+        <div style={{ userSelect: 'all' }} title={tooltipText}>
+          {node.spec.id}
+        </div>
+        <Flex ml="2" align="center" gap="2">
           {dataRefs &&
             dataRefs.length > 0 &&
             dataRefs
               .sort((a, b) => a.id.localeCompare(b.id))
               .map(ref => <Output key={ref.id} dataRef={ref} node={node} />)}
-          {!enabled && <DisabledIcon fontSize="small" />}
-        </Box>
-      </Box>
+          {!enabled && <DisabledIcon size={16} />}
+        </Flex>
+      </Flex>
       <Attachments node={node} enabled={enabled} depth={depth} />
     </Box>
   );
@@ -343,24 +312,19 @@ const legendMap = {
 function Legend() {
   return (
     <Box
-      display="grid"
-      maxWidth={600}
-      p={1}
+      p="2"
       style={{
+        display: 'grid',
+        maxWidth: 600,
         grid: 'auto-flow / repeat(3, 1fr)',
-        gap: 16,
+        gap: 'var(--bui-space-4)',
       }}
     >
       {Object.entries(legendMap).map(([label, dataRef]) => (
-        <Box
-          key={dataRef.id}
-          display="flex"
-          style={{ gap: 8 }}
-          alignItems="center"
-        >
+        <Flex key={dataRef.id} gap="2" align="center">
           <Output dataRef={dataRef} />
-          <Typography>{label}</Typography>
-        </Box>
+          <div>{label}</div>
+        </Flex>
       ))}
     </Box>
   );
@@ -368,14 +332,22 @@ function Legend() {
 
 export function DetailedVisualizer({ tree }: { tree: AppTree }) {
   return (
-    <Box display="flex" height="100%" flex="1 1 100%" flexDirection="column">
-      <Box flex="1 1 0" overflow="auto" ml={2} mt={2}>
+    <Flex direction="column" style={{ height: '100%', flex: '1 1 100%' }}>
+      <Box ml="4" mt="4" style={{ flex: '1 1 0', overflow: 'auto' }}>
         <Extension node={tree.root} depth={0} />
       </Box>
 
-      <Box component={Paper} flex="0 0 auto" m={1}>
+      <Box
+        m="2"
+        style={{
+          flex: '0 0 auto',
+          background: 'var(--bui-bg-surface-1)',
+          border: '1px solid var(--bui-border)',
+          borderRadius: 'var(--bui-radius-2)',
+        }}
+      >
         <Legend />
       </Box>
-    </Box>
+    </Flex>
   );
 }

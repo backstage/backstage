@@ -20,7 +20,7 @@ import {
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import VisualizerIcon from '@material-ui/icons/Visibility';
+import { RiEyeLine as VisualizerIcon } from '@remixicon/react';
 
 const rootRouteRef = createRouteRef();
 
