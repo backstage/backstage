@@ -70,7 +70,7 @@ export interface Config {
      */
     customHomepage?: {
       /**
-       * Whether to prevent duplicate widgets from being added to the homepage
+       * Whether to prevent duplicate widgets from being added to the homepage; default `false`
        * @visibility frontend
        */
       preventDuplicateWidgets?: boolean;

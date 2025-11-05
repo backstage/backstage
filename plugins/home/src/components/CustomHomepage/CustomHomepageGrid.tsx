@@ -174,9 +174,9 @@ const convertConfigToDefaultWidgets = (
         isResizable: false,
       },
       settings: {},
-      movable: conf.movable ?? true,
-      deletable: conf.deletable ?? true,
-      resizable: conf.resizable ?? true,
+      movable: conf.movable,
+      deletable: conf.deletable,
+      resizable: conf.resizable,
     };
   });
   return compact(ret);
@@ -232,7 +232,6 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     useHomeStorage(defaultLayout);
   const [widgets, setWidgets] = useState(storedWidgets);
 
-
   // Get preventDuplicateWidgets from config with prop override
   const configPreventDuplicates = configApi.getOptionalBoolean(
     'home.customHomepage.preventDuplicateWidgets',
@@ -270,7 +269,6 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const handleAdd = (widget: Widget) => {
-    const defaultConfig = defaultLayout.find(w => w.id.includes(widget.name));
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
       .toString(36)
       .slice(2)}`;
@@ -293,9 +291,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           isDraggable: editMode,
         },
         settings: {},
-        movable: widget.movable ?? defaultConfig?.movable ?? true,
-        deletable: widget.deletable ?? defaultConfig?.deletable ?? true,
-        resizable: widget.resizable ?? defaultConfig?.resizable ?? true,
+        movable: widget.movable,
+        deletable: widget.deletable,
+        resizable: widget.resizable,
       },
     ]);
     setAddWidgetDialogOpen(false);
