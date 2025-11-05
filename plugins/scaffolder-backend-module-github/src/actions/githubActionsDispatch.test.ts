@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ describe('github:actions:dispatch', () => {
     initialWaitSeconds: 5,
     pollIntervalSeconds: 10,
     timeoutMinutes: 30,
-    waitForCompletion: false, // FIX 2: Add missing property
+    waitForCompletion: false, 
   };
 
   it('should dispatch a workflow and not wait', async () => {
@@ -138,10 +138,10 @@ describe('github:actions:dispatch', () => {
       input: {
         ...baseInput,
         waitForCompletion: true,
-        pollIntervalSeconds: 1, // Fast poll for test
+        pollIntervalSeconds: 1,
       },
       logger,
-      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      checkpoint: async ({ fn }) => fn(), 
       output: jest.fn(),
     });
 
@@ -168,7 +168,7 @@ describe('github:actions:dispatch', () => {
     const context = createMockActionContext({
       input: { ...baseInput, waitForCompletion: true },
       logger,
-      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      checkpoint: async ({ fn }) => fn(),
       output: jest.fn(),
     });
 
@@ -191,22 +191,22 @@ describe('github:actions:dispatch', () => {
       input: {
         ...baseInput,
         waitForCompletion: true,
-        timeoutMinutes: 1, // 1 minute timeout
-        pollIntervalSeconds: 30, // 30 second poll
+        timeoutMinutes: 1, 
+        pollIntervalSeconds: 30,
       },
       logger,
-      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      checkpoint: async ({ fn }) => fn(),
       output: jest.fn(),
     });
 
-    // Use legacy timer fix for timeouts
+    
     const handlerPromise = action.handler(context);
 
     // Advance clock by 30s (poll 1)
     jest.advanceTimersByTime(30000);
-    // Advance clock by 30s (poll 2) - total 60s
+    // Advance clock by 30s (poll 2)
     jest.advanceTimersByTime(30000);
-    // Advance clock by 1ms (to go over the 1min/60s timeout)
+    // Advance clock by 1ms (to go over the 1min/60s timeout
     jest.advanceTimersByTime(1);
 
     await expect(handlerPromise).rejects.toThrow(
@@ -238,12 +238,12 @@ describe('github:actions:dispatch', () => {
         outputArtifactName: 'my-artifact',
       },
       logger,
-      checkpoint: async ({ fn }) => fn(), // FIX 3: Correct checkpoint type
+      checkpoint: async ({ fn }) => fn(),
       output: jest.fn(),
     });
 
     const handlerPromise = action.handler(context);
-    jest.runAllTimers(); // Use legacy timers
+    jest.runAllTimers(); 
     await handlerPromise;
 
     expect(mockListWorkflowRunArtifacts).toHaveBeenCalledWith({
