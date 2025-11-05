@@ -1,7 +1,6 @@
 'use client';
 
-import { Button, Dialog, Modal, ModalOverlay } from 'react-aria-components';
-import { RiCloseLine } from '@remixicon/react';
+import { Dialog, Modal, ModalOverlay } from 'react-aria-components';
 import styles from './MobileBottomNav.module.css';
 import { Navigation } from '@/components/Navigation';
 
