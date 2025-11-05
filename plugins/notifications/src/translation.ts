@@ -70,6 +70,15 @@ export const notificationsTranslationRef = createTranslationRef({
       },
     },
     table: {
+      emptyMessage: 'No records to display',
+      pagination: {
+        firstTooltip: 'First Page',
+        labelDisplayedRows: '{from}-{to} of {count}',
+        labelRowsSelect: 'rows',
+        lastTooltip: 'Last Page',
+        nextTooltip: 'Next Page',
+        previousTooltip: 'Previous Page',
+      },
       bulkActions: {
         markAllRead: 'Mark all read',
         markSelectedAsRead: 'Mark selected as read',
