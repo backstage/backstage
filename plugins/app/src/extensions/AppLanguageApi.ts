@@ -17,7 +17,11 @@
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../../../packages/core-app-api/src/apis/implementations/AppLanguageApi';
 import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
-import { ApiBlueprint } from '@backstage/frontend-plugin-api';
+import {
+  ApiBlueprint,
+  errorApiRef,
+  storageApiRef,
+} from '@backstage/frontend-plugin-api';
 
 export const AppLanguageApi = ApiBlueprint.makeWithOverrides({
   name: 'app-language',

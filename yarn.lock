@@ -4192,6 +4192,8 @@ __metadata:
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
+    "@backstage/plugin-signals-react": "workspace:^"
+    "@backstage/plugin-user-settings-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"

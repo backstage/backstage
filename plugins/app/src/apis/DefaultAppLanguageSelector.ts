@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-// Internal import to avoid code duplication, this will lead to duplication in build output
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageApi } from '@backstage/core-plugin-api/alpha';
 import { Observable, Subscription } from '@backstage/types';
-import { BehaviorSubject } from '../../../lib';
 import { StorageApi, ErrorApi } from '@backstage/core-plugin-api';
-import { WebStorage } from '../StorageApi/WebStorage';
+import { SignalApi, SignalSubscriber } from '@backstage/plugin-signals-react';
+import { UserSettingsSignal } from '@backstage/plugin-user-settings-common';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { WebStorage } from '../../../../packages/core-app-api/src';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { BehaviorSubject } from '../../../../packages/core-app-api/src/lib/subjects';
 
 const STORAGE_KEY = 'language';
 export const DEFAULT_LANGUAGE = 'en';
 const BUCKET_NAME = 'userSettings';
 
 /** @alpha */
-export interface AppLanguageSelectorOptions {
+export interface DefaultAppLanguageSelectorOptions {
   defaultLanguage?: string;
   availableLanguages?: string[];
   storageApi?: StorageApi;
   errorApi?: ErrorApi;
+  signalApi?: SignalApi;
 }
 
 /**
@@ -39,8 +42,8 @@ export interface AppLanguageSelectorOptions {
  *
  * @alpha
  */
-export class AppLanguageSelector implements AppLanguageApi {
-  static create(options?: AppLanguageSelectorOptions) {
+export class DefaultAppLanguageSelector implements AppLanguageApi {
+  static create(options?: DefaultAppLanguageSelectorOptions) {
     const languages = options?.availableLanguages ?? [DEFAULT_LANGUAGE];
     if (languages.length !== new Set(languages).size) {
       throw new Error(
@@ -58,23 +61,26 @@ export class AppLanguageSelector implements AppLanguageApi {
       );
     }
 
-    return new AppLanguageSelector(
+    return new DefaultAppLanguageSelector(
       languages,
       initialLanguage,
       options?.storageApi,
       options?.errorApi,
+      options?.signalApi,
     );
   }
 
   static createWithStorage(
-    options: Omit<AppLanguageSelectorOptions, 'storageApi' | 'errorApi'>,
+    options: Omit<DefaultAppLanguageSelectorOptions, 'storageApi' | 'errorApi'>,
     storageApi: StorageApi,
     errorApi: ErrorApi,
+    signalApi?: SignalApi,
   ) {
-    return AppLanguageSelector.create({
+    return DefaultAppLanguageSelector.create({
       ...options,
       storageApi,
       errorApi,
+      signalApi,
     });
   }
   readonly #localStorageKey = `/${BUCKET_NAME}/${STORAGE_KEY}`;
@@ -83,8 +89,10 @@ export class AppLanguageSelector implements AppLanguageApi {
   #subject!: BehaviorSubject<{ language: string }>;
   #storage?: StorageApi;
   #errorApi?: ErrorApi;
+  #signalApi?: SignalApi;
   #storageSubscription?: Subscription;
   #persistSubscription?: Subscription;
+  #signalSubscription?: SignalSubscriber;
   #isUpdatingFromStorage = false;
   #lastStoredValue: any = undefined;
   #isInitialLoad = true;
@@ -98,10 +106,12 @@ export class AppLanguageSelector implements AppLanguageApi {
     initialLanguage: string,
     storageApi?: StorageApi,
     errorApi?: ErrorApi,
+    signalApi?: SignalApi,
   ) {
     this.#languages = languages;
     this.#storage = storageApi;
     this.#errorApi = errorApi;
+    this.#signalApi = signalApi;
 
     this.#initializeLanguageFromCache(initialLanguage);
     this.#setupInitialState();
@@ -138,7 +148,11 @@ export class AppLanguageSelector implements AppLanguageApi {
     }
   }
 
-  setStorage(storageApi: StorageApi, errorApi: ErrorApi) {
+  setStorage(
+    storageApi: StorageApi,
+    errorApi: ErrorApi,
+    signalApi?: SignalApi,
+  ) {
     this.#cleanupStorage();
 
     this.#storage = storageApi;
@@ -146,8 +160,12 @@ export class AppLanguageSelector implements AppLanguageApi {
     this.#localCacheSubscription = WebStorage.create({
       errorApi: this.#errorApi,
     });
+    if (signalApi) {
+      this.#signalApi = signalApi;
+    }
     this.#storageSetupRequired = false;
 
+    // Re-setup localStorage event listener based on SignalApi availability
     this.#setupStorageEventListener();
 
     this.#setupStorage();
@@ -193,6 +211,9 @@ export class AppLanguageSelector implements AppLanguageApi {
     // Skip if using WebStorage (handles its own events)
     if (this.#storage instanceof WebStorage) return;
 
+    // Skip if using SignalApi for cross-device sync (no need for localStorage events)
+    if (this.#signalApi && !(this.#storage instanceof WebStorage)) return;
+
     this.#localCacheSubscription
       ?.forBucket(BUCKET_NAME)
       .observe$(STORAGE_KEY)
@@ -230,7 +251,7 @@ export class AppLanguageSelector implements AppLanguageApi {
       .forBucket(BUCKET_NAME)
       .observe$(STORAGE_KEY)
       .subscribe(stored => {
-        // Skip if we're already updating from storage
+        // Skip if we're already updating from storage (SignalApi is handling it)
         if (this.#isUpdatingFromStorage) {
           return;
         }
@@ -243,6 +264,30 @@ export class AppLanguageSelector implements AppLanguageApi {
         const language = this.#parseLanguageValue(stored?.value);
         this.#updateLanguageFromStorage(language);
       });
+
+    // Set up cross-device synchronization via UserSettingsStorage signals
+    if (this.#signalApi) {
+      this.#signalSubscription = this.#signalApi.subscribe(
+        'user-settings',
+        (message: UserSettingsSignal) => {
+          if (message.key === STORAGE_KEY && message.type === 'key-changed') {
+            // Fetch the latest value from storage (which will be the backend value)
+            // Use observe$ to get the actual value, not snapshot which may be 'unknown'
+            let hasReceivedValue = false;
+            const subscription = this.#storage!.forBucket(BUCKET_NAME)
+              .observe$(STORAGE_KEY)
+              .subscribe(stored => {
+                if (hasReceivedValue) return;
+                hasReceivedValue = true;
+                setTimeout(() => subscription.unsubscribe(), 0);
+
+                const language = this.#parseLanguageValue(stored?.value);
+                this.#updateLanguageFromStorage(language);
+              });
+          }
+        },
+      );
+    }
 
     // Persist changes to storage (only when not updating from storage and not initial load)
     this.#persistSubscription = this.#subject.subscribe(({ language }) => {
@@ -315,6 +360,10 @@ export class AppLanguageSelector implements AppLanguageApi {
     if (this.#persistSubscription) {
       this.#persistSubscription.unsubscribe();
       this.#persistSubscription = undefined;
+    }
+    if (this.#signalSubscription) {
+      this.#signalSubscription.unsubscribe();
+      this.#signalSubscription = undefined;
     }
   }
 
