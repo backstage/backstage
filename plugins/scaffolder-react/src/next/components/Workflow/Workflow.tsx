@@ -148,7 +148,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
               />
             </InfoCard>
           </Grid>
-          {showDescription && (
+          {showDescription && description && (
             <Grid item xs={4}>
               <Card>
                 <CardHeader
@@ -170,11 +170,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
                   <MarkdownContent
                     className={styles.markdown}
                     linkTarget="_blank"
-                    content={
-                      description ??
-                      sortedManifest?.description ??
-                      t('workflow.noDescription')
-                    }
+                    content={description}
                   />
                 </CardContent>
               </Card>

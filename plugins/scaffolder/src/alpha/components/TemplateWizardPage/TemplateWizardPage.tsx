@@ -91,6 +91,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const { manifest } = useTemplateParameterSchema(templateRef);
   const decorators = useFormDecorators();
 
+  const descriptionPreviewThreshold = 140;
   const title = manifest?.title ?? templateName;
 
   const { value: editUrl } = useAsync(async () => {
@@ -137,7 +138,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   useEffect(() => {
     const desc = manifest?.description ?? '';
     setDescription(desc);
-    if (desc.length > 140) {
+    if (desc.length > descriptionPreviewThreshold) {
       setShowDescription(true);
     }
   }, [manifest?.description, setDescription, setShowDescription]);
@@ -148,7 +149,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
         <Header
           pageTitleOverride={title}
           title={title}
-          subtitle={description.length < 140 ? description : ''}
+          subtitle={
+            description.length < descriptionPreviewThreshold ? description : ''
+          }
           {...props.headerOptions}
         >
           <TemplateWizardPageContextMenu
