@@ -9,6 +9,7 @@ import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core/Tab';
+import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common';
 
 // @public (undocumented)
 export const ConfigContent: () => JSX_2.Element;
@@ -42,6 +43,16 @@ export const ExternalDependenciesContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export const InfoContent: () => JSX_2.Element;
+
+// @public (undocumented)
+export const ScheduledTaskDetailPanel: ({
+  rowData,
+}: {
+  rowData: TaskApiTasksResponse;
+}) => JSX_2.Element;
+
+// @public (undocumented)
+export const ScheduledTasksContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export type SubRoute = {

@@ -19,6 +19,8 @@ import {
   ConfigInfo,
   DevToolsInfo,
   ExternalDependency,
+  ScheduledTasks,
+  TriggerScheduledTask,
 } from '@backstage/plugin-devtools-common';
 
 export const devToolsApiRef = createApiRef<DevToolsApi>({
@@ -29,4 +31,9 @@ export interface DevToolsApi {
   getConfig(): Promise<ConfigInfo | undefined>;
   getExternalDependencies(): Promise<ExternalDependency[] | undefined>;
   getInfo(): Promise<DevToolsInfo | undefined>;
+  getScheduledTasksByPlugin(plugin: string): Promise<ScheduledTasks>;
+  triggerScheduledTask(
+    plugin: string,
+    taskId: string,
+  ): Promise<TriggerScheduledTask>;
 }
