@@ -13,29 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-  UnprocessedEntity as CommonUnprocessedEntity,
-  UnprocessedEntityCache as CommonUnprocessedEntityCache,
-  UnprocessedEntityError as CommonUnprocessedEntityError,
-} from '@backstage/plugin-catalog-unprocessed-entities-common';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * Unprocessed entity data stored in the database.
  * @public
- * @deprecated Use the type imported from `@backstage/plugin-catalog-unprocessed-entities-common` instead.
  */
-export type UnprocessedEntity = CommonUnprocessedEntity;
+export type UnprocessedEntity = {
+  entity_id: string;
+  entity_ref: string;
+  unprocessed_entity: Entity;
+  unprocessed_hash?: string;
+  processed_entity?: Entity;
+  result_hash?: string;
+  cache?: UnprocessedEntityCache;
+  next_update_at: string | Date;
+  last_discovery_at: string | Date; // remove?
+  errors?: UnprocessedEntityError[];
+  location_key?: string;
+};
 
 /**
  * Unprocessed entity cache stored in the database.
  * @public
- * @deprecated Use the type imported from `@backstage/plugin-catalog-unprocessed-entities-common` instead.
  */
-export type UnprocessedEntityCache = CommonUnprocessedEntityCache;
+export type UnprocessedEntityCache = {
+  ttl: number;
+  cache: object;
+};
 
 /**
  * Unprocessed entity error information stored in the database.
  * @public
- * @deprecated Use the type imported from `@backstage/plugin-catalog-unprocessed-entities-common` instead.
  */
-export type UnprocessedEntityError = CommonUnprocessedEntityError;
+export type UnprocessedEntityError = {
+  name: string;
+  message: string;
+  cause: {
+    name: string;
+    message: string;
+    stack: string;
+  };
+};
+
+/**
+ * Response expected by the {@link CatalogUnprocessedEntitiesApi}
+ *
+ * @public
+ */
+export type CatalogUnprocessedEntitiesApiResponse = {
+  entities: UnprocessedEntity[];
+};
