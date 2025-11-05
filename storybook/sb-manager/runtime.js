@@ -19,7 +19,7 @@ var we = (e, t) => () => (t || e((t = { exports: {} }).exports, t), t.exports), 
       !bf.call(e, r) && r !== o && Go(e, r, { get: () => t[r], enumerable: !(i = hf(t, r)) || i.enumerable });
   return e;
 };
-var Ve = (e, t, o) => (o = e != null ? mf(yf(e)) : {}, xf(
+var je = (e, t, o) => (o = e != null ? mf(yf(e)) : {}, xf(
   // If the importer is in node compatibility mode or this is not an ESM
   // file that has been converted to a CommonJS file using a Babel-
   // compatible transform (i.e. "__esModule" has not been set), then set
@@ -29,14 +29,14 @@ var Ve = (e, t, o) => (o = e != null ? mf(yf(e)) : {}, xf(
 ));
 
 // ../node_modules/prop-types/lib/ReactPropTypesSecret.js
-var Qa = we((T_, Ya) => {
+var Qa = we((C_, Ya) => {
   "use strict";
   var py = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
   Ya.exports = py;
 });
 
 // ../node_modules/prop-types/factoryWithThrowingShims.js
-var el = we((C_, Ja) => {
+var el = we((__, Ja) => {
   "use strict";
   var dy = Qa();
   function Xa() {
@@ -89,13 +89,13 @@ Read more at http://fb.me/use-check-prop-types"
 });
 
 // ../node_modules/prop-types/index.js
-var si = we((P_, tl) => {
+var si = we((A_, tl) => {
   tl.exports = el()();
-  var k_, O_;
+  var O_, P_;
 });
 
 // ../node_modules/react-fast-compare/index.js
-var rl = we((A_, ol) => {
+var rl = we((D_, ol) => {
   var fy = typeof Element < "u", my = typeof Map == "function", hy = typeof Set == "function", gy = typeof ArrayBuffer == "function" && !!ArrayBuffer.
   isView;
   function fr(e, t) {
@@ -159,7 +159,7 @@ var rl = we((A_, ol) => {
 });
 
 // ../node_modules/invariant/browser.js
-var il = we((M_, nl) => {
+var il = we((L_, nl) => {
   "use strict";
   var yy = /* @__PURE__ */ a(function(e, t, o, i, r, n, l, u) {
     if (!e) {
@@ -183,7 +183,7 @@ var il = we((M_, nl) => {
 });
 
 // ../node_modules/shallowequal/index.js
-var al = we((N_, sl) => {
+var al = we((F_, sl) => {
   sl.exports = /* @__PURE__ */ a(function(t, o, i, r) {
     var n = i ? i.call(r, t, o) : void 0;
     if (n !== void 0)
@@ -581,7 +581,7 @@ var Fi = we((kr) => {
 });
 
 // ../node_modules/fast-decode-uri-component/index.js
-var su = we((_A, iu) => {
+var su = we((OA, iu) => {
   "use strict";
   var ru = 12, fv = 0, Ri = [
     // The first part of the table maps bytes to character to a transition.
@@ -1053,7 +1053,7 @@ var cu = we((mt) => {
     if (typeof e != "string")
       return f;
     let h = e.length, y = "", m = -1, b = -1, x = -1, E = f, g, v = "", S = "", w = !1, k = !1, _ = !1, C = !1, T = !1, O = !1, P = !1, D = 0,
-    M = -1, F = -1, Z = -1;
+    M = -1, N = -1, Z = -1;
     for (let V = 0; V < h + 1; V++) {
       if (D = V !== h ? e.charCodeAt(V) : d, D === d) {
         if (P = b > m, P || (b = V), x !== b - 1 && (S = Pr(e, x + 1, M > -1 ? M : b, _, w), v = i(S), g !== void 0 && (E = (0, Or.getDeepObject)(
@@ -1061,19 +1061,19 @@ var cu = we((mt) => {
           P && (y = e.slice(b + 1, V), C && (y = y.replace(lu, " ")), k && (y = (0, au.default)(y) || y));
           let Q = o(y, v);
           if (l) {
-            let z = E[v];
-            z === void 0 ? M > -1 ? E[v] = [Q] : E[v] = Q : z.pop ? z.push(Q) : E[v] = [z, Q];
+            let H = E[v];
+            H === void 0 ? M > -1 ? E[v] = [Q] : E[v] = Q : H.pop ? H.push(Q) : E[v] = [H, Q];
           } else
             E[v] = Q;
         }
         y = "", m = V, b = V, w = !1, k = !1, _ = !1, C = !1, T = !1, O = !1, M = -1, x = V, E = f, g = void 0, v = "";
-      } else D === 93 ? (l && r === "bracket" && Z === 91 && (M = F), n && (u === "index" || p) && b <= m && (x !== F && (S = Pr(e, x + 1, V,
+      } else D === 93 ? (l && r === "bracket" && Z === 91 && (M = N), n && (u === "index" || p) && b <= m && (x !== N && (S = Pr(e, x + 1, V,
       _, w), v = i(S), g !== void 0 && (E = (0, Or.getDeepObject)(E, g, v, void 0, p)), g = v, _ = !1, w = !1), x = V, O = !0, T = !1)) : D ===
-      46 ? n && (u === "dot" || p) && b <= m && (x !== F && (S = Pr(e, x + 1, V, _, w), v = i(S), g !== void 0 && (E = (0, Or.getDeepObject)(
-      E, g, v, p)), g = v, _ = !1, w = !1), T = !0, O = !1, x = V) : D === 91 ? n && (u === "index" || p) && b <= m && (x !== F && (S = Pr(e,
+      46 ? n && (u === "dot" || p) && b <= m && (x !== N && (S = Pr(e, x + 1, V, _, w), v = i(S), g !== void 0 && (E = (0, Or.getDeepObject)(
+      E, g, v, p)), g = v, _ = !1, w = !1), T = !0, O = !1, x = V) : D === 91 ? n && (u === "index" || p) && b <= m && (x !== N && (S = Pr(e,
       x + 1, V, _, w), v = i(S), p && g !== void 0 && (E = (0, Or.getDeepObject)(E, g, v, p)), g = v, _ = !1, w = !1, T = !1, O = !0), x = V) :
       D === 61 ? b <= m ? b = V : k = !0 : D === 43 ? b > m ? C = !0 : _ = !0 : D === 37 && (b > m ? k = !0 : w = !0);
-      F = V, Z = D;
+      N = V, Z = D;
     }
     return f;
   }
@@ -1123,7 +1123,7 @@ var du = we((Xe) => {
 });
 
 // ../node_modules/toggle-selection/index.js
-var bu = we((XA, yu) => {
+var bu = we((JA, yu) => {
   yu.exports = function() {
     var e = document.getSelection();
     if (!e.rangeCount)
@@ -1150,7 +1150,7 @@ var bu = we((XA, yu) => {
 });
 
 // ../node_modules/copy-to-clipboard/index.js
-var Iu = we((ZA, xu) => {
+var Iu = we((eD, xu) => {
   "use strict";
   var Av = bu(), vu = {
     "text/plain": "Text",
@@ -1208,7 +1208,7 @@ de"), Ur = Symbol.for("react.profiler"), Gr = Symbol.for("react.provider"), qr =
 context"), Yr = Symbol.for("react.forward_ref"), Qr = Symbol.for("react.suspense"), Xr = Symbol.for("react.suspense_list"), Zr = Symbol.for(
   "react.memo"), Jr = Symbol.for("react.lazy"), Mx = Symbol.for("react.offscreen"), wp;
   wp = Symbol.for("react.module.reference");
-  function Ue(e) {
+  function Ge(e) {
     if (typeof e == "object" && e !== null) {
       var t = e.$$typeof;
       switch (t) {
@@ -1238,7 +1238,7 @@ context"), Yr = Symbol.for("react.forward_ref"), Qr = Symbol.for("react.suspense
       }
     }
   }
-  a(Ue, "v");
+  a(Ge, "v");
   pe.ContextConsumer = qr;
   pe.ContextProvider = Gr;
   pe.Element = Zi;
@@ -1258,51 +1258,51 @@ context"), Yr = Symbol.for("react.forward_ref"), Qr = Symbol.for("react.suspense
     return !1;
   };
   pe.isContextConsumer = function(e) {
-    return Ue(e) === qr;
+    return Ge(e) === qr;
   };
   pe.isContextProvider = function(e) {
-    return Ue(e) === Gr;
+    return Ge(e) === Gr;
   };
   pe.isElement = function(e) {
     return typeof e == "object" && e !== null && e.$$typeof === Zi;
   };
   pe.isForwardRef = function(e) {
-    return Ue(e) === Yr;
+    return Ge(e) === Yr;
   };
   pe.isFragment = function(e) {
-    return Ue(e) === Kr;
+    return Ge(e) === Kr;
   };
   pe.isLazy = function(e) {
-    return Ue(e) === Jr;
+    return Ge(e) === Jr;
   };
   pe.isMemo = function(e) {
-    return Ue(e) === Zr;
+    return Ge(e) === Zr;
   };
   pe.isPortal = function(e) {
-    return Ue(e) === Ji;
+    return Ge(e) === Ji;
   };
   pe.isProfiler = function(e) {
-    return Ue(e) === Ur;
+    return Ge(e) === Ur;
   };
   pe.isStrictMode = function(e) {
-    return Ue(e) === $r;
+    return Ge(e) === $r;
   };
   pe.isSuspense = function(e) {
-    return Ue(e) === Qr;
+    return Ge(e) === Qr;
   };
   pe.isSuspenseList = function(e) {
-    return Ue(e) === Xr;
+    return Ge(e) === Xr;
   };
   pe.isValidElementType = function(e) {
     return typeof e == "string" || typeof e == "function" || e === Kr || e === Ur || e === $r || e === Qr || e === Xr || e === Mx || typeof e ==
     "object" && e !== null && (e.$$typeof === Jr || e.$$typeof === Zr || e.$$typeof === Gr || e.$$typeof === qr || e.$$typeof === Yr || e.$$typeof ===
     wp || e.getModuleId !== void 0);
   };
-  pe.typeOf = Ue;
+  pe.typeOf = Ge;
 });
 
 // ../node_modules/downshift/node_modules/react-is/index.js
-var Cp = we((AR, Tp) => {
+var Cp = we((MR, Tp) => {
   "use strict";
   Tp.exports = Ep();
 });
@@ -1363,8 +1363,8 @@ var Ld = we((jo, js) => {
         function p(m, b) {
           var x = b.location, E = x === void 0 ? 0 : x, g = b.distance, v = g === void 0 ? 100 : g, S = b.threshold, w = S === void 0 ? 0.6 :
           S, k = b.maxPatternLength, _ = k === void 0 ? 32 : k, C = b.caseSensitive, T = C !== void 0 && C, O = b.tokenSeparator, P = O === void 0 ?
-          / +/g : O, D = b.findAllMatches, M = D !== void 0 && D, F = b.minMatchCharLength, Z = F === void 0 ? 1 : F, V = b.id, Q = V === void 0 ?
-          null : V, z = b.keys, q = z === void 0 ? [] : z, W = b.shouldSort, re = W === void 0 || W, R = b.getFn, B = R === void 0 ? u : R, L = b.
+          / +/g : O, D = b.findAllMatches, M = D !== void 0 && D, N = b.minMatchCharLength, Z = N === void 0 ? 1 : N, V = b.id, Q = V === void 0 ?
+          null : V, H = b.keys, q = H === void 0 ? [] : H, W = b.shouldSort, re = W === void 0 || W, F = b.getFn, R = F === void 0 ? u : F, L = b.
           sortFn, $ = L === void 0 ? function(fe, Se) {
             return fe.score - Se.score;
           } : L, J = b.tokenize, ie = J !== void 0 && J, te = b.matchAllTokens, de = te !== void 0 && te, ae = b.includeMatches, ce = ae !==
@@ -1372,7 +1372,7 @@ var Ld = we((jo, js) => {
           (function(fe, Se) {
             if (!(fe instanceof Se)) throw new TypeError("Cannot call a class as a function");
           })(this, p), this.options = { location: E, distance: v, threshold: w, maxPatternLength: _, isCaseSensitive: T, tokenSeparator: P, findAllMatches: M,
-          minMatchCharLength: Z, id: Q, keys: q, includeMatches: ce, includeScore: Ie, shouldSort: re, getFn: B, sortFn: $, verbose: Oe, tokenize: ie,
+          minMatchCharLength: Z, id: Q, keys: q, includeMatches: ce, includeScore: Ie, shouldSort: re, getFn: R, sortFn: $, verbose: Oe, tokenize: ie,
           matchAllTokens: de }, this.setCollection(m), this._processKeys(q);
         }
         a(p, "e");
@@ -1424,20 +1424,20 @@ Search pattern: "`.concat(m, '"'));
         }, "value") }, { key: "_analyze", value: /* @__PURE__ */ a(function(m, b) {
           var x = this, E = m.key, g = m.arrayIndex, v = g === void 0 ? -1 : g, S = m.value, w = m.record, k = m.index, _ = b.tokenSearchers,
           C = _ === void 0 ? [] : _, T = b.fullSearcher, O = b.resultMap, P = O === void 0 ? {} : O, D = b.results, M = D === void 0 ? [] : D;
-          (/* @__PURE__ */ a(function F(Z, V, Q, z) {
+          (/* @__PURE__ */ a(function N(Z, V, Q, H) {
             if (V != null) {
               if (typeof V == "string") {
                 var q = !1, W = -1, re = 0;
                 x._log(`
 Key: `.concat(E === "" ? "--" : E));
-                var R = T.search(V);
-                if (x._log('Full text: "'.concat(V, '", score: ').concat(R.score)), x.options.tokenize) {
-                  for (var B = V.split(x.options.tokenSeparator), L = B.length, $ = [], J = 0, ie = C.length; J < ie; J += 1) {
+                var F = T.search(V);
+                if (x._log('Full text: "'.concat(V, '", score: ').concat(F.score)), x.options.tokenize) {
+                  for (var R = V.split(x.options.tokenSeparator), L = R.length, $ = [], J = 0, ie = C.length; J < ie; J += 1) {
                     var te = C[J];
                     x._log(`
 Pattern: "`.concat(te.pattern, '"'));
                     for (var de = !1, ae = 0; ae < L; ae += 1) {
-                      var ce = B[ae], ue = te.search(ce), Ie = {};
+                      var ce = R[ae], ue = te.search(ce), Ie = {};
                       ue.isMatch ? (Ie[ce] = ue.score, q = !0, de = !0, $.push(ue.score)) : (Ie[ce] = 1, x.options.matchAllTokens || $.push(
                       1)), x._log('Token: "'.concat(ce, '", score: ').concat(Ie[ce]));
                     }
@@ -1447,17 +1447,17 @@ Pattern: "`.concat(te.pattern, '"'));
                   for (var ye = $.length, Oe = 1; Oe < ye; Oe += 1) W += $[Oe];
                   W /= ye, x._log("Token score average:", W);
                 }
-                var fe = R.score;
+                var fe = F.score;
                 W > -1 && (fe = (fe + W) / 2), x._log("Score average:", fe);
                 var Se = !x.options.tokenize || !x.options.matchAllTokens || re >= C.length;
                 if (x._log(`
-Check Matches: `.concat(Se)), (q || R.isMatch) && Se) {
+Check Matches: `.concat(Se)), (q || F.isMatch) && Se) {
                   var _e = { key: E, arrayIndex: Z, value: V, score: fe };
-                  x.options.includeMatches && (_e.matchedIndices = R.matchedIndices);
-                  var Ae = P[z];
-                  Ae ? Ae.output.push(_e) : (P[z] = { item: Q, output: [_e] }, M.push(P[z]));
+                  x.options.includeMatches && (_e.matchedIndices = F.matchedIndices);
+                  var De = P[H];
+                  De ? De.output.push(_e) : (P[H] = { item: Q, output: [_e] }, M.push(P[H]));
                 }
-              } else if (c(V)) for (var et = 0, N = V.length; et < N; et += 1) F(et, V[et], Q, z);
+              } else if (c(V)) for (var et = 0, Pe = V.length; et < Pe; et += 1) N(et, V[et], Q, H);
             }
           }, "e"))(v, S, w, k);
         }, "value") }, { key: "_computeScore", value: /* @__PURE__ */ a(function(m) {
@@ -1499,9 +1499,9 @@ Output:
             for (var P = 0, D = O.length; P < D; P += 1) {
               var M = O[P];
               if (M.matchedIndices.length !== 0) {
-                var F = { indices: M.matchedIndices, value: M.value };
-                M.key && (F.key = M.key), M.hasOwnProperty("arrayIndex") && M.arrayIndex > -1 && (F.arrayIndex = M.arrayIndex), T.matches.push(
-                F);
+                var N = { indices: M.matchedIndices, value: M.value };
+                M.key && (N.key = M.key), M.hasOwnProperty("arrayIndex") && M.arrayIndex > -1 && (N.arrayIndex = M.arrayIndex), T.matches.push(
+                N);
               }
             }
           }), this.options.includeScore && E.push(function(C, T) {
@@ -1533,8 +1533,8 @@ Output:
         function c(h, y) {
           var m = y.location, b = m === void 0 ? 0 : m, x = y.distance, E = x === void 0 ? 100 : x, g = y.threshold, v = g === void 0 ? 0.6 :
           g, S = y.maxPatternLength, w = S === void 0 ? 32 : S, k = y.isCaseSensitive, _ = k !== void 0 && k, C = y.tokenSeparator, T = C ===
-          void 0 ? / +/g : C, O = y.findAllMatches, P = O !== void 0 && O, D = y.minMatchCharLength, M = D === void 0 ? 1 : D, F = y.includeMatches,
-          Z = F !== void 0 && F;
+          void 0 ? / +/g : C, O = y.findAllMatches, P = O !== void 0 && O, D = y.minMatchCharLength, M = D === void 0 ? 1 : D, N = y.includeMatches,
+          Z = N !== void 0 && N;
           (function(V, Q) {
             if (!(V instanceof Q)) throw new TypeError("Cannot call a class as a function");
           })(this, c), this.options = { location: b, distance: E, threshold: v, maxPatternLength: w, isCaseSensitive: _, tokenSeparator: T, findAllMatches: P,
@@ -1582,23 +1582,23 @@ Output:
           }
         }
         C = -1;
-        for (var F = [], Z = 1, V = T + k, Q = 1 << (T <= 31 ? T - 1 : 30), z = 0; z < T; z += 1) {
+        for (var N = [], Z = 1, V = T + k, Q = 1 << (T <= 31 ? T - 1 : 30), H = 0; H < T; H += 1) {
           for (var q = 0, W = V; q < W; )
-            i(l, { errors: z, currentLocation: w + W, expectedLocation: w, distance: h }) <= _ ? q = W : V = W, W = Math.floor((V - q) / 2 +
+            i(l, { errors: H, currentLocation: w + W, expectedLocation: w, distance: h }) <= _ ? q = W : V = W, W = Math.floor((V - q) / 2 +
             q);
           V = W;
-          var re = Math.max(1, w - W + 1), R = x ? k : Math.min(w + W, k) + T, B = Array(R + 2);
-          B[R + 1] = (1 << z) - 1;
-          for (var L = R; L >= re; L -= 1) {
+          var re = Math.max(1, w - W + 1), F = x ? k : Math.min(w + W, k) + T, R = Array(F + 2);
+          R[F + 1] = (1 << H) - 1;
+          for (var L = F; L >= re; L -= 1) {
             var $ = L - 1, J = u[n.charAt($)];
-            if (J && (O[$] = 1), B[L] = (B[L + 1] << 1 | 1) & J, z !== 0 && (B[L] |= (F[L + 1] | F[L]) << 1 | 1 | F[L + 1]), B[L] & Q && (Z =
-            i(l, { errors: z, currentLocation: $, expectedLocation: w, distance: h })) <= _) {
+            if (J && (O[$] = 1), R[L] = (R[L + 1] << 1 | 1) & J, H !== 0 && (R[L] |= (N[L + 1] | N[L]) << 1 | 1 | N[L + 1]), R[L] & Q && (Z =
+            i(l, { errors: H, currentLocation: $, expectedLocation: w, distance: h })) <= _) {
               if (_ = Z, (C = $) <= w) break;
               re = Math.max(1, 2 * w - C);
             }
           }
-          if (i(l, { errors: z + 1, currentLocation: w, expectedLocation: w, distance: h }) > _) break;
-          F = B;
+          if (i(l, { errors: H + 1, currentLocation: w, expectedLocation: w, distance: h }) > _) break;
+          N = R;
         }
         var ie = { isMatch: C >= 0, score: Z === 0 ? 1e-3 : Z };
         return S && (ie.matchedIndices = r(O, g)), ie;
@@ -1877,9 +1877,9 @@ var Ud = we((bn, vn) => {
 });
 
 // global-externals:react
-var s = __REACT__, { Children: gw, Component: Le, Fragment: Ee, Profiler: yw, PureComponent: bw, StrictMode: vw, Suspense: xw, __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: Iw,
+var s = __REACT__, { Children: gw, Component: Ne, Fragment: Ee, Profiler: yw, PureComponent: bw, StrictMode: vw, Suspense: xw, __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: Iw,
 act: Sw, cloneElement: ta, createContext: Qt, createElement: ww, createFactory: Ew, createRef: Tw, forwardRef: oa, isValidElement: Cw, lazy: _w,
-memo: _t, startTransition: kw, unstable_act: Ow, useCallback: A, useContext: qo, useDebugValue: Pw, useDeferredValue: ra, useEffect: H, useId: na,
+memo: _t, startTransition: kw, unstable_act: Ow, useCallback: A, useContext: qo, useDebugValue: Pw, useDeferredValue: ra, useEffect: B, useId: na,
 useImperativeHandle: Aw, useInsertionEffect: Dw, useLayoutEffect: Xt, useMemo: G, useReducer: Zt, useRef: U, useState: K, useSyncExternalStore: Mw,
 useTransition: ia, version: Lw } = __REACT__;
 
@@ -1891,12 +1891,13 @@ createBrowserChannel: sa } = __STORYBOOK_CHANNELS__;
 var Vw = __STORYBOOK_CORE_EVENTS__, { ARGTYPES_INFO_REQUEST: aa, ARGTYPES_INFO_RESPONSE: la, CHANNEL_CREATED: ua, CHANNEL_WS_DISCONNECT: ca,
 CONFIG_ERROR: jw, CREATE_NEW_STORYFILE_REQUEST: pa, CREATE_NEW_STORYFILE_RESPONSE: da, CURRENT_STORY_WAS_SET: Kw, DOCS_PREPARED: $w, DOCS_RENDERED: Uw,
 FILE_COMPONENT_SEARCH_REQUEST: fa, FILE_COMPONENT_SEARCH_RESPONSE: Yo, FORCE_REMOUNT: Sn, FORCE_RE_RENDER: Gw, GLOBALS_UPDATED: qw, NAVIGATE_URL: Yw,
-PLAY_FUNCTION_THREW_EXCEPTION: Qw, PRELOAD_ENTRIES: kt, PREVIEW_BUILDER_PROGRESS: ma, PREVIEW_KEYDOWN: Xw, REGISTER_SUBSCRIPTION: Zw, REQUEST_WHATS_NEW_DATA: Jw,
-RESET_STORY_ARGS: eE, RESULT_WHATS_NEW_DATA: tE, SAVE_STORY_REQUEST: ha, SAVE_STORY_RESPONSE: ga, SELECT_STORY: oE, SET_CONFIG: rE, SET_CURRENT_STORY: ya,
-SET_FILTER: nE, SET_GLOBALS: iE, SET_INDEX: sE, SET_STORIES: aE, SET_WHATS_NEW_CACHE: lE, SHARED_STATE_CHANGED: uE, SHARED_STATE_SET: cE, STORIES_COLLAPSE_ALL: ho,
-STORIES_EXPAND_ALL: wn, STORY_ARGS_UPDATED: pE, STORY_CHANGED: dE, STORY_ERRORED: fE, STORY_FINISHED: mE, STORY_HOT_UPDATED: hE, STORY_INDEX_INVALIDATED: gE,
-STORY_MISSING: yE, STORY_PREPARED: bE, STORY_RENDERED: vE, STORY_RENDER_PHASE_CHANGED: xE, STORY_SPECIFIED: IE, STORY_THREW_EXCEPTION: SE, STORY_UNCHANGED: wE,
-TELEMETRY_ERROR: EE, TOGGLE_WHATS_NEW_NOTIFICATIONS: TE, UNHANDLED_ERRORS_WHILE_PLAYING: CE, UPDATE_GLOBALS: _E, UPDATE_QUERY_PARAMS: kE, UPDATE_STORY_ARGS: OE } = __STORYBOOK_CORE_EVENTS__;
+PLAY_FUNCTION_THREW_EXCEPTION: Qw, PRELOAD_ENTRIES: kt, PREVIEW_BUILDER_PROGRESS: ma, PREVIEW_INITIALIZED: Xw, PREVIEW_KEYDOWN: Zw, REGISTER_SUBSCRIPTION: Jw,
+REQUEST_WHATS_NEW_DATA: eE, RESET_STORY_ARGS: tE, RESULT_WHATS_NEW_DATA: oE, SAVE_STORY_REQUEST: ha, SAVE_STORY_RESPONSE: ga, SELECT_STORY: rE,
+SET_CONFIG: nE, SET_CURRENT_STORY: ya, SET_FILTER: iE, SET_GLOBALS: sE, SET_INDEX: aE, SET_STORIES: lE, SET_WHATS_NEW_CACHE: uE, SHARED_STATE_CHANGED: cE,
+SHARED_STATE_SET: pE, STORIES_COLLAPSE_ALL: ho, STORIES_EXPAND_ALL: wn, STORY_ARGS_UPDATED: dE, STORY_CHANGED: fE, STORY_ERRORED: mE, STORY_FINISHED: hE,
+STORY_HOT_UPDATED: gE, STORY_INDEX_INVALIDATED: yE, STORY_MISSING: bE, STORY_PREPARED: vE, STORY_RENDERED: xE, STORY_RENDER_PHASE_CHANGED: IE,
+STORY_SPECIFIED: SE, STORY_THREW_EXCEPTION: wE, STORY_UNCHANGED: EE, TELEMETRY_ERROR: TE, TOGGLE_WHATS_NEW_NOTIFICATIONS: CE, UNHANDLED_ERRORS_WHILE_PLAYING: _E,
+UPDATE_GLOBALS: kE, UPDATE_QUERY_PARAMS: OE, UPDATE_STORY_ARGS: PE } = __STORYBOOK_CORE_EVENTS__;
 
 // ../node_modules/@storybook/global/dist/index.mjs
 var se = (() => {
@@ -1956,7 +1957,7 @@ vf(oi, {
   CertificateIcon: () => cm,
   ChangedIcon: () => pm,
   ChatIcon: () => dm,
-  CheckIcon: () => Be,
+  CheckIcon: () => He,
   ChevronDownIcon: () => Ot,
   ChevronLeftIcon: () => fm,
   ChevronRightIcon: () => Cn,
@@ -1971,7 +1972,7 @@ vf(oi, {
   CircleIcon: () => kn,
   ClearIcon: () => Im,
   CloseAltIcon: () => bo,
-  CloseIcon: () => je,
+  CloseIcon: () => Ke,
   CloudHollowIcon: () => Sm,
   CloudIcon: () => wm,
   CogIcon: () => Qo,
@@ -2162,9 +2163,9 @@ ArrowRightIcon: Nf, ArrowSolidDownIcon: Ff, ArrowSolidLeftIcon: Rf, ArrowSolidRi
 ArrowUpIcon: Vf, AzureDevOpsIcon: jf, BackIcon: Kf, BasketIcon: $f, BatchAcceptIcon: Uf, BatchDenyIcon: Gf, BeakerIcon: qf, BellIcon: Yf, BitbucketIcon: Qf,
 BoldIcon: Xf, BookIcon: Zf, BookmarkHollowIcon: Jf, BookmarkIcon: em, BottomBarIcon: yo, BottomBarToggleIcon: Tn, BoxIcon: tm, BranchIcon: om,
 BrowserIcon: rm, ButtonIcon: nm, CPUIcon: im, CalendarIcon: sm, CameraIcon: am, CameraStabilizeIcon: lm, CategoryIcon: um, CertificateIcon: cm,
-ChangedIcon: pm, ChatIcon: dm, CheckIcon: Be, ChevronDownIcon: Ot, ChevronLeftIcon: fm, ChevronRightIcon: Cn, ChevronSmallDownIcon: mm, ChevronSmallLeftIcon: hm,
+ChangedIcon: pm, ChatIcon: dm, CheckIcon: He, ChevronDownIcon: Ot, ChevronLeftIcon: fm, ChevronRightIcon: Cn, ChevronSmallDownIcon: mm, ChevronSmallLeftIcon: hm,
 ChevronSmallRightIcon: gm, ChevronSmallUpIcon: _n, ChevronUpIcon: ym, ChromaticIcon: bm, ChromeIcon: vm, CircleHollowIcon: xm, CircleIcon: kn,
-ClearIcon: Im, CloseAltIcon: bo, CloseIcon: je, CloudHollowIcon: Sm, CloudIcon: wm, CogIcon: Qo, CollapseIcon: On, CommandIcon: Pn, CommentAddIcon: Em,
+ClearIcon: Im, CloseAltIcon: bo, CloseIcon: Ke, CloudHollowIcon: Sm, CloudIcon: wm, CogIcon: Qo, CollapseIcon: On, CommandIcon: Pn, CommentAddIcon: Em,
 CommentIcon: Tm, CommentsIcon: Cm, CommitIcon: _m, CompassIcon: km, ComponentDrivenIcon: Om, ComponentIcon: Xo, ContrastIcon: Pm, ContrastIgnoredIcon: Am,
 ControlsIcon: Dm, CopyIcon: Mm, CreditIcon: Lm, CrossIcon: Nm, DashboardIcon: Fm, DatabaseIcon: Rm, DeleteIcon: Bm, DiamondIcon: Hm, DirectionIcon: zm,
 DiscordIcon: Wm, DocChartIcon: Vm, DocListIcon: jm, DocumentIcon: Pt, DownloadIcon: Km, DragIcon: $m, EditIcon: Um, EllipsisIcon: An, EmailIcon: Gm,
@@ -2187,27 +2188,27 @@ UnpinIcon: jg, UploadIcon: Kg, UserAddIcon: $g, UserAltIcon: Ug, UserIcon: Gg, U
 WandIcon: Zn, WatchIcon: Zg, WindowsIcon: Jg, WrenchIcon: ey, XIcon: ty, YoutubeIcon: oy, ZoomIcon: Jn, ZoomOutIcon: ei, ZoomResetIcon: ti, iconList: ry } = __STORYBOOK_ICONS__;
 
 // global-externals:storybook/manager-api
-var DE = __STORYBOOK_API__, { ActiveTabs: ME, Consumer: me, ManagerContext: LE, Provider: ba, RequestResponseError: NE, addons: He, combineParameters: FE,
-controlOrMetaKey: RE, controlOrMetaSymbol: BE, eventMatchesShortcut: HE, eventToShortcut: va, experimental_MockUniversalStore: zE, experimental_UniversalStore: WE,
+var ME = __STORYBOOK_API__, { ActiveTabs: LE, Consumer: me, ManagerContext: NE, Provider: ba, RequestResponseError: FE, addons: ze, combineParameters: RE,
+controlOrMetaKey: BE, controlOrMetaSymbol: HE, eventMatchesShortcut: zE, eventToShortcut: va, experimental_MockUniversalStore: WE, experimental_UniversalStore: VE,
 experimental_getStatusStore: ny, experimental_getTestProviderStore: iy, experimental_requestResponse: Jo, experimental_useStatusStore: Eo, experimental_useTestProviderStore: ri,
-experimental_useUniversalStore: VE, internal_fullStatusStore: At, internal_fullTestProviderStore: Jt, internal_universalStatusStore: jE, internal_universalTestProviderStore: KE,
-isMacLike: $E, isShortcutTaken: UE, keyToSymbol: GE, merge: er, mockChannel: qE, optionOrAltSymbol: YE, shortcutMatchesShortcut: xa, shortcutToHumanString: Ye,
-types: be, useAddonState: QE, useArgTypes: XE, useArgs: ZE, useChannel: Ia, useGlobalTypes: Sa, useGlobals: tr, useParameter: JE, useSharedState: eT,
-useStoryPrepared: tT, useStorybookApi: oe, useStorybookState: Ne } = __STORYBOOK_API__;
+experimental_useUniversalStore: jE, internal_fullStatusStore: At, internal_fullTestProviderStore: Jt, internal_universalStatusStore: KE, internal_universalTestProviderStore: $E,
+isMacLike: UE, isShortcutTaken: GE, keyToSymbol: qE, merge: er, mockChannel: YE, optionOrAltSymbol: QE, shortcutMatchesShortcut: xa, shortcutToHumanString: Ye,
+types: be, useAddonState: XE, useArgTypes: ZE, useArgs: JE, useChannel: Ia, useGlobalTypes: Sa, useGlobals: tr, useParameter: eT, useSharedState: tT,
+useStoryPrepared: oT, useStorybookApi: oe, useStorybookState: Fe } = __STORYBOOK_API__;
 
 // global-externals:storybook/theming
-var rT = __STORYBOOK_THEMING__, { CacheProvider: nT, ClassNames: iT, Global: eo, ThemeProvider: ni, background: sT, color: wa, convert: aT, create: lT,
-createCache: uT, createGlobal: Ea, createReset: cT, css: pT, darken: dT, ensure: Ta, ignoreSsrWarning: fT, isPropValid: mT, jsx: hT, keyframes: Dt,
-lighten: gT, styled: I, themes: yT, typography: bT, useTheme: De, withTheme: Ca } = __STORYBOOK_THEMING__;
+var nT = __STORYBOOK_THEMING__, { CacheProvider: iT, ClassNames: sT, Global: eo, ThemeProvider: ni, background: aT, color: wa, convert: lT, create: uT,
+createCache: cT, createGlobal: Ea, createReset: pT, css: dT, darken: fT, ensure: Ta, ignoreSsrWarning: mT, isPropValid: hT, jsx: gT, keyframes: Dt,
+lighten: yT, styled: I, themes: bT, typography: vT, useTheme: Me, withTheme: Ca } = __STORYBOOK_THEMING__;
 
 // global-externals:storybook/internal/components
-var xT = __STORYBOOK_COMPONENTS__, { A: IT, ActionBar: ST, AddonPanel: wT, Badge: or, Bar: ET, Blockquote: TT, Button: he, ClipboardCode: CT,
-Code: _T, DL: kT, Div: OT, DocumentWrapper: PT, EmptyTabContent: _a, ErrorFormatter: ka, FlexBar: AT, Form: rr, H1: DT, H2: MT, H3: LT, H4: NT,
-H5: FT, H6: RT, HR: BT, IconButton: ee, Img: HT, LI: zT, Link: Pe, ListItem: sy, Loader: nr, Modal: Mt, OL: WT, P: VT, Placeholder: jT, Pre: KT,
-ProgressSpinner: $T, ResetWrapper: UT, ScrollArea: ir, Separator: yt, Spaced: pt, Span: GT, StorybookIcon: qT, StorybookLogo: sr, SyntaxHighlighter: YT,
-TT: QT, TabBar: ar, TabButton: lr, TabWrapper: XT, Table: ZT, Tabs: Oa, TabsState: JT, TooltipLinkList: ot, TooltipMessage: eC, TooltipNote: rt,
-UL: tC, WithTooltip: ve, WithTooltipPure: oC, Zoom: Pa, codeCommon: rC, components: nC, createCopyToClipboardFunction: iC, getStoryHref: to,
-interleaveSeparators: sC, nameSpaceClassNames: aC, resetComponents: lC, withReset: uC } = __STORYBOOK_COMPONENTS__;
+var IT = __STORYBOOK_COMPONENTS__, { A: ST, ActionBar: wT, AddonPanel: ET, Badge: or, Bar: TT, Blockquote: CT, Button: he, ClipboardCode: _T,
+Code: kT, DL: OT, Div: PT, DocumentWrapper: AT, EmptyTabContent: _a, ErrorFormatter: ka, FlexBar: DT, Form: rr, H1: MT, H2: LT, H3: NT, H4: FT,
+H5: RT, H6: BT, HR: HT, IconButton: ee, Img: zT, LI: WT, Link: Ae, ListItem: sy, Loader: nr, Modal: Mt, OL: VT, P: jT, Placeholder: KT, Pre: $T,
+ProgressSpinner: UT, ResetWrapper: GT, ScrollArea: ir, Separator: yt, Spaced: pt, Span: qT, StorybookIcon: YT, StorybookLogo: sr, SyntaxHighlighter: QT,
+TT: XT, TabBar: ar, TabButton: lr, TabWrapper: ZT, Table: JT, Tabs: Oa, TabsState: eC, TooltipLinkList: ot, TooltipMessage: tC, TooltipNote: rt,
+UL: oC, WithTooltip: ve, WithTooltipPure: rC, Zoom: Pa, codeCommon: nC, components: iC, createCopyToClipboardFunction: sC, getStoryHref: to,
+interleaveSeparators: aC, nameSpaceClassNames: lC, resetComponents: uC, withReset: cC } = __STORYBOOK_COMPONENTS__;
 
 // src/toolbar/utils/normalize-toolbar-arg-type.ts
 var ay = {
@@ -2266,13 +2267,13 @@ var La = /* @__PURE__ */ a((e) => /* @__PURE__ */ a((o) => {
     let m = d.current, b = m.indexOf(p), x = b > -1 ? b : 0, g = x === 0 ? m.length - 1 : x - 1, v = d.current[g];
     c({ [i]: v });
   }, [d, p, c]);
-  return H(() => {
+  return B(() => {
     n && Ma(l, i, {
       next: { ...n.next, action: h },
       previous: { ...n.previous, action: y },
       reset: { ...n.reset, action: f }
     });
-  }, [l, i, n, h, y, f]), H(() => {
+  }, [l, i, n, h, y, f]), B(() => {
     d.current = Da(r);
   }, []), /* @__PURE__ */ s.createElement(e, { cycleValues: d.current, ...o });
 }, "WithKeyboardCycle"), "withKeyboardCycle");
@@ -2290,7 +2291,7 @@ tem"), Fa = /* @__PURE__ */ a(({ currentValue: e, items: t }) => {
 }, "getSelectedTitle");
 
 // global-externals:storybook/internal/client-logger
-var _C = __STORYBOOK_CLIENT_LOGGER__, { deprecate: Ba, logger: ur, once: Ha, pretty: kC } = __STORYBOOK_CLIENT_LOGGER__;
+var kC = __STORYBOOK_CLIENT_LOGGER__, { deprecate: Ba, logger: ur, once: Ha, pretty: OC } = __STORYBOOK_CLIENT_LOGGER__;
 
 // src/components/components/icon/icon.tsx
 var uy = oi, cy = I.svg`
@@ -2320,7 +2321,7 @@ s-deprecated`
     ), null;
   let n = uy[r];
   return /* @__PURE__ */ s.createElement(n, { ...i });
-}, "Icons"), MC = _t(/* @__PURE__ */ a(function({ icons: t = Object.keys(ii) }) {
+}, "Icons"), LC = _t(/* @__PURE__ */ a(function({ icons: t = Object.keys(ii) }) {
   return /* @__PURE__ */ s.createElement(
     cy,
     {
@@ -2643,18 +2644,18 @@ var ja = /* @__PURE__ */ a(() => {
 }, "ToolbarManager");
 
 // global-externals:react-dom/client
-var a_ = __REACT_DOM_CLIENT__, { createRoot: Ka, hydrateRoot: l_ } = __REACT_DOM_CLIENT__;
+var l_ = __REACT_DOM_CLIENT__, { createRoot: Ka, hydrateRoot: u_ } = __REACT_DOM_CLIENT__;
 
 // global-externals:storybook/internal/manager-errors
-var c_ = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__, { Category: p_, ProviderDoesNotExtendBaseProviderError: $a, StatusTypeIdMismatchError: d_,
-UncaughtManagerError: f_ } = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__;
+var p_ = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__, { Category: d_, ProviderDoesNotExtendBaseProviderError: $a, StatusTypeIdMismatchError: f_,
+UncaughtManagerError: m_ } = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__;
 
 // global-externals:storybook/internal/router
-var h_ = __STORYBOOK_ROUTER__, { BaseLocationProvider: g_, DEEPLY_EQUAL: y_, Link: pr, Location: dr, LocationProvider: Ua, Match: Ga, Route: To,
-buildArgsParam: b_, deepDiff: v_, getMatch: x_, parsePath: I_, queryFromLocation: S_, stringifyQuery: w_, useNavigate: qa } = __STORYBOOK_ROUTER__;
+var g_ = __STORYBOOK_ROUTER__, { BaseLocationProvider: y_, DEEPLY_EQUAL: b_, Link: pr, Location: dr, LocationProvider: Ua, Match: Ga, Route: To,
+buildArgsParam: v_, deepDiff: x_, getMatch: I_, parsePath: S_, queryFromLocation: w_, stringifyQuery: E_, useNavigate: qa } = __STORYBOOK_ROUTER__;
 
 // ../node_modules/react-helmet-async/lib/index.module.js
-var ne = Ve(si()), ml = Ve(rl()), pi = Ve(il()), hl = Ve(al());
+var ne = je(si()), ml = je(rl()), pi = je(il()), hl = je(al());
 function xe() {
   return xe = Object.assign || function(e) {
     for (var t = 1; t < arguments.length; t++) {
@@ -2791,7 +2792,7 @@ ld be of type "Array". Instead found type "' + typeof r[e] + '"'), !1);
       u === "innerHTML" || u === "cssText" ? n.dangerouslySetInnerHTML = { __html: o.innerHTML || o.cssText } : n[u] = o[l];
     }), s.createElement(e, n);
   });
-}, "j"), Ke = /* @__PURE__ */ a(function(e, t, o) {
+}, "j"), $e = /* @__PURE__ */ a(function(e, t, o) {
   switch (e) {
     case X.TITLE:
       return { toComponent: /* @__PURE__ */ a(function() {
@@ -2840,13 +2841,13 @@ ld be of type "Array". Instead found type "' + typeof r[e] + '"'), !1);
       return { priorityMethods: { toComponent: /* @__PURE__ */ a(function() {
         return [].concat(hr(X.META, v.priority), hr(X.LINK, S.priority), hr(X.SCRIPT, w.priority));
       }, "toComponent"), toString: /* @__PURE__ */ a(function() {
-        return Ke(X.META, v.priority, g) + " " + Ke(X.LINK, S.priority, g) + " " + Ke(X.SCRIPT, w.priority, g);
+        return $e(X.META, v.priority, g) + " " + $e(X.LINK, S.priority, g) + " " + $e(X.SCRIPT, w.priority, g);
       }, "toString") }, metaTags: v.default, linkTags: S.default, scriptTags: w.default };
     }(e);
     y = m.priorityMethods, p = m.linkTags, f = m.metaTags, h = m.scriptTags;
   }
-  return { priority: y, base: Ke(X.BASE, t, i), bodyAttributes: Ke("bodyAttributes", o, i), htmlAttributes: Ke("htmlAttributes", r, i), link: Ke(
-  X.LINK, p, i), meta: Ke(X.META, f, i), noscript: Ke(X.NOSCRIPT, n, i), script: Ke(X.SCRIPT, h, i), style: Ke(X.STYLE, l, i), title: Ke(X.TITLE,
+  return { priority: y, base: $e(X.BASE, t, i), bodyAttributes: $e("bodyAttributes", o, i), htmlAttributes: $e("htmlAttributes", r, i), link: $e(
+  X.LINK, p, i), meta: $e(X.META, f, i), noscript: $e(X.NOSCRIPT, n, i), script: $e(X.SCRIPT, h, i), style: $e(X.STYLE, l, i), title: $e(X.TITLE,
   { title: c, titleAttributes: d }, i) };
 }, "k"), mr = [], mi = /* @__PURE__ */ a(function(e, t) {
   var o = this;
@@ -2870,7 +2871,7 @@ add: ne.default.func, remove: ne.default.func }) }), ky = typeof document < "u",
   return a(t, "r"), hi(t, e), t.prototype.render = function() {
     return s.createElement(yl.Provider, { value: this.helmetData.value }, this.props.children);
   }, t;
-}(Le);
+}(Ne);
 vt.canUseDOM = ky, vt.propTypes = { context: ne.default.shape({ helmet: ne.default.shape() }), children: ne.default.node.isRequired }, vt.defaultProps =
 { context: {} }, vt.displayName = "HelmetProvider";
 var oo = /* @__PURE__ */ a(function(e, t) {
@@ -2943,7 +2944,7 @@ var oo = /* @__PURE__ */ a(function(e, t) {
   }, o.render = function() {
     return this.init(), null;
   }, t;
-}(Le);
+}(Ne);
 yr.propTypes = { context: _y.isRequired }, yr.displayName = "HelmetDispatcher";
 var Oy = ["children"], Py = ["children"], ko = /* @__PURE__ */ function(e) {
   function t() {
@@ -3025,7 +3026,7 @@ lements. Refer to our API for more information."), (0, pi.default)(!r || typeof 
       return s.createElement(yr, xe({}, l, { context: c }));
     });
   }, t;
-}(Le);
+}(Ne);
 ko.propTypes = { base: ne.default.object, bodyAttributes: ne.default.object, children: ne.default.oneOfType([ne.default.arrayOf(ne.default.node),
 ne.default.node]), defaultTitle: ne.default.string, defer: ne.default.bool, encodeSpecialCharacters: ne.default.bool, htmlAttributes: ne.default.
 object, link: ne.default.arrayOf(ne.default.object), meta: ne.default.arrayOf(ne.default.object), noscript: ne.default.arrayOf(ne.default.object),
@@ -3042,7 +3043,7 @@ function bl(e) {
   function r() {
     i(t(e));
   }
-  return a(r, "handleChange"), H(() => {
+  return a(r, "handleChange"), B(() => {
     let n = window.matchMedia(e);
     return r(), n.addEventListener("change", r), () => {
       n.removeEventListener("change", r);
@@ -3190,7 +3191,7 @@ function vr(e) {
 a(vr, "_wrapNativeSuper");
 
 // ../node_modules/polished/dist/polished.esm.js
-var Fe = /* @__PURE__ */ function(e) {
+var Re = /* @__PURE__ */ function(e) {
   no(t, e);
   function t(o) {
     var i;
@@ -3221,22 +3222,22 @@ var Dy = /* @__PURE__ */ a(function(t) {
     var r = o, n = i;
     if (typeof o == "string") {
       if (!El(o, "px"))
-        throw new Fe(69, t, o);
+        throw new Re(69, t, o);
       r = Tl(o);
     }
     if (typeof i == "string") {
       if (!El(i, "px"))
-        throw new Fe(70, t, i);
+        throw new Re(70, t, i);
       n = Tl(i);
     }
     if (typeof r == "string")
-      throw new Fe(71, o, t);
+      throw new Re(71, o, t);
     if (typeof n == "string")
-      throw new Fe(72, i, t);
+      throw new Re(72, i, t);
     return "" + r / n + t;
   };
-}, "pxtoFactory"), _l = Dy, k1 = _l("em");
-var O1 = _l("rem");
+}, "pxtoFactory"), _l = Dy, O1 = _l("em");
+var P1 = _l("rem");
 function yi(e) {
   return Math.round(e * 255);
 }
@@ -3416,7 +3417,7 @@ Hy = /^rgb(?:a)?\(\s*(\d{1,3})\s*(?:,)?\s*(\d{1,3})\s*(?:,)?\s*(\d{1,3})\s*(?:,|
 Wy = /^hsl(?:a)?\(\s*(\d{0,3}[.]?[0-9]+(?:deg)?)\s*(?:,)?\s*(\d{1,3}[.]?[0-9]?)%\s*(?:,)?\s*(\d{1,3}[.]?[0-9]?)%\s*(?:,|\/)\s*([-+]?\d*[.]?\d+[%]?)\s*\)$/i;
 function io(e) {
   if (typeof e != "string")
-    throw new Fe(3);
+    throw new Re(3);
   var t = Ly(e);
   if (t.match(Ny))
     return {
@@ -3468,7 +3469,7 @@ function io(e) {
     var u = parseInt("" + l[1], 10), c = parseInt("" + l[2], 10) / 100, d = parseInt("" + l[3], 10) / 100, p = "rgb(" + Oo(u, c, d) + ")", f = bi.
     exec(p);
     if (!f)
-      throw new Fe(4, t, p);
+      throw new Re(4, t, p);
     return {
       red: parseInt("" + f[1], 10),
       green: parseInt("" + f[2], 10),
@@ -3480,7 +3481,7 @@ function io(e) {
     var y = parseInt("" + h[1], 10), m = parseInt("" + h[2], 10) / 100, b = parseInt("" + h[3], 10) / 100, x = "rgb(" + Oo(y, m, b) + ")", E = bi.
     exec(x);
     if (!E)
-      throw new Fe(4, t, x);
+      throw new Re(4, t, x);
     return {
       red: parseInt("" + E[1], 10),
       green: parseInt("" + E[2], 10),
@@ -3488,7 +3489,7 @@ function io(e) {
       alpha: parseFloat("" + h[4]) > 1 ? parseFloat("" + h[4]) / 100 : parseFloat("" + h[4])
     };
   }
-  throw new Fe(5);
+  throw new Re(5);
 }
 a(io, "parseToRgb");
 function Vy(e) {
@@ -3557,7 +3558,7 @@ function $y(e, t, o) {
     return xr(e, t, o);
   if (typeof e == "object" && t === void 0 && o === void 0)
     return xr(e.hue, e.saturation, e.lightness);
-  throw new Fe(1);
+  throw new Re(1);
 }
 a($y, "hsl");
 function Uy(e, t, o, i) {
@@ -3565,7 +3566,7 @@ function Uy(e, t, o, i) {
     return i >= 1 ? xr(e, t, o) : "rgba(" + Oo(e, t, o) + "," + i + ")";
   if (typeof e == "object" && t === void 0 && o === void 0 && i === void 0)
     return e.alpha >= 1 ? xr(e.hue, e.saturation, e.lightness) : "rgba(" + Oo(e.hue, e.saturation, e.lightness) + "," + e.alpha + ")";
-  throw new Fe(2);
+  throw new Re(2);
 }
 a(Uy, "hsla");
 function Ii(e, t, o) {
@@ -3573,7 +3574,7 @@ function Ii(e, t, o) {
     return xi("#" + Lt(e) + Lt(t) + Lt(o));
   if (typeof e == "object" && t === void 0 && o === void 0)
     return xi("#" + Lt(e.red) + Lt(e.green) + Lt(e.blue));
-  throw new Fe(6);
+  throw new Re(6);
 }
 a(Ii, "rgb");
 function so(e, t, o, i) {
@@ -3586,7 +3587,7 @@ function so(e, t, o, i) {
     if (typeof e == "object" && t === void 0 && o === void 0 && i === void 0)
       return e.alpha >= 1 ? Ii(e.red, e.green, e.blue) : "rgba(" + e.red + "," + e.green + "," + e.blue + "," + e.alpha + ")";
   }
-  throw new Fe(7);
+  throw new Re(7);
 }
 a(so, "rgba");
 var Gy = /* @__PURE__ */ a(function(t) {
@@ -3601,12 +3602,12 @@ var Gy = /* @__PURE__ */ a(function(t) {
   return typeof t.hue == "number" && typeof t.saturation == "number" && typeof t.lightness == "number" && typeof t.alpha == "number";
 }, "isHsla");
 function St(e) {
-  if (typeof e != "object") throw new Fe(8);
+  if (typeof e != "object") throw new Re(8);
   if (qy(e)) return so(e);
   if (Gy(e)) return Ii(e);
   if (Qy(e)) return Uy(e);
   if (Yy(e)) return $y(e);
-  throw new Fe(8);
+  throw new Re(8);
 }
 a(St, "toColorString");
 function kl(e, t, o) {
@@ -3616,10 +3617,10 @@ function kl(e, t, o) {
   }, "fn");
 }
 a(kl, "curried");
-function ze(e) {
+function We(e) {
   return kl(e, e.length, []);
 }
-a(ze, "curry");
+a(We, "curry");
 function Xy(e, t) {
   if (t === "transparent") return t;
   var o = It(t);
@@ -3628,7 +3629,7 @@ function Xy(e, t) {
   }));
 }
 a(Xy, "adjustHue");
-var P1 = ze(Xy);
+var A1 = We(Xy);
 function ao(e, t, o) {
   return Math.max(e, Math.min(t, o));
 }
@@ -3641,7 +3642,7 @@ function Zy(e, t) {
   }));
 }
 a(Zy, "darken");
-var Jy = ze(Zy), Ir = Jy;
+var Jy = We(Zy), Ir = Jy;
 function eb(e, t) {
   if (t === "transparent") return t;
   var o = It(t);
@@ -3650,7 +3651,7 @@ function eb(e, t) {
   }));
 }
 a(eb, "desaturate");
-var A1 = ze(eb);
+var D1 = We(eb);
 function tb(e, t) {
   if (t === "transparent") return t;
   var o = It(t);
@@ -3659,7 +3660,7 @@ function tb(e, t) {
   }));
 }
 a(tb, "lighten");
-var ob = ze(tb), Po = ob;
+var ob = We(tb), Po = ob;
 function rb(e, t, o) {
   if (t === "transparent") return o;
   if (o === "transparent") return t;
@@ -3677,7 +3678,7 @@ function rb(e, t, o) {
   return so(y);
 }
 a(rb, "mix");
-var nb = ze(rb), Ol = nb;
+var nb = We(rb), Ol = nb;
 function ib(e, t) {
   if (t === "transparent") return t;
   var o = io(t), i = typeof o.alpha == "number" ? o.alpha : 1, r = j({}, o, {
@@ -3686,7 +3687,7 @@ function ib(e, t) {
   return so(r);
 }
 a(ib, "opacify");
-var D1 = ze(ib);
+var M1 = We(ib);
 function sb(e, t) {
   if (t === "transparent") return t;
   var o = It(t);
@@ -3695,38 +3696,38 @@ function sb(e, t) {
   }));
 }
 a(sb, "saturate");
-var M1 = ze(sb);
+var L1 = We(sb);
 function ab(e, t) {
   return t === "transparent" ? t : St(j({}, It(t), {
     hue: parseFloat(e)
   }));
 }
 a(ab, "setHue");
-var L1 = ze(ab);
+var N1 = We(ab);
 function lb(e, t) {
   return t === "transparent" ? t : St(j({}, It(t), {
     lightness: parseFloat(e)
   }));
 }
 a(lb, "setLightness");
-var N1 = ze(lb);
+var F1 = We(lb);
 function ub(e, t) {
   return t === "transparent" ? t : St(j({}, It(t), {
     saturation: parseFloat(e)
   }));
 }
 a(ub, "setSaturation");
-var F1 = ze(ub);
+var R1 = We(ub);
 function cb(e, t) {
   return t === "transparent" ? t : Ol(parseFloat(e), "rgb(0, 0, 0)", t);
 }
 a(cb, "shade");
-var R1 = ze(cb);
+var B1 = We(cb);
 function pb(e, t) {
   return t === "transparent" ? t : Ol(parseFloat(e), "rgb(255, 255, 255)", t);
 }
 a(pb, "tint");
-var B1 = ze(pb);
+var H1 = We(pb);
 function db(e, t) {
   if (t === "transparent") return t;
   var o = io(t), i = typeof o.alpha == "number" ? o.alpha : 1, r = j({}, o, {
@@ -3735,7 +3736,7 @@ function db(e, t) {
   return so(r);
 }
 a(db, "transparentize");
-var fb = ze(db), Te = fb;
+var fb = We(db), Te = fb;
 
 // src/manager/components/notifications/NotificationItem.tsx
 var mb = Dt({
@@ -3850,7 +3851,7 @@ ent"), Sb = I(ee)(({ theme: e }) => ({
     }
   },
   /* @__PURE__ */ s.createElement(bo, { size: 12 })
-), "DismissNotificationItem"), q1 = I.div({
+), "DismissNotificationItem"), Y1 = I.div({
   height: 48
 }), wb = /* @__PURE__ */ a(({
   notification: { content: e, duration: t, link: o, onClear: i, onClick: r, id: n, icon: l },
@@ -3860,7 +3861,7 @@ ent"), Sb = I(ee)(({ theme: e }) => ({
   let d = A(() => {
     u(n), i && i({ dismissed: !1, timeout: !0 });
   }, [n, u, i]), p = U(null);
-  H(() => {
+  B(() => {
     if (t)
       return p.current = setTimeout(d, t), () => clearTimeout(p.current);
   }, [t, d]);
@@ -3933,8 +3934,8 @@ function ke(e, t) {
 a(ke, "_objectWithoutPropertiesLoose");
 
 // global-externals:react-dom
-var Ao = __REACT_DOM__, { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ck, createPortal: pk, createRoot: dk, findDOMNode: fk, flushSync: Do,
-hydrate: mk, hydrateRoot: hk, render: gk, unmountComponentAtNode: yk, unstable_batchedUpdates: bk, unstable_renderSubtreeIntoContainer: vk, version: xk } = __REACT_DOM__;
+var Ao = __REACT_DOM__, { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: pk, createPortal: dk, createRoot: fk, findDOMNode: mk, flushSync: Do,
+hydrate: hk, hydrateRoot: gk, render: yk, unmountComponentAtNode: bk, unstable_batchedUpdates: vk, unstable_renderSubtreeIntoContainer: xk, version: Ik } = __REACT_DOM__;
 
 // ../node_modules/react-transition-group/esm/config.js
 var Ei = {
@@ -4110,10 +4111,10 @@ var ft = dt;
 // src/manager/hooks/useModalDialog.ts
 function wr({ isOpen: e, onClose: t }) {
   let o = U(null);
-  return H(() => {
+  return B(() => {
     let i = o.current;
     i && e && (i.hasAttribute("open") || i.showModal());
-  }, [e]), H(() => {
+  }, [e]), B(() => {
     let i = o.current;
     if (i) {
       let r = /* @__PURE__ */ a((l) => {
@@ -4197,7 +4198,7 @@ var Er = /* @__PURE__ */ a(({ onNavigateToWhatsNew: e }) => {
   createElement(Ob, null, /* @__PURE__ */ s.createElement(_i, { active: o === "npm", onClick: () => i("npm") }, "npm"), /* @__PURE__ */ s.createElement(
   _i, { active: o === "yarn", onClick: () => i("yarn") }, "yarn"), /* @__PURE__ */ s.createElement(_i, { active: o === "pnpm", onClick: () => i(
   "pnpm") }, "pnpm")), /* @__PURE__ */ s.createElement(Pb, null, o === "npm" ? "npx storybook@latest upgrade" : `${o} dlx storybook@latest u\
-pgrade`), e && /* @__PURE__ */ s.createElement(Pe, { onClick: e }, "See what's new in Storybook"));
+pgrade`), e && /* @__PURE__ */ s.createElement(Ae, { onClick: e }, "See what's new in Storybook"));
 }, "UpgradeBlock"), kb = I.div(({ theme: e }) => ({
   border: "1px solid",
   borderRadius: 5,
@@ -4256,8 +4257,8 @@ var Bl = /* @__PURE__ */ a(() => {
 cumentation")),
       /* @__PURE__ */ s.createElement(tt, { width: 12 })
     )), /* @__PURE__ */ s.createElement(Er, null), /* @__PURE__ */ s.createElement(Mb, null, "Open source software maintained by", " ", /* @__PURE__ */ s.
-    createElement(Pe, { href: "https://chromatic.com", target: "_blank" }, "Chromatic"), " ", "and the", " ", /* @__PURE__ */ s.createElement(
-    Pe, { href: "https://github.com/storybookjs/storybook/graphs/contributors" }, "Storybook Community")))
+    createElement(Ae, { href: "https://chromatic.com", target: "_blank" }, "Chromatic"), " ", "and the", " ", /* @__PURE__ */ s.createElement(
+    Ae, { href: "https://github.com/storybookjs/storybook/graphs/contributors" }, "Storybook Community")))
   );
 }, "MobileAbout"), Ab = I.div(
   ({ theme: e, state: t, transitionDuration: o }) => ({
@@ -4471,7 +4472,7 @@ function Bb(e, t) {
 }
 a(Bb, "combineIndexes");
 var Hb = /* @__PURE__ */ a(() => {
-  let { index: e, refs: t } = Ne(), o = oe(), i = o.getCurrentStoryData();
+  let { index: e, refs: t } = Fe(), o = oe(), i = o.getCurrentStoryData();
   if (!i)
     return "";
   let r = Bb(e, t || {}), n = i.renderLabel?.(i, o) || i.name, l = r[i.id];
@@ -4573,7 +4574,7 @@ function $l({
   isDesktop: o
 }) {
   let i = U(null), r = U(null);
-  return H(() => {
+  return B(() => {
     let n = i.current, l = r.current, u = document.querySelector("#storybook-preview-wrapper"), c = null, d = /* @__PURE__ */ a((h) => {
       h.preventDefault(), e((y) => ({
         ...y,
@@ -4674,7 +4675,7 @@ t.rightPanelWidth && e.panelPosition === t.panelPosition, "layoutStateIsEqual"),
     ...t,
     isDragging: !1
   });
-  H(() => {
+  B(() => {
     l.isDragging || // don't interrupt user's drag
     Ul(t, n.current) || (n.current = t, u((x) => ({ ...x, ...t })));
   }, [l.isDragging, t, u]), Xt(() => {
@@ -4851,88 +4852,90 @@ startsWith: !1 }, ({ match: t }) => /* @__PURE__ */ s.createElement(Yb, { shown:
 );
 
 // global-externals:storybook/internal/types
-var VO = __STORYBOOK_TYPES__, { Addon_TypesEnum: Ce } = __STORYBOOK_TYPES__;
+var jO = __STORYBOOK_TYPES__, { Addon_TypesEnum: Ce } = __STORYBOOK_TYPES__;
 
 // src/core-events/index.ts
-var Ql = /* @__PURE__ */ ((N) => (N.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", N.CHANNEL_CREATED = "channelCreated", N.CONFIG_ERROR = "c\
-onfigError", N.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", N.STORY_SPECIFIED = "storySpecified", N.SET_CONFIG = "setConfig", N.SET_STORIES =
-"setStories", N.SET_INDEX = "setIndex", N.SET_CURRENT_STORY = "setCurrentStory", N.CURRENT_STORY_WAS_SET = "currentStoryWasSet", N.FORCE_RE_RENDER =
-"forceReRender", N.FORCE_REMOUNT = "forceRemount", N.PRELOAD_ENTRIES = "preloadStories", N.STORY_PREPARED = "storyPrepared", N.DOCS_PREPARED =
-"docsPrepared", N.STORY_CHANGED = "storyChanged", N.STORY_UNCHANGED = "storyUnchanged", N.STORY_RENDERED = "storyRendered", N.STORY_FINISHED =
-"storyFinished", N.STORY_MISSING = "storyMissing", N.STORY_ERRORED = "storyErrored", N.STORY_THREW_EXCEPTION = "storyThrewException", N.STORY_RENDER_PHASE_CHANGED =
-"storyRenderPhaseChanged", N.STORY_HOT_UPDATED = "storyHotUpdated", N.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", N.UNHANDLED_ERRORS_WHILE_PLAYING =
-"unhandledErrorsWhilePlaying", N.UPDATE_STORY_ARGS = "updateStoryArgs", N.STORY_ARGS_UPDATED = "storyArgsUpdated", N.RESET_STORY_ARGS = "res\
-etStoryArgs", N.SET_FILTER = "setFilter", N.SET_GLOBALS = "setGlobals", N.UPDATE_GLOBALS = "updateGlobals", N.GLOBALS_UPDATED = "globalsUpda\
-ted", N.REGISTER_SUBSCRIPTION = "registerSubscription", N.PREVIEW_KEYDOWN = "previewKeydown", N.PREVIEW_BUILDER_PROGRESS = "preview_builder_\
-progress", N.SELECT_STORY = "selectStory", N.STORIES_COLLAPSE_ALL = "storiesCollapseAll", N.STORIES_EXPAND_ALL = "storiesExpandAll", N.DOCS_RENDERED =
-"docsRendered", N.SHARED_STATE_CHANGED = "sharedStateChanged", N.SHARED_STATE_SET = "sharedStateSet", N.NAVIGATE_URL = "navigateUrl", N.UPDATE_QUERY_PARAMS =
-"updateQueryParams", N.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", N.RESULT_WHATS_NEW_DATA = "resultWhatsNewData", N.SET_WHATS_NEW_CACHE =
-"setWhatsNewCache", N.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", N.TELEMETRY_ERROR = "telemetryError", N.FILE_COMPONENT_SEARCH_REQUEST =
-"fileComponentSearchRequest", N.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchResponse", N.SAVE_STORY_REQUEST = "saveStoryRequest", N.
-SAVE_STORY_RESPONSE = "saveStoryResponse", N.ARGTYPES_INFO_REQUEST = "argtypesInfoRequest", N.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse",
-N.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", N.CREATE_NEW_STORYFILE_RESPONSE = "createNewStoryfileResponse", N))(Ql || {});
+var Ql = /* @__PURE__ */ ((z) => (z.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", z.CHANNEL_CREATED = "channelCreated", z.CONFIG_ERROR = "c\
+onfigError", z.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", z.STORY_SPECIFIED = "storySpecified", z.SET_CONFIG = "setConfig", z.SET_STORIES =
+"setStories", z.SET_INDEX = "setIndex", z.SET_CURRENT_STORY = "setCurrentStory", z.CURRENT_STORY_WAS_SET = "currentStoryWasSet", z.FORCE_RE_RENDER =
+"forceReRender", z.FORCE_REMOUNT = "forceRemount", z.PRELOAD_ENTRIES = "preloadStories", z.STORY_PREPARED = "storyPrepared", z.DOCS_PREPARED =
+"docsPrepared", z.STORY_CHANGED = "storyChanged", z.STORY_UNCHANGED = "storyUnchanged", z.STORY_RENDERED = "storyRendered", z.STORY_FINISHED =
+"storyFinished", z.STORY_MISSING = "storyMissing", z.STORY_ERRORED = "storyErrored", z.STORY_THREW_EXCEPTION = "storyThrewException", z.STORY_RENDER_PHASE_CHANGED =
+"storyRenderPhaseChanged", z.STORY_HOT_UPDATED = "storyHotUpdated", z.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", z.UNHANDLED_ERRORS_WHILE_PLAYING =
+"unhandledErrorsWhilePlaying", z.UPDATE_STORY_ARGS = "updateStoryArgs", z.STORY_ARGS_UPDATED = "storyArgsUpdated", z.RESET_STORY_ARGS = "res\
+etStoryArgs", z.SET_FILTER = "setFilter", z.SET_GLOBALS = "setGlobals", z.UPDATE_GLOBALS = "updateGlobals", z.GLOBALS_UPDATED = "globalsUpda\
+ted", z.REGISTER_SUBSCRIPTION = "registerSubscription", z.PREVIEW_INITIALIZED = "previewInitialized", z.PREVIEW_KEYDOWN = "previewKeydown", z.
+PREVIEW_BUILDER_PROGRESS = "preview_builder_progress", z.SELECT_STORY = "selectStory", z.STORIES_COLLAPSE_ALL = "storiesCollapseAll", z.STORIES_EXPAND_ALL =
+"storiesExpandAll", z.DOCS_RENDERED = "docsRendered", z.SHARED_STATE_CHANGED = "sharedStateChanged", z.SHARED_STATE_SET = "sharedStateSet", z.
+NAVIGATE_URL = "navigateUrl", z.UPDATE_QUERY_PARAMS = "updateQueryParams", z.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", z.RESULT_WHATS_NEW_DATA =
+"resultWhatsNewData", z.SET_WHATS_NEW_CACHE = "setWhatsNewCache", z.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", z.TELEMETRY_ERROR =
+"telemetryError", z.FILE_COMPONENT_SEARCH_REQUEST = "fileComponentSearchRequest", z.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchRes\
+ponse", z.SAVE_STORY_REQUEST = "saveStoryRequest", z.SAVE_STORY_RESPONSE = "saveStoryResponse", z.ARGTYPES_INFO_REQUEST = "argtypesInfoReque\
+st", z.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse", z.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", z.CREATE_NEW_STORYFILE_RESPONSE =
+"createNewStoryfileResponse", z))(Ql || {});
 var {
-  CHANNEL_WS_DISCONNECT: KO,
-  CHANNEL_CREATED: $O,
-  CONFIG_ERROR: UO,
-  CREATE_NEW_STORYFILE_REQUEST: GO,
-  CREATE_NEW_STORYFILE_RESPONSE: qO,
-  CURRENT_STORY_WAS_SET: YO,
-  DOCS_PREPARED: QO,
-  DOCS_RENDERED: XO,
-  FILE_COMPONENT_SEARCH_REQUEST: ZO,
-  FILE_COMPONENT_SEARCH_RESPONSE: JO,
-  FORCE_RE_RENDER: eP,
-  FORCE_REMOUNT: tP,
-  GLOBALS_UPDATED: oP,
-  NAVIGATE_URL: rP,
-  PLAY_FUNCTION_THREW_EXCEPTION: nP,
-  UNHANDLED_ERRORS_WHILE_PLAYING: iP,
-  PRELOAD_ENTRIES: sP,
-  PREVIEW_BUILDER_PROGRESS: aP,
-  PREVIEW_KEYDOWN: lP,
-  REGISTER_SUBSCRIPTION: uP,
-  RESET_STORY_ARGS: cP,
-  SELECT_STORY: pP,
-  SET_CONFIG: dP,
-  SET_CURRENT_STORY: fP,
-  SET_FILTER: mP,
-  SET_GLOBALS: hP,
-  SET_INDEX: gP,
-  SET_STORIES: yP,
-  SHARED_STATE_CHANGED: bP,
-  SHARED_STATE_SET: vP,
-  STORIES_COLLAPSE_ALL: xP,
-  STORIES_EXPAND_ALL: IP,
-  STORY_ARGS_UPDATED: SP,
-  STORY_CHANGED: wP,
-  STORY_ERRORED: EP,
-  STORY_INDEX_INVALIDATED: TP,
-  STORY_MISSING: CP,
+  CHANNEL_WS_DISCONNECT: $O,
+  CHANNEL_CREATED: UO,
+  CONFIG_ERROR: GO,
+  CREATE_NEW_STORYFILE_REQUEST: qO,
+  CREATE_NEW_STORYFILE_RESPONSE: YO,
+  CURRENT_STORY_WAS_SET: QO,
+  DOCS_PREPARED: XO,
+  DOCS_RENDERED: ZO,
+  FILE_COMPONENT_SEARCH_REQUEST: JO,
+  FILE_COMPONENT_SEARCH_RESPONSE: eP,
+  FORCE_RE_RENDER: tP,
+  FORCE_REMOUNT: oP,
+  GLOBALS_UPDATED: rP,
+  NAVIGATE_URL: nP,
+  PLAY_FUNCTION_THREW_EXCEPTION: iP,
+  UNHANDLED_ERRORS_WHILE_PLAYING: sP,
+  PRELOAD_ENTRIES: aP,
+  PREVIEW_INITIALIZED: lP,
+  PREVIEW_BUILDER_PROGRESS: uP,
+  PREVIEW_KEYDOWN: cP,
+  REGISTER_SUBSCRIPTION: pP,
+  RESET_STORY_ARGS: dP,
+  SELECT_STORY: fP,
+  SET_CONFIG: mP,
+  SET_CURRENT_STORY: hP,
+  SET_FILTER: gP,
+  SET_GLOBALS: yP,
+  SET_INDEX: bP,
+  SET_STORIES: vP,
+  SHARED_STATE_CHANGED: xP,
+  SHARED_STATE_SET: IP,
+  STORIES_COLLAPSE_ALL: SP,
+  STORIES_EXPAND_ALL: wP,
+  STORY_ARGS_UPDATED: EP,
+  STORY_CHANGED: TP,
+  STORY_ERRORED: CP,
+  STORY_INDEX_INVALIDATED: _P,
+  STORY_MISSING: kP,
   STORY_PREPARED: Xl,
-  STORY_RENDER_PHASE_CHANGED: _P,
-  STORY_RENDERED: kP,
-  STORY_FINISHED: OP,
-  STORY_SPECIFIED: PP,
-  STORY_THREW_EXCEPTION: AP,
-  STORY_UNCHANGED: DP,
-  STORY_HOT_UPDATED: MP,
-  UPDATE_GLOBALS: LP,
-  UPDATE_QUERY_PARAMS: NP,
-  UPDATE_STORY_ARGS: FP,
-  REQUEST_WHATS_NEW_DATA: RP,
-  RESULT_WHATS_NEW_DATA: BP,
-  SET_WHATS_NEW_CACHE: HP,
-  TOGGLE_WHATS_NEW_NOTIFICATIONS: zP,
-  TELEMETRY_ERROR: WP,
-  SAVE_STORY_REQUEST: VP,
-  SAVE_STORY_RESPONSE: jP,
-  ARGTYPES_INFO_REQUEST: KP,
-  ARGTYPES_INFO_RESPONSE: $P
+  STORY_RENDER_PHASE_CHANGED: OP,
+  STORY_RENDERED: PP,
+  STORY_FINISHED: AP,
+  STORY_SPECIFIED: DP,
+  STORY_THREW_EXCEPTION: MP,
+  STORY_UNCHANGED: LP,
+  STORY_HOT_UPDATED: NP,
+  UPDATE_GLOBALS: FP,
+  UPDATE_QUERY_PARAMS: RP,
+  UPDATE_STORY_ARGS: BP,
+  REQUEST_WHATS_NEW_DATA: HP,
+  RESULT_WHATS_NEW_DATA: zP,
+  SET_WHATS_NEW_CACHE: WP,
+  TOGGLE_WHATS_NEW_NOTIFICATIONS: VP,
+  TELEMETRY_ERROR: jP,
+  SAVE_STORY_REQUEST: KP,
+  SAVE_STORY_RESPONSE: $P,
+  ARGTYPES_INFO_REQUEST: UP,
+  ARGTYPES_INFO_RESPONSE: GP
 } = Ql;
 
 // src/manager/components/panel/Panel.tsx
-var Pi = class Pi extends Le {
+var Pi = class Pi extends Ne {
   constructor(t) {
     super(t), this.state = { hasError: !1 };
   }
@@ -4970,7 +4973,7 @@ var ki = Pi, Oi = s.memo(
             title: "Storybook add-ons",
             description: /* @__PURE__ */ s.createElement(s.Fragment, null, "Integrate your tools with Storybook to connect workflows and unl\
 ock advanced features."),
-            footer: /* @__PURE__ */ s.createElement(Pe, { href: "https://storybook.js.org/addons?ref=ui", target: "_blank", withArrow: !0 },
+            footer: /* @__PURE__ */ s.createElement(Ae, { href: "https://storybook.js.org/addons?ref=ui", target: "_blank", withArrow: !0 },
             /* @__PURE__ */ s.createElement(Pt, null), " Explore integrations catalog")
           }
         ),
@@ -4991,9 +4994,9 @@ ock advanced features."),
             onClick: o.toggleVisibility,
             title: `Hide addons [${Ye(t.togglePanel)}]`
           },
-          /* @__PURE__ */ s.createElement(je, null)
+          /* @__PURE__ */ s.createElement(Ke, null)
         )) : /* @__PURE__ */ s.createElement(ee, { onClick: () => u(!1), "aria-label": "Close addon panel" }, /* @__PURE__ */ s.createElement(
-        je, null))),
+        Ke, null))),
         id: "storybook-panel-root"
       },
       Object.entries(e).map(([c, d]) => (
@@ -5013,7 +5016,7 @@ var Zb = I.div({
 
 // src/manager/container/Panel.tsx
 var Jb = /* @__PURE__ */ a((e) => {
-  let t = oe(), o = Ne(), [i, r] = K(t.getCurrentStoryData());
+  let t = oe(), o = Fe(), [i, r] = K(t.getCurrentStoryData());
   Ia(
     {
       [Xl]: () => {
@@ -5053,7 +5056,7 @@ var Jb = /* @__PURE__ */ a((e) => {
 }, "Panel"), Zl = Jb;
 
 // src/manager/container/Preview.tsx
-var No = Ve(Di(), 1);
+var No = je(Di(), 1);
 
 // src/manager/components/preview/Iframe.tsx
 var ev = I.iframe(({ theme: e }) => ({
@@ -5088,7 +5091,7 @@ function eu(e) {
 a(eu, "IFrame");
 
 // src/manager/components/preview/utils/stringifyQueryParams.tsx
-var fu = Ve(du(), 1);
+var fu = je(du(), 1);
 var mu = /* @__PURE__ */ a((e) => {
   let t = (0, fu.stringify)(e);
   return t === "" ? "" : `&${t}`;
@@ -5178,7 +5181,7 @@ var Pv = /* @__PURE__ */ a(({ api: e, state: t }) => ({
 };
 
 // src/manager/components/preview/tools/copy.tsx
-var Su = Ve(Iu(), 1);
+var Su = je(Iu(), 1);
 var { PREVIEW_URL: Nv, document: Fv } = se, Rv = /* @__PURE__ */ a(({ state: e }) => {
   let { storyId: t, refId: o, refs: i } = e, { location: r } = Fv, n = i[o], l = `${r.origin}${r.pathname}`;
   return l.endsWith("/") || (l += "/"), {
@@ -5272,7 +5275,7 @@ var zv = I(ee)(({ theme: e, animating: t, disabled: o }) => ({
 
 // src/manager/components/preview/tools/zoom.tsx
 var Lo = 1, Cu = Qt({ value: Lo, set: /* @__PURE__ */ a((e) => {
-}, "set") }), zi = class zi extends Le {
+}, "set") }), zi = class zi extends Ne {
   constructor() {
     super(...arguments);
     this.state = {
@@ -5351,7 +5354,7 @@ var $v = /* @__PURE__ */ a(({ api: e, state: t }) => ({
         title: `${o ? "Exit full screen" : "Go full screen"} [${i}]`,
         "aria-label": o ? "Exit full screen" : "Go full screen"
       },
-      o ? /* @__PURE__ */ s.createElement(je, null) : /* @__PURE__ */ s.createElement(Mn, null)
+      o ? /* @__PURE__ */ s.createElement(Ke, null) : /* @__PURE__ */ s.createElement(Mn, null)
     ));
   }, "render")
 };
@@ -5396,7 +5399,7 @@ var Pu = s.memo(/* @__PURE__ */ a(function({
   )));
 }, "Tools"));
 function Uv(e, t) {
-  let o = t?.type === "story" && t?.prepared ? t?.parameters : {}, i = "toolbar" in o ? o.toolbar : void 0, { toolbar: r } = He.getConfig(),
+  let o = t?.type === "story" && t?.prepared ? t?.parameters : {}, i = "toolbar" in o ? o.toolbar : void 0, { toolbar: r } = ze.getConfig(),
   n = er(
     r || {},
     i || {}
@@ -5475,11 +5478,11 @@ var Du = I.main({
     height: "100%"
   },
   ({ show: e }) => ({ display: e ? "grid" : "none" })
-), HD = I(pr)({
+), WD = I(pr)({
   color: "inherit",
   textDecoration: "inherit",
   display: "inline-block"
-}), zD = I.span({
+}), VD = I.span({
   // Hides full screen icon at mobile breakpoint defined in app.js
   "@media (max-width: 599px)": {
     display: "none"
@@ -5559,7 +5562,7 @@ var Xv = /* @__PURE__ */ a(({ state: e, api: t }) => ({
     tabId: b
   } = t, x = y.find((w) => w.id === b)?.render, E = n === "story", { showToolbar: g } = r, v = o.getShowToolbarWithCustomisations(g), S = U(
   l);
-  return H(() => {
+  return B(() => {
     if (u && n) {
       if (l === S.current)
         return;
@@ -5599,10 +5602,10 @@ var Zv = /* @__PURE__ */ a(({ baseUrl: e, withLoader: t, wrappers: o }) => /* @_
   previewInitialized: p
 }) => {
   let f = "canvas", [h, y] = K(void 0);
-  H(() => {
+  B(() => {
     if (se.CONFIG_TYPE === "DEVELOPMENT")
       try {
-        He.getChannel().on(ma, (v) => {
+        ze.getChannel().on(ma, (v) => {
           y(v);
         });
       } catch {
@@ -5626,7 +5629,7 @@ var Zv = /* @__PURE__ */ a(({ baseUrl: e, withLoader: t, wrappers: o }) => /* @_
   ))));
 }), "Canvas");
 function zu(e, t) {
-  let { previewTabs: o } = He.getConfig(), i = t ? t.previewTabs : void 0;
+  let { previewTabs: o } = ze.getConfig(), i = t ? t.previewTabs : void 0;
   if (o || i) {
     let r = er(o || {}, i || {}), n = Object.keys(r).map((l, u) => ({
       index: u,
@@ -5738,7 +5741,7 @@ var e0 = [Bu()], t0 = [Wu, Tu, _u], o0 = [gu, Ou, Eu, wu], r0 = [], n0 = (0, No.
 // src/manager/hooks/useDebounce.ts
 function ju(e, t) {
   let [o, i] = K(e);
-  return H(() => {
+  return B(() => {
     let r = setTimeout(() => {
       i(e);
     }, t);
@@ -6313,7 +6316,7 @@ function g0({
 a(g0, "calculateRange");
 
 // ../node_modules/@tanstack/react-virtual/dist/esm/index.js
-var Ju = typeof document < "u" ? Xt : H;
+var Ju = typeof document < "u" ? Xt : B;
 function y0(e) {
   let t = Zt(() => ({}), {})[1], o = {
     ...e,
@@ -6343,7 +6346,7 @@ var tc = /* @__PURE__ */ a(({
   rowVirtualizer: t,
   selectedItem: o
 }) => {
-  H(() => {
+  B(() => {
     let i = /* @__PURE__ */ a((r) => {
       if (!e.current)
         return;
@@ -6884,7 +6887,7 @@ var S0 = 418, w0 = I(Mt)(() => ({
   container: d
 }) => {
   let [p, f] = Ku(), [h, y] = K(f.height), [, m] = ia(), [b, x] = K(o);
-  return H(() => {
+  return B(() => {
     h < f.height && y(f.height);
   }, [f.height, h]), /* @__PURE__ */ s.createElement(
     w0,
@@ -7039,7 +7042,7 @@ var D0 = /* @__PURE__ */ a((e) => JSON.stringify(e, (t, o) => typeof o == "funct
           subHeadline: `${g} was created`
         },
         duration: 8e3,
-        icon: /* @__PURE__ */ s.createElement(Be, null)
+        icon: /* @__PURE__ */ s.createElement(He, null)
       }), t(!1);
     },
     [f, t]
@@ -7051,11 +7054,11 @@ var D0 = /* @__PURE__ */ a((e) => JSON.stringify(e, (t, o) => typeof o == "funct
         subHeadline: "Successfully navigated to existing story"
       },
       duration: 8e3,
-      icon: /* @__PURE__ */ s.createElement(Be, null)
+      icon: /* @__PURE__ */ s.createElement(He, null)
     }), t(!1);
   }, [f, t]), x = A(() => {
     i(!0);
-    let g = He.getChannel(), v = /* @__PURE__ */ a((S) => {
+    let g = ze.getChannel(), v = /* @__PURE__ */ a((S) => {
       S.id === u && (S.success ? y(S.payload.files) : p({ error: S.error }), g.off(Yo, v), i(!1), c.current = null);
     }, "set");
     return g.on(Yo, v), u !== "" && c.current !== u ? (c.current = u, g.emit(fa, {
@@ -7073,7 +7076,7 @@ var D0 = /* @__PURE__ */ a((e) => JSON.stringify(e, (t, o) => typeof o == "funct
       selectedItemId: k
     }) => {
       try {
-        let _ = He.getChannel(), C = await Jo(_, pa, da, {
+        let _ = ze.getChannel(), C = await Jo(_, pa, da, {
           componentExportName: g,
           componentFilePath: v,
           componentIsDefaultExport: S,
@@ -7113,9 +7116,9 @@ var D0 = /* @__PURE__ */ a((e) => JSON.stringify(e, (t, o) => typeof o == "funct
     },
     [f?.selectStory, m, x, b]
   );
-  return H(() => {
+  return B(() => {
     p(null);
-  }, [u]), H(() => x(), [x]), /* @__PURE__ */ s.createElement(
+  }, [u]), B(() => x(), [x]), /* @__PURE__ */ s.createElement(
     Ic,
     {
       error: d,
@@ -7156,7 +7159,7 @@ var Ec = /* @__PURE__ */ a(({ refId: e, itemId: t }) => /* @__PURE__ */ s.create
 ), "HighlightStyles");
 
 // src/manager/utils/tree.ts
-var co = Ve(Di(), 1);
+var co = je(Di(), 1);
 var { document: ji, window: M0 } = se, Hr = /* @__PURE__ */ a((e, t) => !t || t === lt ? e : `${t}_${e}`, "createId"), _c = /* @__PURE__ */ a(
 (e, t) => `${ji.location.pathname}?path=/${e.type}/${Hr(e.id, t)}`, "getLink");
 var Tc = (0, co.default)(1e3)((e, t) => t[e]), L0 = (0, co.default)(1e3)((e, t) => {
@@ -7288,8 +7291,8 @@ l", variant: "outline", onClick: n }, /* @__PURE__ */ s.createElement(xo, null),
   {
     tooltip: /* @__PURE__ */ s.createElement(R0, null, /* @__PURE__ */ s.createElement(ka, { error: e }))
   },
-  /* @__PURE__ */ s.createElement(Pe, { isButton: !0 }, "View error ", /* @__PURE__ */ s.createElement(Ot, null))
-), " ", /* @__PURE__ */ s.createElement(Pe, { withArrow: !0, href: "https://storybook.js.org/docs?ref=ui", cancel: !1, target: "_blank" }, "\
+  /* @__PURE__ */ s.createElement(Ae, { isButton: !0 }, "View error ", /* @__PURE__ */ s.createElement(Ot, null))
+), " ", /* @__PURE__ */ s.createElement(Ae, { withArrow: !0, href: "https://storybook.js.org/docs?ref=ui", cancel: !1, target: "_blank" }, "\
 View docs")))), "ErrorBlock"), B0 = I(pt)({
   display: "flex"
 }), H0 = I(pt)({
@@ -7433,7 +7436,7 @@ ready" && /* @__PURE__ */ s.createElement(s.Fragment, null, /* @__PURE__ */ s.cr
             ot,
             {
               links: Object.entries(t.versions).map(([c, d]) => ({
-                icon: d === t.url ? /* @__PURE__ */ s.createElement(Be, null) : void 0,
+                icon: d === t.url ? /* @__PURE__ */ s.createElement(He, null) : void 0,
                 id: c,
                 title: c,
                 href: d,
@@ -7449,16 +7452,16 @@ ready" && /* @__PURE__ */ s.createElement(s.Fragment, null, /* @__PURE__ */ s.cr
     }
   )
 ), G0 = /* @__PURE__ */ a(({ url: e, componentCount: t, leafCount: o }) => {
-  let i = De();
+  let i = Me();
   return /* @__PURE__ */ s.createElement(jt, { href: e.replace(/\/?$/, "/index.html"), target: "_blank" }, /* @__PURE__ */ s.createElement(Zo,
   { color: i.color.secondary }), /* @__PURE__ */ s.createElement("div", null, /* @__PURE__ */ s.createElement(Vt, null, "View external Story\
 book"), /* @__PURE__ */ s.createElement("div", null, "Explore ", t, " components and ", o, " stories in a new browser tab.")));
 }, "ReadyMessage"), q0 = /* @__PURE__ */ a(({ url: e }) => {
-  let t = De();
+  let t = Me();
   return /* @__PURE__ */ s.createElement(jt, { href: e, target: "_blank" }, /* @__PURE__ */ s.createElement(Vn, { color: t.color.secondary }),
   /* @__PURE__ */ s.createElement("div", null, /* @__PURE__ */ s.createElement(Vt, null, "View source code")));
 }, "SourceCodeMessage"), Y0 = /* @__PURE__ */ a(({ loginUrl: e, id: t }) => {
-  let o = De(), i = A((r) => {
+  let o = Me(), i = A((r) => {
     r.preventDefault();
     let n = W0.open(e, `storybook_auth_${t}`, "resizable,scrollbars"), l = setInterval(() => {
       n ? n.closed && (clearInterval(l), z0.location.reload()) : clearInterval(l);
@@ -7468,7 +7471,7 @@ book"), /* @__PURE__ */ s.createElement("div", null, "Explore ", t, " components
   createElement("div", null, /* @__PURE__ */ s.createElement(Vt, null, "Log in required"), /* @__PURE__ */ s.createElement("div", null, "You\
  need to authenticate to view this Storybook's components.")));
 }, "LoginRequiredMessage"), Q0 = /* @__PURE__ */ a(() => {
-  let e = De();
+  let e = Me();
   return /* @__PURE__ */ s.createElement(
     jt,
     {
@@ -7480,17 +7483,17 @@ book"), /* @__PURE__ */ s.createElement("div", null, "Explore ", t, " components
     "div", null, "Learn how to combine multiple Storybooks into one."))
   );
 }, "ReadDocsMessage"), X0 = /* @__PURE__ */ a(({ url: e }) => {
-  let t = De();
+  let t = Me();
   return /* @__PURE__ */ s.createElement(jt, { href: e.replace(/\/?$/, "/index.html"), target: "_blank" }, /* @__PURE__ */ s.createElement(go,
   { color: t.color.negative }), /* @__PURE__ */ s.createElement("div", null, /* @__PURE__ */ s.createElement(Vt, null, "Something went wrong"),
   /* @__PURE__ */ s.createElement("div", null, "This external Storybook didn't load. Debug it in a new tab now.")));
 }, "ErrorOccurredMessage"), Z0 = /* @__PURE__ */ a(({ url: e }) => {
-  let t = De();
+  let t = Me();
   return /* @__PURE__ */ s.createElement(jt, { href: e.replace(/\/?$/, "/index.html"), target: "_blank" }, /* @__PURE__ */ s.createElement(Qn,
   { color: t.color.secondary }), /* @__PURE__ */ s.createElement("div", null, /* @__PURE__ */ s.createElement(Vt, null, "Please wait"), /* @__PURE__ */ s.
   createElement("div", null, "This Storybook is loading.")));
 }, "LoadingMessage"), J0 = /* @__PURE__ */ a(() => {
-  let e = De();
+  let e = Me();
   return /* @__PURE__ */ s.createElement(
     jt,
     {
@@ -7582,7 +7585,7 @@ createElement("symbol", { id: Wc }, /* @__PURE__ */ s.createElement(
     fill: "currentColor"
   }
 )), /* @__PURE__ */ s.createElement("symbol", { id: qc }, /* @__PURE__ */ s.createElement("circle", { cx: "3", cy: "3", r: "3", fill: "curre\
-ntColor" }))), "IconSymbols"), Me = /* @__PURE__ */ a(({ type: e }) => e === "group" ? /* @__PURE__ */ s.createElement("use", { xlinkHref: `\
+ntColor" }))), "IconSymbols"), Le = /* @__PURE__ */ a(({ type: e }) => e === "group" ? /* @__PURE__ */ s.createElement("use", { xlinkHref: `\
 #${Wc}` }) : e === "component" ? /* @__PURE__ */ s.createElement("use", { xlinkHref: `#${Vc}` }) : e === "document" ? /* @__PURE__ */ s.createElement(
 "use", { xlinkHref: `#${jc}` }) : e === "story" ? /* @__PURE__ */ s.createElement("use", { xlinkHref: `#${Kc}` }) : e === "success" ? /* @__PURE__ */ s.
 createElement("use", { xlinkHref: `#${$c}` }) : e === "error" ? /* @__PURE__ */ s.createElement("use", { xlinkHref: `#${Uc}` }) : e === "war\
@@ -7611,17 +7614,17 @@ var tx = I(kn)({
   "status-value:pending": [/* @__PURE__ */ s.createElement(ox, { key: "icon" }), "currentColor"],
   "status-value:success": [
     /* @__PURE__ */ s.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, /* @__PURE__ */ s.createElement(
-    Me, { type: "success" })),
+    Le, { type: "success" })),
     "currentColor"
   ],
   "status-value:warning": [
     /* @__PURE__ */ s.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, /* @__PURE__ */ s.createElement(
-    Me, { type: "warning" })),
+    Le, { type: "warning" })),
     "#A15C20"
   ],
   "status-value:error": [
     /* @__PURE__ */ s.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, /* @__PURE__ */ s.createElement(
-    Me, { type: "error" })),
+    Le, { type: "error" })),
     "#D43900"
   ]
 }, Ho = /* @__PURE__ */ a((e) => rx.reduce(
@@ -7874,17 +7877,17 @@ nt" ? e.base === "dark" ? e.color.gold : "#ff8300" : t === "story" ? e.color.sea
 }) {
   return /* @__PURE__ */ s.createElement(tp, { isExpandable: i, tabIndex: -1, ...r }, /* @__PURE__ */ s.createElement(Wr, null, i && /* @__PURE__ */ s.
   createElement(Kt, { isExpanded: o }), /* @__PURE__ */ s.createElement(wt, { viewBox: "0 0 14 14", width: "14", height: "14", type: "group" },
-  /* @__PURE__ */ s.createElement(Me, { type: "group" }))), t);
+  /* @__PURE__ */ s.createElement(Le, { type: "group" }))), t);
 }, "GroupNode")), ip = s.memo(
   /* @__PURE__ */ a(function({ theme: t, children: o, isExpanded: i, isExpandable: r, isSelected: n, ...l }) {
     return /* @__PURE__ */ s.createElement(tp, { isExpandable: r, tabIndex: -1, ...l }, /* @__PURE__ */ s.createElement(Wr, null, r && /* @__PURE__ */ s.
     createElement(Kt, { isExpanded: i }), /* @__PURE__ */ s.createElement(wt, { viewBox: "0 0 14 14", width: "12", height: "12", type: "comp\
-onent" }, /* @__PURE__ */ s.createElement(Me, { type: "component" }))), o);
+onent" }, /* @__PURE__ */ s.createElement(Le, { type: "component" }))), o);
   }, "ComponentNode")
 ), sp = s.memo(
   /* @__PURE__ */ a(function({ theme: t, children: o, docsMode: i, ...r }) {
     return /* @__PURE__ */ s.createElement(op, { tabIndex: -1, ...r }, /* @__PURE__ */ s.createElement(Wr, null, /* @__PURE__ */ s.createElement(
-    wt, { viewBox: "0 0 14 14", width: "12", height: "12", type: "document" }, /* @__PURE__ */ s.createElement(Me, { type: "document" }))), o);
+    wt, { viewBox: "0 0 14 14", width: "12", height: "12", type: "document" }, /* @__PURE__ */ s.createElement(Le, { type: "document" }))), o);
   }, "DocumentNode")
 ), ap = s.memo(/* @__PURE__ */ a(function({
   theme: t,
@@ -7892,7 +7895,7 @@ onent" }, /* @__PURE__ */ s.createElement(Me, { type: "component" }))), o);
   ...i
 }) {
   return /* @__PURE__ */ s.createElement(op, { tabIndex: -1, ...i }, /* @__PURE__ */ s.createElement(Wr, null, /* @__PURE__ */ s.createElement(
-  wt, { viewBox: "0 0 14 14", width: "12", height: "12", type: "story" }, /* @__PURE__ */ s.createElement(Me, { type: "story" }))), o);
+  wt, { viewBox: "0 0 14 14", width: "12", height: "12", type: "story" }, /* @__PURE__ */ s.createElement(Le, { type: "story" }))), o);
 }, "StoryNode"));
 
 // ../node_modules/es-toolkit/dist/function/debounce.mjs
@@ -7966,7 +7969,7 @@ var ux = {
   let { alt: o, ctrl: i, meta: r, shift: n } = e === !1 ? cx : e;
   return !(typeof o == "boolean" && o !== t.altKey || typeof i == "boolean" && i !== t.ctrlKey || typeof r == "boolean" && r !== t.metaKey ||
   typeof n == "boolean" && n !== t.shiftKey);
-}, "matchesModifiers"), $e = /* @__PURE__ */ a((e, t) => t.code ? t.code === e : t.key === ux[e], "matchesKeyCode");
+}, "matchesModifiers"), Ue = /* @__PURE__ */ a((e, t) => t.code ? t.code === e : t.key === ux[e], "matchesKeyCode");
 
 // src/manager/components/sidebar/useExpanded.ts
 var { document: Yi } = se, px = /* @__PURE__ */ a(({
@@ -8019,7 +8022,7 @@ var { document: Yi } = se, px = /* @__PURE__ */ a(({
     },
     [e, m, o]
   );
-  H(() => {
+  B(() => {
     h({ ids: Fo(i, c), value: !0 });
   }, [i, c]);
   let x = A(() => {
@@ -8028,14 +8031,14 @@ var { document: Yi } = se, px = /* @__PURE__ */ a(({
   }, [i, n]), E = A(() => {
     h({ ids: Object.keys(i), value: !0 });
   }, [i]);
-  return H(() => p ? (p.on(ho, x), p.on(wn, E), () => {
+  return B(() => p ? (p.on(ho, x), p.on(wn, E), () => {
     p.off(ho, x), p.off(wn, E);
-  }) : dx, [p, x, E]), H(() => {
+  }) : dx, [p, x, E]), B(() => {
     let g = Yi.getElementById("storybook-explorer-menu"), v = Gi((S) => {
       let w = l.current?.refId === o && l.current?.itemId;
       if (!t || !e.current || !w || S.repeat || !Et(!1, S))
         return;
-      let k = $e("Enter", S), _ = $e("Space", S), C = $e("ArrowLeft", S), T = $e("ArrowRight", S);
+      let k = Ue("Enter", S), _ = Ue("Space", S), C = Ue("ArrowLeft", S), T = Ue("ArrowRight", S);
       if (!(k || _ || C || T))
         return;
       let O = y(w);
@@ -8057,7 +8060,7 @@ var { document: Yi } = se, px = /* @__PURE__ */ a(({
           h({ ids: [w], value: !1 });
           return;
         }
-        let F = O.getAttribute("data-parent-id"), Z = F && y(F);
+        let N = O.getAttribute("data-parent-id"), Z = N && y(N);
         if (Z && Z.getAttribute("data-highlightable") === "true") {
           m(Z);
           return;
@@ -8159,16 +8162,16 @@ var fx = I.div((e) => ({
     }
   }
 })), gx = /* @__PURE__ */ a((e) => {
-  let t = De();
+  let t = Me();
   return /* @__PURE__ */ s.createElement(Un, { ...e, color: t.color.positive });
 }, "SuccessStatusIcon"), yx = /* @__PURE__ */ a((e) => {
-  let t = De();
+  let t = Me();
   return /* @__PURE__ */ s.createElement($n, { ...e, color: t.color.negative });
 }, "ErrorStatusIcon"), bx = /* @__PURE__ */ a((e) => {
-  let t = De();
+  let t = Me();
   return /* @__PURE__ */ s.createElement(Gn, { ...e, color: t.color.warning });
 }, "WarnStatusIcon"), vx = /* @__PURE__ */ a((e) => {
-  let t = De();
+  let t = Me();
   return /* @__PURE__ */ s.createElement(ct, { ...e, size: 12, color: t.color.defaultText });
 }, "PendingStatusIcon"), Qi = {
   "status-value:success": /* @__PURE__ */ s.createElement(gx, null),
@@ -8367,7 +8370,7 @@ var cp = [
       ),
       k.node,
       ["status-value:error", "status-value:warning"].includes(_) && /* @__PURE__ */ s.createElement(zo, { type: "button", status: _ }, /* @__PURE__ */ s.
-      createElement("svg", { key: "icon", viewBox: "0 0 6 6", width: "6", height: "6", type: "dot" }, /* @__PURE__ */ s.createElement(Me, { type: "\
+      createElement("svg", { key: "icon", viewBox: "0 0 6 6", width: "6", height: "6", type: "dot" }, /* @__PURE__ */ s.createElement(Le, { type: "\
 dot" })))
     );
   }
@@ -8431,16 +8434,16 @@ dot" })))
     [E]
   ), v = G(() => E.reduce(
     (T, O) => {
-      let { children: P, parent: D, name: M } = r[O], [F] = P;
+      let { children: P, parent: D, name: M } = r[O], [N] = P;
       if (D) {
         let Z = [...r[D].children];
-        Z[Z.indexOf(O)] = F, T[D] = { ...r[D], children: Z };
+        Z[Z.indexOf(O)] = N, T[D] = { ...r[D], children: Z };
       }
-      return T[F] = {
-        ...r[F],
+      return T[N] = {
+        ...r[N],
         name: M,
         parent: D,
-        depth: r[F].depth - 1
+        depth: r[N].depth - 1
       }, T;
     },
     { ...r }
@@ -8465,7 +8468,7 @@ dot" })))
   ), C = G(() => g.map((T) => {
     let O = v[T], P = Hr(T, i);
     if (O.type === "root") {
-      let M = x[O.id], F = M.every((Z) => w[Z]);
+      let M = x[O.id], N = M.every((Z) => w[Z]);
       return (
         // @ts-expect-error (TODO)
         /* @__PURE__ */ s.createElement(
@@ -8481,7 +8484,7 @@ dot" })))
             isSelected: d === T,
             isExpanded: !!w[T],
             setExpanded: k,
-            isFullyExpanded: F,
+            isFullyExpanded: N,
             expandableDescendants: M,
             onSelectStoryId: p
           }
@@ -8569,7 +8572,7 @@ var Ix = I.div(({ isMain: e }) => ({
     }
   }
 })), fp = s.memo(/* @__PURE__ */ a(function(t) {
-  let { docsOptions: o } = Ne(), i = oe(), {
+  let { docsOptions: o } = Fe(), i = oe(), {
     filteredIndex: r,
     id: n,
     title: l = n,
@@ -8586,10 +8589,10 @@ var Ix = I.div(({ isMain: e }) => ({
     allStatuses: E
   } = t, g = G(() => r ? Object.keys(r).length : 0, [r]), v = U(null), S = n === lt, k = u || (y === "auto-inject" && !x || y === "server-ch\
 ecked") || y === "unknown", O = Ac(k, !!h && g === 0, !!b, !k && g === 0), [P, D] = K(m);
-  H(() => {
+  B(() => {
     r && d && r[d] && D(!0);
   }, [D, r, d]);
-  let M = A(() => D((V) => !V), [D]), F = A(
+  let M = A(() => D((V) => !V), [D]), N = A(
     (V) => f({ itemId: V, refId: n }),
     [f]
   ), Z = A(
@@ -8620,7 +8623,7 @@ ecked") || y === "unknown", O = Ac(k, !!h && g === 0, !!b, !k && g === 0), [P, D
       selectedStoryId: d,
       onSelectStoryId: Z,
       highlightedRef: p,
-      setHighlightedItemId: F
+      setHighlightedItemId: N
     }
   )));
 }, "Ref"));
@@ -8648,17 +8651,17 @@ var { document: jr, window: mp } = se, hp = /* @__PURE__ */ a((e) => e ? { itemI
     },
     [d]
   );
-  return H(() => {
+  return B(() => {
     let f = hp(i);
     d(f), f && gp(`[data-item-id="${f.itemId}"][data-ref-id="${f.refId}"]`, {
       containerRef: e,
       center: !0
     });
-  }, [e, i, d]), H(() => {
+  }, [e, i, d]), B(() => {
     let f = jr.getElementById("storybook-explorer-menu"), h, y = /* @__PURE__ */ a((m) => {
       if (t || !o || !e.current || !Et(!1, m))
         return;
-      let b = $e("ArrowUp", m), x = $e("ArrowDown", m);
+      let b = Ue("ArrowUp", m), x = Ue("ArrowDown", m);
       if (!(b || x))
         return;
       let E = mp.requestAnimationFrame(() => {
@@ -8815,7 +8818,7 @@ var Xi = I(ee)(({ highlighted: e, theme: t, isMobile: o }) => ({
       onClick: () => l(!1),
       isMobile: !0
     },
-    /* @__PURE__ */ s.createElement(je, null)
+    /* @__PURE__ */ s.createElement(Ke, null)
   )) : /* @__PURE__ */ s.createElement(
     ve,
     {
@@ -8905,8 +8908,8 @@ var Ox = I.div(({ theme: e }) => ({
 createElement(Ip, { menu: t, isHighlighted: e, onClick: r })), "Heading");
 
 // ../node_modules/downshift/dist/downshift.esm.js
-var Y = Ve(si());
-var Nx = Ve(Cp());
+var Y = je(si());
+var Nx = je(Cp());
 
 // ../node_modules/compute-scroll-into-view/dist/index.js
 var _p = /* @__PURE__ */ a((e) => typeof e == "object" && e != null && e.nodeType === 1, "t"), kp = /* @__PURE__ */ a((e, t) => (!t || e !==
@@ -8949,25 +8952,25 @@ e - i : l > t && u < o || n < e && u > o ? l - t + r : 0, "o"), Lx = /* @__PURE_
     let Q = window.getComputedStyle(V);
     return { top: parseFloat(Q.scrollMarginTop) || 0, right: parseFloat(Q.scrollMarginRight) || 0, bottom: parseFloat(Q.scrollMarginBottom) ||
     0, left: parseFloat(Q.scrollMarginLeft) || 0 };
-  })(e), M = u === "start" || u === "nearest" ? w - T : u === "end" ? _ + P : w + v / 2 - T + P, F = c === "center" ? C + S / 2 - D + O : c ===
+  })(e), M = u === "start" || u === "nearest" ? w - T : u === "end" ? _ + P : w + v / 2 - T + P, N = c === "center" ? C + S / 2 - D + O : c ===
   "end" ? k + O : C - D, Z = [];
   for (let V = 0; V < y.length; V++) {
-    let Q = y[V], { height: z, width: q, top: W, right: re, bottom: R, left: B } = Q.getBoundingClientRect();
-    if (l === "if-needed" && w >= 0 && C >= 0 && _ <= x && k <= b && (Q === h && !en(Q) || w >= W && _ <= R && C >= B && k <= re)) return Z;
+    let Q = y[V], { height: H, width: q, top: W, right: re, bottom: F, left: R } = Q.getBoundingClientRect();
+    if (l === "if-needed" && w >= 0 && C >= 0 && _ <= x && k <= b && (Q === h && !en(Q) || w >= W && _ <= F && C >= R && k <= re)) return Z;
     let L = getComputedStyle(Q), $ = parseInt(L.borderLeftWidth, 10), J = parseInt(L.borderTopWidth, 10), ie = parseInt(L.borderRightWidth, 10),
     te = parseInt(L.borderBottomWidth, 10), de = 0, ae = 0, ce = "offsetWidth" in Q ? Q.offsetWidth - Q.clientWidth - $ - ie : 0, ue = "offs\
 etHeight" in Q ? Q.offsetHeight - Q.clientHeight - J - te : 0, Ie = "offsetWidth" in Q ? Q.offsetWidth === 0 ? 0 : q / Q.offsetWidth : 0, ye = "\
-offsetHeight" in Q ? Q.offsetHeight === 0 ? 0 : z / Q.offsetHeight : 0;
+offsetHeight" in Q ? Q.offsetHeight === 0 ? 0 : H / Q.offsetHeight : 0;
     if (h === Q) de = u === "start" ? M : u === "end" ? M - x : u === "nearest" ? tn(g, g + x, x, J, te, g + M, g + M + v, v) : M - x / 2, ae =
-    c === "start" ? F : c === "center" ? F - b / 2 : c === "end" ? F - b : tn(E, E + b, b, $, ie, E + F, E + F + S, S), de = Math.max(0, de +
+    c === "start" ? N : c === "center" ? N - b / 2 : c === "end" ? N - b : tn(E, E + b, b, $, ie, E + N, E + N + S, S), de = Math.max(0, de +
     g), ae = Math.max(0, ae + E);
     else {
-      de = u === "start" ? M - W - J : u === "end" ? M - R + te + ue : u === "nearest" ? tn(W, R, z, J, te + ue, M, M + v, v) : M - (W + z /
-      2) + ue / 2, ae = c === "start" ? F - B - $ : c === "center" ? F - (B + q / 2) + ce / 2 : c === "end" ? F - re + ie + ce : tn(B, re, q,
-      $, ie + ce, F, F + S, S);
+      de = u === "start" ? M - W - J : u === "end" ? M - F + te + ue : u === "nearest" ? tn(W, F, H, J, te + ue, M, M + v, v) : M - (W + H /
+      2) + ue / 2, ae = c === "start" ? N - R - $ : c === "center" ? N - (R + q / 2) + ce / 2 : c === "end" ? N - re + ie + ce : tn(R, re, q,
+      $, ie + ce, N, N + S, S);
       let { scrollLeft: Oe, scrollTop: fe } = Q;
-      de = ye === 0 ? 0 : Math.max(0, Math.min(fe + de / ye, Q.scrollHeight - z / ye + ue)), ae = Ie === 0 ? 0 : Math.max(0, Math.min(Oe + ae /
-      Ie, Q.scrollWidth - q / Ie + ce)), M += fe - de, F += Oe - ae;
+      de = ye === 0 ? 0 : Math.max(0, Math.min(fe + de / ye, Q.scrollHeight - H / ye + ue)), ae = Ie === 0 ? 0 : Math.max(0, Math.min(Oe + ae /
+      Ie, Q.scrollWidth - q / Ie + ce)), M += fe - de, N += Oe - ae;
     }
     Z.push({ el: Q, top: de, left: ae });
   }
@@ -8988,12 +8991,12 @@ var $t = /* @__PURE__ */ a(function() {
 // ../node_modules/downshift/dist/downshift.esm.js
 var Fx = 0;
 function Pp(e) {
-  return typeof e == "function" ? e : Re;
+  return typeof e == "function" ? e : Be;
 }
 a(Pp, "cbToCb");
-function Re() {
+function Be() {
 }
-a(Re, "noop");
+a(Be, "noop");
 function Rp(e, t) {
   if (e) {
     var o = Op(e, {
@@ -9252,9 +9255,9 @@ jx = /* @__PURE__ */ Object.freeze({
         var S, w = g === void 0 ? {} : g, k = w.refKey, _ = k === void 0 ? "ref" : k, C = w.ref, T = ke(w, Kx), O = v === void 0 ? {} : v, P = O.
         suppressRefError, D = P === void 0 ? !1 : P;
         n.getRootProps.called = !0, n.getRootProps.refKey = _, n.getRootProps.suppressRefError = D;
-        var M = n.getState(), F = M.isOpen;
-        return j((S = {}, S[_] = Ze(C, n.rootRef), S.role = "combobox", S["aria-expanded"] = F, S["aria-haspopup"] = "listbox", S["aria-owns"] =
-        F ? n.menuId : void 0, S["aria-labelledby"] = n.labelId, S), T);
+        var M = n.getState(), N = M.isOpen;
+        return j((S = {}, S[_] = Ze(C, n.rootRef), S.role = "combobox", S["aria-expanded"] = N, S["aria-haspopup"] = "listbox", S["aria-owns"] =
+        N ? n.menuId : void 0, S["aria-labelledby"] = n.labelId, S), T);
       }, n.keyDownHandlers = {
         ArrowDown: /* @__PURE__ */ a(function(v) {
           var S = this;
@@ -9412,7 +9415,7 @@ jx = /* @__PURE__ */ Object.freeze({
         v.onChangeText;
         var C = ke(v, Ux), T, O = {};
         T = "onChange";
-        var P = n.getState(), D = P.inputValue, M = P.isOpen, F = P.highlightedIndex;
+        var P = n.getState(), D = P.inputValue, M = P.isOpen, N = P.highlightedIndex;
         if (!C.disabled) {
           var Z;
           O = (Z = {}, Z[T] = le(k, _, n.inputHandleChange), Z.onKeyDown = le(S, n.inputHandleKeyDown), Z.onBlur = le(w, n.inputHandleBlur),
@@ -9420,7 +9423,7 @@ jx = /* @__PURE__ */ Object.freeze({
         }
         return j({
           "aria-autocomplete": "list",
-          "aria-activedescendant": M && typeof F == "number" && F >= 0 ? n.getItemId(F) : void 0,
+          "aria-activedescendant": M && typeof N == "number" && N >= 0 ? n.getItemId(N) : void 0,
           "aria-controls": M ? n.menuId : void 0,
           "aria-labelledby": C && C["aria-label"] ? void 0 : n.labelId,
           // https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
@@ -9465,7 +9468,7 @@ jx = /* @__PURE__ */ Object.freeze({
           void 0
         ) : T, P = ke(S, qx);
         C === void 0 ? (n.items.push(O), C = n.items.indexOf(O)) : n.items[C] = O;
-        var D = "onClick", M = _, F = (v = {
+        var D = "onClick", M = _, N = (v = {
           // onMouseMove is used over onMouseEnter here. onMouseMove
           // is only triggered on actual mouse movement while onMouseEnter
           // can fire on DOM changes, interrupting keyboard navigation
@@ -9484,8 +9487,8 @@ jx = /* @__PURE__ */ Object.freeze({
             type: qp
           });
         }), v), Z = P.disabled ? {
-          onMouseDown: F.onMouseDown
-        } : F;
+          onMouseDown: N.onMouseDown
+        } : N;
         return j({
           id: n.getItemId(C),
           role: "option",
@@ -9576,7 +9579,7 @@ jx = /* @__PURE__ */ Object.freeze({
       id, h = this.getRootProps, y = this.getToggleButtonProps, m = this.getLabelProps, b = this.getMenuProps, x = this.getInputProps, E = this.
       getItemProps, g = this.openMenu, v = this.closeMenu, S = this.toggleMenu, w = this.selectItem, k = this.selectItemAtIndex, _ = this.selectHighlightedItem,
       C = this.setHighlightedIndex, T = this.clearSelection, O = this.clearItems, P = this.reset, D = this.setItemCount, M = this.unsetItemCount,
-      F = this.internalSetState;
+      N = this.internalSetState;
       return {
         // prop getters
         getRootProps: h,
@@ -9598,7 +9601,7 @@ jx = /* @__PURE__ */ Object.freeze({
         clearItems: O,
         setItemCount: D,
         unsetItemCount: M,
-        setState: F,
+        setState: N,
         // props
         itemToString: p,
         // derived
@@ -9656,7 +9659,7 @@ move", d), f.addEventListener("touchend", p), this.cleanup = function() {
     }, "componentDidUpdate"), i.componentWillUnmount = /* @__PURE__ */ a(function() {
       this.cleanup();
     }, "componentWillUnmount"), i.render = /* @__PURE__ */ a(function() {
-      var n = Dp(this.props.children, Re);
+      var n = Dp(this.props.children, Be);
       this.clearItems(), this.getRootProps.called = !1, this.getRootProps.refKey = void 0, this.getRootProps.suppressRefError = void 0, this.
       getMenuProps.called = !1, this.getMenuProps.refKey = void 0, this.getMenuProps.suppressRefError = void 0, this.getLabelProps.called = !1,
       this.getInputProps.called = !1;
@@ -9668,7 +9671,7 @@ move", d), f.addEventListener("touchend", p), this.cleanup = function() {
       if (Bx(l))
         return /* @__PURE__ */ ta(l, this.getRootProps(Hx(l)));
     }, "render"), o;
-  }(Le);
+  }(Ne);
   return e.defaultProps = {
     defaultHighlightedIndex: null,
     defaultIsOpen: !1,
@@ -9676,12 +9679,12 @@ move", d), f.addEventListener("touchend", p), this.cleanup = function() {
     itemToString: /* @__PURE__ */ a(function(o) {
       return o == null ? "" : String(o);
     }, "itemToString"),
-    onStateChange: Re,
-    onInputValueChange: Re,
-    onUserAction: Re,
-    onChange: Re,
-    onSelect: Re,
-    onOuterClick: Re,
+    onStateChange: Be,
+    onInputValueChange: Be,
+    onUserAction: Be,
+    onChange: Be,
+    onSelect: Be,
+    onOuterClick: Be,
     selectedItemChanged: /* @__PURE__ */ a(function(o, i) {
       return o !== i;
     }, "selectedItemChanged"),
@@ -9724,7 +9727,7 @@ function Xx(e, t) {
 a(Xx, "stateReducer");
 var Mp = hn(function(e, t) {
   zp(e, t);
-}, 200), Zx = typeof window < "u" && typeof window.document < "u" && typeof window.document.createElement < "u" ? Xt : H, rd = "useId" in s ?
+}, 200), Zx = typeof window < "u" && typeof window.document < "u" && typeof window.document.createElement < "u" ? Xt : B, rd = "useId" in s ?
 /* @__PURE__ */ a(function(t) {
   var o = t.id, i = t.labelId, r = t.menuId, n = t.getItemId, l = t.toggleButtonId, u = t.inputId, c = "downshift-" + s.useId();
   o || (o = c);
@@ -9787,7 +9790,7 @@ function nd(e, t, o, i) {
       props: p.current
     }, y));
   }, [p]), h = n.current;
-  return H(function() {
+  return B(function() {
     var y = Vo(r.current, h?.props), m = h && r.current && !i(y, c);
     m && Yx(h, y, c), r.current = c;
   }, [c, h, i]), [c, f];
@@ -9853,9 +9856,9 @@ function ad(e, t, o) {
     isTouchMove: !1,
     isTouchEnd: !1
   });
-  return H(function() {
+  return B(function() {
     if (!e)
-      return Re;
+      return Be;
     var r = o.map(function(p) {
       return p.current;
     });
@@ -9887,17 +9890,17 @@ function ad(e, t, o) {
 }
 a(ad, "useMouseAndTouchTracker");
 var rs = /* @__PURE__ */ a(function() {
-  return Re;
+  return Be;
 }, "useGetterPropsCalledChecker");
 function ns(e, t, o, i) {
   i === void 0 && (i = {});
   var r = i.document, n = yn();
-  H(function() {
+  B(function() {
     if (!(!e || n || !r)) {
       var l = e(t);
       Mp(l, r);
     }
-  }, o), H(function() {
+  }, o), B(function() {
     return function() {
       Mp.cancel(), Vx(r);
     };
@@ -9911,7 +9914,7 @@ function ld(e) {
   }, [t]), u;
 }
 a(ld, "useScrollIntoView");
-var is = Re;
+var is = Be;
 function cn(e, t, o) {
   var i;
   o === void 0 && (o = !0);
@@ -10053,10 +10056,10 @@ function tI(e) {
   return o;
 }
 a(tI, "getItemIndexByCharacterKey");
-var VR = $t($t({}, cd), { items: Y.default.array.isRequired, isItemDisabled: Y.default.func }), oI = $t($t({}, Wo), { isItemDisabled: /* @__PURE__ */ a(
+var KR = $t($t({}, cd), { items: Y.default.array.isRequired, isItemDisabled: Y.default.func }), oI = $t($t({}, Wo), { isItemDisabled: /* @__PURE__ */ a(
 function() {
   return !1;
-}, "isItemDisabled") }), rI = Re, an = 0, ss = 1, as = 2, dn = 3, ls = 4, us = 5, cs = 6, ps = 7, ds = 8, fs = 9, ms = 10, fn = 11, dd = 12,
+}, "isItemDisabled") }), rI = Be, an = 0, ss = 1, as = 2, dn = 3, ls = 4, us = 5, cs = 6, ps = 7, ds = 8, fs = 9, ms = 10, fn = 11, dd = 12,
 fd = 13, hs = 14, md = 15, hd = 16, gd = 17, yd = 18, gs = 19, es = 20, bd = 21, vd = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   FunctionCloseMenu: gd,
@@ -10192,8 +10195,8 @@ function xd(e) {
   {
     state: l,
     props: t
-  }), g = A(function(z) {
-    return m.current[x.getItemId(z)];
+  }), g = A(function(H) {
+    return m.current[x.getItemId(H)];
   }, [x]);
   ns(r, l, [c, d, p, f], i);
   var v = ld({
@@ -10204,23 +10207,23 @@ function xd(e) {
     scrollIntoView: o,
     getItemNodeFromIndex: g
   });
-  H(function() {
-    return b.current = hn(function(z) {
-      z({
+  B(function() {
+    return b.current = hn(function(H) {
+      H({
         type: es,
         inputValue: ""
       });
     }, 500), function() {
       b.current.cancel();
     };
-  }, []), H(function() {
+  }, []), B(function() {
     f && b.current(u);
   }, [u, f]), is({
     props: t,
     state: l
-  }), H(function() {
-    var z = Ut(t, "isOpen");
-    z && h.current && h.current.focus();
+  }), B(function() {
+    var H = Ut(t, "isOpen");
+    H && h.current && h.current.focus();
   }, []);
   var S = ad(i, A(/* @__PURE__ */ a(function() {
     E.current.state.isOpen && u({
@@ -10229,7 +10232,7 @@ function xd(e) {
   }, "handleBlur"), [u, E]), G(function() {
     return [y, h];
   }, [y.current, h.current])), w = rs("getMenuProps", "getToggleButtonProps");
-  H(function() {
+  B(function() {
     c || (m.current = {});
   }, [c]);
   var k = G(function() {
@@ -10305,37 +10308,37 @@ function xd(e) {
     u({
       type: hd
     });
-  }, [u]), O = A(function(z) {
+  }, [u]), O = A(function(H) {
     u({
       type: yd,
-      highlightedIndex: z
+      highlightedIndex: H
     });
-  }, [u]), P = A(function(z) {
+  }, [u]), P = A(function(H) {
     u({
       type: gs,
-      selectedItem: z
+      selectedItem: H
     });
   }, [u]), D = A(function() {
     u({
       type: bd
     });
-  }, [u]), M = A(function(z) {
+  }, [u]), M = A(function(H) {
     u({
       type: es,
-      inputValue: z
+      inputValue: H
     });
-  }, [u]), F = A(function(z) {
-    var q = z === void 0 ? {} : z, W = q.onClick, re = ke(q, iI), R = /* @__PURE__ */ a(function() {
+  }, [u]), N = A(function(H) {
+    var q = H === void 0 ? {} : H, W = q.onClick, re = ke(q, iI), F = /* @__PURE__ */ a(function() {
       var L;
       (L = h.current) == null || L.focus();
     }, "labelHandleClick");
     return j({
       id: x.labelId,
       htmlFor: x.toggleButtonId,
-      onClick: le(W, R)
+      onClick: le(W, F)
     }, re);
-  }, [x]), Z = A(function(z, q) {
-    var W, re = z === void 0 ? {} : z, R = re.onMouseLeave, B = re.refKey, L = B === void 0 ? "ref" : B, $ = re.ref, J = ke(re, sI), ie = q ===
+  }, [x]), Z = A(function(H, q) {
+    var W, re = H === void 0 ? {} : H, F = re.onMouseLeave, R = re.refKey, L = R === void 0 ? "ref" : R, $ = re.ref, J = ke(re, sI), ie = q ===
     void 0 ? {} : q, te = ie.suppressRefError, de = te === void 0 ? !1 : te, ae = /* @__PURE__ */ a(function() {
       u({
         type: dd
@@ -10343,10 +10346,10 @@ function xd(e) {
     }, "menuHandleMouseLeave");
     return w("getMenuProps", de, L, y), j((W = {}, W[L] = Ze($, function(ce) {
       y.current = ce;
-    }), W.id = x.menuId, W.role = "listbox", W["aria-labelledby"] = J && J["aria-label"] ? void 0 : "" + x.labelId, W.onMouseLeave = le(R, ae),
+    }), W.id = x.menuId, W.role = "listbox", W["aria-labelledby"] = J && J["aria-label"] ? void 0 : "" + x.labelId, W.onMouseLeave = le(F, ae),
     W), J);
-  }, [u, w, x]), V = A(function(z, q) {
-    var W, re = z === void 0 ? {} : z, R = re.onBlur, B = re.onClick;
+  }, [u, w, x]), V = A(function(H, q) {
+    var W, re = H === void 0 ? {} : H, F = re.onBlur, R = re.onClick;
     re.onPress;
     var L = re.onKeyDown, $ = re.refKey, J = $ === void 0 ? "ref" : $, ie = re.ref, te = ke(re, aI), de = q === void 0 ? {} : q, ae = de.suppressRefError,
     ce = ae === void 0 ? !1 : ae, ue = E.current.state, Ie = /* @__PURE__ */ a(function() {
@@ -10358,46 +10361,46 @@ function xd(e) {
         type: fn
       });
     }, "toggleButtonHandleBlur"), Oe = /* @__PURE__ */ a(function(_e) {
-      var Ae = po(_e);
-      Ae && k[Ae] ? k[Ae](_e) : Jx(Ae) && u({
+      var De = po(_e);
+      De && k[De] ? k[De](_e) : Jx(De) && u({
         type: dn,
-        key: Ae
+        key: De
       });
     }, "toggleButtonHandleKeyDown"), fe = j((W = {}, W[J] = Ze(ie, function(Se) {
       h.current = Se;
     }), W["aria-activedescendant"] = ue.isOpen && ue.highlightedIndex > -1 ? x.getItemId(ue.highlightedIndex) : "", W["aria-controls"] = x.menuId,
     W["aria-expanded"] = E.current.state.isOpen, W["aria-haspopup"] = "listbox", W["aria-labelledby"] = te && te["aria-label"] ? void 0 : "" +
-    x.labelId, W.id = x.toggleButtonId, W.role = "combobox", W.tabIndex = 0, W.onBlur = le(R, ye), W), te);
-    return te.disabled || (fe.onClick = le(B, Ie), fe.onKeyDown = le(L, Oe)), w("getToggleButtonProps", ce, J, h), fe;
-  }, [u, x, E, S, w, k]), Q = A(function(z) {
-    var q, W = z === void 0 ? {} : z, re = W.item, R = W.index, B = W.onMouseMove, L = W.onClick, $ = W.onMouseDown;
+    x.labelId, W.id = x.toggleButtonId, W.role = "combobox", W.tabIndex = 0, W.onBlur = le(F, ye), W), te);
+    return te.disabled || (fe.onClick = le(R, Ie), fe.onKeyDown = le(L, Oe)), w("getToggleButtonProps", ce, J, h), fe;
+  }, [u, x, E, S, w, k]), Q = A(function(H) {
+    var q, W = H === void 0 ? {} : H, re = W.item, F = W.index, R = W.onMouseMove, L = W.onClick, $ = W.onMouseDown;
     W.onPress;
     var J = W.refKey, ie = J === void 0 ? "ref" : J, te = W.disabled, de = W.ref, ae = ke(W, lI);
     te !== void 0 && console.warn('Passing "disabled" as an argument to getItemProps is not supported anymore. Please use the isItemDisabled\
  prop from useSelect.');
-    var ce = E.current, ue = ce.state, Ie = ce.props, ye = ts(re, R, Ie.items, "Pass either item or index to getItemProps!"), Oe = ye[0], fe = ye[1],
+    var ce = E.current, ue = ce.state, Ie = ce.props, ye = ts(re, F, Ie.items, "Pass either item or index to getItemProps!"), Oe = ye[0], fe = ye[1],
     Se = Ie.isItemDisabled(Oe, fe), _e = /* @__PURE__ */ a(function() {
       S.isTouchEnd || fe === ue.highlightedIndex || (v.current = !1, u({
         type: fd,
         index: fe,
         disabled: Se
       }));
-    }, "itemHandleMouseMove"), Ae = /* @__PURE__ */ a(function() {
+    }, "itemHandleMouseMove"), De = /* @__PURE__ */ a(function() {
       u({
         type: hs,
         index: fe
       });
     }, "itemHandleClick"), et = /* @__PURE__ */ a(function(fo) {
       return fo.preventDefault();
-    }, "itemHandleMouseDown"), N = j((q = {}, q[ie] = Ze(de, function(Ge) {
-      Ge && (m.current[x.getItemId(fe)] = Ge);
+    }, "itemHandleMouseDown"), Pe = j((q = {}, q[ie] = Ze(de, function(z) {
+      z && (m.current[x.getItemId(fe)] = z);
     }), q["aria-disabled"] = Se, q["aria-selected"] = Oe === ue.selectedItem, q.id = x.getItemId(fe), q.role = "option", q), ae);
-    return Se || (N.onClick = le(L, Ae)), N.onMouseMove = le(B, _e), N.onMouseDown = le($, et), N;
+    return Se || (Pe.onClick = le(L, De)), Pe.onMouseMove = le(R, _e), Pe.onMouseDown = le($, et), Pe;
   }, [E, x, S, v, u]);
   return {
     // prop getters.
     getToggleButtonProps: V,
-    getLabelProps: F,
+    getLabelProps: N,
     getMenuProps: Z,
     getItemProps: Q,
     // actions.
@@ -10451,7 +10454,7 @@ function uI(e) {
   });
 }
 a(uI, "getInitialState$1");
-var jR = j({}, cd, {
+var $R = j({}, cd, {
   items: Y.default.array.isRequired,
   isItemDisabled: Y.default.func,
   inputValue: Y.default.string,
@@ -10462,7 +10465,7 @@ var jR = j({}, cd, {
 });
 function cI(e, t, o, i) {
   var r = U(), n = nd(e, t, o, i), l = n[0], u = n[1], c = yn();
-  return H(function() {
+  return B(function() {
     if (ln(t, "selectedItem")) {
       if (!c) {
         var d = t.itemToKey(t.selectedItem) !== t.itemToKey(r.current);
@@ -10476,7 +10479,7 @@ function cI(e, t, o, i) {
   }, [l.selectedItem, t.selectedItem]), [Vo(l, t), u];
 }
 a(cI, "useControlledReducer");
-var pI = Re, dI = j({}, Wo, {
+var pI = Be, dI = j({}, Wo, {
   isItemDisabled: /* @__PURE__ */ a(function() {
     return !1;
   }, "isItemDisabled")
@@ -10590,8 +10593,8 @@ function Ad(e) {
   t), v = U(), S = gn({
     state: u,
     props: t
-  }), w = A(function(R) {
-    return m.current[g.getItemId(R)];
+  }), w = A(function(F) {
+    return m.current[g.getItemId(F)];
   }, [g]);
   ns(n, u, [d, p, f, h], r);
   var k = ld({
@@ -10605,10 +10608,10 @@ function Ad(e) {
   is({
     props: t,
     state: u
-  }), H(function() {
-    var R = Ut(t, "isOpen");
-    R && b.current && b.current.focus();
-  }, []), H(function() {
+  }), B(function() {
+    var F = Ut(t, "isOpen");
+    F && b.current && b.current.focus();
+  }, []), B(function() {
     E || (v.current = o.length);
   });
   var _ = ad(r, A(/* @__PURE__ */ a(function() {
@@ -10619,68 +10622,68 @@ function Ad(e) {
   }, "handleBlur"), [c, S]), G(function() {
     return [y, x, b];
   }, [y.current, x.current, b.current])), C = rs("getInputProps", "getMenuProps");
-  H(function() {
+  B(function() {
     d || (m.current = {});
-  }, [d]), H(function() {
-    var R;
-    !d || !(r != null && r.document) || !(b != null && (R = b.current) != null && R.focus) || r.document.activeElement !== b.current && b.current.
+  }, [d]), B(function() {
+    var F;
+    !d || !(r != null && r.document) || !(b != null && (F = b.current) != null && F.focus) || r.document.activeElement !== b.current && b.current.
     focus();
   }, [d, r]);
   var T = G(function() {
     return {
-      ArrowDown: /* @__PURE__ */ a(function(B) {
-        B.preventDefault(), c({
+      ArrowDown: /* @__PURE__ */ a(function(R) {
+        R.preventDefault(), c({
           type: ys,
-          altKey: B.altKey
+          altKey: R.altKey
         });
       }, "ArrowDown"),
-      ArrowUp: /* @__PURE__ */ a(function(B) {
-        B.preventDefault(), c({
+      ArrowUp: /* @__PURE__ */ a(function(R) {
+        R.preventDefault(), c({
           type: bs,
-          altKey: B.altKey
+          altKey: R.altKey
         });
       }, "ArrowUp"),
-      Home: /* @__PURE__ */ a(function(B) {
-        S.current.state.isOpen && (B.preventDefault(), c({
+      Home: /* @__PURE__ */ a(function(R) {
+        S.current.state.isOpen && (R.preventDefault(), c({
           type: xs
         }));
       }, "Home"),
-      End: /* @__PURE__ */ a(function(B) {
-        S.current.state.isOpen && (B.preventDefault(), c({
+      End: /* @__PURE__ */ a(function(R) {
+        S.current.state.isOpen && (R.preventDefault(), c({
           type: Is
         }));
       }, "End"),
-      Escape: /* @__PURE__ */ a(function(B) {
+      Escape: /* @__PURE__ */ a(function(R) {
         var L = S.current.state;
-        (L.isOpen || L.inputValue || L.selectedItem || L.highlightedIndex > -1) && (B.preventDefault(), c({
+        (L.isOpen || L.inputValue || L.selectedItem || L.highlightedIndex > -1) && (R.preventDefault(), c({
           type: vs
         }));
       }, "Escape"),
-      Enter: /* @__PURE__ */ a(function(B) {
+      Enter: /* @__PURE__ */ a(function(R) {
         var L = S.current.state;
-        !L.isOpen || B.which === 229 || (B.preventDefault(), c({
+        !L.isOpen || R.which === 229 || (R.preventDefault(), c({
           type: Es
         }));
       }, "Enter"),
-      PageUp: /* @__PURE__ */ a(function(B) {
-        S.current.state.isOpen && (B.preventDefault(), c({
+      PageUp: /* @__PURE__ */ a(function(R) {
+        S.current.state.isOpen && (R.preventDefault(), c({
           type: Ss
         }));
       }, "PageUp"),
-      PageDown: /* @__PURE__ */ a(function(B) {
-        S.current.state.isOpen && (B.preventDefault(), c({
+      PageDown: /* @__PURE__ */ a(function(R) {
+        S.current.state.isOpen && (R.preventDefault(), c({
           type: ws
         }));
       }, "PageDown")
     };
-  }, [c, S]), O = A(function(R) {
+  }, [c, S]), O = A(function(F) {
     return j({
       id: g.labelId,
       htmlFor: g.inputId
-    }, R);
-  }, [g]), P = A(function(R, B) {
-    var L, $ = R === void 0 ? {} : R, J = $.onMouseLeave, ie = $.refKey, te = ie === void 0 ? "ref" : ie, de = $.ref, ae = ke($, mI), ce = B ===
-    void 0 ? {} : B, ue = ce.suppressRefError, Ie = ue === void 0 ? !1 : ue;
+    }, F);
+  }, [g]), P = A(function(F, R) {
+    var L, $ = F === void 0 ? {} : F, J = $.onMouseLeave, ie = $.refKey, te = ie === void 0 ? "ref" : ie, de = $.ref, ae = ke($, mI), ce = R ===
+    void 0 ? {} : R, ue = ce.suppressRefError, Ie = ue === void 0 ? !1 : ue;
     return C("getMenuProps", Ie, te, y), j((L = {}, L[te] = Ze(de, function(ye) {
       y.current = ye;
     }), L.id = g.menuId, L.role = "listbox", L["aria-labelledby"] = ae && ae["aria-label"] ? void 0 : "" + g.labelId, L.onMouseLeave = le(J,
@@ -10689,55 +10692,55 @@ function Ad(e) {
         type: Id
       });
     }), L), ae);
-  }, [c, C, g]), D = A(function(R) {
-    var B, L, $ = R === void 0 ? {} : R, J = $.item, ie = $.index, te = $.refKey, de = te === void 0 ? "ref" : te, ae = $.ref, ce = $.onMouseMove,
+  }, [c, C, g]), D = A(function(F) {
+    var R, L, $ = F === void 0 ? {} : F, J = $.item, ie = $.index, te = $.refKey, de = te === void 0 ? "ref" : te, ae = $.ref, ce = $.onMouseMove,
     ue = $.onMouseDown, Ie = $.onClick;
     $.onPress;
     var ye = $.disabled, Oe = ke($, hI);
     ye !== void 0 && console.warn('Passing "disabled" as an argument to getItemProps is not supported anymore. Please use the isItemDisabled\
  prop from useCombobox.');
-    var fe = S.current, Se = fe.props, _e = fe.state, Ae = ts(J, ie, Se.items, "Pass either item or index to getItemProps!"), et = Ae[0], N = Ae[1],
-    Ge = Se.isItemDisabled(et, N), fo = "onClick", Uo = Ie, ht = /* @__PURE__ */ a(function() {
-      _.isTouchEnd || N === _e.highlightedIndex || (k.current = !1, c({
+    var fe = S.current, Se = fe.props, _e = fe.state, De = ts(J, ie, Se.items, "Pass either item or index to getItemProps!"), et = De[0], Pe = De[1],
+    z = Se.isItemDisabled(et, Pe), fo = "onClick", Uo = Ie, ht = /* @__PURE__ */ a(function() {
+      _.isTouchEnd || Pe === _e.highlightedIndex || (k.current = !1, c({
         type: Sd,
-        index: N,
-        disabled: Ge
+        index: Pe,
+        disabled: z
       }));
     }, "itemHandleMouseMove"), Ct = /* @__PURE__ */ a(function() {
       c({
         type: _s,
-        index: N
+        index: Pe
       });
     }, "itemHandleClick"), gt = /* @__PURE__ */ a(function(ff) {
       return ff.preventDefault();
     }, "itemHandleMouseDown");
-    return j((B = {}, B[de] = Ze(ae, function(qe) {
-      qe && (m.current[g.getItemId(N)] = qe);
-    }), B["aria-disabled"] = Ge, B["aria-selected"] = N === _e.highlightedIndex, B.id = g.getItemId(N), B.role = "option", B), !Ge && (L = {},
+    return j((R = {}, R[de] = Ze(ae, function(qe) {
+      qe && (m.current[g.getItemId(Pe)] = qe);
+    }), R["aria-disabled"] = z, R["aria-selected"] = Pe === _e.highlightedIndex, R.id = g.getItemId(Pe), R.role = "option", R), !z && (L = {},
     L[fo] = le(Uo, Ct), L), {
       onMouseMove: le(ce, ht),
       onMouseDown: le(ue, gt)
     }, Oe);
-  }, [c, g, S, _, k]), M = A(function(R) {
-    var B, L = R === void 0 ? {} : R, $ = L.onClick;
+  }, [c, g, S, _, k]), M = A(function(F) {
+    var R, L = F === void 0 ? {} : F, $ = L.onClick;
     L.onPress;
     var J = L.refKey, ie = J === void 0 ? "ref" : J, te = L.ref, de = ke(L, gI), ae = S.current.state, ce = /* @__PURE__ */ a(function() {
       c({
         type: wd
       });
     }, "toggleButtonHandleClick");
-    return j((B = {}, B[ie] = Ze(te, function(ue) {
+    return j((R = {}, R[ie] = Ze(te, function(ue) {
       x.current = ue;
-    }), B["aria-controls"] = g.menuId, B["aria-expanded"] = ae.isOpen, B.id = g.toggleButtonId, B.tabIndex = -1, B), !de.disabled && j({}, {
+    }), R["aria-controls"] = g.menuId, R["aria-expanded"] = ae.isOpen, R.id = g.toggleButtonId, R.tabIndex = -1, R), !de.disabled && j({}, {
       onClick: le($, ce)
     }), de);
-  }, [c, S, g]), F = A(function(R, B) {
-    var L, $ = R === void 0 ? {} : R, J = $.onKeyDown, ie = $.onChange, te = $.onInput, de = $.onBlur;
+  }, [c, S, g]), N = A(function(F, R) {
+    var L, $ = F === void 0 ? {} : F, J = $.onKeyDown, ie = $.onChange, te = $.onInput, de = $.onBlur;
     $.onChangeText;
-    var ae = $.onClick, ce = $.refKey, ue = ce === void 0 ? "ref" : ce, Ie = $.ref, ye = ke($, yI), Oe = B === void 0 ? {} : B, fe = Oe.suppressRefError,
+    var ae = $.onClick, ce = $.refKey, ue = ce === void 0 ? "ref" : ce, Ie = $.ref, ye = ke($, yI), Oe = R === void 0 ? {} : R, fe = Oe.suppressRefError,
     Se = fe === void 0 ? !1 : fe;
     C("getInputProps", Se, ue, b);
-    var _e = S.current.state, Ae = /* @__PURE__ */ a(function(gt) {
+    var _e = S.current.state, De = /* @__PURE__ */ a(function(gt) {
       var qe = po(gt);
       qe && T[qe] && T[qe](gt);
     }, "inputHandleKeyDown"), et = /* @__PURE__ */ a(function(gt) {
@@ -10745,7 +10748,7 @@ function Ad(e) {
         type: Ts,
         inputValue: gt.target.value
       });
-    }, "inputHandleChange"), N = /* @__PURE__ */ a(function(gt) {
+    }, "inputHandleChange"), Pe = /* @__PURE__ */ a(function(gt) {
       if (r != null && r.document && _e.isOpen && !_.isMouseDown) {
         var qe = gt.relatedTarget === null && r.document.activeElement !== r.document.body;
         c({
@@ -10753,14 +10756,14 @@ function Ad(e) {
           selectItem: !qe
         });
       }
-    }, "inputHandleBlur"), Ge = /* @__PURE__ */ a(function() {
+    }, "inputHandleBlur"), z = /* @__PURE__ */ a(function() {
       c({
         type: Cs
       });
     }, "inputHandleClick"), fo = "onChange", Uo = {};
     if (!ye.disabled) {
       var ht;
-      Uo = (ht = {}, ht[fo] = le(ie, te, et), ht.onKeyDown = le(J, Ae), ht.onBlur = le(de, N), ht.onClick = le(ae, Ge), ht);
+      Uo = (ht = {}, ht[fo] = le(ie, te, et), ht.onKeyDown = le(J, De), ht.onBlur = le(de, Pe), ht.onClick = le(ae, z), ht);
     }
     return j((L = {}, L[ue] = Ze(Ie, function(Ct) {
       b.current = Ct;
@@ -10779,20 +10782,20 @@ function Ad(e) {
     c({
       type: Td
     });
-  }, [c]), z = A(function(R) {
+  }, [c]), H = A(function(F) {
     c({
       type: _d,
-      highlightedIndex: R
+      highlightedIndex: F
     });
-  }, [c]), q = A(function(R) {
+  }, [c]), q = A(function(F) {
     c({
       type: ks,
-      selectedItem: R
+      selectedItem: F
     });
-  }, [c]), W = A(function(R) {
+  }, [c]), W = A(function(F) {
     c({
       type: kd,
-      inputValue: R
+      inputValue: F
     });
   }, [c]), re = A(function() {
     c({
@@ -10804,13 +10807,13 @@ function Ad(e) {
     getItemProps: D,
     getLabelProps: O,
     getMenuProps: P,
-    getInputProps: F,
+    getInputProps: N,
     getToggleButtonProps: M,
     // actions.
     toggleMenu: Z,
     openMenu: Q,
     closeMenu: V,
-    setHighlightedIndex: z,
+    setHighlightedIndex: H,
     setInputValue: W,
     selectItem: q,
     reset: re,
@@ -10856,7 +10859,7 @@ function vI(e, t) {
   return e.selectedItems === t.selectedItems && e.activeIndex === t.activeIndex;
 }
 a(vI, "isStateEqual");
-var KR = {
+var UR = {
   stateReducer: sn.stateReducer,
   itemToKey: sn.itemToKey,
   environment: sn.environment,
@@ -10877,7 +10880,7 @@ var KR = {
   environment: Wo.environment,
   keyNavigationNext: "ArrowRight",
   keyNavigationPrevious: "ArrowLeft"
-}, II = Re, Ps = 0, As = 1, Ds = 2, Ms = 3, Ls = 4, Ns = 5, Fs = 6, Rs = 7, Bs = 8, Hs = 9, zs = 10, Ws = 11, Vs = 12, SI = /* @__PURE__ */ Object.
+}, II = Be, Ps = 0, As = 1, Ds = 2, Ms = 3, Ls = 4, Ns = 5, Fs = 6, Rs = 7, Bs = 8, Hs = 9, zs = 10, Ws = 11, Vs = 12, SI = /* @__PURE__ */ Object.
 freeze({
   __proto__: null,
   DropdownClick: Rs,
@@ -10994,7 +10997,7 @@ function Md(e) {
     state: u,
     props: t
   });
-  ns(o, u, [d, p], i), H(function() {
+  ns(o, u, [d, p], i), B(function() {
     f || (d === -1 && h.current ? h.current.focus() : y.current[d] && y.current[d].focus());
   }, [d]), is({
     props: t,
@@ -11031,24 +11034,24 @@ function Md(e) {
       });
     }, "Backspace"), T;
   }, [c, n]), g = A(function(T) {
-    var O, P = T === void 0 ? {} : T, D = P.refKey, M = D === void 0 ? "ref" : D, F = P.ref, Z = P.onClick, V = P.onKeyDown, Q = P.selectedItem,
-    z = P.index, q = ke(P, EI), W = m.current.state, re = ts(Q, z, W.selectedItems, "Pass either item or index to getSelectedItemProps!"), R = re[1],
-    B = R > -1 && R === W.activeIndex, L = /* @__PURE__ */ a(function() {
+    var O, P = T === void 0 ? {} : T, D = P.refKey, M = D === void 0 ? "ref" : D, N = P.ref, Z = P.onClick, V = P.onKeyDown, Q = P.selectedItem,
+    H = P.index, q = ke(P, EI), W = m.current.state, re = ts(Q, H, W.selectedItems, "Pass either item or index to getSelectedItemProps!"), F = re[1],
+    R = F > -1 && F === W.activeIndex, L = /* @__PURE__ */ a(function() {
       c({
         type: Ps,
-        index: R
+        index: F
       });
     }, "selectedItemHandleClick"), $ = /* @__PURE__ */ a(function(ie) {
       var te = po(ie);
       te && x[te] && x[te](ie);
     }, "selectedItemHandleKeyDown");
-    return j((O = {}, O[M] = Ze(F, function(J) {
+    return j((O = {}, O[M] = Ze(N, function(J) {
       J && y.current.push(J);
-    }), O.tabIndex = B ? 0 : -1, O.onClick = le(Z, L), O.onKeyDown = le(V, $), O), q);
+    }), O.tabIndex = R ? 0 : -1, O.onClick = le(Z, L), O.onKeyDown = le(V, $), O), q);
   }, [c, m, x]), v = A(function(T, O) {
-    var P, D = T === void 0 ? {} : T, M = D.refKey, F = M === void 0 ? "ref" : M, Z = D.ref, V = D.onKeyDown, Q = D.onClick, z = D.preventKeyAction,
-    q = z === void 0 ? !1 : z, W = ke(D, TI), re = O === void 0 ? {} : O, R = re.suppressRefError, B = R === void 0 ? !1 : R;
-    b("getDropdownProps", B, F, h);
+    var P, D = T === void 0 ? {} : T, M = D.refKey, N = M === void 0 ? "ref" : M, Z = D.ref, V = D.onKeyDown, Q = D.onClick, H = D.preventKeyAction,
+    q = H === void 0 ? !1 : H, W = ke(D, TI), re = O === void 0 ? {} : O, F = re.suppressRefError, R = F === void 0 ? !1 : F;
+    b("getDropdownProps", R, N, h);
     var L = /* @__PURE__ */ a(function(ie) {
       var te = po(ie);
       te && E[te] && E[te](ie);
@@ -11057,7 +11060,7 @@ function Md(e) {
         type: Rs
       });
     }, "dropdownHandleClick");
-    return j((P = {}, P[F] = Ze(Z, function(J) {
+    return j((P = {}, P[N] = Ze(Z, function(J) {
       J && (h.current = J);
     }), P), !q && {
       onKeyDown: le(V, L),
@@ -11103,7 +11106,7 @@ function Md(e) {
 a(Md, "useMultipleSelection");
 
 // src/manager/components/sidebar/Search.tsx
-var Nd = Ve(Ld(), 1);
+var Nd = je(Ld(), 1);
 
 // src/manager/components/sidebar/types.ts
 function Ko(e) {
@@ -11230,7 +11233,7 @@ var { document: CI } = se, $s = 50, _I = {
       let O = zr(C || {}, T ?? {});
       return C && k.push(
         ...Object.values(C).map((P) => {
-          let D = T?.[P.id], M = D ? Ho(Object.values(D).map((F) => F.value)) : null;
+          let D = T?.[P.id], M = D ? Ho(Object.values(D).map((N) => N.value)) : null;
           return {
             ...Ki(P, o.hash[_]),
             status: M ?? O[P.id] ?? null
@@ -11312,17 +11315,17 @@ var { document: CI } = se, $s = 50, _I = {
         getItemProps: P,
         getLabelProps: D,
         getMenuProps: M,
-        getRootProps: F,
+        getRootProps: N,
         highlightedIndex: Z
       }) => {
-        let V = C ? C.trim() : "", Q = V ? x(V) : [], z = !V && r();
-        z && z.length && (Q = z.reduce((R, { storyId: B, refId: L }) => {
+        let V = C ? C.trim() : "", Q = V ? x(V) : [], H = !V && r();
+        H && H.length && (Q = H.reduce((F, { storyId: R, refId: L }) => {
           let $ = o.hash[L];
-          if ($ && $.index && $.index[B]) {
-            let J = $.index[B], ie = J.type === "story" ? $.index[J.parent] : J;
-            R.some((te) => te.item.refId === L && te.item.id === ie.id) || R.push({ item: Ki(ie, o.hash[L]), matches: [], score: 0 });
+          if ($ && $.index && $.index[R]) {
+            let J = $.index[R], ie = J.type === "story" ? $.index[J.parent] : J;
+            F.some((te) => te.item.refId === L && te.item.id === ie.id) || F.push({ item: Ki(ie, o.hash[L]), matches: [], score: 0 });
           }
-          return R;
+          return F;
         }, []));
         let q = "storybook-explorer-searchfield", W = O({
           id: q,
@@ -11334,8 +11337,8 @@ var { document: CI } = se, $s = 50, _I = {
             k(), f("Type to find...");
           }, "onFocus"),
           onBlur: /* @__PURE__ */ a(() => f("Find components"), "onBlur"),
-          onKeyDown: /* @__PURE__ */ a((R) => {
-            R.key === "Escape" && C.length === 0 && d.current.blur();
+          onKeyDown: /* @__PURE__ */ a((F) => {
+            F.key === "Escape" && C.length === 0 && d.current.blur();
           }, "onKeyDown")
         }), re = D({
           htmlFor: q
@@ -11344,7 +11347,7 @@ var { document: CI } = se, $s = 50, _I = {
         createElement(kI, null, /* @__PURE__ */ s.createElement(
           PI,
           {
-            ...F({ refKey: "" }, { suppressRefError: !0 }),
+            ...N({ refKey: "" }, { suppressRefError: !0 }),
             isMobile: S,
             className: "search-field"
           },
@@ -11353,7 +11356,7 @@ var { document: CI } = se, $s = 50, _I = {
           !S && i && !w && /* @__PURE__ */ s.createElement(MI, null, m === "\u2318 K" ? /* @__PURE__ */ s.createElement(s.Fragment, null, /* @__PURE__ */ s.
           createElement(LI, null, "\u2318"), "K") : m),
           /* @__PURE__ */ s.createElement(NI, null, w && /* @__PURE__ */ s.createElement(ee, { onClick: () => T() }, /* @__PURE__ */ s.createElement(
-          je, null)), u)
+          Ke, null)), u)
         ), l), /* @__PURE__ */ s.createElement(FI, { tabIndex: 0, id: "storybook-explorer-menu" }, t({
           query: V,
           results: Q,
@@ -11484,15 +11487,15 @@ var { document: Rd } = se, RI = I.ol({
     },
     [i]
   ), l = oe();
-  H(() => {
+  B(() => {
     l && r.isHighlighted && t.type === "component" && l.emit(kt, { ids: [t.children[0]] }, { options: { target: t.refId } });
   }, [r.isHighlighted, t]);
   let u = o.find((p) => p.key === "name"), c = o.filter((p) => p.key === "path"), [d] = t.status ? Bo[t.status] : [];
   return /* @__PURE__ */ s.createElement(BI, { ...r, onClick: n }, /* @__PURE__ */ s.createElement(HI, null, t.type === "component" && /* @__PURE__ */ s.
-  createElement(wt, { viewBox: "0 0 14 14", width: "14", height: "14", type: "component" }, /* @__PURE__ */ s.createElement(Me, { type: "com\
+  createElement(wt, { viewBox: "0 0 14 14", width: "14", height: "14", type: "component" }, /* @__PURE__ */ s.createElement(Le, { type: "com\
 ponent" })), t.type === "story" && /* @__PURE__ */ s.createElement(wt, { viewBox: "0 0 14 14", width: "14", height: "14", type: "story" }, /* @__PURE__ */ s.
-  createElement(Me, { type: "story" })), !(t.type === "component" || t.type === "story") && /* @__PURE__ */ s.createElement(wt, { viewBox: "\
-0 0 14 14", width: "14", height: "14", type: "document" }, /* @__PURE__ */ s.createElement(Me, { type: "document" }))), /* @__PURE__ */ s.createElement(
+  createElement(Le, { type: "story" })), !(t.type === "component" || t.type === "story") && /* @__PURE__ */ s.createElement(wt, { viewBox: "\
+0 0 14 14", width: "14", height: "14", type: "document" }, /* @__PURE__ */ s.createElement(Le, { type: "document" }))), /* @__PURE__ */ s.createElement(
   zI, { className: "search-result-item--label" }, /* @__PURE__ */ s.createElement($I, null, /* @__PURE__ */ s.createElement(Bd, { match: u },
   t.name)), /* @__PURE__ */ s.createElement(UI, null, t.path.map((p, f) => /* @__PURE__ */ s.createElement("span", { key: f }, /* @__PURE__ */ s.
   createElement(Bd, { match: c.find((h) => h.arrayIndex === f) }, p))))), t.status ? /* @__PURE__ */ s.createElement(Xc, { status: t.status },
@@ -11509,9 +11512,9 @@ ponent" })), t.type === "story" && /* @__PURE__ */ s.createElement(wt, { viewBox
   clearLastViewed: d
 }) {
   let p = oe();
-  H(() => {
+  B(() => {
     let y = /* @__PURE__ */ a((m) => {
-      if (!(!c || u || m.repeat) && Et(!1, m) && $e("Escape", m)) {
+      if (!(!c || u || m.repeat) && Et(!1, m) && Ue("Escape", m)) {
         if (m.target?.id === "storybook-explorer-searchfield")
           return;
         m.preventDefault(), i();
@@ -11575,7 +11578,7 @@ var qI = ["active", "critical", "negative", "positive", "warning"], $o, YI = /* 
   });
 }, "getFaviconUrl"), zd = /* @__PURE__ */ a((e) => {
   let t = U(document.head.querySelectorAll("link[rel*='icon']"));
-  H(() => {
+  B(() => {
     let o = !0, [i, ...r] = t.current;
     if (i && !r.length)
       return YI(i.href, e).then(
@@ -11719,7 +11722,7 @@ ow, 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0px -5px 20px 10px ${r.background.app})`,
   successCount: f
 }) => {
   let h = U(null), y = U(null), [m, b] = K(Us), [x, E] = K(!0), [g, v] = K(!1), [S, w] = K(!1), k = U();
-  H(() => {
+  B(() => {
     let P = Jt.onSettingsChanged(() => {
       w(!0), clearTimeout(k.current), k.current = setTimeout(() => {
         w(!1);
@@ -11728,7 +11731,7 @@ ow, 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0px -5px 20px 10px ${r.background.app})`,
     return () => {
       P(), clearTimeout(k.current);
     };
-  }, []), H(() => {
+  }, []), B(() => {
     if (y.current) {
       b(y.current?.getBoundingClientRect().height || Us);
       let P = new ResizeObserver(() => {
@@ -11751,7 +11754,7 @@ ow, 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0px -5px 20px 10px ${r.background.app})`,
   ), T = Object.values(t).some(
     (P) => P === "test-provider-state:crashed"
   ), O = Object.values(e).length > 0;
-  return H(() => {
+  return B(() => {
     T && x && _(void 0, !1);
   }, [T, x, _]), zd(
     T ? "critical" : n > 0 ? "negative" : c > 0 ? "warning" : C ? "active" : f > 0 ? "positive" : void 0
@@ -11953,14 +11956,14 @@ e).some(({ value: t }) => t === "status-value:error"), "filterError"), dS = /* @
   onRunAll: d
 }) => {
   let p = U(null), f = U(null), [h, y] = K(!1), [m, b] = K(!1);
-  return H(() => {
+  return B(() => {
     if (p.current && f.current) {
       let x = new ResizeObserver(() => {
         p.current && f.current && (p.current.style.height = `${f.current.scrollHeight}px`);
       });
       return x.observe(f.current), () => x.disconnect();
     }
-  }, []), H(() => {
+  }, []), B(() => {
     let x = fS(i > 0 && h, o > 0 && m);
     e.experimental_setFilter("sidebar-bottom-filter", x);
   }, [e, i, o, h, m]), !i && !o && Object.values(c).length === 0 && t.length === 0 ? null : /* @__PURE__ */ s.createElement(Ee, null, /* @__PURE__ */ s.
@@ -11987,7 +11990,7 @@ e).some(({ value: t }) => t === "status-value:error"), "filterError"), dS = /* @
     }
   )));
 }, "SidebarBottomBase"), jd = /* @__PURE__ */ a(({ isDevelopment: e }) => {
-  let t = oe(), o = t.getElements(Ce.experimental_TEST_PROVIDER), { notifications: i } = Ne(), { hasStatuses: r, errorCount: n, warningCount: l,
+  let t = oe(), o = t.getElements(Ce.experimental_TEST_PROVIDER), { notifications: i } = Fe(), { hasStatuses: r, errorCount: n, warningCount: l,
   successCount: u } = Eo(
     (d) => Object.values(d).reduce(
       (p, f) => (Object.values(f).forEach((h) => {
@@ -12097,7 +12100,7 @@ var vS = "tags-filter", xS = /* @__PURE__ */ new Set([
   isDevelopment: i
 }) => {
   let [r, n] = K(o), [l, u] = K(!1), c = r.length > 0;
-  H(() => {
+  B(() => {
     e.experimental_setFilter(vS, (y) => r.length === 0 ? !0 : r.some((m) => y.tags?.includes(m)));
   }, [e, r]);
   let d = Object.values(t.entries).reduce((y, m) => (m.tags?.forEach((b) => {
@@ -12140,7 +12143,7 @@ var vS = "tags-filter", xS = /* @__PURE__ */ new Set([
 }, "TagsFilter");
 
 // src/manager/components/sidebar/useLastViewed.ts
-var xn = Ve(Ud(), 1);
+var xn = je(Ud(), 1);
 var Gd = qi((e) => xn.default.set("lastViewedStoryIds", e), 1e3), qd = /* @__PURE__ */ a((e) => {
   let t = G(() => {
     let r = xn.default.get("lastViewedStoryIds");
@@ -12154,7 +12157,7 @@ var Gd = qi((e) => xn.default.set("lastViewedStoryIds", e), 1e3), qd = /* @__PUR
     },
     [o]
   );
-  return H(() => {
+  return B(() => {
     e && i(e);
   }, [e]), {
     getLastViewed: A(() => o.current, [o]),
@@ -12338,7 +12341,7 @@ var PS = {
   "& + &": {
     marginLeft: 6
   }
-}), We = /* @__PURE__ */ a(({ keys: e }) => /* @__PURE__ */ s.createElement(AS, null, e.map((t) => /* @__PURE__ */ s.createElement(DS, { key: t },
+}), Ve = /* @__PURE__ */ a(({ keys: e }) => /* @__PURE__ */ s.createElement(AS, null, e.map((t) => /* @__PURE__ */ s.createElement(DS, { key: t },
 Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
   let u = t.getShortcutKeys(), c = G(
     () => ({
@@ -12367,7 +12370,7 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       id: "shortcuts",
       title: "Keyboard shortcuts",
       onClick: /* @__PURE__ */ a(() => t.changeSettingsTab("shortcuts"), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.shortcutsPage }) : null,
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.shortcutsPage }) : null,
       icon: /* @__PURE__ */ s.createElement(Pn, null)
     }),
     [t, l, u.shortcutsPage]
@@ -12377,8 +12380,8 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       title: "Show sidebar",
       onClick: /* @__PURE__ */ a(() => t.toggleNav(), "onClick"),
       active: n,
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.toggleNav }) : null,
-      icon: n ? /* @__PURE__ */ s.createElement(Be, null) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.toggleNav }) : null,
+      icon: n ? /* @__PURE__ */ s.createElement(He, null) : null
     }),
     [t, l, u, n]
   ), b = G(
@@ -12387,8 +12390,8 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       title: "Show toolbar",
       onClick: /* @__PURE__ */ a(() => t.toggleToolbar(), "onClick"),
       active: o,
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.toolbar }) : null,
-      icon: o ? /* @__PURE__ */ s.createElement(Be, null) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.toolbar }) : null,
+      icon: o ? /* @__PURE__ */ s.createElement(He, null) : null
     }),
     [t, l, u, o]
   ), x = G(
@@ -12397,8 +12400,8 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       title: "Show addons panel",
       onClick: /* @__PURE__ */ a(() => t.togglePanel(), "onClick"),
       active: r,
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.togglePanel }) : null,
-      icon: r ? /* @__PURE__ */ s.createElement(Be, null) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.togglePanel }) : null,
+      icon: r ? /* @__PURE__ */ s.createElement(He, null) : null
     }),
     [t, l, u, r]
   ), E = G(
@@ -12406,7 +12409,7 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       id: "D",
       title: "Change addons orientation",
       onClick: /* @__PURE__ */ a(() => t.togglePanelPosition(), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.panelPosition }) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.panelPosition }) : null
     }),
     [t, l, u]
   ), g = G(
@@ -12415,8 +12418,8 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       title: "Go full screen",
       onClick: /* @__PURE__ */ a(() => t.toggleFullscreen(), "onClick"),
       active: i,
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.fullScreen }) : null,
-      icon: i ? /* @__PURE__ */ s.createElement(Be, null) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.fullScreen }) : null,
+      icon: i ? /* @__PURE__ */ s.createElement(He, null) : null
     }),
     [t, l, u, i]
   ), v = G(
@@ -12424,7 +12427,7 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       id: "/",
       title: "Search",
       onClick: /* @__PURE__ */ a(() => t.focusOnUIElement(PS.storySearchField), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.search }) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.search }) : null
     }),
     [t, l, u]
   ), S = G(
@@ -12432,7 +12435,7 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       id: "up",
       title: "Previous component",
       onClick: /* @__PURE__ */ a(() => t.jumpToComponent(-1), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.prevComponent }) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.prevComponent }) : null
     }),
     [t, l, u]
   ), w = G(
@@ -12440,7 +12443,7 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       id: "down",
       title: "Next component",
       onClick: /* @__PURE__ */ a(() => t.jumpToComponent(1), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.nextComponent }) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.nextComponent }) : null
     }),
     [t, l, u]
   ), k = G(
@@ -12448,7 +12451,7 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       id: "prev",
       title: "Previous story",
       onClick: /* @__PURE__ */ a(() => t.jumpToStory(-1), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.prevStory }) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.prevStory }) : null
     }),
     [t, l, u]
   ), _ = G(
@@ -12456,7 +12459,7 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       id: "next",
       title: "Next story",
       onClick: /* @__PURE__ */ a(() => t.jumpToStory(1), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.nextStory }) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.nextStory }) : null
     }),
     [t, l, u]
   ), C = G(
@@ -12464,16 +12467,16 @@ Ye([t])))), "Shortcut"), Qd = /* @__PURE__ */ a((e, t, o, i, r, n, l) => {
       id: "collapse",
       title: "Collapse all",
       onClick: /* @__PURE__ */ a(() => t.emit(ho), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: u.collapseAll }) : null
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: u.collapseAll }) : null
     }),
     [t, l, u]
   ), T = A(() => {
     let O = t.getAddonsShortcuts(), P = u;
-    return Object.entries(O).filter(([D, { showInMenu: M }]) => M).map(([D, { label: M, action: F }]) => ({
+    return Object.entries(O).filter(([D, { showInMenu: M }]) => M).map(([D, { label: M, action: N }]) => ({
       id: D,
       title: M,
-      onClick: /* @__PURE__ */ a(() => F(), "onClick"),
-      right: l ? /* @__PURE__ */ s.createElement(We, { keys: P[D] }) : null
+      onClick: /* @__PURE__ */ a(() => N(), "onClick"),
+      right: l ? /* @__PURE__ */ s.createElement(Ve, { keys: P[D] }) : null
     }));
   }, [t, l, u]);
   return G(
@@ -12630,7 +12633,7 @@ var LS = I.div({
   marginBottom: 24,
   marginTop: 24,
   gap: 16
-}), Jd = I(Pe)(({ theme: e }) => ({
+}), Jd = I(Ae)(({ theme: e }) => ({
   "&&": {
     fontWeight: e.typography.weight.bold,
     color: e.base === "light" ? e.color.dark : e.color.light
@@ -12648,7 +12651,7 @@ e maintained by", " ", /* @__PURE__ */ s.createElement(Jd, { href: "https://www.
 createElement(Jd, { href: "https://github.com/storybookjs/storybook/graphs/contributors" }, "Storybook Community")))), "AboutScreen");
 
 // src/manager/settings/AboutPage.tsx
-var Ys = class Ys extends Le {
+var Ys = class Ys extends Ne {
   componentDidMount() {
     let { api: t, notificationId: o } = this.props;
     t.clearNotification(o);
@@ -12660,7 +12663,7 @@ var Ys = class Ys extends Le {
 };
 a(Ys, "NotificationClearer");
 var qs = Ys, tf = /* @__PURE__ */ a(() => {
-  let e = oe(), t = Ne(), o = A(() => {
+  let e = oe(), t = Fe(), o = A(() => {
     e.changeSettingsTab("whats-new");
   }, [e]);
   return /* @__PURE__ */ s.createElement(qs, { api: e, notificationId: "update" }, /* @__PURE__ */ s.createElement(
@@ -12681,10 +12684,10 @@ var BS = I.div(({ theme: e }) => ({
   "& > * + *": {
     marginLeft: 20
   }
-})), HS = /* @__PURE__ */ a((e) => /* @__PURE__ */ s.createElement(BS, { ...e }, /* @__PURE__ */ s.createElement(Pe, { secondary: !0, href: "\
-https://storybook.js.org?ref=ui", cancel: !1, target: "_blank" }, "Docs"), /* @__PURE__ */ s.createElement(Pe, { secondary: !0, href: "https\
+})), HS = /* @__PURE__ */ a((e) => /* @__PURE__ */ s.createElement(BS, { ...e }, /* @__PURE__ */ s.createElement(Ae, { secondary: !0, href: "\
+https://storybook.js.org?ref=ui", cancel: !1, target: "_blank" }, "Docs"), /* @__PURE__ */ s.createElement(Ae, { secondary: !0, href: "https\
 ://github.com/storybookjs/storybook", cancel: !1, target: "_blank" }, "GitHub"), /* @__PURE__ */ s.createElement(
-  Pe,
+  Ae,
   {
     secondary: !0,
     href: "https://storybook.js.org/community?ref=ui#support",
@@ -12741,7 +12744,7 @@ var zS = I.header(({ theme: e }) => ({
 ), US = Dt`
 0%,100% { opacity: 0; }
   50% { opacity: 1; }
-`, GS = I(Be)(
+`, GS = I(He)(
   ({ valid: e, theme: t }) => e === "valid" ? {
     color: t.color.positive,
     animation: `${US} 2s ease forwards`
@@ -12788,7 +12791,7 @@ function Qs(e) {
   );
 }
 a(Qs, "toShortcutState");
-var Xs = class Xs extends Le {
+var Xs = class Xs extends Ne {
   constructor(o) {
     super(o);
     this.onKeyDown = /* @__PURE__ */ a((o) => {
@@ -12952,7 +12955,7 @@ var sf = I.div({
   onToggleNotifications: t,
   onCopyLink: o
 }) => {
-  let i = De(), [r, n] = K("Copy Link"), l = /* @__PURE__ */ a(() => {
+  let i = Me(), [r, n] = K("Copy Link"), l = /* @__PURE__ */ a(() => {
     o(), n("Copied!"), setTimeout(() => n("Copy Link"), 4e3);
   }, "copyLink");
   return /* @__PURE__ */ s.createElement(ZS, null, /* @__PURE__ */ s.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
@@ -13001,8 +13004,8 @@ null) : /* @__PURE__ */ s.createElement(s.Fragment, null, /* @__PURE__ */ s.crea
     onCopyLink: r
   }
 ))), "PureWhatsNewScreen"), iw = 1e4, lf = /* @__PURE__ */ a(() => {
-  let e = oe(), t = Ne(), { whatsNewData: o } = t, [i, r] = K(!1), [n, l] = K(!1);
-  if (H(() => {
+  let e = oe(), t = Fe(), { whatsNewData: o } = t, [i, r] = K(!1), [n, l] = K(!1);
+  if (B(() => {
     let c = setTimeout(() => !i && l(!0), iw);
     return () => clearTimeout(c);
   }, [i]), o?.status !== "SUCCESS")
@@ -13065,7 +13068,7 @@ var { document: cf } = se, sw = I.div(({ theme: e }) => ({
   background: e.background.content
 })), lw = /* @__PURE__ */ a(({ changeTab: e, onClose: t, enableShortcuts: o = !0, enableWhatsNew: i }) => (s.useEffect(() => {
   let r = /* @__PURE__ */ a((n) => {
-    !o || n.repeat || Et(!1, n) && $e("Escape", n) && (n.preventDefault(), t());
+    !o || n.repeat || Et(!1, n) && Ue("Escape", n) && (n.preventDefault(), t());
   }, "handleEscape");
   return cf.addEventListener("keydown", r), () => cf.removeEventListener("keydown", r);
 }, [o, t]), /* @__PURE__ */ s.createElement(Ee, null, /* @__PURE__ */ s.createElement(sw, { className: "sb-bar" }, /* @__PURE__ */ s.createElement(
@@ -13077,12 +13080,12 @@ uts", changeTab: e })), /* @__PURE__ */ s.createElement(
     onClick: (r) => (r.preventDefault(), t()),
     title: "Close settings page"
   },
-  /* @__PURE__ */ s.createElement(je, null)
+  /* @__PURE__ */ s.createElement(Ke, null)
 )), /* @__PURE__ */ s.createElement(aw, { vertical: !0, horizontal: !1 }, /* @__PURE__ */ s.createElement(To, { path: "about" }, /* @__PURE__ */ s.
 createElement(tf, { key: "about" })), /* @__PURE__ */ s.createElement(To, { path: "whats-new" }, /* @__PURE__ */ s.createElement(uf, { key: "\
 whats-new" })), /* @__PURE__ */ s.createElement(To, { path: "shortcuts" }, /* @__PURE__ */ s.createElement(nf, { key: "shortcuts" }))))), "P\
 ages"), uw = /* @__PURE__ */ a(() => {
-  let e = oe(), t = Ne(), o = /* @__PURE__ */ a((i) => e.changeSettingsTab(i), "changeTab");
+  let e = oe(), t = Fe(), o = /* @__PURE__ */ a((i) => e.changeSettingsTab(i), "changeTab");
   return /* @__PURE__ */ s.createElement(
     lw,
     {
@@ -13152,9 +13155,9 @@ a(df, "renderStorybookUI");
 
 // src/manager/runtime.tsx
 var dw = "CORE/WS_DISCONNECTED";
-He.register(
+ze.register(
   bt,
-  () => He.add(bt, {
+  () => ze.add(bt, {
     title: bt,
     type: be.TOOL,
     match: /* @__PURE__ */ a(({ tabId: e }) => !e, "match"),
@@ -13166,7 +13169,7 @@ var ea = class ea extends Yt {
     super();
     this.wsDisconnected = !1;
     let o = sa({ page: "manager" });
-    He.setChannel(o), o.emit(ua), this.addons = He, this.channel = o, se.__STORYBOOK_ADDONS_CHANNEL__ = o;
+    ze.setChannel(o), o.emit(ua), this.addons = ze, this.channel = o, se.__STORYBOOK_ADDONS_CHANNEL__ = o;
   }
   getElements(o) {
     return this.addons.getElements(o);

@@ -1,1 +1,0 @@
-@layer tokens,base,components,utilities;@layer components{._bui-CollapsiblePanel_1ak39_20{display:flex;height:var(--collapsible-panel-height);overflow:hidden;transition:all .15s ease-out}._bui-CollapsiblePanel_1ak39_20[data-starting-style],._bui-CollapsiblePanel_1ak39_20[data-ending-style]{height:0}}
