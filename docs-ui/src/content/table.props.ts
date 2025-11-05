@@ -2,7 +2,7 @@ import {
   classNamePropDefs,
   stylePropDefs,
   type PropDef,
-} from '../../utils/propDefs';
+} from '@/utils/propDefs';
 
 export const tablePropDefs: Record<string, PropDef> = {
   selectionBehavior: {
