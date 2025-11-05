@@ -24912,7 +24912,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.0.0, axios@npm:^1.13.0, axios@npm:^1.6.0, axios@npm:^1.7.4, axios@npm:^1.8.3, axios@npm:^1.9.0":
+"axios@npm:^1.0.0, axios@npm:^1.13.0, axios@npm:^1.7.4, axios@npm:^1.8.3, axios@npm:^1.9.0":
   version: 1.13.2
   resolution: "axios@npm:1.13.2"
   dependencies:
@@ -41035,13 +41035,13 @@ __metadata:
   linkType: hard
 
 "passport-auth0@npm:^1.4.3":
-  version: 1.4.4
-  resolution: "passport-auth0@npm:1.4.4"
+  version: 1.4.5
+  resolution: "passport-auth0@npm:1.4.5"
   dependencies:
-    axios: "npm:^1.6.0"
+    axios: "npm:^1.7.4"
     passport-oauth: "npm:^1.0.0"
     passport-oauth2: "npm:^1.6.0"
-  checksum: 10/307d2d8d687a29dbe2fc98fbee1cc948f76e936c6ae7ffeb28076c98b558a942be1cbc0eedb58d9003285bf4e816f6e971b0edb7a604d290272b1ba8e731006d
+  checksum: 10/e9e40e82862f75312ffd0dbed09cd62693008551b07e7ada75725597c3763361aa2f3070ea485e70219572a23d459ea03553dd8f2c5d683ece83577007bdf5b9
   languageName: node
   linkType: hard
 
