@@ -73,6 +73,13 @@ export const notificationsTranslationRef: TranslationRef<
   'plugin.notifications',
   {
     readonly 'table.errors.markAllReadFailed': 'Failed to mark all notifications as read';
+    readonly 'table.pagination.firstTooltip': 'First Page';
+    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.labelRowsSelect': 'rows';
+    readonly 'table.pagination.lastTooltip': 'Last Page';
+    readonly 'table.pagination.nextTooltip': 'Next Page';
+    readonly 'table.pagination.previousTooltip': 'Previous Page';
+    readonly 'table.emptyMessage': 'No records to display';
     readonly 'table.bulkActions.markAllRead': 'Mark all read';
     readonly 'table.bulkActions.markSelectedAsRead': 'Mark selected as read';
     readonly 'table.bulkActions.returnSelectedAmongUnread': 'Return selected among unread';
@@ -81,6 +88,12 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'table.confirmDialog.title': 'Are you sure?';
     readonly 'table.confirmDialog.markAllReadDescription': 'Mark <b>all</b> notifications as <b>read</b>.';
     readonly 'table.confirmDialog.markAllReadConfirmation': 'Mark All';
+    readonly 'settings.table.origin': 'Origin';
+    readonly 'settings.table.topic': 'Topic';
+    readonly 'settings.title': 'Notification settings';
+    readonly 'settings.errors.useNotificationFormat': 'useNotificationFormat must be used within a NotificationFormatProvider';
+    readonly 'settings.errorTitle': 'Failed to load settings';
+    readonly 'settings.noSettingsAvailable': 'No notification settings available, check back later';
     readonly 'filters.view.all': 'All';
     readonly 'filters.view.label': 'View';
     readonly 'filters.view.read': 'Read notifications';
@@ -102,18 +115,9 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'filters.sortBy.origin': 'Origin';
     readonly 'filters.sortBy.label': 'Sort by';
     readonly 'filters.sortBy.placeholder': 'Field to sort by';
+    readonly 'filters.sortBy.topic': 'Topic';
     readonly 'filters.sortBy.newest': 'Newest on top';
     readonly 'filters.sortBy.oldest': 'Oldest on top';
-    readonly 'filters.sortBy.topic': 'Topic';
-    readonly 'settings.table.origin': 'Origin';
-    readonly 'settings.table.topic': 'Topic';
-    readonly 'settings.title': 'Notification settings';
-    readonly 'settings.errors.useNotificationFormat': 'useNotificationFormat must be used within a NotificationFormatProvider';
-    readonly 'settings.errorTitle': 'Failed to load settings';
-    readonly 'settings.noSettingsAvailable': 'No notification settings available, check back later';
-    readonly 'sidebar.title': 'Notifications';
-    readonly 'sidebar.errors.markAsReadFailed': 'Failed to mark notification as read';
-    readonly 'sidebar.errors.fetchNotificationFailed': 'Failed to fetch notification';
     readonly 'notificationsPage.title': 'Notifications';
     readonly 'notificationsPage.tableTitle.all_one': 'All notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.all_other': 'All notifications ({{count}})';
@@ -123,6 +127,9 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'notificationsPage.tableTitle.unread_other': 'Unread notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_one': 'Read notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
+    readonly 'sidebar.title': 'Notifications';
+    readonly 'sidebar.errors.markAsReadFailed': 'Failed to mark notification as read';
+    readonly 'sidebar.errors.fetchNotificationFailed': 'Failed to fetch notification';
   }
 >;
 
