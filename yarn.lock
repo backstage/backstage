@@ -36476,8 +36476,8 @@ __metadata:
   linkType: hard
 
 "ldapts@npm:^8.0.6":
-  version: 8.0.6
-  resolution: "ldapts@npm:8.0.6"
+  version: 8.0.9
+  resolution: "ldapts@npm:8.0.9"
   dependencies:
     "@types/asn1": "npm:>=0.2.4"
     asn1: "npm:0.2.6"
@@ -36485,7 +36485,7 @@ __metadata:
     strict-event-emitter-types: "npm:2.0.0"
     uuid: "npm:11.1.0"
     whatwg-url: "npm:14.2.0"
-  checksum: 10/583fdf70762858fab1fc660670f482aa146481b4247b6e34eebe56628c7c069fe4167584c4159b3998503de18a716cb845e02b28794bc783de9b8c09834e4b15
+  checksum: 10/512bfec21e2c5d8a257ffda0c426221023043718b235dcc21d5ea81ba43d1999a2f14c1e9d6f7db7af1af2c467b46ee7016cac8da74ebae900fe208c54435b0e
   languageName: node
   linkType: hard
 
