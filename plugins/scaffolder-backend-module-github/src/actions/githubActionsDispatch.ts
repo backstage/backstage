@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ export function createGithubActionsDispatchAction(options: {
         await getOctokitOptions({ token, integrations, repoUrl }),
       );
 
-      // --- Checkpoint 1: Dispatch and find the Run ID ---
+      
       // This step is idempotent. If it's re-run, it returns the saved runId/runUrl.
       const { runId, runUrl } = await ctx.checkpoint({
         key: `dispatch-and-find-${owner}-${repo}-${workflowId.replace(
@@ -221,7 +221,7 @@ export function createGithubActionsDispatchAction(options: {
         return;
       }
 
-      // --- Checkpoint 2: Poll for completion ---
+      
       const conclusion = await ctx.checkpoint({
         key: `poll-${runId}`,
         fn: async () => {
@@ -275,7 +275,7 @@ export function createGithubActionsDispatchAction(options: {
         return;
       }
 
-      // --- Checkpoint 3: Download and extract artifact ---
+      
       const outputs = await ctx.checkpoint({
         key: `artifact-${runId}-${outputArtifactName}`,
         fn: async () => {
