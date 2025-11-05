@@ -100,7 +100,7 @@ type TabNames = Record<
 export function InspectEntityDialog(props: {
   open: boolean;
   entity: Entity;
-  initialTab?: TabKey;
+  initialTab?: 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
   onClose: () => void;
   onSelect?: (tab: string) => void;
 }) {
