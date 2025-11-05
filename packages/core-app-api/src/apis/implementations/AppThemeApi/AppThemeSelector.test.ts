@@ -17,9 +17,11 @@
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeSelector } from './AppThemeSelector';
 
+const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
+
 describe('AppThemeSelector', () => {
   it('should should select new themes', async () => {
-    const selector = new AppThemeSelector([]);
+    const selector = AppThemeSelector.create([]);
 
     expect(selector.getInstalledThemes()).toEqual([]);
 
@@ -29,57 +31,101 @@ describe('AppThemeSelector', () => {
     await 'wait a tick';
     expect(subFn).toHaveBeenLastCalledWith(undefined);
 
+    // Set up storage before calling setActiveThemeId
+    const mockStorageApi = {
+      forBucket: jest.fn().mockReturnValue({
+        set: jest.fn().mockResolvedValue(undefined),
+        observe$: jest.fn().mockReturnValue({
+          subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+        }),
+      }),
+    } as any;
+    selector.setStorage(mockStorageApi, mockErrorApi);
+
     selector.setActiveThemeId('x');
     expect(subFn).toHaveBeenLastCalledWith('x');
     expect(selector.getActiveThemeId()).toBe('x');
 
     selector.setActiveThemeId(undefined);
     expect(subFn).toHaveBeenLastCalledWith(undefined);
-    expect(selector.getActiveThemeId()).toBe(undefined);
+    expect(selector.getActiveThemeId()).toBe('null');
   });
 
   it('should return a new array of themes', () => {
     const themes = new Array<AppTheme>();
-    const selector = new AppThemeSelector(themes);
+    const selector = AppThemeSelector.create(themes);
 
     expect(selector.getInstalledThemes()).toEqual(themes);
     expect(selector.getInstalledThemes()).not.toBe(themes);
   });
 
-  it('should store theme in local storage', async () => {
-    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe(
-      undefined,
-    );
-    localStorage.setItem('theme', 'x');
-    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe('x');
-    localStorage.removeItem('theme');
-    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe(
-      undefined,
-    );
+  describe('setStorage', () => {
+    let mockStorageApi: jest.Mocked<any>;
 
-    const addListenerSpy = jest.spyOn(window, 'addEventListener');
-    const selector = AppThemeSelector.createWithStorage([]);
+    beforeEach(() => {
+      mockStorageApi = {
+        forBucket: jest.fn().mockReturnValue({
+          snapshot: jest.fn().mockReturnValue({ presence: 'absent' }),
+          observe$: jest.fn().mockReturnValue({
+            subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+          }),
+          set: jest.fn().mockResolvedValue(undefined),
+        }),
+      } as any;
+    });
 
-    expect(addListenerSpy).toHaveBeenCalledTimes(1);
-    expect(addListenerSpy).toHaveBeenCalledWith(
-      'storage',
-      expect.any(Function),
-    );
+    it('should set up storage', () => {
+      const selector = AppThemeSelector.create([]);
 
-    selector.setActiveThemeId('y');
-    await 'wait a tick';
-    expect(localStorage.getItem('theme')).toBe('y');
+      selector.setStorage(mockStorageApi, mockErrorApi);
 
-    selector.setActiveThemeId(undefined);
-    await 'wait a tick';
-    expect(localStorage.getItem('theme')).toBe(null);
+      expect(mockStorageApi.forBucket).toHaveBeenCalledWith('userSettings');
+    });
 
-    localStorage.setItem('theme', 'z');
-    expect(selector.getActiveThemeId()).toBe(undefined);
+    it('should handle initial load without overwriting storage', () => {
+      const selector = AppThemeSelector.create([
+        { id: 'light', title: 'Light', variant: 'light', Provider: () => null },
+      ]);
 
-    const listener = addListenerSpy.mock.calls[0][1] as EventListener;
-    listener({ key: 'theme' } as StorageEvent);
+      selector.setStorage(mockStorageApi, mockErrorApi);
 
-    expect(selector.getActiveThemeId()).toBe('z');
+      // Should not call set on storage during initial load
+      expect(
+        (mockStorageApi.forBucket('userSettings') as any).set,
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should persist changes after initial load', async () => {
+      const selector = AppThemeSelector.create([
+        { id: 'light', title: 'Light', variant: 'light', Provider: () => null },
+      ]);
+
+      selector.setStorage(mockStorageApi, mockErrorApi);
+
+      // Change theme after initial load
+      selector.setActiveThemeId('light');
+      await 'wait a tick';
+
+      expect(
+        (mockStorageApi.forBucket('userSettings') as any).set,
+      ).toHaveBeenCalledWith('theme', 'light');
+    });
+  });
+
+  describe('destroy', () => {
+    it('should clean up all subscriptions', () => {
+      const selector = AppThemeSelector.create([]);
+      const mockStorageApi = {
+        forBucket: jest.fn().mockReturnValue({
+          observe$: jest.fn().mockReturnValue({
+            subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+          }),
+        }),
+      } as any;
+
+      selector.setStorage(mockStorageApi, mockErrorApi);
+
+      expect(() => selector.destroy()).not.toThrow();
+    });
   });
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,11 @@ import {
   ErrorApi,
 } from '@backstage/core-plugin-api';
 import { Observable, Subscription } from '@backstage/types';
-import { BehaviorSubject } from '../../../lib/subjects';
-import { WebStorage } from '../StorageApi/WebStorage';
+import { SignalApi, SignalSubscriber } from '@backstage/plugin-signals-react';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { WebStorage } from '../../../../packages/core-app-api/src';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { BehaviorSubject } from '../../../../packages/core-app-api/src/lib/subjects';
 
 const STORAGE_KEY = 'theme';
 const BUCKET_NAME = 'userSettings';
@@ -33,27 +36,30 @@ const BUCKET_NAME = 'userSettings';
  *
  * @public
  */
-export class AppThemeSelector implements AppThemeApi {
+export class DefaultAppThemeSelector implements AppThemeApi {
   static create(themes: AppTheme[]) {
-    return new AppThemeSelector(themes);
+    return new DefaultAppThemeSelector(themes);
   }
 
   static createWithStorage(
     themes: AppTheme[],
     storageApi: StorageApi,
     errorApi: ErrorApi,
+    signalApi?: SignalApi,
   ) {
-    const selector = new AppThemeSelector(themes);
-    selector.setStorage(storageApi, errorApi);
+    const selector = new DefaultAppThemeSelector(themes);
+    selector.setStorage(storageApi, errorApi, signalApi);
     return selector;
   }
 
   private activeThemeId: string | undefined;
   private subject = new BehaviorSubject<string | undefined>(undefined);
   private storage?: StorageApi;
+  private signalApi?: SignalApi;
   private errorApi?: ErrorApi;
   private storageSubscription?: Subscription;
   private persistSubscription?: Subscription;
+  private signalSubscription?: SignalSubscriber;
   private isUpdatingFromStorage = false;
   private lastStoredValue: any = undefined;
   private isInitialLoad = true;
@@ -125,7 +131,11 @@ export class AppThemeSelector implements AppThemeApi {
     this.subject.next(themeId);
   }
 
-  setStorage(storageApi: StorageApi, errorApi: ErrorApi) {
+  setStorage(
+    storageApi: StorageApi,
+    errorApi: ErrorApi,
+    signalApi?: SignalApi,
+  ) {
     this.#cleanupStorage();
 
     this.storage = storageApi;
@@ -133,7 +143,9 @@ export class AppThemeSelector implements AppThemeApi {
     this.localCacheSubscription = WebStorage.create({
       errorApi: this.errorApi,
     });
-
+    if (signalApi) {
+      this.signalApi = signalApi;
+    }
     this.storageSetupRequired = false;
 
     // Re-setup localStorage event listener based on SignalApi availability
@@ -186,6 +198,9 @@ export class AppThemeSelector implements AppThemeApi {
     // Skip if using WebStorage (handles its own events)
     if (this.storage instanceof WebStorage) return;
 
+    // Skip if using SignalApi for cross-device sync (no need for localStorage events)
+    if (this.signalApi && !(this.storage instanceof WebStorage)) return;
+
     this.localCacheSubscription
       ?.forBucket(BUCKET_NAME)
       .observe$(STORAGE_KEY)
@@ -236,6 +251,30 @@ export class AppThemeSelector implements AppThemeApi {
         const themeId = this.#parseThemeValue(stored?.value);
         this.#updateThemeFromStorage(themeId);
       });
+
+    // Set up cross-device synchronization via UserSettingsStorage signals
+    if (this.signalApi) {
+      this.signalSubscription = this.signalApi.subscribe(
+        'user-settings',
+        (message: any) => {
+          if (message.key === STORAGE_KEY && message.type === 'key-changed') {
+            // Fetch the latest value from storage (which will be the backend value)
+            // Use observe$ to get the actual value, not snapshot which may be 'unknown'
+            let hasReceivedValue = false;
+            const subscription = this.storage!.forBucket(BUCKET_NAME)
+              .observe$(STORAGE_KEY)
+              .subscribe(stored => {
+                if (hasReceivedValue) return;
+                hasReceivedValue = true;
+                setTimeout(() => subscription.unsubscribe(), 0);
+
+                const themeId = this.#parseThemeValue(stored?.value);
+                this.#updateThemeFromStorage(themeId);
+              });
+          }
+        },
+      );
+    }
 
     // Persist changes to storage (only when not updating from storage and not initial load)
     this.persistSubscription = this.subject.subscribe(themeId => {
@@ -299,6 +338,10 @@ export class AppThemeSelector implements AppThemeApi {
     if (this.persistSubscription) {
       this.persistSubscription.unsubscribe();
       this.persistSubscription = undefined;
+    }
+    if (this.signalSubscription) {
+      this.signalSubscription.unsubscribe();
+      this.signalSubscription = undefined;
     }
   }
 
