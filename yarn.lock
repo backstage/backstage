@@ -31717,13 +31717,13 @@ __metadata:
   linkType: hard
 
 "fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0, fs-extra@npm:^11.2.0":
-  version: 11.3.1
-  resolution: "fs-extra@npm:11.3.1"
+  version: 11.3.2
+  resolution: "fs-extra@npm:11.3.2"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10/2b893213411b1da11f9b061ccb0bcff4d6dd66fe90aa8f5b1616219a5e7ca659da869f454ebd8e94aa21c58342730fb43a2e5c98b5c6c5124f0c54a4633f64b0
+  checksum: 10/d559545c73fda69c75aa786f345c2f738b623b42aea850200b1582e006a35278f63787179e3194ba19413c26a280441758952b0c7e88dd96762d497e365a6c3e
   languageName: node
   linkType: hard
 
