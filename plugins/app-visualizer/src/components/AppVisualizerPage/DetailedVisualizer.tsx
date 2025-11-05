@@ -18,19 +18,19 @@ import {
   AppNode,
   AppTree,
   ExtensionDataRef,
-  RouteRef,
   coreExtensionData,
   ApiBlueprint,
   NavItemBlueprint,
   ThemeBlueprint,
-  useRouteRef,
+  useApi,
+  routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
-import { Box, Flex } from '@backstage/ui';
-import { Link } from 'react-router-dom';
+import { Box, Flex, Link, Text, Tooltip, TooltipTrigger } from '@backstage/ui';
 import {
   RiInputField as InputIcon,
   RiCloseCircleLine as DisabledIcon,
 } from '@remixicon/react';
+import { Focusable } from 'react-aria-components';
 
 function getContrastColor(bgColor: string): string {
   const hex = bgColor.replace('#', '');
@@ -72,36 +72,17 @@ function createOutputColorGenerator(
   };
 }
 
-// Color palette for output visualization
-const colorPalette = {
-  green: { 500: '#4caf50', 200: '#a5d6a7' },
-  yellow: { 500: '#ffeb3b', 200: '#fff59d' },
-  purple: { 500: '#9c27b0', 200: '#ce93d8' },
-  blue: { 500: '#2196f3', 200: '#90caf9' },
-  lime: { 500: '#cddc39', 200: '#e6ee9c' },
-  orange: { 500: '#ff9800', 200: '#ffcc80' },
-  red: { 200: '#ef9a9a' },
-};
-
 const getOutputColor = createOutputColorGenerator(
   {
-    [coreExtensionData.reactElement.id]: colorPalette.green[500],
-    [coreExtensionData.routePath.id]: colorPalette.yellow[500],
-    [coreExtensionData.routeRef.id]: colorPalette.purple[500],
-    [ApiBlueprint.dataRefs.factory.id]: colorPalette.blue[500],
-    [ThemeBlueprint.dataRefs.theme.id]: colorPalette.lime[500],
-    [NavItemBlueprint.dataRefs.target.id]: colorPalette.orange[500],
+    [coreExtensionData.reactElement.id]: '#4caf50',
+    [coreExtensionData.routePath.id]: '#ffeb3b',
+    [coreExtensionData.routeRef.id]: '#9c27b0',
+    [ApiBlueprint.dataRefs.factory.id]: '#2196f3',
+    [ThemeBlueprint.dataRefs.theme.id]: '#cddc39',
+    [NavItemBlueprint.dataRefs.target.id]: '#ff9800',
   },
 
-  [
-    colorPalette.blue[200],
-    colorPalette.orange[200],
-    colorPalette.green[200],
-    colorPalette.red[200],
-    colorPalette.yellow[200],
-    colorPalette.purple[200],
-    colorPalette.lime[200],
-  ],
+  ['#90caf9', '#ffcc80', '#a5d6a7', '#ef9a9a', '#fff59d', '#ce93d8', '#e6ee9c'],
 );
 
 // Helper function to get border color based on depth
@@ -124,73 +105,62 @@ function getFullPath(node?: AppNode): string {
   return getFullPath(parent) + part;
 }
 
-function OutputLink(props: {
-  dataRef: ExtensionDataRef<unknown>;
-  node?: AppNode;
-  style: React.CSSProperties;
-}) {
-  const routeRef = props.node?.instance?.getData(coreExtensionData.routeRef);
-
-  try {
-    const link = useRouteRef(routeRef as RouteRef<undefined>);
-
-    return (
-      <div title={props.dataRef.id}>
-        <Flex style={props.style}>
-          {link ? <Link to={link()}>link</Link> : null}
-        </Flex>
-      </div>
-    );
-  } catch (ex) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      props.node?.spec.id
-        ? `Unable to generate output link for ${props.node.spec.id}`
-        : 'Unable to generate output link',
-      ex,
-    );
-    return null;
-  }
-}
-
 function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
   const { dataRef, node } = props;
   const { id } = dataRef;
   const instance = node?.instance;
 
+  const routeResolutionApi = useApi(routeResolutionApiRef);
+
   const { backgroundColor, color } = getOutputColor(id);
 
   const chipStyle: React.CSSProperties = {
-    padding: '0 var(--bui-space-2_5, 10px)',
     height: 20,
-    borderRadius: 'var(--bui-radius-full)',
+    padding: '0 10px',
+    borderRadius: '10px',
     color,
     backgroundColor,
+    display: 'flex',
+    alignItems: 'center',
+    fontWeight:
+      'var(--bui-font-weight-regular)' as React.CSSProperties['fontWeight'],
   };
 
-  if (id === coreExtensionData.routePath.id) {
-    return (
-      <div title={getFullPath(node)}>
-        <Flex align="center" style={chipStyle}>
-          {String(instance?.getData(dataRef) ?? '')}
-        </Flex>
-      </div>
-    );
+  if (id === coreExtensionData.routeRef.id && node) {
+    try {
+      const routeRef = props.node?.instance?.getData(
+        coreExtensionData.routeRef,
+      );
+      const link = routeRef && routeResolutionApi.resolve(routeRef)?.();
+      if (link) {
+        return (
+          <TooltipTrigger>
+            <Link href={link} style={chipStyle}>
+              link
+            </Link>
+            <Tooltip>{id}</Tooltip>
+          </TooltipTrigger>
+        );
+      }
+    } catch {
+      /* ignore */
+    }
   }
 
-  if (id === coreExtensionData.routeRef.id && node) {
-    return (
-      <OutputLink
-        {...props}
-        style={{ display: 'flex', alignItems: 'center', ...chipStyle }}
-      />
-    );
+  let tooltip = id;
+  let text: string | undefined = undefined;
+  if (id === coreExtensionData.routePath.id) {
+    text = String(instance?.getData(dataRef) ?? '');
+    tooltip = getFullPath(node);
   }
 
   return (
-    <div title={id}>
-      <Flex align="center" style={chipStyle} />
-    </div>
+    <TooltipTrigger>
+      <Focusable>
+        <Text style={{ ...chipStyle, cursor: 'help' }}>{text}</Text>
+      </Focusable>
+      <Tooltip style={{ maxWidth: 'unset' }}>{tooltip}</Tooltip>
+    </TooltipTrigger>
   );
 }
 
@@ -259,7 +229,7 @@ function Extension(props: { node: AppNode; depth: number }) {
     tooltipParts.push(`${currentNode.spec.id} [${input}]`);
   }
   tooltipParts.reverse();
-  const tooltipText = tooltipParts.join(' → ');
+  const tooltipText = tooltipParts.join('\n');
 
   return (
     <Box
@@ -268,7 +238,6 @@ function Extension(props: { node: AppNode; depth: number }) {
         borderLeftWidth: 'var(--bui-space-1_5)',
         borderLeftStyle: 'solid',
         borderLeftColor: getBorderColor(depth),
-        cursor: 'pointer',
       }}
     >
       <Flex
@@ -283,9 +252,14 @@ function Extension(props: { node: AppNode; depth: number }) {
           borderBottomRightRadius: 'var(--bui-radius-2)',
         }}
       >
-        <div style={{ userSelect: 'all' }} title={tooltipText}>
-          {node.spec.id}
-        </div>
+        <TooltipTrigger>
+          <Focusable>
+            <Text style={{ userSelect: 'all' }}>{node.spec.id}</Text>
+          </Focusable>
+          <Tooltip style={{ maxWidth: 'unset' }}>
+            <Text style={{ whiteSpace: 'pre-wrap' }}>{tooltipText}</Text>
+          </Tooltip>
+        </TooltipTrigger>
         <Flex ml="2" align="center" gap="2">
           {dataRefs &&
             dataRefs.length > 0 &&
