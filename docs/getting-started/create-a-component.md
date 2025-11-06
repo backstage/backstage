@@ -10,7 +10,7 @@ Audience: Developers
 
 Components in the software catalog are created using a software template. Templates load skeletons of code, which can include some variables, and incorporate your company's best pracitces. The templates are published to a location, such as GitHub or GitLab.
 
-The standalone Backstage application includes the `Example Node.js Template`, which is an example template for the scaffolder that creates a simple Node.js service. You can also [create your own templates](../features/software-templates/adding-templates.md).
+The standalone Backstage application includes the `Example Node.js Template`, which is an example template for the scaffolder that creates and registers a simple Node.js service. You can also [create your own templates](../features/software-templates/adding-templates.md).
 
 ## Prerequisites
 
@@ -59,16 +59,16 @@ If you see an error message, similar to the following,
 
 Perform the following steps:
 
-1.  Close the Backstage app.
-2.  Enter `CTRL-C` in the terminal window to stop the Backstage frontend and backend.
-3.  In the terminal window, enter:
+1. Close the Backstage app.
+2. Enter `CTRL-C` in the terminal window to stop the Backstage frontend and backend.
+3. In the terminal window, enter:
 
     ```
      export NODE_OPTIONS=--no-node-snapshot
     ```
 
-4.  Enter `yarn start` to restart the Backstage application.
-    e. Repeat steps to create the component.
+4. Enter `yarn start` to restart the Backstage application.
+5. Repeat steps to create the component.
 
 Otherwise, you can follow along with the progress, and as soon as every step is finished, you can take a look at your new service in either the repository or the catalog.
 
