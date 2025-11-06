@@ -417,6 +417,9 @@ export const componentDefinitions: {
       'minHeight',
       'maxHeight',
     ];
+    readonly dataAttributes: {
+      readonly bg: readonly ['surface-0', 'surface-1', 'surface-2'];
+    };
   };
   readonly Button: {
     readonly classNames: {
@@ -519,6 +522,9 @@ export const componentDefinitions: {
       'justify',
       'direction',
     ];
+    readonly dataAttributes: {
+      readonly bg: readonly ['surface-0', 'surface-1', 'surface-2'];
+    };
   };
   readonly Grid: {
     readonly classNames: {
@@ -542,12 +548,18 @@ export const componentDefinitions: {
       'px',
       'py',
     ];
+    readonly dataAttributes: {
+      readonly bg: readonly ['surface-0', 'surface-1', 'surface-2'];
+    };
   };
   readonly GridItem: {
     readonly classNames: {
       readonly root: 'bui-GridItem';
     };
     readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
+    readonly dataAttributes: {
+      readonly bg: readonly ['surface-0', 'surface-1', 'surface-2'];
+    };
   };
   readonly Header: {
     readonly classNames: {
@@ -933,6 +945,8 @@ export const Grid: {
 // @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
+  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
+  // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
@@ -950,6 +964,8 @@ export interface GridItemProps {
 
 // @public (undocumented)
 export interface GridProps extends SpaceProps {
+  // (undocumented)
+  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
