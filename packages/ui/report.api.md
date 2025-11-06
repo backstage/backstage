@@ -144,6 +144,8 @@ export interface BoxProps extends SpaceProps {
   // (undocumented)
   as?: keyof JSX.IntrinsicElements;
   // (undocumented)
+  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
+  // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
@@ -227,6 +229,7 @@ export interface ButtonProps extends ButtonProps_2 {
   iconEnd?: ReactElement;
   // (undocumented)
   iconStart?: ReactElement;
+  on?: SurfaceLevel;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
@@ -901,6 +904,8 @@ export interface FlexProps extends SpaceProps {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
+  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
+  // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
@@ -1303,6 +1308,9 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
+
+// @public (undocumented)
+export type SurfaceLevel = 'surface-0' | 'surface-1' | 'surface-2';
 
 // @public (undocumented)
 export const Switch: ForwardRefExoticComponent<
