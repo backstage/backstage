@@ -34,28 +34,28 @@ To create the component:
 
 1. Select `Create`.
 
-   ![select create for new component](../assets/getting-started/select-create-for-new-component.png)
+   ![select create for new component](../assets/uiguide/select-create-for-new-component.png)
 
 2. Select `Service` in the `CATEGORIES` dropdown list.
 3. Select the `Owner`. For this example, you can select `guest`.
 4. Select `Choose` in the `Example Node.js Template`.
 
-   ![setup-nodejs-categories-owners](../assets/getting-started/setup-nodejs-cat-owner.png)
+   ![setup-nodejs-categories-owners](../assets/uiguide/setup-nodejs-cat-owner.png)
 
 5. For this example, enter `tutorial` for the `Name` of the service. and select `NEXT`.
 
-   ![enter name of new component](../assets/getting-started/enter-name-of-new-component.png)
+   ![enter name of new component](../assets/uiguide/enter-name-of-new-component.png)
 
 6. Enter your GitHub user name as the `Owner`.
 7. Enter `tutorial` for the `Repository` and select `REVIEW`.
-   ![select review create component](../assets/getting-started/select-review-create-component.png)
+   ![select review create component](../assets/uiguide/select-review-create-component.png)
 8. Review the information and select `CREATE`.
 
-   ![select create to make component](../assets/getting-started/select-create-to-make-component.png)
+   ![select create to make component](../assets/uiguide/select-create-to-make-component.png)
 
 If you see an error message, similar to the following,
 
-    ![error creating new component](../assets/getting-started/error-creating-new-component.png)
+    ![error creating new component](../assets/uiguide/error-creating-new-component.png)
 
 Perform the following steps:
 
@@ -72,7 +72,7 @@ Perform the following steps:
 
 Otherwise, you can follow along with the progress, and as soon as every step is finished, you can take a look at your new service in either the repository or the catalog.
 
-![run of example of create component](../assets/getting-started/successful-create-new-coponent.png)
+![run of example of create component](../assets/uiguide/successful-create-new-coponent.png)
 
 Selecting `REPOSITORY` displays the files in the main branch of the new `tutorial` repository. When you created the new `tutorial` component, three files were created in the repository
 
@@ -107,8 +107,8 @@ Selecting `REPOSITORY` displays the files in the main branch of the new `tutoria
 
 Selecting `OPEN IN CATALOG` displays details of the new component, such as its relationships, links, and subcomponents.
 
-![select open in catalog](../assets/getting-started/tutorial-component-open-in-catalog.png)
+![select open in catalog](../assets/uiguide/tutorial-component-open-in-catalog.png)
 
 Selecting `Home` in the sidebar, displays the new `tutorial` component in the catalog.
 
-![new turorial component in software catalog](../assets/getting-started/new-tutorial-component-in-software-catalog.png)
+![new turorial component in software catalog](../assets/uiguide/new-tutorial-component-in-software-catalog.png)
