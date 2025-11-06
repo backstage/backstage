@@ -38,7 +38,7 @@ const appVisualizerPage = PageBlueprint.make({
 export const appVisualizerNavItem = NavItemBlueprint.make({
   params: {
     title: 'Visualizer',
-    icon: VisualizerIcon,
+    icon: () => <VisualizerIcon />,
     routeRef: rootRouteRef,
   },
 });
