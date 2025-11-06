@@ -135,11 +135,9 @@ function createRootInstanceMetadataServiceFactory(
     service: coreServices.rootInstanceMetadata,
     deps: {},
     factory: async () => {
-      console.log(installedPlugins);
       const readonlyInstalledPlugins = deepFreeze([
         ...installedPlugins.values(),
       ]);
-      console.log(readonlyInstalledPlugins, Object.values(installedPlugins));
       const instanceMetadata = {
         getInstalledPlugins: () => Promise.resolve(readonlyInstalledPlugins),
       };
