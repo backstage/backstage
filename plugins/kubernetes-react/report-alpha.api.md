@@ -27,9 +27,6 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'errorPanel.resourceError': "Error fetching Kubernetes resource: '{{resourcePath}}', error: {{errorType}}, status code: {{statusCode}}";
     readonly 'pods.pods_one': '{{count}} pod';
     readonly 'pods.pods_other': '{{count}} pods';
-    readonly 'podsTable.unknown': 'unknown';
-    readonly 'podsTable.status.running': 'Running';
-    readonly 'podsTable.status.ok': 'OK';
     readonly 'podsTable.columns.name': 'name';
     readonly 'podsTable.columns.id': 'ID';
     readonly 'podsTable.columns.status': 'status';
@@ -38,6 +35,9 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podsTable.columns.totalRestarts': 'total restarts';
     readonly 'podsTable.columns.cpuUsage': 'CPU usage %';
     readonly 'podsTable.columns.memoryUsage': 'Memory usage %';
+    readonly 'podsTable.unknown': 'unknown';
+    readonly 'podsTable.status.running': 'Running';
+    readonly 'podsTable.status.ok': 'OK';
     readonly 'fixDialog.title': '{{podName}} - {{errorType}}';
     readonly 'fixDialog.events': 'Events:';
     readonly 'fixDialog.helpButton': 'Help';
@@ -58,14 +58,14 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'hpa.maxReplicas': 'max replicas';
     readonly 'hpa.currentCpuUsage': 'current CPU usage:';
     readonly 'hpa.targetCpuUsage': 'target CPU usage:';
-    readonly 'errorReporting.title': 'Error Reporting';
     readonly 'errorReporting.columns.name': 'name';
-    readonly 'errorReporting.columns.messages': 'messages';
     readonly 'errorReporting.columns.kind': 'kind';
+    readonly 'errorReporting.columns.messages': 'messages';
     readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.cluster': 'cluster';
-    readonly 'podLogs.description': 'No logs were emitted by the container';
+    readonly 'errorReporting.title': 'Error Reporting';
     readonly 'podLogs.title': 'No logs emitted';
+    readonly 'podLogs.description': 'No logs were emitted by the container';
     readonly 'podLogs.buttonText': 'Logs';
     readonly 'podLogs.titleTemplate': '{{podName}} - {{containerName}} logs on cluster {{clusterName}}';
     readonly 'podLogs.buttonAriaLabel': 'get logs';
