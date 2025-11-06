@@ -628,7 +628,10 @@ export const componentDefinitions: {
   readonly PasswordField: {
     readonly classNames: {
       readonly root: 'bui-PasswordField';
-      readonly inputVisibility: 'bui-InputVisibility';
+      readonly inputWrapper: 'bui-PasswordFieldInputWrapper';
+      readonly input: 'bui-PasswordFieldInput';
+      readonly inputIcon: 'bui-PasswordFieldIcon';
+      readonly inputVisibility: 'bui-PasswordFieldVisibility';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium'];
@@ -650,7 +653,7 @@ export const componentDefinitions: {
     readonly classNames: {
       readonly root: 'bui-SearchField';
       readonly clear: 'bui-SearchFieldClear';
-      readonly inputWrapper: 'bui-SearchFieldWrapper';
+      readonly inputWrapper: 'bui-SearchFieldInputWrapper';
       readonly input: 'bui-SearchFieldInput';
       readonly inputIcon: 'bui-SearchFieldInputIcon';
     };
