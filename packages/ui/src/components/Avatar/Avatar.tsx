@@ -47,7 +47,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
     };
   }, [src]);
 
-  const initialsCount = ['x-small', 'small'].includes(cleanedProps.size)
+  const initialsCount = ['x-small', 'small'].includes(props.size || 'medium')
     ? 1
     : 2;
 
