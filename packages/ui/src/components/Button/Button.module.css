@@ -58,20 +58,6 @@
       background-color: var(--bui-bg-solid-disabled);
       color: var(--bui-fg-solid-disabled);
     }
-
-    /* For tests purposes - TO BE REMOVED */
-    &[data-on='surface-0'] {
-      background-color: blue;
-      color: white;
-    }
-    &[data-on='surface-1'] {
-      background-color: green;
-      color: white;
-    }
-    &[data-on='surface-2'] {
-      background-color: red;
-      color: white;
-    }
   }
 
   .bui-Button[data-variant='secondary'] {
