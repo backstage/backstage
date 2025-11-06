@@ -292,10 +292,14 @@ export async function createRouter(
     }
 
     // Add config default origins if not in user settings
+    // Only add origins if the channel is enabled (not explicitly disabled)
     const defaultChannelSettings = defaultNotificationSettings?.channels?.find(
       c => c.id.toLowerCase() === opts.channel.toLowerCase(),
     );
-    if (defaultChannelSettings?.origins) {
+    if (
+      defaultChannelSettings?.origins &&
+      settings.channels[0].enabled !== false
+    ) {
       for (const defaultOrigin of defaultChannelSettings.origins) {
         if (
           !settings.channels[0].origins.some(
