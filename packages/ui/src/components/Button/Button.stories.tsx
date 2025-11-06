@@ -150,6 +150,42 @@ export const Responsive: Story = {
   },
 };
 
+export const OnSurfaces: Story = {
+  args: {
+    children: 'Button',
+  },
+  render: () => (
+    <Flex>
+      <Flex bg="surface-0" p="4" direction="column" align="start">
+        This is a button on Default<Button>Surface 0</Button>
+      </Flex>
+      <Flex bg="surface-0" p="4" direction="column" align="start">
+        This is a button on surface 0<Button>Surface 0</Button>
+      </Flex>
+      <Flex bg="surface-1" p="4" direction="column" align="start">
+        This is a button on surface 1<Button>Surface 1</Button>
+      </Flex>
+      <Flex bg="surface-2" p="4" direction="column" align="start">
+        This is a button on surface 2<Button>Surface 2</Button>
+      </Flex>
+    </Flex>
+  ),
+};
+
+export const OnProp: Story = {
+  args: {
+    children: 'Button',
+  },
+  render: () => (
+    <Flex>
+      <Button>Default</Button>
+      <Button on="surface-0">On Surface 0</Button>
+      <Button on="surface-1">On Surface 1</Button>
+      <Button on="surface-2">On Surface 2</Button>
+    </Flex>
+  ),
+};
+
 const variants = ['primary', 'secondary'] as const;
 const sizes = ['small', 'medium'] as const;
 

@@ -23,4 +23,16 @@
     /* This helps when using `truncate` on text inside a flex container */
     min-width: 0;
   }
+
+  .bui-Flex[data-bg='surface-0'] {
+    background-color: var(--bui-bg-surface-0);
+  }
+
+  .bui-Flex[data-bg='surface-1'] {
+    background-color: var(--bui-bg-surface-1);
+  }
+
+  .bui-Flex[data-bg='surface-2'] {
+    background-color: var(--bui-bg-surface-2);
+  }
 }

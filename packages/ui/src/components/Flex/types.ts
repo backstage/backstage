@@ -25,4 +25,5 @@ export interface FlexProps extends SpaceProps {
   direction?: Responsive<'row' | 'column' | 'row-reverse' | 'column-reverse'>;
   className?: string;
   style?: React.CSSProperties;
+  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
 }
