@@ -107,3 +107,33 @@ export const RowAndColumns: Story = {
     </Grid.Root>
   ),
 };
+
+export const Background: Story = {
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Flex>
+        <Grid.Root {...args} bg="surface-0">
+          Surface 0
+        </Grid.Root>
+        <Grid.Root {...args} bg="surface-1">
+          Surface 1
+        </Grid.Root>
+        <Grid.Root {...args} bg="surface-2">
+          Surface 2
+        </Grid.Root>
+      </Flex>
+      <Flex>
+        <Grid.Root {...args}>
+          <Grid.Item bg="surface-0">Surface 0</Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item bg="surface-1">Surface 0</Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item bg="surface-2">Surface 0</Grid.Item>
+        </Grid.Root>
+      </Flex>
+    </Flex>
+  ),
+};

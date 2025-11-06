@@ -23,12 +23,10 @@ import { SurfaceLevel, SurfaceProvider } from '../../hooks/useSurface';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'Flex',
-    { gap: '4', ...props },
-  );
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles('Flex', { gap: '4', ...props });
 
-  const { className, bg = 'surface-0', ...rest } = cleanedProps;
+  const { className, ...rest } = cleanedProps;
 
   const content = (
     <div
@@ -40,13 +38,13 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
         className,
       )}
       style={style}
-      data-bg={bg}
+      {...dataAttributes}
       {...rest}
     />
   );
 
-  return bg ? (
-    <SurfaceProvider surface={bg as unknown as SurfaceLevel}>
+  return props.bg ? (
+    <SurfaceProvider surface={props.bg as unknown as SurfaceLevel}>
       {content}
     </SurfaceProvider>
   ) : (

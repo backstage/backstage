@@ -23,10 +23,8 @@ import { SurfaceLevel, SurfaceProvider } from '../../hooks/useSurface';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'Box',
-    props,
-  );
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles('Box', props);
 
   const { as = 'div', children, className, bg, ...rest } = cleanedProps;
 
@@ -40,8 +38,8 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
         utilityClasses,
         className,
       ),
-      'data-bg': bg,
       style,
+      ...dataAttributes,
       ...rest,
     },
     bg ? (

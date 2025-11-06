@@ -247,3 +247,24 @@ export const WithTextTruncate: Story = {
     </Flex>
   ),
 };
+
+export const Background: Story = {
+  args: {
+    px: '6',
+    py: '4',
+  },
+  render: args => (
+    <Flex align="center">
+      <Flex {...args}>Default</Flex>
+      <Flex bg="surface-0" {...args}>
+        Surface 0
+      </Flex>
+      <Flex bg="surface-1" {...args}>
+        Surface 1
+      </Flex>
+      <Flex bg="surface-2" {...args}>
+        Surface 2
+      </Flex>
+    </Flex>
+  ),
+};

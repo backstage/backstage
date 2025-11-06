@@ -59,6 +59,9 @@ export const componentDefinitions = {
       'minHeight',
       'maxHeight',
     ],
+    dataAttributes: {
+      bg: ['surface-0', 'surface-1', 'surface-2'] as const,
+    },
   },
   Button: {
     classNames: {
@@ -161,6 +164,9 @@ export const componentDefinitions = {
       'justify',
       'direction',
     ],
+    dataAttributes: {
+      bg: ['surface-0', 'surface-1', 'surface-2'] as const,
+    },
   },
   Grid: {
     classNames: {
@@ -184,12 +190,18 @@ export const componentDefinitions = {
       'px',
       'py',
     ],
+    dataAttributes: {
+      bg: ['surface-0', 'surface-1', 'surface-2'] as const,
+    },
   },
   GridItem: {
     classNames: {
       root: 'bui-GridItem',
     },
     utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
+    dataAttributes: {
+      bg: ['surface-0', 'surface-1', 'surface-2'] as const,
+    },
   },
   Header: {
     classNames: {

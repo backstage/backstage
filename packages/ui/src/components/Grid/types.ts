@@ -23,6 +23,7 @@ export interface GridProps extends SpaceProps {
   columns?: Responsive<Columns>;
   gap?: Responsive<Space>;
   style?: React.CSSProperties;
+  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
 }
 
 /** @public */
@@ -34,4 +35,5 @@ export interface GridItemProps {
   colStart?: Responsive<Columns>;
   rowSpan?: Responsive<Columns>;
   style?: React.CSSProperties;
+  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
 }
