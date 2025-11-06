@@ -267,7 +267,10 @@ export const componentDefinitions = {
   PasswordField: {
     classNames: {
       root: 'bui-PasswordField',
-      inputVisibility: 'bui-InputVisibility',
+      inputWrapper: 'bui-PasswordFieldInputWrapper',
+      input: 'bui-PasswordFieldInput',
+      inputIcon: 'bui-PasswordFieldIcon',
+      inputVisibility: 'bui-PasswordFieldVisibility',
     },
     dataAttributes: {
       size: ['small', 'medium'] as const,
@@ -289,7 +292,7 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-SearchField',
       clear: 'bui-SearchFieldClear',
-      inputWrapper: 'bui-SearchFieldWrapper',
+      inputWrapper: 'bui-SearchFieldInputWrapper',
       input: 'bui-SearchFieldInput',
       inputIcon: 'bui-SearchFieldInputIcon',
     },
