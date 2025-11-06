@@ -347,3 +347,21 @@ export const Display: Story = {
     </Flex>
   ),
 };
+
+export const Background: Story = {
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex align="center">
+      <Box {...args}>Default</Box>
+      <Box bg="surface-0" {...args}>
+        Surface 0
+      </Box>
+      <Box bg="surface-1" {...args}>
+        Surface 1
+      </Box>
+      <Box bg="surface-2" {...args}>
+        Surface 2
+      </Box>
+    </Flex>
+  ),
+};

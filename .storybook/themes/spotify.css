@@ -216,7 +216,7 @@
 }
 
 [data-theme-mode='light'][data-theme-name='spotify'] {
-  --bui-bg: var(--bui-gray-1);
+  --bui-bg-surface-0: var(--bui-gray-1);
   --bui-bg-surface-1: var(--bui-white);
   --bui-bg-surface-2: var(--bui-gray-2);
   --bui-bg-solid: #1ed760;

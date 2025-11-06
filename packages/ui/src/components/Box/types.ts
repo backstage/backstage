@@ -32,4 +32,5 @@ export interface BoxProps extends SpaceProps {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
 }

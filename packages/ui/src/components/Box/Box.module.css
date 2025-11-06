@@ -22,4 +22,16 @@
     font-weight: var(--bui-font-weight-regular);
     color: var(--bui-fg-primary);
   }
+
+  .bui-Box[data-bg='surface-0'] {
+    background-color: var(--bui-bg-surface-0);
+  }
+
+  .bui-Box[data-bg='surface-1'] {
+    background-color: var(--bui-bg-surface-1);
+  }
+
+  .bui-Box[data-bg='surface-2'] {
+    background-color: var(--bui-bg-surface-2);
+  }
 }
