@@ -38,8 +38,6 @@ export const Button = forwardRef(
 
     const onLevel = on || surface;
 
-    console.log('onLevel', onLevel);
-
     return (
       <RAButton
         className={clsx(classNames.root, styles[classNames.root], className)}

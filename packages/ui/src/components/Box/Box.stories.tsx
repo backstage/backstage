@@ -18,6 +18,7 @@ import { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Box } from './Box';
 import { Flex } from '../Flex';
+import { Button } from '../Button';
 
 const meta = {
   title: 'Backstage UI/Box',
@@ -361,6 +362,29 @@ export const Background: Story = {
       </Box>
       <Box bg="surface-2" {...args}>
         Surface 2
+      </Box>
+    </Flex>
+  ),
+};
+
+export const BackgroundNested: Story = {
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Box style={{ maxWidth: '600px' }} mb="4">
+        In this test, we are nesting boxes and buttons on different surfaces to
+        ensure that the correct surface is applied to each element. If a Button
+        is placed on a surface that doesn't have the bg prop set, it will
+        inherit the surface from the parent.
+      </Box>
+      <Box {...args} bg="surface-1">
+        <Button>Button</Button>
+        <Box {...args} bg="surface-2" mt="4">
+          <Button>Button</Button>
+          <Box {...args} mt="4">
+            <Button>Button</Button>
+          </Box>
+        </Box>
       </Box>
     </Flex>
   ),
