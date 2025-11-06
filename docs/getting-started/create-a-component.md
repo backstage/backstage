@@ -72,7 +72,7 @@ Perform the following steps:
 
 Otherwise, you can follow along with the progress, and as soon as every step is finished, you can take a look at your new service in either the repository or the catalog.
 
-![run of example of create component](../assets/uiguide/successful-create-new-coponent.png)
+![run of example of create component](../assets/uiguide/successful-create-new-component.png)
 
 Selecting `REPOSITORY` displays the files in the main branch of the new `tutorial` repository. When you created the new `tutorial` component, three files were created in the repository
 
