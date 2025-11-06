@@ -110,7 +110,7 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
 
   // Generate surface colors
   Object.entries({
-    '': palette.background.default,
+    'surface-0': palette.background.default,
     'surface-1': palette.background.paper,
     'surface-2': palette.background.default,
     solid: palette.primary.main,
