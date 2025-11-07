@@ -17,7 +17,7 @@ import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
 
-import { createRouter } from './router';
+import { GraphModule } from './GraphModule';
 import { DefaultGraphService, GraphService } from './services/GraphService';
 import {
   GraphQueryParams,
@@ -65,8 +65,6 @@ const entities: Entity[] = [
   },
 ];
 
-// TEMPLATE NOTE:
-// Testing the router directly allows you to write a unit test that mocks the provided options.
 describe('createRouter', () => {
   let app: express.Express;
   let graphService: GraphService;
@@ -79,12 +77,13 @@ describe('createRouter', () => {
       maxDepth: 10,
       limitEntities: 1000,
     });
-    const router = await createRouter({
-      httpAuth: mockServices.httpAuth(),
-      graphService,
-    });
     app = express();
-    app.use(router);
+    const graphModule = GraphModule.create({
+      graphService,
+      router: app,
+      httpAuth: mockServices.httpAuth(),
+    });
+    graphModule.registerRoutes();
     app.use(mockErrorHandler());
   });
 
