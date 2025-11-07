@@ -150,7 +150,7 @@ export function useEntityRelationGraphFromBackend(
     ({ isActive, urlPath }: { isActive: () => boolean; urlPath: string }) => {
       const performQuery = async () => {
         try {
-          const baseUrl = await discoveryApi.getBaseUrl('catalog-graph');
+          const baseUrl = await discoveryApi.getBaseUrl('catalog');
 
           const url = new URL(`${baseUrl}${urlPath}`);
 
