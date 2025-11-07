@@ -24,11 +24,12 @@ import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
 import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
-import { existsSync } from 'fs';
-import { join } from 'path';
+import semver from 'semver'
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
+
+const backstageVersion = require('../package.json').version;
 
 const useVersionedDocs = require('fs').existsSync('versions.json');
 
@@ -196,10 +197,6 @@ const config: Config = {
         fromExtensions: [],
         redirects: [
           {
-            from: '/docs/features/test123',
-            to: '/docs/auth/test',
-          },
-          {
             from: '/docs',
             to: '/docs/overview/what-is-backstage',
           },
@@ -279,31 +276,11 @@ const config: Config = {
             from: '/docs/getting-started/app-custom-theme',
             to: '/docs/conf/user-interface',
           },
+          semver.gt(backstageVersion, '1.46.0') ? {
+              from: '/docs/plugins/url-reader/',
+              to: '/docs/auth/test'
+            } : undefined,
         ],
-        createRedirects(existingPath) {
-          // If we're using versioned docs, we need to make sure to only allow through redirects that actually exist in the stable docsite.
-          if (useVersionedDocs) {
-            if (existingPath.startsWith('/docs/next')) {
-              throw new Error(`Redirects should not be created for next docs: ${existingPath}`);
-            }
-            if (
-              existsSync(
-                join(
-                  __dirname,
-                  'versioned_docs',
-                  'version-stable',
-                  existingPath.replace(/docs/, ''),
-                ) + '.md',
-              )
-            ) {
-              return existingPath;
-            } else {
-              return undefined;
-            }
-          } else {
-            return existingPath;
-          }
-        },
       }),
     [
       'docusaurus-pushfeedback',
