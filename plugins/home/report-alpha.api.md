@@ -12,6 +12,7 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -146,7 +147,7 @@ export const HomepageBlueprint: ExtensionBlueprint<{
       >;
   inputs: {
     widgets: ExtensionInput<
-      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      ConfigurableExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>,
       {
         singleton: false;
         optional: false;
