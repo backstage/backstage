@@ -6,7 +6,7 @@
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { JSX as JSX_2 } from 'react';
+import { ReactElement } from 'react';
 import { RJSFSchema } from '@rjsf/utils';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UiSchema } from '@rjsf/utils';
@@ -43,19 +43,7 @@ export type ComponentParts = {
 export const HomepageWidgetBlueprint: ExtensionBlueprint<{
   kind: 'home-widget';
   params: HomepageWidgetBlueprintParams;
-  output:
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ExtensionDataRef<
-        {
-          name?: string;
-          title?: string;
-          description?: string;
-          layout?: CardLayout;
-          settings?: CardSettings;
-        },
-        'home.widget.metadata',
-        {}
-      >;
+  output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -74,6 +62,23 @@ export interface HomepageWidgetBlueprintParams {
 }
 
 // @alpha
+export interface HomePageWidgetData {
+  component: ReactElement;
+  description?: string;
+  layout?: CardLayout;
+  name?: string;
+  settings?: CardSettings;
+  title?: string;
+}
+
+// @alpha
+export const homePageWidgetDataRef: ConfigurableExtensionDataRef<
+  HomePageWidgetData,
+  'home.widget.data',
+  {}
+>;
+
+// @alpha
 export const homeReactTranslationRef: TranslationRef<
   'home-react',
   {
@@ -81,18 +86,5 @@ export const homeReactTranslationRef: TranslationRef<
     readonly 'settingsModal.closeButtonTitle': 'Close';
     readonly 'cardExtension.settingsButtonTitle': 'Settings';
   }
->;
-
-// @alpha
-export const widgetMetadataRef: ConfigurableExtensionDataRef<
-  {
-    name?: string;
-    title?: string;
-    description?: string;
-    layout?: CardLayout;
-    settings?: CardSettings;
-  },
-  'home.widget.metadata',
-  {}
 >;
 ```
