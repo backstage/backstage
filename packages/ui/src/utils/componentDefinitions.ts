@@ -60,7 +60,7 @@ export const componentDefinitions = {
       'maxHeight',
     ],
     dataAttributes: {
-      bg: ['surface-0', 'surface-1', 'surface-2'] as const,
+      surface: ['0', '1', '2', 'danger', 'warning', 'success'] as const,
     },
   },
   Button: {
@@ -165,7 +165,7 @@ export const componentDefinitions = {
       'direction',
     ],
     dataAttributes: {
-      bg: ['surface-0', 'surface-1', 'surface-2'] as const,
+      surface: ['0', '1', '2', 'danger', 'warning', 'success'] as const,
     },
   },
   Grid: {
@@ -191,7 +191,7 @@ export const componentDefinitions = {
       'py',
     ],
     dataAttributes: {
-      bg: ['surface-0', 'surface-1', 'surface-2'] as const,
+      surface: ['0', '1', '2', 'danger', 'warning', 'success'] as const,
     },
   },
   GridItem: {
@@ -200,7 +200,7 @@ export const componentDefinitions = {
     },
     utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
     dataAttributes: {
-      bg: ['surface-0', 'surface-1', 'surface-2'] as const,
+      surface: ['0', '1', '2', 'danger', 'warning', 'success'] as const,
     },
   },
   Header: {

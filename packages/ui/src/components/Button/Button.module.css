@@ -144,7 +144,7 @@
     background-color: var(--bui-bg-disabled-on-surface-0);
   }
 
-  &[data-on='surface-1'] {
+  &[data-on-surface='1'] {
     background-color: var(--bui-bg-on-surface-1);
 
     &[data-hovered='true'] {
@@ -160,7 +160,7 @@
     }
   }
 
-  &[data-on='surface-2'] {
+  &[data-on-surface='2'] {
     background-color: var(--bui-bg-on-surface-2);
 
     &[data-hovered='true'] {

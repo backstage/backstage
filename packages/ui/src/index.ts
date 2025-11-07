@@ -56,7 +56,6 @@ export * from './components/VisuallyHidden';
 
 // Types
 export * from './types';
-export type { SurfaceLevel } from './hooks/useSurface';
 
 // Hooks
 export { useBreakpoint } from './hooks/useBreakpoint';

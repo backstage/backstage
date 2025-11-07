@@ -349,37 +349,37 @@ export const Display: Story = {
   ),
 };
 
-export const Background: Story = {
+export const Surfaces: Story = {
   args: { px: '6', py: '4' },
   render: args => (
     <Flex align="center">
       <Box {...args}>Default</Box>
-      <Box bg="surface-0" {...args}>
+      <Box surface="0" {...args}>
         Surface 0
       </Box>
-      <Box bg="surface-1" {...args}>
+      <Box surface="1" {...args}>
         Surface 1
       </Box>
-      <Box bg="surface-2" {...args}>
+      <Box surface="2" {...args}>
         Surface 2
       </Box>
     </Flex>
   ),
 };
 
-export const BackgroundNested: Story = {
+export const SurfacesNested: Story = {
   args: { px: '6', py: '4' },
   render: args => (
     <Flex direction="column">
       <Box style={{ maxWidth: '600px' }} mb="4">
         In this test, we are nesting boxes and buttons on different surfaces to
         ensure that the correct surface is applied to each element. If a Button
-        is placed on a surface that doesn't have the bg prop set, it will
+        is placed on a surface that doesn't have the surface prop set, it will
         inherit the surface from the parent.
       </Box>
-      <Box {...args} bg="surface-1">
+      <Box {...args} surface="1">
         <Button>Button</Button>
-        <Box {...args} bg="surface-2" mt="4">
+        <Box {...args} surface="2" mt="4">
           <Button>Button</Button>
           <Box {...args} mt="4">
             <Button>Button</Button>

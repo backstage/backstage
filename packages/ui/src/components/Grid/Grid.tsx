@@ -19,7 +19,8 @@ import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Grid.module.css';
-import { SurfaceLevel, SurfaceProvider } from '../../hooks/useSurface';
+import { SurfaceProvider } from '../../hooks/useSurface';
+import { Surface } from '../../types';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
@@ -42,8 +43,8 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
     />
   );
 
-  return props.bg ? (
-    <SurfaceProvider surface={props.bg as unknown as SurfaceLevel}>
+  return props.surface ? (
+    <SurfaceProvider surface={props.surface as unknown as Surface}>
       {content}
     </SurfaceProvider>
   ) : (
@@ -72,8 +73,8 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
     />
   );
 
-  return props.bg ? (
-    <SurfaceProvider surface={props.bg as unknown as SurfaceLevel}>
+  return props.surface ? (
+    <SurfaceProvider surface={props.surface as unknown as Surface}>
       {content}
     </SurfaceProvider>
   ) : (

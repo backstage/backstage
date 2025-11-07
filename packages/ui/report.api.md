@@ -144,8 +144,6 @@ export interface BoxProps extends SpaceProps {
   // (undocumented)
   as?: keyof JSX.IntrinsicElements;
   // (undocumented)
-  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
-  // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
@@ -167,6 +165,8 @@ export interface BoxProps extends SpaceProps {
   >;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
   // (undocumented)
   width?: Responsive<string>;
 }
@@ -229,7 +229,7 @@ export interface ButtonProps extends ButtonProps_2 {
   iconEnd?: ReactElement;
   // (undocumented)
   iconStart?: ReactElement;
-  on?: SurfaceLevel;
+  onSurface?: Surface;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
@@ -418,7 +418,14 @@ export const componentDefinitions: {
       'maxHeight',
     ];
     readonly dataAttributes: {
-      readonly bg: readonly ['surface-0', 'surface-1', 'surface-2'];
+      readonly surface: readonly [
+        '0',
+        '1',
+        '2',
+        'danger',
+        'warning',
+        'success',
+      ];
     };
   };
   readonly Button: {
@@ -523,7 +530,14 @@ export const componentDefinitions: {
       'direction',
     ];
     readonly dataAttributes: {
-      readonly bg: readonly ['surface-0', 'surface-1', 'surface-2'];
+      readonly surface: readonly [
+        '0',
+        '1',
+        '2',
+        'danger',
+        'warning',
+        'success',
+      ];
     };
   };
   readonly Grid: {
@@ -549,7 +563,14 @@ export const componentDefinitions: {
       'py',
     ];
     readonly dataAttributes: {
-      readonly bg: readonly ['surface-0', 'surface-1', 'surface-2'];
+      readonly surface: readonly [
+        '0',
+        '1',
+        '2',
+        'danger',
+        'warning',
+        'success',
+      ];
     };
   };
   readonly GridItem: {
@@ -558,7 +579,14 @@ export const componentDefinitions: {
     };
     readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
     readonly dataAttributes: {
-      readonly bg: readonly ['surface-0', 'surface-1', 'surface-2'];
+      readonly surface: readonly [
+        '0',
+        '1',
+        '2',
+        'danger',
+        'warning',
+        'success',
+      ];
     };
   };
   readonly Header: {
@@ -916,8 +944,6 @@ export interface FlexProps extends SpaceProps {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
-  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
-  // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
@@ -929,6 +955,8 @@ export interface FlexProps extends SpaceProps {
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -945,8 +973,6 @@ export const Grid: {
 // @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
-  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
-  // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
@@ -960,12 +986,12 @@ export interface GridItemProps {
   rowSpan?: Responsive<Columns>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
 export interface GridProps extends SpaceProps {
-  // (undocumented)
-  bg?: Responsive<'surface-0' | 'surface-1' | 'surface-2'>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -976,6 +1002,8 @@ export interface GridProps extends SpaceProps {
   gap?: Responsive<Space>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public
@@ -1326,7 +1354,7 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
 
 // @public (undocumented)
-export type SurfaceLevel = 'surface-0' | 'surface-1' | 'surface-2';
+export type Surface = '0' | '1' | '2' | 'danger' | 'warning' | 'success';
 
 // @public (undocumented)
 export const Switch: ForwardRefExoticComponent<

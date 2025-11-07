@@ -59,7 +59,7 @@ export const Variants: Story = {
     <Flex direction="column" gap="4">
       <Flex direction="column" gap="4">
         <Text>On Surface 0</Text>
-        <Flex align="center" bg="surface-0" p="4">
+        <Flex align="center" surface="0" p="4">
           <Button iconStart={<RiCloudLine />} variant="primary">
             Button
           </Button>
@@ -73,7 +73,7 @@ export const Variants: Story = {
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Surface 1</Text>
-        <Flex align="center" bg="surface-1" p="4">
+        <Flex align="center" surface="1" p="4">
           <Button iconStart={<RiCloudLine />} variant="primary">
             Button
           </Button>
@@ -87,7 +87,7 @@ export const Variants: Story = {
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Surface 2</Text>
-        <Flex align="center" bg="surface-2" p="4">
+        <Flex align="center" surface="2" p="4">
           <Button iconStart={<RiCloudLine />} variant="primary">
             Button
           </Button>
@@ -155,16 +155,49 @@ export const FullWidth: Story = {
 
 export const Disabled: Story = {
   render: () => (
-    <Flex direction="row" gap="4">
-      <Button variant="primary" isDisabled>
-        Primary
-      </Button>
-      <Button variant="secondary" isDisabled>
-        Secondary
-      </Button>
-      <Button variant="tertiary" isDisabled>
-        Tertiary
-      </Button>
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="4" surface="0" p="4">
+        <Text>On Surface 0</Text>
+        <Flex direction="row" gap="4">
+          <Button variant="primary" isDisabled>
+            Primary
+          </Button>
+          <Button variant="secondary" isDisabled>
+            Secondary
+          </Button>
+          <Button variant="tertiary" isDisabled>
+            Tertiary
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4" surface="1" p="4">
+        <Text>On Surface 1</Text>
+        <Flex direction="row" gap="4">
+          <Button variant="primary" isDisabled>
+            Primary
+          </Button>
+          <Button variant="secondary" isDisabled>
+            Secondary
+          </Button>
+          <Button variant="tertiary" isDisabled>
+            Tertiary
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4" surface="2" p="4">
+        <Text>On Surface 2</Text>
+        <Flex direction="row" gap="4">
+          <Button variant="primary" isDisabled>
+            Primary
+          </Button>
+          <Button variant="secondary" isDisabled>
+            Secondary
+          </Button>
+          <Button variant="tertiary" isDisabled>
+            Tertiary
+          </Button>
+        </Flex>
+      </Flex>
     </Flex>
   ),
 };
@@ -193,15 +226,15 @@ export const OnSurfaces: Story = {
         This is a button on Default
         <Button variant="secondary">Surface 0</Button>
       </Flex>
-      <Flex bg="surface-0" p="4" direction="column" align="start">
+      <Flex surface="0" p="4" direction="column" align="start">
         This is a button on surface 0
         <Button variant="secondary">Surface 0</Button>
       </Flex>
-      <Flex bg="surface-1" p="4" direction="column" align="start">
+      <Flex surface="1" p="4" direction="column" align="start">
         This is a button on surface 1
         <Button variant="secondary">Surface 1</Button>
       </Flex>
-      <Flex bg="surface-2" p="4" direction="column" align="start">
+      <Flex surface="2" p="4" direction="column" align="start">
         This is a button on surface 2
         <Button variant="secondary">Surface 2</Button>
       </Flex>
@@ -216,78 +249,15 @@ export const OnProp: Story = {
   render: () => (
     <Flex>
       <Button variant="secondary">Default</Button>
-      <Button on="surface-0" variant="secondary">
+      <Button onSurface="0" variant="secondary">
         On Surface 0
       </Button>
-      <Button on="surface-1" variant="secondary">
+      <Button onSurface="1" variant="secondary">
         On Surface 1
       </Button>
-      <Button on="surface-2" variant="secondary">
+      <Button onSurface="2" variant="secondary">
         On Surface 2
       </Button>
-    </Flex>
-  ),
-};
-
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
-export const Playground: Story = {
-  args: {
-    children: 'Button',
-  },
-  render: () => (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {sizes.map(size => (
-            <Flex align="center" key={size}>
-              <Button variant={variant} size={size}>
-                Button
-              </Button>
-              <Button iconStart={<RiCloudLine />} variant={variant} size={size}>
-                Button
-              </Button>
-              <Button
-                iconEnd={<RiArrowRightSLine />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                iconEnd={<RiArrowRightSLine />}
-                style={{ width: '200px' }}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button variant={variant} size={size} isDisabled>
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </Button>
-              <Button
-                iconEnd={<RiArrowRightSLine />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </Button>
-            </Flex>
-          ))}
-        </Flex>
-      ))}
     </Flex>
   ),
 };

@@ -19,7 +19,8 @@ import { FlexProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Flex.module.css';
-import { SurfaceLevel, SurfaceProvider } from '../../hooks/useSurface';
+import { SurfaceProvider } from '../../hooks/useSurface';
+import { Surface } from '../../types';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
@@ -43,8 +44,8 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
     />
   );
 
-  return props.bg ? (
-    <SurfaceProvider surface={props.bg as unknown as SurfaceLevel}>
+  return props.surface ? (
+    <SurfaceProvider surface={props.surface as unknown as Surface}>
       {content}
     </SurfaceProvider>
   ) : (

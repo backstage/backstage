@@ -15,18 +15,16 @@
  */
 
 import { createContext, useContext, ReactNode } from 'react';
-
-/** @public */
-export type SurfaceLevel = 'surface-0' | 'surface-1' | 'surface-2';
+import { Surface } from '../types';
 
 /** @public */
 export interface SurfaceContextValue {
-  surface: SurfaceLevel | undefined;
+  surface: Surface | undefined;
 }
 
 /** @public */
 export interface SurfaceProviderProps {
-  surface: SurfaceLevel;
+  surface: Surface;
   children: ReactNode;
 }
 

@@ -31,19 +31,19 @@ export const Button = forwardRef(
       ...props,
     });
 
-    const { children, className, iconStart, iconEnd, on, ...rest } =
+    const { children, className, iconStart, iconEnd, onSurface, ...rest } =
       cleanedProps;
 
     const { surface } = useSurface();
 
-    const onLevel = on || surface;
+    const onSurfaceValue = onSurface || surface;
 
     return (
       <RAButton
         className={clsx(classNames.root, styles[classNames.root], className)}
         ref={ref}
         {...dataAttributes}
-        data-on={onLevel}
+        data-on-surface={onSurfaceValue}
         {...rest}
       >
         {iconStart}

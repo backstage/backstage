@@ -19,14 +19,15 @@ import { BoxProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Box.module.css';
-import { SurfaceLevel, SurfaceProvider } from '../../hooks/useSurface';
+import { SurfaceProvider } from '../../hooks/useSurface';
+import { Surface } from '../../types';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles('Box', props);
 
-  const { as = 'div', children, className, bg, ...rest } = cleanedProps;
+  const { as = 'div', children, className, surface, ...rest } = cleanedProps;
 
   return createElement(
     as,
@@ -42,8 +43,8 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
       ...dataAttributes,
       ...rest,
     },
-    bg ? (
-      <SurfaceProvider surface={bg as unknown as SurfaceLevel}>
+    surface ? (
+      <SurfaceProvider surface={surface as unknown as Surface}>
         {children}
       </SurfaceProvider>
     ) : (

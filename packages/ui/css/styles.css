@@ -60,7 +60,7 @@
     --bui-bg-solid: #1f5493;
     --bui-bg-solid-hover: #163a66;
     --bui-bg-solid-pressed: #0f2b4e;
-    --bui-bg-solid-disabled: #ebebeb;
+    --bui-bg-solid-disabled: #0f2b4e;
     --bui-bg-on-surface-0: var(--bui-bg-surface-0);
     --bui-bg-hover-on-surface-0: color-mix(in srgb, var(--bui-bg-solid) 4%, transparent);
     --bui-bg-pressed-on-surface-0: color-mix(in srgb, var(--bui-bg-solid) 6%, transparent);
@@ -116,7 +116,7 @@
     --bui-bg-solid: #9cc9ff;
     --bui-bg-solid-hover: #83b9fd;
     --bui-bg-solid-pressed: #83b9fd;
-    --bui-bg-solid-disabled: #222;
+    --bui-bg-solid-disabled: #153155;
     --bui-bg-on-surface-0: var(--bui-bg-surface-0);
     --bui-bg-hover-on-surface-0: color-mix(in srgb, var(--bui-bg-solid) 12%, transparent);
     --bui-bg-pressed-on-surface-0: color-mix(in srgb, var(--bui-bg-solid) 16%, transparent);

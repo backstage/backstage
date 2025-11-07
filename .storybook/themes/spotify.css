@@ -222,7 +222,7 @@
   --bui-bg-solid: #1ed760;
   --bui-bg-solid-hover: #3be477;
   --bui-bg-solid-pressed: #1abc54;
-  --bui-bg-solid-disabled: var(--bui-gray-2);
+  --bui-bg-solid-disabled: #0f6c30;
 
   --bui-bg-hover-on-surface-0: var(--bui-white);
   --bui-bg-pressed-on-surface-0: var(--bui-gray-2);
@@ -239,6 +239,7 @@
   --bui-fg-primary: var(--bui-black);
   --bui-fg-secondary: var(--bui-gray-7);
   --bui-fg-solid: var(--bui-black);
+  --bui-fg-solid-disabled: #7cb590;
 
   --bui-border: rgba(0, 0, 0, 0.2);
   --bui-border-hover: rgba(0, 0, 0, 0.3);
