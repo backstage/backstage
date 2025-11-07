@@ -16,7 +16,8 @@
 
 import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
-import { Button as RAButton } from 'react-aria-components';
+import { Button as RAButton, ProgressBar } from 'react-aria-components';
+import { RiLoader4Line } from '@remixicon/react';
 import type { ButtonIconProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import stylesButtonIcon from './ButtonIcon.module.css';
@@ -33,7 +34,7 @@ export const ButtonIcon = forwardRef(
 
     const { classNames: classNamesButtonIcon } = useStyles('ButtonIcon');
 
-    const { className, icon, ...rest } = cleanedProps;
+    const { className, icon, loading, ...rest } = cleanedProps;
 
     return (
       <RAButton
@@ -45,10 +46,41 @@ export const ButtonIcon = forwardRef(
           className,
         )}
         ref={ref}
+        isPending={loading}
         {...dataAttributes}
         {...rest}
       >
-        {icon}
+        {({ isPending }) => (
+          <>
+            <span
+              className={clsx(
+                classNames.content,
+                classNamesButtonIcon.content,
+                stylesButton[classNames.content],
+                stylesButtonIcon[classNamesButtonIcon.content],
+                className,
+              )}
+            >
+              {icon}
+            </span>
+
+            {isPending && (
+              <ProgressBar
+                aria-label="Loading"
+                isIndeterminate
+                className={clsx(
+                  classNames.spinner,
+                  classNamesButtonIcon.spinner,
+                  stylesButton[classNames.spinner],
+                  stylesButtonIcon[classNamesButtonIcon.spinner],
+                  className,
+                )}
+              >
+                <RiLoader4Line aria-hidden="true" />
+              </ProgressBar>
+            )}
+          </>
+        )}
       </RAButton>
     );
   },

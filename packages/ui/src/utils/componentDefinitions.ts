@@ -63,15 +63,20 @@ export const componentDefinitions = {
   Button: {
     classNames: {
       root: 'bui-Button',
+      content: 'bui-ButtonContent',
+      spinner: 'bui-ButtonSpinner',
     },
     dataAttributes: {
       size: ['small', 'medium', 'large'] as const,
       variant: ['primary', 'secondary', 'tertiary'] as const,
+      loading: [true, false] as const,
     },
   },
   ButtonIcon: {
     classNames: {
       root: 'bui-ButtonIcon',
+      content: 'bui-ButtonIconContent',
+      spinner: 'bui-ButtonIconSpinner',
     },
   },
   ButtonLink: {

@@ -41,47 +41,38 @@ export const ButtonLink = forwardRef(
 
     const isExternal = isExternalLink(href);
 
-    // If it's an external link, render RALink without RouterProvider
-    if (isExternal) {
-      return (
-        <RALink
-          className={clsx(
-            classNames.root,
-            classNamesButtonLink.root,
-            stylesButton[classNames.root],
-            className,
-          )}
-          ref={ref}
-          {...dataAttributes}
-          href={href}
-          {...rest}
+    const linkButton = (
+      <RALink
+        className={clsx(
+          classNames.root,
+          classNamesButtonLink.root,
+          stylesButton[classNames.root],
+          className,
+        )}
+        ref={ref}
+        {...dataAttributes}
+        href={href}
+        {...rest}
+      >
+        <span
+          className={clsx(classNames.content, stylesButton[classNames.content])}
         >
           {iconStart}
           {children}
           {iconEnd}
-        </RALink>
-      );
+        </span>
+      </RALink>
+    );
+
+    // If it's an external link, render RALink without RouterProvider
+    if (isExternal) {
+      return linkButton;
     }
 
     // For internal links, use RouterProvider
     return (
       <RouterProvider navigate={navigate} useHref={useHref}>
-        <RALink
-          className={clsx(
-            classNames.root,
-            classNamesButtonLink.root,
-            stylesButton[classNames.root],
-            className,
-          )}
-          ref={ref}
-          {...dataAttributes}
-          href={href}
-          {...rest}
-        >
-          {iconStart}
-          {children}
-          {iconEnd}
-        </RALink>
+        {linkButton}
       </RouterProvider>
     );
   },

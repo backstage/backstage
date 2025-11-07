@@ -187,6 +187,8 @@ export interface ButtonIconProps extends ButtonProps_2 {
   // (undocumented)
   icon?: ReactElement;
   // (undocumented)
+  loading?: boolean;
+  // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
@@ -227,6 +229,8 @@ export interface ButtonProps extends ButtonProps_2 {
   iconEnd?: ReactElement;
   // (undocumented)
   iconStart?: ReactElement;
+  // (undocumented)
+  loading?: boolean;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
@@ -418,15 +422,20 @@ export const componentDefinitions: {
   readonly Button: {
     readonly classNames: {
       readonly root: 'bui-Button';
+      readonly content: 'bui-ButtonContent';
+      readonly spinner: 'bui-ButtonSpinner';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium', 'large'];
       readonly variant: readonly ['primary', 'secondary', 'tertiary'];
+      readonly loading: readonly [true, false];
     };
   };
   readonly ButtonIcon: {
     readonly classNames: {
       readonly root: 'bui-ButtonIcon';
+      readonly content: 'bui-ButtonIconContent';
+      readonly spinner: 'bui-ButtonIconSpinner';
     };
   };
   readonly ButtonLink: {
