@@ -32,7 +32,7 @@ async function checkBackendAvailability(
   discoveryApi: DiscoveryApi,
   fetchApi: FetchApi,
 ): Promise<boolean> {
-  const baseUrl = await discoveryApi.getBaseUrl('catalog-graph');
+  const baseUrl = await discoveryApi.getBaseUrl('catalog');
 
   const resp = await fetchApi.fetch(`${baseUrl}/graph`);
   if (!resp.ok) {
@@ -44,6 +44,7 @@ async function checkBackendAvailability(
   return true;
 }
 
+// Cache the backend availability check result, only needs to be done once
 let backendAvailable: Promise<boolean>;
 
 export function useFetchMethod(hasEntitySet: boolean): FetchMethod {
