@@ -1,7 +1,7 @@
 ---
-'@backstage/plugin-catalog-graph-backend': patch
+'@backstage/plugin-catalog-backend-module-graph': minor
 ---
 
-New backend for the `catalog-graph` frontend plugin.
+New catalog backend module for the `catalog-graph` frontend plugin (or other API usages).
 
-When installed, the `catalog-graph` will render faster, especially for high-latency users.
+When installed, a new endpoint `/api/catalog/graph` will be available which the `catalog-graph` will use to render faster, especially for high-latency users.

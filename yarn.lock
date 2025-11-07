@@ -5153,6 +5153,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-graph@workspace:^, @backstage/plugin-catalog-backend-module-graph@workspace:plugins/catalog-backend-module-graph":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-graph@workspace:plugins/catalog-backend-module-graph"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-graph-common": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@types/express": "npm:^4.17.6"
+    "@types/supertest": "npm:^2.0.8"
+    express: "npm:^4.17.1"
+    express-promise-router: "npm:^4.1.1"
+    supertest: "npm:^6.2.4"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion"
@@ -5365,28 +5384,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-catalog-graph-backend@workspace:^, @backstage/plugin-catalog-graph-backend@workspace:plugins/catalog-graph-backend":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-catalog-graph-backend@workspace:plugins/catalog-graph-backend"
-  dependencies:
-    "@backstage/backend-defaults": "workspace:^"
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/catalog-client": "workspace:^"
-    "@backstage/catalog-model": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/errors": "workspace:^"
-    "@backstage/plugin-catalog-graph-common": "workspace:^"
-    "@backstage/plugin-catalog-node": "workspace:^"
-    "@types/express": "npm:^4.17.6"
-    "@types/supertest": "npm:^2.0.8"
-    express: "npm:^4.17.1"
-    express-promise-router: "npm:^4.1.0"
-    supertest: "npm:^6.2.4"
-    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 
@@ -31502,10 +31499,10 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-graph": "workspace:^"
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
-    "@backstage/plugin-catalog-graph-backend": "workspace:^"
     "@backstage/plugin-devtools-backend": "workspace:^"
     "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^"

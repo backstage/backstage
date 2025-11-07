@@ -49,8 +49,8 @@ backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
+backend.add(import('@backstage/plugin-catalog-backend-module-graph'));
 backend.add(import('@backstage/plugin-catalog-backend'));
-backend.add(import('@backstage/plugin-catalog-graph-backend'));
 backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend'));

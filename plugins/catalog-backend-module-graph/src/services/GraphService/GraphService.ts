@@ -15,7 +15,7 @@
  */
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import {
+import type {
   GraphQueryParams,
   GraphQueryResult,
 } from '@backstage/plugin-catalog-graph-common';

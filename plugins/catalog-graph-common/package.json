@@ -7,7 +7,6 @@
     "pluginId": "catalog-graph",
     "pluginPackages": [
       "@backstage/plugin-catalog-graph",
-      "@backstage/plugin-catalog-graph-backend",
       "@backstage/plugin-catalog-graph-common"
     ]
   },
