@@ -13,4 +13,29 @@ Here's an example:
 </Box>
 ```
 
-**Breaking change** Updated Backstage UI `--bui-bg` token to be `--bui-bg-surface-0`.
+**Breaking change** This update underlying background color tokens. Here's a breakdown of the updates:
+
+```diff
+- --bui-bg-tint              No replacement
+- --bui-bg-tint-hover        No replacement
+- --bui-bg-tint-pressed      No replacement
+- --bui-bg-tint-disabled     No replacement
+- --bui-bg                   To be replaced by --bui-bg-surface-0
+
++ --bui-bg-surface-0
+
++ --bui-bg-on-surface-0
++ --bui-bg-hover-on-surface-0
++ --bui-bg-pressed-on-surface-0
++ --bui-bg-disabled-on-surface-0
+
++ --bui-bg-on-surface-1
++ --bui-bg-hover-on-surface-1
++ --bui-bg-pressed-on-surface-1
++ --bui-bg-disabled-on-surface-1
+
++ --bui-bg-on-surface-2
++ --bui-bg-hover-on-surface-2
++ --bui-bg-pressed-on-surface-2
++ --bui-bg-disabled-on-surface-2
+```
