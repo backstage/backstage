@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-events-backend-module-kafka
+  title: '@backstage/plugin-events-backend-module-kafka'
+  description: The kafka backend module for the events plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

@@ -4,6 +4,7 @@
 
 ```ts
 import { AuditorService } from '@backstage/backend-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -34,6 +35,7 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
+import { RootInstanceMetadataService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -151,7 +153,10 @@ export interface MockDirectoryContentOptions {
 }
 
 // @public
-export function mockErrorHandler(): ErrorRequestHandler<
+export function mockErrorHandler(
+  _options?: {},
+  ..._args: never[]
+): ErrorRequestHandler<
   ParamsDictionary,
   any,
   any,
@@ -275,14 +280,17 @@ export namespace mockServices {
         partialImpl?: Partial<LoggerService> | undefined,
       ) => ServiceMock<LoggerService>;
   }
+  export function permissions(options?: {
+    result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+  }): PermissionsService;
   // (undocumented)
   export namespace permissions {
-    const // (undocumented)
-      factory: () => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<PermissionsService> | undefined,
-      ) => ServiceMock<PermissionsService>;
+    const factory: (options?: {
+      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    }) => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
+    const mock: (
+      partialImpl?: Partial<PermissionsService> | undefined,
+    ) => ServiceMock<PermissionsService>;
   }
   // (undocumented)
   export namespace permissionsRegistry {
@@ -298,7 +306,11 @@ export namespace mockServices {
       ) => ServiceMock<PermissionsRegistryService>;
   }
   // (undocumented)
-  export function rootConfig(options?: rootConfig.Options): RootConfigService;
+  export function rootConfig(
+    options?: rootConfig.Options,
+  ): RootConfigService & {
+    update(options: { data: JsonObject }): void;
+  };
   // (undocumented)
   export namespace rootConfig {
     // (undocumented)
@@ -333,6 +345,21 @@ export namespace mockServices {
       ) => ServiceMock<RootHttpRouterService>;
   }
   // (undocumented)
+  export function rootInstanceMetadata(): RootInstanceMetadataService;
+  // (undocumented)
+  export namespace rootInstanceMetadata {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootInstanceMetadataService> | undefined,
+      ) => ServiceMock<RootInstanceMetadataService>;
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        RootInstanceMetadataService,
+        'plugin',
+        'singleton' | 'multiton'
+      >;
+  }
+  // (undocumented)
   export namespace rootLifecycle {
     const // (undocumented)
       factory: () => ServiceFactory<RootLifecycleService, 'root', 'singleton'>;
@@ -359,9 +386,15 @@ export namespace mockServices {
       ) => ServiceMock<RootLoggerService>;
   }
   // (undocumented)
+  export function scheduler(): SchedulerService;
+  // (undocumented)
   export namespace scheduler {
     const // (undocumented)
-      factory: () => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
+      factory: (options?: {
+        skipTaskRunOnStartup?: boolean;
+        includeManualTasksOnStartup?: boolean;
+        includeInitialDelayedTasksOnStartup?: boolean;
+      }) => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,
@@ -493,6 +526,7 @@ export class TestCaches {
 
 // @public
 export type TestDatabaseId =
+  | 'POSTGRES_18'
   | 'POSTGRES_17'
   | 'POSTGRES_16'
   | 'POSTGRES_15'

@@ -21,11 +21,6 @@ import fs from 'fs-extra';
 import type { KnipConfig } from 'knip';
 import { createBinRunner } from '../util';
 
-// Ignore these
-const ignoredPackages = [
-  'packages/canon', // storybook config is different from the rest
-];
-
 interface KnipExtractionOptions {
   packageDirs: string[];
   isLocalBuild: boolean;
@@ -63,7 +58,7 @@ async function generateKnipConfig({ knipConfigPath }: KnipConfigOptions) {
     workspaces: {
       '.': {},
       '{packages,plugins}/*': {
-        entry: ['dev/index.{ts,tsx}', 'src/index.{ts,tsx}'],
+        entry: ['dev/**/*.{ts,tsx}', 'src/index.{ts,tsx}'],
         ignore: [
           '.eslintrc.js',
           'config.d.ts',
@@ -104,23 +99,24 @@ async function handlePackage({
   isLocalBuild,
 }: KnipPackageOptions) {
   console.log(`## Processing ${packageDir}`);
-  if (ignoredPackages.includes(packageDir)) {
-    console.log(`Skipping ${packageDir}`);
-    return;
-  }
+
   const fullDir = cliPaths.resolveTargetRoot(packageDir);
   const reportPath = resolvePath(fullDir, 'knip-report.md');
   const run = createBinRunner(cliPaths.targetRoot, '');
 
   let report = await run(
     `${knipDir}/knip.js`,
-    `-W ${packageDir}`, // Run the desired workspace
-    '--config knip.json',
+    '-W', // Run the desired workspace
+    packageDir,
+    '--config',
+    'knip.json',
     '--no-exit-code', // Removing this will end the process in case there are findings by knip
     '--no-progress', // Remove unnecessary debugging from output
     // TODO: Add more checks when dependencies start to look ok, see https://knip.dev/reference/cli#--include
-    '--include dependencies,unlisted',
-    '--reporter markdown',
+    '--include',
+    'dependencies,unlisted',
+    '--reporter',
+    'markdown',
   );
 
   // Adjust report paths to be relative to workspace

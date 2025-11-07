@@ -16,3 +16,5 @@
 
 export { removeUnsafeLinks } from './links';
 export { removeUnsafeIframes } from './iframes';
+export { removeUnsafeMetaTags } from './metatags';
+export { removeRestrictedAttributes } from './attributes';

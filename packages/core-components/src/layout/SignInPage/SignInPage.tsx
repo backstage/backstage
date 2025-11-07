@@ -18,6 +18,7 @@ import {
   BackstageIdentityResponse,
   configApiRef,
   SignInPageProps,
+  useAnalytics,
   useApi,
 } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
@@ -116,6 +117,7 @@ export const SingleSignInPage = ({
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
   const { t } = useTranslationRef(coreComponentsTranslationRef);
+  const analytics = useAnalytics();
 
   const [error, setError] = useState<Error>();
 
@@ -167,6 +169,7 @@ export const SingleSignInPage = ({
           profile,
         }),
       );
+      analytics.captureEvent('signIn', 'success');
     } catch (err: any) {
       // User closed the sign-in modal
       setError(err);

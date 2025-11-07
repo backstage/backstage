@@ -21,10 +21,8 @@ import {
   decodeProtectedHeader,
   jwtVerify,
 } from 'jose';
-import { omit } from 'lodash';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -45,10 +43,6 @@ const entityRef = stringifyEntityRef({
 });
 
 describe('TokenFactory', () => {
-  const mockUserInfoDatabaseHandler = {
-    addUserInfo: jest.fn().mockResolvedValue(undefined),
-  } as unknown as UserInfoDatabaseHandler;
-
   it('should issue valid tokens signed by a listed key', async () => {
     const keyDurationSeconds = 5;
     const factory = new TokenFactory({
@@ -56,7 +50,6 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     await expect(factory.listPublicKeys()).resolves.toEqual({ keys: [] });
@@ -92,10 +85,6 @@ describe('TokenFactory', () => {
     expect(verifyResult.payload.exp).toBe(
       verifyResult.payload.iat! + keyDurationSeconds,
     );
-
-    expect(mockUserInfoDatabaseHandler.addUserInfo).toHaveBeenCalledWith({
-      claims: omit(verifyResult.payload, ['aud', 'iat', 'iss', 'uip']),
-    });
 
     // Emulate the reconstruction of a limited user token
     const limitedUserToken = [
@@ -139,14 +128,13 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds: 5,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     const { token: token1 } = await factory.issueToken({
-      claims: { sub: entityRef },
+      claims: { sub: entityRef, ent: [entityRef] },
     });
     const { token: token2 } = await factory.issueToken({
-      claims: { sub: entityRef },
+      claims: { sub: entityRef, ent: [entityRef] },
     });
     expect(jwtKid(token1)).toBe(jwtKid(token2));
 
@@ -165,7 +153,7 @@ describe('TokenFactory', () => {
     });
 
     const { token: token3 } = await factory.issueToken({
-      claims: { sub: entityRef },
+      claims: { sub: entityRef, ent: [entityRef] },
     });
     expect(jwtKid(token3)).not.toBe(jwtKid(token2));
 
@@ -185,12 +173,11 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
       return factory.issueToken({
-        claims: { sub: 'UserId' },
+        claims: { sub: 'UserId', ent: [entityRef] },
       });
     }).rejects.toThrow();
   });
@@ -203,12 +190,11 @@ describe('TokenFactory', () => {
       keyDurationSeconds,
       logger,
       algorithm: '',
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
       return factory.issueToken({
-        claims: { sub: 'UserId' },
+        claims: { sub: 'UserId', ent: [entityRef] },
       });
     }).rejects.toThrow();
   });
@@ -219,7 +205,6 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds: 5,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
@@ -238,7 +223,6 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     const { token } = await factory.issueToken({

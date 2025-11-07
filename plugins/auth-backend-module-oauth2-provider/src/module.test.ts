@@ -54,7 +54,7 @@ describe('authModuleOauth2Provider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('oauth2-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/oauth2/handler',
       script: false,
       secure: false,

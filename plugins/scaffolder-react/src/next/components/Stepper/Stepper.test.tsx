@@ -672,6 +672,40 @@ describe('Stepper', () => {
     );
   });
 
+  it('should scroll the first main element to top when activeStep changes', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        { title: 'Step 1', schema: { properties: {} } },
+        { title: 'Step 2', schema: { properties: {} } },
+      ],
+      title: 'Scroll Test',
+    };
+
+    // Render a main element in the document for the Stepper to find
+    const main = document.createElement('main');
+    document.body.appendChild(main);
+    const scrollToMock = jest.fn();
+    main.scrollTo = scrollToMock;
+
+    // Render Stepper as usual (do not pass container)
+    const { getByRole, unmount } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    // Click next to change the activeStep
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    expect(scrollToMock).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
+
+    // Clean up
+    document.body.removeChild(main);
+    unmount();
+  });
+
   describe('Scaffolder Layouts', () => {
     it('should render the step in the scaffolder layout', async () => {
       const ScaffolderLayout: LayoutTemplate = ({ properties }) => (

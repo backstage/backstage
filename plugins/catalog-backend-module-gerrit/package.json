@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gerrit",
-  "version": "0.3.2-next.3",
+  "version": "0.3.8-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",
@@ -61,7 +61,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
-    "luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
   "configSchema": "config.d.ts"

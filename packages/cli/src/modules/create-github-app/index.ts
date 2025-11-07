@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createCliPlugin } from '../../wiring/factory';
 import { Command } from 'commander';
 import { lazy } from '../../lib/lazy';
 
-export function registerCommands(program: Command) {
-  program
-    .command('create-github-app <github-org>')
-    .description('Create new GitHub App in your organization.')
-    .action(
-      lazy(
-        () => import('../create-github-app/commands/create-github-app'),
-        'default',
-      ),
-    );
-}
+export default createCliPlugin({
+  pluginId: 'new',
+  init: async reg => {
+    reg.addCommand({
+      path: ['create-github-app'],
+      description: 'Create new GitHub App in your organization.',
+      execute: async ({ args }) => {
+        const command = new Command();
+        const defaultCommand = command
+          .argument('<github-org>')
+          .action(
+            lazy(() => import('./commands/create-github-app'), 'default'),
+          );
+
+        await defaultCommand.parseAsync(args, { from: 'user' });
+      },
+    });
+  },
+});

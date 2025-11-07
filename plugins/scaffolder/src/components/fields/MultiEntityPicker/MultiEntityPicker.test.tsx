@@ -262,6 +262,71 @@ describe('<MultiEntityPicker />', () => {
     });
   });
 
+  describe('with existing form data', () => {
+    beforeEach(() => {
+      uiSchema = { 'ui:options': {} };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData: ['group:default/team-a'],
+      } as unknown as FieldProps;
+    });
+
+    it('preserves existing data on blur', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
+    });
+
+    it('preserves existing data on value create', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
+    });
+
+    it('preserves existing data on selecting an existing option', async () => {
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.mouseDown(input);
+      const optionA = screen.getByText('squad-b');
+      await userEvent.click(optionA as HTMLElement);
+
+      expect(onChange).toHaveBeenCalledWith([
+        'group:default/team-a',
+        'group:default/squad-b',
+      ]);
+    });
+  });
+
   describe('uses full entity ref', () => {
     beforeEach(() => {
       uiSchema = {
@@ -945,6 +1010,83 @@ describe('<MultiEntityPicker />', () => {
       expect(queryByText(description.default!)).toBe(null);
       expect(queryByText(description.fromSchema)).toBe(null);
       expect(getByText(description.fromUiSchema)).toBeInTheDocument();
+    });
+  });
+
+  describe('entity presentation', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+    });
+
+    it('renders and filters selection displayName', async () => {
+      catalogApi.getEntities.mockResolvedValue({
+        items: entities.map(item => ({
+          ...item,
+          spec: {
+            profile: { displayName: item.metadata.name.replace('-', ' ') },
+          },
+        })),
+      });
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team a' } });
+
+      expect(getByText('team a')).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 'squad b' } });
+
+      expect(getByText('squad b')).toBeInTheDocument();
+
+      fireEvent.blur(input);
+    });
+
+    it('renders and filters selection title', async () => {
+      catalogApi.getEntities.mockResolvedValue({
+        items: entities.map(item => ({
+          ...item,
+          metadata: {
+            ...item.metadata,
+            title: item.metadata.name.replace('-', ' ').toUpperCase(),
+          },
+        })),
+      });
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team a' } });
+
+      expect(getByText('TEAM A')).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 'squad b' } });
+
+      expect(getByText('SQUAD B')).toBeInTheDocument();
+
+      fireEvent.blur(input);
     });
   });
 });

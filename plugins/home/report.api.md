@@ -23,6 +23,7 @@ import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
+import { Variant } from '@material-ui/core/styles/createTypography';
 
 // @public
 export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -336,10 +337,12 @@ export type VisitsWebStorageApiOptions = {
 // @public
 export const WelcomeTitle: ({
   language,
+  variant,
 }: WelcomeTitleLanguageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type WelcomeTitleLanguageProps = {
   language?: string[];
+  variant?: Variant | 'inherit';
 };
 ```

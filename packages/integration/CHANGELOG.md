@@ -1,5 +1,121 @@
 # @backstage/integration
 
+## 1.18.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+
+## 1.18.1
+
+### Patch Changes
+
+- d772b51: remove host from azure blob storage integration type
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 1.18.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
+## 1.18.1-next.0
+
+### Patch Changes
+
+- d772b51: remove host from azure blob storage integration type
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 1.18.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
+### Patch Changes
+
+- 56897d7: Fixes issue with Github credentials provider which fails to match organization name if using allowedInstallationOwners
+
+## 1.18.0-next.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
+## 1.17.1
+
+### Patch Changes
+
+- e0189b8: UrlReader: Fix handling of access tokens for GitLab readURL requests
+- d1e4a6d: Fixed bug where the GitLab user token and GitLab integration token were being merged together
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 1.17.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
+## 1.17.1-next.0
+
+### Patch Changes
+
+- e0189b8: UrlReader: Fix handling of access tokens for GitLab readURL requests
+- d1e4a6d: Fixed bug where the GitLab user token and GitLab integration token were being merged together
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.17.0
+
+### Minor Changes
+
+- d945206: Added support for federated credentials using managed identities in the Azure DevOps integration. Federated credentials are only available for Azure DevOps organizations that have been configured to use Entra ID for authentication.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  +       - clientId: ${APP_REGISTRATION_CLIENT_ID}
+  +         managedIdentityClientId: system-assigned
+  +         tenantId: ${AZURE_TENANT_ID}
+  ```
+
+  This also adds support for automatically using the system-assigned managed identity of an Azure resource by specifying `system-assigned` as the client ID of the managed identity.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  -       - clientId: ${AZURE_CLIENT_ID}
+  +       - clientId: system-assigned
+  ```
+
+- f134cea: Implement Edit URL feature for Gerrit 3.9+.
+
+  It's possible to disable the edit url by adding the `disableEditUrl: true` config in the Gerrit integration.
+
+### Patch Changes
+
+- f3381d3: Added missing `organizations` property to `azure` section in `config.d.ts` file
+- acea1d4: update documentation
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.17.0-next.3
 
 ### Minor Changes

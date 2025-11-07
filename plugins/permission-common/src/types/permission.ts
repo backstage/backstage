@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { EvaluatePermissionRequest, EvaluatePermissionResponse } from './api';
-
 /**
  * The attributes related to a given permission; these should be generic and widely applicable to
  * all permissions in the system.
@@ -87,18 +85,6 @@ export type ResourcePermission<TResourceType extends string = string> =
       resourceType: TResourceType;
     }
   >;
-
-/**
- * A client interacting with the permission backend can implement this authorizer interface.
- * @public
- * @deprecated Use {@link @backstage/plugin-permission-common#PermissionEvaluator} instead
- */
-export interface PermissionAuthorizer {
-  authorize(
-    requests: EvaluatePermissionRequest[],
-    options?: AuthorizeRequestOptions,
-  ): Promise<EvaluatePermissionResponse[]>;
-}
 
 /**
  * Options for authorization requests.

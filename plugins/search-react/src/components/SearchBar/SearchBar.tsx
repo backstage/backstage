@@ -154,7 +154,7 @@ export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
   const clearButtonEndAdornment = (
     <InputAdornment position="end">
       <Button
-        aria-label="Clear"
+        aria-label={t('searchBar.clearButtonTitle')}
         size="small"
         onClick={handleClear}
         onKeyDown={event => {
@@ -164,7 +164,7 @@ export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
           }
         }}
       >
-        Clear
+        {t('searchBar.clearButtonTitle')}
       </Button>
     </InputAdornment>
   );

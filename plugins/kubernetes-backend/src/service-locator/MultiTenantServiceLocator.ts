@@ -20,7 +20,7 @@ import {
   KubernetesClustersSupplier,
   KubernetesServiceLocator,
   ServiceLocatorRequestContext,
-} from '../types/types';
+} from '@backstage/plugin-kubernetes-node';
 
 // This locator assumes that every service is located on every cluster
 // Therefore it will always return all clusters provided

@@ -1,6 +1,6 @@
 {
   "name": "yarn-plugin-backstage",
-  "version": "0.0.5-next.1",
+  "version": "0.0.7",
   "description": "Yarn plugin for working with Backstage monorepos",
   "backstage": {
     "role": "node-library"
@@ -31,9 +31,11 @@
   },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
-    "@yarnpkg/core": "^4.4.0",
+    "@yarnpkg/core": "^4.4.1",
     "@yarnpkg/fslib": "^3.1.2",
+    "@yarnpkg/plugin-essentials": "^4.4.0",
     "@yarnpkg/plugin-npm": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch",
     "@yarnpkg/plugin-pack": "^4.0.1",
     "semver": "^7.6.0"

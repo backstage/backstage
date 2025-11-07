@@ -1,5 +1,170 @@
 # @backstage/app-defaults
 
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/theme@0.7.0
+
+## 1.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/theme@0.7.0
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-react@0.4.37
+
+## 1.7.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
+## 1.7.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.1-next.0
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-react@0.4.37-next.0
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-app-api@1.19.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.7.0
+
+### Minor Changes
+
+- 9956704: Add and configure the OpenShift authentication provider to the default APIs.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/core-app-api@1.19.0
+
+## 1.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.6-next.0
+
+## 1.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/theme@0.6.8
+
+## 1.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.6.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-app-api@1.18.0
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.6.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-app-api@1.18.0-next.1
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 1.6.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.17.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-permission-react@0.4.36-next.0
+
+## 1.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/plugin-permission-react@0.4.35
+
+## 1.6.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/core-app-api@1.17.1
+  - @backstage/theme@0.6.6
+  - @backstage/plugin-permission-react@0.4.35
+
+## 1.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/theme@0.6.6
+  - @backstage/plugin-permission-react@0.4.34
+
+## 1.6.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.6
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-permission-react@0.4.34
+
 ## 1.6.2-next.2
 
 ### Patch Changes

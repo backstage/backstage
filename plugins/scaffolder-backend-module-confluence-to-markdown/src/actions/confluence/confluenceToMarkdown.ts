@@ -49,33 +49,36 @@ export const createConfluenceToMarkdownAction = (options: {
     [key: string]: string;
   };
 
-  return createTemplateAction<{
-    confluenceUrls: string[];
-    repoUrl: string;
-  }>({
+  return createTemplateAction({
     id: 'confluence:transform:markdown',
     description: 'Transforms Confluence content to Markdown',
     examples,
     schema: {
       input: {
-        properties: {
-          confluenceUrls: {
-            type: 'array',
-            title: 'Confluence URL',
+        confluenceUrls: z =>
+          z.array(z.string(), {
             description:
               'Paste your Confluence url. Ensure it follows this format: https://{confluence+base+url}/display/{spacekey}/{page+title} or https://{confluence+base+url}/spaces/{spacekey}/pages/1234567/{page+title} for Confluence Cloud',
-            items: {
-              type: 'string',
-              default: 'Confluence URL',
-            },
-          },
-          repoUrl: {
-            type: 'string',
-            title: 'GitHub Repo Url',
+          }),
+        repoUrl: z =>
+          z.string({
             description:
               'mkdocs.yml file location inside the github repo you want to store the document',
-          },
-        },
+          }),
+      },
+      output: {
+        repo: z =>
+          z
+            .string({
+              description: 'Repository name',
+            })
+            .optional(),
+        owner: z =>
+          z
+            .string({
+              description: 'Repository owner',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

@@ -2306,23 +2306,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             organization: {
               teams: {
                 pageInfo: { hasNextPage: false },
-                nodes: [
-                  {
-                    slug: 'team',
-                    combinedSlug: 'orgA/team',
-                    name: 'TeamA',
-                    description: 'The one and only team',
-                    avatarUrl: 'http://example.com/team.jpeg',
-                    editTeamUrl: 'https://example.com',
-                    parentTeam: {
-                      slug: 'parent',
-                    },
-                    members: {
-                      pageInfo: { hasNextPage: false },
-                      nodes: [],
-                    },
-                  },
-                ],
+                nodes: [],
               },
             },
           })

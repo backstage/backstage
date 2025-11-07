@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 
@@ -30,7 +30,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Run Prettier on ADOPTERS.md
-        uses: creyD/prettier_action@31355f8eef017f8aeba2e0bc09d8502b13dbbad1 # v4.3
+        uses: creyD/prettier_action@8c18391fdc98ed0d884c6345f03975edac71b8f0 # v4.6
         with:
           # Modifies commit only if prettier autofixed the ADOPTERS.md
           prettier_options: --config docs/prettier.config.js --write ADOPTERS.md

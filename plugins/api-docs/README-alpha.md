@@ -68,9 +68,8 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
    ```yaml
    # app-config.yaml
    app:
-     experimental:
-       # Auto discovering all plugins extensions
-       packages: all
+     # Auto discovering all plugins extensions
+     packages: all
      extensions:
        # Enabling some entity cards
        # The cards will be displayed in the same order it appears in this setting list
@@ -287,7 +286,7 @@ export default createFrontendModule({
     createPageExtension({
       // Omitting name since we are overriding a plugin index page
       // It's up to you whether to use the original default path or not, but links that are hardcoded to the default path won't work if you change it
-      defaultPath: '/api-docs',
+      path: '/api-docs',
       // Associating the page with a different route ref may result in the sidebar item or external plugin route pointing to an unreachable page
       routeRef: convertLegacyRouteRef(rootRoute),
       // Custom page components are loaded here

@@ -26,10 +26,13 @@ import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 
 export class AuthorizedLocationAnalyzer implements LocationAnalyzer {
-  constructor(
-    private readonly service: LocationAnalyzer,
-    private readonly permissionApi: PermissionsService,
-  ) {}
+  private readonly service: LocationAnalyzer;
+  private readonly permissionApi: PermissionsService;
+
+  constructor(service: LocationAnalyzer, permissionApi: PermissionsService) {
+    this.service = service;
+    this.permissionApi = permissionApi;
+  }
 
   async analyzeLocation(
     request: AnalyzeLocationRequest,

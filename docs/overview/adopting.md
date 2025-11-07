@@ -1,7 +1,6 @@
 ---
 id: adopting
 title: Strategies for adopting
-# prettier-ignore
 description: Documentation on some general best practices that have been key to Backstage's success inside Spotify
 ---
 
@@ -86,7 +85,7 @@ Examples of tactics we have used to evangelize Backstage internally:
   as to send out weekly digest emails showing how usage metrics have changed for
   individual plugins.
 
-- Pro-actively identify new plugins. Reach out to teams that own internal UIs or
+- Pro-actively identify new plugins. Reach out to teams that own internal user interfaces or
   platforms that you think would make sense to consolidate into Backstage.
 
 ## KPIs and metrics

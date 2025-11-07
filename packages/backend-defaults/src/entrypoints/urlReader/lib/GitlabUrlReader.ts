@@ -63,10 +63,16 @@ export class GitlabUrlReader implements UrlReaderService {
     });
   };
 
+  private readonly integration: GitLabIntegration;
+  private readonly deps: { treeResponseFactory: ReadTreeResponseFactory };
+
   constructor(
-    private readonly integration: GitLabIntegration,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {}
+    integration: GitLabIntegration,
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -313,14 +319,10 @@ export class GitlabUrlReader implements UrlReaderService {
    */
   private getStaticPart(globPattern: string) {
     const segments = globPattern.split('/');
-    let i = segments.length;
-    while (
-      i > 0 &&
-      new Minimatch(segments.slice(0, i).join('/')).match(globPattern)
-    ) {
-      i--;
-    }
-    return segments.slice(0, i).join('/');
+    const globIndex = segments.findIndex(segment => segment.match(/[*?]/));
+    return globIndex === -1
+      ? globPattern
+      : segments.slice(0, globIndex).join('/');
   }
 
   toString() {
@@ -340,10 +342,7 @@ export class GitlabUrlReader implements UrlReaderService {
       );
     }
     // Default to the old behavior of assuming the url is for a file
-    return getGitLabFileFetchUrl(target, {
-      ...this.integration.config,
-      ...(token && { token }),
-    });
+    return getGitLabFileFetchUrl(target, this.integration.config, token);
   }
 
   // convert urls of the form:
@@ -398,6 +397,12 @@ export class GitlabUrlReader implements UrlReaderService {
     );
     const data = await result.json();
     if (!result.ok) {
+      if (result.status === 401) {
+        throw new Error(
+          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
+        );
+      }
+
       throw new Error(`Gitlab error: ${data.error}, ${data.error_description}`);
     }
     return Number(data.id);

@@ -28,7 +28,7 @@ nav:
           - Database: 'getting-started/config/database.md'
           - Authentication: 'getting-started/config/authentication.md'
           - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
-          - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
+          - Customize the look-and-feel of your App: 'conf/user-interface/index.md'
           - Customizing your Homepage: 'getting-started/homepage.md'
       - Deployment:
           - Deploying Backstage: 'deployment/index.md'
@@ -126,6 +126,9 @@ nav:
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
           - Discovery: 'integrations/gitlab/discovery.md'
+      - Gitea:
+          - Locations: 'integrations/gitea/locations.md'
+          - Discovery: 'integrations/gitea/discovery.md'
       - Google GCS:
           - Locations: 'integrations/google-cloud-storage/locations.md'
       - LDAP:

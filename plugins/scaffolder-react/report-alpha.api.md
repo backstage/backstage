@@ -5,6 +5,7 @@
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
@@ -12,13 +13,14 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldSchema } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
-import { FormField } from '@internal/scaffolder';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -134,11 +136,10 @@ export const Form: (
 // @alpha
 export const FormDecoratorBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-decorator';
-  name: undefined;
   params: {
     decorator: ScaffolderFormDecorator;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     ScaffolderFormDecorator,
     'scaffolder.form-decorator-loader',
     {}
@@ -155,14 +156,19 @@ export const FormDecoratorBlueprint: ExtensionBlueprint<{
   };
 }>;
 
+// @alpha (undocumented)
+export interface FormField {
+  // (undocumented)
+  readonly $$type: '@backstage/scaffolder/FormField';
+}
+
 // @alpha
 export const FormFieldBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-field';
-  name: undefined;
   params: {
     field: () => Promise<FormField>;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     () => Promise<FormField>,
     'scaffolder.form-field-loader',
     {}
@@ -202,7 +208,7 @@ export type FormFieldExtensionData<
 export const formFieldsApi: ExtensionDefinition<{
   config: {};
   configInput: {};
-  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
   inputs: {
     formFields: ExtensionInput<
       ConfigurableExtensionDataRef<
@@ -218,9 +224,13 @@ export const formFieldsApi: ExtensionDefinition<{
   };
   kind: 'api';
   name: 'form-fields';
-  params: {
-    factory: AnyApiFactory;
-  };
+  params: <
+    TApi,
+    TImpl extends TApi,
+    TDeps extends { [name in string]: unknown },
+  >(
+    params: ApiFactory<TApi, TImpl, TDeps>,
+  ) => ExtensionBlueprintParams<AnyApiFactory>;
 }>;
 
 // @alpha @deprecated (undocumented)

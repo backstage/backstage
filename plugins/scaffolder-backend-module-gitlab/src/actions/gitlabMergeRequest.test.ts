@@ -238,7 +238,7 @@ jest.mock('@gitbeaker/rest', () => ({
 }));
 
 describe('createGitLabMergeRequest', () => {
-  let instance: TemplateAction<any>;
+  let instance: TemplateAction<any, any, 'v2'>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
@@ -1443,6 +1443,68 @@ describe('createGitLabMergeRequest', () => {
 
       await expect(instance.handler(ctx)).rejects.toThrow(
         'Relative path is not allowed to refer to a directory outside its parent',
+      );
+    });
+  });
+  describe('with labels', () => {
+    it('handles single label', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'skip',
+        labels: 'single-label',
+      };
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+          labels: 'single-label',
+        },
+      );
+    });
+    it('handles array of labels', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'skip',
+        labels: ['foo', 'bar', 'baz'],
+      };
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+          labels: ['foo', 'bar', 'baz'],
+        },
       );
     });
   });

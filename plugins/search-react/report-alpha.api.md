@@ -5,6 +5,8 @@
 ```ts
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { ListItemProps } from '@material-ui/core/ListItem';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
@@ -14,14 +16,14 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 export type BaseSearchResultListItemProps<T = {}> = T & {
   rank?: number;
   result?: SearchDocument;
+  icon?: JSX_2.Element;
 } & Omit<ListItemProps, 'button'>;
 
 // @alpha (undocumented)
 export const SearchFilterBlueprint: ExtensionBlueprint<{
   kind: 'search-filter';
-  name: undefined;
   params: SearchFilterBlueprintParams;
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       component: SearchFilterExtensionComponent;
     },
@@ -51,7 +53,7 @@ export interface SearchFilterBlueprintParams {
 // @alpha (undocumented)
 export type SearchFilterExtensionComponent = (
   props: SearchFilterExtensionComponentProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @alpha (undocumented)
 export type SearchFilterExtensionComponentProps = {
@@ -61,13 +63,12 @@ export type SearchFilterExtensionComponentProps = {
 // @alpha (undocumented)
 export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
   kind: 'search-filter-result-type';
-  name: undefined;
   params: SearchFilterResultTypeBlueprintParams;
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       value: string;
       name: string;
-      icon: JSX.Element;
+      icon: JSX_2;
     },
     'search.filters.result-types.type',
     {}
@@ -80,7 +81,7 @@ export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
       {
         value: string;
         name: string;
-        icon: JSX.Element;
+        icon: JSX_2;
       },
       'search.filters.result-types.type',
       {}
@@ -101,6 +102,7 @@ export const searchReactTranslationRef: TranslationRef<
   {
     readonly 'searchBar.title': 'Search';
     readonly 'searchBar.placeholder': 'Search in {{org}}';
+    readonly 'searchBar.clearButtonTitle': 'Clear';
     readonly 'searchFilter.allOptionTitle': 'All';
     readonly 'searchPagination.limitLabel': 'Results per page:';
     readonly 'searchPagination.limitText': 'of {{num}}';
@@ -117,7 +119,7 @@ export type SearchResultItemExtensionComponent = <
   P extends BaseSearchResultListItemProps,
 >(
   props: P,
-) => JSX.Element | null;
+) => JSX_2.Element | null;
 
 // @alpha (undocumented)
 export type SearchResultItemExtensionPredicate = (
@@ -127,12 +129,12 @@ export type SearchResultItemExtensionPredicate = (
 // @alpha
 export const SearchResultListItemBlueprint: ExtensionBlueprint<{
   kind: 'search-result-list-item';
-  name: undefined;
   params: SearchResultListItemBlueprintParams;
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
+      icon?: JSX_2.Element;
     },
     'search.search-result-list-item.item',
     {}
@@ -149,6 +151,7 @@ export const SearchResultListItemBlueprint: ExtensionBlueprint<{
       {
         predicate?: SearchResultItemExtensionPredicate;
         component: SearchResultItemExtensionComponent;
+        icon?: JSX_2.Element;
       },
       'search.search-result-list-item.item',
       {}
@@ -163,6 +166,7 @@ export interface SearchResultListItemBlueprintParams {
       noTrack?: boolean;
     };
   }) => Promise<SearchResultItemExtensionComponent>;
+  icon?: JSX_2.Element;
   predicate?: SearchResultItemExtensionPredicate;
 }
 

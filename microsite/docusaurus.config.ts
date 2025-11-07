@@ -269,6 +269,10 @@ const config: Config = {
             from: '/docs/plugins/url-reader/',
             to: '/docs/backend-system/core-services/url-reader',
           },
+          {
+            from: '/docs/getting-started/app-custom-theme',
+            to: '/docs/conf/user-interface',
+          },
         ],
       }),
     [
@@ -296,6 +300,11 @@ const config: Config = {
             ...defaultOpenApiOptions,
             specPath: '../plugins/search-backend/src/schema/openapi.yaml',
             outputDir: '../docs/features/search/api',
+          } satisfies OpenApiPlugin.Options,
+          scaffolder: {
+            ...defaultOpenApiOptions,
+            specPath: '../plugins/scaffolder-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/software-templates/api',
           } satisfies OpenApiPlugin.Options,
         },
       },
@@ -343,13 +352,14 @@ const config: Config = {
     ],
 
     colorMode: {
+      disableSwitch: false,
       defaultMode: 'dark',
-      disableSwitch: true,
     },
     navbar: {
       logo: {
         alt: 'Backstage Software Catalog and Developer Platform',
-        src: 'img/logo.svg',
+        src: 'img/logo-black.svg',
+        srcDark: 'img/logo.svg',
       },
       items: [
         {
@@ -482,7 +492,7 @@ const config: Config = {
       copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
     },
     algolia: {
-      apiKey: '1f0ba86672ccfc3576faa94583e5b318',
+      apiKey: '60d2643a9c6306463f15f8c3556e7f2e', // Owned by @Rugvip
       indexName: 'crawler_Backstage Docusaurus 2',
       appId: 'JCMFNHCHI8',
       searchParameters: {},

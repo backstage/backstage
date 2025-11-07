@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PuppetDbEntityProviderConfig } from '../providers';
+import { PuppetDbEntityProviderConfig } from '../providers/PuppetDbEntityProviderConfig';
 import { PuppetNode, ResourceTransformer } from './types';
 import { ResourceEntity } from '@backstage/catalog-model';
 import { defaultResourceTransformer } from './transformers';

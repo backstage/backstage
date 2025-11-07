@@ -107,4 +107,201 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20250707164600_user_created_at.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateUntilBefore(knex, '20250707164600_user_created_at.js');
+
+      if (knex.client.config.client.includes('sqlite')) {
+        // Sqlite doesn't support adding a column with non-constant default when table has data
+        // so we just test that the migration runs without errors
+        await migrateUpOnce(knex);
+
+        return;
+      }
+
+      const user_info = JSON.stringify({
+        claims: {
+          ent: ['group:default/group1', 'group:default/group2'],
+        },
+      });
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user',
+          user_info,
+          exp: knex.fn.now(),
+        })
+        .into('user_info');
+
+      const { exp } = await knex('user_info').first();
+
+      await migrateUpOnce(knex);
+
+      const { created_at, updated_at } = await knex('user_info').first();
+
+      expect(updated_at).toEqual(exp);
+      expect(created_at).toBeDefined();
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user',
+          user_info,
+          updated_at: knex.fn.now(),
+        })
+        .into('user_info')
+        .onConflict(['user_entity_ref'])
+        .merge();
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user-2',
+          user_info,
+          updated_at: knex.fn.now(),
+        })
+        .into('user_info');
+
+      await expect(
+        knex('user_info').select('created_at', 'updated_at'),
+      ).resolves.toEqual([
+        {
+          created_at: expect.any(Date),
+          updated_at: expect.any(Date),
+        },
+        {
+          created_at: expect.any(Date),
+          updated_at: expect.any(Date),
+        },
+      ]);
+
+      await migrateDownOnce(knex);
+
+      await expect(knex('user_info').select('exp')).resolves.toEqual([
+        { exp: expect.any(Date) },
+        { exp: expect.any(Date) },
+      ]);
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    '20250909120000_oidc_client_registration.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(
+        knex,
+        '20250909120000_oidc_client_registration.js',
+      );
+      await migrateUpOnce(knex);
+
+      await knex
+        .insert({
+          client_id: 'test-client-id',
+          client_secret: 'test-client-secret',
+          client_name: 'Test Client',
+          response_types: JSON.stringify(['code']),
+          grant_types: JSON.stringify(['authorization_code']),
+          redirect_uris: JSON.stringify(['https://example.com/callback']),
+          scope: 'openid profile',
+          metadata: JSON.stringify({ description: 'Test client' }),
+        })
+        .into('oidc_clients');
+
+      await expect(
+        knex('oidc_clients').where('client_id', 'test-client-id').first(),
+      ).resolves.toEqual({
+        client_id: 'test-client-id',
+        client_secret: 'test-client-secret',
+        client_name: 'Test Client',
+        response_types: JSON.stringify(['code']),
+        grant_types: JSON.stringify(['authorization_code']),
+        redirect_uris: JSON.stringify(['https://example.com/callback']),
+        scope: 'openid profile',
+        metadata: JSON.stringify({ description: 'Test client' }),
+      });
+
+      await knex
+        .insert({
+          id: 'test-session-id',
+          client_id: 'test-client-id',
+          user_entity_ref: 'user:default/test-user',
+          redirect_uri: 'https://example.com/callback',
+          scope: 'openid',
+          state: 'test-state',
+          response_type: 'code',
+          code_challenge: 'test-challenge',
+          code_challenge_method: 'S256',
+          nonce: 'test-nonce',
+          status: 'pending',
+          expires_at: new Date(Date.now() + 3600000),
+        })
+        .into('oauth_authorization_sessions');
+
+      await expect(
+        knex('oauth_authorization_sessions')
+          .where('id', 'test-session-id')
+          .first(),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          id: 'test-session-id',
+          client_id: 'test-client-id',
+          user_entity_ref: 'user:default/test-user',
+          redirect_uri: 'https://example.com/callback',
+          scope: 'openid',
+          state: 'test-state',
+          response_type: 'code',
+          code_challenge: 'test-challenge',
+          code_challenge_method: 'S256',
+          nonce: 'test-nonce',
+          status: 'pending',
+        }),
+      );
+
+      await knex
+        .insert({
+          code: 'test-auth-code',
+          session_id: 'test-session-id',
+          expires_at: new Date(Date.now() + 600000),
+          used: false,
+        })
+        .into('oidc_authorization_codes');
+
+      await expect(
+        knex('oidc_authorization_codes')
+          .where('code', 'test-auth-code')
+          .first(),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          code: 'test-auth-code',
+          session_id: 'test-session-id',
+        }),
+      );
+
+      await knex('oauth_authorization_sessions')
+        .where('id', 'test-session-id')
+        .del();
+
+      await expect(
+        knex('oidc_authorization_codes').where('session_id', 'test-session-id'),
+      ).resolves.toHaveLength(0);
+
+      await migrateDownOnce(knex);
+
+      const tables = [
+        'oidc_clients',
+        'oauth_authorization_sessions',
+        'oidc_authorization_codes',
+      ];
+
+      for (const table of tables) {
+        await expect(knex.schema.hasTable(table)).resolves.toBe(false);
+      }
+
+      await knex.destroy();
+    },
+  );
 });

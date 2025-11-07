@@ -25,6 +25,10 @@ import {
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
+import {
+  createExactRouteAliasResolver,
+  createRouteAliasResolver,
+} from './RouteAliasResolver';
 
 const rest = {
   element: null,
@@ -47,9 +51,19 @@ function src(sourcePath: string) {
   return { sourcePath };
 }
 
+const emptyResolver = createExactRouteAliasResolver(new Map());
+
 describe('RouteResolver', () => {
   it('should not resolve anything with an empty resolver', () => {
-    const r = new RouteResolver(new Map(), new Map(), [], new Map(), '');
+    const r = new RouteResolver(
+      new Map(),
+      new Map(),
+      [],
+      new Map(),
+      '',
+      emptyResolver,
+      new Map(),
+    );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe(undefined);
     expect(r.resolve(ref2, src('/'))?.({ x: '1x' })).toBe(undefined);
@@ -70,6 +84,8 @@ describe('RouteResolver', () => {
       [{ routeRefs: new Set([ref1]), path: 'my-route', ...rest }],
       new Map(),
       '',
+      emptyResolver,
+      new Map(),
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
@@ -109,6 +125,8 @@ describe('RouteResolver', () => {
         [externalRef2, subRef3],
       ]),
       '',
+      emptyResolver,
+      new Map(),
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
@@ -129,6 +147,94 @@ describe('RouteResolver', () => {
     expect(r.resolve(externalRef2, src('/'))?.({ x: '6x' })).toBe(
       '/my-route/my-parent/6x/bar',
     );
+  });
+
+  it('should resolve a route with an alias', () => {
+    const r = new RouteResolver(
+      new Map<RouteRef, string>([[ref1, 'my-route']]),
+      new Map(),
+      [
+        {
+          routeRefs: new Set([ref1]),
+          path: 'my-route',
+          ...rest,
+          children: [],
+        },
+      ],
+      new Map<ExternalRouteRef, RouteRef | SubRouteRef>(),
+      '',
+      createRouteAliasResolver({
+        routes: new Map([['test.ref1', ref1]]),
+        externalRoutes: new Map(),
+      }),
+      new Map(),
+    );
+
+    expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
+    expect(
+      r.resolve(createRouteRef({ aliasFor: 'test.ref1' }), src('/'))?.(),
+    ).toBe('/my-route');
+  });
+
+  it('should resolve default route ref targets lazily', () => {
+    // Same of the common test ones, but not bound and with default targets
+    const externalRefDefault1 = createExternalRouteRef({
+      defaultTarget: 'test.root',
+    });
+    const externalRefDefault2 = createExternalRouteRef({
+      params: ['x'],
+      defaultTarget: 'test.param',
+    });
+
+    const r = new RouteResolver(
+      new Map<RouteRef, string>([
+        [ref1, 'my-route'],
+        [ref2, 'my-parent/:x'],
+      ]),
+      new Map(),
+      [
+        {
+          routeRefs: new Set([ref1]),
+          path: 'my-route',
+          ...rest,
+          children: [],
+        },
+        {
+          routeRefs: new Set([ref2]),
+          path: 'my-parent',
+          ...rest,
+          children: [],
+        },
+      ],
+      new Map<ExternalRouteRef, RouteRef | SubRouteRef>([
+        [externalRef1, ref1],
+        [externalRef2, subRef3],
+      ]),
+      '',
+      createRouteAliasResolver({
+        routes: new Map([['test.param', ref2]]),
+        externalRoutes: new Map(),
+      }),
+      new Map<string, RouteRef | SubRouteRef>([
+        ['test.root', subRef1],
+        ['test.param', ref2],
+      ]),
+    );
+
+    expect(r.resolve(externalRef1, src('/'))?.()).toBe('/my-route');
+    expect(r.resolve(externalRefDefault1, src('/'))?.()).toBe('/my-route/foo');
+    expect(r.resolve(externalRef2, src('/'))?.({ x: '1x' })).toBe(
+      '/my-parent/1x/bar',
+    );
+    expect(r.resolve(externalRefDefault2, src('/'))?.({ x: '1x' })).toBe(
+      '/my-parent/1x',
+    );
+    expect(
+      r.resolve(
+        createRouteRef({ aliasFor: 'test.param', params: ['x'] }),
+        src('/'),
+      )?.({ x: '1x' }),
+    ).toBe('/my-parent/1x');
   });
 
   it('should resolve the most specific match', () => {
@@ -167,6 +273,8 @@ describe('RouteResolver', () => {
       ],
       new Map<ExternalRouteRef, RouteRef | SubRouteRef>(),
       '',
+      emptyResolver,
+      new Map(),
     );
 
     expect(r.resolve(ref2, src('/'))?.({ x: 'x' })).toBe('/root/x');
@@ -222,6 +330,8 @@ describe('RouteResolver', () => {
         [externalRef2, subRef3],
       ]),
       '',
+      emptyResolver,
+      new Map(),
     );
 
     const l = '/my-grandparent/my-y/my-parent/my-x';
@@ -298,6 +408,8 @@ describe('RouteResolver', () => {
       ],
       new Map(),
       '/base',
+      emptyResolver,
+      new Map(),
     );
 
     expect(r.resolve(ref2, src('/'))?.({ x: 'a/#&?b' })).toBe(

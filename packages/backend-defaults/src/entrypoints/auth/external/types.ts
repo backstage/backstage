@@ -15,20 +15,23 @@
  */
 
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 
-export type AccessRestriptionsMap = Map<
+export type AccessRestrictionsMap = Map<
   string, // plugin ID
   BackstagePrincipalAccessRestrictions
 >;
 
-export interface TokenHandler {
-  add(options: Config): void;
-  verifyToken(token: string): Promise<
-    | {
-        subject: string;
-        allAccessRestrictions?: AccessRestriptionsMap;
-      }
-    | undefined
-  >;
+/**
+ * @public
+ * This interface is used to handle external tokens.
+ * It is used by the auth service to verify tokens and extract the subject.
+ */
+export interface ExternalTokenHandler<TContext> {
+  type: string;
+  initialize(ctx: { options: Config }): TContext;
+  verifyToken(
+    token: string,
+    ctx: TContext,
+  ): Promise<{ subject: string } | undefined>;
 }

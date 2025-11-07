@@ -30,11 +30,15 @@ class Node<T> {
     );
   }
 
-  private constructor(
-    readonly value: T,
-    readonly consumes: Set<string>,
-    readonly provides: Set<string>,
-  ) {}
+  readonly value: T;
+  readonly consumes: Set<string>;
+  readonly provides: Set<string>;
+
+  private constructor(value: T, consumes: Set<string>, provides: Set<string>) {
+    this.value = value;
+    this.consumes = consumes;
+    this.provides = provides;
+  }
 }
 
 /** @internal */
@@ -188,11 +192,24 @@ export class DependencyGraph<T> {
     fn: (value: T) => Promise<TResult>,
   ): Promise<TResult[]> {
     const allProvided = this.#allProvided;
-    const producedSoFar = new Set<string>();
     const waiting = new Set(this.#nodes.values());
     const visited = new Set<Node<T>>();
     const results = new Array<TResult>();
     let inFlight = 0; // Keep track of how many callbacks are in flight, so that we know if we got stuck
+
+    // This keeps track of a counter of how many providers there are still left
+    // to be visited for each dependency. This needs to be a counter instead of
+    // a flag for the special case where there are several providers of a given
+    // value, even though there may be only one consumer of it.
+    const producedRemaining = new Map<string, number>();
+    for (const node of this.#nodes) {
+      for (const provided of node.provides) {
+        producedRemaining.set(
+          provided,
+          (producedRemaining.get(provided) ?? 0) + 1,
+        );
+      }
+    }
 
     // Find all nodes that have no dependencies that have not already been produced by visited nodes
     async function processMoreNodes() {
@@ -203,7 +220,10 @@ export class DependencyGraph<T> {
       for (const node of waiting) {
         let ready = true;
         for (const consumed of node.consumes) {
-          if (allProvided.has(consumed) && !producedSoFar.has(consumed)) {
+          if (
+            allProvided.has(consumed) &&
+            producedRemaining.get(consumed) !== 0
+          ) {
             ready = false;
             continue;
           }
@@ -234,7 +254,17 @@ export class DependencyGraph<T> {
       const result = await fn(node.value);
       results.push(result);
 
-      node.provides.forEach(produced => producedSoFar.add(produced));
+      node.provides.forEach(produced => {
+        const remaining = producedRemaining.get(produced);
+        if (!remaining) {
+          // This should be impossible, if the code that generates the map is correct
+          throw new Error(
+            `Internal error: Node provided superfluous dependency '${produced}'`,
+          );
+        }
+        producedRemaining.set(produced, remaining - 1);
+      });
+
       inFlight -= 1;
       await processMoreNodes();
     }

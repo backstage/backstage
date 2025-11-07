@@ -22,9 +22,9 @@ import {
   createExtensionPoint,
   createBackendFeatureLoader,
   ServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const baseFactories = [
@@ -57,6 +57,42 @@ const testPlugin = createBackendPlugin({
 });
 
 describe('BackendInitializer', () => {
+  it('should only load modules if the plugin is present', async () => {
+    let loadedModule = false;
+    const backend1 = new BackendInitializer(baseFactories);
+    const testModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'producer',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {
+            loadedModule = true;
+          },
+        });
+      },
+    });
+    await backend1.add(testModule);
+    await backend1.start();
+    expect(loadedModule).toBe(false);
+
+    const backend2 = new BackendInitializer(baseFactories);
+    await backend2.add(testModule);
+    await backend2.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    await backend2.start();
+    expect(loadedModule).toBe(true);
+  });
+
   it('should initialize root scoped services', async () => {
     const ref1 = createServiceRef<{ x: number }>({
       id: '1',
@@ -1074,7 +1110,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should properly add plugins + modules to the instance metadata service', async () => {
-    expect.assertions(2);
+    expect.assertions(1);
     const backend = new BackendInitializer(baseFactories);
     const plugin = createBackendPlugin({
       pluginId: 'test',
@@ -1090,31 +1126,25 @@ describe('BackendInitializer', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            instanceMetadata: instanceMetadataServiceRef,
+            instanceMetadata: coreServices.rootInstanceMetadata,
           },
           async init({ instanceMetadata }) {
-            expect(instanceMetadata.getInstalledFeatures()).toEqual([
+            await expect(
+              instanceMetadata.getInstalledPlugins(),
+            ).resolves.toEqual([
               {
                 pluginId: 'test',
-                type: 'plugin',
-              },
-              {
-                pluginId: 'test',
-                moduleId: 'test',
-                type: 'module',
+                modules: [
+                  {
+                    moduleId: 'test',
+                  },
+                ],
               },
               {
                 pluginId: 'instance-metadata',
-                type: 'plugin',
+                modules: [],
               },
             ]);
-            expect(instanceMetadata.getInstalledFeatures().map(String)).toEqual(
-              [
-                'plugin{pluginId=test}',
-                'module{moduleId=test,pluginId=test}',
-                'plugin{pluginId=instance-metadata}',
-              ],
-            );
           },
         });
       },
@@ -1132,6 +1162,131 @@ describe('BackendInitializer', () => {
     backend.add(plugin);
     backend.add(module);
     backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
+  it('should ignore modules that do not have a matching plugin', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const instanceMetadataPlugin = createBackendPlugin({
+      pluginId: 'instance-metadata',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.rootInstanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            await expect(
+              instanceMetadata.getInstalledPlugins(),
+            ).resolves.toEqual([
+              {
+                pluginId: 'instance-metadata',
+                modules: [],
+              },
+            ]);
+          },
+        });
+      },
+    });
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    backend.add(module);
+    backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
+  it('should prevent writes to the instance metadata service', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.rootInstanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            const plugins = await instanceMetadata.getInstalledPlugins();
+            await expect(() => {
+              (plugins[0] as any).pluginId = 'foo';
+            }).toThrow(/Cannot assign to read only property/);
+          },
+        });
+      },
+    });
+    backend.add(plugin);
+    await backend.start();
+  });
+
+  it('should properly wait for all modules that consume an extension point to really finish, before starting the module that provides that extension point', async () => {
+    expect.assertions(3);
+    const backend = new BackendInitializer(baseFactories);
+    const ext = createExtensionPoint<{ hello: (message: string) => void }>({
+      id: 'a',
+    });
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    const producerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'producer',
+      register(reg) {
+        const hello = jest.fn();
+        reg.registerExtensionPoint(ext, { hello });
+        reg.registerInit({
+          deps: {},
+          async init() {
+            // we must not have been initialized before both of the consuming modules have been initialized
+            expect(hello).toHaveBeenCalledTimes(2);
+            expect(hello).toHaveBeenNthCalledWith(1, 'fast');
+            expect(hello).toHaveBeenNthCalledWith(2, 'slow');
+          },
+        });
+      },
+    });
+    const fastConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'fast-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            x.hello('fast');
+          },
+        });
+      },
+    });
+    const slowConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'slow-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            x.hello('slow');
+          },
+        });
+      },
+    });
+    await backend.add(plugin);
+    await backend.add(producerModule);
+    await backend.add(fastConsumerModule);
+    await backend.add(slowConsumerModule);
     await backend.start();
   });
 });

@@ -28,7 +28,7 @@ jobs:
     name: Install ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 
@@ -64,7 +64,7 @@ jobs:
     name: Verify ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 
@@ -102,9 +102,6 @@ jobs:
       - name: type checking and declarations
         run: yarn tsc:full
 
-      - name: prettier
-        run: yarn prettier:check
-
         # We need to generate the API references as well, so that we can verify the doc links
       - name: check api reports and generate API reference
         run: yarn build:api-reports:only --ci --docs
@@ -127,9 +124,9 @@ jobs:
       - name: build all packages
         run: yarn backstage-cli repo build --all
 
-        # For now canon has a custom build script and needs to be built separately
-      - name: build canon
-        run: yarn --cwd packages/canon build
+        # For now BUI has a custom build script and needs to be built separately
+      - name: build BUI
+        run: yarn --cwd packages/ui build
 
       - name: verify type dependencies
         run: yarn lint:type-deps
@@ -161,8 +158,8 @@ jobs:
 
     name: Test ${{ matrix.node-version }}
     services:
-      postgres17:
-        image: postgres:17
+      postgres18:
+        image: postgres:18
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -172,8 +169,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postgres13:
-        image: postgres:13
+      postgres14:
+        image: postgres:14
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -239,12 +236,15 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore backstage-cli cache
-        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-
+
+      - name: prettier
+        run: yarn prettier:check --cache --cache-location .cache/backstage-cli/.prettier-cache
 
       - name: lint changed packages
         run: yarn backstage-cli repo lint --since origin/master --successCache --successCacheDir .cache/backstage-cli
@@ -253,14 +253,14 @@ jobs:
         run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/master --successCache --successCacheDir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES17_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres17.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save backstage-cli cache
-        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         if: always()
         with:
           path: .cache/backstage-cli

@@ -22,6 +22,8 @@ module.exports = {
         '@backstage/no-forbidden-package-imports': 'error',
         '@backstage/no-relative-monorepo-imports': 'error',
         '@backstage/no-undeclared-imports': 'error',
+        '@backstage/no-mixed-plugin-imports': 'warn',
+        '@backstage/no-ui-css-imports-in-non-frontend': 'error',
       },
     },
   },
@@ -30,5 +32,7 @@ module.exports = {
     'no-relative-monorepo-imports': require('./rules/no-relative-monorepo-imports'),
     'no-undeclared-imports': require('./rules/no-undeclared-imports'),
     'no-top-level-material-ui-4-imports': require('./rules/no-top-level-material-ui-4-imports'),
+    'no-mixed-plugin-imports': require('./rules/no-mixed-plugin-imports'),
+    'no-ui-css-imports-in-non-frontend': require('./rules/no-ui-css-imports-in-non-frontend'),
   },
 };

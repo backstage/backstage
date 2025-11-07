@@ -19,7 +19,7 @@ import { Config, ConfigReader } from '@backstage/config';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import PQueue from 'p-queue';
-import { join as joinPath, resolve as resolvePath } from 'path';
+import { dirname, join as joinPath, resolve as resolvePath } from 'path';
 import { paths as cliPaths } from '../../../../lib/paths';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
@@ -32,7 +32,10 @@ interface PackageDetectionConfig {
 function readPackageDetectionConfig(
   config: Config,
 ): PackageDetectionConfig | undefined {
-  const packages = config.getOptional('app.experimental.packages');
+  // The experimental key is deprecated, but supported still for backwards compatibility
+  const packages =
+    config.getOptional('app.packages') ??
+    config.getOptional('app.experimental.packages');
   if (packages === undefined || packages === null) {
     return undefined;
   }
@@ -40,21 +43,16 @@ function readPackageDetectionConfig(
   if (typeof packages === 'string') {
     if (packages !== 'all') {
       throw new Error(
-        `Invalid app.experimental.packages mode, got '${packages}', expected 'all'`,
+        `Invalid app.packages mode, got '${packages}', expected 'all'`,
       );
     }
     return {};
   }
 
   if (typeof packages !== 'object' || Array.isArray(packages)) {
-    throw new Error(
-      "Invalid config at 'app.experimental.packages', expected object",
-    );
+    throw new Error("Invalid config at 'app.packages', expected object");
   }
-  const packagesConfig = new ConfigReader(
-    packages,
-    'app.experimental.packages',
-  );
+  const packagesConfig = new ConfigReader(packages, 'app.packages');
 
   return {
     include: packagesConfig.getOptionalStringArray('include'),
@@ -109,6 +107,7 @@ async function detectPackages(
 const writeQueue = new PQueue({ concurrency: 1 });
 
 async function writeDetectedPackagesModule(
+  targetPath: string,
   pkgs: { name: string; export?: string; import: string }[],
 ) {
   const requirePackageScript = pkgs
@@ -120,16 +119,19 @@ async function writeDetectedPackagesModule(
     )
     .join(',');
 
-  await writeQueue.add(() =>
-    fs.writeFile(
-      joinPath(
-        cliPaths.targetRoot,
-        'node_modules',
-        `${DETECTED_MODULES_MODULE_NAME}.js`,
-      ),
+  await writeQueue.add(async () => {
+    const detectedModulesPath = joinPath(
+      targetPath,
+      'node_modules',
+      `${DETECTED_MODULES_MODULE_NAME}.js`,
+    );
+
+    await fs.ensureDir(dirname(detectedModulesPath));
+    await fs.writeFile(
+      detectedModulesPath,
       `window['__@backstage/discovered__'] = { modules: [${requirePackageScript}] };`,
-    ),
-  );
+    );
+  });
 }
 
 export async function createDetectedModulesEntryPoint(options: {
@@ -144,11 +146,23 @@ export async function createDetectedModulesEntryPoint(options: {
     return [];
   }
 
+  // Previous versions of the CLI would write the detected modules file to the
+  // root `node_modules`, this makes sure that doesn't exist to minimize risk of conflicts
+  const legacyDetectedModulesPath = joinPath(
+    cliPaths.targetRoot,
+    'node_modules',
+    `${DETECTED_MODULES_MODULE_NAME}.js`,
+  );
+  if (await fs.pathExists(legacyDetectedModulesPath)) {
+    await fs.remove(legacyDetectedModulesPath);
+  }
+
   if (watch) {
     const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
 
     watcher.on('change', async () => {
       await writeDetectedPackagesModule(
+        targetPath,
         await detectPackages(targetPath, detectionConfig),
       );
       watch();
@@ -156,6 +170,7 @@ export async function createDetectedModulesEntryPoint(options: {
   }
 
   await writeDetectedPackagesModule(
+    targetPath,
     await detectPackages(targetPath, detectionConfig),
   );
 

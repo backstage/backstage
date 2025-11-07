@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 import { JsonValue } from '@backstage/types';
 
@@ -48,9 +50,23 @@ export type PackageDependency = {
 };
 
 /** @public */
-export enum ExternalDependencyStatus {
-  healthy = 'Healthy',
-  unhealthy = 'Unhealthy',
+export const ExternalDependencyStatus = {
+  healthy: 'Healthy',
+  unhealthy: 'Unhealthy',
+} as const;
+
+/**
+ * @public
+ */
+export type ExternalDependencyStatus =
+  (typeof ExternalDependencyStatus)[keyof typeof ExternalDependencyStatus];
+
+/**
+ * @public
+ */
+export namespace ExternalDependencyStatus {
+  export type healthy = typeof ExternalDependencyStatus.healthy;
+  export type unhealthy = typeof ExternalDependencyStatus.unhealthy;
 }
 
 /** @public */

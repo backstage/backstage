@@ -1,0 +1,78 @@
+import {
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+  SchedulerServiceTaskScheduleDefinition,
+} from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
+
+const DEFAULT_PROVIDER_ID = 'default';
+const DEFAULT_SCHEDULE: SchedulerServiceTaskScheduleDefinition = {
+  frequency: {
+    minutes: 30,
+  },
+  timeout: {
+    minutes: 3,
+  },
+}
+
+export type {{providerClass}}ProviderConfig = {
+  id: string;
+  target: string;
+  schedule: SchedulerServiceTaskScheduleDefinition;
+}
+
+/**
+ * Parses all configured providers.
+ *
+ * @param config - The root of the provider config hierarchy
+ *
+ * @public
+ */
+export function readProviderConfigs(
+  config: Config,
+): {{providerClass}}ProviderConfig[] {
+  const providersConfig = config.getOptionalConfig(
+    'catalog.providers.{{providerVar}}',
+  );
+  if (!providersConfig) {
+    return [];
+  }
+
+  if ((providersConfig).has('target')) {
+    // simple/single config variant
+    return [readProviderConfig(DEFAULT_PROVIDER_ID, providersConfig)];
+  }
+
+  return providersConfig.keys().map(id => {
+    const providerConfig = providersConfig.getConfig(id);
+
+    return readProviderConfig(id, providerConfig);
+  });
+}
+
+/**
+ * Parses a single configured provider by id.
+ *
+ * @param id - the id of the provider to parse
+ * @param config - The root of the provider config hierarchy
+ *
+ * @public
+ */
+export function readProviderConfig(
+  id: string,
+  config: Config,
+): {{providerClass}}ProviderConfig {
+
+  const target = config.getString('target');
+
+  const schedule = config.has('schedule')
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
+    : DEFAULT_SCHEDULE;
+
+  return {
+    id,
+    target,
+    schedule,
+  };
+}

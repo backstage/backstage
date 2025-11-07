@@ -15,11 +15,12 @@
  */
 
 import { JSX } from 'react';
-import { RouteRef } from '../routing';
+import { RouteRef } from '../routing/RouteRef';
 import { createExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export const coreExtensionData = {
+  title: createExtensionDataRef<string>().with({ id: 'core.title' }),
   reactElement: createExtensionDataRef<JSX.Element>().with({
     id: 'core.reactElement',
   }),

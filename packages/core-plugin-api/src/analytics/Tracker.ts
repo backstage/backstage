@@ -20,7 +20,7 @@ import {
   AnalyticsEventAttributes,
   AnalyticsTracker,
 } from '../apis';
-import { AnalyticsContextValue } from './';
+import { AnalyticsContextValue } from './types';
 
 type TempGlobalEvents = {
   /**
@@ -65,14 +65,19 @@ const globalEvents = getOrCreateGlobalSingleton<TempGlobalEvents>(
 export const routableExtensionRenderedEvent = '_ROUTABLE-EXTENSION-RENDERED';
 
 export class Tracker implements AnalyticsTracker {
+  private readonly analyticsApi: AnalyticsApi;
+  private context: AnalyticsContextValue;
+
   constructor(
-    private readonly analyticsApi: AnalyticsApi,
-    private context: AnalyticsContextValue = {
+    analyticsApi: AnalyticsApi,
+    context: AnalyticsContextValue = {
       routeRef: 'unknown',
       pluginId: 'root',
       extension: 'App',
     },
   ) {
+    this.analyticsApi = analyticsApi;
+    this.context = context;
     // Only register a single beforeunload event across all trackers.
     if (!globalEvents.beforeUnloadRegistered) {
       // Before the page unloads, attempt to capture any deferred navigation

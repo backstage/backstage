@@ -2,11 +2,8 @@
 id: index
 title: Building Frontend Plugins
 sidebar_label: Overview
-# prettier-ignore
 description: Building frontend plugins using the new frontend system
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 This section covers how to build your own frontend [plugins](../architecture/15-plugins.md) and
 [overrides](../architecture/25-extension-overrides.md). They are sometimes collectively referred to as
@@ -76,7 +73,7 @@ const examplePage = PageBlueprint.make({
     routeRef: rootRouteRef,
 
     // This is the default path of this page, but integrators are free to override it
-    defaultPath: '/example',
+    path: '/example',
 
     // Page extensions are always dynamically loaded using React.lazy().
     // All of the functionality of this page is implemented in the
@@ -155,19 +152,18 @@ export function ExamplePage() {
 ```
 
 ```tsx title="in src/plugin.ts - Registering a factory for our API"
-import { createApiFactory, ApiBlueprint } from '@backstage/frontend-plugin-api';
+import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 import { exampleApiRef, DefaultExampleApi } from './api';
 
 // highlight-add-start
 const exampleApi = ApiBlueprint.make({
   name: 'example',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: exampleApiRef,
       deps: {},
       factory: () => new DefaultExampleApi(),
     }),
-  },
 });
 // highlight-add-end
 
@@ -200,8 +196,8 @@ import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 // route reference if you want to be able to generate a URL that links to the content.
 const exampleEntityContent = EntityContentBlueprint.make({
   params: {
-    defaultPath: 'example',
-    defaultTitle: 'Example',
+    path: 'example',
+    title: 'Example',
     loader: () =>
       import('./components/ExampleEntityContent').then(m => (
         <m.ExampleEntityContent />

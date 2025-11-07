@@ -59,12 +59,19 @@ export class AwsSqsConsumingEventPublisher {
     );
   }
 
+  private readonly logger: LoggerService;
+  private readonly events: EventsService;
+  private readonly scheduler: SchedulerService;
+
   private constructor(
-    private readonly logger: LoggerService,
-    private readonly events: EventsService,
-    private readonly scheduler: SchedulerService,
+    logger: LoggerService,
+    events: EventsService,
+    scheduler: SchedulerService,
     config: AwsSqsEventSourceConfig,
   ) {
+    this.logger = logger;
+    this.events = events;
+    this.scheduler = scheduler;
     this.topic = config.topic;
 
     this.receiveParams = {

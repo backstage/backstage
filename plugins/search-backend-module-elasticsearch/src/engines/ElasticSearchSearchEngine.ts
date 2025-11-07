@@ -136,15 +136,29 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly highlightOptions: ElasticSearchHighlightConfig;
   private readonly queryOptions?: ElasticSearchQueryConfig;
 
+  private readonly elasticSearchClientOptions: ElasticSearchClientOptions;
+  private readonly aliasPostfix: string;
+  private readonly indexPrefix: string;
+  private readonly logger: LoggerService;
+  private readonly batchSize: number;
+  private readonly batchKeyField?: string;
+
   constructor(
-    private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
-    private readonly aliasPostfix: string,
-    private readonly indexPrefix: string,
-    private readonly logger: LoggerService,
-    private readonly batchSize: number,
+    elasticSearchClientOptions: ElasticSearchClientOptions,
+    aliasPostfix: string,
+    indexPrefix: string,
+    logger: LoggerService,
+    batchSize: number,
+    batchKeyField?: string,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
   ) {
+    this.elasticSearchClientOptions = elasticSearchClientOptions;
+    this.aliasPostfix = aliasPostfix;
+    this.indexPrefix = indexPrefix;
+    this.logger = logger;
+    this.batchSize = batchSize;
+    this.batchKeyField = batchKeyField;
     this.elasticSearchClientWrapper =
       ElasticSearchClientWrapper.fromClientOptions(elasticSearchClientOptions);
     const uuidTag = uuid();
@@ -189,6 +203,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger,
       config.getOptionalNumber('search.elasticsearch.batchSize') ??
         DEFAULT_INDEXER_BATCH_SIZE,
+      config.getOptionalString('search.elasticsearch.batchKeyField'),
       config.getOptional<ElasticSearchHighlightOptions>(
         'search.elasticsearch.highlightOptions',
       ),
@@ -345,6 +360,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       elasticSearchClientWrapper: this.elasticSearchClientWrapper,
       logger: indexerLogger,
       batchSize: this.batchSize,
+      batchKeyField: this.batchKeyField,
       skipRefresh:
         (
           this

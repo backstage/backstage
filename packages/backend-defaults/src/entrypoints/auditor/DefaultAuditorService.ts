@@ -48,7 +48,7 @@ export type AuditorEventStatus =
   | { status: 'succeeded' }
   | {
       status: 'failed';
-      error: string;
+      error: Error;
     };
 
 /**
@@ -195,7 +195,7 @@ export class DefaultAuditorService implements AuditorService {
         await this.log({
           ...options,
           ...params,
-          error: String(params.error),
+          error: params.error,
           meta: { ...options.meta, ...params?.meta },
           status: 'failed',
         });

@@ -1,0 +1,83 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { Banner } from '@/components/Banner';
+import { snippet } from './snippets';
+
+# Welcome to Backstage UI
+
+Backstage UI is a design system created specifically for Backstage, built with React, TypeScript, and vanilla CSS.
+This open-source library is hosted in the Backstage monorepo. While it can be used in other projects, Backstage UI
+is designed to deliver a consistent, accessible, and extensible experience tailored to Backstage users.
+
+## Import BUI's global styles
+
+Backstage UI works by importing a global CSS file at the root of your application. This file includes all the default styles for the components.
+First, you'll need to install the package using a package manager. For example, if you're using Yarn:
+
+<CodeBlock
+  lang="shell"
+  title="Run this command in your `packages/app` directory"
+  code={`yarn add @backstage/ui`}
+/>
+
+<CodeBlock
+  lang="tsx"
+  title="Add this line to `packages/app/src/index.tsx`"
+  code={`import '@backstage/cli/asset-types';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import '@backstage/ui/css/styles.css'; // [!code ++]
+
+ReactDOM.createRoot(document.getElementById('root')!).render(<App />);`}
+/>
+
+<Banner
+  text="Import these styles only once at your application root. Plugin developers should skip this step to avoid conflicts."
+  variant="warning"
+/>
+
+## Use BUI components
+
+As a plugin maintainer, you can use BUI components in your plugin. As mentioned above, you should not import the styles
+again in your plugin as this will be handled at the root of your application. To get started, just add the library to
+your plugin and import the components you need.
+
+<CodeBlock
+  lang="shell"
+  title="Run this command in your `packages/[your-plugin]` directory"
+  code={`yarn add @backstage/ui`}
+/>
+
+<CodeBlock lang="tsx" title="Let's get started 🚀" code={snippet} />
+
+## Support
+
+Now that you have the basics down, you can start building your plugin using the new design system.
+Please familiarise yourself first with our theming principles. This will help you understand the core concepts of the design system.
+If you have any questions, please reach out to us on [Discord](https://discord.gg/MUpMjP2).
+
+## Philosophy
+
+Backstage empowers product teams to build software faster and with greater quality. Its extensibility,
+however, required us to rethink how to deliver a consistent and accessible user experience. Our goal is
+to enable plugin creators to design plugins that seamlessly integrate with Backstage&apos;s look and feel while
+still allowing customization to match individual brands.
+
+Instead of reinventing the wheel, we chose to focus on layout and styling while leveraging existing headless
+component libraries for functionality. This approach allows us to dedicate our efforts to creating a cohesive
+and flexible theming system.
+
+## Team
+
+Backstage UI is designed and maintained primarily by Spotify&apos;s Backstage team, leveraging Spotify&apos;s expertise in
+crafting high-quality design and technology. Drawing from our experience in building reliable and intuitive
+user experiences for the music industry, we&apos;ve created a design system that looks great and works seamlessly.
+
+## Community
+
+Backstage UI is an open-source project and we welcome contributions from the community. If you are interested in
+contributing to Backstage UI, please read our [contributing guide](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
+and our [code of conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md).
+
+## License
+
+Backstage UI is licensed under the Apache 2.0 license. See the [LICENSE](https://github.com/backstage/backstage/blob/master/LICENSE) file for more details.

@@ -42,6 +42,23 @@ describe('credentials', () => {
       },
     });
 
+    expect(
+      createCredentialsWithUserPrincipal(
+        'user:default/mock',
+        'my-token',
+        undefined,
+        'my-actor',
+      ),
+    ).toEqual({
+      $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
+      principal: {
+        type: 'user',
+        userEntityRef: 'user:default/mock',
+        actor: { type: 'service', subject: 'my-actor' },
+      },
+    });
+
     expect(createCredentialsWithNonePrincipal()).toEqual({
       $$type: '@backstage/BackstageCredentials',
       version: 'v1',
@@ -63,5 +80,64 @@ describe('credentials', () => {
         createCredentialsWithUserPrincipal('user:default/mock', 'my-token'),
       ),
     ).not.toMatch(/my-token/);
+  });
+
+  it('should have a serializable form both as strings and as JSON', () => {
+    const simpleService = createCredentialsWithServicePrincipal('my-service');
+    expect(String(simpleService)).toMatchInlineSnapshot(
+      `"backstageCredentials{servicePrincipal{my-service}}"`,
+    );
+    expect(JSON.stringify(simpleService)).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","version":"v1","principal":{"type":"service","subject":"my-service"}}"`,
+    );
+
+    const serviceWithAccessRestrictions = createCredentialsWithServicePrincipal(
+      'my-service',
+      undefined,
+      {
+        permissionNames: ['perm'],
+        permissionAttributes: {
+          action: ['read'],
+        },
+      },
+    );
+    expect(String(serviceWithAccessRestrictions)).toMatchInlineSnapshot(
+      `"backstageCredentials{servicePrincipal{my-service,accessRestrictions=cXWOJgUirHkHNZIowUi/YO5nwEwhTicC38iXi2XTYCk}}"`,
+    );
+    expect(JSON.stringify(serviceWithAccessRestrictions)).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","version":"v1","principal":{"type":"service","subject":"my-service","accessRestrictions":{"permissionNames":["perm"],"permissionAttributes":{"action":["read"]}}}}"`,
+    );
+
+    const simpleUser = createCredentialsWithUserPrincipal(
+      'user:default/mock',
+      'my-token',
+    );
+    expect(String(simpleUser)).toMatchInlineSnapshot(
+      `"backstageCredentials{userPrincipal{user:default/mock}}"`,
+    );
+    expect(JSON.stringify(simpleUser)).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","version":"v1","principal":{"type":"user","userEntityRef":"user:default/mock"}}"`,
+    );
+
+    const userWithActor = createCredentialsWithUserPrincipal(
+      'user:default/mock',
+      'my-token',
+      undefined,
+      'my-actor',
+    );
+    expect(String(userWithActor)).toMatchInlineSnapshot(
+      `"backstageCredentials{userPrincipal{user:default/mock,actor={servicePrincipal{my-actor}}}}"`,
+    );
+    expect(JSON.stringify(userWithActor)).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","version":"v1","principal":{"type":"user","userEntityRef":"user:default/mock","actor":{"type":"service","subject":"my-actor"}}}"`,
+    );
+
+    const none = createCredentialsWithNonePrincipal();
+    expect(String(none)).toMatchInlineSnapshot(
+      `"backstageCredentials{nonePrincipal}"`,
+    );
+    expect(JSON.stringify(none)).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","version":"v1","principal":{"type":"none"}}"`,
+    );
   });
 });

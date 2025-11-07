@@ -31,16 +31,11 @@ import { SubRouteRef as SubRouteRef_2 } from '@backstage/frontend-plugin-api';
 // @public
 export function compatWrapper(element: ReactNode): JSX_3.Element;
 
-// @public (undocumented)
-export function convertLegacyApp(
-  rootElement: JSX_2.Element,
-  options?: ConvertLegacyAppOptions,
-): (FrontendPlugin | FrontendModule)[];
+// @public @deprecated (undocumented)
+export const convertLegacyApp: typeof convertLegacyAppRoot;
 
-// @public (undocumented)
-export interface ConvertLegacyAppOptions {
-  entityPage?: JSX_2.Element;
-}
+// @public @deprecated (undocumented)
+export type ConvertLegacyAppOptions = ConvertLegacyAppRootOptions;
 
 // @public (undocumented)
 export function convertLegacyAppOptions(options?: {
@@ -55,11 +50,23 @@ export function convertLegacyAppOptions(options?: {
 }): FrontendModule;
 
 // @public (undocumented)
+export function convertLegacyAppRoot(
+  rootElement: JSX_2.Element,
+  options?: ConvertLegacyAppRootOptions,
+): (FrontendPlugin | FrontendModule)[];
+
+// @public (undocumented)
+export interface ConvertLegacyAppRootOptions {
+  entityPage?: JSX_2.Element;
+}
+
+// @public (undocumented)
 export function convertLegacyPageExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    defaultPath?: string;
+    path?: string;
+    defaultPath?: [Error: `Use the 'path' override instead`];
   },
 ): ExtensionDefinition;
 

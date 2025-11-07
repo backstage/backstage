@@ -55,6 +55,7 @@ export interface MyTaskPageProps {
     editor?: boolean;
     actions?: boolean;
     create?: boolean;
+    templatingExtensions?: boolean;
   };
 }
 
@@ -91,14 +92,22 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
 
   if (error) {
     return (
-      <>
-        <ErrorPanel error={error} />
-        <EmptyState
-          missing="info"
-          title={t('listTaskPage.content.emptyState.title')}
-          description={t('listTaskPage.content.emptyState.description')}
-        />
-      </>
+      <CatalogFilterLayout>
+        <CatalogFilterLayout.Filters>
+          <OwnerListPicker
+            filter={ownerFilter}
+            onSelectOwner={id => setOwnerFilter(id)}
+          />
+        </CatalogFilterLayout.Filters>
+        <CatalogFilterLayout.Content>
+          <ErrorPanel error={error} />
+          <EmptyState
+            missing="info"
+            title={t('listTaskPage.content.emptyState.title')}
+            description={t('listTaskPage.content.emptyState.description')}
+          />
+        </CatalogFilterLayout.Content>
+      </CatalogFilterLayout>
     );
   }
 
@@ -185,7 +194,10 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
       props?.contextMenu?.create !== false
         ? () => navigate(createLink())
         : undefined,
-    onTemplatingExtensionsClicked: () => navigate(templatingExtensionsLink()),
+    onTemplatingExtensionsClicked:
+      props?.contextMenu?.templatingExtensions !== false
+        ? () => navigate(templatingExtensionsLink())
+        : undefined,
   };
   return (
     <Page themeId="home">
