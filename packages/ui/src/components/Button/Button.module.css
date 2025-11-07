@@ -129,20 +129,19 @@
 
 .bui-Button[data-variant='secondary'],
 .bui-Button[data-variant='tertiary'] {
-  &[data-on='surface-0'] {
-    background-color: var(--bui-bg-on-surface-0);
+  /* Default background color = Surface 0 */
+  background-color: var(--bui-bg-on-surface-0);
 
-    &[data-hovered='true'] {
-      background-color: var(--bui-bg-hover-on-surface-0);
-    }
+  &[data-hovered='true'] {
+    background-color: var(--bui-bg-hover-on-surface-0);
+  }
 
-    &:active {
-      background-color: var(--bui-bg-pressed-on-surface-0);
-    }
+  &:active {
+    background-color: var(--bui-bg-pressed-on-surface-0);
+  }
 
-    &[data-disabled='true'] {
-      background-color: var(--bui-bg-disabled-on-surface-0);
-    }
+  &[data-disabled='true'] {
+    background-color: var(--bui-bg-disabled-on-surface-0);
   }
 
   &[data-on='surface-1'] {
