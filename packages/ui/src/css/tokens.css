@@ -84,17 +84,54 @@
     --bui-bg-surface-0: var(--bui-gray-1);
     --bui-bg-surface-1: var(--bui-white);
     --bui-bg-surface-2: var(--bui-gray-2);
+
+    --bui-bg-danger: #feebe7;
+    --bui-bg-warning: #fff2b2;
+    --bui-bg-success: #e6f6eb;
+
     --bui-bg-solid: #1f5493;
     --bui-bg-solid-hover: #163a66;
     --bui-bg-solid-pressed: #0f2b4e;
     --bui-bg-solid-disabled: #ebebeb;
-    --bui-bg-tint: transparent;
-    --bui-bg-tint-hover: rgba(31, 84, 147, 0.4);
-    --bui-bg-tint-pressed: rgba(31, 84, 147, 0.6);
-    --bui-bg-tint-disabled: #ebebeb;
-    --bui-bg-danger: #feebe7;
-    --bui-bg-warning: #fff2b2;
-    --bui-bg-success: #e6f6eb;
+
+    --bui-bg-on-surface-0: var(--bui-bg-surface-0);
+    --bui-bg-hover-on-surface-0: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 4%,
+      transparent
+    );
+    --bui-bg-pressed-on-surface-0: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 6%,
+      transparent
+    );
+    --bui-bg-disabled-on-surface-0: var(--bui-bg-surface-0);
+
+    --bui-bg-on-surface-1: var(--bui-bg-surface-1);
+    --bui-bg-hover-on-surface-1: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 4%,
+      transparent
+    );
+    --bui-bg-pressed-on-surface-1: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 6%,
+      transparent
+    );
+    --bui-bg-disabled-on-surface-1: var(--bui-bg-surface-1);
+
+    --bui-bg-on-surface-2: var(--bui-bg-surface-2);
+    --bui-bg-hover-on-surface-2: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 4%,
+      transparent
+    );
+    --bui-bg-pressed-on-surface-2: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 6%,
+      transparent
+    );
+    --bui-bg-disabled-on-surface-2: var(--bui-bg-surface-2);
 
     /* Foreground Colors */
     --bui-fg-primary: var(--bui-black);
@@ -143,17 +180,54 @@
     --bui-bg-surface-0: #333333;
     --bui-bg-surface-1: #424242;
     --bui-bg-surface-2: var(--bui-gray-2);
+
+    --bui-bg-danger: #3b1219;
+    --bui-bg-warning: #302008;
+    --bui-bg-success: #132d21;
+
     --bui-bg-solid: #9cc9ff;
     --bui-bg-solid-hover: #83b9fd;
     --bui-bg-solid-pressed: #83b9fd;
     --bui-bg-solid-disabled: #222222;
-    --bui-bg-tint: transparent;
-    --bui-bg-tint-hover: rgba(156, 201, 255, 0.12);
-    --bui-bg-tint-pressed: rgba(156, 201, 255, 0.16);
-    --bui-bg-tint-disabled: transparent;
-    --bui-bg-danger: #3b1219;
-    --bui-bg-warning: #302008;
-    --bui-bg-success: #132d21;
+
+    --bui-bg-on-surface-0: var(--bui-bg-surface-0);
+    --bui-bg-hover-on-surface-0: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 12%,
+      transparent
+    );
+    --bui-bg-pressed-on-surface-0: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 16%,
+      transparent
+    );
+    --bui-bg-disabled-on-surface-0: var(--bui-bg-surface-0);
+
+    --bui-bg-on-surface-1: var(--bui-bg-surface-1);
+    --bui-bg-hover-on-surface-1: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 4%,
+      transparent
+    );
+    --bui-bg-pressed-on-surface-1: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 6%,
+      transparent
+    );
+    --bui-bg-disabled-on-surface-1: var(--bui-bg-surface-1);
+
+    --bui-bg-on-surface-2: var(--bui-bg-surface-2);
+    --bui-bg-hover-on-surface-2: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 4%,
+      transparent
+    );
+    --bui-bg-pressed-on-surface-2: color-mix(
+      in srgb,
+      var(--bui-bg-solid) 6%,
+      transparent
+    );
+    --bui-bg-disabled-on-surface-2: var(--bui-bg-surface-2);
 
     /* Foreground Colors */
     --bui-fg-primary: var(--bui-white);
@@ -170,7 +244,7 @@
     --bui-fg-success: #1db954;
 
     /* Border Colors */
-    --bui-border: rgba(255, 255, 255, 0.12);
+    --bui-border: rgba(255, 255, 255, 0.2);
     --bui-border-hover: rgba(255, 255, 255, 0.4);
     --bui-border-pressed: rgba(255, 255, 255, 0.5);
     --bui-border-disabled: rgba(255, 255, 255, 0.2);
