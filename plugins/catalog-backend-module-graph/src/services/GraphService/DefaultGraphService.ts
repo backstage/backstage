@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   GraphQueryParams,
   GraphQueryResult,
 } from '@backstage/plugin-catalog-graph-common';
@@ -22,6 +22,7 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import {
   Entity,
+  EntityRelation,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -54,21 +55,27 @@ export class DefaultGraphService implements GraphService {
     const {
       rootEntityRefs,
       relations,
+      kinds,
       maxDepth: userMaxDepth = Number.POSITIVE_INFINITY,
     } = query;
 
     const maxDepth = Math.min(userMaxDepth, this.#maxDepth);
 
-    const includeRelation = relations
+    const includeRelationType = relations
       ? (type: string) => relations.includes(type)
       : () => true;
 
-    const kindsSet = query.kinds
-      ? new Set(query.kinds.map(kind => kind.toLocaleLowerCase('en-US')))
+    const kindsSet = kinds
+      ? new Set(kinds.map(kind => kind.toLocaleLowerCase('en-US')))
       : undefined;
     const includeKind = !kindsSet
       ? () => true
-      : (kind: string) => kindsSet.has(kind);
+      : (kind: string) => kindsSet.has(kind.toLocaleLowerCase('en-US'));
+
+    const includeRelation = (rel: EntityRelation) => {
+      const target = parseEntityRef(rel.targetRef);
+      return includeRelationType(rel.type) && includeKind(target.kind);
+    };
 
     let cutoff: boolean = false;
     const visited = new Set<string>();
@@ -107,13 +114,7 @@ export class DefaultGraphService implements GraphService {
         new Set(
           foundEntities.flatMap((entity): string[] =>
             (entity.relations ?? [])
-              .filter(rel => {
-                const target = parseEntityRef(rel.targetRef);
-                return (
-                  includeRelation(rel.type) &&
-                  includeKind(target.kind.toLocaleLowerCase('en-US'))
-                );
-              })
+              .filter(rel => includeRelation(rel))
               .map(rel => rel.targetRef),
           ),
         ),

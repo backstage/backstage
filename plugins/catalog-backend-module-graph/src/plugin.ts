@@ -13,37 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
-  createBackendPlugin,
+  createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
-import { createRouter } from './router';
 import { DefaultGraphService } from './services/GraphService';
+import { GraphModule } from './GraphModule';
 
 /**
- * catalogGraphPlugin backend plugin
+ * Catalog Module for Graph queries
  *
  * @public
  */
-export const catalogGraphPlugin = createBackendPlugin({
-  pluginId: 'catalog-graph',
+export const catalogModuleGraph = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'catalog-module-graph',
   register(env) {
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
         httpAuth: coreServices.httpAuth,
         httpRouter: coreServices.httpRouter,
+        logger: coreServices.logger,
         catalog: catalogServiceRef,
       },
-      async init({ config, httpAuth, httpRouter, catalog }) {
+      async init({ config, httpAuth, httpRouter, logger, catalog }) {
         const maxDepth =
-          config.getOptionalNumber('catalogGraph.maxDepth') ??
+          config.getOptionalNumber('catalog.graph.maxDepth') ??
           Number.POSITIVE_INFINITY;
 
         const limitEntities =
-          config.getOptionalNumber('catalogGraph.limitEntities') ??
+          config.getOptionalNumber('catalog.graph.limitEntities') ??
           Number.POSITIVE_INFINITY;
 
         const graphService = new DefaultGraphService({
@@ -52,12 +55,15 @@ export const catalogGraphPlugin = createBackendPlugin({
           limitEntities,
         });
 
-        httpRouter.use(
-          await createRouter({
-            httpAuth,
-            graphService,
-          }),
-        );
+        const graphModule = GraphModule.create({
+          graphService,
+          router: httpRouter,
+          httpAuth,
+        });
+
+        graphModule.registerRoutes();
+
+        logger.info('registered additional routes for catalog-module-graph');
       },
     });
   },
