@@ -24,7 +24,7 @@ import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
 import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
-import semver from 'semver'
+import semver from 'semver';
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
@@ -276,10 +276,12 @@ const config: Config = {
             from: '/docs/getting-started/app-custom-theme',
             to: '/docs/conf/user-interface',
           },
-          semver.gt(backstageVersion, '1.46.0') ? {
-              from: '/docs/plugins/url-reader/',
-              to: '/docs/auth/test'
-            } : undefined,
+          semver.gt(backstageVersion, '1.46.0')
+            ? {
+                from: '/docs/plugins/url-reader/',
+                to: '/docs/auth/test',
+              }
+            : undefined,
         ],
       }),
     [
