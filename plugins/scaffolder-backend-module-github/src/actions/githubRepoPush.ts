@@ -44,80 +44,39 @@ export function createGithubRepoPushAction(options: {
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    protectDefaultBranch?: boolean;
-    protectEnforceAdmins?: boolean;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    requireCodeOwnerReviews?: boolean;
-    dismissStaleReviews?: boolean;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredApprovingReviewCount?: number;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredStatusCheckContexts?: string[];
-    requireBranchesToBeUpToDate?: boolean;
-    requiredConversationResolution?: boolean;
-    sourcePath?: string;
-    token?: string;
-    requiredCommitSigning?: boolean;
-    requiredLinearHistory?: boolean;
-    requireLastPushApproval?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'github:repo:push',
     description:
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-          dismissStaleReviews: inputProps.dismissStaleReviews,
-          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-          restrictions: inputProps.restrictions,
-          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-          requiredConversationResolution:
-            inputProps.requiredConversationResolution,
-          requireLastPushApproval: inputProps.requireLastPushApproval,
-          defaultBranch: inputProps.defaultBranch,
-          protectDefaultBranch: inputProps.protectDefaultBranch,
-          protectEnforceAdmins: inputProps.protectEnforceAdmins,
-          gitCommitMessage: inputProps.gitCommitMessage,
-          gitAuthorName: inputProps.gitAuthorName,
-          gitAuthorEmail: inputProps.gitAuthorEmail,
-          sourcePath: inputProps.sourcePath,
-          token: inputProps.token,
-          requiredCommitSigning: inputProps.requiredCommitSigning,
-          requiredLinearHistory: inputProps.requiredLinearHistory,
-        },
+        repoUrl: inputProps.repoUrl,
+        requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+        dismissStaleReviews: inputProps.dismissStaleReviews,
+        requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+        bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+        requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+        restrictions: inputProps.restrictions,
+        requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+        requiredConversationResolution:
+          inputProps.requiredConversationResolution,
+        requireLastPushApproval: inputProps.requireLastPushApproval,
+        defaultBranch: inputProps.defaultBranch,
+        protectDefaultBranch: inputProps.protectDefaultBranch,
+        protectEnforceAdmins: inputProps.protectEnforceAdmins,
+        gitCommitMessage: inputProps.gitCommitMessage,
+        gitAuthorName: inputProps.gitAuthorName,
+        gitAuthorEmail: inputProps.gitAuthorEmail,
+        sourcePath: inputProps.sourcePath,
+        token: inputProps.token,
+        requiredCommitSigning: inputProps.requiredCommitSigning,
+        requiredLinearHistory: inputProps.requiredLinearHistory,
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: outputProps.remoteUrl,
-          repoContentsUrl: outputProps.repoContentsUrl,
-          commitHash: outputProps.commitHash,
-        },
+        remoteUrl: outputProps.remoteUrl,
+        repoContentsUrl: outputProps.repoContentsUrl,
+        commitHash: outputProps.commitHash,
       },
     },
     async handler(ctx) {

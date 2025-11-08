@@ -1,0 +1,243 @@
+.toolbar {
+  display: flex;
+  height: 80px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  @media (min-width: 768px) {
+    right: 40px;
+  }
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.logoMobile {
+  display: block;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.breadcrumbDesktop {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.breadcrumbLink {
+  color: var(--secondary);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--primary);
+    text-decoration: underline;
+    transition: color 0.2s ease-in-out;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+}
+
+.breadcrumbSeparator {
+  color: var(--secondary);
+  flex-shrink: 0;
+}
+
+.breadcrumbCurrent {
+  color: var(--primary);
+}
+
+.actions {
+  display: none;
+
+  @media (min-width: 320px) {
+    display: flex;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+@media (min-width: 820px) {
+  .content {
+    justify-content: space-between;
+  }
+
+  .version {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: var(--action); */
+  }
+}
+
+.bubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding-inline: 16px;
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  height: 32px;
+  cursor: pointer;
+  gap: 4px;
+
+  &[data-selected] {
+    background-color: var(--action);
+    color: var(--primary);
+  }
+
+  &:hover {
+    background-color: var(--action);
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  &[data-hide-tablet] {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    &[data-hide-tablet] {
+      display: flex;
+    }
+  }
+}
+
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding-inline: 4px;
+  height: 32px;
+  display: none;
+
+  @media (min-width: 480px) {
+    display: flex;
+  }
+}
+
+.buttonGroup button {
+  height: 24px;
+  background-color: var(--bg);
+  border: none;
+  border-radius: 28px;
+  padding-inline: 16px;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  &[data-selected] {
+    background-color: var(--action);
+    color: var(--primary);
+  }
+
+  &:hover {
+    background-color: var(--action);
+    transition: background-color 0.2s ease-in-out;
+  }
+}
+
+.Popup {
+  box-sizing: border-box;
+  padding-block: 0.25rem;
+  border-radius: 0.375rem;
+  background-color: var(--bg);
+  color: var(--color-gray-900);
+  border: 1px solid var(--border);
+  padding-inline: 0.25rem;
+  transform-origin: var(--transform-origin);
+  transition: transform 150ms, opacity 150ms;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  &[data-side='none'] {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  @media (prefers-color-scheme: light) {
+    outline: 1px solid var(--color-gray-200);
+    box-shadow: 0px 10px 15px -3px var(--color-gray-200),
+      0px 4px 6px -4px var(--color-gray-200);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    outline: 1px solid var(--color-gray-300);
+    outline-offset: -1px;
+  }
+}
+
+.Popup[data-trigger='Select'] {
+  min-width: var(--trigger-width);
+
+  .ListBox {
+    display: block;
+    width: unset;
+    max-height: inherit;
+    min-height: unset;
+    border: none;
+
+    .react-aria-Header {
+      padding-left: 1.571rem;
+    }
+  }
+
+  .Item {
+    position: relative;
+    padding: 0 0.571rem 0 1.571rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+
+    &[data-focus-visible] {
+      outline: none;
+    }
+
+    &[data-selected] {
+      font-weight: 600;
+      background: unset;
+      color: var(--text-color);
+
+      &::before {
+        content: '✓';
+        content: '✓' / '';
+        alt: ' ';
+        position: absolute;
+        left: 4px;
+      }
+    }
+
+    &[data-focused],
+    &[data-pressed] {
+      background: var(--bg);
+      color: var(--primary);
+      cursor: pointer;
+    }
+  }
+}

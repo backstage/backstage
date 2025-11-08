@@ -2,7 +2,6 @@
 id: migrating
 title: Migrating Plugins
 sidebar_label: Migration Guide
-# prettier-ignore
 description: How to migrate an existing frontend plugin to the new frontend system
 ---
 
@@ -120,7 +119,7 @@ const fooPage = PageBlueprint.make({
   params: {
     // This is the path that was previously defined in the app code.
     // It's labelled as the default one because it can be changed via configuration.
-    defaultPath: '/foo',
+    path: '/foo',
     // You can reuse the existing routeRef by wrapping it with convertLegacyRouteRef.
     routeRef: convertLegacyRouteRef(rootRouteRef),
     // these inputs usually match the props required by the component.
@@ -206,22 +205,17 @@ The major changes we'll make are
 The end result, after simplifying imports and cleaning up a bit, might look like this:
 
 ```tsx title="in @internal/plugin-example"
-import {
-  storageApiRef,
-  createApiFactory,
-  ApiBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { storageApiRef, ApiBlueprint } from '@backstage/frontend-plugin-api';
 import { workApiRef } from '@internal/plugin-example-react';
 import { WorkImpl } from './WorkImpl';
 
 const exampleWorkApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: workApiRef,
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) => new WorkImpl({ storageApi }),
     }),
-  },
 });
 ```
 

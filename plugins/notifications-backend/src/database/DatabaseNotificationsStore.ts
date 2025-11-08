@@ -30,6 +30,8 @@ import {
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
+import crypto from 'crypto';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-notifications-backend',
@@ -105,11 +107,24 @@ export const normalizeSeverity = (input?: string): NotificationSeverity => {
   return lower;
 };
 
+export const generateSettingsHash = (
+  user: string,
+  channel: string,
+  origin: string,
+  topic: string | null,
+): string => {
+  const rawKey = `${user}|${channel}|${origin}|${topic ?? ''}`;
+  return crypto.createHash('sha256').update(rawKey).digest('hex');
+};
+
 /** @internal */
 export class DatabaseNotificationsStore implements NotificationsStore {
   private readonly isSQLite = false;
 
-  private constructor(private readonly db: Knex) {
+  private readonly db: Knex;
+
+  private constructor(db: Knex) {
+    this.db = db;
     this.isSQLite = this.db.client.config.client.includes('sqlite3');
   }
 
@@ -138,7 +153,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   private mapToNotifications = (rows: any[]): Notification[] => {
     return rows.map(row => ({
       id: row.id,
-      user: row.user,
+      user: row.type === 'broadcast' ? null : row.user,
       created: new Date(row.created),
       saved: row.saved,
       read: row.read,
@@ -169,10 +184,31 @@ export class DatabaseNotificationsStore implements NotificationsStore {
           });
           chan = acc.channels[acc.channels.length - 1];
         }
-        chan.origins.push({
-          id: row.origin,
-          enabled: Boolean(row.enabled),
-        });
+        let origin = chan.origins.find(
+          (ori: { id: string }) => ori.id === row.origin,
+        );
+        if (!origin) {
+          origin = {
+            id: row.origin,
+            enabled: true,
+            topics: [],
+          };
+          chan.origins.push(origin);
+        }
+        if (row.topic === null) {
+          origin.enabled = Boolean(row.enabled);
+        } else {
+          let topic = origin.topics.find(
+            (top: { id: string }) => top.id === row.topic,
+          );
+          if (!topic) {
+            topic = {
+              id: row.topic,
+              enabled: Boolean(row.enabled),
+            };
+            origin.topics.push(topic);
+          }
+        }
         return acc;
       },
       { channels: [] },
@@ -220,7 +256,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
           join.andOnVal('user', '=', user);
         }
       })
-      .select(NOTIFICATION_COLUMNS);
+      .select([...NOTIFICATION_COLUMNS, this.db.raw("'broadcast' as type")]);
   };
 
   private getNotificationsBaseQuery = (
@@ -229,7 +265,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const { user, orderField } = options;
 
     const subQuery = this.db<NotificationRowType>('notification')
-      .select(NOTIFICATION_COLUMNS)
+      .select([...NOTIFICATION_COLUMNS, this.db.raw("'entity' as type")])
       .unionAll([this.getBroadcastUnion(user)])
       .as('notifications');
 
@@ -299,7 +335,10 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async getNotifications(options: NotificationGetOptions) {
     const notificationQuery = this.getNotificationsBaseQuery(options);
-    const notifications = await notificationQuery.select(NOTIFICATION_COLUMNS);
+    const notifications = await notificationQuery.select([
+      ...NOTIFICATION_COLUMNS,
+      'type',
+    ]);
     return this.mapToNotifications(notifications);
   }
 
@@ -430,7 +469,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .select('*')
       .from(
         this.db<NotificationRowType>('notification')
-          .select(NOTIFICATION_COLUMNS)
+          .select([...NOTIFICATION_COLUMNS, this.db.raw("'entity' as type")])
           .unionAll([this.getBroadcastUnion(options.user)])
           .as('notifications'),
       )
@@ -518,10 +557,26 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return { origins: rows.map(row => row.origin) };
   }
 
+  async getUserNotificationTopics(options: {
+    user: string;
+  }): Promise<{ topics: { origin: string; topic: string }[] }> {
+    const rows: { topic: string; origin: string }[] =
+      await this.db<NotificationRowType>('notification')
+        .where('user', options.user)
+        .select('topic', 'origin')
+        .whereNotNull('topic')
+        .distinct();
+
+    return {
+      topics: rows.map(row => ({ origin: row.origin, topic: row.topic })),
+    };
+  }
+
   async getNotificationSettings(options: {
     user: string;
     origin?: string;
     channel?: string;
+    topic?: string;
   }): Promise<NotificationSettings> {
     const settingsQuery = this.db<UserSettingsRowType>('user_settings').where(
       'user',
@@ -534,6 +589,10 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     if (options.channel) {
       settingsQuery.where('channel', options.channel);
     }
+
+    if (options.topic) {
+      settingsQuery.where('topic', options.topic);
+    }
     const settings = await settingsQuery.select();
     return this.mapToNotificationSettings(settings);
   }
@@ -543,18 +602,44 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     settings: NotificationSettings;
   }): Promise<void> {
     const rows: {
+      settings_key_hash: string;
       user: string;
       channel: string;
       origin: string;
+      topic: string | null;
       enabled: boolean;
     }[] = [];
-    options.settings.channels.map(channel => {
-      channel.origins.map(origin => {
+
+    options.settings.channels.forEach(channel => {
+      channel.origins.forEach(origin => {
         rows.push({
+          settings_key_hash: generateSettingsHash(
+            options.user,
+            channel.id,
+            origin.id,
+            null,
+          ),
           user: options.user,
           channel: channel.id,
           origin: origin.id,
+          topic: null,
           enabled: origin.enabled,
+        });
+
+        origin.topics?.forEach(topic => {
+          rows.push({
+            settings_key_hash: generateSettingsHash(
+              options.user,
+              channel.id,
+              origin.id,
+              topic.id,
+            ),
+            user: options.user,
+            channel: channel.id,
+            origin: origin.id,
+            topic: topic.id,
+            enabled: origin.enabled && topic.enabled,
+          });
         });
       });
     });
@@ -574,5 +659,25 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .whereNotNull('topic')
       .distinct(['topic']);
     return { topics: topics.map(row => row.topic) };
+  }
+
+  async clearNotifications(options: {
+    maxAge: HumanDuration;
+  }): Promise<{ deletedCount: number }> {
+    const ms = durationToMilliseconds(options.maxAge);
+    const now = new Date(new Date().getTime() - ms);
+    const notificationsCount = await this.db('notification')
+      .where(builder => {
+        builder.where('created', '<=', now).whereNull('updated');
+      })
+      .orWhere('updated', '<=', now)
+      .delete();
+    const broadcastsCount = await this.db('broadcast')
+      .where(builder => {
+        builder.where('created', '<=', now).whereNull('updated');
+      })
+      .orWhere('updated', '<=', now)
+      .delete();
+    return { deletedCount: notificationsCount + broadcastsCount };
   }
 }

@@ -80,7 +80,7 @@ describe('github:repo:create examples', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -136,6 +136,7 @@ describe('github:repo:create examples', () => {
       has_wiki: undefined,
       homepage: undefined,
       visibility: 'private',
+      auto_init: undefined,
     });
   });
 
@@ -169,6 +170,7 @@ describe('github:repo:create examples', () => {
       has_wiki: undefined,
       homepage: undefined,
       visibility: 'private',
+      auto_init: undefined,
     });
   });
 
@@ -203,6 +205,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: false, // disable wiki
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -246,6 +249,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: 'https://example.com',
+      auto_init: undefined,
     });
   });
 
@@ -289,6 +293,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -332,6 +337,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -375,6 +381,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -418,6 +425,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -461,6 +469,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -504,6 +513,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -547,6 +557,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -590,6 +601,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -633,6 +645,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -676,6 +689,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -719,6 +733,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -762,6 +777,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -805,6 +821,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -848,6 +865,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -891,6 +909,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -934,6 +953,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -977,6 +997,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: 'https://project-xyz.com',
+      auto_init: undefined,
     });
   });
 
@@ -1020,6 +1041,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1063,6 +1085,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1106,6 +1129,7 @@ describe('github:repo:create examples', () => {
       has_projects: true,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1149,6 +1173,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1192,6 +1217,7 @@ describe('github:repo:create examples', () => {
       has_projects: false,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1235,6 +1261,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1278,6 +1305,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1321,6 +1349,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1364,6 +1393,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1407,6 +1437,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1450,6 +1481,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1493,6 +1525,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1536,6 +1569,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1579,6 +1613,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: 'https://internal.example.com',
+      auto_init: undefined,
     });
   });
 
@@ -1622,6 +1657,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1665,6 +1701,7 @@ describe('github:repo:create examples', () => {
       has_projects: true,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1708,6 +1745,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1751,6 +1789,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1794,6 +1833,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1837,6 +1877,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: 'https://webapp.example.com',
+      auto_init: undefined,
     });
   });
 
@@ -1880,6 +1921,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1923,6 +1965,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -1966,6 +2009,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2009,6 +2053,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2052,6 +2097,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2095,6 +2141,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: false,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2138,6 +2185,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2181,6 +2229,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2224,6 +2273,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2267,6 +2317,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2310,6 +2361,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: 'https://example.com',
+      auto_init: undefined,
     });
   });
 
@@ -2353,6 +2405,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2396,6 +2449,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2439,6 +2493,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2482,6 +2537,7 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
     });
   });
 
@@ -2525,6 +2581,51 @@ describe('github:repo:create examples', () => {
       has_projects: undefined,
       has_wiki: undefined,
       homepage: undefined,
+      auto_init: undefined,
+    });
+  });
+
+  it(`Should ${examples[58].description}`, async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    let input;
+    try {
+      input = yaml.parse(examples[58].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+      has_issues: undefined,
+      description: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
+      auto_init: true,
     });
   });
 });

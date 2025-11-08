@@ -41,37 +41,44 @@ import {
   JSONSchema7Definition,
   JSONSchema7Type,
 } from 'json-schema';
-import { FC, JSX, cloneElement, Fragment } from 'react';
+import { FC, JSX, cloneElement, Fragment, ReactElement } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { SchemaRenderContext, SchemaRenderStrategy } from './types';
 import { TranslationMessages } from '../TemplatingExtensionsPage/types';
 
-const getTypes = (properties: JSONSchema7) => {
-  if (!properties.type) {
+const compositeSchemaProperties = ['allOf', 'anyOf', 'not', 'oneOf'] as const;
+
+type subSchemasType = {
+  [K in (typeof compositeSchemaProperties)[number]]?: JSONSchema7Definition[];
+};
+
+const getTypes = (schema: JSONSchema7) => {
+  if (!schema.type) {
+    if (
+      Object.getOwnPropertyNames(schema).some(p =>
+        compositeSchemaProperties.includes(p as any),
+      )
+    ) {
+      return undefined;
+    }
     return ['unknown'];
   }
-  if (properties.type !== 'array') {
-    return [properties.type].flat();
+  if (schema.type !== 'array') {
+    return [schema.type].flat();
   }
   return [
-    `${properties.type}(${
-      (properties.items as JSONSchema7 | undefined)?.type ?? 'unknown'
+    `${schema.type}(${
+      (schema.items as JSONSchema7 | undefined)?.type ?? 'unknown'
     })`,
   ];
 };
 
-const getSubschemas = (
-  schema: JSONSchema7Definition,
-): Record<string, JSONSchema7Definition[]> => {
+const getSubschemas = (schema: JSONSchema7Definition): subSchemasType => {
   if (typeof schema === 'boolean') {
     return {};
   }
   const base: Omit<JSONSchema7, keyof subSchemasType> = {};
 
-  const compositeSchemaProperties = ['allOf', 'anyOf', 'not', 'oneOf'] as const;
-  type subSchemasType = {
-    [K in (typeof compositeSchemaProperties)[number]]?: JSONSchema7Definition[];
-  };
   const subschemas: subSchemasType = {};
 
   for (const [key, value] of Object.entries(schema) as [
@@ -94,6 +101,9 @@ const getSubschemas = (
     } else {
       base[key as Exclude<keyof JSONSchema7, keyof subSchemasType>] = value;
     }
+  }
+  if (!(base?.type === 'object' || 'properties' in base)) {
+    return subschemas;
   }
   return Object.fromEntries(
     Object.entries(subschemas).map(([key, sub]) => {
@@ -224,7 +234,10 @@ const inspectSchema = (
     return { canSubschema: false, hasEnum: false };
   }
   return {
-    canSubschema: getTypes(schema).some(t => t.includes('object')),
+    canSubschema:
+      Object.getOwnPropertyNames(schema).some(p =>
+        compositeSchemaProperties.includes(p as any),
+      ) || getTypes(schema)!.some(t => t.includes('object')),
     hasEnum: !!enumFrom(schema),
   };
 };
@@ -242,8 +255,8 @@ const typeColumn = {
     const info = inspectSchema(element.schema);
     return (
       <>
-        {types.map((type, index) =>
-          type.includes('object') || (info.hasEnum && index === 0) ? (
+        {types?.map((type, index) =>
+          info.canSubschema || (info.hasEnum && index === 0) ? (
             <Chip
               data-testid={`expand_${id}`}
               label={type}
@@ -344,18 +357,19 @@ export const RenderSchema = ({
   const columnStyles = useColumnStyles();
   const result = (() => {
     if (typeof schema === 'object') {
-      const subschemas =
-        strategy === 'root' || !context.parent ? getSubschemas(schema) : {};
+      const subschemas = getSubschemas(schema);
       let columns: Column[] | undefined;
       let elements: SchemaRenderElement[] | undefined;
       if (strategy === 'root') {
-        elements = [{ schema }];
-        columns = [typeColumn];
-        if (schema.description) {
-          columns.unshift(descriptionColumn);
-        }
-        if (schema.title) {
-          columns.unshift(titleColumn);
+        if ('type' in schema || !Object.keys(subschemas).length) {
+          elements = [{ schema }];
+          columns = [typeColumn];
+          if (schema.description) {
+            columns.unshift(descriptionColumn);
+          }
+          if (schema.title) {
+            columns.unshift(titleColumn);
+          }
         }
       } else if (schema.properties) {
         columns = [nameColumn, titleColumn, descriptionColumn, typeColumn];
@@ -393,90 +407,100 @@ export const RenderSchema = ({
                   {elements.map(el => {
                     const id = generateId(el, context);
                     const info = inspectSchema(el.schema);
-                    return (
-                      <Fragment key={id}>
-                        <TableRow data-testid={`${strategy}-row_${id}`}>
-                          {columns!.map(col => (
-                            <TableCell
-                              key={col.key}
-                              className={
-                                columnStyles[col.className ?? 'standard']
+                    const rows = [
+                      <TableRow data-testid={`${strategy}-row_${id}`}>
+                        {columns!.map(col => (
+                          <TableCell
+                            key={col.key}
+                            className={
+                              columnStyles[col.className ?? 'standard']
+                            }
+                          >
+                            {col.render(el, context)}
+                          </TableCell>
+                        ))}
+                      </TableRow>,
+                    ];
+                    if (
+                      typeof el.schema !== 'boolean' &&
+                      (info.canSubschema || info.hasEnum)
+                    ) {
+                      let details: ReactElement = (
+                        <Box data-testid={`expansion_${id}`} sx={{ margin: 1 }}>
+                          {info.canSubschema && (
+                            <RenderSchema
+                              strategy="properties"
+                              context={{
+                                ...context,
+                                parentId: id,
+                                parent: context,
+                              }}
+                              schema={
+                                el.schema.type === 'array'
+                                  ? (el.schema.items as JSONSchema7 | undefined)
+                                  : el.schema
                               }
-                            >
-                              {col.render(el, context)}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                        {typeof el.schema !== 'boolean' &&
-                          (info.canSubschema || info.hasEnum) && (
-                            <TableRow>
-                              <TableCell
-                                style={{ paddingBottom: 0, paddingTop: 0 }}
-                                colSpan={columns!.length}
-                              >
-                                <Collapse
-                                  in={isExpanded[id]}
-                                  timeout="auto"
-                                  unmountOnExit
-                                >
-                                  <Box
-                                    data-testid={`expansion_${id}`}
-                                    sx={{ margin: 1 }}
-                                  >
-                                    {info.canSubschema && (
-                                      <RenderSchema
-                                        strategy="properties"
-                                        context={{
-                                          ...context,
-                                          parentId: id,
-                                          parent: context,
-                                        }}
-                                        schema={
-                                          el.schema.type === 'array'
-                                            ? (el.schema.items as
-                                                | JSONSchema7
-                                                | undefined)
-                                            : el.schema
-                                        }
-                                      />
-                                    )}
-                                    {info.hasEnum && (
-                                      <>
-                                        {cloneElement(
-                                          context.headings[0],
-                                          {},
-                                          'Valid values:',
-                                        )}
-                                        <RenderEnum
-                                          data-testid={`enum_${id}`}
-                                          e={enumFrom(el.schema)!}
-                                          classes={context.classes}
-                                        />
-                                      </>
-                                    )}
-                                  </Box>
-                                </Collapse>
-                              </TableCell>
-                            </TableRow>
+                            />
                           )}
-                      </Fragment>
-                    );
+                          {info.hasEnum && (
+                            <>
+                              {cloneElement(
+                                context.headings[0],
+                                {},
+                                'Valid values:',
+                              )}
+                              <RenderEnum
+                                data-testid={`enum_${id}`}
+                                e={enumFrom(el.schema)!}
+                                classes={context.classes}
+                              />
+                            </>
+                          )}
+                        </Box>
+                      );
+                      if (getTypes(el.schema)) {
+                        details = (
+                          <Collapse
+                            in={isExpanded[id]}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            {details}
+                          </Collapse>
+                        );
+                      }
+                      rows.push(
+                        <TableRow>
+                          <TableCell
+                            style={{ paddingBottom: 0, paddingTop: 0 }}
+                            colSpan={columns!.length}
+                          >
+                            {details}
+                          </TableCell>
+                        </TableRow>,
+                      );
+                    }
+                    return <Fragment key={id}>{rows}</Fragment>;
                   })}
                 </TableBody>
               </Table>
             </TableContainer>
           )}
-          {Object.keys(subschemas).map(sk => (
+          {(Object.keys(subschemas) as Array<keyof subSchemasType>).map(sk => (
             <Fragment key={sk}>
               {cloneElement(context.headings[0], {}, sk)}
-              {subschemas[sk].map((sub, index) => (
+              {subschemas[sk]!.map((sub, index) => (
                 <RenderSchema
                   key={index}
+                  strategy={
+                    typeof sub !== 'boolean' && 'properties' in sub
+                      ? strategy
+                      : 'root'
+                  }
                   {...{
-                    strategy,
                     context: {
                       ...context,
-                      parentId: `${context.parentId}_sub${index}`,
+                      parentId: `${context.parentId}_${sk}${index}`,
                     },
                     schema: sub,
                   }}

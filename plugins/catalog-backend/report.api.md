@@ -61,6 +61,8 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<Entity>;
   // (undocumented)
+  preProcessEntity(entity: Entity): Promise<Entity>;
+  // (undocumented)
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
 
@@ -135,11 +137,7 @@ export function transformLegacyPolicyToProcessor(
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {
-  constructor(options: {
-    reader: UrlReaderService;
-    logger: LoggerService;
-    config?: Config;
-  });
+  constructor(options: { reader: UrlReaderService; logger: LoggerService });
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

@@ -143,6 +143,24 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
 }
 
 /**
+ * The shape of each entry of parameters which gets rendered
+ * as a separate step in the wizard input
+ *
+ * @public
+ */
+export type TemplateParameterSchema = {
+  title: string;
+  description?: string;
+  presentation?: TemplatePresentationV1beta3;
+  steps: Array<{
+    title: string;
+    description?: string;
+    schema: JsonObject;
+  }>;
+  EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
+};
+
+/**
  * Parameter that is part of a Template Entity.
  *
  * @public

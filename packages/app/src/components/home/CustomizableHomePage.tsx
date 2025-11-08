@@ -28,6 +28,7 @@ import { HomePageSearchBar } from '@backstage/plugin-search';
 import Grid from '@material-ui/core/Grid';
 
 import { tools, useLogoStyles } from './shared';
+import { WelcomeTitle } from '@backstage/plugin-home';
 
 const defaultConfig = [
   {
@@ -36,6 +37,7 @@ const defaultConfig = [
     y: 0,
     width: 24,
     height: 2,
+    deletable: false,
   },
   {
     component: 'HomePageRecentlyVisited',
@@ -81,6 +83,7 @@ export const CustomizableHomePage = () => {
         </Grid>
 
         <CustomHomepageGrid config={defaultConfig}>
+          <WelcomeTitle variant="h1" />
           <HomePageSearchBar />
           <HomePageRecentlyVisited />
           <HomePageTopVisited />

@@ -161,13 +161,13 @@ The `createSearchResultItemExtension` function returns a Backstage's extension r
 
 In this object, you can see exactly what will happen once the custom extension is installed:
 
-- **[1] $$type**: declares that the object represents an extension;
-- **[2] id**: Is a unique identification for the extension, the `plugin.search.result.item.techdocs` is the key used to configure the extension in the `app-config.yaml` file;
-- **[3] at**: It represents the extension attachment point, so the value `plugin.search.page/items` says that the `TechDocs`'s search result item output will be injected as input on the "items" attachment expected by the search page extension;
-- **[4] inputs**: in this case is an empty object because this extension doesn't expect inputs;
-- **[5] output**: Object representing the artifact produced by the `TechDocs` result item extension, on the example, it is a react component reference;
-- **[6] configSchema**: represents the `TechDocs` search result item configuration definition, this is the same schema that adopters will use for customizing the extension via `app-config.yaml` file;
-- **[7] disable**: Says that the result item extension will be enable by default when the `TechDocs` plugin is installed in the app.
+- **[1] `$$type`**: declares that the object represents an extension;
+- **[2] `id`**: Is a unique identification for the extension, the `plugin.search.result.item.techdocs` is the key used to configure the extension in the `app-config.yaml` file;
+- **[3] `at`**: It represents the extension attachment point, so the value `plugin.search.page/items` says that the `TechDocs`'s search result item output will be injected as input on the "items" attachment expected by the search page extension;
+- **[4] `inputs`**: in this case is an empty object because this extension doesn't expect inputs;
+- **[5] `output`**: Object representing the artifact produced by the `TechDocs` result item extension, on the example, it is a react component reference;
+- **[6] `configSchema`**: represents the `TechDocs` search result item configuration definition, this is the same schema that adopters will use for customizing the extension via `app-config.yaml` file;
+- **[7] `disable`**: Says that the result item extension will be enable by default when the `TechDocs` plugin is installed in the app.
 
 To complete the development cycle for creating a custom search result item extension, we should provide the extension via `TechDocs` plugin:
 
@@ -182,7 +182,7 @@ export default createPlugin({
 })
 ```
 
-Here is the `plugins/techdocs/alpha.tsx` final version, and you can also take a look at the [actual implementation](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/alpha.tsx) of a custom `TechDocs` search result item:
+Here is the `plugins/techdocs/alpha/index.tsx` final version, and you can also take a look at the [actual implementation](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/alpha/index.tsx) of a custom `TechDocs` search result item:
 
 ```tsx
 // plugins/techdocs/alpha.tsx

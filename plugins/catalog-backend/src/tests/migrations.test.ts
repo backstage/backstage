@@ -521,6 +521,7 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
   it.each(databases.eachSupportedId())(
     '20250401200503_update_refresh_state_columns.js, %p',
     async databaseId => {
@@ -600,6 +601,91 @@ describe('migrations', () => {
           cache: JSON.stringify({ cacheKey: 'cacheValue' }),
         }),
       );
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    '20250514000000_refresh_state_references_big_increments.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      const read = async () => {
+        return await knex('refresh_state_references')
+          .orderBy('id')
+          .then(rs => rs.map(r => ({ ...r, id: String(r.id) })));
+      };
+
+      // Run migrations up to just before the target migration
+      await migrateUntilBefore(
+        knex,
+        '20250514000000_refresh_state_references_big_increments.js',
+      );
+
+      await knex('refresh_state').insert({
+        entity_id: 'a',
+        entity_ref: 'k:ns/a',
+        unprocessed_entity: '{}',
+        cache: '{}',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+      await knex('refresh_state_references').insert({
+        source_key: 'before',
+        target_entity_ref: 'k:ns/a',
+      });
+
+      await migrateUpOnce(knex);
+
+      // can still insert with auto generated id in sequence
+      await knex('refresh_state_references').insert({
+        source_key: 'after1',
+        target_entity_ref: 'k:ns/a',
+      });
+      await expect(read()).resolves.toEqual([
+        {
+          id: '1',
+          source_key: 'before',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+        {
+          id: '2',
+          source_key: 'after1',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+      ]);
+
+      await migrateDownOnce(knex);
+
+      // can still insert with auto generated id in sequence
+      await knex('refresh_state_references').insert({
+        source_key: 'after2',
+        target_entity_ref: 'k:ns/a',
+      });
+      await expect(read()).resolves.toEqual([
+        {
+          id: '1',
+          source_key: 'before',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+        {
+          id: '2',
+          source_key: 'after1',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+        {
+          id: '3',
+          source_key: 'after2',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+      ]);
 
       await knex.destroy();
     },

@@ -19,7 +19,7 @@ import { DialogApi, DialogApiDialog } from '@backstage/frontend-plugin-api';
 export type OnShowDialog = (options: {
   component: (props: { dialog: DialogApiDialog<any> }) => React.JSX.Element;
   modal: boolean;
-}) => DialogApiDialog;
+}) => DialogApiDialog<unknown>;
 
 /**
  * Default implementation for the {@link DialogApi}.
@@ -28,7 +28,7 @@ export type OnShowDialog = (options: {
 export class DefaultDialogApi implements DialogApi {
   #onShow?: OnShowDialog;
 
-  show<TResult = {}>(
+  show<TResult = void>(
     elementOrComponent:
       | JSX.Element
       | ((props: {
@@ -47,7 +47,7 @@ export class DefaultDialogApi implements DialogApi {
     }) as DialogApiDialog<TResult | undefined>;
   }
 
-  showModal<TResult = {}>(
+  showModal<TResult = void>(
     elementOrComponent:
       | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),

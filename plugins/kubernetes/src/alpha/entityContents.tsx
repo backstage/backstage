@@ -21,9 +21,9 @@ import { isKubernetesAvailable } from '../Router';
 export const entityKubernetesContent = EntityContentBlueprint.make({
   name: 'kubernetes',
   params: {
-    defaultPath: '/kubernetes',
-    defaultTitle: 'Kubernetes',
-    defaultGroup: 'deployment',
+    path: '/kubernetes',
+    title: 'Kubernetes',
+    group: 'deployment',
     filter: isKubernetesAvailable,
     loader: () =>
       import('./KubernetesContentPage').then(m =>

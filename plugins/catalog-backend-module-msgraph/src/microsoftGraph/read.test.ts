@@ -1102,6 +1102,14 @@ describe('read microsoft graph', () => {
           name: 'c',
         },
       });
+      const groupD = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/group-id': 'group-id-d',
+          },
+          name: 'd',
+        },
+      });
       const user1 = user({
         metadata: {
           annotations: {
@@ -1118,16 +1126,17 @@ describe('read microsoft graph', () => {
           name: 'user2',
         },
       });
-      const groups = [rootGroup, groupA, groupB, groupC];
+      const groups = [rootGroup, groupA, groupB, groupC, groupD];
       const users = [user1, user2];
       const groupMember = new Map<string, Set<string>>();
       groupMember.set('group-id-b', new Set(['group-id-c']));
+      groupMember.set('group-id-d', new Set(['group-id-c']));
       const groupMemberOf = new Map<string, Set<string>>();
       groupMemberOf.set('user-id-1', new Set(['group-id-a']));
       groupMemberOf.set('user-id-2', new Set(['group-id-c']));
 
       // We have a root groups
-      // We have three groups: a, b, c. c is child of b
+      // We have three groups: a, b, c. c is child of b and d, b should be picked as it's first
       // we have two users: u1, u2. u1 is member of a, u2 is member of c
       resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
 
@@ -1146,6 +1155,11 @@ describe('read microsoft graph', () => {
 
       expect(groupC.spec.parent).toEqual('group:default/b');
       expect(groupC.spec.children).toEqual(expect.arrayContaining([]));
+
+      expect(groupD.spec.parent).toEqual('group:default/root');
+      expect(groupD.spec.children).toEqual(
+        expect.arrayContaining(['group:default/c']),
+      );
 
       expect(user1.spec.memberOf).toEqual(
         expect.arrayContaining(['group:default/a']),

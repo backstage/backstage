@@ -2,11 +2,8 @@
 id: index
 title: Building Frontend Apps
 sidebar_label: Overview
-# prettier-ignore
 description: Building frontend apps using the new frontend system
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 To get set up quickly with your own Backstage project you can create a Backstage App.
 
@@ -38,10 +35,12 @@ This is how to create a minimal app:
 import ReactDOM from 'react-dom/client';
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import '@backstage/ui/css/styles.css';
 
 // Create your app instance
 const app = createApp({
-  // Features such as plugins can be installed explicitly, but we will explore other options later on
+  // Custom features such as plugins can be installed explicitly, but they are usually
+  // auto-discovered, unless `app.packages` is customized in `app-config.yaml`.
   features: [catalogPlugin],
 });
 

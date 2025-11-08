@@ -153,18 +153,22 @@ export function TreeVisualizer({ tree }: { tree: AppTree }) {
   const graphData = useMemo(() => resolveGraphData(tree), [tree]);
 
   return (
-    <Box height="100%" flex="1 1 100%" flexDirection="column" overflow="hidden">
+    <Box
+      flex="1 1 0"
+      display="flex"
+      justifyContent="stretch"
+      alignItems="stretch"
+      overflow="hidden"
+    >
       <DependencyGraph
         fit="contain"
-        style={{ height: '100%', width: '100%' }}
         {...graphData}
         nodeMargin={10}
         rankMargin={50}
         paddingX={50}
         renderNode={Node}
-        align={DependencyGraphTypes.Alignment.DOWN_RIGHT}
         ranker={DependencyGraphTypes.Ranker.TIGHT_TREE}
-        direction={DependencyGraphTypes.Direction.TOP_BOTTOM}
+        direction={DependencyGraphTypes.Direction.LEFT_RIGHT}
       />
     </Box>
   );

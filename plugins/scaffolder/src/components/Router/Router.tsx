@@ -60,14 +60,12 @@ import {
   CustomFieldsPage,
 } from '../../alpha/components/TemplateEditorPage';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import {
-  taskReadPermission,
-  templateManagementPermission,
-} from '@backstage/plugin-scaffolder-common/alpha';
+import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { useApp } from '@backstage/core-plugin-api';
-import { FormField, OpaqueFormField } from '@internal/scaffolder';
+import { OpaqueFormField } from '@internal/scaffolder';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { TemplatingExtensionsPage } from '../TemplatingExtensionsPage';
+import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 
 /**
  * The Props for the Scaffolder Router
@@ -105,6 +103,8 @@ export type RouterProps = {
     tasks?: boolean;
     /** Whether to show a link to the create page (on /create subroutes) */
     create?: boolean;
+    /** Whether to show a link to the templating extensions page */
+    templatingExtensions?: boolean;
   };
 };
 
@@ -182,11 +182,9 @@ export const InternalRouter = (
       <Route
         path={scaffolderTaskRouteRef.path}
         element={
-          <RequirePermission permission={taskReadPermission}>
-            <TaskPageComponent
-              TemplateOutputsComponent={TemplateOutputsComponent}
-            />
-          </RequirePermission>
+          <TaskPageComponent
+            TemplateOutputsComponent={TemplateOutputsComponent}
+          />
         }
       />
       <Route
@@ -230,11 +228,7 @@ export const InternalRouter = (
       />
       <Route
         path={scaffolderListTaskRouteRef.path}
-        element={
-          <RequirePermission permission={taskReadPermission}>
-            <ListTasksPage contextMenu={props.contextMenu} />
-          </RequirePermission>
-        }
+        element={<ListTasksPage contextMenu={props.contextMenu} />}
       />
       <Route
         path={editorRouteRef.path}
@@ -252,7 +246,7 @@ export const InternalRouter = (
       />
       <Route
         path={templatingExtensionsRouteRef.path}
-        element={<TemplatingExtensionsPage />}
+        element={<TemplatingExtensionsPage contextMenu={props.contextMenu} />}
       />
       <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>

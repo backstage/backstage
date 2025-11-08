@@ -2,7 +2,6 @@
 id: well-known-annotations
 title: Well-known Annotations on Catalog Entities
 sidebar_label: Well-known Annotations
-# prettier-ignore
 description: Documentation that lists a number of well known Annotations, that have defined semantics. They can be attached to catalog entities and consumed by plugins as needed.
 ---
 
@@ -114,6 +113,20 @@ This allows you to reference TechDocs from a single source without either duplic
 the TechDocs in the TechDocs page or needing multiple builds of the same docs.
 
 This is for situations where you have complex systems where they share a single repo, and likely a single TechDoc location.
+
+### backstage.io/techdocs-entity-path
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/techdocs-entity: component:default/example
+    backstage.io/techdocs-entity-path: /path/to/this/component
+```
+
+The value of this annotation informs of the path to this component's TechDocs within an external entity that owns the TechDocs.
+In conjunction with [backstage.io/techdocs-entity](#backstageiotechdocs-entity) this allows for deep linking into the TechDocs of
+another entity, not just linking to the root of another entity's TechDocs.
 
 ### backstage.io/view-url, backstage.io/edit-url
 

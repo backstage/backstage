@@ -1,5 +1,69 @@
 # @backstage/plugin-permission-react
 
+## 0.4.38-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.4.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.4.37-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
+## 0.4.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/core-plugin-api@1.10.9
+
+## 0.4.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.4.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.9.0
+
+## 0.4.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/config@1.3.2
+
 ## 0.4.34-next.1
 
 ### Patch Changes

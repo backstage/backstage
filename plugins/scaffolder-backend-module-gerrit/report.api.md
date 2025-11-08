@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -17,15 +16,19 @@ export function createPublishGerritAction(options: {
   {
     repoUrl: string;
     description: string;
-    defaultBranch?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    sourcePath?: string;
-    signCommit?: boolean;
+    defaultBranch?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    sourcePath?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    remoteUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+    commitHash?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public
@@ -35,15 +38,18 @@ export function createPublishGerritReviewAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    branch?: string;
-    sourcePath?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    signCommit?: boolean;
+    branch?: string | undefined;
+    sourcePath?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    reviewUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public

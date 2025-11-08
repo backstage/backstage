@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 
@@ -29,7 +29,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v20.x
 
       - name: Create Snyk report
-        uses: snyk/actions/node@cdb760004ba9ea4d525f2e043745dfe85bb9077e # master
+        uses: snyk/actions/node@9adf32b1121593767fc3c057af55b55db032dc04 # master
         continue-on-error: true # Snyk CLI exits with error when vulnerabilities are found
         with:
           args: >

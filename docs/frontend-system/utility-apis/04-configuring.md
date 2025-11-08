@@ -2,11 +2,8 @@
 id: configuring
 title: Configuring Utility APIs
 sidebar_label: Configuring
-# prettier-ignore
 description: Configuring, extending, and overriding utility APIs
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 Utility APIs are extensions and can therefore optionally be amended with configurability, as well as inputs that other extensions attach themselves to. This section describes how to make use of that as a consumer of such utility APIs.
 

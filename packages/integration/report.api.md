@@ -588,6 +588,7 @@ export function getGitilesAuthenticationUrl(
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<string>;
 
 // @public
@@ -668,7 +669,7 @@ export type GithubAppConfig = {
 
 // @public
 export class GithubAppCredentialsMux {
-  constructor(config: GithubIntegrationConfig);
+  constructor(config: GithubIntegrationConfig, appIds?: number[]);
   // (undocumented)
   getAllInstallations(): Promise<
     RestEndpointMethodTypes['apps']['listInstallations']['response']['data']

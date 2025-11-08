@@ -2,7 +2,6 @@
 id: discovery
 title: Bitbucket Cloud Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from repositories in Bitbucket Cloud
 ---
 

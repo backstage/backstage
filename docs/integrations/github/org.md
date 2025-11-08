@@ -2,7 +2,6 @@
 id: org
 title: GitHub Organizational Data
 sidebar_label: Org Data
-# prettier-ignore
 description: Importing users and groups from a GitHub organization into Backstage
 ---
 
@@ -80,6 +79,10 @@ catalog:
           initialDelay: { seconds: 30 }
           frequency: { hours: 1 }
           timeout: { minutes: 50 }
+        pageSizes:
+          teams: 25
+          teamMembers: 50
+          organizationMembers: 50
       - id: ghe
         githubUrl: https://ghe.mycompany.com
         orgs: ['internal-1', 'internal-2', 'internal-3']
@@ -95,6 +98,13 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 - `githubUrl`: The target that this provider should consume
 - `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
 - `schedule`: The refresh schedule to use, matches the structure of [`SchedulerServiceTaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinitionconfig/)
+- `pageSizes` (optional): Configure page sizes for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors. You can configure the following page sizes:
+
+  - `teams`: Number of teams to fetch per page when querying organization teams (default: 25)
+  - `teamMembers`: Number of team members to fetch per page when querying team members (default: 50)
+  - `organizationMembers`: Number of organization members to fetch per page (default: 50)
+
+  Reducing page sizes will result in more API calls and slightly longer sync times, but will prevent API resource limits for organizations with large number of teams and members.
 
 ### Events Support
 
@@ -169,6 +179,7 @@ const backend = createBackend();
 
 backend.add(import('@backstage/plugin-catalog-backend'));
 
+backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 backend.add(githubOrgModule);
 
 backend.start();

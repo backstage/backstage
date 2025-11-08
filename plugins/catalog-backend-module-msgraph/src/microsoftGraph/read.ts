@@ -359,7 +359,14 @@ export function resolveRelations(
       }
     });
 
+    // TODO: Until we have better support for multiple parents in the model,
+    //       the order of the parents is important as changing it causes
+    //       unnecessary entity stitching randomly.
     retrieveItems(parentGroups, id).forEach(p => {
+      // Only set the parent if it doesn't exist yet
+      if (group.spec.parent) {
+        return;
+      }
       const parentGroup = groupMap.get(p);
       if (parentGroup) {
         // TODO: Only having a single parent group might not match every companies model, but fine for now.
@@ -546,5 +553,5 @@ function retrieveItems(
   target: Map<string, Set<string>>,
   key: string,
 ): Set<string> {
-  return target.get(key) ?? new Set();
+  return new Set([...(target.get(key) ?? [])].sort());
 }

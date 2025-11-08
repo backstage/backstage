@@ -15,6 +15,7 @@
  */
 
 import {
+  ApiBlueprint,
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
@@ -24,7 +25,11 @@ import {
 } from '@backstage/core-compat-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
-import { Direction } from '@backstage/plugin-catalog-graph';
+import {
+  catalogGraphApiRef,
+  DefaultCatalogGraphApi,
+  Direction,
+} from '@backstage/plugin-catalog-graph';
 
 const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'relations',
@@ -75,7 +80,7 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config }) {
     return originalFactory({
-      defaultPath: '/catalog-graph',
+      path: '/catalog-graph',
       routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
       loader: () =>
         import('./components/CatalogGraphPage').then(m =>
@@ -85,13 +90,25 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
   },
 });
 
+const CatalogGraphApi = ApiBlueprint.make({
+  params: defineParams =>
+    defineParams({
+      api: catalogGraphApiRef,
+      deps: {},
+      factory: () => new DefaultCatalogGraphApi(),
+    }),
+});
+
 export default createFrontendPlugin({
   pluginId: 'catalog-graph',
+  info: { packageJson: () => import('../package.json') },
   routes: {
     catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),
   },
   externalRoutes: {
     catalogEntity: convertLegacyRouteRef(catalogEntityRouteRef),
   },
-  extensions: [CatalogGraphPage, CatalogGraphEntityCard],
+  extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi],
 });
+
+export { catalogGraphTranslationRef } from './translation';

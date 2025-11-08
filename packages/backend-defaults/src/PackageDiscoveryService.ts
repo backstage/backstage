@@ -23,6 +23,7 @@ import {
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { BackstagePackageJson } from '@backstage/cli-node';
+import { isError } from '@backstage/errors';
 
 const DETECTED_PACKAGE_ROLES = [
   'node-library',
@@ -79,10 +80,13 @@ async function findClosestPackageDir(
 
 /** @internal */
 export class PackageDiscoveryService {
-  constructor(
-    private readonly config: RootConfigService,
-    private readonly logger: RootLoggerService,
-  ) {}
+  private readonly config: RootConfigService;
+  private readonly logger: RootLoggerService;
+
+  constructor(config: RootConfigService, logger: RootLoggerService) {
+    this.config = config;
+    this.logger = logger;
+  }
 
   getDependencyNames(path: string) {
     const { dependencies } = require(path) as BackstagePackageJson;
@@ -125,9 +129,19 @@ export class PackageDiscoveryService {
     const features: BackendFeature[] = [];
 
     for (const name of dependencyNames) {
-      const depPkg = require(require.resolve(`${name}/package.json`, {
-        paths: [packageDir],
-      })) as BackstagePackageJson;
+      let depPkg: BackstagePackageJson;
+      try {
+        const packageJsonPath = require.resolve(`${name}/package.json`, {
+          paths: [packageDir],
+        });
+        depPkg = require(packageJsonPath) as BackstagePackageJson;
+      } catch (error) {
+        // Handle packages with "exports" field that don't export ./package.json
+        if (isError(error) && error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
+          continue; // Skip packages that don't export package.json - they can't be Backstage packages
+        }
+        throw error;
+      }
       if (
         !depPkg?.backstage?.role ||
         !DETECTED_PACKAGE_ROLES.includes(depPkg.backstage.role)
@@ -164,6 +178,6 @@ export class PackageDiscoveryService {
       }
     }
 
-    return { features };
+    return { features: Array.from(new Set(features)) };
   }
 }

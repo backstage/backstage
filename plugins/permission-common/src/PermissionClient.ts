@@ -60,14 +60,16 @@ const authorizePermissionResponseSchema: z.ZodSchema<AuthorizePermissionResponse
       .or(z.literal(AuthorizeResult.DENY)),
   });
 
-const authorizePermissionResponseBatchSchema = z.object({
-  result: z.array(
-    z.union([
-      z.literal(AuthorizeResult.ALLOW),
-      z.literal(AuthorizeResult.DENY),
-    ]),
-  ),
-});
+const authorizePermissionResponseBatchSchema = z
+  .object({
+    result: z.array(
+      z.union([
+        z.literal(AuthorizeResult.ALLOW),
+        z.literal(AuthorizeResult.DENY),
+      ]),
+    ),
+  })
+  .or(authorizePermissionResponseSchema);
 
 const queryPermissionResponseSchema: z.ZodSchema<QueryPermissionResponse> =
   z.union([
@@ -144,7 +146,7 @@ export class PermissionClient implements PermissionEvaluator {
     options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
     if (!this.enabled) {
-      return requests.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
     if (this.enableBatchedRequests) {
@@ -166,7 +168,7 @@ export class PermissionClient implements PermissionEvaluator {
     options?: PermissionClientRequestOptions,
   ): Promise<QueryPermissionResponse[]> {
     if (!this.enabled) {
-      return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
     return this.makeRequest(queries, queryPermissionResponseSchema, options);
@@ -240,9 +242,13 @@ export class PermissionClient implements PermissionEvaluator {
       const { id } = request[query.permission.name];
 
       const item = responsesById[id];
-      return {
-        result: query.resourceRef ? item.result.shift()! : item.result[0],
-      };
+
+      if (Array.isArray(item.result)) {
+        return {
+          result: query.resourceRef ? item.result.shift()! : item.result[0],
+        };
+      }
+      return { result: item.result };
     });
   }
 

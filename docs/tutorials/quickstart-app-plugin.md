@@ -246,7 +246,7 @@ const auth = useApi(githubAuthApiRef);
 
 2. The access token we need to make our GitHub request and the request itself is
    obtained in an asynchronous manner.
-3. Add the useAsync block inside the ExampleFetchComponent
+3. Add the `useAsync` block inside the ExampleFetchComponent
 
 ```tsx
 const { value, loading, error } = useAsync(async (): Promise<any> => {

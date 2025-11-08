@@ -4,7 +4,6 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -45,12 +44,51 @@ export function createFetchRailsAction(options: {
 }): TemplateAction<
   {
     url: string;
-    targetPath?: string;
-    values: JsonObject;
-    imageName?: string;
+    values: {
+      railsArguments?:
+        | {
+            template?: string | undefined;
+            api?: boolean | undefined;
+            database?:
+              | 'sqlite3'
+              | 'mysql'
+              | 'postgresql'
+              | 'oracle'
+              | 'sqlserver'
+              | 'jdbcmysql'
+              | 'jdbcsqlite3'
+              | 'jdbcpostgresql'
+              | 'jdbc'
+              | undefined;
+            force?: boolean | undefined;
+            minimal?: boolean | undefined;
+            railsVersion?: 'edge' | 'master' | 'dev' | 'fromImage' | undefined;
+            skipActionCable?: boolean | undefined;
+            skipActionMailbox?: boolean | undefined;
+            skipActionMailer?: boolean | undefined;
+            skipActionText?: boolean | undefined;
+            skipActiveStorage?: boolean | undefined;
+            skipBundle?: boolean | undefined;
+            skipTest?: boolean | undefined;
+            skipWebpackInstall?: boolean | undefined;
+            skipActiveRecord?: boolean | undefined;
+            webpacker?:
+              | 'react'
+              | 'angular'
+              | 'vue'
+              | 'elm'
+              | 'stimulus'
+              | undefined;
+          }
+        | undefined;
+    };
+    targetPath?: string | undefined;
+    imageName?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public

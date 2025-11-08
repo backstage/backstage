@@ -2,7 +2,6 @@
 id: org
 title: Microsoft Entra Tenant Data
 sidebar_label: Org Data
-# prettier-ignore
 description: Importing users and groups from Microsoft Entra ID into Backstage
 ---
 

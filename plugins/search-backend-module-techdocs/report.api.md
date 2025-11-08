@@ -14,6 +14,9 @@ const _default: BackendFeature;
 export default _default;
 
 // @public (undocumented)
+export const defaultTechDocsCollatorDocumentTransformer: TechDocsCollatorDocumentTransformer;
+
+// @public (undocumented)
 export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTransformer;
 
 // @public (undocumented)

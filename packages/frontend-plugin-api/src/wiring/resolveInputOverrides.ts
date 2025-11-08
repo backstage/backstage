@@ -19,25 +19,16 @@ import { Expand } from '@backstage/types';
 import { ResolvedExtensionInput } from './createExtension';
 import { createExtensionDataContainer } from '@internal/frontend';
 import {
-  AnyExtensionDataRef,
   ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataContainer } from './types';
 
-/** @public */
-export type ResolveInputValueOverrides<
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  } = {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
+/** @ignore */
+export type ResolvedInputValueOverrides<
+  TInputs extends { [inputName in string]: ExtensionInput } = {
+    [inputName in string]: ExtensionInput;
   },
 > = Expand<
   {
@@ -90,18 +81,13 @@ function expectItem<T>(value: T | T[]): T {
 
 /** @internal */
 export function resolveInputOverrides(
-  declaredInputs?: {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  declaredInputs?: { [inputName in string]: ExtensionInput },
   inputs?: {
     [KName in string]?:
       | ({ node: AppNode } & ExtensionDataContainer<any>)
       | Array<{ node: AppNode } & ExtensionDataContainer<any>>;
   },
-  inputOverrides?: ResolveInputValueOverrides,
+  inputOverrides?: ResolvedInputValueOverrides,
 ) {
   if (!declaredInputs || !inputs || !inputOverrides) {
     return inputs;
@@ -119,6 +105,7 @@ export function resolveInputOverrides(
       if (providedData) {
         const providedContainer = createExtensionDataContainer(
           providedData as Iterable<ExtensionDataValue<any, any>>,
+          'extension input override',
           declaredInput.extensionData,
         );
         if (!originalInput) {
@@ -157,6 +144,7 @@ export function resolveInputOverrides(
           newInputs[name] = providedData.map((data, i) => {
             const providedContainer = createExtensionDataContainer(
               data as Iterable<ExtensionDataValue<any, any>>,
+              'extension input override',
               declaredInput.extensionData,
             );
             return Object.assign(providedContainer, {

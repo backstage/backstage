@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { QueryEntitiesResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
 import { compact, isEqual } from 'lodash';
 import qs from 'qs';
 import {
@@ -22,6 +24,7 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -50,8 +53,6 @@ import {
   reduceCatalogFilters,
   reduceEntityFilters,
 } from '../utils/filters';
-import { useApi } from '@backstage/core-plugin-api';
-import { QueryEntitiesResponse } from '@backstage/catalog-client';
 
 /** @public */
 export type DefaultEntityFilters = {
@@ -239,7 +240,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // The main async filter worker. Note that while it has a lot of dependencies
   // in terms of its implementation, the triggering only happens (debounced)
   // based on the requested filters changing.
-  const [{ loading, error }, refresh] = useAsyncFn(
+  const [{ value: resolvedValue, loading, error }, refresh] = useAsyncFn(
     async () => {
       const kindValue =
         requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
@@ -249,19 +250,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           : requestedFilters;
       const compacted = compact(Object.values(adjustedFilters));
 
-      const queryParams = Object.keys(requestedFilters).reduce(
-        (params, key) => {
-          const filter = requestedFilters[key as keyof EntityFilters] as
-            | EntityFilter
-            | undefined;
-          if (filter?.toQueryValue) {
-            params[key] = filter.toQueryValue();
-          }
-          return params;
-        },
-        {} as Record<string, string | string[]>,
-      );
-
       if (paginationMode !== 'none') {
         if (cursor) {
           if (cursor !== outputState.appliedCursor) {
@@ -270,14 +258,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               cursor,
               limit,
             });
-            setOutputState({
+            return {
               appliedFilters: requestedFilters,
               appliedCursor: cursor,
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
               totalItems: response.totalItems,
-            });
+            };
           }
         } else {
           const entityFilter = reduceEntityFilters(compacted);
@@ -296,7 +284,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               limit,
               offset,
             });
-            setOutputState({
+            return {
               appliedFilters: requestedFilters,
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
@@ -304,12 +292,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               totalItems: response.totalItems,
               limit,
               offset,
-            });
+            };
           }
         }
       } else {
         const entityFilter = reduceEntityFilters(compacted);
         const backendFilter = reduceBackendCatalogFilters(compacted);
+        const { orderFields } = reduceCatalogFilters(compacted);
         const previousBackendFilter = reduceBackendCatalogFilters(
           compact(Object.values(outputState.appliedFilters)),
         );
@@ -322,41 +311,25 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           // fields + table columns
           const response = await catalogApi.getEntities({
             filter: backendFilter,
+            order: orderFields,
           });
           const entities = response.items.filter(entityFilter);
-          setOutputState({
+          return {
             appliedFilters: requestedFilters,
             backendEntities: response.items,
             entities,
             totalItems: entities.length,
-          });
-        } else {
-          const entities = outputState.backendEntities.filter(entityFilter);
-          setOutputState({
-            appliedFilters: requestedFilters,
-            backendEntities: outputState.backendEntities,
-            entities,
-            totalItems: entities.length,
-          });
+          };
         }
+        const entities = outputState.backendEntities.filter(entityFilter);
+        return {
+          appliedFilters: requestedFilters,
+          backendEntities: outputState.backendEntities,
+          entities,
+          totalItems: entities.length,
+        };
       }
-
-      if (isMounted()) {
-        const oldParams = qs.parse(location.search, {
-          ignoreQueryPrefix: true,
-        });
-        const newParams = qs.stringify(
-          { ...oldParams, filters: queryParams, cursor, offset, limit },
-          { addQueryPrefix: true, arrayFormat: 'repeat' },
-        );
-        const newUrl = `${window.location.pathname}${newParams}`;
-        // We use direct history manipulation since useSearchParams and
-        // useNavigate in react-router-dom cause unnecessary extra rerenders.
-        // Also make sure to replace the state rather than pushing, since we
-        // don't want there to be back/forward slots for every single filter
-        // change.
-        window.history?.replaceState(null, document.title, newUrl);
-      }
+      return undefined;
     },
     [
       catalogApi,
@@ -374,6 +347,55 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
   useDebounce(refresh, 10, [requestedFilters, cursor, limit, offset]);
+
+  useEffect(() => {
+    if (resolvedValue === undefined) {
+      return;
+    }
+    setOutputState(resolvedValue);
+    if (isMounted()) {
+      const queryParams = Object.keys(requestedFilters).reduce(
+        (params, key) => {
+          const filter = requestedFilters[key as keyof EntityFilters] as
+            | EntityFilter
+            | undefined;
+          if (filter?.toQueryValue) {
+            params[key] = filter.toQueryValue();
+          }
+          return params;
+        },
+        {} as Record<string, string | string[]>,
+      );
+
+      const oldParams = qs.parse(location.search, {
+        ignoreQueryPrefix: true,
+      });
+      const newParams = qs.stringify(
+        {
+          ...oldParams,
+          filters: queryParams,
+          ...(paginationMode === 'none' ? {} : { cursor, limit, offset }),
+        },
+        { addQueryPrefix: true, arrayFormat: 'repeat' },
+      );
+      const newUrl = `${window.location.pathname}${newParams}`;
+      // We use direct history manipulation since useSearchParams and
+      // useNavigate in react-router-dom cause unnecessary extra rerenders.
+      // Also make sure to replace the state rather than pushing, since we
+      // don't want there to be back/forward slots for every single filter
+      // change.
+      window.history?.replaceState(null, document.title, newUrl);
+    }
+  }, [
+    cursor,
+    isMounted,
+    limit,
+    location.search,
+    offset,
+    requestedFilters,
+    resolvedValue,
+    paginationMode,
+  ]);
 
   const updateFilters = useCallback(
     (

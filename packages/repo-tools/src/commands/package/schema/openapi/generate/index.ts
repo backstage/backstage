@@ -95,6 +95,7 @@ export async function command(opts: OptionValues) {
     try {
       await sharedCommand();
     } catch (err) {
+      console.error(chalk.red('Error: ', err));
       process.exit(1);
     }
   }

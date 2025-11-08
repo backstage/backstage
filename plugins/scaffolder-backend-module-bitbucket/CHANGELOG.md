@@ -1,5 +1,223 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.3.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.15-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.15-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
+## 0.3.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.15-next.0
+
+## 0.3.15
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.14
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.14
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+
+## 0.3.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.14-next.1
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+
+## 0.3.15-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.14-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.14-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 0.3.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.13
+  - @backstage/plugin-scaffolder-node@0.11.1
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.13-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.12
+
+## 0.3.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.12-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/integration@1.17.1
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11
+
+## 0.3.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.2
+
+## 0.3.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.1
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+
+## 0.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.3.11
+
+### Patch Changes
+
+- 7f710d2: Migrating `bitbucket` actions to use the new `zod` format
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+
+## 0.3.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.2
+
+## 0.3.11-next.1
+
+### Patch Changes
+
+- 7f710d2: Migrating `bitbucket` actions to use the new `zod` format
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.1
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+
+## 0.3.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.0
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.3.10
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.3.10-next.3
 
 ### Patch Changes

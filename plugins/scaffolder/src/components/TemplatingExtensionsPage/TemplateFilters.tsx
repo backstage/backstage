@@ -26,7 +26,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import classNames from 'classnames';
-import React, { ReactElement, useState } from 'react';
+import { cloneElement, Fragment, ReactElement, useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
 import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
@@ -60,7 +60,7 @@ const FilterDetailContent = ({
     headings: [<Typography variant="h6" component="h4" />],
   };
   return (
-    <React.Fragment key={`${name}.detail`}>
+    <Fragment key={`${name}.detail`}>
       {filter.description && <MarkdownContent content={filter.description} />}
       <Box pb={2}>
         <Typography variant="h5" component="h3">
@@ -84,7 +84,7 @@ const FilterDetailContent = ({
             const [argSchema, required] = inspectFunctionArgSchema(arg);
 
             return (
-              <React.Fragment key={i}>
+              <Fragment key={i}>
                 <div
                   className={classNames({ [classes.argRequired]: required })}
                 >
@@ -101,7 +101,7 @@ const FilterDetailContent = ({
                   }}
                   schema={argSchema}
                 />
-              </React.Fragment>
+              </Fragment>
             );
           })}
         </Box>
@@ -133,7 +133,7 @@ const FilterDetailContent = ({
           </AccordionDetails>
         </Accordion>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 };
 
@@ -178,7 +178,7 @@ export const TemplateFilters = ({
             >
               {name}
             </Typography>
-            {React.cloneElement(baseLink, {
+            {cloneElement(baseLink, {
               to: `${baseLink.props.to}#${fragment}`,
             })}
             <FilterDetailContent {...{ t, classes, name, filter }} />

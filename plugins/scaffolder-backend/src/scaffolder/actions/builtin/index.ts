@@ -15,7 +15,6 @@
  */
 
 export * from './catalog';
-export * from './createBuiltinActions';
 export * from './debug';
 export * from './fetch';
 export * from './filesystem';

@@ -4,17 +4,20 @@
 
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
-import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
@@ -22,7 +25,7 @@ import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-re
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
     docRoot: RouteRef<{
@@ -39,35 +42,35 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:techdocs/storage': ExtensionDefinition<{
       kind: 'api';
       name: 'storage';
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'empty-state:techdocs/entity-content': ExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         JSX_2.Element,
         'core.reactElement',
         {
@@ -76,10 +79,10 @@ const _default: FrontendPlugin<
       >;
       inputs: {
         [x: string]: ExtensionInput<
-          AnyExtensionDataRef,
+          ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -101,35 +104,31 @@ const _default: FrontendPlugin<
         group?: string | false | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
           >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-content-title',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
             {
               optional: true;
             }
           >
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
             {
               optional: true;
             }
           >
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
+        | ExtensionDataRef<
             string,
             'catalog.entity-content-group',
             {
@@ -165,12 +164,54 @@ const _default: FrontendPlugin<
       kind: 'entity-content';
       name: undefined;
       params: {
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
+        defaultTitle?: [Error: `Use the 'title' param instead`];
+        title: string;
+        defaultGroup?: [Error: `Use the 'group' param instead`];
+        group?: keyof defaultEntityContentGroups | (string & {});
         loader: () => Promise<JSX.Element>;
-        defaultPath: string;
-        defaultTitle: string;
-        defaultGroup?: keyof defaultEntityContentGroups | (string & {});
         routeRef?: RouteRef;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      };
+    }>;
+    'entity-icon-link:techdocs/read-docs': ExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'read-docs';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            () => IconLinkVerticalProps,
+            'entity-icon-link-props',
+            {}
+          >;
+      inputs: {};
+      params: {
+        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+        filter?: EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:techdocs': ExtensionDefinition<{
@@ -178,7 +219,7 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -204,9 +245,9 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -215,7 +256,8 @@ const _default: FrontendPlugin<
           >;
       inputs: {};
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -228,9 +270,9 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -253,7 +295,8 @@ const _default: FrontendPlugin<
       kind: 'page';
       name: 'reader';
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -275,20 +318,21 @@ const _default: FrontendPlugin<
       } & {
         noTrack?: boolean | undefined;
       };
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}
       >;
       inputs: {
         [x: string]: ExtensionInput<
-          AnyExtensionDataRef,
+          ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -318,20 +362,21 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   } & {
     noTrack?: boolean | undefined;
   };
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
+      icon?: JSX_2.Element;
     },
     'search.search-result-list-item.item',
     {}
   >;
   inputs: {
     [x: string]: ExtensionInput<
-      AnyExtensionDataRef,
+      ExtensionDataRef,
       {
-        optional: boolean;
         singleton: boolean;
+        optional: boolean;
       }
     >;
   };

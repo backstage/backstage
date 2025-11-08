@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import path from 'path';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import { InputError } from '@backstage/errors';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import {
   createTemplateAction,
   parseRepoUrl,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import { CommitAction } from '@gitbeaker/rest';
-import path from 'path';
-import { ScmIntegrationRegistry } from '@backstage/integration';
-import { InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createGitlabApi, getErrorMessage } from './helpers';
 import { examples } from './gitlabRepoPush.examples';
 
@@ -37,78 +37,63 @@ export const createGitlabRepoPushAction = (options: {
 }) => {
   const { integrations } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    branchName: string;
-    commitMessage: string;
-    sourcePath?: string;
-    targetPath?: string;
-    token?: string;
-    commitAction?: 'create' | 'delete' | 'update';
-  }>({
+  return createTemplateAction({
     id: 'gitlab:repo:push',
     examples,
     schema: {
       input: {
-        required: ['repoUrl', 'branchName', 'commitMessage'],
-        type: 'object',
-        properties: {
-          repoUrl: {
-            type: 'string',
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
-          },
-          branchName: {
-            type: 'string',
-            title: 'Source Branch Name',
+          }),
+        branchName: z =>
+          z.string({
             description: 'The branch name for the commit',
-          },
-          commitMessage: {
-            type: 'string',
-            title: 'Commit Message',
+          }),
+        commitMessage: z =>
+          z.string({
             description: `The commit message`,
-          },
-          sourcePath: {
-            type: 'string',
-            title: 'Working Subdirectory',
-            description:
-              'Subdirectory of working directory to copy changes from',
-          },
-          targetPath: {
-            type: 'string',
-            title: 'Repository Subdirectory',
-            description: 'Subdirectory of repository to apply changes to',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitLab',
-          },
-          commitAction: {
-            title: 'Commit action',
-            type: 'string',
-            enum: ['create', 'update', 'delete'],
-            description:
-              'The action to be used for git commit. Defaults to create, but can be set to update or delete',
-          },
-        },
+          }),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Subdirectory of working directory to copy changes from',
+            })
+            .optional(),
+        targetPath: z =>
+          z
+            .string({
+              description: 'Subdirectory of repository to apply changes to',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitLab',
+            })
+            .optional(),
+        commitAction: z =>
+          z
+            .enum(['create', 'update', 'delete'], {
+              description:
+                'The action to be used for git commit. Defaults to create, but can be set to update or delete',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          projectid: {
-            title: 'Gitlab Project id/Name(slug)',
-            type: 'string',
-          },
-          projectPath: {
-            title: 'Gitlab Project path',
-            type: 'string',
-          },
-          commitHash: {
-            title: 'The git commit hash of the commit',
-            type: 'string',
-          },
-        },
+        projectid: z =>
+          z.string({
+            description: 'Gitlab Project id/Name(slug)',
+          }),
+        projectPath: z =>
+          z.string({
+            description: 'Gitlab Project path',
+          }),
+        commitHash: z =>
+          z.string({
+            description: 'The git commit hash of the commit',
+          }),
       },
     },
     async handler(ctx) {

@@ -17,7 +17,18 @@
 import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 import { AppNode } from '@backstage/frontend-plugin-api';
-import { toLegacyPlugin } from './toLegacyPlugin';
+import {
+  createExactRouteAliasResolver,
+  RouteAliasResolver,
+} from './RouteAliasResolver';
+
+/** @internal */
+export type RouteInfo = {
+  routePaths: Map<RouteRef, string>;
+  routeParents: Map<RouteRef, RouteRef | undefined>;
+  routeObjects: BackstageRouteObject[];
+  routeAliasResolver: RouteAliasResolver;
+};
 
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
@@ -28,7 +39,6 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   path: '*',
   element: 'match-all', // These elements aren't used, so we add in a bit of debug information
   routeRefs: new Set(),
-  plugins: new Set(),
 };
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
@@ -40,11 +50,10 @@ export function joinPaths(...paths: string[]): string {
   return normalized;
 }
 
-export function extractRouteInfoFromAppNode(node: AppNode): {
-  routePaths: Map<RouteRef, string>;
-  routeParents: Map<RouteRef, RouteRef | undefined>;
-  routeObjects: BackstageRouteObject[];
-} {
+export function extractRouteInfoFromAppNode(
+  node: AppNode,
+  routeAliasResolver: RouteAliasResolver,
+): RouteInfo {
   // This tracks the route path for each route ref, the value is the route path relative to the parent ref
   const routePaths = new Map<RouteRef, string>();
   // This tracks the parents of each route ref. To find the full path of any route ref you traverse
@@ -53,6 +62,9 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
   // This route object tree is passed to react-router in order to be able to look up the current route
   // ref or extension/source based on our current location.
   const routeObjects = new Array<BackstageRouteObject>();
+  // This tracks all resolved route aliases. By storing and re-using the resolutions here we make sure that it's not
+  // possible to pass an aliased route ref directly to the resolver, e.g. `useRouteRef(createRouteRef({ aliasFor: 'example.root' }))`
+  const routeAliases = new Map<RouteRef, RouteRef | undefined>();
 
   function visit(
     current: AppNode,
@@ -65,7 +77,13 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
     const routePath = current.instance
       ?.getData(coreExtensionData.routePath)
       ?.replace(/^\//, '');
-    const routeRef = current.instance?.getData(coreExtensionData.routeRef);
+
+    const foundRouteRef = current.instance?.getData(coreExtensionData.routeRef);
+    const routeRef = routeAliasResolver(foundRouteRef, current.spec.plugin?.id);
+    if (foundRouteRef && routeRef !== foundRouteRef) {
+      routeAliases.set(foundRouteRef, routeRef);
+    }
+
     const parentChildren = parentObj?.children ?? routeObjects;
     let currentObj = parentObj;
 
@@ -83,7 +101,6 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
         routeRefs: new Set<RouteRef>(),
         caseSensitive: false,
         children: [MATCH_ALL_ROUTE],
-        plugins: new Set(),
         appNode: current,
       };
       parentChildren.push(currentObj);
@@ -124,9 +141,6 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
 
       routeParents.set(routeRef, newParentRef);
       currentObj?.routeRefs.add(routeRef);
-      if (current.spec.source) {
-        currentObj?.plugins.add(toLegacyPlugin(current.spec.source));
-      }
     }
 
     for (const children of current.edges.attachments.values()) {
@@ -145,5 +159,10 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
 
   visit(node);
 
-  return { routePaths, routeParents, routeObjects };
+  return {
+    routePaths,
+    routeParents,
+    routeObjects,
+    routeAliasResolver: createExactRouteAliasResolver(routeAliases),
+  };
 }

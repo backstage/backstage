@@ -6,6 +6,6 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @public
-const eventsModuleGooglePubsubConsumingEventPublisher: BackendFeature;
-export default eventsModuleGooglePubsubConsumingEventPublisher;
+const _default: BackendFeature;
+export default _default;
 ```

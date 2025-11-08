@@ -31,6 +31,7 @@ const main = (argv: string[]) => {
     .name('backstage-create-app')
     .version(version)
     .description('Creates a new app in a new directory or specified path')
+    .option('--next', 'Use the next generation of the app template')
     .option(
       '--path [directory]',
       'Location to store the app defaulting to a new folder with the app name',

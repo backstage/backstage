@@ -22,6 +22,7 @@ import {
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { PgSearchHighlightOptions } from '../PgSearchEngine';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
+import { v4 as uuidv4 } from 'uuid';
 
 const highlightOptions: PgSearchHighlightOptions = {
   preTag: '<tag>',
@@ -67,7 +68,7 @@ describe('DatabaseDocumentStore', () => {
 
   describe('supported', () => {
     const databases = TestDatabases.create({
-      ids: ['POSTGRES_13'],
+      ids: ['POSTGRES_14'],
     });
 
     async function createStore(databaseId: TestDatabaseId) {
@@ -119,6 +120,32 @@ describe('DatabaseDocumentStore', () => {
         expect(
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '2' }]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should insert truncated documents, %p',
+      async databaseId => {
+        const { store, knex } = await createStore(databaseId);
+
+        await store.transaction(async tx => {
+          await store.prepareInsert(tx);
+
+          await store.insertDocuments(tx, 'my-type', [
+            {
+              title: 'TITLE 1',
+              text: Array.from({ length: 100000 })
+                .map(() => uuidv4()) // text tokens should be unique to overflow the tsvector indexing and trigger truncation
+                .join(' '),
+              location: 'LOCATION-1',
+            },
+          ]);
+          await store.completeInsert(tx, 'my-type', true);
+        });
+
+        expect(
+          await knex.count('*').where('type', 'my-type').from('documents'),
+        ).toEqual([{ count: '1' }]);
       },
     );
 

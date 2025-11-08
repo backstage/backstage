@@ -1,5 +1,154 @@
 # @backstage/plugin-events-backend
 
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-openapi-utils@0.6.2
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-events-node@0.4.16
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/backend-openapi-utils@0.6.2-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
+## 0.5.6
+
+### Patch Changes
+
+- 0efcc97: Updated generated schemas
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/types@1.2.2
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 0.5.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-events-node@0.4.14
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/backend-openapi-utils@0.5.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-events-node@0.4.13
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/backend-openapi-utils@0.5.5-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
+## 0.5.3
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/backend-openapi-utils@0.5.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.12
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.5.4-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+  - @backstage/backend-openapi-utils@0.5.4-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/backend-openapi-utils@0.5.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11
+
 ## 0.5.2-next.2
 
 ### Patch Changes

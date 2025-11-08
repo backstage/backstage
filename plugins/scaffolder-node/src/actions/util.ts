@@ -130,11 +130,7 @@ function checkRequiredParams(repoUrl: URL, ...params: string[]) {
   }
 }
 
-const isZodSchema = (schema: unknown): schema is z.ZodType => {
-  return typeof schema === 'object' && !!schema && 'safeParseAsync' in schema;
-};
-
-const isNativeZodSchema = (
+const isKeyValueZodCallback = (
   schema: unknown,
 ): schema is { [key in string]: (zImpl: typeof z) => z.ZodType } => {
   return (
@@ -144,23 +140,20 @@ const isNativeZodSchema = (
   );
 };
 
+const isZodFunctionDefinition = (
+  schema: unknown,
+): schema is (zImpl: typeof z) => z.ZodType => {
+  return typeof schema === 'function';
+};
+
 export const parseSchemas = (
-  action: TemplateActionOptions,
+  action: TemplateActionOptions<any, any, any>,
 ): { inputSchema?: Schema; outputSchema?: Schema } => {
   if (!action.schema) {
     return { inputSchema: undefined, outputSchema: undefined };
   }
 
-  if (isZodSchema(action.schema.input)) {
-    return {
-      inputSchema: zodToJsonSchema(action.schema.input) as Schema,
-      outputSchema: isZodSchema(action.schema.output)
-        ? (zodToJsonSchema(action.schema.output) as Schema)
-        : undefined,
-    };
-  }
-
-  if (isNativeZodSchema(action.schema.input)) {
+  if (isKeyValueZodCallback(action.schema.input)) {
     const input = z.object(
       Object.fromEntries(
         Object.entries(action.schema.input).map(([k, v]) => [k, v(z)]),
@@ -169,7 +162,7 @@ export const parseSchemas = (
 
     return {
       inputSchema: zodToJsonSchema(input) as Schema,
-      outputSchema: isNativeZodSchema(action.schema.output)
+      outputSchema: isKeyValueZodCallback(action.schema.output)
         ? (zodToJsonSchema(
             z.object(
               Object.fromEntries(
@@ -181,8 +174,26 @@ export const parseSchemas = (
     };
   }
 
+  if (isZodFunctionDefinition(action.schema.input)) {
+    return {
+      inputSchema: zodToJsonSchema(action.schema.input(z)) as Schema,
+      outputSchema: isZodFunctionDefinition(action.schema.output)
+        ? (zodToJsonSchema(action.schema.output(z)) as Schema)
+        : undefined,
+    };
+  }
+
   return {
-    inputSchema: action.schema.input,
-    outputSchema: action.schema.output,
+    inputSchema: undefined,
+    outputSchema: undefined,
   };
 };
+
+/**
+ * Filter function to exclude the .git directory and its contents
+ * while keeping other files like .gitignore
+ * @public
+ */
+export function isNotGitDirectoryOrContents(path: string): boolean {
+  return !(path.endsWith('.git') || path.includes('.git/'));
+}

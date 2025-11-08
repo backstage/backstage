@@ -1,5 +1,21 @@
 # @backstage/cli-node
 
+## 0.2.15-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.2.14
+
+### Patch Changes
+
+- d9a7835: Add `get` and `keys` methods to `Lockfile` class
+
 ## 0.2.13
 
 ### Patch Changes

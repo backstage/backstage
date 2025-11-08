@@ -525,7 +525,7 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'should return both target and targetRef for entities',
+      'should return both target and targetRef for entities in compat mode',
       async databaseId => {
         await createDatabase(databaseId);
         await addEntity(
@@ -557,6 +557,7 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: mockServices.logger.mock(),
           stitcher,
+          enableRelationsCompatibility: true,
         });
 
         const res = await catalog.entities();
@@ -2354,6 +2355,52 @@ describe('DefaultEntitiesCatalog', () => {
               { value: 'two', count: 1 },
             ]),
             missing: [],
+          },
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'works when the entity is duplicated in search results, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'one',
+            uid: 'uid-a',
+          },
+          spec: {},
+        });
+
+        // Manually insert a duplicate search entry, this shouldn't happen but does in reality
+        await knex<DbSearchRow>('search').insert([
+          {
+            entity_id: 'uid-a',
+            key: 'metadata.name',
+            value: 'one',
+            original_value: 'one',
+          },
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.name'],
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.name': expect.arrayContaining([
+              { value: 'one', count: 1 },
+            ]),
           },
         });
       },

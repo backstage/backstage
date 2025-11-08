@@ -127,10 +127,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -204,10 +202,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -330,10 +326,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -447,10 +441,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -540,10 +532,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -604,10 +594,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -653,10 +641,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -759,10 +745,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -889,10 +873,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -1002,10 +984,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {
@@ -1112,10 +1092,8 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
+            packages: {
+              include: [],
             },
           },
           backend: {

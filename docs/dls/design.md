@@ -127,7 +127,7 @@ your own plugin for Backstage.
 **[Discord](https://discord.gg/backstage-687207715902193673)** - all design questions should be
 directed to the _#design_ channel.
 
-**[Customize Backstage's look and feel](https://backstage.io/docs/getting-started/app-custom-theme)** -
+**[Customizing Your App's UI](https://backstage.io/docs/conf/user-interface)** -
 How to customize the look and feel of your Backstage instance by extending the
 theme.
 

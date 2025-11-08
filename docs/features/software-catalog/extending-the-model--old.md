@@ -1,7 +1,6 @@
 ---
 id: extending-the-model--old
 title: Extending the model
-# prettier-ignore
 description: Documentation on extending the catalog model
 ---
 
@@ -29,23 +28,23 @@ Backstage comes with a number of catalog concepts out of the box:
 
 We'll list different possibilities for extending this below.
 
-## Adding a New apiVersion of an Existing Kind
+## Adding a New `apiVersion` of an Existing Kind
 
 Example intents:
 
 > "I want to evolve this core kind, tweaking the semantics a bit so I will bump
-> the apiVersion a step"
+> the `apiVersion` a step"
 
 > "This core kind is a decent fit but we want to evolve it at will so we'll move
-> it to our own company's apiVersion space and use that instead of
+> it to our own company's `apiVersion` space and use that instead of
 > `backstage.io`."
 
-The `backstage.io` apiVersion space is reserved for use by the Backstage
+The `backstage.io` `apiVersion` space is reserved for use by the Backstage
 maintainers. Please do not change or add versions within that space.
 
-If you add an [apiVersion](descriptor-format.md#apiversion-and-kind-required)
+If you add an [`apiVersion`](descriptor-format.md#apiversion-and-kind-required)
 space of your own, you are effectively branching out from the underlying kind
-and making your own. An entity kind is identified by the apiVersion + kind pair,
+and making your own. An entity kind is identified by the `apiVersion` + `kind` pair,
 so even though the resulting entity may be similar to the core one, there will
 be no guarantees that plugins will be able to parse or understand its data. See
 below about adding a new kind.
@@ -58,7 +57,7 @@ Example intents:
 > thing that is a poor fit for either of the builtins."
 
 > "This core kind is a decent fit but we want to evolve it at will so we'll move
-> it to our own company's apiVersion space and use that instead of
+> it to our own company's `apiVersion` space and use that instead of
 > `backstage.io`."
 
 A [kind](descriptor-format.md#apiversion-and-kind-required) is an overarching
@@ -68,7 +67,7 @@ variety of needs that one may want to model in Backstage. The primary ambition
 is to map things to these kinds, but sometimes you may want or need to extend
 beyond them.
 
-Introducing a new apiVersion is basically the same as adding a new kind. Bear in
+Introducing a new `apiVersion` is basically the same as adding a new kind. Bear in
 mind that most plugins will be compiled against the builtin
 `@backstage/catalog-model` package and have expectations that kinds align with
 that.

@@ -1,5 +1,367 @@
 # @backstage/plugin-home
 
+## 0.8.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/theme@0.7.0
+  - @backstage/plugin-home-react@0.1.32-next.0
+
+## 0.8.13
+
+### Patch Changes
+
+- e7d59d3: fix(home): correct `clearAll` logic to properly handle `deletable` flag
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/config@1.3.5
+  - @backstage/theme@0.7.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-home-react@0.1.31
+
+## 0.8.13-next.3
+
+### Patch Changes
+
+- e7d59d3: fix(home): correct `clearAll` logic to properly handle `deletable` flag
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
+## 0.8.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
+## 0.8.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-app-api@1.19.1-next.0
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-home-react@0.1.31-next.1
+  - @backstage/catalog-client@1.12.0
+
+## 0.8.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/plugin-home-react@0.1.31-next.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.19.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/theme@0.6.8
+
+## 0.8.12
+
+### Patch Changes
+
+- 929c55a: Fixed race condition in CustomHomepageGrid by waiting for storage to load before rendering custom layout to prevent
+  rendering of the default content.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/core-components@0.18.0
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/core-app-api@1.19.0
+  - @backstage/plugin-home-react@0.1.30
+
+## 0.8.12-next.2
+
+### Patch Changes
+
+- 929c55a: Fixed race condition in CustomHomepageGrid by waiting for storage to load before rendering custom layout to prevent
+  rendering of the default content.
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+  - @backstage/core-compat-api@0.5.2-next.2
+
+## 0.8.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+  - @backstage/plugin-home-react@0.1.30-next.0
+
+## 0.8.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/plugin-home-react@0.1.29
+
+## 0.8.11
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f16d380: Add the missing Visits API to the alpha plugin, fixing a crash due to the API not being installed.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- 121899a: **BREAKING ALPHA**: The `app-root-element` extension now only accepts `JSX.Element` in its `element` param, meaning overrides need to be updated.
+- 166dfd7: Fixed bug in CustomHomepageGrid where `clearAll` did not respect the `deletable` flag on widgets
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/plugin-catalog-react@1.20.0
+  - @backstage/theme@0.6.8
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-home-react@0.1.29
+
+## 0.8.11-next.2
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- 121899a: **BREAKING ALPHA**: The `app-root-element` extension now only accepts `JSX.Element` in its `element` param, meaning overrides need to be updated.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/plugin-home-react@0.1.29-next.0
+
+## 0.8.11-next.1
+
+### Patch Changes
+
+- f16d380: Add the missing Visits API to the alpha plugin, fixing a crash due to the API not being installed.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/plugin-home-react@0.1.29-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+
+## 0.8.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.8.10
+
+### Patch Changes
+
+- d52d67f: Added a New Frontend System App Root Element for the `<VisitListener />` component
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-home-react@0.1.28
+
+## 0.8.10-next.2
+
+### Patch Changes
+
+- d52d67f: Added a New Frontend System App Root Element for the `<VisitListener />` component
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-app-api@1.18.0-next.1
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+
+## 0.8.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/core-app-api@1.17.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-home-react@0.1.28-next.1
+
+## 0.8.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/plugin-home-react@0.1.28-next.0
+
+## 0.8.9
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- 0ebad54: Fixed the `WelcomeTitle` to properly default to the previous value of `inherit`
+- cef60db: Home plugin support i18n
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/plugin-home-react@0.1.27
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/theme@0.6.6
+
+## 0.8.9-next.2
+
+### Patch Changes
+
+- 0ebad54: Fixed the `WelcomeTitle` to properly default to the previous value of `inherit`
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/plugin-home-react@0.1.27-next.0
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/theme@0.6.6
+
+## 0.8.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/theme@0.6.6
+  - @backstage/plugin-home-react@0.1.26
+
+## 0.8.9-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
+## 0.8.8
+
+### Patch Changes
+
+- f7ca0fe: Added the Catalog presentation API to the HomePageRecentlyVisited and HomePageTopVisited components
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- eddd96c: Added optional title prop to `customHomePageGrid`
+- 16eb4bf: Export ContentModal from `@backstage/plugin-home-react` so people can use this in other scenarios.
+  Renamed `CatalogReactComponentsNameToClassKey` to `PluginHomeComponentsNameToClassKey` in `overridableComponents.ts`
+
+  Made QuickStartCard `docsLinkTitle` prop more flexible to allow for any React.JSX.Element instead of just a string.
+  Added QuickStartCard prop `additionalContent` which can eventually replace the prop `video`.
+
+- 2c1761f: Added a `variant` prop to the `WelcomeTitle` component making it work with the Customizable Home page feature. Adding it like this `<WelcomeTitle variant='h1' />` to the list of items under `CustomHomepageGrid` will allow it to render with a size that works well.
+- 195323f: Export root page route from the home plugin to enable adding links/nav to it from outside the plugin
+- 72d019d: Removed various typos
+- d710d74: docs: Update default for `preventCollision` prop
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-home-react@0.1.26
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+
 ## 0.8.8-next.3
 
 ### Patch Changes

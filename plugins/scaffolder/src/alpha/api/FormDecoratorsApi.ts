@@ -16,7 +16,6 @@
 
 import {
   ApiBlueprint,
-  createApiFactory,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecoratorsApi } from './types';
@@ -28,11 +27,13 @@ import { FormDecoratorBlueprint } from '@backstage/plugin-scaffolder-react/alpha
 export class DefaultScaffolderFormDecoratorsApi
   implements ScaffolderFormDecoratorsApi
 {
-  private constructor(
-    private readonly options: {
-      decorators: Array<ScaffolderFormDecorator>;
-    },
-  ) {}
+  private readonly options: {
+    decorators: Array<ScaffolderFormDecorator>;
+  };
+
+  private constructor(options: { decorators: Array<ScaffolderFormDecorator> }) {
+    this.options = options;
+  }
 
   static create(options?: { decorators: ScaffolderFormDecorator[] }) {
     return new DefaultScaffolderFormDecoratorsApi(
@@ -58,8 +59,8 @@ export const formDecoratorsApi = ApiBlueprint.makeWithOverrides({
       e.get(FormDecoratorBlueprint.dataRefs.formDecoratorLoader),
     );
 
-    return originalFactory({
-      factory: createApiFactory({
+    return originalFactory(defineParams =>
+      defineParams({
         api: formDecoratorsApiRef,
         deps: {},
         factory: () =>
@@ -67,6 +68,6 @@ export const formDecoratorsApi = ApiBlueprint.makeWithOverrides({
             decorators: formDecorators,
           }),
       }),
-    });
+    );
   },
 });

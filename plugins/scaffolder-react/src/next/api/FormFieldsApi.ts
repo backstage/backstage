@@ -16,18 +16,19 @@
 
 import {
   ApiBlueprint,
-  createApiFactory,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { formFieldsApiRef } from './ref';
-import { ScaffolderFormFieldsApi } from './types';
+import { FormField, ScaffolderFormFieldsApi } from './types';
 import { FormFieldBlueprint } from '../blueprints';
-import { FormField, OpaqueFormField } from '@internal/scaffolder';
+import { OpaqueFormField } from '@internal/scaffolder';
 
 class DefaultScaffolderFormFieldsApi implements ScaffolderFormFieldsApi {
-  constructor(
-    private readonly formFieldLoaders: Array<() => Promise<FormField>> = [],
-  ) {}
+  private readonly formFieldLoaders: Array<() => Promise<FormField>>;
+
+  constructor(formFieldLoaders: Array<() => Promise<FormField>> = []) {
+    this.formFieldLoaders = formFieldLoaders;
+  }
 
   async getFormFields() {
     const formFields = await Promise.all(
@@ -53,12 +54,12 @@ export const formFieldsApi = ApiBlueprint.makeWithOverrides({
       e.get(FormFieldBlueprint.dataRefs.formFieldLoader),
     );
 
-    return originalFactory({
-      factory: createApiFactory({
+    return originalFactory(defineParams =>
+      defineParams({
         api: formFieldsApiRef,
         deps: {},
         factory: () => new DefaultScaffolderFormFieldsApi(formFieldLoaders),
       }),
-    });
+    );
   },
 });

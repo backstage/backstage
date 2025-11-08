@@ -32,7 +32,7 @@ jobs:
     name: Techdocs
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 
@@ -41,11 +41,14 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: install dependencies
-        run: yarn install --immutable
-
-      - name: generate types
-        run: yarn tsc
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: yarn install
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: build techdocs-cli
         working-directory: packages/techdocs-cli

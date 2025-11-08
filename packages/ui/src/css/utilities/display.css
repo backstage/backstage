@@ -1,0 +1,128 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer utilities {
+  .bui-display-none {
+    display: none;
+  }
+
+  .bui-display-inline {
+    display: inline;
+  }
+
+  .bui-display-inline-block {
+    display: inline-block;
+  }
+
+  .bui-display-block {
+    display: block;
+  }
+
+  /* Breakpoint xs */
+  @media (min-width: 640px) {
+    .xs\:bui-display-none {
+      display: none;
+    }
+
+    .xs\:bui-display-inline {
+      display: inline;
+    }
+
+    .xs\:bui-display-inline-block {
+      display: inline-block;
+    }
+
+    .xs\:bui-display-block {
+      display: block;
+    }
+  }
+
+  /* Breakpoint sm */
+  @media (min-width: 768px) {
+    .sm\:bui-display-none {
+      display: none;
+    }
+
+    .sm\:bui-display-inline {
+      display: inline;
+    }
+
+    .sm\:bui-display-inline-block {
+      display: inline-block;
+    }
+
+    .sm\:bui-display-block {
+      display: block;
+    }
+  }
+
+  /* Breakpoint md */
+  @media (min-width: 1024px) {
+    .md\:bui-display-none {
+      display: none;
+    }
+
+    .md\:bui-display-inline {
+      display: inline;
+    }
+
+    .md\:bui-display-inline-block {
+      display: inline-block;
+    }
+
+    .md\:bui-display-block {
+      display: block;
+    }
+  }
+
+  /* Breakpoint lg */
+  @media (min-width: 1280px) {
+    .lg\:bui-display-none {
+      display: none;
+    }
+
+    .lg\:bui-display-inline {
+      display: inline;
+    }
+
+    .lg\:bui-display-inline-block {
+      display: inline-block;
+    }
+
+    .lg\:bui-display-block {
+      display: block;
+    }
+  }
+
+  /* Breakpoint xl */
+  @media (min-width: 1536px) {
+    .xl\:bui-display-none {
+      display: none;
+    }
+
+    .xl\:bui-display-inline {
+      display: inline;
+    }
+
+    .xl\:bui-display-inline-block {
+      display: inline-block;
+    }
+
+    .xl\:bui-display-block {
+      display: block;
+    }
+  }
+}

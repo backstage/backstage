@@ -10,7 +10,7 @@ Add the rules as follows, it has no options:
 "@backstage/no-undeclared-imports": ["error"]
 ```
 
-The following patterns are considered files used during development, and only need dependencies to be declared in devDependencies:
+The following patterns are considered files used during development, and only need dependencies to be declared in `devDependencies`:
 
 ```python
 !src/**  # Any files outside of src are considered dev files

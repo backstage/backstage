@@ -1,7 +1,8 @@
 {
   "name": "@internal/bar",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "bar"
   },
   "exports": {
     ".": "./src/index.ts",

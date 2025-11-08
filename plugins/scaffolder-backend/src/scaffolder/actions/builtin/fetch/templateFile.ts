@@ -38,60 +38,63 @@ export function createFetchTemplateFileAction(options: {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
-  return createTemplateAction<{
-    url: string;
-    targetPath: string;
-    values: any;
-    cookiecutterCompat?: boolean;
-    replace?: boolean;
-    trimBlocks?: boolean;
-    lstripBlocks?: boolean;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'fetch:template:file',
     description: 'Downloads single file and places it in the workspace.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['url', 'targetPath'],
-        properties: {
-          url: {
-            title: 'Fetch URL',
+        url: z =>
+          z.string({
             description:
               'Relative path or absolute URL pointing to the single file to fetch.',
-            type: 'string',
-          },
-          targetPath: {
-            title: 'Target Path',
+          }),
+        targetPath: z =>
+          z.string({
             description:
               'Target path within the working directory to download the file as.',
-            type: 'string',
-          },
-          values: {
-            title: 'Template Values',
-            description: 'Values to pass on to the templating engine',
-            type: 'object',
-          },
-          cookiecutterCompat: {
-            title: 'Cookiecutter compatibility mode',
-            description:
-              'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
-            type: 'boolean',
-          },
-          replace: {
-            title: 'Replace file',
-            description:
-              'If set, replace file in targetPath instead of overwriting existing one.',
-            type: 'boolean',
-          },
-          token: {
-            title: 'Token',
-            description:
-              'An optional token to use for authentication when reading the resources.',
-            type: 'string',
-          },
-        },
+          }),
+        values: z =>
+          z
+            .record(z.any(), {
+              description: 'Values to pass on to the templating engine',
+            })
+            .optional(),
+        cookiecutterCompat: z =>
+          z
+            .boolean({
+              description:
+                'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
+            })
+            .optional(),
+        replace: z =>
+          z
+            .boolean({
+              description:
+                'If set, replace file in targetPath instead of overwriting existing one.',
+            })
+            .optional(),
+        trimBlocks: z =>
+          z
+            .boolean({
+              description:
+                'If set, the first newline after a block is removed (block, not variable tag).',
+            })
+            .optional(),
+        lstripBlocks: z =>
+          z
+            .boolean({
+              description:
+                'If set, leading spaces and tabs are stripped from the start of a line to a block.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'An optional token to use for authentication when reading the resources.',
+            })
+            .optional(),
       },
     },
     supportsDryRun: true,

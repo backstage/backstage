@@ -44,13 +44,20 @@ interface WinstonLoggerOptions {
 // This is a workaround for being able to preserve the log format of the root logger.
 // Will revisit all of this implementation once we can break the router to use only `LoggerService`.
 export class BackstageLoggerTransport extends Transport {
+  private readonly backstageLogger: LoggerService;
+  private readonly taskContext: TaskContext;
+  private readonly stepId: string;
+
   constructor(
-    private readonly backstageLogger: LoggerService,
-    private readonly taskContext: TaskContext,
-    private readonly stepId: string,
+    backstageLogger: LoggerService,
+    taskContext: TaskContext,
+    stepId: string,
     opts?: TransportStreamOptions,
   ) {
     super(opts);
+    this.backstageLogger = backstageLogger;
+    this.taskContext = taskContext;
+    this.stepId = stepId;
   }
 
   log(info: TransformableInfo, callback: VoidFunction) {
@@ -61,23 +68,22 @@ export class BackstageLoggerTransport extends Transport {
 
     const message = info[MESSAGE];
     const level = info[LEVEL];
-    const splat = info[SPLAT];
 
     switch (level) {
       case 'error':
-        this.backstageLogger.error(String(message), ...splat);
+        this.backstageLogger.error(String(message));
         break;
       case 'warn':
-        this.backstageLogger.warn(String(message), ...splat);
+        this.backstageLogger.warn(String(message));
         break;
       case 'info':
-        this.backstageLogger.info(String(message), ...splat);
+        this.backstageLogger.info(String(message));
         break;
       case 'debug':
-        this.backstageLogger.debug(String(message), ...splat);
+        this.backstageLogger.debug(String(message));
         break;
       default:
-        this.backstageLogger.info(String(message), ...splat);
+        this.backstageLogger.info(String(message));
     }
 
     this.taskContext.emitLog(message, { stepId: this.stepId });
@@ -132,6 +138,10 @@ export class WinstonLogger implements RootLoggerService {
       add(newRedactions) {
         let added = 0;
         for (const redactionToTrim of newRedactions) {
+          // Skip null or undefined values
+          if (redactionToTrim === null || redactionToTrim === undefined) {
+            continue;
+          }
           // Trimming the string ensures that we don't accdentally get extra
           // newlines or other whitespace interfering with the redaction; this
           // can happen for example when using string literals in yaml

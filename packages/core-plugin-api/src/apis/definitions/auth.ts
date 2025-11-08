@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 import { ApiRef, createApiRef } from '../system';
 import { IconComponent } from '../../icons/types';
@@ -54,6 +56,11 @@ export type AuthProviderInfo = {
    * Icon for the auth provider.
    */
   icon: IconComponent;
+
+  /**
+   * Optional user friendly messaage to display for the auth provider.
+   */
+  message?: string;
 };
 
 /**
@@ -264,15 +271,28 @@ export type ProfileInfo = {
  *
  * @public
  */
-export enum SessionState {
+export const SessionState = {
   /**
    * User signed in.
    */
-  SignedIn = 'SignedIn',
+  SignedIn: 'SignedIn',
   /**
    * User not signed in.
    */
-  SignedOut = 'SignedOut',
+  SignedOut: 'SignedOut',
+} as const;
+
+/**
+ * @public
+ */
+export type SessionState = (typeof SessionState)[keyof typeof SessionState];
+
+/**
+ * @public
+ */
+export namespace SessionState {
+  export type SignedIn = typeof SessionState.SignedIn;
+  export type SignedOut = typeof SessionState.SignedOut;
 }
 
 /**
@@ -468,4 +488,21 @@ export const vmwareCloudAuthApiRef: ApiRef<
     SessionApi
 > = createApiRef({
   id: 'core.auth.vmware-cloud',
+});
+
+/**
+ * Provides authentication towards OpenShift APIs and identities.
+ *
+ * @public
+ * @remarks
+ *
+ * See {@link https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/authentication_and_authorization/configuring-oauth-clients}
+ * on how to configure the OAuth clients and
+ * {@link https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html-single/authentication_and_authorization/index#tokens-scoping-about_configuring-internal-oauth}
+ * for available scopes.
+ */
+export const openshiftAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.openshift',
 });

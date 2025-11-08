@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
-import { SearchOptions } from 'ldapjs';
+import { SearchOptions } from 'ldapts';
 import mergeWith from 'lodash/mergeWith';
 import { trimEnd } from 'lodash';
 import { RecursivePartial } from './util';
@@ -90,6 +90,7 @@ export type UserConfig = {
   // Only the scope, filter, attributes, and paged fields are supported. The
   // default is scope "one" and attributes "*" and "+".
   options: SearchOptions;
+
   // JSON paths (on a.b.c form) and hard coded values to set on those paths
   set?: { [path: string]: JsonValue };
   // Mappings from well known entity fields, to LDAP attribute names
@@ -114,7 +115,7 @@ export type UserConfig = {
     picture?: string;
     // The name of the attribute that shall be used for the values of the
     // spec.memberOf field of the entity. Defaults to "memberOf".
-    memberOf: string;
+    memberOf: string | null;
   };
 };
 
@@ -129,6 +130,7 @@ export type GroupConfig = {
   // The search options to use.
   // Only the scope, filter, attributes, and paged fields are supported.
   options: SearchOptions;
+
   // JSON paths (on a.b.c form) and hard coded values to set on those paths
   set?: { [path: string]: JsonValue };
   // Mappings from well known entity fields, to LDAP attribute names
@@ -156,10 +158,10 @@ export type GroupConfig = {
     picture?: string;
     // The name of the attribute that shall be used for the values of the
     // spec.parent field of the entity. Defaults to "memberOf".
-    memberOf: string;
+    memberOf: string | null;
     // The name of the attribute that shall be used for the values of the
     // spec.children field of the entity. Defaults to "member".
-    members: string;
+    members: string | null;
   };
 };
 
@@ -272,8 +274,10 @@ function readOptionsConfig(c: Config | undefined): SearchOptions {
     attributes: c.getOptionalStringArray('attributes'),
     sizeLimit: c.getOptionalNumber('sizeLimit'),
     timeLimit: c.getOptionalNumber('timeLimit'),
-    derefAliases: c.getOptionalNumber('derefAliases'),
-    typesOnly: c.getOptionalBoolean('typesOnly'),
+    derefAliases: c.getOptionalNumber(
+      'derefAliases',
+    ) as SearchOptions['derefAliases'],
+    returnAttributeValues: c.getOptionalBoolean('attributeValues'),
     ...(paged !== undefined ? { paged } : undefined),
   };
 }

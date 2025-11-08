@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 
@@ -27,7 +27,7 @@ jobs:
             recent activity. It will be closed if no further activity occurs. Thank you
             for your contributions.
           days-before-issue-stale: 60
-          days-before-issue-close: 7
+          days-before-issue-close: 14
           exempt-issue-labels: after vacations,no stale
           stale-issue-label: stale
           stale-pr-message: >
@@ -35,8 +35,8 @@ jobs:
             recent activity from the author. It will be closed if no further activity occurs.
             If the PR was closed and you want it re-opened, let us know
             and we'll re-open the PR so that you can continue the contribution!
-          days-before-pr-stale: 14
-          days-before-pr-close: 7
+          days-before-pr-stale: 30
+          days-before-pr-close: 14
           exempt-pr-labels: after vacations,no stale
           stale-pr-label: stale
           operations-per-run: 100

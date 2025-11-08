@@ -16,7 +16,6 @@
 
 import {
   configApiRef,
-  createApiFactory,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
@@ -43,7 +42,7 @@ export * from './translation';
 //       whether this type of override is typically done with an input or by overriding the entire extension.
 const catalogImportPage = PageBlueprint.make({
   params: {
-    defaultPath: '/catalog-import',
+    path: '/catalog-import',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('./components/ImportPage').then(m =>
@@ -53,8 +52,8 @@ const catalogImportPage = PageBlueprint.make({
 });
 
 const catalogImportApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: catalogImportApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -81,12 +80,12 @@ const catalogImportApi = ApiBlueprint.make({
           configApi,
         }),
     }),
-  },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog-import',
+  info: { packageJson: () => import('../package.json') },
   extensions: [catalogImportApi, catalogImportPage],
   routes: {
     importPage: convertLegacyRouteRef(rootRouteRef),

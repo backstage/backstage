@@ -38,6 +38,22 @@ export interface Config {
            * (Optional) TaskScheduleDefinition for the refresh.
            */
           schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+          /**
+           * (Optional) Google Service Account credentials for authentication
+           * JSON string containing the service account key
+           * @visibility secret
+           */
+          googleServiceAccountCredentials?: string;
+          /**
+           * (Optional) Authentication provider to use for Kubernetes clusters
+           * Defaults to 'google' for backward compatibility
+           */
+          authProvider?: string;
+          /**
+           * (Optional) Owner of the discovered clusters
+           * Defaults to 'unknown' if not specified
+           */
+          owner?: string;
         };
       };
     };

@@ -5,12 +5,15 @@
 ```ts
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/core-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -18,7 +21,7 @@ import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-rea
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
   },
@@ -29,22 +32,22 @@ const _default: FrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'nav-item:search': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -72,9 +75,9 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -87,6 +90,7 @@ const _default: FrontendPlugin<
             {
               predicate?: SearchResultItemExtensionPredicate;
               component: SearchResultItemExtensionComponent;
+              icon?: JSX_2.Element;
             },
             'search.search-result-list-item.item',
             {}
@@ -101,7 +105,7 @@ const _default: FrontendPlugin<
             {
               value: string;
               name: string;
-              icon: JSX.Element;
+              icon: JSX_2.Element;
             },
             'search.filters.result-types.type',
             {}
@@ -128,7 +132,8 @@ const _default: FrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -143,11 +148,15 @@ export const searchApi: ExtensionDefinition<{
   name: undefined;
   config: {};
   configInput: {};
-  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
   inputs: {};
-  params: {
-    factory: AnyApiFactory;
-  };
+  params: <
+    TApi,
+    TImpl extends TApi,
+    TDeps extends { [name in string]: unknown },
+  >(
+    params: ApiFactory<TApi, TImpl, TDeps>,
+  ) => ExtensionBlueprintParams<AnyApiFactory>;
 }>;
 
 // @alpha (undocumented)
@@ -156,7 +165,7 @@ export const searchNavItem: ExtensionDefinition<{
   name: undefined;
   config: {};
   configInput: {};
-  output: ConfigurableExtensionDataRef<
+  output: ExtensionDataRef<
     {
       title: string;
       icon: IconComponent;
@@ -186,9 +195,9 @@ export const searchPage: ExtensionDefinition<{
     path?: string | undefined;
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-    | ConfigurableExtensionDataRef<
+    | ExtensionDataRef<string, 'core.routing.path', {}>
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
         'core.routing.ref',
         {
@@ -201,6 +210,7 @@ export const searchPage: ExtensionDefinition<{
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}
@@ -215,7 +225,7 @@ export const searchPage: ExtensionDefinition<{
         {
           value: string;
           name: string;
-          icon: JSX.Element;
+          icon: JSX_2.Element;
         },
         'search.filters.result-types.type',
         {}
@@ -242,7 +252,8 @@ export const searchPage: ExtensionDefinition<{
   kind: 'page';
   name: undefined;
   params: {
-    defaultPath: string;
+    defaultPath?: [Error: `Use the 'path' param instead`];
+    path: string;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
   };

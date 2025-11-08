@@ -26,7 +26,7 @@ const rootRouteRef = createRouteRef();
 
 const appVisualizerPage = PageBlueprint.make({
   params: {
-    defaultPath: '/visualizer',
+    path: '/visualizer',
     routeRef: rootRouteRef,
     loader: () =>
       import('./components/AppVisualizerPage').then(m => (
@@ -46,5 +46,6 @@ export const appVisualizerNavItem = NavItemBlueprint.make({
 /** @public */
 export const visualizerPlugin = createFrontendPlugin({
   pluginId: 'app-visualizer',
+  info: { packageJson: () => import('../package.json') },
   extensions: [appVisualizerPage, appVisualizerNavItem],
 });

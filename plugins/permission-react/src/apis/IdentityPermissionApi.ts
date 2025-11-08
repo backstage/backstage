@@ -29,10 +29,16 @@ import { Config } from '@backstage/config';
  * @public
  */
 export class IdentityPermissionApi implements PermissionApi {
+  private readonly permissionClient: PermissionClient;
+  private readonly identityApi: IdentityApi;
+
   private constructor(
-    private readonly permissionClient: PermissionClient,
-    private readonly identityApi: IdentityApi,
-  ) {}
+    permissionClient: PermissionClient,
+    identityApi: IdentityApi,
+  ) {
+    this.permissionClient = permissionClient;
+    this.identityApi = identityApi;
+  }
 
   static create(options: {
     config: Config;

@@ -269,4 +269,14 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
   MuiPaper: {
     styleOverrides: { root: { backgroundImage: 'unset' } },
   },
+  MuiMenuItem: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        // Fixes a bug with MUI 4 that's fixed in MUI 5
+        '&:focus': {
+          backgroundColor: theme.palette.action.focus,
+        },
+      }),
+    },
+  },
 };
