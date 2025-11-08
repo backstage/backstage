@@ -22,6 +22,7 @@ import {
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
+  S3ServiceException,
   UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
@@ -196,16 +197,16 @@ describe('AwsS3Publish', () => {
       [directory]: files,
     });
 
-    s3Mock = mockClient(S3Client as any);
+    s3Mock = mockClient(S3Client);
 
-    s3Mock.on(HeadObjectCommand).callsFake((input: any) => {
+    s3Mock.on(HeadObjectCommand).callsFake((input: { Key: string }) => {
       if (!fs.pathExistsSync(mockDir.resolve(input.Key))) {
         throw new Error('File does not exist');
       }
       return {};
     });
 
-    s3Mock.on(GetObjectCommand).callsFake((input: any) => {
+    s3Mock.on(GetObjectCommand).callsFake((input: { Key: string }) => {
       if (fs.pathExistsSync(mockDir.resolve(input.Key))) {
         return {
           Body: Readable.from(fs.readFileSync(mockDir.resolve(input.Key))),
@@ -215,14 +216,14 @@ describe('AwsS3Publish', () => {
       throw new Error(`The file ${input.Key} does not exist!`);
     });
 
-    s3Mock.on(HeadBucketCommand).callsFake((input: any) => {
+    s3Mock.on(HeadBucketCommand).callsFake((input: { Bucket: string }) => {
       if (input.Bucket === 'errorBucket') {
         throw new Error('Bucket does not exist');
       }
       return {};
     });
 
-    s3Mock.on(ListObjectsV2Command).callsFake((input: any) => {
+    s3Mock.on(ListObjectsV2Command).callsFake((input: { Bucket: string }) => {
       if (
         input.Bucket === 'delete_stale_files_success' ||
         input.Bucket === 'delete_stale_files_error'
@@ -234,7 +235,7 @@ describe('AwsS3Publish', () => {
       return {};
     });
 
-    s3Mock.on(DeleteObjectCommand).callsFake((input: any) => {
+    s3Mock.on(DeleteObjectCommand).callsFake((input: { Bucket: string }) => {
       if (input.Bucket === 'delete_stale_files_error') {
         throw new Error('Message');
       }
@@ -242,9 +243,11 @@ describe('AwsS3Publish', () => {
     });
 
     s3Mock.on(UploadPartCommand).rejects();
-    s3Mock.on(PutObjectCommand).callsFake((input: any) => {
-      mockDir.addContent({ [input.Key]: input.Body });
-    });
+    s3Mock
+      .on(PutObjectCommand)
+      .callsFake((input: { Key: string; Body: any }) => {
+        mockDir.addContent({ [input.Key]: input.Body });
+      });
   });
 
   afterEach(() => {
@@ -296,6 +299,122 @@ describe('AwsS3Publish', () => {
 
       await AwsS3Publish.fromConfig(mockConfig, logger);
       expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('retry mechanism', () => {
+    it('should retry with custom retry strategy', async () => {
+      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const customRetryStrategy = jest.fn((error: any) => {
+        return error.name === 'NetworkingError';
+      });
+
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'NetworkingError',
+            $fault: 'client',
+            $metadata: {},
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as any).retryOperation(
+        async () => {
+          return s3Mock.send(
+            new ListObjectsV2Command({ Bucket: 'bucketName' }),
+          );
+        },
+        'TestOperation',
+        3,
+        customRetryStrategy,
+      );
+
+      expect(customRetryStrategy).toHaveBeenCalled();
+    });
+
+    it('should use default retry strategy when no custom strategy provided', async () => {
+      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce('RequestTimeout')
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as any).retryOperation(
+        async () => {
+          return s3Mock.send(
+            new ListObjectsV2Command({ Bucket: 'bucketName' }),
+          );
+        },
+        'TestOperation',
+        3,
+      );
+    });
+
+    it('should retry on server errors (5xx)', async () => {
+      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'InternalError',
+            $fault: 'server',
+            $metadata: { httpStatusCode: 500 },
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as any).retryOperation(
+        async () => {
+          return s3Mock.send(
+            new ListObjectsV2Command({ Bucket: 'bucketName' }),
+          );
+        },
+        'TestOperation',
+        3,
+      );
+    });
+
+    it('should retry on specific 4xx errors', async () => {
+      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce('RequestTimeout')
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as any).retryOperation(
+        async () => {
+          return s3Mock.send(
+            new ListObjectsV2Command({ Bucket: 'bucketName' }),
+          );
+        },
+        'TestOperation',
+        3,
+      );
+    });
+
+    it('should not retry on non-retriable 4xx errors', async () => {
+      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      s3Mock.on(ListObjectsV2Command).rejectsOnce(
+        new S3ServiceException({
+          name: 'BadRequest',
+          $fault: 'client',
+          $metadata: { httpStatusCode: 400 },
+        }),
+      );
+
+      await expect(
+        (publisher as any).retryOperation(
+          async () => {
+            return s3Mock.send(
+              new ListObjectsV2Command({ Bucket: 'bucketName' }),
+            );
+          },
+          'TestOperation',
+          3,
+        ),
+      ).rejects.toHaveProperty('name', 'BadRequest');
     });
   });
 

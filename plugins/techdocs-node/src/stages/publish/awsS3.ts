@@ -16,6 +16,10 @@
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, ForwardedError } from '@backstage/errors';
+
+// Maximum size in bytes for a single upload part (5MB)
+const MAX_SINGLE_UPLOAD_BYTES = 5 * 1024 * 1024;
+
 import {
   AwsCredentialsManager,
   DefaultAwsCredentialsManager,
@@ -275,67 +279,48 @@ export class AwsS3Publish implements PublisherBase {
     operation: () => Promise<TOutput>,
     operationName: string,
     maxAttempts: number = 3,
+    shouldRetry: (error: S3ServiceException) => boolean = this
+      .defaultShouldRetry,
   ): Promise<TOutput> {
-    let attempts = maxAttempts;
-    let LastError: S3ServiceException;
-
-    while (attempts > 0) {
+    for (let attempt = 1; attempt < maxAttempts; attempt++) {
       try {
         return await operation();
-      } catch (error: unknown) {
-        LastError = error as S3ServiceException;
-        attempts--;
+      } catch (error) {
+        const e = error as S3ServiceException;
+        if (!shouldRetry(e)) {
+          this.logger.error(`${operationName} failed: ${e.message}`);
+          throw e;
+        }
 
-        const httpStatusCode = LastError.$metadata?.httpStatusCode;
-        const errorCode = LastError.name;
-
-        this.logger.warn(`${operationName} failed.`, {
-          errorCode,
-          httpStatusCode,
-          attemptsRemaining: attempts,
-          currentAttempt: maxAttempts - attempts,
-          totalAttempts: maxAttempts,
-          error: LastError.message,
+        this.logger.warn(`${operationName} failed, retrying...`, {
+          attempt,
+          maxAttempts,
+          error: e.message,
+          errorCode: e.name,
+          httpStatusCode: e.$metadata?.httpStatusCode,
         });
-        // Determine if we should retry based on error type
-        const shouldRetry = this.shouldRetryOperation(LastError, attempts);
-        if (!shouldRetry || attempts === 0) {
-          this.logger.error(
-            `${operationName} failed after all retries: ${LastError.message}`,
-          );
-          throw LastError;
-        }
-        // Enhanced exponential backoff with jitter for upload operation
-        let baseDelay = 1000;
-        if (operationName.startsWith('Upload-')) {
-          // for uploads use longer base delay due to potential multipart commplexity
-          baseDelay = 2000;
-        }
-        const backoffDelay = Math.min(
-          baseDelay * Math.pow(2, maxAttempts - attempts),
-          30000,
-        );
+
+        // Enhanced exponential backoff with jitter
+        const baseDelay = operationName.startsWith('Upload-') ? 2000 : 1000;
+        const backoffDelay = Math.min(baseDelay * Math.pow(2, attempt), 30000);
         const jitter = Math.random() * 1000;
-        const totalDelay = backoffDelay + jitter;
-        await new Promise(resolve => setTimeout(resolve, totalDelay));
+        await new Promise(resolve =>
+          setTimeout(resolve, backoffDelay + jitter),
+        );
       }
     }
-    // Final attempt without retry wrapper
-    return operation();
+    return await operation();
   }
 
   /**
    * Determines if an S3 operation should be retried based on the error details.
    */
-  private shouldRetryOperation(
-    error: S3ServiceException,
-    attemptsRemaining: number,
-  ): boolean {
+  private defaultShouldRetry(error: S3ServiceException): boolean {
     const httpStatusCode = error.$metadata?.httpStatusCode;
     const errorCode = error.name;
     // Handle invalid part errors first - these are retriable for multipart uploads
     if (errorCode === 'InvalidPart') {
-      return attemptsRemaining > 0;
+      return true;
     }
     // Dont retry for client errors (4xx) except specific cases
     if (httpStatusCode && httpStatusCode >= 400 && httpStatusCode < 500) {
@@ -345,7 +330,7 @@ export class AwsS3Publish implements PublisherBase {
         'RequestTimeoutException',
         'PriorRequestNotComplete',
         'ConnectionError',
-        'RequestTimeToooSkewed',
+        'RequestTimeTooSkewed',
         'InvalidPart',
         'NoSuchUpload',
       ];
@@ -355,7 +340,7 @@ export class AwsS3Publish implements PublisherBase {
     }
     // Always retry for server errors (5xx)
     if (httpStatusCode && httpStatusCode >= 500) {
-      return attemptsRemaining > 0;
+      return true;
     }
     // Retry specific network/connection errors and multipart upload errors
     const retriableErrors = [
@@ -380,12 +365,10 @@ export class AwsS3Publish implements PublisherBase {
       'IncompleteBody',
       'RequestTimeout',
     ];
-    return (
-      retriableErrors.some(
-        retriableError =>
-          errorCode.includes(retriableError) ||
-          error.message.includes(retriableError),
-      ) && attemptsRemaining > 0
+    return retriableErrors.some(
+      retriableError =>
+        errorCode.includes(retriableError) ||
+        error.message.includes(retriableError),
     );
   }
 
@@ -511,16 +494,12 @@ export class AwsS3Publish implements PublisherBase {
                     new PutObjectCommand(putParams),
                   );
                 }
-                // For files 5MB and larger, use multipart upload with enhanced configuration
-                const calaculatedPartSize = Math.max(
-                  fiveMB,
-                  Math.ceil(fileSizeInBytes / 10000),
-                );
+                // For files larger than MAX_SINGLE_UPLOAD_BYTES, use multipart upload
                 const upload = new Upload({
                   client: this.storageClient,
                   params,
                   // Configure miltipart upload option for better reliability
-                  partSize: calaculatedPartSize,
+                  partSize: MAX_SINGLE_UPLOAD_BYTES,
                   queueSize: 3,
                   leavePartsOnError: false,
                 });
@@ -536,7 +515,7 @@ export class AwsS3Publish implements PublisherBase {
 
             // Check if this is a multipart upload failure that we can handle
             if (
-              fileSizeInBytes >= 5 * 1024 * 1024 &&
+              fileSizeInBytes >= MAX_SINGLE_UPLOAD_BYTES &&
               (errorName === 'InvalidPart' || errorName === 'NoSuchUpload')
             ) {
               this.logger.warn(
