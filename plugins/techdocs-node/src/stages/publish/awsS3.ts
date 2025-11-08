@@ -318,54 +318,35 @@ export class AwsS3Publish implements PublisherBase {
   private defaultShouldRetry(error: S3ServiceException): boolean {
     const httpStatusCode = error.$metadata?.httpStatusCode;
     const errorCode = error.name;
-    // Handle invalid part errors first - these are retriable for multipart uploads
-    if (errorCode === 'InvalidPart') {
-      return true;
-    }
-    // Dont retry for client errors (4xx) except specific cases
-    if (httpStatusCode && httpStatusCode >= 400 && httpStatusCode < 500) {
-      // Retry specfic 4xx errors that might be transient
-      const retriable4xxErrors = [
-        'RequestTimeOut',
-        'RequestTimeoutException',
-        'PriorRequestNotComplete',
-        'ConnectionError',
-        'RequestTimeTooSkewed',
-        'InvalidPart',
-        'NoSuchUpload',
-      ];
-      if (!retriable4xxErrors.includes(errorCode)) {
-        return false;
-      }
-    }
-    // Always retry for server errors (5xx)
-    if (httpStatusCode && httpStatusCode >= 500) {
-      return true;
-    }
-    // Retry specific network/connection errors and multipart upload errors
-    const retriableErrors = [
+
+    // Truly transient errors that should always be retried
+    const transientErrors = [
       'NetworkingError',
       'TimeoutError',
       'ConnectionError',
-      'ECONNRESET',
-      'ENOTFOUND',
-      'ECONNREFUSED',
-      'ETIMEDOUT',
+      'RequestTimeout',
       'ServiceUnavailable',
       'SlowDown',
-      'Throttling',
       'ThrottlingException',
-      'ProvisionedThroughputExceededException',
-      // Multipart upload specific errors - now handled above but kept for completeness
-      'InvalidPart',
-      'NoSuchUpload',
-      'UploadTimeout',
-      'EntityTooLarge',
-      'InternalError',
-      'IncompleteBody',
-      'RequestTimeout',
     ];
-    return retriableErrors.some(
+
+    // Server errors are always considered transient
+    if (httpStatusCode && httpStatusCode >= 500) {
+      return true;
+    }
+
+    // Specific 4xx errors that are known to be transient
+    if (httpStatusCode && httpStatusCode >= 400 && httpStatusCode < 500) {
+      const retriable4xxErrors = [
+        'RequestTimeout',
+        'RequestTimeoutException',
+        'PriorRequestNotComplete',
+      ];
+      return retriable4xxErrors.includes(errorCode);
+    }
+
+    // Check against known transient errors
+    return transientErrors.some(
       retriableError =>
         errorCode.includes(retriableError) ||
         error.message.includes(retriableError),
