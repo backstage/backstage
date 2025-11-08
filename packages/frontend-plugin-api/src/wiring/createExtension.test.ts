@@ -288,6 +288,95 @@ describe('createExtension', () => {
     );
   });
 
+  it('should provide type safe attachments by reference', () => {
+    const parent = createExtension({
+      attachTo: { id: 'root', input: 'children' },
+      inputs: {
+        string: createExtensionInput([stringDataRef]),
+        stringOpt: createExtensionInput([stringDataRef.optional()]),
+        number: createExtensionInput([numberDataRef]),
+        numberOpt: createExtensionInput([numberDataRef.optional()]),
+        both: createExtensionInput([stringDataRef, numberDataRef]),
+        bothOptString: createExtensionInput([
+          stringDataRef.optional(),
+          numberDataRef,
+        ]),
+        bothOptNumber: createExtensionInput([
+          stringDataRef,
+          numberDataRef.optional(),
+        ]),
+        bothOpt: createExtensionInput([
+          stringDataRef.optional(),
+          numberDataRef.optional(),
+        ]),
+      },
+      output: [],
+      factory: () => [],
+    });
+    const strOutExt = createExtension({
+      attachTo: parent.inputs.string,
+      output: [stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.string,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.stringOpt,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.number,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.numberOpt,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.both,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.bothOptNumber,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.bothOptString,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.bothOpt,
+    });
+    const numberOutExt = createExtension({
+      // @ts-expect-error
+      attachTo: parent.inputs.string,
+      output: [numberDataRef],
+      factory: () => [numberDataRef(1)],
+    });
+    numberOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.string,
+    });
+    numberOutExt.override({
+      attachTo: parent.inputs.number,
+    });
+    const bothOutExt = createExtension({
+      attachTo: parent.inputs.both,
+      output: [numberDataRef, stringDataRef],
+      factory: () => [numberDataRef(1), stringDataRef('str')],
+    });
+    // TODO(Rugvip): Potentially encapsulate the parent input type in the extension, until then we can't verify this
+    bothOutExt.override({
+      output: [numberDataRef.optional(), stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    bothOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.both,
+      output: [numberDataRef.optional(), stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    expect('types').not.toBe('broken');
+  });
+
   it('should create an extension with input', () => {
     const extension = createExtension({
       attachTo: { id: 'root', input: 'default' },

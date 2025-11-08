@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
+import {
+  createExtensionDataRef,
+  createExtensionInput,
+} from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from './createExtension';
 import {
   ResolveExtensionId,
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
+import {
+  OpaqueExtensionDefinition,
+  OpaqueExtensionInput,
+} from '@internal/frontend';
+
+const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
 
 describe('resolveExtensionDefinition', () => {
   const baseDef = {
@@ -26,8 +36,8 @@ describe('resolveExtensionDefinition', () => {
     T: undefined as any,
     version: 'v2',
     attachTo: { id: '', input: '' },
-    disabled: false,
     inputs: {},
+    disabled: false,
     override: () => ({} as ExtensionDefinition),
   };
 
@@ -62,99 +72,108 @@ describe('resolveExtensionDefinition', () => {
     );
   });
 
-  it('should resolve relative attachment points', () => {
-    const resolved = resolveExtensionDefinition(
-      {
-        ...baseDef,
-        attachTo: [
-          { relative: { kind: 'page' }, input: 'tabs' },
-          { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
-        ],
-      } as ExtensionDefinition,
-      { namespace: 'test' },
-    );
-    expect(resolved.attachTo).toEqual([
-      { id: 'page:test', input: 'tabs' },
-      { id: 'page:test/index', input: 'tabs' },
-    ]);
-  });
-
   it('should resolve extension input references', () => {
-    const resolved = resolveExtensionDefinition(
-      {
-        ...baseDef,
-        attachTo: {
-          $$type: '@backstage/ExtensionInputRef',
-          kind: 'parent',
-          name: 'example',
-          input: 'children',
-        },
-      } as ExtensionDefinition,
-      { namespace: 'test' },
+    const baseInpuf = OpaqueExtensionInput.toInternal(
+      createExtensionInput([testDataRef]),
     );
-    expect(resolved.attachTo).toEqual({
-      id: 'parent:test/example',
-      input: 'children',
-    });
-  });
-
-  it('should resolve extension input references without name', () => {
-    const resolved = resolveExtensionDefinition(
-      {
-        ...baseDef,
-        attachTo: {
-          $$type: '@backstage/ExtensionInputRef',
-          kind: 'parent',
-          input: 'children',
-        },
-      } as ExtensionDefinition,
-      { namespace: 'test' },
-    );
-    expect(resolved.attachTo).toEqual({
-      id: 'parent:test',
-      input: 'children',
-    });
-  });
-
-  it('should resolve extension input references without kind', () => {
-    const resolved = resolveExtensionDefinition(
-      {
-        ...baseDef,
-        attachTo: {
-          $$type: '@backstage/ExtensionInputRef',
-          name: 'example',
-          input: 'children',
-        },
-      } as ExtensionDefinition,
-      { namespace: 'test' },
-    );
-    expect(resolved.attachTo).toEqual({
-      id: 'test/example',
-      input: 'children',
-    });
-  });
-
-  it('should resolve array with mixed attachment types including input references', () => {
-    const resolved = resolveExtensionDefinition(
-      {
-        ...baseDef,
-        attachTo: [
-          { id: 'page:home', input: 'widgets' },
-          { relative: { kind: 'page' }, input: 'actions' },
-          {
-            $$type: '@backstage/ExtensionInputRef',
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: baseInpuf.withContext({
             kind: 'parent',
             name: 'example',
             input: 'children',
-          },
-        ],
-      } as ExtensionDefinition,
-      { namespace: 'test' },
-    );
-    expect(resolved.attachTo).toEqual([
-      { id: 'page:home', input: 'widgets' },
-      { id: 'page:test', input: 'actions' },
-      { id: 'parent:test/example', input: 'children' },
+          }),
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual({
+      id: 'parent:test/example',
+      input: 'children',
+    });
+
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: baseInpuf.withContext({
+            name: 'example',
+            input: 'children',
+          }),
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual({
+      id: 'test/example',
+      input: 'children',
+    });
+
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: baseInpuf.withContext({
+            kind: 'parent',
+            input: 'children',
+          }),
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual({
+      id: 'parent:test',
+      input: 'children',
+    });
+
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: baseInpuf.withContext({
+            input: 'children',
+          }),
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual({
+      id: 'test',
+      input: 'children',
+    });
+
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: [
+            baseInpuf.withContext({
+              kind: 'k1',
+              input: 'children',
+            }),
+            baseInpuf.withContext({
+              kind: 'k2',
+              input: 'children',
+            }),
+            baseInpuf.withContext({
+              kind: 'k3',
+              input: 'children',
+            }),
+          ],
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual([
+      {
+        id: 'k1:test',
+        input: 'children',
+      },
+      {
+        id: 'k2:test',
+        input: 'children',
+      },
+      {
+        id: 'k3:test',
+        input: 'children',
+      },
     ]);
   });
 });
@@ -165,8 +184,8 @@ describe('old resolveExtensionDefinition', () => {
     T: undefined as any,
     version: 'v1',
     attachTo: { id: '', input: '' },
-    disabled: false,
     inputs: {},
+    disabled: false,
     override: () => ({} as ExtensionDefinition),
   };
 

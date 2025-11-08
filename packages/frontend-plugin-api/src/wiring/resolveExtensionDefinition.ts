@@ -199,18 +199,6 @@ export function resolveExtensionDefinition<
 ): Extension<T['config'], T['configInput']> {
   const internalDefinition = OpaqueExtensionDefinition.toInternal(definition);
 
-  // Restore internal inputs if they were saved under a symbol
-  // This is needed because we override the inputs property with ExtensionInputRef objects
-  const internalInputsSymbol = Symbol.for(
-    '@backstage/ExtensionDefinition/internalInputs',
-  );
-  if ((internalDefinition as any)[internalInputsSymbol]) {
-    // Restore the internal inputs from the symbol
-    (internalDefinition as any).inputs = (internalDefinition as any)[
-      internalInputsSymbol
-    ];
-  }
-
   const {
     name,
     kind,

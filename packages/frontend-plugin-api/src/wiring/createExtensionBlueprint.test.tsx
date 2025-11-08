@@ -1463,6 +1463,115 @@ describe('createExtensionBlueprint', () => {
         'ExtensionDefinition{kind=test,attachTo=page:<plugin>/index@otherTabs}',
       );
     });
+
+    it('should provide type safe attachments by reference', () => {
+      const stringDataRef = createExtensionDataRef<string>().with({
+        id: 'test.string',
+      });
+      const numberDataRef = createExtensionDataRef<number>().with({
+        id: 'test.number',
+      });
+
+      const parent = createExtensionBlueprint({
+        kind: 'test-parent',
+        attachTo: { id: 'root', input: 'children' },
+        inputs: {
+          string: createExtensionInput([stringDataRef]),
+          stringOpt: createExtensionInput([stringDataRef.optional()]),
+          number: createExtensionInput([numberDataRef]),
+          numberOpt: createExtensionInput([numberDataRef.optional()]),
+          both: createExtensionInput([stringDataRef, numberDataRef]),
+          bothOptString: createExtensionInput([
+            stringDataRef.optional(),
+            numberDataRef,
+          ]),
+          bothOptNumber: createExtensionInput([
+            stringDataRef,
+            numberDataRef.optional(),
+          ]),
+          bothOpt: createExtensionInput([
+            stringDataRef.optional(),
+            numberDataRef.optional(),
+          ]),
+        },
+        output: [],
+        factory: () => [],
+      }).make({ params: {} });
+      const strOutExt = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: parent.inputs.string,
+        output: [stringDataRef],
+        factory: () => [stringDataRef('str')],
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.string,
+        params: {},
+      });
+      strOutExt.makeWithOverrides({
+        attachTo: parent.inputs.stringOpt,
+        factory: orig => orig({}),
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.number,
+        params: {},
+      });
+      strOutExt.makeWithOverrides({
+        attachTo: parent.inputs.numberOpt,
+        factory: orig => orig({}),
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.both,
+        params: {},
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.bothOptNumber,
+        params: {},
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.bothOptString,
+        params: {},
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.bothOpt,
+        params: {},
+      });
+      const numberOutExt = createExtensionBlueprint({
+        kind: 'test',
+        // @ts-expect-error
+        attachTo: parent.inputs.string,
+        output: [numberDataRef],
+        factory: () => [numberDataRef(1)],
+      });
+      numberOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.string,
+        params: {},
+      });
+      numberOutExt.makeWithOverrides({
+        attachTo: parent.inputs.number,
+        factory: orig => orig({}),
+      });
+      const bothOutExt = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: parent.inputs.both,
+        output: [numberDataRef, stringDataRef],
+        factory: () => [numberDataRef(1), stringDataRef('str')],
+      });
+      bothOutExt.makeWithOverrides({
+        output: [numberDataRef.optional(), stringDataRef],
+        factory: orig => orig({}),
+      });
+      bothOutExt.makeWithOverrides({
+        // @ts-expect-error
+        attachTo: parent.inputs.both,
+        output: [numberDataRef.optional(), stringDataRef],
+        factory: orig => orig({}),
+      });
+      expect('types').not.toBe('broken');
+    });
   });
 
   describe('with advanced parameter types', () => {

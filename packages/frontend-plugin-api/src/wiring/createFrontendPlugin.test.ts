@@ -170,7 +170,6 @@ describe('createFrontendPlugin', () => {
         "override": [Function],
         "toString": [Function],
         "version": "v2",
-        Symbol(@backstage/ExtensionDefinition/internalInputs): {},
       }
     `);
     // @ts-expect-error
@@ -359,7 +358,6 @@ describe('createFrontendPlugin', () => {
           "override": [Function],
           "toString": [Function],
           "version": "v2",
-          Symbol(@backstage/ExtensionDefinition/internalInputs): {},
         }
       `);
     });
