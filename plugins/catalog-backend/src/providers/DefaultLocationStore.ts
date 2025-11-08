@@ -36,13 +36,21 @@ import {
   parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import {
+  CatalogScmEvent,
+  CatalogScmEventsService,
+} from '@backstage/plugin-catalog-node/alpha';
+import { chunk, uniqBy } from 'lodash';
+import parseGitUrl, { type GitUrl } from 'git-url-parse';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
   private readonly db: Knex;
+  private readonly scmEvents: CatalogScmEventsService;
 
-  constructor(db: Knex) {
+  constructor(db: Knex, scmEvents: CatalogScmEventsService) {
     this.db = db;
+    this.scmEvents = scmEvents;
   }
 
   getProviderName(): string {
@@ -185,6 +193,8 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       type: 'full',
       entities,
     });
+
+    this.scmEvents.subscribe({ onEvents: this.#onScmEvents.bind(this) });
   }
 
   private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {
@@ -201,4 +211,260 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         }))
     );
   }
+
+  // #region SCM event handling
+
+  async #onScmEvents(events: CatalogScmEvent[]): Promise<void> {
+    const exactLocationsToDelete = new Set<string>();
+    const locationPrefixesToDelete = new Set<string>();
+    const exactLocationsToCreate = new Set<string>();
+    const locationPrefixesToMove = new Map<string, string>();
+
+    for (const event of events) {
+      if (event.type === 'location.deleted') {
+        exactLocationsToDelete.add(event.url);
+      } else if (event.type === 'location.moved') {
+        // Since Location entities are named after their target URL, these
+        // unfortunately have to be translated into deletion and creation
+        exactLocationsToDelete.add(event.fromUrl);
+        exactLocationsToCreate.add(event.toUrl);
+      } else if (event.type === 'repository.deleted') {
+        locationPrefixesToDelete.add(event.url);
+      } else if (event.type === 'repository.moved') {
+        // These also have to be handled with deletions and creations
+        locationPrefixesToMove.set(event.fromUrl, event.toUrl);
+      }
+    }
+
+    if (exactLocationsToDelete.size > 0) {
+      await this.#deleteLocationsByExactUrl(exactLocationsToDelete);
+    }
+    if (locationPrefixesToDelete.size > 0) {
+      await this.#deleteLocationsByUrlPrefix(locationPrefixesToDelete);
+    }
+    if (exactLocationsToCreate.size > 0) {
+      await this.#createLocationsByExactUrl(exactLocationsToCreate);
+    }
+    if (locationPrefixesToMove.size > 0) {
+      await this.#moveLocationsByUrlPrefix(locationPrefixesToMove);
+    }
+  }
+
+  async #createLocationsByExactUrl(urls: Iterable<string>): Promise<number> {
+    let count = 0;
+
+    for (const batch of chunk(Array.from(urls), 100)) {
+      const existingUrls = await this.db<DbLocationsRow>('locations')
+        .where('type', '=', 'url')
+        .where('target', 'in', batch)
+        .select()
+        .then(rows => new Set(rows.map(row => row.target)));
+
+      const newLocations = batch
+        .filter(url => !existingUrls.has(url))
+        .map(url => ({ id: uuid(), type: 'url', target: url }));
+
+      if (newLocations.length) {
+        await this.db<DbLocationsRow>('locations').insert(newLocations);
+
+        await this.connection.applyMutation({
+          type: 'delta',
+          added: newLocations.map(location => {
+            const entity = locationSpecToLocationEntity({ location });
+            return { entity, locationKey: getEntityLocationRef(entity) };
+          }),
+          removed: [],
+        });
+
+        count += newLocations.length;
+      }
+    }
+
+    return count;
+  }
+
+  async #deleteLocationsByExactUrl(urls: Iterable<string>): Promise<number> {
+    let count = 0;
+
+    for (const batch of chunk(Array.from(urls), 100)) {
+      const rows = await this.db<DbLocationsRow>('locations')
+        .where('type', '=', 'url')
+        .where('target', 'in', batch)
+        .select();
+
+      if (rows.length) {
+        await this.db<DbLocationsRow>('locations')
+          .where(
+            'id',
+            'in',
+            rows.map(row => row.id),
+          )
+          .delete();
+
+        await this.connection.applyMutation({
+          type: 'delta',
+          added: [],
+          removed: rows.map(row => ({
+            entity: locationSpecToLocationEntity({ location: row }),
+          })),
+        });
+
+        count += rows.length;
+      }
+    }
+
+    return count;
+  }
+
+  async #deleteLocationsByUrlPrefix(urls: Iterable<string>): Promise<number> {
+    const matches = await this.#findLocationsByPrefixOrExactMatch(urls);
+    if (matches.length) {
+      await this.#deleteLocations(matches.map(l => l.row));
+    }
+
+    return matches.length;
+  }
+
+  async #moveLocationsByUrlPrefix(
+    urlPrefixes: Map<string, string>,
+  ): Promise<number> {
+    let count = 0;
+
+    for (const [fromPrefix, toPrefix] of urlPrefixes) {
+      if (fromPrefix === toPrefix) {
+        continue;
+      }
+
+      if (fromPrefix.match(/[?#]/) || toPrefix.match(/[?#]/)) {
+        // TODO(freben): We can't yet support complex URL locations where e.g.
+        // the path can be anywhere in the URL including in the query or hash
+        // part. The code below currently assumes that we can use simple
+        // substring operations.
+        continue;
+      }
+
+      const matches = await this.#findLocationsByPrefixOrExactMatch([
+        fromPrefix,
+      ]);
+      if (matches.length) {
+        await this.#deleteLocations(matches.map(m => m.row));
+
+        await this.#createLocationsByExactUrl(
+          matches.map(m => {
+            const remainder = m.row.target
+              .slice(fromPrefix.length)
+              .replace(/^\/+/, '');
+            if (!remainder) {
+              return toPrefix;
+            }
+            return `${toPrefix.replace(/\/+$/, '')}/${remainder}`;
+          }),
+        );
+
+        count += matches.length;
+      }
+    }
+
+    return count;
+  }
+
+  async #deleteLocations(rows: DbLocationsRow[]): Promise<void> {
+    // Delete the location table entries (in chunks so as not to overload the
+    // knex query builder)
+    for (const ids of chunk(
+      rows.map(l => l.id),
+      100,
+    )) {
+      await this.db<DbLocationsRow>('locations').whereIn('id', ids).delete();
+    }
+
+    // Delete the corresponding Location kind entities (this is efficiently
+    // chunked internally in the catalog)
+    await this.connection.applyMutation({
+      type: 'delta',
+      added: [],
+      removed: rows.map(l => ({
+        entity: locationSpecToLocationEntity({ location: l }),
+      })),
+    });
+  }
+
+  /**
+   * Given a "base" URL prefix, find all locations that are for paths at or
+   * below it.
+   *
+   * For example, given a base URL prefix of
+   * "https://github.com/backstage/backstage/blob/master/plugins", it will match
+   * locations inside the plugins directory, and nowhere else.
+   */
+  async #findLocationsByPrefixOrExactMatch(
+    urls: Iterable<string>,
+  ): Promise<Array<{ row: DbLocationsRow; parsed: GitUrl }>> {
+    const result = new Array<{ row: DbLocationsRow; parsed: GitUrl }>();
+
+    for (const url of urls) {
+      let base: GitUrl;
+      try {
+        base = parseGitUrl(url);
+      } catch (error) {
+        throw new Error(`Invalid URL prefix, could not parse: ${url}`);
+      }
+
+      if (!base.owner || !base.name) {
+        throw new Error(
+          `Invalid URL prefix, missing owner or repository: ${url}`,
+        );
+      }
+
+      const pathPrefix =
+        base.filepath === '' || base.filepath.endsWith('/')
+          ? base.filepath
+          : `${base.filepath}/`;
+
+      const rows = await this.db<DbLocationsRow>('locations')
+        .where('type', '=', 'url')
+        // Initial rough pruning to not have to go through them all
+        .where('target', 'like', `%${base.owner}%`)
+        .where('target', 'like', `%${base.name}%`)
+        .select();
+
+      result.push(
+        ...rows.flatMap(row => {
+          try {
+            // We do this pretty explicit set of checks because we want to support
+            // providers that have a URL format where the path isn't necessarily at
+            // the end of the URL string (e.g. in the query part). Some of these may
+            // be empty strings etc, but that's fine as long as they parse to the
+            // same thing as above.
+            const candidate = parseGitUrl(row.target);
+
+            if (
+              candidate.protocol === base.protocol &&
+              candidate.resource === base.resource &&
+              candidate.port === base.port &&
+              candidate.organization === base.organization &&
+              candidate.owner === base.owner &&
+              candidate.name === base.name &&
+              // If the base has no ref (for example didn't have the "/blob/master"
+              // part and therefore targeted an entire repository) then we match any
+              // ref below that
+              (!base.ref || candidate.ref === base.ref) &&
+              // Match both on exact equality and any subpath with a slash between
+              (candidate.filepath === base.filepath ||
+                candidate.filepath.startsWith(pathPrefix))
+            ) {
+              return [{ row, parsed: candidate }];
+            }
+            return [];
+          } catch {
+            return [];
+          }
+        }),
+      );
+    }
+
+    return uniqBy(result, entry => entry.row.id);
+  }
+
+  // #endregion
 }
