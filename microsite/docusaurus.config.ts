@@ -276,12 +276,14 @@ const config: Config = {
             from: '/docs/getting-started/app-custom-theme',
             to: '/docs/conf/user-interface',
           },
-          semver.gt(backstageVersion, '1.46.0')
-            ? {
-                from: '/docs/plugins/url-reader/',
-                to: '/docs/auth/test',
-              }
-            : undefined,
+          ...(semver.gt(backstageVersion, '1.46.0')
+            ? [
+                {
+                  from: '/docs/plugins/url-reader/',
+                  to: '/docs/auth/test',
+                },
+              ]
+            : []),
         ],
       }),
     [
