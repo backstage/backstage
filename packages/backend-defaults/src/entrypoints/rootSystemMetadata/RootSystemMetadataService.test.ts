@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
-import { systemMetadataServiceFactory } from './systemMetadataServiceFactory';
+import { rootSystemMetadataServiceFactory } from './rootSystemMetadataServiceFactory';
 import { mockServices } from '@backstage/backend-test-utils';
 import getPort from 'get-port';
 import {
@@ -66,7 +66,7 @@ describe('SystemMetadataService', () => {
       instance1 = createSpecializedBackend({
         defaultServiceFactories: [
           ...baseFactories,
-          systemMetadataServiceFactory,
+          rootSystemMetadataServiceFactory,
           configFactory(instance1HttpPort),
         ],
       });
@@ -74,7 +74,7 @@ describe('SystemMetadataService', () => {
       instance2 = createSpecializedBackend({
         defaultServiceFactories: [
           ...baseFactories,
-          systemMetadataServiceFactory,
+          rootSystemMetadataServiceFactory,
           configFactory(instance2HttpPort),
         ],
       });
@@ -169,7 +169,7 @@ describe('SystemMetadataService', () => {
       instance = createSpecializedBackend({
         defaultServiceFactories: [
           ...baseFactories,
-          systemMetadataServiceFactory,
+          rootSystemMetadataServiceFactory,
           mockServices.rootConfig.factory({
             data: {
               backend: {
@@ -236,7 +236,7 @@ describe('SystemMetadataService', () => {
       instance = createSpecializedBackend({
         defaultServiceFactories: [
           ...baseFactories,
-          systemMetadataServiceFactory,
+          rootSystemMetadataServiceFactory,
           configFactory,
         ],
       });

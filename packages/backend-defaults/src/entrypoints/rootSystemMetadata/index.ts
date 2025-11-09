@@ -13,20 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Observable } from '@backstage/types';
-
-/**
- * @public
- */
-export interface BackstageInstance {
-  internalUrl: string;
-  externalUrl: string;
-}
-
-/**
- * @public
- */
-export interface SystemMetadataService {
-  instances(): Observable<BackstageInstance[]>;
-}
+export { rootSystemMetadataServiceFactory } from './rootSystemMetadataServiceFactory';
+export { DefaultRootSystemMetadataService } from './lib/DefaultRootSystemMetadataService';

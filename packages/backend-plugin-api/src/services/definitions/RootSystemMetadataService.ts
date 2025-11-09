@@ -13,5 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { systemMetadataServiceFactory } from './systemMetadataServiceFactory';
-export { DefaultSystemMetadataService } from './lib/DefaultSystemMetadataService';
+
+/** @public */
+export interface RootSystemMetadataServicePluginInfo {
+  readonly pluginId: string;
+  readonly hosts: (string | { external: string; internal: string })[];
+}
+
+/** @public */
+export interface RootSystemMetadataService {
+  getInstalledPlugins: () => Promise<
+    ReadonlyArray<RootSystemMetadataServicePluginInfo>
+  >;
+
+  getHosts: () => Promise<
+    ReadonlyArray<string | { external: string; internal: string }>
+  >;
+}

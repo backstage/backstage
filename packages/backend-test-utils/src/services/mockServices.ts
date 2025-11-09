@@ -30,7 +30,6 @@ import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import {
   AuthService,
   BackstageCredentials,
-  BackstageInstance,
   BackstageUserInfo,
   DatabaseService,
   DiscoveryService,
@@ -41,7 +40,6 @@ import {
   SchedulerService,
   ServiceFactory,
   ServiceRef,
-  SystemMetadataService,
   UserInfoService,
   coreServices,
   createServiceFactory,
@@ -63,8 +61,6 @@ import { simpleMock } from './simpleMock';
 import { MockSchedulerService } from './MockSchedulerService';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';
-import { MockSystemMetadataService } from './MockSystemMetadataService';
-import { createMockObservable } from './MockObservable';
 
 /** @internal */
 function createLoggerMock() {
@@ -577,33 +573,23 @@ export namespace mockServices {
       rootInstanceMetadata,
     );
   }
-  /**
-   * Creates a functional mock implementation for the
-   * {@link @backstage/backend-plugin-api#coreServices.systemMetadata}.
-   */
-  export function systemMetadata(options: {
-    instances: BackstageInstance[];
-  }): SystemMetadataService {
-    return MockSystemMetadataService.create(options);
-  }
-  export namespace systemMetadata {
+  export namespace rootSystemMetadata {
     /**
      * Creates a functional mock factory for the
      * {@link @backstage/backend-plugin-api#coreServices.systemMetadata}.
      */
     export const factory = simpleFactoryWithOptions(
-      coreServices.systemMetadata,
-      systemMetadata,
+      coreServices.rootSystemMetadata,
+      rootSystemMetadata,
     );
     /**
      * Creates a mock of the
      * {@link @backstage/backend-events-node#systemMetadata}, optionally
      * with some given method implementations.
      */
-    export const mock = simpleMock(coreServices.systemMetadata, () => ({
-      instances: jest
-        .fn()
-        .mockReturnValue(createMockObservable<BackstageInstance[]>([])),
+    export const mock = simpleMock(coreServices.rootSystemMetadata, () => ({
+      getInstalledPlugins: jest.fn(),
+      getHosts: jest.fn(),
     }));
   }
 }

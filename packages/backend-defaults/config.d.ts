@@ -1249,15 +1249,5 @@ export interface Config {
        */
       plugins: string[];
     }>;
-
-    /**
-     * A list of deployed Backstage instances that can be crawled for discovery.
-     */
-    instances: Array<{
-      /**
-       * The base URL of the instance. All /.backstage/ routes should be accessible.
-       */
-      baseUrl: string | { internal: string; external: string };
-    }>;
   };
 }

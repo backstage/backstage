@@ -33,11 +33,11 @@
     "./permissions": "./src/entrypoints/permissions/index.ts",
     "./rootConfig": "./src/entrypoints/rootConfig/index.ts",
     "./rootHealth": "./src/entrypoints/rootHealth/index.ts",
+    "./rootSystemMetadata": "./src/entrypoints/rootSystemMetadata/index.ts",
     "./rootHttpRouter": "./src/entrypoints/rootHttpRouter/index.ts",
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
-    "./systemMetadata": "./src/entrypoints/systemMetadata/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
     "./alpha": "./src/alpha/index.ts",
@@ -92,14 +92,14 @@
       "rootLifecycle": [
         "src/entrypoints/rootLifecycle/index.ts"
       ],
+      "rootSystemMetadata": [
+        "src/entrypoints/rootSystemMetadata/index.ts"
+      ],
       "rootLogger": [
         "src/entrypoints/rootLogger/index.ts"
       ],
       "scheduler": [
         "src/entrypoints/scheduler/index.ts"
-      ],
-      "systemMetadata": [
-        "src/entrypoints/systemMetadata/index.ts"
       ],
       "urlReader": [
         "src/entrypoints/urlReader/index.ts"
@@ -198,7 +198,6 @@
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",
     "yn": "^4.0.0",
-    "zen-observable": "^0.10.0",
     "zod": "^3.22.4",
     "zod-to-json-schema": "^3.20.4"
   },

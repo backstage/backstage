@@ -73,9 +73,9 @@ export type {
   SchedulerServiceTaskScheduleDefinitionConfig,
 } from './SchedulerService';
 export type {
-  BackstageInstance,
-  SystemMetadataService,
-} from './SystemMetadataService';
+  RootSystemMetadataServicePluginInfo,
+  RootSystemMetadataService,
+} from './RootSystemMetadataService';
 export type {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,

@@ -18,7 +18,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { DefaultSystemMetadataService } from './lib/DefaultSystemMetadataService';
+import { DefaultRootSystemMetadataService } from './lib/DefaultRootSystemMetadataService';
 import { createSystemMetadataRouter } from './lib/createSystemMetadataRouter';
 
 /**
@@ -26,17 +26,19 @@ import { createSystemMetadataRouter } from './lib/createSystemMetadataRouter';
  *
  * @alpha
  */
-export const systemMetadataServiceFactory = createServiceFactory({
-  service: coreServices.systemMetadata,
+export const rootSystemMetadataServiceFactory = createServiceFactory({
+  service: coreServices.rootSystemMetadata,
   deps: {
     logger: coreServices.rootLogger,
     config: coreServices.rootConfig,
     httpRouter: coreServices.rootHttpRouter,
+    instanceMetadata: coreServices.rootInstanceMetadata,
   },
-  async factory({ logger, config, httpRouter }) {
-    const systemMetadata = DefaultSystemMetadataService.create({
+  async factory({ logger, config, httpRouter, instanceMetadata }) {
+    const systemMetadata = DefaultRootSystemMetadataService.create({
       logger,
       config,
+      instanceMetadata,
     });
 
     const router = await createSystemMetadataRouter({ systemMetadata, logger });
