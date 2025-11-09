@@ -12,7 +12,7 @@
     "prettier:fix": "prettier --write .",
     "publish-gh-pages": "docusaurus-publish",
     "rename-version": "docusaurus-rename-version",
-    "start": "node scripts/pre-build.js && docusaurus start",
+    "start": "docusaurus start",
     "swizzle": "docusaurus swizzle",
     "verify:sidebars": "node ./scripts/verify-sidebars",
     "version": "docusaurus-version",

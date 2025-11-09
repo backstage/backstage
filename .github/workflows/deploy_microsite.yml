@@ -238,12 +238,6 @@ jobs:
         run: yarn install --immutable
         working-directory: microsite
 
-      - name: download stable reference
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: stable-reference
-          path: docs/reference
-
       - name: download stable OpenAPI API docs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
@@ -272,12 +266,6 @@ jobs:
         run: yarn install --immutable
         working-directory: microsite
 
-      - name: download next reference
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: next-reference
-          path: docs/reference
-
       - name: download next OpenAPI API docs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
@@ -296,7 +284,7 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: stable-reference
-          path: microsite/build/api/
+          path: microsite/build/api/stable/
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
