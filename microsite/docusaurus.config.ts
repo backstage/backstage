@@ -276,7 +276,7 @@ const config: Config = {
             from: '/docs/getting-started/app-custom-theme',
             to: '/docs/conf/user-interface',
           },
-          ...(semver.gt(backstageVersion, '1.46.0')
+          ...(semver.gt(backstageVersion, '1.45.0')
             ? [
                 {
                   from: '/docs/plugins/url-reader/',
