@@ -16,7 +16,11 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { createApiRef } from '@backstage/core-plugin-api';
-import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
+import {
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+  TechDocsTransformerOptions,
+} from './types';
 
 /**
  * API to talk to techdocs-backend.
@@ -77,3 +81,53 @@ export interface TechDocsStorageApi {
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',
 });
+
+/**
+ * API for providing custom TechDocs transformers.
+ * Implement this API to provide custom DOM transformers that will be applied
+ * to the TechDocs content during rendering.
+ *
+ * @alpha
+ */
+export interface TechDocsTransformersApi {
+  /**
+   * Get the list of custom transformers to apply to TechDocs content.
+   *
+   * @param defaults - The default built-in transformers. You can filter, modify,
+   *                   or replace these transformers as needed.
+   *
+   * @returns An array of transformer options. These will be sorted by priority
+   *          before being applied.
+   *
+   * @example
+   * ```typescript
+   * // Add custom transformers to defaults
+   * getTransformers: (defaults) => [...defaults, myCustomTransformer]
+   *
+   * // Remove a specific default transformer
+   * getTransformers: (defaults) => defaults.filter(t => t.name !== 'removeMkdocsHeader')
+   *
+   * // Modify a default transformer's priority
+   * getTransformers: (defaults) => defaults.map(t =>
+   *   t.name === 'sanitizer' ? { ...t, priority: 5 } : t
+   * )
+   *
+   * // Replace defaults entirely
+   * getTransformers: () => [myCustomTransformer1, myCustomTransformer2]
+   * ```
+   */
+  getTransformers(
+    defaults: TechDocsTransformerOptions[],
+  ): TechDocsTransformerOptions[];
+}
+
+/**
+ * Utility API reference for the {@link TechDocsTransformersApi}.
+ *
+ * @alpha
+ */
+export const techdocsTransformersApiRef = createApiRef<TechDocsTransformersApi>(
+  {
+    id: 'plugin.techdocs.transformers',
+  },
+);

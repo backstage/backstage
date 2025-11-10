@@ -39,7 +39,10 @@ import {
   EntityIconLinkBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
-import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
+import {
+  AddonBlueprint,
+  TransformerBlueprint,
+} from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsClient, TechDocsStorageClient } from '../client';
 import {
   rootCatalogDocsRouteRef,
@@ -52,6 +55,7 @@ import {
   TechDocsAddons,
   techdocsApiRef,
   techdocsStorageApiRef,
+  techdocsTransformersApiRef,
 } from '@backstage/plugin-techdocs-react';
 
 import { useTechdocsReaderIconLinkProps } from './hooks/useTechdocsReaderIconLinkProps';
@@ -145,6 +149,38 @@ const techDocsPage = PageBlueprint.make({
       import('../home/components/TechDocsIndexPage').then(m =>
         compatWrapper(<m.TechDocsIndexPage />),
       ),
+  },
+});
+
+/**
+ * API factory for providing custom transformers from extensions
+ *
+ * @alpha
+ */
+const techDocsReaderPageTransformersApi = ApiBlueprint.makeWithOverrides({
+  name: 'reader-transformers',
+  inputs: {
+    transformers: createExtensionInput([
+      TransformerBlueprint.dataRefs.transformer,
+    ]),
+  },
+  factory(originalFactory, { inputs }) {
+    const transformers = inputs.transformers.map(output =>
+      output.get(TransformerBlueprint.dataRefs.transformer),
+    );
+
+    return originalFactory(defineParams =>
+      defineParams({
+        api: techdocsTransformersApiRef,
+        deps: {},
+        factory: () => ({
+          getTransformers: defaults => {
+            // Add custom transformers from blueprints to defaults
+            return [...defaults, ...transformers];
+          },
+        }),
+      }),
+    );
   },
 });
 
@@ -252,6 +288,7 @@ export default createFrontendPlugin({
   extensions: [
     techDocsClientApi,
     techDocsStorageApi,
+    techDocsReaderPageTransformersApi,
     techDocsNavItem,
     techDocsPage,
     techDocsReaderPage,

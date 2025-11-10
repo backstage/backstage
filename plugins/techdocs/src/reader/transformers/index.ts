@@ -29,3 +29,4 @@ export * from './scrollIntoNavigation';
 export * from './transformer';
 export * from './handleMetaRedirects';
 export * from './addNavLinkKeyboardToggle';
+export * from './defaults';

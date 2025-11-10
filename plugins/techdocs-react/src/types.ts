@@ -115,3 +115,30 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
   location: keyof typeof TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };
+
+/**
+ * A transformer function that takes a DOM element and returns a transformed DOM element.
+ * @alpha
+ */
+export type Transformer = (dom: Element) => Element | Promise<Element>;
+
+/**
+ * The phase in which a transformer should run.
+ * - pre: Runs before the DOM is attached to the document (faster, no event listeners)
+ * - post: Runs after the DOM is attached (can attach event listeners)
+ * @alpha
+ */
+export type TransformerPhase = 'pre' | 'post';
+
+/**
+ * Options for creating a TechDocs transformer.
+ * @alpha
+ */
+export type TechDocsTransformerOptions = {
+  // If a name is not provided, one will be generated
+  // based on the extension name.
+  name?: string;
+  transformer: Transformer;
+  phase: TransformerPhase;
+  priority?: number;
+};

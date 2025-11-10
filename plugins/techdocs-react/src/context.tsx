@@ -39,9 +39,14 @@ import {
   AnalyticsContext,
   configApiRef,
   useApi,
+  useApiHolder,
 } from '@backstage/core-plugin-api';
 
-import { techdocsApiRef } from './api';
+import {
+  techdocsApiRef,
+  techdocsTransformersApiRef,
+  TechDocsTransformersApi,
+} from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 import { toLowercaseEntityRefMaybe } from './helpers';
@@ -72,6 +77,11 @@ export type TechDocsReaderPageValue = {
    * @deprecated property can be passed down directly to the `TechDocsReaderPageContent` instead.
    */
   onReady?: () => void;
+  /**
+   * Transformers API that can customize default and add custom transformers.
+   * @alpha
+   */
+  transformersApi?: TechDocsTransformersApi;
 };
 
 const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
@@ -83,6 +93,7 @@ const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   metadata: { loading: true },
   entityMetadata: { loading: true },
   entityRef: { kind: '', name: '', namespace: '' },
+  transformersApi: undefined,
 };
 
 const TechDocsReaderPageContext = createVersionedContext<{
@@ -118,6 +129,8 @@ export const TechDocsReaderPageProvider = memo(
 
     const techdocsApi = useApi(techdocsApiRef);
     const config = useApi(configApiRef);
+    const apiHolder = useApiHolder();
+    const transformersApi = apiHolder.get(techdocsTransformersApiRef);
 
     const entityMetadata = useAsync(async () => {
       return techdocsApi.getEntityMetadata(entityRef);
@@ -157,6 +170,7 @@ export const TechDocsReaderPageProvider = memo(
       setTitle,
       subtitle,
       setSubtitle,
+      transformersApi: transformersApi || undefined,
     };
     const versionedValue = createVersionedValueMap({ 1: value });
 

@@ -15,7 +15,7 @@
  */
 import { createElement, ComponentType } from 'react';
 
-import { TechDocsAddonOptions } from './types';
+import { TechDocsAddonOptions, TechDocsTransformerOptions } from './types';
 import {
   attachComponentData,
   getComponentData,
@@ -27,7 +27,13 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 /** @alpha */
-export type { TechDocsAddonOptions, TechDocsAddonLocations } from './types';
+export type {
+  TechDocsAddonOptions,
+  TechDocsAddonLocations,
+  TechDocsTransformerOptions,
+  Transformer,
+  TransformerPhase,
+} from './types';
 
 /** @alpha */
 export const techDocsAddonDataRef =
@@ -73,3 +79,35 @@ export const attachTechDocsAddonComponentData = <P>(
     attachComponentData(techDocsAddon, dataKey, true);
   }
 };
+
+/** @alpha */
+export const techDocsTransformerDataRef =
+  createExtensionDataRef<TechDocsTransformerOptions>().with({
+    id: 'techdocs.transformer',
+  });
+
+/**
+ * Creates an extension to add custom DOM transformers to TechDocs rendering.
+ * Transformers can run in two phases:
+ * - pre: Before the DOM is attached (faster, no event listeners)
+ * - post: After the DOM is attached (can attach event listeners)
+ * @alpha
+ */
+export const TransformerBlueprint = createExtensionBlueprint({
+  kind: 'transformer',
+  attachTo: [{ id: 'api:techdocs/reader-transformers', input: 'transformers' }],
+  output: [techDocsTransformerDataRef],
+  factory: (params: TechDocsTransformerOptions, { node }) => {
+    // Use the extension's name as the transformer name
+    const autoName = node.spec.id.split('/').pop() || 'unknown';
+    return [
+      techDocsTransformerDataRef({
+        name: autoName,
+        ...params,
+      }),
+    ];
+  },
+  dataRefs: {
+    transformer: techDocsTransformerDataRef,
+  },
+});
