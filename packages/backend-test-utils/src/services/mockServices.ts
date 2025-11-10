@@ -44,6 +44,7 @@ import {
   coreServices,
   createServiceFactory,
   RootLoggerService,
+  RootSystemMetadataService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
@@ -573,6 +574,12 @@ export namespace mockServices {
       rootInstanceMetadata,
     );
   }
+
+  export function rootSystemMetadata(): RootSystemMetadataService {
+    return {
+      getInstalledPlugins: () => Promise.resolve([]),
+    };
+  }
   export namespace rootSystemMetadata {
     /**
      * Creates a functional mock factory for the
@@ -589,7 +596,6 @@ export namespace mockServices {
      */
     export const mock = simpleMock(coreServices.rootSystemMetadata, () => ({
       getInstalledPlugins: jest.fn(),
-      getHosts: jest.fn(),
     }));
   }
 }

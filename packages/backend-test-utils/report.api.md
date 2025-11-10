@@ -9,7 +9,6 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { BackstageInstance } from '@backstage/backend-plugin-api';
 import { BackstageNonePrincipal } from '@backstage/backend-plugin-api';
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import { BackstageServicePrincipal } from '@backstage/backend-plugin-api';
@@ -39,10 +38,10 @@ import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootInstanceMetadataService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
+import { RootSystemMetadataService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { SystemMetadataService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
@@ -354,7 +353,7 @@ export namespace mockServices {
       factory: () => ServiceFactory<
         RootInstanceMetadataService,
         'root',
-        'singleton'
+        'singleton' | 'multiton'
       >;
   }
   // (undocumented)
@@ -384,6 +383,19 @@ export namespace mockServices {
       ) => ServiceMock<RootLoggerService>;
   }
   // (undocumented)
+  export function rootSystemMetadata(): RootSystemMetadataService;
+  // (undocumented)
+  export namespace rootSystemMetadata {
+    const factory: () => ServiceFactory<
+      RootSystemMetadataService,
+      'root',
+      'singleton' | 'multiton'
+    >;
+    const mock: (
+      partialImpl?: Partial<RootSystemMetadataService> | undefined,
+    ) => ServiceMock<RootSystemMetadataService>;
+  }
+  // (undocumented)
   export function scheduler(): SchedulerService;
   // (undocumented)
   export namespace scheduler {
@@ -397,22 +409,6 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,
       ) => ServiceMock<SchedulerService>;
-  }
-  export function systemMetadata(options: {
-    instances: BackstageInstance[];
-  }): SystemMetadataService;
-  // (undocumented)
-  export namespace systemMetadata {
-    const factory: (options: {
-      instances: BackstageInstance[];
-    }) => ServiceFactory<
-      SystemMetadataService,
-      'root',
-      'singleton' | 'multiton'
-    >;
-    const mock: (
-      partialImpl?: Partial<SystemMetadataService> | undefined,
-    ) => ServiceMock<SystemMetadataService>;
   }
   // (undocumented)
   export namespace urlReader {

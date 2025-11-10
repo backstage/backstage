@@ -25,7 +25,7 @@ export const actionsServiceFactory: ServiceFactory<
 // @alpha @deprecated (undocumented)
 export const instanceMetadataServiceFactory: ServiceFactory<
   InstanceMetadataService,
-  'plugin',
+  'root',
   'singleton'
 >;
 

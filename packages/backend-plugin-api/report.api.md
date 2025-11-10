@@ -14,7 +14,6 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { Observable } from '@backstage/types';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -138,14 +137,6 @@ export type BackstageCredentials<TPrincipal = unknown> = {
   principal: TPrincipal;
 };
 
-// @public (undocumented)
-export interface BackstageInstance {
-  // (undocumented)
-  externalUrl: string;
-  // (undocumented)
-  internalUrl: string;
-}
-
 // @public
 export type BackstageNonePrincipal = {
   type: 'none';
@@ -246,13 +237,11 @@ export namespace coreServices {
     'root',
     'singleton'
   >;
-  const // @alpha
-    systemMetadataServiceRef: ServiceRef<
-      SystemMetadataService,
-      'root',
-      'singleton'
-    >;
-  const systemMetadata: ServiceRef<SystemMetadataService, 'root', 'singleton'>;
+  const rootSystemMetadata: ServiceRef<
+    RootSystemMetadataService,
+    'root',
+    'singleton'
+  >;
 }
 
 // @public
@@ -644,6 +633,28 @@ export interface RootServiceFactoryOptions<
   service: ServiceRef<TService, 'root', TInstances>;
 }
 
+// @public (undocumented)
+export interface RootSystemMetadataService {
+  // (undocumented)
+  getInstalledPlugins: () => Promise<
+    ReadonlyArray<RootSystemMetadataServicePluginInfo>
+  >;
+}
+
+// @public (undocumented)
+export interface RootSystemMetadataServicePluginInfo {
+  // (undocumented)
+  readonly hosts: (
+    | string
+    | {
+        external: string;
+        internal: string;
+      }
+  )[];
+  // (undocumented)
+  readonly pluginId: string;
+}
+
 // @public
 export interface SchedulerService {
   createScheduledTaskRunner(
@@ -758,12 +769,6 @@ export interface ServiceRefOptions<
   multiton?: TInstances extends 'multiton' ? true : false;
   // (undocumented)
   scope?: TScope;
-}
-
-// @public (undocumented)
-export interface SystemMetadataService {
-  // (undocumented)
-  instances(): Observable<BackstageInstance[]>;
 }
 
 // @public

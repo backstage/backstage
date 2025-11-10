@@ -86,14 +86,14 @@
       "rootHealth": [
         "src/entrypoints/rootHealth/index.ts"
       ],
+      "rootSystemMetadata": [
+        "src/entrypoints/rootSystemMetadata/index.ts"
+      ],
       "rootHttpRouter": [
         "src/entrypoints/rootHttpRouter/index.ts"
       ],
       "rootLifecycle": [
         "src/entrypoints/rootLifecycle/index.ts"
-      ],
-      "rootSystemMetadata": [
-        "src/entrypoints/rootSystemMetadata/index.ts"
       ],
       "rootLogger": [
         "src/entrypoints/rootLogger/index.ts"
