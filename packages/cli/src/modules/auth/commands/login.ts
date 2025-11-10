@@ -347,18 +347,13 @@ function cryptoRandom(): string {
 
 // The react-dev-utils/openBrowser breaks the login URL by encoding the URL parameters again
 export function openInBrowser(url: string): void {
-  const platform = process.platform;
-  if (platform === 'darwin') {
-    spawn('open', [url], { detached: true, stdio: 'ignore' }).unref();
-    return;
+  const spawnOpts = { detached: true, stdio: 'ignore' } as const;
+  if (process.platform === 'darwin') {
+    spawn('open', [url], spawnOpts).unref();
+  } else if (process.platform === 'win32') {
+    spawn('cmd', ['/c', 'start', '""', url], spawnOpts).unref();
+  } else {
+    // linux and others
+    spawn('xdg-open', [url], spawnOpts).unref();
   }
-  if (platform === 'win32') {
-    spawn('cmd', ['/c', 'start', '""', url], {
-      detached: true,
-      stdio: 'ignore',
-    }).unref();
-    return;
-  }
-  // linux and others
-  spawn('xdg-open', [url], { detached: true, stdio: 'ignore' }).unref();
 }
