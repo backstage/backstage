@@ -16,14 +16,21 @@
 
 /* eslint-disable jest/expect-expect */
 
-import express from 'express';
+import express, { Router } from 'express';
 import request from 'supertest';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
 import {
   mockCredentials,
   mockErrorHandler,
   mockServices,
+  startTestBackend,
 } from '@backstage/backend-test-utils';
+import { httpRouterServiceFactory } from '../httpRouterServiceFactory';
+import {
+  coreServices,
+  createBackendPlugin,
+  getLoggerMetaContext,
+} from '@backstage/backend-plugin-api';
 
 function setup() {
   const barrier = createCredentialsBarrier({
@@ -169,5 +176,42 @@ describe('createCredentialsBarrier', () => {
       .send()
       .expect(200);
     await request(app).get('/other').send().expect(200);
+  });
+
+  it('adds contextual fields to the logger', async () => {
+    const backend = await startTestBackend({
+      features: [
+        httpRouterServiceFactory,
+        createBackendPlugin({
+          pluginId: 'test',
+          register(env) {
+            env.registerInit({
+              deps: { httpRouter: coreServices.httpRouter },
+              async init({ httpRouter }) {
+                const router = Router();
+                router.get('/meta', (_req, res) => {
+                  res.json(getLoggerMetaContext());
+                });
+                httpRouter.use(router);
+              },
+            });
+          },
+        }),
+      ],
+    });
+
+    await request(backend.server)
+      .get('/api/test/meta')
+      .send()
+      .expect(200)
+      .expect(res => {
+        expect(res.body).toMatchInlineSnapshot(`
+          {
+            "core.http.initiator.credentials": "{"$$type":"@backstage/BackstageCredentials","principal":{"type":"user","userEntityRef":"user:default/mock"}}",
+          }
+        `);
+      });
+
+    await backend.stop();
   });
 });

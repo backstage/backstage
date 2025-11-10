@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
+import {
+  createBackendPlugin,
+  coreServices,
+  getLoggerMetaContext,
+} from '@backstage/backend-plugin-api';
 import { LocalTaskWorker } from './LocalTaskWorker';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import waitFor from 'wait-for-expect';
+import { schedulerServiceFactory } from '../schedulerServiceFactory';
+import { createDeferred, JsonObject } from '@backstage/types';
 
 jest.setTimeout(10_000);
 
@@ -212,5 +219,41 @@ describe('LocalTaskWorker', () => {
         status: 'idle',
       });
     });
+  });
+
+  it('adds contextual fields to the logger', async () => {
+    const meta = createDeferred<JsonObject>();
+
+    const backend = await startTestBackend({
+      features: [
+        schedulerServiceFactory,
+        createBackendPlugin({
+          pluginId: 'test',
+          register(env) {
+            env.registerInit({
+              deps: { scheduler: coreServices.scheduler },
+              async init({ scheduler }) {
+                await scheduler.scheduleTask({
+                  id: 'test',
+                  frequency: { seconds: 1 },
+                  timeout: { seconds: 1 },
+                  scope: 'local',
+                  fn: async () => {
+                    meta.resolve(getLoggerMetaContext());
+                  },
+                });
+              },
+            });
+          },
+        }),
+      ],
+    });
+
+    await expect(meta).resolves.toEqual({
+      'core.scheduler.task': 'test',
+      'core.scheduler.taskInstance': expect.any(String),
+    });
+
+    await backend.stop();
   });
 });

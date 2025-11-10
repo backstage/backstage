@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  runWithLoggerMetaContext,
+} from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
 import { ConflictError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
+import { v4 as uuid } from 'uuid';
 import { TaskSettingsV2, TaskApiTasksResponse } from './types';
 import { delegateAbortController, serializeError, sleep } from './util';
 
@@ -63,7 +67,13 @@ export class LocalTaskWorker {
 
           while (!options.signal.aborted) {
             const startTime = process.hrtime();
-            await this.runOnce(settings, options.signal);
+            await runWithLoggerMetaContext(
+              {
+                'core.scheduler.task': this.taskId,
+                'core.scheduler.taskInstance': uuid(),
+              },
+              () => this.runOnce(settings, options.signal),
+            );
             const timeTaken = process.hrtime(startTime);
             await this.waitUntilNext(
               settings,

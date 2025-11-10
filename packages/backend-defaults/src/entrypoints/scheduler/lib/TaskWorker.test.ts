@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
+import {
+  TestDatabases,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import { DateTime, Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
@@ -22,6 +26,13 @@ import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
 import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 import { TaskSettingsV2 } from './types';
+import {
+  coreServices,
+  createBackendPlugin,
+  getLoggerMetaContext,
+} from '@backstage/backend-plugin-api';
+import { createDeferred, JsonObject } from '@backstage/types';
+import { schedulerServiceFactory } from '../schedulerServiceFactory';
 
 jest.setTimeout(60_000);
 
@@ -580,4 +591,39 @@ describe('TaskWorker', () => {
       await knex.destroy();
     },
   );
+
+  it('adds contextual fields to the logger', async () => {
+    const meta = createDeferred<JsonObject>();
+
+    const backend = await startTestBackend({
+      features: [
+        schedulerServiceFactory,
+        createBackendPlugin({
+          pluginId: 'test',
+          register(env) {
+            env.registerInit({
+              deps: { scheduler: coreServices.scheduler },
+              async init({ scheduler }) {
+                await scheduler.scheduleTask({
+                  id: 'test',
+                  frequency: { seconds: 1 },
+                  timeout: { seconds: 1 },
+                  fn: async () => {
+                    meta.resolve(getLoggerMetaContext());
+                  },
+                });
+              },
+            });
+          },
+        }),
+      ],
+    });
+
+    await expect(meta).resolves.toEqual({
+      'core.scheduler.task': 'test',
+      'core.scheduler.taskInstance': expect.any(String),
+    });
+
+    await backend.stop();
+  });
 });

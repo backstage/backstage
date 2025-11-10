@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/types';
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { getOrCreateGlobalSingleton } from '../utilities/globals';
 import { LoggerService } from './LoggerService';
 
 /**
@@ -24,3 +27,34 @@ import { LoggerService } from './LoggerService';
  * @public
  */
 export interface RootLoggerService extends LoggerService {}
+
+const loggerMetaContextStorage = getOrCreateGlobalSingleton(
+  'coreLoggerMetaContext',
+  () => new AsyncLocalStorage<JsonObject>(),
+);
+
+/**
+ * Runs a function, wherein all emitted logging should be amended with a set of
+ * values. This can be used to add contextual information that should be part of
+ * every message logged, such as a plugin ID or a user ID etc.
+ *
+ * @public
+ */
+export function runWithLoggerMetaContext<TReturn>(
+  meta: JsonObject,
+  fn: () => TReturn,
+): TReturn {
+  const newMeta = { ...getLoggerMetaContext(), ...meta };
+  return loggerMetaContextStorage.run(newMeta, () => {
+    return fn();
+  });
+}
+
+/**
+ * Gets the current logger meta context.
+ *
+ * @public
+ */
+export function getLoggerMetaContext(): JsonObject {
+  return loggerMetaContextStorage.getStore() ?? {};
+}

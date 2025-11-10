@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  runWithLoggerMetaContext,
+} from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { Knex } from 'knex';
@@ -237,7 +240,13 @@ export class TaskWorker {
       this.#workerState = {
         status: 'running',
       };
-      await this.fn(taskAbortController.signal);
+      await runWithLoggerMetaContext(
+        {
+          'core.scheduler.task': this.taskId,
+          'core.scheduler.taskInstance': uuid(),
+        },
+        () => this.fn(taskAbortController.signal),
+      );
       taskAbortController.abort(); // releases resources
     } catch (e) {
       this.logger.error(e);

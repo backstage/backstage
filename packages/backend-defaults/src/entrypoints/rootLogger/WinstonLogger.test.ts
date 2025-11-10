@@ -18,6 +18,8 @@ import { format } from 'logform';
 import { WinstonLogger } from './WinstonLogger';
 import Transport from 'winston-transport';
 import { MESSAGE } from 'triple-beam';
+import { runWithLoggerMetaContext } from '@backstage/backend-plugin-api';
+import waitFor from 'wait-for-expect';
 
 describe('WinstonLogger', () => {
   it('creates a winston logger instance with default options', () => {
@@ -195,5 +197,66 @@ describe('WinstonLogger', () => {
     logger.info('info log', { plugin: 'catalog' });
 
     expect(mockTransport.log).not.toHaveBeenCalled();
+  });
+
+  it('handles contextual meta', async () => {
+    const log = jest.fn().mockImplementation((_info, next) => {
+      next();
+    });
+    const mockTransport = new Transport({ log });
+
+    const logger = WinstonLogger.create({
+      format: format.json(),
+      transports: [mockTransport],
+    });
+
+    await runWithLoggerMetaContext({ foo: 1 }, async () => {
+      logger.info('one');
+      expect(log).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          level: 'info',
+          message: 'one',
+          foo: 1,
+        }),
+        expect.any(Function),
+      );
+
+      await runWithLoggerMetaContext({ bar: 2 }, async () => {
+        await new Promise<void>(resolve => {
+          logger.info('two', { two: 2 });
+          expect(log).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              level: 'info',
+              message: 'two',
+              foo: 1,
+              bar: 2,
+              two: 2,
+            }),
+            expect.any(Function),
+          );
+          resolve();
+        });
+      });
+
+      logger.info('three', { three: 3 });
+      expect(log).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          level: 'info',
+          message: 'three',
+          foo: 1,
+          three: 3,
+        }),
+        expect.any(Function),
+      );
+    });
+
+    logger.info('four');
+    expect(log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        level: 'info',
+        message: 'four',
+      }),
+      expect.any(Function),
+    );
   });
 });

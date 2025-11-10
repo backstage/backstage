@@ -18,6 +18,7 @@ import {
   HttpAuthService,
   HttpRouterServiceAuthPolicy,
   RootConfigService,
+  runWithLoggerMetaContext,
 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { pathToRegexp } from 'path-to-regexp';
@@ -82,7 +83,14 @@ export function createCredentialsBarrier(options: {
         allowLimitedAccess: allowsCookie,
       })
       .then(
-        () => next(),
+        credentials => {
+          runWithLoggerMetaContext(
+            {
+              'core.http.initiator.credentials': JSON.stringify(credentials),
+            },
+            () => next(),
+          );
+        },
         err => next(err),
       );
   };

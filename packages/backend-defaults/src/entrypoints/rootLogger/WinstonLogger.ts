@@ -15,6 +15,7 @@
  */
 
 import {
+  getLoggerMetaContext,
   LoggerService,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
@@ -237,19 +238,19 @@ export class WinstonLogger implements RootLoggerService {
   }
 
   error(message: string, meta?: JsonObject): void {
-    this.#winston.error(message, meta);
+    this.#winston.error(message, { ...getLoggerMetaContext(), ...meta });
   }
 
   warn(message: string, meta?: JsonObject): void {
-    this.#winston.warn(message, meta);
+    this.#winston.warn(message, { ...getLoggerMetaContext(), ...meta });
   }
 
   info(message: string, meta?: JsonObject): void {
-    this.#winston.info(message, meta);
+    this.#winston.info(message, { ...getLoggerMetaContext(), ...meta });
   }
 
   debug(message: string, meta?: JsonObject): void {
-    this.#winston.debug(message, meta);
+    this.#winston.debug(message, { ...getLoggerMetaContext(), ...meta });
   }
 
   child(meta: JsonObject): LoggerService {
