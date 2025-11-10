@@ -355,7 +355,7 @@ export namespace mockServices {
     const // (undocumented)
       factory: () => ServiceFactory<
         RootInstanceMetadataService,
-        'plugin',
+        'root',
         'singleton' | 'multiton'
       >;
   }
