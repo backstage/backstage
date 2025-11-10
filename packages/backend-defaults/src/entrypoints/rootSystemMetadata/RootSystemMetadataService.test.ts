@@ -70,12 +70,6 @@ describe('SystemMetadataService', () => {
       expect(instanceResponse.status).toBe(200);
       expect(instanceResponse.body).toMatchObject([
         {
-          hosts: [
-            {
-              external: `http://localhost:0`,
-              internal: `http://localhost:0`,
-            },
-          ],
           pluginId: 'test-plugin',
         },
       ]);
@@ -108,12 +102,6 @@ describe('SystemMetadataService', () => {
       expect(initialResponse.status).toBe(200);
       expect(initialResponse.body).toMatchObject([
         {
-          hosts: [
-            {
-              external: `http://localhost:0`,
-              internal: `http://localhost:0`,
-            },
-          ],
           pluginId: 'test-plugin',
         },
       ]);
@@ -144,21 +132,9 @@ describe('SystemMetadataService', () => {
       expect(responseAfterUpdate.status).toBe(200);
       expect(responseAfterUpdate.body).toMatchObject([
         {
-          hosts: [
-            {
-              external: 'http://test.internal',
-              internal: 'http://test.internal',
-            },
-          ],
           pluginId: 'your-new-plugin',
         },
         {
-          hosts: [
-            {
-              external: `http://localhost:0`,
-              internal: `http://localhost:0`,
-            },
-          ],
           pluginId: 'test-plugin',
         },
       ]);

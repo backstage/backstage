@@ -31,7 +31,6 @@ export class DefaultRootSystemMetadataService
 {
   #hostDiscovery: HostDiscovery;
   #instanceMetadata: RootInstanceMetadataService;
-  #config: RootConfigService;
   constructor(options: {
     logger: LoggerService;
     config: RootConfigService;
@@ -46,7 +45,6 @@ export class DefaultRootSystemMetadataService
       });
     });
     this.#instanceMetadata = options.instanceMetadata;
-    this.#config = options.config;
   }
 
   public static create(pluginEnv: {
@@ -61,22 +59,15 @@ export class DefaultRootSystemMetadataService
     RootSystemMetadataServicePluginInfo[]
   > {
     const resolutions = await this.#hostDiscovery.listResolutions();
-    const instanceAddress = this.#hostDiscovery.getInstanceAddress(
-      this.#config,
-    );
-    const currentInstance = await this.#instanceMetadata.getInstalledPlugins();
-    for (const plugin of currentInstance) {
-      if (!resolutions.has(plugin.pluginId)) {
-        resolutions.set(plugin.pluginId, []);
-      }
-      resolutions.get(plugin.pluginId)?.push(instanceAddress);
+    const plugins = [];
+    for (const pluginId of resolutions.keys()) {
+      plugins.push({ pluginId });
     }
-    return Array.from(resolutions.entries()).map(([pluginId, targets]) => ({
-      pluginId,
-      hosts: Array.from(targets).filter(
-        (target): target is { external: string; internal: string } =>
-          Object.keys(target).length > 0,
-      ),
-    }));
+
+    for (const plugin of await this.#instanceMetadata.getInstalledPlugins()) {
+      plugins.push({ pluginId: plugin.pluginId });
+    }
+
+    return plugins;
   }
 }

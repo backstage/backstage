@@ -17,7 +17,6 @@
 /** @public */
 export interface RootSystemMetadataServicePluginInfo {
   readonly pluginId: string;
-  readonly hosts: (string | { external: string; internal: string })[];
 }
 
 /** @public */
