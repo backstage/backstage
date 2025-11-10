@@ -16,6 +16,7 @@ import {
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { ButtonDefinition } from '../utils/definitions';
 
 <PageTitle
   title="Button"
@@ -117,6 +118,6 @@ If you want to use a button as a link, please use the `ButtonLink` component.
   code={buttonAsLinkSnippet}
 />
 
-<Theming component="Button" />
+<Theming definition={ButtonDefinition} />
 
 <ChangelogComponent component="button" />

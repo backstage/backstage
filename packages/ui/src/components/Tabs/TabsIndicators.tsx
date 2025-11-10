@@ -16,6 +16,7 @@
 
 import { TabListStateContext } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
+import { TabsDefinition } from './definition';
 import { useContext, useEffect, useCallback, useRef } from 'react';
 import type { TabsIndicatorsProps } from './types';
 import styles from './Tabs.module.css';
@@ -28,7 +29,7 @@ import clsx from 'clsx';
  */
 export const TabsIndicators = (props: TabsIndicatorsProps) => {
   const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
-  const { classNames } = useStyles('Tabs');
+  const { classNames } = useStyles(TabsDefinition);
   const state = useContext(TabListStateContext);
   const prevSelectedKey = useRef<string | null>(null);
 

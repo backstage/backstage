@@ -13,6 +13,7 @@ import {
 } from './header.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { HeaderDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -80,6 +81,6 @@ You can use the `Header` component inside the [HeaderPage](/components/header-pa
   open
 />
 
-<Theming component="Header" />
+<Theming definition={HeaderDefinition} />
 
 <ChangelogComponent component="Header" />

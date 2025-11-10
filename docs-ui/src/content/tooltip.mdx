@@ -10,6 +10,7 @@ import {
 } from './tooltip.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { TooltipDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -42,6 +43,6 @@ The tooltip will wrap the content of the tooltip.
 
 <PropsTable data={tooltipPropDefs} />
 
-<Theming component="Tooltip" />
+<Theming definition={TooltipDefinition} />
 
 <ChangelogComponent component="tooltip" />

@@ -24,6 +24,7 @@ import { useFilter } from 'react-aria';
 import { RiCloseCircleLine } from '@remixicon/react';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { SelectDefinition } from './definition';
 import { SelectListBox } from './SelectListBox';
 import styles from './Select.module.css';
 import type { Option } from './types';
@@ -40,7 +41,7 @@ export function SelectContent({
   options,
 }: SelectContentProps) {
   const { contains } = useFilter({ sensitivity: 'base' });
-  const { classNames } = useStyles('Select');
+  const { classNames } = useStyles(SelectDefinition);
 
   if (!searchable) {
     return <SelectListBox options={options} />;
