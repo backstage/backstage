@@ -19,6 +19,7 @@ export const buttonIconPropDefs: Record<string, PropDef> = {
   },
   icon: { type: 'enum', values: ['ReactNode'], responsive: false },
   isDisabled: { type: 'boolean', default: 'false', responsive: false },
+  loading: { type: 'boolean', default: 'false', responsive: false },
   type: {
     type: 'enum',
     values: ['button', 'submit', 'reset'],
@@ -49,6 +50,8 @@ export const buttonIconSizesSnippet = `<Flex align="center">
 </Flex>`;
 
 export const buttonIconDisabledSnippet = `<ButtonIcon icon={<Icon name="cloud" />} isDisabled />`;
+
+export const buttonIconLoadingSnippet = `<ButtonIcon icon={<Icon name="cloud" />} variant="primary" loading={isLoading} onPress={handleClick} />`;
 
 export const buttonIconResponsiveSnippet = `<ButtonIcon icon={<Icon name="cloud" />} variant={{ initial: 'primary', lg: 'secondary' }} />`;
 

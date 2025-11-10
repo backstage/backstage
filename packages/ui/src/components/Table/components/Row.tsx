@@ -57,6 +57,7 @@ export function Row<T extends object>(props: RowProps<T>) {
     return (
       <ReactAriaRow
         id={id}
+        href={href}
         className={clsx(classNames.row, styles[classNames.row])}
         {...rest}
       >
@@ -69,6 +70,7 @@ export function Row<T extends object>(props: RowProps<T>) {
     <RouterProvider navigate={navigate} useHref={useHref}>
       <ReactAriaRow
         id={id}
+        href={href}
         className={clsx(classNames.row, styles[classNames.row])}
         data-react-aria-pressable="true"
         {...rest}

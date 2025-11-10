@@ -103,6 +103,7 @@ export const useStyles = makeStyles(
       flexShrink: 0,
       color: colors.blue[300],
       borderRight: `1px solid ${colors.blue[700]}`,
+      userSelect: 'none',
     },
     textHighlight: {
       background: alpha(theme.palette.info.main, 0.15),
