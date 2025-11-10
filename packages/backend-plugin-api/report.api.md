@@ -644,14 +644,6 @@ export interface RootSystemMetadataService {
 // @public (undocumented)
 export interface RootSystemMetadataServicePluginInfo {
   // (undocumented)
-  readonly hosts: (
-    | string
-    | {
-        external: string;
-        internal: string;
-      }
-  )[];
-  // (undocumented)
   readonly pluginId: string;
 }
 
