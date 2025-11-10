@@ -45,6 +45,7 @@ import {
   createServiceFactory,
   RootLoggerService,
   RootSystemMetadataService,
+  RootInstanceMetadataServicePluginInfo,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
@@ -560,9 +561,11 @@ export namespace mockServices {
     }));
   }
 
-  export function rootInstanceMetadata(): RootInstanceMetadataService {
+  export function rootInstanceMetadata(options?: {
+    plugins: RootInstanceMetadataServicePluginInfo[];
+  }): RootInstanceMetadataService {
     return {
-      getInstalledPlugins: () => Promise.resolve([]),
+      getInstalledPlugins: () => Promise.resolve(options?.plugins ?? []),
     };
   }
   export namespace rootInstanceMetadata {

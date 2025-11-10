@@ -14,72 +14,66 @@
  * limitations under the License.
  */
 
-import { mockServices } from '@backstage/backend-test-utils';
-import { default as getPort } from 'get-port';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import {
   coreServices,
   createBackendPlugin,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { createBackend } from '../../CreateBackend';
-import { Backend } from '@backstage/backend-app-api';
 import Router from 'express-promise-router';
+import request from 'supertest';
+import { rootSystemMetadataServiceFactory } from './rootSystemMetadataServiceFactory';
 
 describe('SystemMetadataService', () => {
   describe('returns plugins from config', () => {
-    let port: number;
-    let instance: Backend;
-    beforeEach(async () => {
-      port = await getPort();
-      instance = createBackend();
-      instance.add(
-        createBackendPlugin({
-          pluginId: 'test-plugin',
-          register(reg) {
-            reg.registerInit({
-              deps: {
-                systemMetadata: coreServices.rootSystemMetadata,
-                rootHttpRouter: coreServices.rootHttpRouter,
-              },
-              init: async ({ systemMetadata, rootHttpRouter }) => {
-                const router = Router();
-                router.use('/plugins', async (_, res) => {
-                  res.json(await systemMetadata.getInstalledPlugins());
-                });
-                rootHttpRouter.use('/systemMetadata', router);
-              },
-            });
+    const testPlugin = createBackendPlugin({
+      pluginId: 'test-plugin',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            systemMetadata: coreServices.rootSystemMetadata,
+            rootHttpRouter: coreServices.rootHttpRouter,
           },
-        }),
-      );
+          init: async ({ systemMetadata, rootHttpRouter }) => {
+            const router = Router();
+            router.use('/plugins', async (_, res) => {
+              res.json(await systemMetadata.getInstalledPlugins());
+            });
+            rootHttpRouter.use('/systemMetadata', router);
+          },
+        });
+      },
     });
 
     it('should list all known instances', async () => {
-      instance.add(
-        mockServices.rootConfig.factory({
-          data: {
-            backend: {
-              listen: {
-                port,
+      const { server } = await startTestBackend({
+        features: [
+          testPlugin,
+          rootSystemMetadataServiceFactory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                listen: {
+                  port: 0,
+                },
+                baseUrl: `http://localhost:0`,
               },
-              baseUrl: `http://localhost:${port}`,
             },
-          },
-        }),
-      );
-      await instance.start();
+          }),
+        ],
+      });
 
-      const instanceResponse = await fetch(
-        `http://localhost:${port}/systemMetadata/plugins`,
+      const instanceResponse = await request(server).get(
+        `/systemMetadata/plugins`,
       );
 
       expect(instanceResponse.status).toBe(200);
-      await expect(instanceResponse.json()).resolves.toMatchObject([
+      expect(instanceResponse.body).toMatchObject([
         {
           hosts: [
             {
-              external: `http://localhost:${port}`,
-              internal: `http://localhost:${port}`,
+              external: `http://localhost:0`,
+              internal: `http://localhost:0`,
             },
           ],
           pluginId: 'test-plugin',
@@ -92,9 +86,9 @@ describe('SystemMetadataService', () => {
         data: {
           backend: {
             listen: {
-              port,
+              port: 0,
             },
-            baseUrl: `http://localhost:${port}`,
+            baseUrl: `http://localhost:0`,
           },
         },
       });
@@ -103,20 +97,21 @@ describe('SystemMetadataService', () => {
         deps: {},
         factory: () => config,
       });
-      instance.add(configFactory);
-      await instance.start();
+      const { server } = await startTestBackend({
+        features: [testPlugin, configFactory, rootSystemMetadataServiceFactory],
+      });
 
-      const instance1Response = await fetch(
-        `http://localhost:${port}/systemMetadata/plugins`,
+      const initialResponse = await request(server).get(
+        `/systemMetadata/plugins`,
       );
 
-      expect(instance1Response.status).toBe(200);
-      await expect(instance1Response.json()).resolves.toMatchObject([
+      expect(initialResponse.status).toBe(200);
+      expect(initialResponse.body).toMatchObject([
         {
           hosts: [
             {
-              external: `http://localhost:${port}`,
-              internal: `http://localhost:${port}`,
+              external: `http://localhost:0`,
+              internal: `http://localhost:0`,
             },
           ],
           pluginId: 'test-plugin',
@@ -127,9 +122,9 @@ describe('SystemMetadataService', () => {
         data: {
           backend: {
             listen: {
-              port,
+              port: 0,
             },
-            baseUrl: `http://localhost:${port}`,
+            baseUrl: `http://localhost:0`,
           },
           discovery: {
             endpoints: [
@@ -142,12 +137,12 @@ describe('SystemMetadataService', () => {
         },
       });
 
-      const responseAfterUpdate = await fetch(
-        `http://localhost:${port}/systemMetadata/plugins`,
+      const responseAfterUpdate = await request(server).get(
+        `/systemMetadata/plugins`,
       );
 
       expect(responseAfterUpdate.status).toBe(200);
-      await expect(responseAfterUpdate.json()).resolves.toMatchObject([
+      expect(responseAfterUpdate.body).toMatchObject([
         {
           hosts: [
             {
@@ -160,17 +155,13 @@ describe('SystemMetadataService', () => {
         {
           hosts: [
             {
-              external: `http://localhost:${port}`,
-              internal: `http://localhost:${port}`,
+              external: `http://localhost:0`,
+              internal: `http://localhost:0`,
             },
           ],
           pluginId: 'test-plugin',
         },
       ]);
-    });
-
-    afterEach(async () => {
-      await instance.stop();
     });
   });
 });
