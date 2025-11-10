@@ -214,7 +214,7 @@ export class HostDiscovery implements DiscoveryService {
     return _targets;
   }
 
-  getInstanceAddress(config: Config) {
+  #getInstanceAddress(config: Config) {
     const backendBaseUrl = trimEnd(config.getString('backend.baseUrl'), '/');
 
     const {
@@ -248,7 +248,7 @@ export class HostDiscovery implements DiscoveryService {
   }
 
   #updateFallbackResolvers(config: Config) {
-    const { internal, external } = this.getInstanceAddress(config);
+    const { internal, external } = this.#getInstanceAddress(config);
 
     this.#internalFallbackResolver = this.#makeResolver(
       `${internal}/api/{{pluginId}}`,

@@ -237,11 +237,6 @@ export namespace coreServices {
     'root',
     'singleton'
   >;
-  const rootSystemMetadata: ServiceRef<
-    RootSystemMetadataService,
-    'root',
-    'singleton'
-  >;
 }
 
 // @public
@@ -631,20 +626,6 @@ export interface RootServiceFactoryOptions<
   initialization?: 'always' | 'lazy';
   // (undocumented)
   service: ServiceRef<TService, 'root', TInstances>;
-}
-
-// @public (undocumented)
-export interface RootSystemMetadataService {
-  // (undocumented)
-  getInstalledPlugins: () => Promise<
-    ReadonlyArray<RootSystemMetadataServicePluginInfo>
-  >;
-}
-
-// @public (undocumented)
-export interface RootSystemMetadataServicePluginInfo {
-  // (undocumented)
-  readonly pluginId: string;
 }
 
 // @public

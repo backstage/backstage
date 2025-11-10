@@ -73,10 +73,6 @@ export type {
   SchedulerServiceTaskScheduleDefinitionConfig,
 } from './SchedulerService';
 export type {
-  RootSystemMetadataServicePluginInfo,
-  RootSystemMetadataService,
-} from './RootSystemMetadataService';
-export type {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
   UrlReaderServiceReadTreeResponse,

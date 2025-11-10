@@ -15,6 +15,11 @@
  */
 
 export type {
+  RootSystemMetadataServicePluginInfo,
+  RootSystemMetadataService,
+} from './RootSystemMetadataService';
+
+export type {
   ActionsRegistryService,
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
@@ -22,11 +27,12 @@ export type {
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
-export { actionsRegistryServiceRef, actionsServiceRef } from './refs';
-
-import { createServiceRef } from '@backstage/backend-plugin-api';
-
 export type {
   BackstageInstance,
   SystemMetadataService,
 } from './services/definitions/SystemMetadataService';
+export {
+  actionsRegistryServiceRef,
+  actionsServiceRef,
+  rootSystemMetadataServiceRef,
+} from './refs';

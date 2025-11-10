@@ -18,6 +18,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { rootSystemMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import Router from 'express-promise-router';
 
 /**
@@ -29,7 +30,7 @@ export default createBackendPlugin({
   register: reg => {
     reg.registerInit({
       deps: {
-        systemMetadata: coreServices.rootSystemMetadata,
+        systemMetadata: rootSystemMetadataServiceRef,
         rootHttpRouter: coreServices.rootHttpRouter,
       },
       async init({ systemMetadata, rootHttpRouter }) {

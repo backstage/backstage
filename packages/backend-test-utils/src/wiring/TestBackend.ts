@@ -88,7 +88,6 @@ export const defaultServiceFactories = [
   mockServices.userInfo.factory(),
   mockServices.urlReader.factory(),
   mockServices.events.factory(),
-  mockServices.rootSystemMetadata.factory(),
 
   // Alpha services
   actionsRegistryServiceMock.factory(),

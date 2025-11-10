@@ -43,8 +43,6 @@ import {
   UserInfoService,
   coreServices,
   createServiceFactory,
-  RootLoggerService,
-  RootSystemMetadataService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
@@ -573,29 +571,5 @@ export namespace mockServices {
       coreServices.rootInstanceMetadata,
       rootInstanceMetadata,
     );
-  }
-
-  export function rootSystemMetadata(): RootSystemMetadataService {
-    return {
-      getInstalledPlugins: () => Promise.resolve([]),
-    };
-  }
-  export namespace rootSystemMetadata {
-    /**
-     * Creates a functional mock factory for the
-     * {@link @backstage/backend-plugin-api#coreServices.systemMetadata}.
-     */
-    export const factory = simpleFactoryWithOptions(
-      coreServices.rootSystemMetadata,
-      rootSystemMetadata,
-    );
-    /**
-     * Creates a mock of the
-     * {@link @backstage/backend-events-node#systemMetadata}, optionally
-     * with some given method implementations.
-     */
-    export const mock = simpleMock(coreServices.rootSystemMetadata, () => ({
-      getInstalledPlugins: jest.fn(),
-    }));
   }
 }

@@ -33,7 +33,6 @@
     "./permissions": "./src/entrypoints/permissions/index.ts",
     "./rootConfig": "./src/entrypoints/rootConfig/index.ts",
     "./rootHealth": "./src/entrypoints/rootHealth/index.ts",
-    "./rootSystemMetadata": "./src/entrypoints/rootSystemMetadata/index.ts",
     "./rootHttpRouter": "./src/entrypoints/rootHttpRouter/index.ts",
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
@@ -85,9 +84,6 @@
       ],
       "rootHealth": [
         "src/entrypoints/rootHealth/index.ts"
-      ],
-      "rootSystemMetadata": [
-        "src/entrypoints/rootSystemMetadata/index.ts"
       ],
       "rootHttpRouter": [
         "src/entrypoints/rootHttpRouter/index.ts"

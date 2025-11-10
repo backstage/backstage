@@ -18,10 +18,12 @@ import {
   LoggerService,
   RootConfigService,
   RootInstanceMetadataService,
+} from '@backstage/backend-plugin-api';
+import { HostDiscovery } from '../../../../entrypoints/discovery';
+import {
   RootSystemMetadataService,
   RootSystemMetadataServicePluginInfo,
-} from '@backstage/backend-plugin-api';
-import { HostDiscovery } from '../../discovery';
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
  * @alpha
