@@ -30,7 +30,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
+    "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -38,7 +38,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.ts"
+        "src/alpha.tsx"
       ],
       "package.json": [
         "package.json"
@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",

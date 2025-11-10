@@ -7,6 +7,7 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
 
 // @alpha
 export const AddonBlueprint: ExtensionBlueprint<{
@@ -54,6 +55,31 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
   location: keyof typeof TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };
+
+// @alpha
+export const TechDocsReaderLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'techdocs-reader-layout';
+  params: {
+    loader: () => Promise<(props: TechDocsReaderLayoutProps) => JSX_2.Element>;
+  };
+  output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {
+    withHeader: boolean | undefined;
+    withSearch: boolean | undefined;
+  };
+  configInput: {
+    withSearch?: boolean | undefined;
+    withHeader?: boolean | undefined;
+  };
+  dataRefs: never;
+}>;
+
+// @alpha
+export interface TechDocsReaderLayoutProps {
+  withHeader?: boolean;
+  withSearch?: boolean;
+}
 
 // (No @packageDocumentation comment for this package)
 ```
