@@ -19,6 +19,7 @@ import {
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { LinkDefinition } from '../utils/definitions';
 
 <PageTitle
   title="Link"
@@ -97,6 +98,6 @@ The `Link` component has a `truncate` prop that can be used to truncate the text
   code={linkTruncateSnippet}
 />
 
-<Theming component="Link" />
+<Theming definition={LinkDefinition} />
 
 <ChangelogComponent component="link" />

@@ -15,6 +15,7 @@
  */
 
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import {
   Table as ReactAriaTable,
   type TableProps,
@@ -24,10 +25,7 @@ import clsx from 'clsx';
 
 /** @public */
 export const Table = (props: TableProps) => {
-  const { classNames, cleanedProps } = useStyles<'Table', TableProps>(
-    'Table',
-    props,
-  );
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
 
   return (
     <ReactAriaTable

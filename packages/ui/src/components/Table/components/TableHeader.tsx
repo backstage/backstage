@@ -22,6 +22,7 @@ import {
 import { Collection, useTableOptions } from 'react-aria-components';
 import { Column } from './Column';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
 
@@ -29,10 +30,7 @@ import clsx from 'clsx';
 export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
   let { selectionBehavior, selectionMode, allowsDragging } = useTableOptions();
 
-  const { classNames, cleanedProps } = useStyles<'Table', TableHeaderProps<T>>(
-    'Table',
-    props,
-  );
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
   const { columns, children, ...rest } = cleanedProps;
 
   return (

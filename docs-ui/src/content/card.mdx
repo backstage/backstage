@@ -14,6 +14,7 @@ import {
 } from './card.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { CardDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -84,6 +85,6 @@ Here's a view when card has a list.
   open
 />
 
-<Theming component="Card" />
+<Theming definition={CardDefinition} />
 
 <ChangelogComponent component="card" />

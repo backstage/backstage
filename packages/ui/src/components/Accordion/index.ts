@@ -20,6 +20,7 @@ export {
   AccordionPanel,
   AccordionGroup,
 } from './Accordion';
+export { AccordionDefinition } from './definition';
 export type {
   AccordionProps,
   AccordionTriggerProps,

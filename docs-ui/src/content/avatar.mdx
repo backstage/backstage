@@ -11,6 +11,7 @@ import {
 } from './avatar.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { AvatarDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -70,6 +71,6 @@ Control how the avatar is announced to screen readers using the `purpose` prop.
   code={snippetPurpose}
 />
 
-<Theming component="Avatar" />
+<Theming definition={AvatarDefinition} />
 
 <ChangelogComponent component="avatar" />

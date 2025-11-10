@@ -16,6 +16,7 @@ import {
 } from './grid.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { GridDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -93,6 +94,6 @@ The start and end props can be used to position the item in the grid.
 
 <CodeBlock code={gridStartEndSnippet} />
 
-<Theming component="Grid" />
+<Theming definition={GridDefinition} />
 
 <ChangelogComponent component="grid" />

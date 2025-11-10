@@ -16,6 +16,7 @@
 
 import { Link } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
+import { HeaderDefinition } from './definition';
 import { useRef } from 'react';
 import { RiShapesLine } from '@remixicon/react';
 import type { HeaderToolbarProps } from './types';
@@ -29,7 +30,7 @@ import clsx from 'clsx';
  * @internal
  */
 export const HeaderToolbar = (props: HeaderToolbarProps) => {
-  const { classNames, cleanedProps } = useStyles('Header', props);
+  const { classNames, cleanedProps } = useStyles(HeaderDefinition, props);
   const { className, icon, title, titleLink, customActions, hasTabs } =
     cleanedProps;
 
