@@ -16,6 +16,7 @@ import {
 } from './accordion.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { AccordionDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -123,6 +124,6 @@ Here's a view when multiple accordions can be open simultaneously.
   code={accordionGroupMultipleOpenSnippet}
 />
 
-<Theming component="Accordion" />
+<Theming definition={AccordionDefinition} />
 
 <ChangelogComponent component="accordion" />

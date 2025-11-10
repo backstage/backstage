@@ -15,6 +15,7 @@ import {
 } from './button-icon.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { ButtonIconDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -93,6 +94,6 @@ Here's a view when buttons are responsive.
 
 <CodeBlock code={buttonIconResponsiveSnippet} />
 
-<Theming component="ButtonIcon" />
+<Theming definition={ButtonIconDefinition} />
 
 <ChangelogComponent component="button-icon" />

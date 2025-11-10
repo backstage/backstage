@@ -20,6 +20,7 @@ import type { ElementType } from 'react';
 import type { TextProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Text.module.css';
+import { TextDefinition } from './definition';
 
 function TextComponent<T extends ElementType = 'span'>(
   props: TextProps<T>,
@@ -27,12 +28,15 @@ function TextComponent<T extends ElementType = 'span'>(
 ) {
   const Component = props.as || 'span';
 
-  const { classNames, dataAttributes, cleanedProps } = useStyles('Text', {
-    variant: 'body-medium',
-    weight: 'regular',
-    color: 'primary',
-    ...props,
-  });
+  const { classNames, dataAttributes, cleanedProps } = useStyles(
+    TextDefinition,
+    {
+      variant: 'body-medium',
+      weight: 'regular',
+      color: 'primary',
+      ...props,
+    },
+  );
 
   const { className, truncate, ...restProps } = cleanedProps;
 

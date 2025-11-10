@@ -10,6 +10,7 @@ import {
 } from './visually-hidden.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { VisuallyHiddenDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -46,6 +47,6 @@ Here's an example of providing screen reader context for a list of links in a fo
   open
 />
 
-<Theming component="VisuallyHidden" />
+<Theming definition={VisuallyHiddenDefinition} />
 
 <ChangelogComponent component="visually-hidden" />

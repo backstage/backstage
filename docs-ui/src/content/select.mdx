@@ -18,6 +18,7 @@ import {
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SelectDefinition } from '../utils/definitions';
 
 <PageTitle
   title="Select"
@@ -132,6 +133,6 @@ Here's a view when the select is responsive.
 
 <CodeBlock code={selectResponsiveSnippet} />
 
-<Theming component="Select" />
+<Theming definition={SelectDefinition} />
 
 <ChangelogComponent component="select" />

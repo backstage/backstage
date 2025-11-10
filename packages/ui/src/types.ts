@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { componentDefinitions } from './utils/componentDefinitions';
-
 /** @public */
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -175,16 +173,3 @@ export interface ComponentDefinition {
   dataAttributes?: DataAttributesMap;
   utilityProps?: string[];
 }
-
-/**
- * Type utilities for extracting information from the component styles
- * @public
- */
-export type ComponentDefinitionName = keyof typeof componentDefinitions;
-
-/**
- * Helper type to extract class names for a component
- * @public
- */
-export type ComponentClassNames<T extends ComponentDefinitionName> =
-  (typeof componentDefinitions)[T]['classNames'];

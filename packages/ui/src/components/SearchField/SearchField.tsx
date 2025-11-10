@@ -25,6 +25,7 @@ import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
 import { useStyles } from '../../hooks/useStyles';
+import { SearchFieldDefinition } from './definition';
 import styles from './SearchField.module.css';
 
 import type { SearchFieldProps } from './types';
@@ -50,7 +51,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
     }, [label, ariaLabel, ariaLabelledBy]);
 
     const { classNames, dataAttributes, style, cleanedProps } = useStyles(
-      'SearchField',
+      SearchFieldDefinition,
       {
         size: 'small',
         placeholder: 'Search',

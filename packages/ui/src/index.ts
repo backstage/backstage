@@ -59,6 +59,3 @@ export * from './types';
 
 // Hooks
 export { useBreakpoint } from './hooks/useBreakpoint';
-
-// Component Definitions
-export * from './utils/componentDefinitions';

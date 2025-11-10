@@ -15,4 +15,5 @@
  */
 
 export { Grid } from './Grid';
+export { GridDefinition, GridItemDefinition } from './definition';
 export type { GridProps, GridItemProps } from './types';

@@ -20,6 +20,8 @@ import { Link as RALink, RouterProvider } from 'react-aria-components';
 import { useNavigate, useHref } from 'react-router-dom';
 import type { ButtonLinkProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { ButtonDefinition } from '../Button/definition';
+import { ButtonLinkDefinition } from './definition';
 import { isExternalLink } from '../../utils/isExternalLink';
 import stylesButton from '../Button/Button.module.css';
 
@@ -28,13 +30,17 @@ export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
     const navigate = useNavigate();
 
-    const { classNames, dataAttributes, cleanedProps } = useStyles('Button', {
-      size: 'small',
-      variant: 'primary',
-      ...props,
-    });
+    const { classNames, dataAttributes, cleanedProps } = useStyles(
+      ButtonDefinition,
+      {
+        size: 'small',
+        variant: 'primary',
+        ...props,
+      },
+    );
 
-    const { classNames: classNamesButtonLink } = useStyles('ButtonLink');
+    const { classNames: classNamesButtonLink } =
+      useStyles(ButtonLinkDefinition);
 
     const { children, className, iconStart, iconEnd, href, ...rest } =
       cleanedProps;

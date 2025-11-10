@@ -15,6 +15,7 @@ import {
 } from './tag-group.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { TagGroupDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -109,6 +110,6 @@ A switch can be disabled using the `isDisabled` prop.
   code={disabled}
 />
 
-<Theming component="Switch" />
+<Theming definition={TagGroupDefinition} />
 
 <ChangelogComponent component="switch" />

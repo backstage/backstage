@@ -20,12 +20,13 @@ import { Link } from '../../Link';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 import type { CellProps } from '../types';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import styles from '../Table.module.css';
 
 /** @public */
 const Cell = (props: CellProps) => {
-  const { classNames, cleanedProps } = useStyles<'Table', CellProps>('Table', {
-    color: 'primary',
+  const { classNames, cleanedProps } = useStyles(TableDefinition, {
+    color: 'primary' as const,
     ...props,
   });
   const { className, title, description, color, leadingIcon, href, ...rest } =

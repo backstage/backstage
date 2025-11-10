@@ -24,6 +24,7 @@ import {
   RouterProvider,
 } from 'react-aria-components';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import { useNavigate } from 'react-router-dom';
 import { useHref } from 'react-router-dom';
 import { isExternalLink } from '../../../utils/isExternalLink';
@@ -32,10 +33,7 @@ import clsx from 'clsx';
 
 /** @public */
 export function Row<T extends object>(props: RowProps<T>) {
-  const { classNames, cleanedProps } = useStyles<'Table', RowProps<T>>(
-    'Table',
-    props,
-  );
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
   const { id, columns, children, href, ...rest } = cleanedProps;
   const navigate = useNavigate();
   const isExternal = isExternalLink(href);
