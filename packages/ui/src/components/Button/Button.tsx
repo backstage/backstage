@@ -20,6 +20,7 @@ import { Button as RAButton } from 'react-aria-components';
 import type { ButtonProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Button.module.css';
+import { useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const Button = forwardRef(
@@ -30,13 +31,19 @@ export const Button = forwardRef(
       ...props,
     });
 
-    const { children, className, iconStart, iconEnd, ...rest } = cleanedProps;
+    const { children, className, iconStart, iconEnd, onSurface, ...rest } =
+      cleanedProps;
+
+    const { surface } = useSurface();
+
+    const onSurfaceValue = onSurface || surface;
 
     return (
       <RAButton
         className={clsx(classNames.root, styles[classNames.root], className)}
         ref={ref}
         {...dataAttributes}
+        data-on-surface={onSurfaceValue}
         {...rest}
       >
         {iconStart}

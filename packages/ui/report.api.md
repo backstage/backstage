@@ -166,6 +166,8 @@ export interface BoxProps extends SpaceProps {
   // (undocumented)
   style?: React.CSSProperties;
   // (undocumented)
+  surface?: Responsive<Surface>;
+  // (undocumented)
   width?: Responsive<string>;
 }
 
@@ -227,6 +229,7 @@ export interface ButtonProps extends ButtonProps_2 {
   iconEnd?: ReactElement;
   // (undocumented)
   iconStart?: ReactElement;
+  onSurface?: Surface;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
@@ -414,6 +417,16 @@ export const componentDefinitions: {
       'minHeight',
       'maxHeight',
     ];
+    readonly dataAttributes: {
+      readonly surface: readonly [
+        '0',
+        '1',
+        '2',
+        'danger',
+        'warning',
+        'success',
+      ];
+    };
   };
   readonly Button: {
     readonly classNames: {
@@ -516,6 +529,16 @@ export const componentDefinitions: {
       'justify',
       'direction',
     ];
+    readonly dataAttributes: {
+      readonly surface: readonly [
+        '0',
+        '1',
+        '2',
+        'danger',
+        'warning',
+        'success',
+      ];
+    };
   };
   readonly Grid: {
     readonly classNames: {
@@ -539,12 +562,32 @@ export const componentDefinitions: {
       'px',
       'py',
     ];
+    readonly dataAttributes: {
+      readonly surface: readonly [
+        '0',
+        '1',
+        '2',
+        'danger',
+        'warning',
+        'success',
+      ];
+    };
   };
   readonly GridItem: {
     readonly classNames: {
       readonly root: 'bui-GridItem';
     };
     readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
+    readonly dataAttributes: {
+      readonly surface: readonly [
+        '0',
+        '1',
+        '2',
+        'danger',
+        'warning',
+        'success',
+      ];
+    };
   };
   readonly Header: {
     readonly classNames: {
@@ -919,6 +962,8 @@ export interface FlexProps extends SpaceProps {
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -948,6 +993,8 @@ export interface GridItemProps {
   rowSpan?: Responsive<Columns>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -962,6 +1009,8 @@ export interface GridProps extends SpaceProps {
   gap?: Responsive<Space>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public
@@ -1314,6 +1363,9 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
+
+// @public (undocumented)
+export type Surface = '0' | '1' | '2' | 'danger' | 'warning' | 'success';
 
 // @public (undocumented)
 export const Switch: ForwardRefExoticComponent<

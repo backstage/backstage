@@ -171,12 +171,15 @@ export function useStyles<
     }
   }
 
-  // Create cleaned props by excluding only utility props
-  // All other props (including data attributes, style, children, etc.) remain
-  const utilityPropsSet = new Set<string>(utilityPropNames);
+  // Create cleaned props by excluding utility props and data attribute props
+  // All other props (including style, children, etc.) remain
+  const excludedPropsSet = new Set<string>([
+    ...utilityPropNames,
+    ...dataAttributeNames,
+  ]);
 
   const cleanedPropsBase = Object.keys(props).reduce((acc, key) => {
-    if (!utilityPropsSet.has(key)) {
+    if (!excludedPropsSet.has(key)) {
       acc[key] = props[key];
     }
     return acc;

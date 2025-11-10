@@ -19,16 +19,16 @@ import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Grid.module.css';
+import { SurfaceProvider } from '../../hooks/useSurface';
+import { Surface } from '../../types';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'Grid',
-    { columns: 'auto', gap: '4', ...props },
-  );
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles('Grid', { columns: 'auto', gap: '4', ...props });
 
   const { className, ...rest } = cleanedProps;
 
-  return (
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -38,20 +38,27 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return props.surface ? (
+    <SurfaceProvider surface={props.surface as unknown as Surface}>
+      {content}
+    </SurfaceProvider>
+  ) : (
+    content
   );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'GridItem',
-    props,
-  );
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles('GridItem', props);
 
   const { className, ...rest } = cleanedProps;
 
-  return (
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -61,8 +68,17 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return props.surface ? (
+    <SurfaceProvider surface={props.surface as unknown as Surface}>
+      {content}
+    </SurfaceProvider>
+  ) : (
+    content
   );
 });
 

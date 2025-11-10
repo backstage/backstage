@@ -188,3 +188,6 @@ export type ComponentDefinitionName = keyof typeof componentDefinitions;
  */
 export type ComponentClassNames<T extends ComponentDefinitionName> =
   (typeof componentDefinitions)[T]['classNames'];
+
+/** @public */
+export type Surface = '0' | '1' | '2' | 'danger' | 'warning' | 'success';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SpaceProps, Responsive } from '../../types';
+import type { SpaceProps, Responsive, Surface } from '../../types';
 
 /** @public */
 export interface BoxProps extends SpaceProps {
@@ -32,4 +32,5 @@ export interface BoxProps extends SpaceProps {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  surface?: Responsive<Surface>;
 }

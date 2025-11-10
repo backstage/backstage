@@ -121,10 +121,11 @@ const preview: Preview = {
         };
       }, [selectedTheme, selectedThemeName]);
 
-      document.body.style.backgroundColor = 'var(--bui-bg)';
+      document.body.style.backgroundColor = 'var(--bui-bg-surface-0)';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg)';
+        (element as HTMLElement).style.backgroundColor =
+          'var(--bui-bg-surface-0)';
       });
 
       return (

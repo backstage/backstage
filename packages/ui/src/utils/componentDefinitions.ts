@@ -59,6 +59,9 @@ export const componentDefinitions = {
       'minHeight',
       'maxHeight',
     ],
+    dataAttributes: {
+      surface: ['0', '1', '2', 'danger', 'warning', 'success'] as const,
+    },
   },
   Button: {
     classNames: {
@@ -161,6 +164,9 @@ export const componentDefinitions = {
       'justify',
       'direction',
     ],
+    dataAttributes: {
+      surface: ['0', '1', '2', 'danger', 'warning', 'success'] as const,
+    },
   },
   Grid: {
     classNames: {
@@ -184,12 +190,18 @@ export const componentDefinitions = {
       'px',
       'py',
     ],
+    dataAttributes: {
+      surface: ['0', '1', '2', 'danger', 'warning', 'success'] as const,
+    },
   },
   GridItem: {
     classNames: {
       root: 'bui-GridItem',
     },
     utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
+    dataAttributes: {
+      surface: ['0', '1', '2', 'danger', 'warning', 'success'] as const,
+    },
   },
   Header: {
     classNames: {

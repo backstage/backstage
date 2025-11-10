@@ -19,17 +19,17 @@ import { FlexProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Flex.module.css';
+import { SurfaceProvider } from '../../hooks/useSurface';
+import { Surface } from '../../types';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'Flex',
-    { gap: '4', ...props },
-  );
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles('Flex', { gap: '4', ...props });
 
   const { className, ...rest } = cleanedProps;
 
-  return (
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -39,7 +39,16 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return props.surface ? (
+    <SurfaceProvider surface={props.surface as unknown as Surface}>
+      {content}
+    </SurfaceProvider>
+  ) : (
+    content
   );
 });
