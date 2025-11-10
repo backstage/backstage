@@ -69,7 +69,8 @@
     "@opentelemetry/auto-instrumentations-node": "^0.61.0",
     "@opentelemetry/exporter-prometheus": "^0.54.0",
     "@opentelemetry/sdk-node": "^0.54.0",
-    "example-app": "link:../app"
+    "example-app": "link:../app",
+    "express-promise-router": "^4.1.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
