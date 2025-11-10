@@ -20245,11 +20245,11 @@ __metadata:
   linkType: hard
 
 "@types/archiver@npm:^6.0.0":
-  version: 6.0.3
-  resolution: "@types/archiver@npm:6.0.3"
+  version: 6.0.4
+  resolution: "@types/archiver@npm:6.0.4"
   dependencies:
     "@types/readdir-glob": "npm:*"
-  checksum: 10/c0ab3ca45b02baf2020b5ddb9f61452b5f9600db3a700ea365a46572f81baaaeb3b53ff5391b443df01af1492f470114006721e1850179da513b87cc5e6f441d
+  checksum: 10/93e500f55e3fbb200b10988dbd8407df78e8a3d921d09d97c114bde609ef75e478a2fdeddc1b8da465f569219dfb1fb7dc1ff83332d77c2a03806d68a027c909
   languageName: node
   linkType: hard
 
