@@ -22,26 +22,39 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { createBackend } from '../../CreateBackend';
+import { Backend } from '@backstage/backend-app-api';
+import Router from 'express-promise-router';
 
 describe('SystemMetadataService', () => {
   describe('returns plugins from config', () => {
     let port: number;
-    let testPlugin: ReturnType<typeof createBackendPlugin>;
+    let instance: Backend;
     beforeEach(async () => {
       port = await getPort();
-      testPlugin = createBackendPlugin({
-        pluginId: 'test-plugin',
-        register(reg) {
-          reg.registerInit({
-            deps: {},
-            init: async () => {},
-          });
-        },
-      });
+      instance = createBackend();
+      instance.add(
+        createBackendPlugin({
+          pluginId: 'test-plugin',
+          register(reg) {
+            reg.registerInit({
+              deps: {
+                systemMetadata: coreServices.rootSystemMetadata,
+                rootHttpRouter: coreServices.rootHttpRouter,
+              },
+              init: async ({ systemMetadata, rootHttpRouter }) => {
+                const router = Router();
+                router.use('/plugins', async (_, res) => {
+                  res.json(await systemMetadata.getInstalledPlugins());
+                });
+                rootHttpRouter.use('/systemMetadata', router);
+              },
+            });
+          },
+        }),
+      );
     });
 
     it('should list all known instances', async () => {
-      const instance = createBackend();
       instance.add(
         mockServices.rootConfig.factory({
           data: {
@@ -54,11 +67,10 @@ describe('SystemMetadataService', () => {
           },
         }),
       );
-      instance.add(testPlugin);
       await instance.start();
 
       const instanceResponse = await fetch(
-        `http://localhost:${port}/.backstage/systemMetadata/v1/plugins/installed`,
+        `http://localhost:${port}/systemMetadata/plugins`,
       );
 
       expect(instanceResponse.status).toBe(200);
@@ -91,13 +103,11 @@ describe('SystemMetadataService', () => {
         deps: {},
         factory: () => config,
       });
-      const instance = createBackend();
       instance.add(configFactory);
-      instance.add(testPlugin);
       await instance.start();
 
       const instance1Response = await fetch(
-        `http://localhost:${port}/.backstage/systemMetadata/v1/plugins/installed`,
+        `http://localhost:${port}/systemMetadata/plugins`,
       );
 
       expect(instance1Response.status).toBe(200);
@@ -133,7 +143,7 @@ describe('SystemMetadataService', () => {
       });
 
       const responseAfterUpdate = await fetch(
-        `http://localhost:${port}/.backstage/systemMetadata/v1/plugins/installed`,
+        `http://localhost:${port}/systemMetadata/plugins`,
       );
 
       expect(responseAfterUpdate.status).toBe(200);
@@ -157,6 +167,10 @@ describe('SystemMetadataService', () => {
           pluginId: 'test-plugin',
         },
       ]);
+    });
+
+    afterEach(async () => {
+      await instance.stop();
     });
   });
 });
