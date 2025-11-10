@@ -22,7 +22,6 @@ import {
   RootSystemMetadataServicePluginInfo,
 } from '@backstage/backend-plugin-api';
 import { HostDiscovery } from '../../discovery';
-import {} from '@backstage/backend-plugin-api';
 
 /**
  * @alpha
@@ -79,18 +78,5 @@ export class DefaultRootSystemMetadataService
           Object.keys(target).length > 0,
       ),
     }));
-  }
-
-  public async getHosts(): Promise<
-    ReadonlyArray<string | { external: string; internal: string }>
-  > {
-    const resolutions = await this.#hostDiscovery.listResolutions();
-    const hosts = new Set<string | { external: string; internal: string }>();
-    for (const [_, targets] of resolutions.entries()) {
-      for (const target of targets) {
-        hosts.add(target as string | { external: string; internal: string });
-      }
-    }
-    return Array.from(hosts);
   }
 }

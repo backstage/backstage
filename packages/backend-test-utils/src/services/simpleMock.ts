@@ -39,7 +39,6 @@ export function simpleMock<TService>(
     const mock = mockFactory();
     if (partialImpl) {
       for (const [key, impl] of Object.entries(partialImpl)) {
-        console.log(key, impl, mock);
         if (typeof impl === 'function') {
           (mock as any)[key].mockImplementation(impl);
         } else {

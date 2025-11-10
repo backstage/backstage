@@ -26,11 +26,6 @@ export async function createSystemMetadataRouter(options: {
 
   const router = Router();
 
-  router.get('/hosts', async (_, res) => {
-    const hosts = await systemMetadata.getHosts();
-    res.json({ items: hosts });
-  });
-
   router.get('/plugins/installed', async (_, res) => {
     res.json(await systemMetadata.getInstalledPlugins());
   });

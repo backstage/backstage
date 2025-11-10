@@ -25,8 +25,4 @@ export interface RootSystemMetadataService {
   getInstalledPlugins: () => Promise<
     ReadonlyArray<RootSystemMetadataServicePluginInfo>
   >;
-
-  getHosts: () => Promise<
-    ReadonlyArray<string | { external: string; internal: string }>
-  >;
 }
