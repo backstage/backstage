@@ -1,0 +1,10 @@
+---
+title: EventCatalog Backstage Plugin  
+author: EventCatalog  
+authorUrl: https://www.eventcatalog.dev  
+category: Discovery  
+description: Embed your Event-Driven Architecture source-of-truth from EventCatalog directly into Backstage.  
+documentation: https://www.eventcatalog.dev/docs/development/plugins/backstage/intro  
+iconUrl: https://www.eventcatalog.dev/img/logo.png
+npmPackageName: '@eventcatalog/backstage-plugin-eventcatalog'  
+addedDate: '2025-11-10'
