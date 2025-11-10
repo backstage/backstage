@@ -705,8 +705,8 @@ __metadata:
   linkType: hard
 
 "@mdx-js/loader@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@mdx-js/loader@npm:3.1.0"
+  version: 3.1.1
+  resolution: "@mdx-js/loader@npm:3.1.1"
   dependencies:
     "@mdx-js/mdx": "npm:^3.0.0"
     source-map: "npm:^0.7.0"
@@ -715,7 +715,7 @@ __metadata:
   peerDependenciesMeta:
     webpack:
       optional: true
-  checksum: 10/983b8d4949f4d214a17f4ad8597a50de36ace75e93292d2493b5fb6077d69d6abc8230b62f88b818c04f12a01d281d63edb6a0738937f7e259406a73ce998134
+  checksum: 10/b78afe06e49b5c0bec9e5b232fbc874ffa721ff6b022bdaa7a29e2b5a44fa9f8282aa2b34f74701ca0b8750b33a775cd3182aaba5202e209f3d66961600c930f
   languageName: node
   linkType: hard
 
