@@ -280,7 +280,7 @@ const config: Config = {
             ? [
                 {
                   from: '/docs/not-a-real-path',
-                  to: '/docs/auth/test',
+                  to: '/docs/auth/not-a-real-path',
                 },
               ]
             : []),
