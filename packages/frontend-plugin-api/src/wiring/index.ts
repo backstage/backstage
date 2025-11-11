@@ -18,8 +18,8 @@ export { coreExtensionData } from './coreExtensionData';
 export {
   createExtension,
   type ExtensionDefinition,
-  type ExtensionDefinitionParameters,
   type ExtensionDefinitionAttachTo,
+  type ExtensionDefinitionParameters,
   type CreateExtensionOptions,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,

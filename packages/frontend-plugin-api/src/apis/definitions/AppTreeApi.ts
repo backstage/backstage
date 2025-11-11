@@ -15,12 +15,8 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import {
-  FrontendPlugin,
-  Extension,
-  ExtensionDataRef,
-  ExtensionAttachTo,
-} from '../../wiring';
+import { FrontendPlugin, Extension, ExtensionDataRef } from '../../wiring';
+import { ExtensionAttachTo } from '../../wiring/resolveExtensionDefinition';
 
 /**
  * The specification for this {@link AppNode} in the {@link AppTree}.

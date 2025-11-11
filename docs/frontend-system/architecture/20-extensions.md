@@ -390,3 +390,31 @@ const childExtension = createExtension({
   },
 });
 ```
+
+## Extension input references
+
+Building on the relative attachment point concept, you can also reference extension inputs directly via the `inputs` property of an extension definition. This provides a more convenient and type-safe way to attach child extensions, especially when using blueprints that provide a nested hierarchy of extensions.
+
+Extension inputs references are always relative, this means that they can only be used for referencing extensions within the same plugin.
+
+Each extension definition exposes an `inputs` property that contains references to all of its defined inputs. These references can be passed directly to the `attachTo` option when creating child extensions:
+
+```tsx
+const parent = createExtension({
+  inputs: {
+    children: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  // other options...
+});
+
+// Create a child extension that attaches to the parent's input
+const child = createExtension({
+  attachTo: page.inputs.children, // Direct reference to the input
+  output: [coreExtensionData.reactElement], // Outputs are verified against the parent input
+  // other options...
+});
+```
+
+These references are a type-safe way to attach child extensions, it both ensures that the parent input is present, as well as the child providing the required data for the parent.
+
+Under the hood, input references are resolved in the same way as relative attachment points, using the extension's kind, namespace, and name to construct the final attachment target.
