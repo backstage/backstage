@@ -198,7 +198,7 @@ const config: Config = {
         redirects: [
           {
             from: '/docs',
-            to: '/docs/overview/what-is-backstage',
+            to: '/docs/landing-page/doc-landing-page',
           },
           {
             from: '/docs/features/software-catalog/software-catalog-overview',
@@ -279,7 +279,7 @@ const config: Config = {
           ...(semver.gt(backstageVersion, '1.40.0')
             ? [
                 {
-                  from: '/docs/plugins/url-reader/',
+                  from: '/docs/not-a-real-path',
                   to: '/docs/auth/test',
                 },
               ]
