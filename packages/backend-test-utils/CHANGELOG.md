@@ -1,5 +1,13 @@
 # @backstage/backend-test-utils
 
+## 1.10.0-next.2
+
+### Patch Changes
+
+- f3001fd: Tweak some of the mock services to have more precise types
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.2
+
 ## 1.10.0-next.1
 
 ### Patch Changes

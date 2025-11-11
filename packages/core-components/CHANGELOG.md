@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.18.3-next.2
+
+### Patch Changes
+
+- 96ad674: Line numbers in LogViewer will not be selectable in UI anymore
+
 ## 0.18.3-next.1
 
 ### Patch Changes
