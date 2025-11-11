@@ -1,5 +1,15 @@
 # @backstage/plugin-org
 
+## 0.6.46-next.1
+
+### Patch Changes
+
+- 6db9e7e: Improved responsiveness of GroupProfileCard component
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.2
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
 ## 0.6.46-next.0
 
 ### Patch Changes

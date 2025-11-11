@@ -1,5 +1,19 @@
 # example-backend
 
+## 0.0.44-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-backend@0.6.0-next.2
+  - @backstage/backend-plugin-api@1.5.0-next.2
+  - @backstage/plugin-kubernetes-backend@0.20.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.16-next.2
+  - @backstage/plugin-catalog-backend@3.2.0-next.1
+  - @backstage/plugin-events-backend@0.5.8-next.1
+  - @backstage/plugin-scaffolder-backend@3.0.1-next.1
+  - @backstage/plugin-search-backend@2.0.8-next.1
+
 ## 0.0.44-next.1
 
 ### Patch Changes

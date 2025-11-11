@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.3-next.2
+
+### Patch Changes
+
+- 36d7582: Added missing i18n
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
 ## 1.21.3-next.1
 
 ### Patch Changes
