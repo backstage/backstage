@@ -37,8 +37,11 @@ nav:
           - Kubernetes: 'deployment/k8s.md'
       - Using Backstage:
           - Logging in: 'getting-started/logging-in.md'
-          - Register a component: 'getting-started/register-a-component.md'
-          - Create a component: 'getting-started/create-a-component.md'
+          - UI overview: 'getting-started/ui-overview.md'
+          - Managing Components:
+            - Creating a component: 'getting-started/create-a-component.md'
+            - Registering a component: 'getting-started/register-a-component.md'
+            - Updating a component: 'getting-started/'update-a-component.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
   - Core Features:
       - Software Catalog:
