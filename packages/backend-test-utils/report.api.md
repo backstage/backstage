@@ -230,11 +230,7 @@ export namespace mockServices {
   export function events(): EventsService;
   // (undocumented)
   export namespace events {
-    const factory: () => ServiceFactory<
-      EventsService,
-      'plugin',
-      'singleton' | 'multiton'
-    >;
+    const factory: () => ServiceFactory<EventsService, 'plugin', 'singleton'>;
     const mock: (
       partialImpl?: Partial<EventsService> | undefined,
     ) => ServiceMock<EventsService>;
@@ -320,7 +316,7 @@ export namespace mockServices {
     const // (undocumented)
       factory: (
         options?: Options | undefined,
-      ) => ServiceFactory<RootConfigService, 'root', 'singleton' | 'multiton'>;
+      ) => ServiceFactory<RootConfigService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootConfigService> | undefined,
@@ -356,7 +352,7 @@ export namespace mockServices {
       factory: () => ServiceFactory<
         RootInstanceMetadataService,
         'root',
-        'singleton' | 'multiton'
+        'singleton'
       >;
   }
   // (undocumented)
@@ -369,7 +365,7 @@ export namespace mockServices {
       ) => ServiceMock<RootLifecycleService>;
   }
   // (undocumented)
-  export function rootLogger(options?: rootLogger.Options): LoggerService;
+  export function rootLogger(options?: rootLogger.Options): RootLoggerService;
   // (undocumented)
   export namespace rootLogger {
     // (undocumented)
@@ -379,7 +375,7 @@ export namespace mockServices {
     const // (undocumented)
       factory: (
         options?: Options | undefined,
-      ) => ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'>;
+      ) => ServiceFactory<RootLoggerService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootLoggerService> | undefined,
