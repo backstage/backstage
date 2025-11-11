@@ -20,6 +20,7 @@ import { paths } from '../../../lib/paths';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from '@backstage/cli-node';
 import { resolve as resolvePath } from 'path';
+import { readFileSync } from 'fs';
 
 type Options = {
   args: string[];
@@ -30,6 +31,7 @@ type Options = {
   withDeprecatedKeys?: boolean;
   fullVisibility?: boolean;
   strict?: boolean;
+  schemaPath?: string;
   watch?: (newFrontendAppConfigs: AppConfig[]) => void;
 };
 
@@ -60,12 +62,23 @@ export async function loadCliConfig(options: Options) {
     localPackageNames = packages.map(p => p.packageJson.name);
   }
 
-  const schema = await loadConfigSchema({
-    dependencies: localPackageNames,
-    // Include the package.json in the project root if it exists
-    packagePaths: [paths.resolveTargetRoot('package.json')],
-    noUndeclaredProperties: options.strict,
-  });
+  if (options.schemaPath) {
+    console.log(`Using provided schema at ${options.schemaPath}`);
+  }
+  const schema = await loadConfigSchema(
+    options.schemaPath
+      ? {
+          serialized: JSON.parse(
+            readFileSync(resolvePath(options.schemaPath)).toString(),
+          ),
+        }
+      : {
+          dependencies: localPackageNames,
+          // Include the package.json in the project root if it exists
+          packagePaths: [paths.resolveTargetRoot('package.json')],
+          noUndeclaredProperties: options.strict,
+        },
+  );
 
   const source = ConfigSources.default({
     allowMissingDefaultConfig: true,
