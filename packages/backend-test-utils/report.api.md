@@ -352,7 +352,7 @@ export namespace mockServices {
       factory: () => ServiceFactory<
         RootInstanceMetadataService,
         'root',
-        'singleton' | 'multiton'
+        'singleton'
       >;
   }
   // (undocumented)

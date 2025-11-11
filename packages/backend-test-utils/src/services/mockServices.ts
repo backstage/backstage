@@ -43,6 +43,7 @@ import {
   UserInfoService,
   coreServices,
   createServiceFactory,
+  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
