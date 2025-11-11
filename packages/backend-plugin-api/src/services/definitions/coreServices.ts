@@ -287,5 +287,6 @@ export namespace coreServices {
     import('./RootInstanceMetadataService').RootInstanceMetadataService
   >({
     id: 'core.rootInstanceMetadata',
+    scope: 'root',
   });
 }
