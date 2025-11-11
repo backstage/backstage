@@ -1,5 +1,43 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-notifications-node@0.2.21-next.1
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.2.21-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-notifications-common@0.1.2-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 3d09bb2: Adds username as optional config in order to send Slack notifications with a specific username in the case when using one Slack App for more than just Backstage.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-notifications-common@0.1.1
+  - @backstage/plugin-notifications-node@0.2.20
+
 ## 0.2.0-next.1
 
 ### Minor Changes

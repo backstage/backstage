@@ -24,9 +24,11 @@ import { FormFieldBlueprint } from '../blueprints';
 import { OpaqueFormField } from '@internal/scaffolder';
 
 class DefaultScaffolderFormFieldsApi implements ScaffolderFormFieldsApi {
-  constructor(
-    private readonly formFieldLoaders: Array<() => Promise<FormField>> = [],
-  ) {}
+  private readonly formFieldLoaders: Array<() => Promise<FormField>>;
+
+  constructor(formFieldLoaders: Array<() => Promise<FormField>> = []) {
+    this.formFieldLoaders = formFieldLoaders;
+  }
 
   async getFormFields() {
     const formFields = await Promise.all(

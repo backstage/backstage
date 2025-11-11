@@ -39,8 +39,11 @@ import {
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
+  private readonly db: Knex;
 
-  constructor(private readonly db: Knex) {}
+  constructor(db: Knex) {
+    this.db = db;
+  }
 
   getProviderName(): string {
     return 'DefaultLocationStore';

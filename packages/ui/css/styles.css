@@ -1,3 +1,5 @@
+@layer tokens, base, components, utilities;
+
 /*! modern-normalize v3.0.1 | MIT License | https://github.com/sindresorhus/modern-normalize */
 @layer tokens {
   :root {
@@ -238,6 +240,20 @@
 
   body {
     background-color: var(--bui-bg);
+    color: var(--bui-fg-primary);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    font-size: var(--bui-font-size-3);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  [data-theme-mode="dark"] {
+    color-scheme: dark;
+  }
+
+  [data-theme-mode="light"] {
+    color-scheme: light;
   }
 }
 
@@ -9242,5 +9258,3 @@
     }
   }
 }
-
-@layer legacy;

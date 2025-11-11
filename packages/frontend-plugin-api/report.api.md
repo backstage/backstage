@@ -399,13 +399,7 @@ export { createApiRef };
 export function createExtension<
   UOutput extends ExtensionDataRef,
   TInputs extends {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
+    [inputName in string]: ExtensionInput;
   },
   TConfigSchema extends {
     [key: string]: (zImpl: typeof z) => z.ZodType;
@@ -453,13 +447,7 @@ export function createExtensionBlueprint<
   TParams extends object | ExtensionBlueprintDefineParams,
   UOutput extends ExtensionDataRef,
   TInputs extends {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
+    [inputName in string]: ExtensionInput;
   },
   TConfigSchema extends {
     [key in string]: (zImpl: typeof z) => z.ZodType;
@@ -511,13 +499,7 @@ export type CreateExtensionBlueprintOptions<
   TParams extends object | ExtensionBlueprintDefineParams,
   UOutput extends ExtensionDataRef,
   TInputs extends {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
+    [inputName in string]: ExtensionInput;
   },
   TConfigSchema extends {
     [key in string]: (zImpl: typeof z) => z.ZodType;
@@ -601,13 +583,7 @@ export type CreateExtensionOptions<
   TName extends string | undefined,
   UOutput extends ExtensionDataRef,
   TInputs extends {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
+    [inputName in string]: ExtensionInput;
   },
   TConfigSchema extends {
     [key: string]: (zImpl: typeof z) => z.ZodType;
@@ -909,13 +885,7 @@ export interface ExtensionBlueprint<
     UFactoryOutput extends ExtensionDataValue<any, any>,
     UNewOutput extends ExtensionDataRef,
     TExtraInputs extends {
-      [inputName in string]: ExtensionInput<
-        ExtensionDataRef,
-        {
-          optional: boolean;
-          singleton: boolean;
-        }
-      >;
+      [inputName in string]: ExtensionInput;
     },
   >(args: {
     name?: TName;
@@ -1008,13 +978,7 @@ export type ExtensionBlueprintParameters = {
   };
   output?: ExtensionDataRef;
   inputs?: {
-    [KName in string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
+    [KName in string]: ExtensionInput;
   };
   dataRefs?: {
     [name in string]: ExtensionDataRef;
@@ -1116,13 +1080,7 @@ export type ExtensionDefinition<
     UFactoryOutput extends ExtensionDataValue<any, any>,
     UNewOutput extends ExtensionDataRef,
     TExtraInputs extends {
-      [inputName in string]: ExtensionInput<
-        ExtensionDataRef,
-        {
-          optional: boolean;
-          singleton: boolean;
-        }
-      >;
+      [inputName in string]: ExtensionInput;
     },
     TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
   >(
@@ -1222,13 +1180,7 @@ export type ExtensionDefinitionParameters = {
   };
   output?: ExtensionDataRef;
   inputs?: {
-    [KName in string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
+    [KName in string]: ExtensionInput;
   };
   params?: object | ExtensionBlueprintDefineParams;
 };
@@ -1253,8 +1205,11 @@ export interface ExtensionInput<
     {
       optional?: true;
     }
-  >,
+  > = ExtensionDataRef,
   TConfig extends {
+    singleton: boolean;
+    optional: boolean;
+  } = {
     singleton: boolean;
     optional: boolean;
   },
@@ -1625,18 +1580,17 @@ export const Progress: {
 export type ProgressProps = {};
 
 // @public
-export type ResolvedExtensionInput<
-  TExtensionInput extends ExtensionInput<any, any>,
-> = TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
-  ? {
-      node: AppNode;
-    } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
-  : never;
+export type ResolvedExtensionInput<TExtensionInput extends ExtensionInput> =
+  TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
+    ? {
+        node: AppNode;
+      } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
+    : never;
 
 // @public
 export type ResolvedExtensionInputs<
   TInputs extends {
-    [name in string]: ExtensionInput<any, any>;
+    [name in string]: ExtensionInput;
   },
 > = {
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']

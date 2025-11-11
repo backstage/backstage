@@ -1,5 +1,21 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/config@1.3.5
+
 ## 0.1.6-next.1
 
 ### Patch Changes

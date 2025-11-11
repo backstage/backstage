@@ -30,7 +30,7 @@ export * from './components/Container';
 export * from './components/Avatar';
 export * from './components/Button';
 export * from './components/Card';
-export * from './components/Collapsible';
+export * from './components/Accordion';
 export * from './components/Dialog';
 export * from './components/FieldLabel';
 export * from './components/Header';
@@ -52,6 +52,7 @@ export * from './components/Link';
 export * from './components/Select';
 export * from './components/Skeleton';
 export * from './components/Switch';
+export * from './components/VisuallyHidden';
 
 // Types
 export * from './types';

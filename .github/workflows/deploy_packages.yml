@@ -16,8 +16,8 @@ jobs:
         node-version: [20.x, 22.x]
 
     services:
-      postgres17:
-        image: postgres:17
+      postgres18:
+        image: postgres:18
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -27,8 +27,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postgres13:
-        image: postgres:13
+      postgres14:
+        image: postgres:14
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -94,7 +94,7 @@ jobs:
         run: yarn backstage-cli config:check --lax
 
       - name: backstage-cli cache
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -122,8 +122,8 @@ jobs:
           yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --successCache --successCacheDir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES17_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres17.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_postgres18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_postgres14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
@@ -151,7 +151,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 

@@ -1,5 +1,38 @@
 # @backstage/plugin-home
 
+## 0.8.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/theme@0.7.0
+  - @backstage/plugin-home-react@0.1.32-next.0
+
+## 0.8.13
+
+### Patch Changes
+
+- e7d59d3: fix(home): correct `clearAll` logic to properly handle `deletable` flag
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/config@1.3.5
+  - @backstage/theme@0.7.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-home-react@0.1.31
+
 ## 0.8.13-next.3
 
 ### Patch Changes

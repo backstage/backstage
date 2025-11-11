@@ -23,12 +23,12 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 
       - name: find latest release
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         id: find-release
         with:
           script: |
@@ -82,7 +82,7 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
@@ -102,7 +102,7 @@ jobs:
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save package-docs cache
-        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         if: always()
         with:
           path: .cache/package-docs
@@ -135,7 +135,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 
@@ -166,7 +166,7 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
@@ -186,7 +186,7 @@ jobs:
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save package-docs cache
-        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         if: always()
         with:
           path: .cache/package-docs
@@ -240,7 +240,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           egress-policy: audit
 

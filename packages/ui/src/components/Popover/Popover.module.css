@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+@layer tokens, base, components, utilities;
+
 @layer components {
   .bui-Popover {
     margin-right: 12px;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
     background-color: var(--bui-bg-surface-1);
     border: 1px solid var(--bui-border);
     border-radius: var(--bui-radius-3);

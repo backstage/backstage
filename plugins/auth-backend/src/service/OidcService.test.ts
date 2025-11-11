@@ -687,12 +687,53 @@ describe('OidcService', () => {
           code,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
+          expiresIn: 3600,
         });
 
         expect(tokenResult).toEqual({
           accessToken: mockToken,
           tokenType: 'Bearer',
           expiresIn: 3600,
+          idToken: mockToken,
+          scope: 'openid',
+        });
+      });
+
+      it('should exchange valid code for tokens with custom expiration', async () => {
+        const { service, mocks } = await createOidcService(databaseId);
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+          expiresIn: 6000,
+        });
+
+        expect(tokenResult).toEqual({
+          accessToken: mockToken,
+          tokenType: 'Bearer',
+          expiresIn: 6000,
           idToken: mockToken,
           scope: 'openid',
         });
@@ -706,6 +747,7 @@ describe('OidcService', () => {
             code: 'test-code',
             redirectUri: 'https://example.com/callback',
             grantType: 'client_credentials',
+            expiresIn: 3600,
           }),
         ).rejects.toThrow('Unsupported grant type');
       });
@@ -746,6 +788,7 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           codeVerifier,
+          expiresIn: 3600,
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
@@ -781,6 +824,7 @@ describe('OidcService', () => {
             redirectUri: 'https://example.com/callback',
             grantType: 'authorization_code',
             codeVerifier: 'invalid-verifier',
+            expiresIn: 3600,
           }),
         ).rejects.toThrow('Invalid code verifier');
       });

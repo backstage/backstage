@@ -1,5 +1,27 @@
 # @backstage/plugin-permission-common
 
+## 0.9.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+
+## 0.9.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+
 ## 0.9.2-next.0
 
 ### Patch Changes

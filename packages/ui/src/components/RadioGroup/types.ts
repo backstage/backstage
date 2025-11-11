@@ -24,7 +24,7 @@ import { ReactNode } from 'react';
 /** @public */
 export interface RadioGroupProps
   extends Omit<AriaRadioGroupProps, 'children'>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   children?: ReactNode;
 }
 

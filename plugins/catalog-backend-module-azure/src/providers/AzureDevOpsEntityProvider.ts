@@ -97,13 +97,20 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     });
   }
 
+  private readonly config: AzureDevOpsConfig;
+  private readonly integration: AzureIntegration;
+  private readonly credentialsProvider: AzureDevOpsCredentialsProvider;
+
   private constructor(
-    private readonly config: AzureDevOpsConfig,
-    private readonly integration: AzureIntegration,
-    private readonly credentialsProvider: AzureDevOpsCredentialsProvider,
+    config: AzureDevOpsConfig,
+    integration: AzureIntegration,
+    credentialsProvider: AzureDevOpsCredentialsProvider,
     logger: LoggerService,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
+    this.config = config;
+    this.integration = integration;
+    this.credentialsProvider = credentialsProvider;
     this.logger = logger.child({
       target: this.getProviderName(),
     });

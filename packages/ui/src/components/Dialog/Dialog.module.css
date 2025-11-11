@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@layer tokens, base, components, utilities;
+
 @layer components {
   .bui-DialogOverlay {
     position: fixed;
@@ -21,7 +23,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(232, 232, 232, 0.8);
+    background: color-mix(in srgb, var(--bui-gray-2) 80%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;

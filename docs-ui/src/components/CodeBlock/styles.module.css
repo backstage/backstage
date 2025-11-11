@@ -1,23 +1,29 @@
 .codeBlock {
-  border-radius: 4px;
-  border: 1px solid var(--border);
+  border-radius: 8px;
   position: relative;
   background: transparent;
   overflow-x: auto;
   font-family: var(--font-mono);
-  background-color: #fff;
+  background-color: var(--code-bg);
   margin-bottom: 1rem;
 }
 
-[data-theme-mode='dark'] .codeBlock {
-  background-color: #121212;
+.title {
+  padding: 12px 20px;
+  font-size: 0.8125rem;
+  color: #fff;
+  font-family: var(--font-regular);
+  font-weight: var(--font-weight-bold);
+  background-color: var(--code-title);
 }
 
-.title {
-  border-bottom: 1px solid var(--border);
-  padding: 12px 20px;
-  font-size: 0.875rem;
-  color: var(--secondary);
+.title code {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.375rem;
+  border-radius: 0.25rem;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
 }
 
 .code {

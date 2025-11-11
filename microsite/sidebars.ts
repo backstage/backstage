@@ -62,6 +62,42 @@ export default {
       'overview/support',
       'getting-started/keeping-backstage-updated',
     ],
+    ...(process.env.GOLDEN_PATH
+      ? {
+          'Golden Paths': [
+            {
+              type: 'category',
+              label: '001 - create-app',
+              items: [
+                'golden-path/create-app/index',
+                'golden-path/create-app/npx-create-app',
+                'golden-path/create-app/local-development',
+                'golden-path/create-app/installing-plugins',
+                'golden-path/create-app/logging-in',
+                'golden-path/create-app/custom-theme',
+                'golden-path/create-app/keeping-backstage-updated',
+              ],
+            },
+            {
+              type: 'category',
+              label: '002 - Plugins',
+              items: [
+                'golden-path/plugins/index',
+                'golden-path/plugins/why-build-plugins',
+                'golden-path/plugins/sustainable-plugin-development',
+                {
+                  type: 'category',
+                  label: 'Backend Plugins',
+                  items: [
+                    'golden-path/plugins/backend/001-first-steps',
+                    'golden-path/plugins/backend/002-poking-around',
+                  ],
+                },
+              ],
+            },
+          ],
+        }
+      : {}),
     'Core Features': [
       {
         type: 'category',

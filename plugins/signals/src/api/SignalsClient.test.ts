@@ -17,8 +17,9 @@
 import { mockApis } from '@backstage/test-utils';
 import WS from 'jest-websocket-mock';
 import { SignalClient } from './SignalClient';
+import waitForExpect from 'wait-for-expect';
 
-describe('SignalsClient', () => {
+describe('SignalClient', () => {
   const identity = mockApis.identity({ token: '12345' });
   const discoveryApi = mockApis.discovery({ baseUrl: 'http://localhost:1234' });
 
@@ -72,25 +73,51 @@ describe('SignalsClient', () => {
 
     await server.connected;
 
-    await expect(server).toReceiveMessage({
-      action: 'subscribe',
-      channel: 'channel',
-    });
+    await waitForExpect(() =>
+      expect(server).toHaveReceivedMessages([
+        {
+          action: 'subscribe',
+          channel: 'channel',
+        },
+        {
+          action: 'subscribe',
+          channel: 'channel',
+        },
+      ]),
+    );
     server.send({ channel: 'channel', message: { hello: 'world' } });
     expect(messageMock1).toHaveBeenCalledWith({ hello: 'world' });
     expect(messageMock2).toHaveBeenCalledWith({ hello: 'world' });
 
     await unsubscribe1();
-    await expect(server).not.toReceiveMessage({
-      action: 'unsubscribe',
-      channel: 'channel',
-    });
+    await waitForExpect(() =>
+      expect(server).toReceiveMessage({
+        action: 'unsubscribe',
+        channel: 'channel',
+      }),
+    );
 
     await unsubscribe2();
-    await expect(server).toReceiveMessage({
-      action: 'unsubscribe',
-      channel: 'channel',
-    });
+    await waitForExpect(() =>
+      expect(server.messages).toEqual([
+        {
+          action: 'subscribe',
+          channel: 'channel',
+        },
+        {
+          action: 'subscribe',
+          channel: 'channel',
+        },
+        {
+          action: 'unsubscribe',
+          channel: 'channel',
+        },
+        {
+          action: 'unsubscribe',
+          channel: 'channel',
+        },
+      ]),
+    );
   });
 
   it('should reconnect on error', async () => {
@@ -111,10 +138,11 @@ describe('SignalsClient', () => {
 
     await server.server.emit('error', null);
 
-    await new Promise(r => setTimeout(r, 50));
-    await expect(server).toReceiveMessage({
-      action: 'subscribe',
-      channel: 'channel',
-    });
+    await waitForExpect(() =>
+      expect(server.messages).toEqual([
+        { action: 'subscribe', channel: 'channel' },
+        { action: 'subscribe', channel: 'channel' },
+      ]),
+    );
   });
 });

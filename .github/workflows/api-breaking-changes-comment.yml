@@ -23,7 +23,7 @@ jobs:
       comment-cache-key: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.0
         with:
           disable-sudo: true
           egress-policy: block
@@ -99,11 +99,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
 
       - name: Fetch cached Manifests File
         id: cache
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: comment.md
           key: ${{ needs.setup.outputs.comment-cache-key }}

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend-module-email",
-  "version": "0.3.14-next.1",
+  "version": "0.3.16-next.1",
   "description": "The email backend module for the notifications plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -34,7 +34,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.550.0",
+    "@aws-sdk/client-sesv2": "^3.911.0",
     "@azure/communication-email": "^1.0.0",
     "@azure/identity": "^4.0.0",
     "@backstage/backend-plugin-api": "workspace:^",

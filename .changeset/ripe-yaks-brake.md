@@ -1,6 +1,0 @@
----
-'@backstage/plugin-search-react': patch
-'@backstage/plugin-search': patch
----
-
-Implemented AbortController request cancellation for overlapping search requests. This change ensures that when users type quickly, previous search requests are properly canceled before new ones start.

@@ -34,7 +34,7 @@ function TextComponent<T extends ElementType = 'span'>(
     ...props,
   });
 
-  const { className, ...restProps } = cleanedProps;
+  const { className, truncate, ...restProps } = cleanedProps;
 
   return (
     <Component
