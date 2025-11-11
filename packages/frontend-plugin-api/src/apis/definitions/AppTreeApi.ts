@@ -19,7 +19,7 @@ import {
   FrontendPlugin,
   Extension,
   ExtensionDataRef,
-  ExtensionAttachToSpec,
+  ExtensionAttachTo,
 } from '../../wiring';
 
 /**
@@ -33,7 +33,7 @@ import {
  */
 export interface AppNodeSpec {
   readonly id: string;
-  readonly attachTo: ExtensionAttachToSpec;
+  readonly attachTo: ExtensionAttachTo;
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;

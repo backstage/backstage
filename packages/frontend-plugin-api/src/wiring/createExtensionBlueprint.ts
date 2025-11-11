@@ -18,7 +18,7 @@ import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '@backstage/types';
 import { OpaqueType } from '@internal/opaque';
 import {
-  ExtensionAttachToSpec,
+  ExtensionDefinitionAttachTo,
   ExtensionDefinition,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
@@ -109,7 +109,7 @@ export type CreateExtensionBlueprintOptions<
   TDataRefs extends { [name in string]: ExtensionDataRef },
 > = {
   kind: TKind;
-  attachTo: ExtensionAttachToSpec;
+  attachTo: ExtensionDefinitionAttachTo;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -214,7 +214,7 @@ export interface ExtensionBlueprint<
     TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
   >(args: {
     name?: TName;
-    attachTo?: ExtensionAttachToSpec;
+    attachTo?: ExtensionDefinitionAttachTo;
     disabled?: boolean;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
@@ -247,7 +247,7 @@ export interface ExtensionBlueprint<
     TExtraInputs extends { [inputName in string]: ExtensionInput },
   >(args: {
     name?: TName;
-    attachTo?: ExtensionAttachToSpec;
+    attachTo?: ExtensionDefinitionAttachTo;
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &

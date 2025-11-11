@@ -259,7 +259,7 @@ export interface AppNodeInstance {
 // @public
 export interface AppNodeSpec {
   // (undocumented)
-  readonly attachTo: ExtensionAttachToSpec;
+  readonly attachTo: ExtensionAttachTo;
   // (undocumented)
   readonly config?: unknown;
   // (undocumented)
@@ -510,7 +510,7 @@ export type CreateExtensionBlueprintOptions<
   },
 > = {
   kind: TKind;
-  attachTo: ExtensionAttachToSpec;
+  attachTo: ExtensionDefinitionAttachTo;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -592,7 +592,7 @@ export type CreateExtensionOptions<
 > = {
   kind?: TKind;
   name?: TName;
-  attachTo: ExtensionAttachToSpec;
+  attachTo: ExtensionDefinitionAttachTo;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -839,7 +839,7 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 }
 
 // @public (undocumented)
-export type ExtensionAttachToSpec =
+export type ExtensionAttachTo =
   | {
       id: string;
       input: string;
@@ -848,6 +848,9 @@ export type ExtensionAttachToSpec =
       id: string;
       input: string;
     }>;
+
+// @public @deprecated (undocumented)
+export type ExtensionAttachToSpec = ExtensionAttachTo;
 
 // @public (undocumented)
 export interface ExtensionBlueprint<
@@ -861,7 +864,7 @@ export interface ExtensionBlueprint<
     TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
   >(args: {
     name?: TName;
-    attachTo?: ExtensionAttachToSpec;
+    attachTo?: ExtensionDefinitionAttachTo;
     disabled?: boolean;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
@@ -889,7 +892,7 @@ export interface ExtensionBlueprint<
     },
   >(args: {
     name?: TName;
-    attachTo?: ExtensionAttachToSpec;
+    attachTo?: ExtensionDefinitionAttachTo;
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -1086,7 +1089,7 @@ export type ExtensionDefinition<
   >(
     args: Expand<
       {
-        attachTo?: ExtensionAttachToSpec;
+        attachTo?: ExtensionDefinitionAttachTo;
         disabled?: boolean;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -1167,6 +1170,37 @@ export type ExtensionDefinition<
       >;
   }>;
 };
+
+// @public
+export type ExtensionDefinitionAttachTo =
+  | {
+      id: string;
+      input: string;
+      relative?: never;
+    }
+  | {
+      relative: {
+        kind?: string;
+        name?: string;
+      };
+      input: string;
+      id?: never;
+    }
+  | Array<
+      | {
+          id: string;
+          input: string;
+          relative?: never;
+        }
+      | {
+          relative: {
+            kind?: string;
+            name?: string;
+          };
+          input: string;
+          id?: never;
+        }
+    >;
 
 // @public (undocumented)
 export type ExtensionDefinitionParameters = {

@@ -112,10 +112,46 @@ export type VerifyExtensionFactoryOutput<
       >}`
   : never;
 
-/** @public */
-export type ExtensionAttachToSpec =
-  | { id: string; input: string }
-  | Array<{ id: string; input: string }>;
+/**
+ * Specifies where an extension should attach in the extension tree.
+ *
+ * @remarks
+ *
+ * A standard attachment point declaration will specify the ID of the parent extension, as well as the name of the input to attach to.
+ *
+ * There are two more advanced forms that are available for more complex use-cases:
+ *
+ * 1. Relative attachment points: using the `relative` property instead of `id`, the attachment point is resolved relative to the current plugin.
+ * 2. Array of attachment points: an array of attachment points can be used to clone and attach to multiple extensions at once.
+ *
+ * @example
+ * ```ts
+ * // Attach to a specific extension by full ID
+ * { id: 'app/routes', input: 'routes' }
+ *
+ * // Attach to an extension in the same plugin by kind
+ * { relative: { kind: 'page' }, input: 'actions' }
+ *
+ * // Attach to multiple parents at once
+ * [
+ *   { id: 'page/home', input: 'widgets' },
+ *   { relative: { kind: 'page' }, input: 'widgets' },
+ * ]
+ * ```
+ *
+ * @public
+ */
+export type ExtensionDefinitionAttachTo =
+  | { id: string; input: string; relative?: never }
+  | { relative: { kind?: string; name?: string }; input: string; id?: never }
+  | Array<
+      | { id: string; input: string; relative?: never }
+      | {
+          relative: { kind?: string; name?: string };
+          input: string;
+          id?: never;
+        }
+    >;
 
 /** @public */
 export type CreateExtensionOptions<
@@ -128,7 +164,7 @@ export type CreateExtensionOptions<
 > = {
   kind?: TKind;
   name?: TName;
-  attachTo: ExtensionAttachToSpec;
+  attachTo: ExtensionDefinitionAttachTo;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -188,7 +224,7 @@ export type ExtensionDefinition<
   >(
     args: Expand<
       {
-        attachTo?: ExtensionAttachToSpec;
+        attachTo?: ExtensionDefinitionAttachTo;
         disabled?: boolean;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -395,12 +431,23 @@ export function createExtension<
       if (options.name) {
         parts.push(`name=${options.name}`);
       }
-      parts.push(
-        `attachTo=${[options.attachTo]
-          .flat()
-          .map(a => `${a.id}@${a.input}`)
-          .join('+')}`,
-      );
+      const attachTo = [options.attachTo]
+        .flat()
+        .map(a => {
+          if ('relative' in a && a.relative) {
+            let id = '<plugin>';
+            if (a.relative.kind) {
+              id = `${a.relative.kind}:${id}`;
+            }
+            if (a.relative.name) {
+              id = `${id}/${a.relative.name}`;
+            }
+            return `${id}@${a.input}`;
+          }
+          return `${a.id}@${a.input}`;
+        })
+        .join('+');
+      parts.push(`attachTo=${attachTo}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
     override(overrideOptions) {
