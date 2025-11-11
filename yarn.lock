@@ -10608,14 +10608,15 @@ __metadata:
   linkType: hard
 
 "@keyv/redis@npm:^4.0.1":
-  version: 4.4.1
-  resolution: "@keyv/redis@npm:4.4.1"
+  version: 4.6.0
+  resolution: "@keyv/redis@npm:4.6.0"
   dependencies:
     "@redis/client": "npm:^1.6.0"
     cluster-key-slot: "npm:^1.1.2"
+    hookified: "npm:^1.10.0"
   peerDependencies:
     keyv: ^5.3.4
-  checksum: 10/85bf5830d5a19f45fbba864f7eb830cff0059f3f7c59c711a65b439821008a3321a94fb06c4d1f09295f0f233422586458652d266696c0925b5c8d1d695700ec
+  checksum: 10/c2619b4a8607fbc1cf159d695e827e7eba29859f342e017bf32e049eb62d40a61160671aec52c4f4ad6726fcee21c551193f3dd81846c0e98d1e0206d076e6fd
   languageName: node
   linkType: hard
 
@@ -33029,6 +33030,13 @@ __metadata:
   dependencies:
     parse-passwd: "npm:^1.0.0"
   checksum: 10/18dd4db87052c6a2179d1813adea0c4bfcfa4f9996f0e226fefb29eb3d548e564350fa28ec46b0bf1fbc0a1d2d6922ceceb80093115ea45ff8842a4990139250
+  languageName: node
+  linkType: hard
+
+"hookified@npm:^1.10.0":
+  version: 1.12.2
+  resolution: "hookified@npm:1.12.2"
+  checksum: 10/d445956d47ea8a3d30b29a9c1fe9945536577fa027d83c69eff9de4d47e22167fbe2b0721a8c4df6a0a2b53f0cc0b9eeda3a311ea9b4f20e09b2bb556105b035
   languageName: node
   linkType: hard
 
