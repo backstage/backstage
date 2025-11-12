@@ -17079,8 +17079,8 @@ __metadata:
   linkType: hard
 
 "@rspack/plugin-react-refresh@npm:^1.4.3":
-  version: 1.5.2
-  resolution: "@rspack/plugin-react-refresh@npm:1.5.2"
+  version: 1.5.3
+  resolution: "@rspack/plugin-react-refresh@npm:1.5.3"
   dependencies:
     error-stack-parser: "npm:^2.1.4"
     html-entities: "npm:^2.6.0"
@@ -17090,7 +17090,7 @@ __metadata:
   peerDependenciesMeta:
     webpack-hot-middleware:
       optional: true
-  checksum: 10/e1fdda9ab1d453f6718e5c57e67ec81048bf4b5d9534ccfe04a7354f0fe3309f914aa53592d2a7430e2a490319a27b34a6b01da8ad4e88b0053e5a8141ec1b6c
+  checksum: 10/3886a13dca3d42e9245480283ab839c16015a48eceda0d7352114de26968e319e8f110c5ec4dbe4c20d4a8457b368401840c736ce49f774edd450cf3ba193f62
   languageName: node
   linkType: hard
 
