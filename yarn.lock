@@ -17568,7 +17568,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/types@npm:^2.11.0, @slack/types@npm:^2.13.0, @slack/types@npm:^2.14.0, @slack/types@npm:^2.9.0":
+"@slack/types@npm:^2.11.0, @slack/types@npm:^2.13.0, @slack/types@npm:^2.14.0, @slack/types@npm:^2.18.0":
   version: 2.18.0
   resolution: "@slack/types@npm:2.18.0"
   checksum: 10/c4a2a2ad0934503a9932779958c2d48af9227d6bb5b1f1568e2efcaac6e612467233962cec86069f13069820a0485d608380bea1dcb23705b1d34a78d108ca0a
@@ -17595,22 +17595,22 @@ __metadata:
   linkType: hard
 
 "@slack/web-api@npm:^7.5.0":
-  version: 7.9.3
-  resolution: "@slack/web-api@npm:7.9.3"
+  version: 7.12.0
+  resolution: "@slack/web-api@npm:7.12.0"
   dependencies:
     "@slack/logger": "npm:^4.0.0"
-    "@slack/types": "npm:^2.9.0"
+    "@slack/types": "npm:^2.18.0"
     "@types/node": "npm:>=18.0.0"
     "@types/retry": "npm:0.12.0"
-    axios: "npm:^1.8.3"
+    axios: "npm:^1.11.0"
     eventemitter3: "npm:^5.0.1"
-    form-data: "npm:^4.0.0"
+    form-data: "npm:^4.0.4"
     is-electron: "npm:2.2.2"
     is-stream: "npm:^2"
     p-queue: "npm:^6"
     p-retry: "npm:^4"
     retry: "npm:^0.13.1"
-  checksum: 10/dc8aa95c8127a1155f0c0756bc819185da0b471feb5953dc118301e577e67f45ad4ef64d9459ff430b44f769344a6347d1636ad59267483e9ac0104611263a05
+  checksum: 10/c8936187e1e99a758a13cb33d9aea0b4ecf9d5c78f6d8b7dd1e1cc3e0fb30f50ed718e5270ca6d3c9ccba259f3b1a058c95fc43d35366cdc6ac8cce07742344d
   languageName: node
   linkType: hard
 
@@ -24874,7 +24874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.0.0, axios@npm:^1.13.0, axios@npm:^1.7.4, axios@npm:^1.8.3, axios@npm:^1.9.0":
+"axios@npm:^1.0.0, axios@npm:^1.11.0, axios@npm:^1.13.0, axios@npm:^1.7.4, axios@npm:^1.9.0":
   version: 1.13.2
   resolution: "axios@npm:1.13.2"
   dependencies:
