@@ -41,11 +41,13 @@ import {
 } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import capitalize from 'lodash/capitalize';
 
 import { rootRouteRef } from '../../../routes';
 import { useParams } from 'react-router-dom';
+import { techdocsTranslationRef } from '../../../translation';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
@@ -73,6 +75,7 @@ export const TechDocsReaderPageHeader = (
   const { children } = props;
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const { '*': path = '' } = useParams();
@@ -125,7 +128,7 @@ export const TechDocsReaderPageHeader = (
       />
       {ownedByRelations.length > 0 && (
         <HeaderLabel
-          label="Owner"
+          label={t('readerPageHeader.owner')}
           value={
             <EntityRefLinks
               color="inherit"
@@ -136,7 +139,10 @@ export const TechDocsReaderPageHeader = (
         />
       )}
       {lifecycle ? (
-        <HeaderLabel label="Lifecycle" value={String(lifecycle)} />
+        <HeaderLabel
+          label={t('readerPageHeader.lifecycle')}
+          value={String(lifecycle)}
+        />
       ) : null}
       {locationMetadata &&
       locationMetadata.type !== 'dir' &&
@@ -149,7 +155,7 @@ export const TechDocsReaderPageHeader = (
                 <CodeIcon style={{ marginTop: '-25px' }} />
               </Grid>
               <Grid style={{ padding: 0 }} item>
-                Source
+                {t('readerPageHeader.source')}
               </Grid>
             </Grid>
           }

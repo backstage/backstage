@@ -258,3 +258,6 @@ export default createFrontendPlugin({
     entityContent: rootCatalogDocsRouteRef,
   },
 });
+
+/** @alpha */
+export { techdocsTranslationRef } from '../translation';

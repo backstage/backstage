@@ -69,3 +69,4 @@ export type {
 };
 
 export * from './overridableComponents';
+export { techdocsTranslationRef } from './translation';
