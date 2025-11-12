@@ -25,8 +25,11 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 export const apiDocsTranslationRef: TranslationRef<
   'api-docs',
   {
+    readonly 'apiDefinitionCard.error.title': 'Could not fetch the API';
+    readonly 'apiDefinitionCard.rawButtonTitle': 'Raw';
     readonly 'apiDefinitionDialog.closeButtonTitle': 'Close';
     readonly 'apiDefinitionDialog.tabsAriaLabel': 'API definition options';
+    readonly 'apiDefinitionDialog.rawButtonTitle': 'Raw';
     readonly 'apiDefinitionDialog.toggleButtonAriaLabel': 'Toggle API Definition Dialog';
     readonly 'defaultApiExplorerPage.title': 'APIs';
     readonly 'defaultApiExplorerPage.subtitle': '{{orgName}} API Explorer';
