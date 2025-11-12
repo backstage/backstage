@@ -40,17 +40,24 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { CatalogExportButton } from '../CatalogExportButton';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
+  enableExport?: boolean;
 };
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable />, pagination } = props;
+  const {
+    filters,
+    content = <CatalogTable />,
+    pagination,
+    enableExport = false,
+  } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -69,6 +76,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
               to={createComponentLink && createComponentLink()}
             />
           )}
+          {enableExport && <CatalogExportButton />}
           <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
         </ContentHeader>
         <EntityListProvider pagination={pagination}>
