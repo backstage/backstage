@@ -30,7 +30,7 @@ export const catalogGraphTranslationRef: TranslationRef<
     readonly 'catalogGraphPage.supportButtonDescription': 'Start tracking your component in by adding it to the software catalog.';
     readonly 'catalogGraphPage.simplifiedSwitchLabel': 'Simplified';
     readonly 'catalogGraphPage.mergeRelationsSwitchLabel': 'Merge relations';
-    readonly 'catalogGraphPage.zoomOutDescription': 'Use pinch &amp; zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
+    readonly 'catalogGraphPage.zoomOutDescription': 'Use pinch & zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
     readonly 'catalogGraphPage.curveFilter.title': 'Curve';
     readonly 'catalogGraphPage.curveFilter.curveStepBefore': 'Step Before';
     readonly 'catalogGraphPage.curveFilter.curveMonotoneX': 'Monotone X';
