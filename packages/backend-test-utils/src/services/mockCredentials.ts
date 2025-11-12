@@ -122,6 +122,7 @@ export namespace mockCredentials {
     validateUserEntityRef(userEntityRef);
     const result = {
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: {
         type: 'user',
         userEntityRef,
