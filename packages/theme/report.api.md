@@ -4,7 +4,6 @@
 
 ```ts
 import type { ComponentsProps } from '@material-ui/core/styles/props';
-import { Context } from 'react';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import type { Palette } from '@material-ui/core/styles/createPalette';
 import type { PaletteOptions } from '@material-ui/core/styles/createPalette';
@@ -18,9 +17,6 @@ import { ThemeOptions } from '@mui/material/styles';
 import { ThemeOptions as ThemeOptions_2 } from '@material-ui/core/styles';
 import type { ThemeOptions as ThemeOptions_3 } from '@material-ui/core/styles/createTheme';
 import { UnifiedTheme as UnifiedTheme_2 } from '@backstage/theme';
-
-// @public
-export const AppThemeIdContext: Context<string | undefined>;
 
 // @public @deprecated
 export type BackstagePalette = Palette & BackstagePaletteAdditions;
@@ -464,5 +460,6 @@ export interface UnifiedThemeProviderProps {
   children: ReactNode;
   // (undocumented)
   theme: UnifiedTheme;
+  themeName?: string;
 }
 ```

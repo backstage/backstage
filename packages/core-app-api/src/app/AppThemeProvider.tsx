@@ -16,7 +16,6 @@
 
 import { useMemo, useEffect, useState, PropsWithChildren } from 'react';
 import { useApi, appThemeApiRef, AppTheme } from '@backstage/core-plugin-api';
-import { AppThemeIdContext } from '@backstage/theme';
 import useObservable from 'react-use/esm/useObservable';
 
 // This tries to find the most accurate match, but also falls back to less
@@ -89,9 +88,5 @@ export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
     throw new Error('App has no themes');
   }
 
-  return (
-    <AppThemeIdContext.Provider value={appTheme.id}>
-      <appTheme.Provider children={children} />
-    </AppThemeIdContext.Provider>
-  );
+  return <appTheme.Provider>{children}</appTheme.Provider>;
 }

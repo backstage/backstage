@@ -21,10 +21,7 @@ import {
 import { useTheme as useV5Theme } from '@mui/material/styles';
 import { makeStyles as makeV5Styles } from '@mui/styles';
 import { render, screen, waitFor } from '@testing-library/react';
-import {
-  UnifiedThemeProvider,
-  AppThemeIdContext,
-} from './UnifiedThemeProvider';
+import { UnifiedThemeProvider } from './UnifiedThemeProvider';
 import { themes } from './themes';
 
 describe('UnifiedThemeProvider', () => {
@@ -91,13 +88,11 @@ describe('UnifiedThemeProvider', () => {
     );
   });
 
-  it('applies theme attributes based on the provided theme id', async () => {
+  it('applies theme attributes based on the provided options', async () => {
     render(
-      <AppThemeIdContext.Provider value="aperture">
-        <UnifiedThemeProvider theme={themes.light}>
-          <span>theme</span>
-        </UnifiedThemeProvider>
-      </AppThemeIdContext.Provider>,
+      <UnifiedThemeProvider theme={themes.light} themeName="aperture">
+        <span>theme</span>
+      </UnifiedThemeProvider>,
     );
 
     await waitFor(() =>

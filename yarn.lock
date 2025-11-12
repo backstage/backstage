@@ -3493,7 +3493,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@testing-library/dom": "npm:^10.0.0"

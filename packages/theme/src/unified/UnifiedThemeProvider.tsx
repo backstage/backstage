@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode, createContext, useContext } from 'react';
+import { ReactNode } from 'react';
 import {
   ThemeProvider,
   StylesProvider,
@@ -30,12 +30,6 @@ import { UnifiedTheme } from './types';
 import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material/className';
 
 /**
- * React context for the current application theme ID.
- * @public
- */
-export const AppThemeIdContext = createContext<string | undefined>(undefined);
-
-/**
  * Props for {@link UnifiedThemeProvider}.
  *
  * @public
@@ -43,6 +37,8 @@ export const AppThemeIdContext = createContext<string | undefined>(undefined);
 export interface UnifiedThemeProviderProps {
   children: ReactNode;
   theme: UnifiedTheme;
+  /** Optional override for the value written to the `data-theme-name` attribute. */
+  themeName?: string;
 }
 
 /**
@@ -72,15 +68,14 @@ import { useApplyThemeAttributes } from './useApplyThemeAttributes';
 export function UnifiedThemeProvider(
   props: UnifiedThemeProviderProps,
 ): JSX.Element {
-  const { children, theme } = props;
+  const { children, theme, themeName } = props;
 
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
 
   const themeMode = v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode;
-  const themeId = useContext(AppThemeIdContext) ?? 'backstage';
 
-  useApplyThemeAttributes(themeMode, themeId);
+  useApplyThemeAttributes(themeMode, themeName ?? 'backstage');
 
   let result = children as JSX.Element;
 
