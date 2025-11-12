@@ -10630,11 +10630,11 @@ __metadata:
   linkType: hard
 
 "@keyv/valkey@npm:^1.0.1":
-  version: 1.0.10
-  resolution: "@keyv/valkey@npm:1.0.10"
+  version: 1.0.11
+  resolution: "@keyv/valkey@npm:1.0.11"
   dependencies:
     iovalkey: "npm:^0.3.3"
-  checksum: 10/3fce23bdea1e7484be50da8ddf486abd04851425ee563a22ce70dca62ab449b1afec47bfe720d1b9cbb6bdb8c4ed6d8c417004e83dc3c3f02ae9bd33b0a7a0ce
+  checksum: 10/c12b08590c0e95e008bdf0649a1f91983af69c94e31c52a81dc5473328efc25a4a9c7e435208a4a0c38e4a77a0b0f28945c81e0c34baaaa1bd0283014bea85ac
   languageName: node
   linkType: hard
 
