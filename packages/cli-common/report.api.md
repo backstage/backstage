@@ -7,13 +7,13 @@
 export const BACKSTAGE_JSON = 'backstage.json';
 
 // @public
+export function bootstrapEnvProxyAgents(): void;
+
+// @public
 export function findPaths(searchDir: string): Paths;
 
 // @public
 export function isChildPath(base: string, path: string): boolean;
-
-// @public
-export function maybeBootstrapProxy(): void;
 
 // @public
 export type Paths = {

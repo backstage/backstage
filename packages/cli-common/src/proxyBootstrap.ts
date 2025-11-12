@@ -28,7 +28,7 @@
  *
  * @public
  */
-export function maybeBootstrapProxy() {
+export function bootstrapEnvProxyAgents() {
   // see https://www.npmjs.com/package/global-agent
   const globalAgentNamespace =
     process.env.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE ?? 'GLOBAL_AGENT_';

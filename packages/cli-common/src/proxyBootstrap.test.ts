@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { maybeBootstrapProxy } from './proxyBootstrap';
+import { bootstrapEnvProxyAgents } from './proxyBootstrap';
 
 jest.mock('global-agent', () => ({
   bootstrap: jest.fn(),
@@ -24,7 +24,7 @@ jest.mock('undici', () => ({
   EnvHttpProxyAgent: jest.fn(),
 }));
 
-describe('maybeBootstrapProxy', () => {
+describe('bootstrapEnvProxyAgents', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
@@ -42,7 +42,7 @@ describe('maybeBootstrapProxy', () => {
 
     const { bootstrap } =
       require('global-agent') as typeof import('global-agent');
-    maybeBootstrapProxy();
+    bootstrapEnvProxyAgents();
 
     expect(bootstrap).toHaveBeenCalledTimes(1);
   });
@@ -52,7 +52,7 @@ describe('maybeBootstrapProxy', () => {
 
     const { bootstrap } =
       require('global-agent') as typeof import('global-agent');
-    maybeBootstrapProxy();
+    bootstrapEnvProxyAgents();
 
     expect(bootstrap).toHaveBeenCalledTimes(1);
   });
@@ -62,7 +62,7 @@ describe('maybeBootstrapProxy', () => {
 
     const { setGlobalDispatcher, EnvHttpProxyAgent } =
       require('undici') as typeof import('undici');
-    maybeBootstrapProxy();
+    bootstrapEnvProxyAgents();
 
     expect(EnvHttpProxyAgent).toHaveBeenCalledTimes(1);
     expect(setGlobalDispatcher).toHaveBeenCalledWith(
@@ -75,7 +75,7 @@ describe('maybeBootstrapProxy', () => {
 
     const { setGlobalDispatcher, EnvHttpProxyAgent } =
       require('undici') as typeof import('undici');
-    maybeBootstrapProxy();
+    bootstrapEnvProxyAgents();
 
     expect(EnvHttpProxyAgent).toHaveBeenCalledTimes(1);
     expect(setGlobalDispatcher).toHaveBeenCalledWith(
@@ -89,7 +89,7 @@ describe('maybeBootstrapProxy', () => {
     const { setGlobalDispatcher } =
       require('undici') as typeof import('undici');
 
-    maybeBootstrapProxy();
+    bootstrapEnvProxyAgents();
 
     expect(bootstrap).not.toHaveBeenCalled();
     expect(setGlobalDispatcher).not.toHaveBeenCalled();
@@ -101,7 +101,7 @@ describe('maybeBootstrapProxy', () => {
 
     const { bootstrap } =
       require('global-agent') as typeof import('global-agent');
-    maybeBootstrapProxy();
+    bootstrapEnvProxyAgents();
 
     expect(bootstrap).toHaveBeenCalledTimes(1);
   });
