@@ -16,10 +16,10 @@
 import { InputError } from '@backstage/errors';
 import { REQUEST_COLUMN_ENTITY_FILTER_MAP } from '../types';
 import { ParsedQs } from 'qs';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 
 type FilterValue = string | string[];
 type FilterObj = Record<string, FilterValue>;
-type EntityFilterQuery = FilterObj | FilterObj[] | undefined;
 
 function remapKey(k: string): string {
   return REQUEST_COLUMN_ENTITY_FILTER_MAP[k] ?? k; // if already a dot path (e.g. 'spec.type'), it stays as-is
@@ -43,7 +43,7 @@ const normObj = (requestQuery: object): FilterObj => {
 
 export const toEntityFilterQuery = (
   requestQuery: ParsedQs,
-): EntityFilterQuery => {
+): EntityFilterQuery | undefined => {
   if (requestQuery === null) {
     return undefined;
   }

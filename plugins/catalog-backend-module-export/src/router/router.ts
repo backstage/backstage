@@ -52,7 +52,7 @@ export const createRouter = (options: RouterOptions): express.Router => {
 
     const credentials = await httpAuth.credentials(request);
     const { items: entities } = await catalogApi.getEntities(
-      { filter: filter as any },
+      { filter },
       { credentials },
     );
 
