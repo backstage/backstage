@@ -27,6 +27,7 @@
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
