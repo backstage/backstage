@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.8-next.1
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+
 ## 0.9.8-next.0
 
 ### Patch Changes

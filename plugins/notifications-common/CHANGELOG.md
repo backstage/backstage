@@ -1,5 +1,14 @@
 # @backstage/plugin-notifications-common
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 87e597c: Adds support for default configuration for an entire notification channel.
+  This setting will also be inherited down to origins and topics while still respecting the users individual choices.
+
+  This will be handy if you want to use a "opt-in" strategy.
+
 ## 0.1.2-next.0
 
 ### Patch Changes

@@ -63,15 +63,20 @@ export const componentDefinitions = {
   Button: {
     classNames: {
       root: 'bui-Button',
+      content: 'bui-ButtonContent',
+      spinner: 'bui-ButtonSpinner',
     },
     dataAttributes: {
       size: ['small', 'medium', 'large'] as const,
       variant: ['primary', 'secondary', 'tertiary'] as const,
+      loading: [true, false] as const,
     },
   },
   ButtonIcon: {
     classNames: {
       root: 'bui-ButtonIcon',
+      content: 'bui-ButtonIconContent',
+      spinner: 'bui-ButtonIconSpinner',
     },
   },
   ButtonLink: {
@@ -89,19 +94,11 @@ export const componentDefinitions = {
   },
   Checkbox: {
     classNames: {
-      root: 'bui-CheckboxRoot',
-      label: 'bui-CheckboxLabel',
+      root: 'bui-Checkbox',
       indicator: 'bui-CheckboxIndicator',
     },
     dataAttributes: {
-      checked: [true, false] as const,
-    },
-  },
-  Collapsible: {
-    classNames: {
-      root: 'bui-CollapsibleRoot',
-      trigger: 'bui-CollapsibleTrigger',
-      panel: 'bui-CollapsiblePanel',
+      selected: [true, false] as const,
     },
   },
   Container: {
@@ -118,6 +115,18 @@ export const componentDefinitions = {
       headerTitle: 'bui-DialogHeaderTitle',
       body: 'bui-DialogBody',
       footer: 'bui-DialogFooter',
+    },
+  },
+  Accordion: {
+    classNames: {
+      root: 'bui-Accordion',
+      trigger: 'bui-AccordionTrigger',
+      triggerButton: 'bui-AccordionTriggerButton',
+      triggerTitle: 'bui-AccordionTriggerTitle',
+      triggerSubtitle: 'bui-AccordionTriggerSubtitle',
+      triggerIcon: 'bui-AccordionTriggerIcon',
+      panel: 'bui-AccordionPanel',
+      group: 'bui-AccordionGroup',
     },
   },
   FieldError: {
@@ -229,6 +238,8 @@ export const componentDefinitions = {
     dataAttributes: {
       variant: ['subtitle', 'body', 'caption', 'label'] as const,
       weight: ['regular', 'bold'] as const,
+      color: ['primary', 'secondary', 'danger', 'warning', 'success'] as const,
+      truncate: [true, false] as const,
     },
   },
   List: {
@@ -261,7 +272,10 @@ export const componentDefinitions = {
   PasswordField: {
     classNames: {
       root: 'bui-PasswordField',
-      inputVisibility: 'bui-InputVisibility',
+      inputWrapper: 'bui-PasswordFieldInputWrapper',
+      input: 'bui-PasswordFieldInput',
+      inputIcon: 'bui-PasswordFieldIcon',
+      inputVisibility: 'bui-PasswordFieldVisibility',
     },
     dataAttributes: {
       size: ['small', 'medium'] as const,
@@ -282,7 +296,10 @@ export const componentDefinitions = {
   SearchField: {
     classNames: {
       root: 'bui-SearchField',
-      clear: 'bui-InputClear',
+      clear: 'bui-SearchFieldClear',
+      inputWrapper: 'bui-SearchFieldInputWrapper',
+      input: 'bui-SearchFieldInput',
+      inputIcon: 'bui-SearchFieldInputIcon',
     },
     dataAttributes: {
       startCollapsed: [true, false] as const,
@@ -292,13 +309,18 @@ export const componentDefinitions = {
   Select: {
     classNames: {
       root: 'bui-Select',
+      popover: 'bui-SelectPopover',
       trigger: 'bui-SelectTrigger',
+      chevron: 'bui-SelectTriggerChevron',
       value: 'bui-SelectValue',
-      icon: 'bui-SelectIcon',
       list: 'bui-SelectList',
       item: 'bui-SelectItem',
       itemIndicator: 'bui-SelectItemIndicator',
       itemLabel: 'bui-SelectItemLabel',
+      searchWrapper: 'bui-SelectSearchWrapper',
+      search: 'bui-SelectSearch',
+      searchClear: 'bui-SelectSearchClear',
+      noResults: 'bui-SelectNoResults',
     },
     dataAttributes: {
       size: ['small', 'medium'] as const,
@@ -393,6 +415,11 @@ export const componentDefinitions = {
     classNames: {
       tooltip: 'bui-Tooltip',
       arrow: 'bui-TooltipArrow',
+    },
+  },
+  VisuallyHidden: {
+    classNames: {
+      root: 'bui-VisuallyHidden',
     },
   },
 } as const satisfies Record<string, ComponentDefinition>;

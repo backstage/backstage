@@ -863,4 +863,144 @@ describe('github', () => {
       });
     });
   });
+
+  describe('Page sizes configuration', () => {
+    const org = 'my-org';
+
+    it('uses custom page sizes for getOrganizationTeams', async () => {
+      server.use(
+        graphqlMsw.query('teams', ({ variables }) => {
+          expect(variables.teamsPageSize).toBe(10);
+          expect(variables.membersPageSize).toBe(20);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      slug: 'team1',
+                      combinedSlug: 'my-org/team1',
+                      name: 'Team 1',
+                      description: 'desc',
+                      avatarUrl: '',
+                      editTeamUrl: '',
+                      parentTeam: null,
+                      members: {
+                        pageInfo: { hasNextPage: false },
+                        nodes: [{ login: 'user1' }],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationTeams(graphql as any, org, undefined, {
+        teams: 10,
+        teamMembers: 20,
+        organizationMembers: 20,
+        repositories: 10,
+      });
+    });
+
+    it('uses custom page sizes for getOrganizationUsers', async () => {
+      server.use(
+        graphqlMsw.query('users', ({ variables }) => {
+          expect(variables.organizationMembersPageSize).toBe(30);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                membersWithRole: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      login: 'user1',
+                      name: 'User 1',
+                      bio: '',
+                      avatarUrl: '',
+                      email: 'user1@example.com',
+                      organizationVerifiedDomainEmails: [],
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationUsers(graphql as any, org, 'token', undefined, {
+        teams: 10,
+        teamMembers: 20,
+        organizationMembers: 30,
+        repositories: 10,
+      });
+    });
+
+    it('uses custom page sizes for getOrganizationRepositories', async () => {
+      server.use(
+        graphqlMsw.query('repositories', ({ variables }) => {
+          expect(variables.repositoriesPageSize).toBe(15);
+          return HttpResponse.json({
+            data: {
+              repositoryOwner: {
+                repositories: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      name: 'repo1',
+                      url: 'https://github.com/my-org/repo1',
+                      isArchived: false,
+                      isFork: false,
+                      visibility: 'public',
+                      defaultBranchRef: { name: 'main' },
+                      catalogInfoFile: null,
+                      repositoryTopics: { nodes: [] },
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationRepositories(
+        graphql as any,
+        org,
+        '/catalog-info.yaml',
+        {
+          teams: 10,
+          teamMembers: 20,
+          organizationMembers: 30,
+          repositories: 15,
+        },
+      );
+    });
+
+    it('uses default page sizes when not specified', async () => {
+      server.use(
+        graphqlMsw.query('teams', ({ variables }) => {
+          expect(variables.teamsPageSize).toBe(25);
+          expect(variables.membersPageSize).toBe(50);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationTeams(graphql as any, org);
+    });
+  });
 });

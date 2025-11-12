@@ -194,8 +194,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -228,8 +228,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -251,8 +251,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -1165,6 +1165,7 @@ const _default: OverridableFrontendPlugin<
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}

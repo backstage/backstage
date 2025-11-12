@@ -136,7 +136,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
           // No permission configured for this document type - always allow.
           if (!permission) {
-            return { result: AuthorizeResult.ALLOW as const };
+            return { result: AuthorizeResult.ALLOW };
           }
 
           // Resource permission supplied, so we need to check for conditional decisions.

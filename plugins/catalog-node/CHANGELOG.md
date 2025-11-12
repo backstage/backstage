@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-node
 
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 9d3ec06: Make YAML merge (<<:) support configurable in the Backstage Catalog instead of always being enabled
+- 8c26af4: Enable YAML merge keys in yamlPlaceholderResolver
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
 ## 1.19.2-next.0
 
 ### Patch Changes

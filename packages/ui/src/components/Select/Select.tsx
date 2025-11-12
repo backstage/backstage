@@ -15,15 +15,7 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import {
-  Select as AriaSelect,
-  SelectValue,
-  Button,
-  Popover,
-  ListBox,
-  ListBoxItem,
-  Text,
-} from 'react-aria-components';
+import { Select as AriaSelect, Popover } from 'react-aria-components';
 import clsx from 'clsx';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
@@ -31,10 +23,14 @@ import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import styles from './Select.module.css';
 import stylesPopover from '../Popover/Popover.module.css';
-import { RiArrowDownSLine, RiCheckLine } from '@remixicon/react';
+import { SelectTrigger } from './SelectTrigger';
+import { SelectContent } from './SelectContent';
 
 /** @public */
-export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
+export const Select = forwardRef<
+  HTMLDivElement,
+  SelectProps<'single' | 'multiple'>
+>((props, ref) => {
   const { classNames: popoverClassNames } = useStyles('Popover');
   const { classNames, dataAttributes, cleanedProps } = useStyles('Select', {
     size: 'small',
@@ -47,14 +43,13 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     label,
     description,
     options,
-    placeholder,
-    size,
     icon,
+    searchable,
+    searchPlaceholder,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     isRequired,
     secondaryLabel,
-    style,
     ...rest
   } = cleanedProps;
 
@@ -66,7 +61,6 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     }
   }, [label, ariaLabel, ariaLabelledBy]);
 
-  // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
   const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
 
   return (
@@ -83,50 +77,22 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         secondaryLabel={secondaryLabelText}
         description={description}
       />
-      <Button
-        className={clsx(classNames.trigger, styles[classNames.trigger])}
-        data-size={dataAttributes['data-size']}
-      >
-        {icon}
-        <SelectValue
-          className={clsx(classNames.value, styles[classNames.value])}
-        />
-        <RiArrowDownSLine aria-hidden="true" />
-      </Button>
+      <SelectTrigger icon={icon} />
       <FieldError />
       <Popover
         className={clsx(
           popoverClassNames.root,
           stylesPopover[popoverClassNames.root],
+          classNames.popover,
+          styles[classNames.popover],
         )}
+        {...dataAttributes}
       >
-        <ListBox className={clsx(classNames.list, styles[classNames.list])}>
-          {options?.map(option => (
-            <ListBoxItem
-              key={option.value}
-              id={option.value}
-              className={clsx(classNames.item, styles[classNames.item])}
-            >
-              <div
-                className={clsx(
-                  classNames.itemIndicator,
-                  styles[classNames.itemIndicator],
-                )}
-              >
-                <RiCheckLine />
-              </div>
-              <Text
-                slot="label"
-                className={clsx(
-                  classNames.itemLabel,
-                  styles[classNames.itemLabel],
-                )}
-              >
-                {option.label}
-              </Text>
-            </ListBoxItem>
-          ))}
-        </ListBox>
+        <SelectContent
+          searchable={searchable}
+          searchPlaceholder={searchPlaceholder}
+          options={options}
+        />
       </Popover>
     </AriaSelect>
   );

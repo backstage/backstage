@@ -18,7 +18,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { Handler } from 'express';
 
 /**
@@ -33,17 +32,17 @@ export const gatewayPlugin = createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         rootHttpRouter: coreServices.rootHttpRouter,
-        instanceMeta: instanceMetadataServiceRef,
+        instanceMeta: coreServices.rootInstanceMetadata,
         discovery: coreServices.discovery,
       },
       async init({ logger, discovery, instanceMeta, rootHttpRouter }) {
         rootHttpRouter.use(
           '/api/:pluginId',
-          createRouter({
+          (await createRouter({
             discovery,
             instanceMeta,
             logger,
-          }) as Handler,
+          })) as Handler,
         );
       },
     });

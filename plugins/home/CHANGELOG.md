@@ -1,5 +1,15 @@
 # @backstage/plugin-home
 
+## 0.8.14-next.1
+
+### Patch Changes
+
+- 2ac5d29: Allow customization of VisitList by adding optional enrichVisit, transformPathname, canSave functions to VisitsStorageApi, along with VisitDisplayProvider for colors, labels
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.2
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
 ## 0.8.14-next.0
 
 ### Patch Changes

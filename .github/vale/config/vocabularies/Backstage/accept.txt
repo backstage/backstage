@@ -110,6 +110,7 @@ dependabot
 deps
 dequeue
 dequeueing
+dereferencing
 deserialization
 destructured
 destructuring
@@ -179,6 +180,7 @@ graphql
 GraphQL
 graphviz
 Hackathons
+hackathon
 haproxy
 hardcoded
 hardcoding
@@ -228,6 +230,7 @@ JWTs
 Kaewkasi
 Kaswell
 keepalive
+Keycloak
 Keyv
 Knex
 knip
@@ -568,3 +571,4 @@ Zolotusky
 zoomable
 zsh
 resizable
+enums

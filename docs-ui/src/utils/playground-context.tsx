@@ -16,8 +16,8 @@ const PlaygroundContext = createContext<{
   setSelectedScreenSizes: (screenSizes: string[]) => void;
   selectedComponents: string[];
   setSelectedComponents: (components: string[]) => void;
-  selectedTheme: Theme;
-  setSelectedTheme: (theme: Theme) => void;
+  selectedTheme: Set<Theme>;
+  setSelectedTheme: (keys: Set<Theme>) => void;
   selectedThemeName: ThemeName;
   setSelectedThemeName: (themeName: ThemeName) => void;
 }>({
@@ -25,7 +25,7 @@ const PlaygroundContext = createContext<{
   setSelectedScreenSizes: () => {},
   selectedComponents: [],
   setSelectedComponents: () => {},
-  selectedTheme: 'light',
+  selectedTheme: new Set(['light']),
   setSelectedTheme: () => {},
   selectedThemeName: 'backstage',
   setSelectedThemeName: () => {},
@@ -40,16 +40,24 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
   const [selectedComponents, setSelectedComponents] = useState<string[]>(
     components.map(component => component.slug),
   );
-  const [selectedTheme, setSelectedTheme] = useState<Theme>('light');
+  const [selectedTheme, setSelectedTheme] = useState<Set<Theme>>(
+    new Set(['light']),
+  );
   const [selectedThemeName, setSelectedThemeName] =
     useState<ThemeName>('backstage');
 
   // Load saved theme from localStorage after hydration
   useEffect(() => {
     if (isBrowser) {
-      const savedTheme = localStorage.getItem('theme-mode') as Theme;
-      if (savedTheme) {
-        setSelectedTheme(savedTheme);
+      const savedThemeString = localStorage.getItem('theme-mode');
+      if (savedThemeString) {
+        // Parse the comma-separated string back into a Set
+        const themeArray = savedThemeString
+          .split(',')
+          .filter(Boolean) as Theme[];
+        setSelectedTheme(new Set(themeArray));
+      } else {
+        setSelectedTheme(new Set(['light']));
       }
     }
   }, [isBrowser]);
@@ -68,9 +76,9 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     if (isBrowser) {
       document.documentElement.setAttribute(
         'data-theme-mode',
-        selectedTheme || 'light',
+        Array.from(selectedTheme).join(','),
       );
-      localStorage.setItem('theme-mode', selectedTheme || 'light');
+      localStorage.setItem('theme-mode', Array.from(selectedTheme).join(','));
     }
   }, [selectedTheme, isBrowser]);
 

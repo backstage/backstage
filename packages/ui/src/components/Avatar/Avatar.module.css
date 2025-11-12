@@ -34,6 +34,11 @@
     width: 2rem;
   }
 
+  .bui-AvatarRoot[data-size='x-small'] {
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+
   .bui-AvatarRoot[data-size='small'] {
     height: 1.5rem;
     width: 1.5rem;
@@ -45,6 +50,11 @@
   }
 
   .bui-AvatarRoot[data-size='large'] {
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+
+  .bui-AvatarRoot[data-size='x-large'] {
     height: 3rem;
     width: 3rem;
   }
@@ -53,6 +63,7 @@
     object-fit: cover;
     height: 100%;
     width: 100%;
+    display: block;
   }
 
   .bui-AvatarFallback {

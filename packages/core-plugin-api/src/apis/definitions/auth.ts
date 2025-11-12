@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 import { ApiRef, createApiRef } from '../system';
 import { IconComponent } from '../../icons/types';
@@ -269,15 +271,28 @@ export type ProfileInfo = {
  *
  * @public
  */
-export enum SessionState {
+export const SessionState = {
   /**
    * User signed in.
    */
-  SignedIn = 'SignedIn',
+  SignedIn: 'SignedIn',
   /**
    * User not signed in.
    */
-  SignedOut = 'SignedOut',
+  SignedOut: 'SignedOut',
+} as const;
+
+/**
+ * @public
+ */
+export type SessionState = (typeof SessionState)[keyof typeof SessionState];
+
+/**
+ * @public
+ */
+export namespace SessionState {
+  export type SignedIn = typeof SessionState.SignedIn;
+  export type SignedOut = typeof SessionState.SignedOut;
 }
 
 /**

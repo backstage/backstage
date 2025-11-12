@@ -7,7 +7,7 @@
     "build": "next build",
     "lint": "next lint",
     "prestart": "yarn sync:css",
-    "start": "concurrently \"yarn sync:css:watch\" \"next dev\"",
+    "start": "next dev",
     "sync:css": "node scripts/sync-css.js",
     "sync:css:watch": "node scripts/sync-css.js --watch"
   },
@@ -16,6 +16,7 @@
     "@types/react-dom": "19.1.7"
   },
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-beta.4",
     "@codemirror/lang-sass": "^6.0.2",
     "@codemirror/view": "^6.34.4",
     "@lezer/highlight": "^1.2.1",
@@ -26,6 +27,7 @@
     "@storybook/react": "^8.6.12",
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
+    "clsx": "^2.1.1",
     "html-react-parser": "^5.2.5",
     "motion": "^12.4.1",
     "next": "15.4.7",
@@ -43,7 +45,6 @@
     "@types/react": "19.1.9",
     "@types/react-dom": "19.1.7",
     "chokidar": "^3.6.0",
-    "concurrently": "^8.2.2",
     "eslint": "^8",
     "eslint-config-next": "15.3.4",
     "lightningcss": "^1.28.2",

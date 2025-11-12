@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.2-next.1
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.9-next.1
+
 ## 2.1.2-next.0
 
 ### Patch Changes

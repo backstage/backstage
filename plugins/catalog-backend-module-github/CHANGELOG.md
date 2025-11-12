@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.11.2-next.1
+
+### Patch Changes
+
+- 999d1c1: Added configurable `pageSizes` for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors with organizations with large number of repositories. Please see the [GitHub Discovery documentation](https://backstage.io/docs/integrations/github/discovery#configuration) for new configuration options.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
 ## 0.11.2-next.0
 
 ### Patch Changes

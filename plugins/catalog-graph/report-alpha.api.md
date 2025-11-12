@@ -6,7 +6,6 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { Direction } from '@backstage/plugin-catalog-graph';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
@@ -83,7 +82,7 @@ const _default: OverridableFrontendPlugin<
         maxDepth: number | undefined;
         unidirectional: boolean | undefined;
         mergeRelations: boolean | undefined;
-        direction: Direction | undefined;
+        direction: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         relationPairs: [string, string][] | undefined;
         zoom: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
@@ -96,7 +95,7 @@ const _default: OverridableFrontendPlugin<
       configInput: {
         height?: number | undefined;
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
-        direction?: Direction | undefined;
+        direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         title?: string | undefined;
         relations?: string[] | undefined;
@@ -136,8 +135,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -157,7 +156,7 @@ const _default: OverridableFrontendPlugin<
         maxDepth: number | undefined;
         unidirectional: boolean | undefined;
         mergeRelations: boolean | undefined;
-        direction: Direction | undefined;
+        direction: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         showFilters: boolean | undefined;
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         kinds: string[] | undefined;
@@ -169,7 +168,7 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
-        direction?: Direction | undefined;
+        direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         relations?: string[] | undefined;
         rootEntityRefs?: string[] | undefined;
@@ -198,8 +197,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };

@@ -146,6 +146,7 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -190,6 +191,7 @@ describe('<EntityListProvider />', () => {
       expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -264,6 +266,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api', 'spec.type': ['service'] },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -320,6 +323,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'user' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -341,6 +345,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'group' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -370,6 +375,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
 
@@ -384,6 +390,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(3, {
         filter: { kind: 'system' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
 
