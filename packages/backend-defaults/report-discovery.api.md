@@ -26,16 +26,6 @@ export class HostDiscovery implements DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   // (undocumented)
   getExternalBaseUrl(pluginId: string): Promise<string>;
-  // (undocumented)
-  listResolutions(): Promise<
-    Map<
-      string,
-      {
-        internal?: string;
-        external?: string;
-      }[]
-    >
-  >;
 }
 
 // @public
