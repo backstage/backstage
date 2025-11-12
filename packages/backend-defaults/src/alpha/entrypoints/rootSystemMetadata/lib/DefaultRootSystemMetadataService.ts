@@ -19,11 +19,17 @@ import {
   RootConfigService,
   RootInstanceMetadataService,
 } from '@backstage/backend-plugin-api';
-import { HostDiscovery } from '../../../../entrypoints/discovery';
 import {
   RootSystemMetadataService,
   RootSystemMetadataServicePluginInfo,
 } from '@backstage/backend-plugin-api/alpha';
+import { getEndpoints } from '../../../../entrypoints/discovery/parsing';
+import { Config } from '@backstage/config';
+
+function getPlugins(config: Config): string[] {
+  const endpoints = getEndpoints(config);
+  return Array.from(new Set(endpoints.flatMap(endpoint => endpoint.plugins)));
+}
 
 /**
  * @alpha
@@ -31,20 +37,17 @@ import {
 export class DefaultRootSystemMetadataService
   implements RootSystemMetadataService
 {
-  #hostDiscovery: HostDiscovery;
+  #plugins: string[];
   #instanceMetadata: RootInstanceMetadataService;
   constructor(options: {
     logger: LoggerService;
     config: RootConfigService;
     instanceMetadata: RootInstanceMetadataService;
   }) {
-    this.#hostDiscovery = HostDiscovery.fromConfig(options.config, {
-      logger: options.logger,
-    });
-    options.config.subscribe?.(() => {
-      this.#hostDiscovery = HostDiscovery.fromConfig(options.config, {
-        logger: options.logger,
-      });
+    const { config } = options;
+    this.#plugins = getPlugins(config);
+    config.subscribe?.(() => {
+      this.#plugins = getPlugins(config);
     });
     this.#instanceMetadata = options.instanceMetadata;
   }
@@ -60,11 +63,7 @@ export class DefaultRootSystemMetadataService
   public async getInstalledPlugins(): Promise<
     RootSystemMetadataServicePluginInfo[]
   > {
-    const resolutions = await this.#hostDiscovery.listResolutions();
-    const plugins = [];
-    for (const pluginId of resolutions.keys()) {
-      plugins.push({ pluginId });
-    }
+    const plugins = this.#plugins.map(pluginId => ({ pluginId }));
 
     for (const plugin of await this.#instanceMetadata.getInstalledPlugins()) {
       plugins.push({ pluginId: plugin.pluginId });

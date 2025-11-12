@@ -23,6 +23,7 @@ import {
 import { readHttpServerOptions } from '../rootHttpRouter/http/config';
 import { SrvResolvers } from './SrvResolvers';
 import { trimEnd } from 'lodash';
+import { getEndpoints } from './parsing';
 
 type Resolver = (pluginId: string) => Promise<string>;
 
@@ -150,11 +151,6 @@ export class HostDiscovery implements DiscoveryService {
     throw new Error('Not initialized');
   };
 
-  #resolutions: Map<
-    string,
-    Set<{ hash: string; target: { internal?: string; external?: string } }>
-  > = new Map();
-
   static fromConfig(config: RootConfigService, options?: HostDiscoveryOptions) {
     const discovery = new HostDiscovery(new SrvResolvers());
 
@@ -198,23 +194,12 @@ export class HostDiscovery implements DiscoveryService {
     return await resolver(pluginId);
   }
 
-  async listResolutions() {
-    const _targets: Map<string, { internal?: string; external?: string }[]> =
-      new Map();
-    for (const [pluginId, targets] of this.#resolutions.entries()) {
-      const currentTargets = [...targets.values()].map(({ target }) => ({
-        ...target,
-      }));
-      if (_targets.has(pluginId)) {
-        _targets.set(pluginId, [..._targets.get(pluginId)!, ...currentTargets]);
-      } else {
-        _targets.set(pluginId, currentTargets);
-      }
-    }
-    return _targets;
+  #updateResolvers(config: Config, defaultEndpoints?: HostDiscoveryEndpoint[]) {
+    this.#updateFallbackResolvers(config);
+    this.#updatePluginResolvers(config, defaultEndpoints);
   }
 
-  #getInstanceAddress(config: Config) {
+  #updateFallbackResolvers(config: Config) {
     const backendBaseUrl = trimEnd(config.getString('backend.baseUrl'), '/');
 
     const {
@@ -236,26 +221,12 @@ export class HostDiscovery implements DiscoveryService {
       host = `[${host}]`;
     }
 
-    return {
-      internal: `${protocol}://${host}:${listenPort}`,
-      external: backendBaseUrl,
-    };
-  }
-
-  #updateResolvers(config: Config, defaultEndpoints?: HostDiscoveryEndpoint[]) {
-    this.#updateFallbackResolvers(config);
-    this.#updatePluginResolvers(config, defaultEndpoints);
-  }
-
-  #updateFallbackResolvers(config: Config) {
-    const { internal, external } = this.#getInstanceAddress(config);
-
     this.#internalFallbackResolver = this.#makeResolver(
-      `${internal}/api/{{pluginId}}`,
+      `${protocol}://${host}:${listenPort}/api/{{pluginId}}`,
       false,
     );
     this.#externalFallbackResolver = this.#makeResolver(
-      `${external}/api/{{pluginId}}`,
+      `${backendBaseUrl}/api/{{pluginId}}`,
       false,
     );
   }
@@ -268,25 +239,7 @@ export class HostDiscovery implements DiscoveryService {
     const endpoints = defaultEndpoints?.slice() ?? [];
 
     // Allow config to override the default endpoints
-    const endpointConfigs = config.getOptionalConfigArray(
-      'discovery.endpoints',
-    );
-    for (const endpointConfig of endpointConfigs ?? []) {
-      if (typeof endpointConfig.get('target') === 'string') {
-        endpoints.push({
-          target: endpointConfig.getString('target'),
-          plugins: endpointConfig.getStringArray('plugins'),
-        });
-      } else {
-        endpoints.push({
-          target: {
-            internal: endpointConfig.getOptionalString('target.internal'),
-            external: endpointConfig.getOptionalString('target.external'),
-          },
-          plugins: endpointConfig.getStringArray('plugins'),
-        });
-      }
-    }
+    endpoints.push(...getEndpoints(config));
 
     // Build up a new set of resolvers
     const internalResolvers: Map<string, Resolver> = new Map();
@@ -294,7 +247,6 @@ export class HostDiscovery implements DiscoveryService {
     for (const { target, plugins } of endpoints) {
       let internalResolver: Resolver | undefined;
       let externalResolver: Resolver | undefined;
-      this.#addResolution(target, plugins);
 
       if (typeof target === 'string') {
         internalResolver = externalResolver = this.#makeResolver(target, false);
@@ -322,26 +274,6 @@ export class HostDiscovery implements DiscoveryService {
     // Only persist if no errors were thrown above
     this.#internalResolvers = internalResolvers;
     this.#externalResolvers = externalResolvers;
-  }
-
-  #addResolution(
-    target: string | { internal?: string; external?: string },
-    plugins: string[],
-  ) {
-    for (const pluginId of plugins) {
-      if (!this.#resolutions.has(pluginId)) {
-        this.#resolutions.set(pluginId, new Set());
-      }
-      const standardizedTarget =
-        typeof target === 'string'
-          ? { external: target, internal: target }
-          : target;
-      const matchingResolution = this.#resolutions.get(pluginId)!;
-      const hash = JSON.stringify(standardizedTarget);
-      if (![...matchingResolution.values()].some(e => e.hash === hash)) {
-        matchingResolution.add({ target: standardizedTarget, hash });
-      }
-    }
   }
 
   #makeResolver(urlPattern: string, allowSrv: boolean): Resolver {
