@@ -30,11 +30,11 @@ export interface BackstageStreamedDownloadOptions {
  * and streams the response to create a downloadable file in the user's browser.
  * It uses the Backstage FetchApi to handle authentication.
  *
- * We are not using a library like `axios` here because the native `fetch` API provides
- * direct and efficient access to the response body as a `Blob`. This is ideal for
- * handling file downloads, as it allows us to easily create an object URL
- * (`URL.createObjectURL`) and trigger a download prompt in the browser without needing
- * extra configuration or dependencies that might complicate handling binary data.
+ * The native `fetch` API provides direct and efficient access to the response body as a
+ * `Blob`. This is ideal for handling file downloads, as it allows us to easily create
+ * an object URL (`URL.createObjectURL`) and trigger a download prompt in the browser
+ * without needing extra configuration or dependencies that might complicate handling
+ * binary data.
  *
  * @returns An object containing:
  *          - `download`: The function to trigger the download.
