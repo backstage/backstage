@@ -187,20 +187,13 @@ export class AwsS3Publish implements PublisherBase {
       // Enhanced retry configuration for better reliability
       maxAttempts: maxAttempts || 5,
       retryMode: 'adaptive',
-      ...(httpsProxy && {
-        requestHandler: new NodeHttpHandler({
+      // Enhanced connection settings for large file uploads
+      requestHandler: new NodeHttpHandler({
+        ...(httpsProxy && {
           httpsAgent: new HttpsProxyAgent({ proxy: httpsProxy }),
-          // Enhanced connection setting for large file uploads
-          connectionTimeout: 60000,
-          socketTimeout: 120000,
         }),
-      }),
-      // Add default request handler with enhanced timeouts if no proxy
-      ...(!httpsProxy && {
-        requestHandler: new NodeHttpHandler({
-          connectionTimeout: 60000,
-          socketTimeout: 120000,
-        }),
+        connectionTimeout: 60000,
+        socketTimeout: 120000,
       }),
     });
 
@@ -279,8 +272,9 @@ export class AwsS3Publish implements PublisherBase {
     operation: () => Promise<TOutput>,
     operationName: string,
     maxAttempts: number = 3,
-    shouldRetry: (error: S3ServiceException) => boolean = this
-      .defaultShouldRetry,
+    shouldRetry: (
+      error: S3ServiceException,
+    ) => boolean = this.defaultShouldRetry.bind(this),
   ): Promise<TOutput> {
     for (let attempt = 1; attempt < maxAttempts; attempt++) {
       try {
@@ -302,7 +296,10 @@ export class AwsS3Publish implements PublisherBase {
 
         // Enhanced exponential backoff with jitter
         const baseDelay = operationName.startsWith('Upload-') ? 2000 : 1000;
-        const backoffDelay = Math.min(baseDelay * Math.pow(2, attempt), 30000);
+        const backoffDelay = Math.min(
+          baseDelay * Math.pow(2, attempt - 1),
+          30000,
+        );
         const jitter = Math.random() * 1000;
         await new Promise(resolve =>
           setTimeout(resolve, backoffDelay + jitter),
@@ -348,8 +345,7 @@ export class AwsS3Publish implements PublisherBase {
     // Check against known transient errors
     return transientErrors.some(
       retriableError =>
-        errorCode.includes(retriableError) ||
-        error.message.includes(retriableError),
+        errorCode === retriableError || error.message.includes(retriableError),
     );
   }
 
@@ -462,68 +458,62 @@ export class AwsS3Publish implements PublisherBase {
           const stats = await fs.stat(absoluteFilePath);
           const fileSizeInBytes = stats.size;
 
-          // Use retry wrapper for uploads with enhanced error handling
+          // Check if this is a large file that requires multipart upload
+          if (fileSizeInBytes >= MAX_SINGLE_UPLOAD_BYTES) {
+            // Try multipart upload for large files
+            try {
+              const upload = new Upload({
+                client: this.storageClient,
+                params,
+                partSize: MAX_SINGLE_UPLOAD_BYTES,
+                queueSize: 3,
+                leavePartsOnError: false,
+              });
+              await this.retryOperation(
+                () => upload.done(),
+                `Upload-${params.Key}`,
+                this.maxAttempts,
+              );
+              return;
+            } catch (multipartError) {
+              const s3Error = multipartError as any;
+              const errorName = s3Error?.name || 'Unknown';
+
+              // For specific multipart errors, attempt simple upload fallback
+              if (errorName === 'InvalidPart' || errorName === 'NoSuchUpload') {
+                this.logger.warn(
+                  `Multipart upload failed for ${params.Key}, attempting simple upload fallback.`,
+                );
+              } else {
+                // Non-recoverable multipart error, throw it
+                this.logger.error(
+                  `Multipart upload failed for ${params.Key}: ${
+                    multipartError instanceof Error
+                      ? multipartError.message
+                      : String(multipartError)
+                  }`,
+                );
+                throw multipartError;
+              }
+            }
+          }
+
+          // Use simple upload for small files or as fallback from multipart
           try {
-            const result = await this.retryOperation(
-              async () => {
-                const fiveMB = 5 * 1024 * 1024;
-                // For files smaller than 5MB, use simple PutObject to avoid multipart complexity
-                if (fileSizeInBytes < fiveMB) {
-                  const fileContent = await fs.readFile(absoluteFilePath);
-                  const putParams = { ...params, Body: fileContent };
-                  return this.storageClient.send(
-                    new PutObjectCommand(putParams),
-                  );
-                }
-                // For files larger than MAX_SINGLE_UPLOAD_BYTES, use multipart upload
-                const upload = new Upload({
-                  client: this.storageClient,
-                  params,
-                  // Configure miltipart upload option for better reliability
-                  partSize: MAX_SINGLE_UPLOAD_BYTES,
-                  queueSize: 3,
-                  leavePartsOnError: false,
-                });
-                return upload.done();
-              },
+            const fileContent = await fs.readFile(absoluteFilePath);
+            const putParams = { ...params, Body: fileContent };
+            await this.retryOperation(
+              () => this.storageClient.send(new PutObjectCommand(putParams)),
               `Upload-${params.Key}`,
               this.maxAttempts,
             );
-            return result;
-          } catch (error) {
-            const s3Error = error as any;
-            const errorName = s3Error?.name || 'Unknown';
 
-            // Check if this is a multipart upload failure that we can handle
-            if (
-              fileSizeInBytes >= MAX_SINGLE_UPLOAD_BYTES &&
-              (errorName === 'InvalidPart' || errorName === 'NoSuchUpload')
-            ) {
-              this.logger.warn(
-                `Multipart upload failed for ${params.Key}, Attempting simple upload fallback.`,
+            if (fileSizeInBytes >= MAX_SINGLE_UPLOAD_BYTES) {
+              this.logger.info(
+                `Simple upload fallback succeeded for ${params.Key}`,
               );
-              try {
-                // Attempt simple upload as a fallback
-                const fileContent = await fs.readFile(absoluteFilePath);
-                const simpleParams = { ...params, Body: fileContent };
-                const fallbackResult = await this.storageClient.send(
-                  new PutObjectCommand(simpleParams),
-                );
-                this.logger.info(
-                  `Simple upload fallback succeeded for ${params.Key}`,
-                );
-                return fallbackResult;
-              } catch (fallbackError) {
-                this.logger.error(
-                  `Both multipart and simple upload failed for ${params.Key}: ${
-                    fallbackError instanceof Error
-                      ? fallbackError.message
-                      : String(fallbackError)
-                  }`,
-                );
-                // Fall through to throw original error
-              }
             }
+          } catch (error) {
             this.logger.error(
               `Upload failed for ${params.Key}: ${
                 error instanceof Error ? error.message : String(error)

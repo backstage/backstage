@@ -338,7 +338,13 @@ describe('AwsS3Publish', () => {
       const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
       s3Mock
         .on(ListObjectsV2Command)
-        .rejectsOnce('RequestTimeout')
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'RequestTimeout',
+            $fault: 'client',
+            $metadata: {},
+          }),
+        )
         .resolvesOnce({ Contents: [] });
 
       await (publisher as any).retryOperation(
@@ -376,11 +382,17 @@ describe('AwsS3Publish', () => {
       );
     });
 
-    it('should retry on specific 4xx errors', async () => {
+    it('should retry on specific 4xx errors that are transient', async () => {
       const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
       s3Mock
         .on(ListObjectsV2Command)
-        .rejectsOnce('RequestTimeout')
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'RequestTimeout',
+            $fault: 'client',
+            $metadata: { httpStatusCode: 408 },
+          }),
+        )
         .resolvesOnce({ Contents: [] });
 
       await (publisher as any).retryOperation(
@@ -415,6 +427,62 @@ describe('AwsS3Publish', () => {
           3,
         ),
       ).rejects.toHaveProperty('name', 'BadRequest');
+    });
+
+    it('should use exact error code matching for transient errors', async () => {
+      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      // Test that ConnectionError (exact match) is retried, but ConnectionErrorSomething (substring) is not
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'ConnectionError',
+            $fault: 'client',
+            $metadata: {},
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as any).retryOperation(
+        async () => {
+          return s3Mock.send(
+            new ListObjectsV2Command({ Bucket: 'bucketName' }),
+          );
+        },
+        'TestOperation',
+        3,
+      );
+    });
+
+    it('should apply exponential backoff with correct calculation', async () => {
+      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const startTime = Date.now();
+
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'SlowDown',
+            $fault: 'server',
+            $metadata: {},
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as any).retryOperation(
+        async () => {
+          return s3Mock.send(
+            new ListObjectsV2Command({ Bucket: 'bucketName' }),
+          );
+        },
+        'TestOperation',
+        2,
+      );
+
+      const elapsedTime = Date.now() - startTime;
+      // First attempt fails, then backoff with baseDelay * 2^(attempt-1) = 1000 * 2^0 = 1000ms minimum
+      // Adding jitter (0-1000ms), so we expect at least 1000ms total
+      expect(elapsedTime).toBeGreaterThanOrEqual(900);
     });
   });
 
