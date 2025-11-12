@@ -1,5 +1,16 @@
 # @backstage/repo-tools
 
+## 0.16.0-next.2
+
+### Minor Changes
+
+- 11c61f2: The `package-docs` command will now automatically use a `typedoc.json` file if one exists at the root of your project.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.2
+
 ## 0.15.4-next.1
 
 ### Patch Changes

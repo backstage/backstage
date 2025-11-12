@@ -216,6 +216,167 @@ describe('createExtension', () => {
     );
   });
 
+  it('should create an extension with relative attachment points', () => {
+    const extension = createExtension({
+      attachTo: [
+        { relative: {}, input: 'tabs' },
+        { relative: { kind: 'page' }, input: 'tabs' },
+        { relative: { name: 'index' }, input: 'tabs' },
+        { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+      ],
+      output: [stringDataRef],
+      factory: () => [stringDataRef('bar')],
+    });
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+    );
+  });
+
+  it('should create an extension with relative attachment points by reference', () => {
+    const baseOpts = {
+      attachTo: { id: 'root', input: 'children' },
+      inputs: {
+        tabs: createExtensionInput([stringDataRef]),
+      },
+      output: [],
+      factory: () => [],
+    };
+    const parent1 = createExtension({
+      ...baseOpts,
+    });
+    const parent2 = createExtension({
+      ...baseOpts,
+      kind: 'page',
+    });
+    const parent3 = createExtension({
+      ...baseOpts,
+      name: 'index',
+    });
+    const parent4 = createExtension({
+      ...baseOpts,
+      inputs: {},
+      kind: 'page',
+      name: 'index',
+    }).override({
+      inputs: {
+        otherTabs: createExtensionInput([stringDataRef]),
+      },
+      factory: () => [],
+    });
+    const extension = createExtension({
+      attachTo: [
+        parent1.inputs.tabs,
+        parent2.inputs.tabs,
+        parent3.inputs.tabs,
+        parent4.inputs.otherTabs,
+      ],
+      output: [stringDataRef],
+      factory: () => [stringDataRef('bar')],
+    });
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+    );
+    const overrdeExtension = extension.override({
+      attachTo: [
+        parent2.inputs.tabs,
+        parent3.inputs.tabs,
+        parent4.inputs.otherTabs,
+      ],
+    });
+    expect(String(overrdeExtension)).toBe(
+      'ExtensionDefinition{attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+    );
+  });
+
+  it('should provide type safe attachments by reference', () => {
+    const parent = createExtension({
+      attachTo: { id: 'root', input: 'children' },
+      inputs: {
+        string: createExtensionInput([stringDataRef]),
+        stringOpt: createExtensionInput([stringDataRef.optional()]),
+        number: createExtensionInput([numberDataRef]),
+        numberOpt: createExtensionInput([numberDataRef.optional()]),
+        both: createExtensionInput([stringDataRef, numberDataRef]),
+        bothOptString: createExtensionInput([
+          stringDataRef.optional(),
+          numberDataRef,
+        ]),
+        bothOptNumber: createExtensionInput([
+          stringDataRef,
+          numberDataRef.optional(),
+        ]),
+        bothOpt: createExtensionInput([
+          stringDataRef.optional(),
+          numberDataRef.optional(),
+        ]),
+      },
+      output: [],
+      factory: () => [],
+    });
+    const strOutExt = createExtension({
+      attachTo: parent.inputs.string,
+      output: [stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.string,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.stringOpt,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.number,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.numberOpt,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.both,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.bothOptNumber,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.bothOptString,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.bothOpt,
+    });
+    const numberOutExt = createExtension({
+      // @ts-expect-error
+      attachTo: parent.inputs.string,
+      output: [numberDataRef],
+      factory: () => [numberDataRef(1)],
+    });
+    numberOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.string,
+    });
+    numberOutExt.override({
+      attachTo: parent.inputs.number,
+    });
+    const bothOutExt = createExtension({
+      attachTo: parent.inputs.both,
+      output: [numberDataRef, stringDataRef],
+      factory: () => [numberDataRef(1), stringDataRef('str')],
+    });
+    // TODO(Rugvip): Potentially encapsulate the parent input type in the extension, until then we can't verify this
+    bothOutExt.override({
+      output: [numberDataRef.optional(), stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    bothOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.both,
+      output: [numberDataRef.optional(), stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    expect('types').not.toBe('broken');
+  });
+
   it('should create an extension with input', () => {
     const extension = createExtension({
       attachTo: { id: 'root', input: 'default' },

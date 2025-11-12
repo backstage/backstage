@@ -11,6 +11,9 @@ import {
   selectDisabledSnippet,
   selectResponsiveSnippet,
   selectIconSnippet,
+  selectSearchableSnippet,
+  selectMultipleSnippet,
+  selectSearchableMultipleSnippet,
 } from './select.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -85,6 +88,42 @@ Here's a view when the select is disabled.
   open
   preview={<SelectSnippet story="Disabled" />}
   code={selectDisabledSnippet}
+/>
+
+### Searchable
+
+Here's a view when the select has searchable filtering.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectSnippet story="Searchable" />}
+  code={selectSearchableSnippet}
+/>
+
+### Multiple Selection
+
+Here's a view when the select allows multiple selections.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectSnippet story="MultipleSelection" />}
+  code={selectMultipleSnippet}
+/>
+
+### Searchable with Multiple Selection
+
+Here's a view when the select combines search and multiple selection.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectSnippet story="SearchableMultiple" />}
+  code={selectSearchableMultipleSnippet}
 />
 
 ### Responsive

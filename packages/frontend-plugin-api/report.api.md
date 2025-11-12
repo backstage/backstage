@@ -259,7 +259,7 @@ export interface AppNodeInstance {
 // @public
 export interface AppNodeSpec {
   // (undocumented)
-  readonly attachTo: ExtensionAttachToSpec;
+  readonly attachTo: ExtensionAttachTo;
   // (undocumented)
   readonly config?: unknown;
   // (undocumented)
@@ -407,6 +407,7 @@ export function createExtension<
   UFactoryOutput extends ExtensionDataValue<any, any>,
   const TKind extends string | undefined = undefined,
   const TName extends string | undefined = undefined,
+  UParentInputs extends ExtensionDataRef = ExtensionDataRef,
 >(
   options: CreateExtensionOptions<
     TKind,
@@ -414,7 +415,8 @@ export function createExtension<
     UOutput,
     TInputs,
     TConfigSchema,
-    UFactoryOutput
+    UFactoryOutput,
+    UParentInputs
   >,
 ): ExtensionDefinition<{
   config: string extends keyof TConfigSchema
@@ -454,6 +456,7 @@ export function createExtensionBlueprint<
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TKind extends string,
+  UParentInputs extends ExtensionDataRef,
   TDataRefs extends {
     [name in string]: ExtensionDataRef;
   } = never,
@@ -465,7 +468,8 @@ export function createExtensionBlueprint<
     TInputs,
     TConfigSchema,
     UFactoryOutput,
-    TDataRefs
+    TDataRefs,
+    UParentInputs
   >,
 ): ExtensionBlueprint<{
   kind: TKind;
@@ -508,9 +512,11 @@ export type CreateExtensionBlueprintOptions<
   TDataRefs extends {
     [name in string]: ExtensionDataRef;
   },
+  UParentInputs extends ExtensionDataRef,
 > = {
   kind: TKind;
-  attachTo: ExtensionAttachToSpec;
+  attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
+    VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -589,10 +595,12 @@ export type CreateExtensionOptions<
     [key: string]: (zImpl: typeof z) => z.ZodType;
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  UParentInputs extends ExtensionDataRef,
 > = {
   kind?: TKind;
   name?: TName;
-  attachTo: ExtensionAttachToSpec;
+  attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
+    VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -839,7 +847,7 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 }
 
 // @public (undocumented)
-export type ExtensionAttachToSpec =
+export type ExtensionAttachTo =
   | {
       id: string;
       input: string;
@@ -848,6 +856,9 @@ export type ExtensionAttachToSpec =
       id: string;
       input: string;
     }>;
+
+// @public @deprecated (undocumented)
+export type ExtensionAttachToSpec = ExtensionAttachTo;
 
 // @public (undocumented)
 export interface ExtensionBlueprint<
@@ -859,9 +870,11 @@ export interface ExtensionBlueprint<
   make<
     TName extends string | undefined,
     TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+    UParentInputs extends ExtensionDataRef,
   >(args: {
     name?: TName;
-    attachTo?: ExtensionAttachToSpec;
+    attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+      VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
     disabled?: boolean;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
@@ -887,9 +900,16 @@ export interface ExtensionBlueprint<
     TExtraInputs extends {
       [inputName in string]: ExtensionInput;
     },
+    UParentInputs extends ExtensionDataRef,
   >(args: {
     name?: TName;
-    attachTo?: ExtensionAttachToSpec;
+    attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+      VerifyExtensionAttachTo<
+        ExtensionDataRef extends UNewOutput
+          ? NonNullable<T['output']>
+          : UNewOutput,
+        UParentInputs
+      >;
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -1073,6 +1093,11 @@ export type ExtensionDefinition<
 > = {
   $$type: '@backstage/ExtensionDefinition';
   readonly T: T;
+  readonly inputs: {
+    [K in keyof T['inputs']]: ExtensionInput<
+      T['inputs'][K] extends ExtensionInput<infer IData> ? IData : never
+    >;
+  };
   override<
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
@@ -1083,10 +1108,17 @@ export type ExtensionDefinition<
       [inputName in string]: ExtensionInput;
     },
     TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
+    UParentInputs extends ExtensionDataRef,
   >(
     args: Expand<
       {
-        attachTo?: ExtensionAttachToSpec;
+        attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+          VerifyExtensionAttachTo<
+            ExtensionDataRef extends UNewOutput
+              ? NonNullable<T['output']>
+              : UNewOutput,
+            UParentInputs
+          >;
         disabled?: boolean;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -1168,6 +1200,41 @@ export type ExtensionDefinition<
   }>;
 };
 
+// @public
+export type ExtensionDefinitionAttachTo<
+  UParentInputs extends ExtensionDataRef = ExtensionDataRef,
+> =
+  | {
+      id: string;
+      input: string;
+      relative?: never;
+    }
+  | {
+      relative: {
+        kind?: string;
+        name?: string;
+      };
+      input: string;
+      id?: never;
+    }
+  | ExtensionInput<UParentInputs>
+  | Array<
+      | {
+          id: string;
+          input: string;
+          relative?: never;
+        }
+      | {
+          relative: {
+            kind?: string;
+            name?: string;
+          };
+          input: string;
+          id?: never;
+        }
+      | ExtensionInput<UParentInputs>
+    >;
+
 // @public (undocumented)
 export type ExtensionDefinitionParameters = {
   kind?: string;
@@ -1215,13 +1282,13 @@ export interface ExtensionInput<
   },
 > {
   // (undocumented)
-  $$type: '@backstage/ExtensionInput';
+  readonly $$type: '@backstage/ExtensionInput';
   // (undocumented)
-  config: TConfig;
+  readonly config: TConfig;
   // (undocumented)
-  extensionData: Array<UExtensionData>;
+  readonly extensionData: Array<UExtensionData>;
   // (undocumented)
-  replaces?: Array<{
+  readonly replaces?: Array<{
     id: string;
     input: string;
   }>;

@@ -1,5 +1,11 @@
 # @backstage/backend-plugin-api
 
+## 1.5.0-next.2
+
+### Minor Changes
+
+- 62fc2de: Explicitly mark `coreServices.rootInstanceMetadata` as a root service.
+
 ## 1.5.0-next.1
 
 ### Minor Changes

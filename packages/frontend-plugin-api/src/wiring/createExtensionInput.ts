@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  ExtensionInputContext,
+  OpaqueExtensionInput,
+} from '@internal/frontend';
 import { ExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
@@ -28,10 +32,10 @@ export interface ExtensionInput<
     optional: boolean;
   },
 > {
-  $$type: '@backstage/ExtensionInput';
-  extensionData: Array<UExtensionData>;
-  config: TConfig;
-  replaces?: Array<{ id: string; input: string }>;
+  readonly $$type: '@backstage/ExtensionInput';
+  readonly extensionData: Array<UExtensionData>;
+  readonly config: TConfig;
+  readonly replaces?: Array<{ id: string; input: string }>;
 }
 
 /** @public */
@@ -68,8 +72,7 @@ export function createExtensionInput<
       }
     }
   }
-  return {
-    $$type: '@backstage/ExtensionInput',
+  const baseOptions = {
     extensionData,
     config: {
       singleton: Boolean(config?.singleton) as TConfig['singleton'] extends true
@@ -80,11 +83,21 @@ export function createExtensionInput<
         : false,
     },
     replaces: config?.replaces,
-  } as ExtensionInput<
+  };
+
+  function createInstance(parent?: ExtensionInputContext): ExtensionInput<
     UExtensionData,
     {
       singleton: TConfig['singleton'] extends true ? true : false;
       optional: TConfig['optional'] extends true ? true : false;
     }
-  >;
+  > {
+    return OpaqueExtensionInput.createInstance(undefined, {
+      ...baseOptions,
+      context: parent,
+      withContext: createInstance,
+    });
+  }
+
+  return createInstance();
 }

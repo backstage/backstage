@@ -17,6 +17,7 @@ export const buttonPropDefs: Record<string, PropDef> = {
   iconStart: { type: 'enum', values: ['ReactNode'], responsive: false },
   iconEnd: { type: 'enum', values: ['ReactNode'], responsive: false },
   isDisabled: { type: 'boolean', default: 'false', responsive: false },
+  loading: { type: 'boolean', default: 'false', responsive: false },
   children: { type: 'enum', values: ['ReactNode'], responsive: false },
   type: {
     type: 'enum',
@@ -63,6 +64,10 @@ export const buttonDisabledSnippet = `<Flex gap="4">
 
 export const buttonResponsiveSnippet = `<Button variant={{ initial: 'primary', lg: 'secondary' }}>
   Responsive Button
+</Button>`;
+
+export const buttonLoadingSnippet = `<Button variant="primary" loading={isLoading} onPress={handleClick}>
+  Load more items
 </Button>`;
 
 export const buttonAsLinkSnippet = `import { ButtonLink } from '@backstage/ui';

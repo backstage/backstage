@@ -1,5 +1,60 @@
 # @backstage/ui
 
+## 0.9.0-next.3
+
+### Minor Changes
+
+- 83c100e: **BREAKING**: Removed `Collapsible` component. Migrate to `Accordion` or use React Aria `Disclosure`.
+
+  ## Migration Path 1: Accordion (Opinionated Styled Component)
+
+  Accordion provides preset styling with a similar component structure.
+
+  ```diff
+  - import { Collapsible } from '@backstage/ui';
+  + import { Accordion, AccordionTrigger, AccordionPanel } from '@backstage/ui';
+
+  - <Collapsible.Root>
+  -   <Collapsible.Trigger render={(props) => <Button {...props}>Toggle</Button>} />
+  -   <Collapsible.Panel>Content</Collapsible.Panel>
+  - </Collapsible.Root>
+
+  + <Accordion>
+  +   <AccordionTrigger title="Toggle" />
+  +   <AccordionPanel>Content</AccordionPanel>
+  + </Accordion>
+  ```
+
+  CSS classes: `.bui-CollapsibleRoot` → `.bui-Accordion`, `.bui-CollapsibleTrigger` → `.bui-AccordionTrigger` (now on heading element), `.bui-CollapsiblePanel` → `.bui-AccordionPanel`
+
+  ## Migration Path 2: React Aria Disclosure (Full Customization)
+
+  For custom styling without preset styles:
+
+  ```tsx
+  import { Disclosure, Button, DisclosurePanel } from 'react-aria-components';
+
+  <Disclosure>
+    <Button slot="trigger">Toggle</Button>
+    <DisclosurePanel>Content</DisclosurePanel>
+  </Disclosure>;
+  ```
+
+- 816af0f: **BREAKING**: The `SelectProps` interface now accepts a generic type parameter for selection mode.
+
+  Added searchable and multiple selection support to Select component. The component now accepts `searchable`, `selectionMode`, and `searchPlaceholder` props to enable filtering and multi-selection modes.
+
+  Migration: If you're using `SelectProps` type directly, update from `SelectProps` to `SelectProps<'single' | 'multiple'>`. Component usage remains backward compatible.
+
+### Patch Changes
+
+- 35a3614: Fixed CSS issues in Select component including popover width constraints, focus outline behavior, and overflow handling.
+- 01476f0: Improved visual consistency of PasswordField, SearchField, and MenuAutocomplete components.
+- 836b0c7: Fixed dialog backdrop appearance in dark mode.
+- 6d35a6b: Removed `@base-ui-components/react` dependency as all components now use React Aria Components.
+- 7839e7b: Added `loading` prop to Button and ButtonIcon components for displaying spinner during async operations.
+- a00fb88: Fixed Table Row component to properly support opening links in new tabs via right-click or Cmd+Click when using the href prop.
+
 ## 0.9.0-next.2
 
 ### Minor Changes

@@ -63,15 +63,20 @@ export const componentDefinitions = {
   Button: {
     classNames: {
       root: 'bui-Button',
+      content: 'bui-ButtonContent',
+      spinner: 'bui-ButtonSpinner',
     },
     dataAttributes: {
       size: ['small', 'medium', 'large'] as const,
       variant: ['primary', 'secondary', 'tertiary'] as const,
+      loading: [true, false] as const,
     },
   },
   ButtonIcon: {
     classNames: {
       root: 'bui-ButtonIcon',
+      content: 'bui-ButtonIconContent',
+      spinner: 'bui-ButtonIconSpinner',
     },
   },
   ButtonLink: {
@@ -267,7 +272,10 @@ export const componentDefinitions = {
   PasswordField: {
     classNames: {
       root: 'bui-PasswordField',
-      inputVisibility: 'bui-InputVisibility',
+      inputWrapper: 'bui-PasswordFieldInputWrapper',
+      input: 'bui-PasswordFieldInput',
+      inputIcon: 'bui-PasswordFieldIcon',
+      inputVisibility: 'bui-PasswordFieldVisibility',
     },
     dataAttributes: {
       size: ['small', 'medium'] as const,
@@ -289,7 +297,7 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-SearchField',
       clear: 'bui-SearchFieldClear',
-      inputWrapper: 'bui-SearchFieldWrapper',
+      inputWrapper: 'bui-SearchFieldInputWrapper',
       input: 'bui-SearchFieldInput',
       inputIcon: 'bui-SearchFieldInputIcon',
     },
@@ -303,12 +311,16 @@ export const componentDefinitions = {
       root: 'bui-Select',
       popover: 'bui-SelectPopover',
       trigger: 'bui-SelectTrigger',
+      chevron: 'bui-SelectTriggerChevron',
       value: 'bui-SelectValue',
-      icon: 'bui-SelectIcon',
       list: 'bui-SelectList',
       item: 'bui-SelectItem',
       itemIndicator: 'bui-SelectItemIndicator',
       itemLabel: 'bui-SelectItemLabel',
+      searchWrapper: 'bui-SelectSearchWrapper',
+      search: 'bui-SelectSearch',
+      searchClear: 'bui-SelectSearchClear',
+      noResults: 'bui-SelectNoResults',
     },
     dataAttributes: {
       size: ['small', 'medium'] as const,
