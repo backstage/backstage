@@ -23,6 +23,7 @@ import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-rea
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -384,6 +385,28 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   name: undefined;
   params: SearchResultListItemBlueprintParams;
 }>;
+
+// @alpha (undocumented)
+export const techdocsTranslationRef: TranslationRef<
+  'techdocs',
+  {
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
+    readonly 'docsTable.columns.type': 'Type';
+    readonly 'docsTable.columns.document': 'Document';
+    readonly 'docsTable.columns.kind': 'Kind';
+    readonly 'docsTable.columns.owner': 'Owner';
+    readonly 'docsTable.emptyState.title': 'No documents to show';
+    readonly 'docsTable.emptyState.description': 'Create your own document. Check out our Getting Started Information';
+    readonly 'docsTable.emptyState.readMoreButton': 'Read more';
+    readonly 'docsTable.allTitle': 'All';
+    readonly 'techDocsBuildLogs.title': 'Build Details';
+    readonly 'techDocsBuildLogs.showBuildLogsButton': 'Show Build Logs';
+    readonly 'techDocsBuildLogs.closeDrawerTooltip': 'Close the drawer';
+    readonly 'techDocsBuildLogs.waitingForLogsMessage': 'Waiting for logs...';
+    readonly 'techDocsPageWrapper.title': 'Documentation';
+    readonly 'techDocsPageWrapper.subtitle': 'Documentation available in {{ organizationName }}';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

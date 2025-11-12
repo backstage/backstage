@@ -47,6 +47,8 @@ import {
   rootRouteRef,
 } from '../routes';
 import { TechDocsReaderLayout } from '../reader';
+
+export { techdocsTranslationRef } from '../translation';
 import { attachTechDocsAddonComponentData } from '@backstage/plugin-techdocs-react/alpha';
 import {
   TechDocsAddons,

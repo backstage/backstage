@@ -23,5 +23,31 @@ export const techdocsTranslationRef = createTranslationRef({
     aboutCard: {
       viewTechdocs: 'View TechDocs',
     },
+    docsTable: {
+      // title: 'Documentation',
+      allTitle: 'All',
+      columns: {
+        document: 'Document',
+        owner: 'Owner',
+        kind: 'Kind',
+        type: 'Type',
+      },
+      emptyState: {
+        title: 'No documents to show',
+        description:
+          'Create your own document. Check out our Getting Started Information',
+        readMoreButton: 'Read more',
+      },
+    },
+    techDocsBuildLogs: {
+      title: 'Build Details',
+      showBuildLogsButton: 'Show Build Logs',
+      closeDrawerTooltip: 'Close the drawer',
+      waitingForLogsMessage: 'Waiting for logs...',
+    },
+    techDocsPageWrapper: {
+      title: 'Documentation',
+      subtitle: 'Documentation available in {{ organizationName }}',
+    },
   },
 });

@@ -15,6 +15,7 @@
  */
 
 import { LogViewer } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
@@ -23,6 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Close from '@material-ui/icons/Close';
 import { useState } from 'react';
+import { techdocsTranslationRef } from '../../translation';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,8 +56,12 @@ export const TechDocsBuildLogsDrawerContent = ({
   onClose: () => void;
 }) => {
   const classes = useDrawerStyles();
+  const { t } = useTranslationRef(techdocsTranslationRef);
+
   const logText =
-    buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n');
+    buildLog.length === 0
+      ? t('techDocsBuildLogs.waitingForLogsMessage')
+      : buildLog.join('\n');
   return (
     <Grid
       container
@@ -72,10 +78,10 @@ export const TechDocsBuildLogsDrawerContent = ({
         spacing={0}
         wrap="nowrap"
       >
-        <Typography variant="h5">Build Details</Typography>
+        <Typography variant="h5">{t('techDocsBuildLogs.title')}</Typography>
         <IconButton
           key="dismiss"
-          title="Close the drawer"
+          title={t('techDocsBuildLogs.closeDrawerTooltip')}
           onClick={onClose}
           color="inherit"
         >
@@ -90,13 +96,14 @@ export const TechDocsBuildLogsDrawerContent = ({
 };
 
 export const TechDocsBuildLogs = ({ buildLog }: { buildLog: string[] }) => {
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const classes = useDrawerStyles();
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <Button color="inherit" onClick={() => setOpen(true)}>
-        Show Build Logs
+        {t('techDocsBuildLogs.showBuildLogsButton')}
       </Button>
       <Drawer
         classes={{ paper: classes.paper }}

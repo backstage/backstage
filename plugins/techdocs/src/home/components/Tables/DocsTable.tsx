@@ -18,7 +18,7 @@ import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { rootDocsRouteRef } from '../../../routes';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
   EmptyState,
   LinkButton,
@@ -27,6 +27,8 @@ import {
   TableOptions,
   TableProps,
 } from '@backstage/core-components';
+import { rootDocsRouteRef } from '../../../routes';
+import { techdocsTranslationRef } from '../../../translation';
 import { actionFactories } from './actions';
 import { columnFactories, defaultColumns } from './columns';
 import { DocsTableRow } from './types';
@@ -56,6 +58,7 @@ export const DocsTable = (props: DocsTableProps) => {
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const { t } = useTranslationRef(techdocsTranslationRef);
   if (!entities) return null;
 
   const documents = entitiesToDocsMapper(
@@ -89,21 +92,21 @@ export const DocsTable = (props: DocsTableProps) => {
           title={
             title
               ? `${title} (${documents.length})`
-              : `All (${documents.length})`
+              : `${t('docsTable.allTitle')} (${documents.length})`
           }
         />
       ) : (
         <EmptyState
           missing="data"
-          title="No documents to show"
-          description="Create your own document. Check out our Getting Started Information"
+          title={t('docsTable.emptyState.title')}
+          description={t('docsTable.emptyState.description')}
           action={
             <LinkButton
               color="primary"
               to="https://backstage.io/docs/features/techdocs/getting-started"
               variant="contained"
             >
-              DOCS
+              {t('docsTable.emptyState.readMoreButton')}
             </LinkButton>
           }
         />

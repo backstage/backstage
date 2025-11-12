@@ -18,6 +18,7 @@ import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { DocsTableRow } from './types';
+import { TableColumnTitle } from './TableColumnTitle';
 
 function customTitle(entity: Entity): string {
   return entity.metadata.title || entity.metadata.name;
@@ -39,7 +40,7 @@ export const columnFactories = {
   },
   createNameColumn(): TableColumn<DocsTableRow> {
     return {
-      title: 'Document',
+      title: <TableColumnTitle translationKey="document" />,
       field: 'entity.metadata.name',
       highlight: true,
       searchable: true,
@@ -61,7 +62,7 @@ export const columnFactories = {
   },
   createOwnerColumn(): TableColumn<DocsTableRow> {
     return {
-      title: 'Owner',
+      title: <TableColumnTitle translationKey="owner" />,
       field: 'resolved.ownedByRelationsTitle',
       render: ({ resolved }) => (
         <EntityRefLinks
@@ -73,13 +74,13 @@ export const columnFactories = {
   },
   createKindColumn(): TableColumn<DocsTableRow> {
     return {
-      title: 'Kind',
+      title: <TableColumnTitle translationKey="kind" />,
       field: 'entity.kind',
     };
   },
   createTypeColumn(): TableColumn<DocsTableRow> {
     return {
-      title: 'Type',
+      title: <TableColumnTitle translationKey="type" />,
       field: 'entity.spec.type',
     };
   },
