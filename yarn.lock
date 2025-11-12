@@ -16633,11 +16633,11 @@ __metadata:
   linkType: hard
 
 "@remixicon/react@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "@remixicon/react@npm:4.6.0"
+  version: 4.7.0
+  resolution: "@remixicon/react@npm:4.7.0"
   peerDependencies:
     react: ">=18.2.0"
-  checksum: 10/d92c8131734062fca8d82d55dd8f3f4e28cb72c5eefda528c8aba5f3298f0c847342eecdbd7787d6da5af21b699d735f6cf27f151f0c982c1c9f06a78b235c94
+  checksum: 10/9ecee093dd4aec3744bcc7562eddb987bf9c7c059787dfecfbcc25a64c2f4833dc815dff715aa2a7f75011d65f877b3751a401d19cf2d725b5bcc685587d37f4
   languageName: node
   linkType: hard
 
