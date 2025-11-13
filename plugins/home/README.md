@@ -358,7 +358,7 @@ In order to validate the config you can use `backstage/cli config:check`
 
 ### Customizing the VisitList
 
-If you want more control over the recent and top visited lists, you can write your own functions to transform the pathnames and determine which visits to save. You can also enrich each visit with other fields and customize the chip colors/labels in the visit lists.
+If you want more control over the recent and top visited lists, you can write your own functions to transform the path names and determine which visits to save. You can also enrich each visit with other fields and customize the chip colors/labels in the visit lists.
 
 #### Transform Pathname Function
 
@@ -490,7 +490,7 @@ export const apis: AnyApiFactory[] = [
 
 #### Custom Chip Colors and Labels
 
-To provide your own chip colors and/or labels for the recent and top visited lists, wrap the components in `VisitDisplayProvider` with `getChipColor` and `getChipLabel` functions. The colors provided will be used instead of the hard coded [colorVariants](https://github.com/backstage/backstage/blob/2da352043425bcab4c4422e4d2820c26c0a83382/packages/theme/src/base/pageTheme.ts#L46) provided via `@backstage/theme`.
+To provide your own chip colors and/or labels for the recent and top visited lists, wrap the components in `VisitDisplayProvider` with `getChipColor` and `getChipLabel` functions. The colors provided will be used instead of the hard coded [`colorVariants`](https://github.com/backstage/backstage/blob/2da352043425bcab4c4422e4d2820c26c0a83382/packages/theme/src/base/pageTheme.ts#L46) provided via `@backstage/theme`.
 
 ```tsx
 import {

@@ -124,7 +124,7 @@ createApiFactory({
 ```
 
 Provider specific factory implementations, copy the code you need into the
-factory method depending on which apiRef you previously used.
+factory method depending on which API ref you previously used.
 
 ```ts
 // samlAuthApiRef
