@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Tooltip
@@ -25,4 +25,4 @@ export const TooltipDefinition = {
     tooltip: 'bui-Tooltip',
     arrow: 'bui-TooltipArrow',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

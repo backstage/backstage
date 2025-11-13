@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Text
@@ -30,4 +30,4 @@ export const TextDefinition = {
     color: ['primary', 'secondary', 'danger', 'warning', 'success'] as const,
     truncate: [true, false] as const,
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

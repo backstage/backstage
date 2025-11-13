@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Checkbox
@@ -28,4 +28,4 @@ export const CheckboxDefinition = {
   dataAttributes: {
     selected: [true, false] as const,
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

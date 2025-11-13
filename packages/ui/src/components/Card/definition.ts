@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Card
@@ -27,4 +27,4 @@ export const CardDefinition = {
     body: 'bui-CardBody',
     footer: 'bui-CardFooter',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

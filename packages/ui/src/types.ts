@@ -165,10 +165,10 @@ export type DataAttributeValues = readonly (string | number | boolean)[];
 export type DataAttributesMap = Record<string, DataAttributeValues>;
 
 /**
- * Base type for the component styles structure
+ * Component definition for useStyles hook
  * @public
  */
-export interface ComponentDefinition {
+export interface LegacyComponentDefinition {
   classNames: ClassNamesMap;
   dataAttributes?: DataAttributesMap;
   utilityProps?: string[];

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Menu
@@ -39,4 +39,4 @@ export const MenuDefinition = {
     searchFieldClear: 'bui-MenuSearchFieldClear',
     emptyState: 'bui-MenuEmptyState',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

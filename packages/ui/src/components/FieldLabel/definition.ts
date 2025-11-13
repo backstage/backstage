@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for FieldLabel
@@ -27,4 +27,4 @@ export const FieldLabelDefinition = {
     secondaryLabel: 'bui-FieldSecondaryLabel',
     description: 'bui-FieldDescription',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

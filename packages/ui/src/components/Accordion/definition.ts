@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Accordion
@@ -31,4 +31,4 @@ export const AccordionDefinition = {
     panel: 'bui-AccordionPanel',
     group: 'bui-AccordionGroup',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

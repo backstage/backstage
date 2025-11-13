@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Switch
@@ -25,4 +25,4 @@ export const SwitchDefinition = {
     root: 'bui-Switch',
     indicator: 'bui-SwitchIndicator',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

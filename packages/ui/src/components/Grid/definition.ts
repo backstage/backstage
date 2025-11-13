@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Grid
@@ -42,7 +42,7 @@ export const GridDefinition = {
     'px',
     'py',
   ],
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;
 
 /**
  * Component definition for GridItem
@@ -53,4 +53,4 @@ export const GridItemDefinition = {
     root: 'bui-GridItem',
   },
   utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

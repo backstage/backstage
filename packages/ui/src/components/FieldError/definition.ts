@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for FieldError
@@ -24,4 +24,4 @@ export const FieldErrorDefinition = {
   classNames: {
     root: 'bui-FieldError',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

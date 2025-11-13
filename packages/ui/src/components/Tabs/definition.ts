@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Tabs
@@ -30,4 +30,4 @@ export const TabsDefinition = {
     tabHovered: 'bui-TabHovered',
     panel: 'bui-TabPanel',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

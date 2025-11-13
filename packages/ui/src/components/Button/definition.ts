@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Button
@@ -31,4 +31,4 @@ export const ButtonDefinition = {
     variant: ['primary', 'secondary', 'tertiary'] as const,
     loading: [true, false] as const,
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

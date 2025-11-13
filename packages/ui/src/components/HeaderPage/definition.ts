@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for HeaderPage
@@ -28,4 +28,4 @@ export const HeaderPageDefinition = {
     tabsWrapper: 'bui-HeaderPageTabsWrapper',
     controls: 'bui-HeaderPageControls',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;
