@@ -108,12 +108,12 @@ const createStepLogger = ({
   task,
   step,
   rootLogger,
-  secretsForRedaction,
+  redactions,
 }: {
   task: TaskContext;
   step: TaskStep;
   rootLogger: LoggerService;
-  secretsForRedaction?: string[];
+  redactions?: Record<string, string>;
 }) => {
   const taskLogger = WinstonLogger.create({
     level: process.env.LOG_LEVEL || 'info',
@@ -124,8 +124,7 @@ const createStepLogger = ({
     transports: [new BackstageLoggerTransport(rootLogger, task, step.id)],
   });
 
-  taskLogger.addRedactions(Object.values(task.secrets ?? {}));
-  taskLogger.addRedactions(Object.values(secretsForRedaction ?? {}));
+  taskLogger.addRedactions(Object.values(redactions ?? {}));
 
   return { taskLogger };
 };
@@ -280,9 +279,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         task,
         step,
         rootLogger: this.options.logger,
-        secretsForRedaction: this.environment?.secrets
-          ? Object.values(this.environment.secrets)
-          : [],
+        redactions: {
+          ...task.secrets,
+          ...this.environment?.secrets,
+        },
       });
 
       if (task.isDryRun) {
