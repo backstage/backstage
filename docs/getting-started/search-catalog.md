@@ -62,10 +62,11 @@ There are three additional items that can be part of the system model:
 
   Use the `Lifecycle` dropdown to filter the catalog list by lifecycle.
 
-- **\*Search by Processing Status**
+- **Search by Processing Status**
 
   Use the `Processing Status` dropdown to restrict the displayed list to only include those entities which are [orphaned](../features/software-catalog/life-of-an-entity.md#orphaning) or in error.
 
 - **Search by Namespace**
 
   Use the `Namespace` dropdown to filter the catalog list by namespace associated with the entity.
+
