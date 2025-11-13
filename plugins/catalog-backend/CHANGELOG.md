@@ -1,5 +1,100 @@
 # @backstage/plugin-catalog-backend
 
+## 3.2.0-next.1
+
+### Minor Changes
+
+- 2d229b2: Enable YAML merge keys in yamlPlaceholderResolver
+- 9d3ec06: Make YAML merge (<<:) support configurable in the Backstage Catalog instead of always being enabled
+- 8c26af4: Enable YAML merge keys in yamlPlaceholderResolver
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
+## 3.1.3-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 3.1.2
+
+### Patch Changes
+
+- 9890488: Internal refactor to remove remnants of the old backend system
+- 6493c98: Log before provider-orphaning eviction happens
+- 2aaf01a: Fix for duplicate search results in entity-facets API call
+- e489661: Moved catalog processor and provider disabling and priorities under own config objects.
+
+  This is due to issue with some existing providers, such as GitHub, using array syntax for the provider configuration.
+
+  The new config format is not backwards compatible, so users will need to update their config files. The new format
+  is as follows:
+
+  ```yaml
+  catalog:
+    providerOptions:
+      providerA:
+        disabled: false
+      providerB:
+        disabled: true
+    processorOptions:
+      processorA:
+        disabled: false
+        priority: 10
+      processorB:
+        disabled: true
+  ```
+
+- 77516c5: Added new `catalog:validate-entity` action to actions registry.
+
+  This action can be used to validate entities against the software catalog.
+  This is useful for validating `catalog-info.yaml` file changes locally using the
+  Backstage MCP server.
+
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/config@1.3.5
+  - @backstage/backend-openapi-utils@0.6.2
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+
+## 3.1.2-next.2
+
+### Patch Changes
+
+- 6493c98: Log before provider-orphaning eviction happens
+- 77516c5: Added new `catalog:validate-entity` action to actions registry.
+
+  This action can be used to validate entities against the software catalog.
+  This is useful for validating `catalog-info.yaml` file changes locally using the
+  Backstage MCP server.
+
 ## 3.1.1-next.1
 
 ### Patch Changes

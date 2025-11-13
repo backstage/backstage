@@ -1,4 +1,6 @@
 import createMDX from '@next/mdx';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
@@ -13,6 +15,10 @@ const nextConfig = {
     // These are type-level conflicts that don't affect runtime behavior
     ignoreBuildErrors: true,
   },
+  outputFileTracingRoot: path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    '..',
+  ),
 };
 
 const withMDX = createMDX({});

@@ -79,4 +79,110 @@ describe('createPackageVersionProvider', () => {
       `^${corePluginApiPkg.version}`,
     );
   });
+
+  describe('with backstage protocol options', () => {
+    it('should return backstage:^ for @backstage packages when preferBackstageProtocol is true', async () => {
+      mockDir.setContent({
+        'yarn.lock': `${HEADER}
+"@backstage/core-plugin-api@^1.0.0":
+  version "1.0.0"
+`,
+      });
+
+      const lockfilePath = mockDir.resolve('yarn.lock');
+      const lockfile = await Lockfile.load(lockfilePath);
+      const provider = createPackageVersionProvider(lockfile, {
+        preferBackstageProtocol: true,
+      });
+
+      expect(provider('@backstage/core-plugin-api')).toBe('backstage:^');
+      expect(provider('@backstage/cli')).toBe('backstage:^');
+    });
+
+    it('should not return backstage:^ for non-@backstage packages even when preferBackstageProtocol is true', async () => {
+      mockDir.setContent({
+        'yarn.lock': `${HEADER}
+"react@^18.0.0":
+  version "18.0.0"
+
+"@backstage/core-plugin-api@^1.0.0":
+  version "1.0.0"
+
+"@internal/library@workspace:packages/internal":
+  version "0.0.0-use.local"
+`,
+      });
+
+      const lockfilePath = mockDir.resolve('yarn.lock');
+      const lockfile = await Lockfile.load(lockfilePath);
+      const provider = createPackageVersionProvider(lockfile, {
+        preferBackstageProtocol: true,
+      });
+
+      expect(provider('react', '18.0.0')).toBe('^18.0.0');
+      expect(provider('@backstage/core-plugin-api')).toBe('backstage:^');
+      expect(provider('@internal/library')).toBe('workspace:^');
+    });
+
+    it('should prefer workspace ranges over backstage protocol', async () => {
+      mockDir.setContent({
+        'yarn.lock': `${HEADER}
+"react@workspace:packages/internal":
+  version "0.0.0-use.local"
+
+"@backstage/core-plugin-api@workspace:packages/internal":
+  version "0.0.0-use.local"
+
+"@internal/library@workspace:packages/internal":
+  version "0.0.0-use.local"
+`,
+      });
+
+      const lockfilePath = mockDir.resolve('yarn.lock');
+      const lockfile = await Lockfile.load(lockfilePath);
+      const provider = createPackageVersionProvider(lockfile, {
+        preferBackstageProtocol: true,
+      });
+
+      expect(provider('react')).toBe('workspace:^');
+      expect(provider('@backstage/core-plugin-api')).toBe('workspace:^');
+      expect(provider('@internal/library')).toBe('workspace:^');
+    });
+
+    // skipping this as it's broken in VP right now, and need a release.
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip('should not use backstage protocol when preferBackstageProtocol is false', async () => {
+      mockDir.setContent({
+        'yarn.lock': `${HEADER}
+"@backstage/core-plugin-api@*":
+  version "1.0.0"
+`,
+      });
+
+      const lockfilePath = mockDir.resolve('yarn.lock');
+      const lockfile = await Lockfile.load(lockfilePath);
+      const provider = createPackageVersionProvider(lockfile, {
+        preferBackstageProtocol: false,
+      });
+
+      expect(provider('@backstage/core-plugin-api')).toBe('*');
+    });
+
+    // skipping this as it's broken in VP right now, and need a release.
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip('should not use backstage protocol when options are not provided', async () => {
+      mockDir.setContent({
+        'yarn.lock': `${HEADER}
+"@backstage/core-plugin-api@*":
+  version "1.0.0"
+`,
+      });
+
+      const lockfilePath = mockDir.resolve('yarn.lock');
+      const lockfile = await Lockfile.load(lockfilePath);
+      const provider = createPackageVersionProvider(lockfile);
+
+      expect(provider('@backstage/core-plugin-api')).toBe('*');
+    });
+  });
 });

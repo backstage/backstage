@@ -203,10 +203,16 @@ describe('ApiBlueprint', () => {
               "optional": false,
               "singleton": false,
             },
+            "context": {
+              "input": "test",
+              "kind": "api",
+              "name": "test",
+            },
             "extensionData": [
               [Function],
             ],
             "replaces": undefined,
+            "withContext": [Function],
           },
         },
         "kind": "api",

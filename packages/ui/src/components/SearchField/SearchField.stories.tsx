@@ -17,11 +17,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
-import { Icon } from '../Icon';
 import { Flex } from '../Flex';
 import { FieldLabel } from '../FieldLabel';
 import { ButtonIcon } from '../ButtonIcon';
-import { RiCactusLine } from '@remixicon/react';
+import { RiCactusLine, RiEBike2Line } from '@remixicon/react';
 import { Button } from '../Button';
 import { Header } from '../Header';
 import { MemoryRouter } from 'react-router-dom';
@@ -51,6 +50,7 @@ export const Default: Story = {
     style: {
       maxWidth: '300px',
     },
+    'aria-label': 'Search',
   },
 };
 
@@ -110,7 +110,7 @@ export const WithIcon: Story = {
       {...args}
       placeholder="Enter a URL"
       size="small"
-      icon={<Icon name="eye" />}
+      icon={<RiEBike2Line />}
     />
   ),
 };
@@ -192,7 +192,7 @@ export const InHeader: Story = {
               size="small"
               variant="secondary"
             />
-            <SearchField {...args} size="small" />
+            <SearchField aria-label="Search" {...args} size="small" />
             <ButtonIcon
               aria-label="Cactus icon button"
               icon={<RiCactusLine />}
@@ -271,4 +271,25 @@ export const StartCollapsedWithButtons: Story = {
       </Button>
     </Flex>
   ),
+};
+
+export const StartCollapsedWithOnChange: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  render: args => {
+    const handleChange = (value: string) => {
+      console.log('Search value:', value);
+    };
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} onChange={handleChange} size="small" />
+      </Flex>
+    );
+  },
 };

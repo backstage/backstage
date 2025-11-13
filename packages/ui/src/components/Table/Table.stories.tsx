@@ -169,6 +169,41 @@ export const WithPaginationControlled: Story = {
   },
 };
 
+export const Sorting: Story = {
+  render: () => {
+    return (
+      <Table>
+        <TableHeader>
+          <Column isRowHeader allowsSorting>
+            Name
+          </Column>
+          <Column allowsSorting>Owner</Column>
+          <Column allowsSorting>Type</Column>
+          <Column allowsSorting>Lifecycle</Column>
+        </TableHeader>
+        <TableBody>
+          {data1.map(item => (
+            <Row key={item.name}>
+              <Cell
+                title={item.name}
+                leadingIcon={<RiCactusLine />}
+                description={item.description}
+              />
+              <CellProfileBUI
+                name={item.owner.name}
+                src={item.owner.profilePicture}
+                href={item.owner.link}
+              />
+              <Cell title={item.type} />
+              <Cell title={item.lifecycle} />
+            </Row>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
 export const TableRockBand: Story = {
   render: () => {
     const { data, paginationProps } = useTable({

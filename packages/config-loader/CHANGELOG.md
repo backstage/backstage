@@ -1,5 +1,24 @@
 # @backstage/config-loader
 
+## 1.10.6-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.5
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+- Updated dependencies
+  - @backstage/config@1.3.5
+
 ## 1.10.4-next.0
 
 ### Patch Changes

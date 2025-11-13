@@ -1,5 +1,76 @@
 # techdocs-cli-embedded-app
 
+## 0.2.114-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.2
+  - @backstage/plugin-techdocs@1.16.0-next.1
+  - @backstage/plugin-catalog@1.32.0-next.1
+  - @backstage/cli@0.34.5-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/core-app-api@1.19.2-next.1
+
+## 0.2.114-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.1
+
+## 0.2.114-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.34.5-next.0
+  - @backstage/ui@0.8.2-next.0
+  - @backstage/plugin-techdocs@1.15.2-next.0
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/app-defaults@1.7.2-next.0
+  - @backstage/integration-react@1.2.12-next.0
+  - @backstage/test-utils@1.7.13-next.0
+  - @backstage/theme@0.7.0
+  - @backstage/plugin-catalog@1.31.5-next.0
+  - @backstage/plugin-techdocs-react@1.3.5-next.0
+
+## 0.2.113
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/cli@0.34.4
+  - @backstage/config@1.3.5
+  - @backstage/theme@0.7.0
+  - @backstage/plugin-catalog@1.31.4
+  - @backstage/app-defaults@1.7.1
+  - @backstage/test-utils@1.7.12
+  - @backstage/plugin-techdocs@1.15.1
+  - @backstage/plugin-techdocs-react@1.3.4
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/integration-react@1.2.11
+
+## 0.2.113-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.34.4-next.2
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+  - @backstage/app-defaults@1.7.1-next.2
+  - @backstage/test-utils@1.7.12-next.1
+  - @backstage/plugin-techdocs@1.15.1-next.2
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+
 ## 0.2.113-next.1
 
 ### Patch Changes

@@ -1,5 +1,47 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.10.0-next.1
+
+### Minor Changes
+
+- ff96d7e: fix scaffolder action createDeployToken to allow usage of oauth tokens
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
+## 0.9.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+
+## 0.9.6
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+
+## 0.9.6-next.2
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+
 ## 0.9.6-next.1
 
 ### Patch Changes

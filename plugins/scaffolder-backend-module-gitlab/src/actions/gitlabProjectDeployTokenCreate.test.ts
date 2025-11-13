@@ -79,6 +79,37 @@ describe('gitlab:create-deploy-token', () => {
         name: 'tokenname',
         username: 'tokenuser',
         scopes: ['read_repository'],
+        token: 'oidctoken',
+      },
+    });
+
+    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
+      'tokenname',
+      ['read_repository'],
+      {
+        projectId: '123',
+        username: 'tokenuser',
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
+  });
+
+  it('should work when there is not a token provided through ctx.input e.g. integration token', async () => {
+    mockGitlabClient.DeployTokens.create.mockResolvedValue({
+      token: 'TOKEN',
+      username: 'User',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=bob&owner=owner',
+        projectId: '123',
+        name: 'tokenname',
+        username: 'tokenuser',
+        scopes: ['read_repository'],
       },
     });
 

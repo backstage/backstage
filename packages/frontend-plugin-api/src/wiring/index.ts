@@ -18,8 +18,8 @@ export { coreExtensionData } from './coreExtensionData';
 export {
   createExtension,
   type ExtensionDefinition,
+  type ExtensionDefinitionAttachTo,
   type ExtensionDefinitionParameters,
-  type ExtensionAttachToSpec,
   type CreateExtensionOptions,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
@@ -54,7 +54,11 @@ export {
   type FrontendFeatureLoader,
   type CreateFrontendFeatureLoaderOptions,
 } from './createFrontendFeatureLoader';
-export { type Extension } from './resolveExtensionDefinition';
+export {
+  type Extension,
+  type ExtensionAttachTo,
+  type ExtensionAttachToSpec,
+} from './resolveExtensionDefinition';
 export {
   type ExtensionDataContainer,
   type FeatureFlagConfig,

@@ -13,6 +13,7 @@ export type Component =
   | 'datatable'
   | 'select'
   | 'collapsible'
+  | 'accordion'
   | 'checkbox'
   | 'container'
   | 'link'
@@ -25,7 +26,8 @@ export type Component =
   | 'radio-group'
   | 'card'
   | 'skeleton'
-  | 'header';
+  | 'header'
+  | 'passwordfield';
 
 export type Version = `${number}.${number}.${number}`;
 

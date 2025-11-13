@@ -97,6 +97,7 @@ export const useStyles = makeStyles(
       marginRight: theme.spacing(1),
       cursor: 'pointer',
       flexShrink: 0,
+      userSelect: 'none',
     },
     textHighlight: {
       background: alpha(theme.palette.info.main, 0.15),

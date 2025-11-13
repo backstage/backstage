@@ -248,7 +248,7 @@ You can also check out the documentation on [how to test Backstage plugin module
 Run `yarn start` in the root folder of your Backstage project and look for logs like these:
 
 ```sh
-[backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Task worker starting: search_index_faq_snippets, {"version":2,"cadence":"PT10M","initialDelayDuration":"PT3S","timeoutAfterDuration":"PT15M"} task=search_index_faq_snippets
+[backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Registered scheduled task: search_index_faq_snippets, {"version":2,"cadence":"PT10M","initialDelayDuration":"PT3S","timeoutAfterDuration":"PT15M"} task=search_index_faq_snippets
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Collating documents for faq-snippets via FaqSnippetsCollatorFactory documentType=faq-snippets
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Fetching faq snippets from https://backstage.example.biz/faq-snippets
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Collating documents for faq-snippets succeeded documentType=faq-snippets

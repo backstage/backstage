@@ -70,6 +70,21 @@ type LoadConfigOptions = {
   overrides?: Partial<PortableTemplateConfig>;
 };
 
+function computePackageNamePluginInfix(
+  packageNamePrefix: string,
+  namePluginInfix?: string,
+) {
+  const packageNamePluginInfix =
+    namePluginInfix ??
+    (packageNamePrefix.includes('backstage')
+      ? defaults.packageNamePluginInfix
+      : 'backstage-plugin-');
+
+  return {
+    packageNamePluginInfix,
+  };
+}
+
 export async function loadPortableTemplateConfig(
   options: LoadConfigOptions = {},
 ): Promise<PortableTemplateConfig> {
@@ -116,6 +131,16 @@ export async function loadPortableTemplateConfig(
     templateNameConflicts.set(pointer.name, rawPointer);
   }
 
+  const packageNamePrefix =
+    overrides.packageNamePrefix ??
+    config?.globals?.namePrefix ??
+    defaults.packageNamePrefix;
+
+  const { packageNamePluginInfix } = computePackageNamePluginInfix(
+    packageNamePrefix,
+    overrides.packageNamePluginInfix ?? config?.globals?.namePluginInfix,
+  );
+
   return {
     isUsingDefaultTemplates: !config?.templates,
     templatePointers: templatePointerEntries.map(({ pointer }) => pointer),
@@ -126,14 +151,8 @@ export async function loadPortableTemplateConfig(
       overrides.publishRegistry ??
       config?.globals?.publishRegistry ??
       defaults.publishRegistry,
-    packageNamePrefix:
-      overrides.packageNamePrefix ??
-      config?.globals?.namePrefix ??
-      defaults.packageNamePrefix,
-    packageNamePluginInfix:
-      overrides.packageNamePluginInfix ??
-      config?.globals?.namePluginInfix ??
-      defaults.packageNamePluginInfix,
+    packageNamePrefix,
+    packageNamePluginInfix,
   };
 }
 

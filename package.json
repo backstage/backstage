@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.44.0-next.1",
+  "version": "1.45.0-next.3",
   "backstage": {
     "cli": {
       "new": {
@@ -45,6 +45,7 @@
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:peer-deps": "backstage-repo-tools peer-deps",
     "lint:type-deps": "backstage-repo-tools type-deps",
+    "mui-to-bui": "node scripts/mui-to-bui/backstage-migration-analytics.js",
     "new": "backstage-cli new",
     "prepare": "husky",
     "prettier:check": "prettier --check .",
@@ -54,6 +55,7 @@
     "snyk:test:package": "yarn snyk:test --include",
     "start": "backstage-cli repo start",
     "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
+    "start:docker": "docker compose -f docker-compose.deps.yml up --wait && BACKSTAGE_ENV=docker yarn start",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn start example-app-next example-backend",
     "storybook": "storybook dev -p 6006",
@@ -105,6 +107,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch",
+    "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0",
     "ast-types@0.14.2": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
     "ast-types@^0.14.1": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
     "ast-types@npm:0.14.2": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch",
@@ -164,6 +167,7 @@
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
     "storybook": "^9.1.7",
+    "ts-morph": "^24.0.0",
     "typedoc": "^0.28.0",
     "typescript": "~5.7.0",
     "vite": "^7.1.5"

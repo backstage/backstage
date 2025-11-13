@@ -59,7 +59,11 @@ export class DatabaseUserSettingsStore implements UserSettingsStore {
     return new DatabaseUserSettingsStore(client);
   }
 
-  private constructor(private readonly db: Knex) {}
+  private readonly db: Knex;
+
+  private constructor(db: Knex) {
+    this.db = db;
+  }
 
   async get(options: {
     userEntityRef: string;

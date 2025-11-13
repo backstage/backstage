@@ -1,5 +1,30 @@
 # @backstage/plugin-gateway-backend
 
+## 1.1.0-next.1
+
+### Minor Changes
+
+- a17d9df: Update usage of the `instanceMetadata` service.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 1.0.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.5-next.0
+
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+
 ## 1.0.6-next.0
 
 ### Patch Changes

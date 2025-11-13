@@ -52,9 +52,9 @@ backend:
           type: incomingRequest
         level: warn
 
-      # Ignore logs starting with "Task worker starting", unless they're warnings or errors
+      # Ignore logs starting with "Registered scheduled task", unless they're warnings or errors
       - matchers:
-          message: ['/^Task worker starting/']
+          message: ['/^Registered scheduled task/']
         level: warn
 ```
 

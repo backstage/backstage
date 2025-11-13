@@ -71,7 +71,7 @@ describe('BitbucketServerUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.tgz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -157,7 +157,7 @@ describe('BitbucketServerUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.tgz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -216,7 +216,7 @@ describe('BitbucketServerUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.tgz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(

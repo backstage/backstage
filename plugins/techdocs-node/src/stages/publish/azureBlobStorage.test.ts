@@ -39,7 +39,11 @@ jest.mock('@azure/identity', () => ({
 
 jest.mock('@azure/storage-blob', () => {
   class BlockBlobClient {
-    constructor(private readonly blobName: string) {}
+    private readonly blobName: string;
+
+    constructor(blobName: string) {
+      this.blobName = blobName;
+    }
 
     uploadFile(source: string): Promise<BlobUploadCommonResponse> {
       mockDir.addContent({
@@ -117,7 +121,11 @@ jest.mock('@azure/storage-blob', () => {
   }
 
   class ContainerClient {
-    constructor(private readonly containerName: string) {}
+    private readonly containerName: string;
+
+    constructor(containerName: string) {
+      this.containerName = containerName;
+    }
 
     getProperties(): Promise<ContainerGetPropertiesResponse> {
       return Promise.resolve({
@@ -173,10 +181,13 @@ jest.mock('@azure/storage-blob', () => {
   }
 
   class BlobServiceClient {
-    constructor(
-      public readonly url: string,
-      private readonly credential?: StorageSharedKeyCredential,
-    ) {}
+    public readonly url: string;
+    private readonly credential?: StorageSharedKeyCredential;
+
+    constructor(url: string, credential?: StorageSharedKeyCredential) {
+      this.url = url;
+      this.credential = credential;
+    }
 
     getContainerClient(containerName: string) {
       if (containerName === 'bad_container') {

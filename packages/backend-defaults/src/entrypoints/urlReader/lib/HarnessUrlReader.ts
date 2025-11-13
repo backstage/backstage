@@ -64,12 +64,20 @@ export class HarnessUrlReader implements UrlReaderService {
       });
   };
 
+  private readonly integration: HarnessIntegration;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+  };
+
   constructor(
-    private readonly integration: HarnessIntegration,
-    private readonly deps: {
+    integration: HarnessIntegration,
+    deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
-  ) {}
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+  }
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
     return response.buffer();
