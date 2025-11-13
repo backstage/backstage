@@ -362,6 +362,39 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       owners: new EntityOwnerFilter(['group:default/team-b']),
     });
   });
+
+  it('calls fetch with lowercased input and displays results', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+          }}
+        >
+          <EntityOwnerPicker mode="all" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: undefined,
+    });
+
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+    const input = screen.getByRole('textbox', { name: 'Owner' });
+    fireEvent.change(input, { target: { value: 'Some-Owner' } });
+
+    await waitFor(() =>
+      expect(screen.getByText('some-owner')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText('some-owner'));
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/some-owner']),
+    });
+  });
 });
 
 describe('<EntityOwnerPicker mode="owners-only" />', () => {
