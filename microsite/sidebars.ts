@@ -55,8 +55,16 @@ export default {
         label: 'Using Backstage',
         items: [
           'getting-started/logging-in',
-          'getting-started/register-a-component',
-          'getting-started/create-a-component',
+          {
+            type: 'category',
+            label: 'Managing Components',
+            items: [
+              'getting-started/register-a-component',
+              'getting-started/create-a-component',
+              'getting-started/update-a-component',
+            ],
+          },
+          'getting-started/search-catalog',
         ],
       },
       'overview/support',
