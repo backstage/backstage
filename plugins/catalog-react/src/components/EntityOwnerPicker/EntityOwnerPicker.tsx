@@ -221,7 +221,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         }}
         name="owner-picker"
         onInputChange={(_e, inputValue) => {
-          setText(inputValue);
+          setText(inputValue.toLocaleLowerCase('en-US'));
         }}
         ListboxProps={{
           onScroll: (e: MouseEvent) => {
