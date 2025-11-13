@@ -8,8 +8,8 @@ Moved from `ldapjs` dependency to `ldapts`
 
 **Type Migration**
 
-Custom transformers must now accept `Entry` from ldapts instead of `SearchEntry`
-from ldapjs The Entry type provides direct property access without need for
+Custom transformers must now accept `Entry` from `ldapts` instead of `SearchEntry`
+from `ldapjs` The Entry type provides direct property access without need for
 `.object()` or `.raw()` methods.
 
 If you have custom user or group transformers, update the signature from:
@@ -29,7 +29,7 @@ to
 **Search Options**
 
 Updated LDAP search configuration `typesOnly: false` → `attributeValues: true`
-This inverts the boolean logic: ldapjs used negative form while ldapts uses
+This inverts the boolean logic: `ldapjs` used negative form while `ldapts` uses
 positive form. Both achieve the same result: retrieving attribute values rather
 than just attribute names.
 
@@ -66,5 +66,5 @@ for (const entry of entries) {
 ```
 
 > **_NOTE:_**: Both methods have always loaded all entries into memory. The
-> searchStreaming method was only needed internally to handle ldapjs's
+> `searchStreaming` method was only needed internally to handle `ldapjs`'s
 > event-based API.
