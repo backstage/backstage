@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for ButtonIcon
@@ -26,4 +26,4 @@ export const ButtonIconDefinition = {
     content: 'bui-ButtonIconContent',
     spinner: 'bui-ButtonIconSpinner',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Container
@@ -25,4 +25,4 @@ export const ContainerDefinition = {
     root: 'bui-Container',
   },
   utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'],
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

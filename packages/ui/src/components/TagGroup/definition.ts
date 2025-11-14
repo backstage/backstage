@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for TagGroup
@@ -28,4 +28,4 @@ export const TagGroupDefinition = {
     tagIcon: 'bui-TagIcon',
     tagRemoveButton: 'bui-TagRemoveButton',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

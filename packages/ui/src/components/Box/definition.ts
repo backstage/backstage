@@ -15,6 +15,7 @@
  */
 
 import type { ComponentDefinition } from '../../types';
+import { BoxProps } from './types';
 
 /**
  * Component definition for Box
@@ -48,4 +49,4 @@ export const BoxDefinition = {
     'minHeight',
     'maxHeight',
   ],
-} as const satisfies ComponentDefinition;
+} as const satisfies ComponentDefinition<BoxProps>;

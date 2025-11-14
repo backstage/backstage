@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Skeleton
@@ -24,4 +24,4 @@ export const SkeletonDefinition = {
   classNames: {
     root: 'bui-Skeleton',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

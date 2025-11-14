@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Dialog
@@ -29,4 +29,4 @@ export const DialogDefinition = {
     body: 'bui-DialogBody',
     footer: 'bui-DialogFooter',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

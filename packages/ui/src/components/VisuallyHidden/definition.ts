@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for VisuallyHidden
@@ -24,4 +24,4 @@ export const VisuallyHiddenDefinition = {
   classNames: {
     root: 'bui-VisuallyHidden',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

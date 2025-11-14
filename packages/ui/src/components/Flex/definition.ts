@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for Flex
@@ -44,4 +44,4 @@ export const FlexDefinition = {
     'justify',
     'direction',
   ],
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

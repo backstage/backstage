@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import type { LegacyComponentDefinition } from '../../types';
-
-/**
- * Component definition for Avatar
- * @public
- */
-export const AvatarDefinition = {
-  classNames: {
-    root: 'bui-AvatarRoot',
-    image: 'bui-AvatarImage',
-    fallback: 'bui-AvatarFallback',
-  },
-  dataAttributes: {
-    size: ['small', 'medium', 'large'] as const,
-  },
-} as const satisfies LegacyComponentDefinition;
+export function defineOwnProps<const T extends readonly PropertyKey[]>(
+  arr: T,
+): { [K in T[number]]: true } {
+  return Object.fromEntries(
+    (arr as readonly T[number][]).map(k => [k, true] as const),
+  ) as { [K in T[number]]: true };
+}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for TextField
@@ -33,4 +33,4 @@ export const TextFieldDefinition = {
     disabled: [true, false] as const,
     size: ['small', 'medium'] as const,
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

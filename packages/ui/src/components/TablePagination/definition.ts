@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for TablePagination
@@ -27,4 +27,4 @@ export const TablePaginationDefinition = {
     right: 'bui-TablePaginationRight',
     select: 'bui-TablePaginationSelect',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;

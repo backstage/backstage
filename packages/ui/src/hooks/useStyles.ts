@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useBreakpoint, breakpoints } from './useBreakpoint';
-import type { ComponentDefinition } from '../types';
+import type { LegacyComponentDefinition } from '../types';
 import { utilityClassMap } from '../utils/utilityClassMap';
 
 /**
@@ -57,9 +57,10 @@ function resolveResponsiveValue(
  * @param componentDefinition - The component's definition object
  * @param props - All component props
  * @returns Object with classNames, dataAttributes, utilityClasses, style, and cleanedProps
+ * @deprecated Use new hook system (useClassNames, useDataAttributes, useComponentProps, useUtilityStyles) instead
  */
 export function useStyles<
-  T extends ComponentDefinition,
+  T extends LegacyComponentDefinition,
   P extends Record<string, any> = Record<string, any>,
 >(
   componentDefinition: T,

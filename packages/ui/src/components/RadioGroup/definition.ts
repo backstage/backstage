@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import type { LegacyComponentDefinition } from '../../types';
 
 /**
  * Component definition for RadioGroup
@@ -26,4 +26,4 @@ export const RadioGroupDefinition = {
     content: 'bui-RadioGroupContent',
     radio: 'bui-Radio',
   },
-} as const satisfies ComponentDefinition;
+} as const satisfies LegacyComponentDefinition;
