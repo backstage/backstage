@@ -62,7 +62,9 @@ export const LightTheme = ThemeBlueprint.make({
       variant: 'light',
       icon: <LightIcon />,
       Provider: ({ children }) => (
-        <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+        <UnifiedThemeProvider theme={builtinThemes.light} themeName="light">
+          {children}
+        </UnifiedThemeProvider>
       ),
     },
   },
@@ -77,7 +79,9 @@ export const DarkTheme = ThemeBlueprint.make({
       variant: 'dark',
       icon: <DarkIcon />,
       Provider: ({ children }) => (
-        <UnifiedThemeProvider theme={builtinThemes.dark} children={children} />
+        <UnifiedThemeProvider theme={builtinThemes.dark} themeName="dark">
+          {children}
+        </UnifiedThemeProvider>
       ),
     },
   },
