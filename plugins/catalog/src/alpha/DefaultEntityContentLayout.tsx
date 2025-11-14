@@ -15,7 +15,6 @@
  */
 
 import { Fragment } from 'react';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntitySwitch } from '../components/EntitySwitch';
@@ -41,6 +40,15 @@ const useStyles = makeStyles<
     display: 'flex',
     flexFlow: 'column nowrap',
     gap: theme.spacing(3),
+  },
+  warningArea: {
+    display: 'grid',
+    gap: theme.spacing(2),
+    marginBottom: theme.spacing(3),
+    '&:empty': {
+      marginBottom: 0,
+      display: 'none',
+    },
   },
   mainContent: {
     display: 'flex',
@@ -120,34 +128,6 @@ const useStyles = makeStyles<
   },
 }));
 
-const entityWarningContent = (
-  <>
-    <EntitySwitch>
-      <EntitySwitch.Case if={isOrphan}>
-        <Grid item xs={12}>
-          <EntityOrphanWarning />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
-
-    <EntitySwitch>
-      <EntitySwitch.Case if={hasRelationWarnings}>
-        <Grid item xs={12}>
-          <EntityRelationWarning />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
-
-    <EntitySwitch>
-      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
-        <Grid item xs={12}>
-          <EntityProcessingErrorsPanel />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
-  </>
-);
-
 export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
 
@@ -165,7 +145,25 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
 
   return (
     <>
-      {entityWarningContent}
+      <div className={classes.warningArea}>
+        <EntitySwitch>
+          <EntitySwitch.Case if={isOrphan}>
+            <EntityOrphanWarning />
+          </EntitySwitch.Case>
+        </EntitySwitch>
+
+        <EntitySwitch>
+          <EntitySwitch.Case if={hasRelationWarnings}>
+            <EntityRelationWarning />
+          </EntitySwitch.Case>
+        </EntitySwitch>
+
+        <EntitySwitch>
+          <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+            <EntityProcessingErrorsPanel />
+          </EntitySwitch.Case>
+        </EntitySwitch>
+      </div>
       <div className={classes.root}>
         {infoCards.length > 0 ? (
           <div className={classes.infoArea}>
