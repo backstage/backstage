@@ -52,7 +52,7 @@ const useStyles = makeStyles<
   infoArea: {
     display: 'flex',
     flexFlow: 'column nowrap',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     gap: theme.spacing(3),
     minWidth: 0,
     '& > *': {
@@ -62,10 +62,11 @@ const useStyles = makeStyles<
   },
   summaryArea: {
     minWidth: 0,
-    margin: theme.spacing(1.5), // To counteract MUI negative grid margin
+    margin: theme.spacing(1), // To counteract MUI negative grid margin
   },
   summaryCard: {
     flex: '0 0 auto',
+    width: '100%',
     '& + &': {
       marginLeft: theme.spacing(3),
     },
@@ -96,7 +97,7 @@ const useStyles = makeStyles<
     },
     summaryArea: {
       gridArea: 'summary',
-      marginBottom: theme.spacing(3),
+      margin: theme.spacing(1), // To counteract MUI negative grid margin
     },
     infoArea: {
       gridArea: 'info',
@@ -116,6 +117,9 @@ const useStyles = makeStyles<
       '&::-webkit-scrollbar': {
         display: 'none',
       },
+    },
+    summaryCard: {
+      width: 'auto',
     },
   },
 }));
