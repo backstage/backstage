@@ -146,7 +146,11 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     mode,
     initialSelectedOwnersRefs: selectedOwners,
   });
-  useDebouncedEffect(() => handleFetch({ text }), [text, handleFetch], 250);
+  useDebouncedEffect(
+    () => handleFetch({ text: text.toLocaleLowerCase('en-US') }),
+    [text, handleFetch],
+    250,
+  );
 
   const availableOwners = value?.items || [];
 
@@ -221,7 +225,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         }}
         name="owner-picker"
         onInputChange={(_e, inputValue) => {
-          setText(inputValue.toLocaleLowerCase('en-US'));
+          setText(inputValue);
         }}
         ListboxProps={{
           onScroll: (e: MouseEvent) => {
