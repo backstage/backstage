@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.2.16-next.1
+
+### Patch Changes
+
+- a5bcb2a: fix wrong dereferencing for AsyncApi 3 documents
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 0.2.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+
 ## 0.2.15
 
 ### Patch Changes

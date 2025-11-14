@@ -1,5 +1,28 @@
 # @backstage/plugin-notifications
 
+## 0.5.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.0-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
+## 0.5.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.0
+  - @backstage/plugin-notifications-common@0.1.2-next.0
+  - @backstage/plugin-signals-react@0.0.17-next.0
+
 ## 0.5.10
 
 ### Patch Changes

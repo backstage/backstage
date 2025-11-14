@@ -6,17 +6,24 @@
   .sidebar {
     display: block;
     position: fixed;
-    top: 112px;
+    top: 0;
     left: 0;
-    width: 332px;
-    height: calc(100vh - 112px);
+    width: 260px;
+    height: 100vh;
     color: var(--primary);
     overflow: hidden;
   }
 }
 
+.logoContainer {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding-left: 32px;
+}
+
 .root {
-  height: 100%;
+  height: calc(100% - 80px);
 }
 
 .scrollbar {
@@ -56,67 +63,13 @@
 }
 
 .content {
-  padding: 0 20px 64px;
+  padding: 32px 20px 64px;
 }
 
 .menu {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-}
-
-.section {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 2px;
-}
-
-.sectionTitle {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  padding: 0 12px 4px;
-  color: var(--secondary);
-  margin-top: 40px;
-  text-transform: uppercase;
-
-  &:first-child {
-    margin-top: 12px;
-  }
-}
-
-.line {
-  text-decoration: none;
-  align-items: center;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 26px;
-  padding: 0 12px;
-  border-radius: 4px;
-
-  &:hover {
-    background-color: var(--action);
-  }
-}
-
-.line.active {
-  background-color: var(--action);
-}
-
-.line.active .lineTitle {
-  color: var(--primary);
-}
-
-.lineTitle {
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--primary);
-}
-
-.lineStatus {
-  font-size: 14px;
-  color: var(--secondary);
+  position: relative;
 }

@@ -22,7 +22,7 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 /** @public */
 export interface PasswordFieldProps
   extends AriaTextFieldProps,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   /**
    * An icon to render before the input
    */

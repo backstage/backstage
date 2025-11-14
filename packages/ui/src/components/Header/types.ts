@@ -29,6 +29,7 @@ export interface HeaderProps {
   customActions?: React.ReactNode;
   tabs?: HeaderTab[];
   onTabSelectionChange?: TabsProps['onSelectionChange'];
+  className?: string;
 }
 
 /**
@@ -59,4 +60,5 @@ export interface HeaderToolbarProps {
   titleLink?: HeaderProps['titleLink'];
   customActions?: HeaderProps['customActions'];
   hasTabs?: boolean;
+  className?: string;
 }

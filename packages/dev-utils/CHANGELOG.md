@@ -1,5 +1,28 @@
 # @backstage/dev-utils
 
+## 1.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.1
+
+## 1.1.17-next.0
+
+### Patch Changes
+
+- b29a856: Fixed styling of the dev app by adding a lazy import of `@backstage/ui/css/styles.css`.
+- Updated dependencies
+  - @backstage/ui@0.8.2-next.0
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/app-defaults@1.7.2-next.0
+  - @backstage/integration-react@1.2.12-next.0
+  - @backstage/theme@0.7.0
+
 ## 1.1.15
 
 ### Patch Changes

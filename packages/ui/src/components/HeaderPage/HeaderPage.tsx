@@ -32,10 +32,12 @@ import clsx from 'clsx';
  */
 export const HeaderPage = (props: HeaderPageProps) => {
   const { classNames, cleanedProps } = useStyles('HeaderPage', props);
-  const { title, tabs, customActions, breadcrumbs } = cleanedProps;
+  const { className, title, tabs, customActions, breadcrumbs } = cleanedProps;
 
   return (
-    <Container className={clsx(classNames.root, styles[classNames.root])}>
+    <Container
+      className={clsx(classNames.root, styles[classNames.root], className)}
+    >
       <div className={clsx(classNames.content, styles[classNames.content])}>
         <div
           className={clsx(

@@ -28,7 +28,6 @@ import type { PasswordFieldProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { RiEyeLine, RiEyeOffLine } from '@remixicon/react';
 import stylesPasswordField from './PasswordField.module.css';
-import stylesTextField from '../TextField/TextField.module.css';
 
 /** @public */
 export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
@@ -46,8 +45,6 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
         );
       }
     }, [label, ariaLabel, ariaLabelledBy]);
-
-    const { classNames: textFieldClassNames } = useStyles('TextField');
 
     const {
       classNames: classNamesPasswordField,
@@ -96,16 +93,16 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
         />
         <div
           className={clsx(
-            textFieldClassNames.inputWrapper,
-            stylesTextField[textFieldClassNames.inputWrapper],
+            classNamesPasswordField.inputWrapper,
+            stylesPasswordField[classNamesPasswordField.inputWrapper],
           )}
           data-size={dataAttributes['data-size']}
         >
           {icon && (
             <div
               className={clsx(
-                textFieldClassNames.inputIcon,
-                stylesTextField[textFieldClassNames.inputIcon],
+                classNamesPasswordField.inputIcon,
+                stylesPasswordField[classNamesPasswordField.inputIcon],
               )}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
@@ -113,36 +110,29 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
               {icon}
             </div>
           )}
-          <div
-            className={clsx(
-              textFieldClassNames.inputAction,
-              stylesTextField[textFieldClassNames.inputAction],
-            )}
-          >
-            <RAButton
-              data-size={dataAttributes['data-size']}
-              data-variant={'tertiary'}
-              aria-label={isVisible ? 'Hide value' : 'Show value'}
-              aria-controls={isVisible ? 'text' : 'password'}
-              aria-expanded={isVisible}
-              onPress={() => setIsVisible(v => !v)}
-              className={clsx(
-                classNamesPasswordField.inputVisibility,
-                stylesPasswordField[classNamesPasswordField.inputVisibility],
-              )}
-            >
-              {isVisible ? <RiEyeLine /> : <RiEyeOffLine />}
-            </RAButton>
-          </div>
           <Input
             className={clsx(
-              textFieldClassNames.input,
-              stylesTextField[textFieldClassNames.input],
+              classNamesPasswordField.input,
+              stylesPasswordField[classNamesPasswordField.input],
             )}
             {...(icon && { 'data-icon': true })}
             placeholder={placeholder}
             type={isVisible ? 'text' : 'password'}
           />
+          <RAButton
+            data-size={dataAttributes['data-size']}
+            data-variant={'tertiary'}
+            aria-label={isVisible ? 'Hide value' : 'Show value'}
+            aria-controls={isVisible ? 'text' : 'password'}
+            aria-expanded={isVisible}
+            onPress={() => setIsVisible(v => !v)}
+            className={clsx(
+              classNamesPasswordField.inputVisibility,
+              stylesPasswordField[classNamesPasswordField.inputVisibility],
+            )}
+          >
+            {isVisible ? <RiEyeLine /> : <RiEyeOffLine />}
+          </RAButton>
         </div>
         <FieldError />
       </AriaTextField>

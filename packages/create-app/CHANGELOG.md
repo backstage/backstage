@@ -1,5 +1,31 @@
 # @backstage/create-app
 
+## 0.7.6-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.6-next.2
+
+### Patch Changes
+
+- 9f939a6: Added `@backstage/plugin-app-visualizer` to the app in the `--next` template.
+
+## 0.7.6-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.6-next.0
+
+### Patch Changes
+
+- fc7cbfc: Added the new `@backstage/cli/templates/catalog-provider-module` template to the explicit template configuration for the `next-app` template.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.7.5
 
 ### Patch Changes

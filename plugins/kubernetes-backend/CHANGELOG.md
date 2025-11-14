@@ -1,5 +1,47 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.4-next.2
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.2
+  - @backstage/plugin-kubernetes-common@0.9.8-next.1
+  - @backstage/plugin-kubernetes-node@0.3.6-next.2
+
+## 0.20.4-next.1
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-kubernetes-node@0.3.6-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
+## 0.20.4-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration-aws-node@0.1.19-next.0
+  - @backstage/plugin-kubernetes-node@0.3.6-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.8-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
 ## 0.20.3
 
 ### Patch Changes

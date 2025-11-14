@@ -27,11 +27,11 @@ export const Skeleton = (props: SkeletonProps) => {
     rounded: false,
     ...props,
   });
-  const { width, height, rounded, style, ...rest } = cleanedProps;
+  const { className, width, height, rounded, style, ...rest } = cleanedProps;
 
   return (
     <div
-      className={clsx(classNames.root, styles[classNames.root])}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       data-rounded={rounded}
       style={{
         width,

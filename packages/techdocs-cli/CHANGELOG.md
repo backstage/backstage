@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.10.1-next.0
+
+### Patch Changes
+
+- c2a2017: Fix for missing styles due to move to BUI.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/cli-common@0.1.15
+
 ## 1.10.0
 
 ### Minor Changes
