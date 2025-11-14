@@ -70,7 +70,7 @@
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "cronstrue": "^2.32.0",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "kubernetes-models": "^4.3.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
