@@ -167,7 +167,7 @@ export function createTestAppWrapper(
         title: 'Test App Theme',
         variant: 'light',
         Provider: ({ children }) => (
-          <UnifiedThemeProvider theme={themes.light} themeName="light">
+          <UnifiedThemeProvider theme={themes.light}>
             {children}
           </UnifiedThemeProvider>
         ),
