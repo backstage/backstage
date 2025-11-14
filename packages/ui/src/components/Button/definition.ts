@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import type { LegacyComponentDefinition } from '../../types';
+import type { RAExtendingComponentDefinition } from '../../types';
+import { defineOwnProps } from '../../utils/defineOwnProps';
+import { ButtonOwnProps } from './types';
 
 /**
  * Component definition for Button
@@ -25,10 +27,19 @@ export const ButtonDefinition = {
     root: 'bui-Button',
     content: 'bui-ButtonContent',
     spinner: 'bui-ButtonSpinner',
+  } as const,
+  dataAttributes: ['size', 'variant', 'loading'] as const,
+  ownProps: defineOwnProps([
+    'size',
+    'variant',
+    'iconStart',
+    'iconEnd',
+    'loading',
+    'children',
+    'className',
+  ]),
+  defaults: {
+    size: 'small',
+    variant: 'primary',
   },
-  dataAttributes: {
-    size: ['small', 'medium', 'large'] as const,
-    variant: ['primary', 'secondary', 'tertiary'] as const,
-    loading: [true, false] as const,
-  },
-} as const satisfies LegacyComponentDefinition;
+} as const satisfies RAExtendingComponentDefinition<ButtonOwnProps>;

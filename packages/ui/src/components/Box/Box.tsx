@@ -17,29 +17,27 @@
 import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
 import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
 import styles from './Box.module.css';
 import { BoxDefinition } from './definition';
+import { useClassNames } from '../../hooks/useClassNames';
+import { useUtilityStyles } from '../../hooks/useUtilityStyles';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+  const classNames = useClassNames(BoxDefinition, styles, props);
+
+  const { utilityClasses, style, propsWithoutUtilities } = useUtilityStyles(
     BoxDefinition,
     props,
   );
 
-  const { as = 'div', children, className, ...rest } = cleanedProps;
+  const { as = 'div', children, className, ...rest } = propsWithoutUtilities;
 
   return createElement(
     as,
     {
       ref,
-      className: clsx(
-        classNames.root,
-        styles[classNames.root],
-        utilityClasses,
-        className,
-      ),
+      className: clsx(utilityClasses, classNames.root),
       style,
       ...rest,
     },

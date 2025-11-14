@@ -19,11 +19,9 @@ import { ReactElement, ReactNode } from 'react';
 import { ButtonProps as RAButtonProps } from 'react-aria-components';
 
 /**
- * Properties for {@link Button}
- *
- * @public
+ * @internal
  */
-export interface ButtonProps extends RAButtonProps {
+export interface ButtonOwnProps {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   variant?:
     | 'primary'
@@ -34,4 +32,13 @@ export interface ButtonProps extends RAButtonProps {
   iconEnd?: ReactElement;
   children?: ReactNode;
   loading?: boolean;
+  className?: string;
 }
+
+/**
+ * Properties for {@link Button}
+ *
+ * @public
+ */
+export type ButtonProps = ButtonOwnProps &
+  Omit<RAButtonProps, 'children' | 'className'>;

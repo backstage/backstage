@@ -166,10 +166,32 @@ export type DataAttributesMap = Record<string, DataAttributeValues>;
 
 /**
  * Component definition for useStyles hook
+ * @deprecated Use new ComponentDefinition with new hook system instead
  * @public
  */
 export interface LegacyComponentDefinition {
   classNames: ClassNamesMap;
   dataAttributes?: DataAttributesMap;
   utilityProps?: string[];
+}
+
+export interface ComponentDefinition<
+  Own extends Record<string, any>,
+  Styles extends Readonly<Record<string, string>> = Readonly<
+    Record<string, string>
+  >,
+> {
+  classNames: Styles;
+  dataAttributes?: ReadonlyArray<keyof Own>;
+  defaults?: Partial<Own>;
+  utilityProps?: ReadonlyArray<keyof Own>;
+}
+
+export interface RAExtendingComponentDefinition<
+  Own extends Record<string, any>,
+  Styles extends Readonly<Record<string, string>> = Readonly<
+    Record<string, string>
+  >,
+> extends ComponentDefinition<Own, Styles> {
+  ownProps: { [K in keyof Own]-?: true }; // exhaustive by construction
 }
