@@ -42,7 +42,8 @@ const useStyles = makeStyles<
     gap: theme.spacing(3),
   },
   warningArea: {
-    display: 'grid',
+    display: 'flex',
+    flexDirection: 'column',
     gap: theme.spacing(2),
     marginBottom: theme.spacing(3),
     '&:empty': {
