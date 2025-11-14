@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
@@ -168,22 +169,35 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
       <div className={classes.root}>
         {infoCards.length > 0 ? (
           <div className={classes.infoArea}>
-            {infoCards.map(card => card.element)}
+            {infoCards.map((card, index) => (
+              <Fragment key={card.element.key ?? index}>
+                {card.element}
+              </Fragment>
+            ))}
           </div>
         ) : null}
         <div className={classes.mainContent}>
           {summaryCards.length > 0 ? (
             <div className={classes.summaryArea}>
               <HorizontalScrollGrid scrollStep={400} scrollSpeed={100}>
-                {summaryCards.map(card => (
-                  <div className={classes.summaryCard}>{card.element}</div>
+                {summaryCards.map((card, index) => (
+                  <div
+                    key={card.element.key ?? index}
+                    className={classes.summaryCard}
+                  >
+                    {card.element}
+                  </div>
                 ))}
               </HorizontalScrollGrid>
             </div>
           ) : null}
           {contentCards.length > 0 ? (
             <div className={classes.contentArea}>
-              {contentCards.map(card => card.element)}
+              {contentCards.map((card, index) => (
+                <Fragment key={card.element.key ?? index}>
+                  {card.element}
+                </Fragment>
+              ))}
             </div>
           ) : null}
         </div>
