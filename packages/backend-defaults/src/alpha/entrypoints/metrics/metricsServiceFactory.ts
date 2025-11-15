@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-export type {
-  BackendFeatureMeta,
-  InstanceMetadataService,
-} from './InstanceMetadataService';
-
-export type {
-  ActionsRegistryService,
-  ActionsRegistryActionOptions,
-  ActionsRegistryActionContext,
-} from './ActionsRegistryService';
-
-export type { ActionsService, ActionsServiceAction } from './ActionsService';
-
-export type {
-  MetricsService,
-  MetricServiceOpts,
-  RootMetricsService,
-  ObservableMetric,
-} from './MetricsService';
-
-export {
-  actionsRegistryServiceRef,
-  actionsServiceRef,
-  instanceMetadataServiceRef,
+import {
   metricsServiceRef,
   rootMetricsServiceRef,
-} from './refs';
+} from '@backstage/backend-plugin-api/alpha';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+
+/**
+ * Service factory for collecting plugin-scoped metrics.
+ * This is the default metrics service for plugins.
+ *
+ * @alpha
+ */
+export const metricsServiceFactory = createServiceFactory({
+  service: metricsServiceRef,
+  deps: {
+    rootMetrics: rootMetricsServiceRef,
+    pluginMetadata: coreServices.pluginMetadata,
+  },
+  factory: ({ rootMetrics, pluginMetadata }) => {
+    return rootMetrics.forPlugin(pluginMetadata.getId());
+  },
+});

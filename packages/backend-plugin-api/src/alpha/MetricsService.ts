@@ -18,6 +18,7 @@ import {
   Counter,
   Gauge,
   Histogram,
+  Meter,
   MetricOptions,
   ObservableCallback,
   ObservableCounter,
@@ -46,6 +47,20 @@ export interface ObservableMetric {
    * The options for the instrument.
    */
   opts: MetricOptions;
+}
+
+/**
+ * The options for a metrics service.
+ *
+ * @alpha
+ */
+export interface MetricServiceOpts {
+  meter: Meter;
+
+  /**
+   * The namespace for the metrics service.
+   */
+  namespace: string;
 }
 
 /**
@@ -118,7 +133,7 @@ export interface MetricsService {
 }
 
 /**
- * A service that provides a metrics facility for root scoped services.
+ * A service that provides root scoped metrics utilities
  *
  * @alpha
  */

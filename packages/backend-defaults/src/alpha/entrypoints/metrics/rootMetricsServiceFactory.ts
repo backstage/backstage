@@ -13,31 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { rootMetricsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { DefaultRootMetricsService } from './DefaultRootMetricsService';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 
-export type {
-  BackendFeatureMeta,
-  InstanceMetadataService,
-} from './InstanceMetadataService';
-
-export type {
-  ActionsRegistryService,
-  ActionsRegistryActionOptions,
-  ActionsRegistryActionContext,
-} from './ActionsRegistryService';
-
-export type { ActionsService, ActionsServiceAction } from './ActionsService';
-
-export type {
-  MetricsService,
-  MetricServiceOpts,
-  RootMetricsService,
-  ObservableMetric,
-} from './MetricsService';
-
-export {
-  actionsRegistryServiceRef,
-  actionsServiceRef,
-  instanceMetadataServiceRef,
-  metricsServiceRef,
-  rootMetricsServiceRef,
-} from './refs';
+/**
+ * Service factory responsible for creating the root metrics service
+ *
+ * @alpha
+ */
+export const rootMetricsServiceFactory = createServiceFactory({
+  service: rootMetricsServiceRef,
+  deps: {
+    rootLogger: coreServices.rootLogger,
+  },
+  factory: ({ rootLogger }) =>
+    DefaultRootMetricsService.forRoot({ rootLogger }),
+});
