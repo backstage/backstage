@@ -16,7 +16,7 @@
 
 // TODO: Bring useArgs() back when we update Storybook to 9
 // import { useArgs } from 'storybook/preview-api';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TablePagination } from './TablePagination';
 
 const meta = {

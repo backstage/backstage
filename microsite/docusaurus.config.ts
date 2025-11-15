@@ -269,6 +269,10 @@ const config: Config = {
             from: '/docs/plugins/url-reader/',
             to: '/docs/backend-system/core-services/url-reader',
           },
+          {
+            from: '/docs/getting-started/app-custom-theme',
+            to: '/docs/conf/user-interface',
+          },
         ],
       }),
     [
@@ -296,6 +300,11 @@ const config: Config = {
             ...defaultOpenApiOptions,
             specPath: '../plugins/search-backend/src/schema/openapi.yaml',
             outputDir: '../docs/features/search/api',
+          } satisfies OpenApiPlugin.Options,
+          scaffolder: {
+            ...defaultOpenApiOptions,
+            specPath: '../plugins/scaffolder-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/software-templates/api',
           } satisfies OpenApiPlugin.Options,
         },
       },

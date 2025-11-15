@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { PropsWithChildren } from 'react';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
   RELATION_CHILD_OF,
   RELATION_HAS_MEMBER,
@@ -21,18 +23,34 @@ import {
 } from '@backstage/catalog-model';
 import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ALL_RELATION_PAIRS } from '../EntityRelationsGraph';
+import { ALL_RELATIONS } from '../../lib/types';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+
+function GraphContext(props: PropsWithChildren<{}>) {
+  return (
+    <ApiProvider
+      apis={TestApiRegistry.from([
+        catalogGraphApiRef,
+        new DefaultCatalogGraphApi(),
+      ])}
+    >
+      {props.children}
+    </ApiProvider>
+  );
+}
 
 describe('<SelectedRelationsFilter/>', () => {
   test('should render current value', async () => {
     await renderInTestApp(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
-        onChange={() => {}}
-      />,
+      <GraphContext>
+        <SelectedRelationsFilter
+          relations={ALL_RELATIONS}
+          value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
+          onChange={() => {}}
+        />
+      </GraphContext>,
     );
 
     expect(screen.getByText(RELATION_OWNED_BY)).toBeInTheDocument();
@@ -42,11 +60,13 @@ describe('<SelectedRelationsFilter/>', () => {
   test('should select value', async () => {
     const onChange = jest.fn();
     await renderInTestApp(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
-        onChange={onChange}
-      />,
+      <GraphContext>
+        <SelectedRelationsFilter
+          relations={ALL_RELATIONS}
+          value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
+          onChange={onChange}
+        />
+      </GraphContext>,
     );
 
     await userEvent.click(screen.getByLabelText('Open'));
@@ -66,16 +86,16 @@ describe('<SelectedRelationsFilter/>', () => {
     });
   });
 
-  test('should return undefined if all values are selected', async () => {
+  test('should return all known relations if all values are selected', async () => {
     const onChange = jest.fn();
     await renderInTestApp(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={ALL_RELATION_PAIRS.flatMap(p => p).filter(
-          r => r !== RELATION_HAS_MEMBER,
-        )}
-        onChange={onChange}
-      />,
+      <GraphContext>
+        <SelectedRelationsFilter
+          relations={ALL_RELATIONS}
+          value={ALL_RELATIONS.filter(r => r !== RELATION_HAS_MEMBER)}
+          onChange={onChange}
+        />
+      </GraphContext>,
     );
 
     await userEvent.click(screen.getByLabelText('Open'));
@@ -87,18 +107,26 @@ describe('<SelectedRelationsFilter/>', () => {
     await userEvent.click(screen.getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith(undefined);
+      // Same as ALL_RELATIONS but with RELATION_HAS_MEMBER at the end
+      const allRelationsOrdered = [
+        ...ALL_RELATIONS.filter(rel => rel !== RELATION_HAS_MEMBER),
+        RELATION_HAS_MEMBER,
+      ];
+
+      expect(onChange).toHaveBeenCalledWith(allRelationsOrdered);
     });
   });
 
   test('should return all values when cleared', async () => {
     const onChange = jest.fn();
     await renderInTestApp(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[]}
-        onChange={onChange}
-      />,
+      <GraphContext>
+        <SelectedRelationsFilter
+          relations={ALL_RELATIONS}
+          value={[]}
+          onChange={onChange}
+        />
+      </GraphContext>,
     );
 
     await userEvent.click(screen.getByRole('combobox'));

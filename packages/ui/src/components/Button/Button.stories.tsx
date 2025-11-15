@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
-import { Icon } from '../Icon';
+import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
+import { useState } from 'react';
 
 const meta = {
   title: 'Backstage UI/Button',
@@ -57,13 +58,13 @@ export const Variants: Story = {
   },
   render: () => (
     <Flex align="center">
-      <Button iconStart={<Icon name="cloud" />} variant="primary">
+      <Button iconStart={<RiCloudLine />} variant="primary">
         Button
       </Button>
-      <Button iconStart={<Icon name="cloud" />} variant="secondary">
+      <Button iconStart={<RiCloudLine />} variant="secondary">
         Button
       </Button>
-      <Button iconStart={<Icon name="cloud" />} variant="tertiary">
+      <Button iconStart={<RiCloudLine />} variant="tertiary">
         Button
       </Button>
     </Flex>
@@ -76,10 +77,10 @@ export const Sizes: Story = {
   },
   render: () => (
     <Flex align="center">
-      <Button size="small" iconStart={<Icon name="cloud" />}>
+      <Button size="small" iconStart={<RiCloudLine />}>
         Small
       </Button>
-      <Button size="medium" iconStart={<Icon name="cloud" />}>
+      <Button size="medium" iconStart={<RiCloudLine />}>
         Medium
       </Button>
     </Flex>
@@ -92,12 +93,12 @@ export const WithIcons: Story = {
   },
   render: args => (
     <Flex align="center">
-      <Button {...args} iconStart={<Icon name="cloud" />} />
-      <Button {...args} iconEnd={<Icon name="chevron-right" />} />
+      <Button {...args} iconStart={<RiCloudLine />} />
+      <Button {...args} iconEnd={<RiArrowRightSLine />} />
       <Button
         {...args}
-        iconStart={<Icon name="cloud" />}
-        iconEnd={<Icon name="chevron-right" />}
+        iconStart={<RiCloudLine />}
+        iconEnd={<RiArrowRightSLine />}
       />
     </Flex>
   ),
@@ -109,12 +110,12 @@ export const FullWidth: Story = {
   },
   render: args => (
     <Flex direction="column" gap="4" style={{ width: '300px' }}>
-      <Button {...args} iconStart={<Icon name="cloud" />} />
-      <Button {...args} iconEnd={<Icon name="chevron-right" />} />
+      <Button {...args} iconStart={<RiCloudLine />} />
+      <Button {...args} iconEnd={<RiArrowRightSLine />} />
       <Button
         {...args}
-        iconStart={<Icon name="cloud" />}
-        iconEnd={<Icon name="chevron-right" />}
+        iconStart={<RiCloudLine />}
+        iconEnd={<RiArrowRightSLine />}
       />
     </Flex>
   ),
@@ -167,23 +168,19 @@ export const Playground: Story = {
               <Button variant={variant} size={size}>
                 Button
               </Button>
+              <Button iconStart={<RiCloudLine />} variant={variant} size={size}>
+                Button
+              </Button>
               <Button
-                iconStart={<Icon name="cloud" />}
+                iconEnd={<RiArrowRightSLine />}
                 variant={variant}
                 size={size}
               >
                 Button
               </Button>
               <Button
-                iconEnd={<Icon name="chevron-right" />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button
-                iconStart={<Icon name="cloud" />}
-                iconEnd={<Icon name="chevron-right" />}
+                iconStart={<RiCloudLine />}
+                iconEnd={<RiArrowRightSLine />}
                 style={{ width: '200px' }}
                 variant={variant}
                 size={size}
@@ -194,7 +191,7 @@ export const Playground: Story = {
                 Button
               </Button>
               <Button
-                iconStart={<Icon name="cloud" />}
+                iconStart={<RiCloudLine />}
                 variant={variant}
                 size={size}
                 isDisabled
@@ -202,7 +199,7 @@ export const Playground: Story = {
                 Button
               </Button>
               <Button
-                iconEnd={<Icon name="chevron-right" />}
+                iconEnd={<RiArrowRightSLine />}
                 variant={variant}
                 size={size}
                 isDisabled
@@ -213,6 +210,83 @@ export const Playground: Story = {
           ))}
         </Flex>
       ))}
+    </Flex>
+  ),
+};
+
+export const Loading: Story = {
+  render: () => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleClick = () => {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+    };
+
+    return (
+      <Button variant="primary" loading={isLoading} onPress={handleClick}>
+        Load more items
+      </Button>
+    );
+  },
+};
+
+export const LoadingVariants: Story = {
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Text>Primary</Text>
+      <Flex align="center" gap="4">
+        <Button variant="primary" size="small" loading>
+          Small Loading
+        </Button>
+        <Button variant="primary" size="medium" loading>
+          Medium Loading
+        </Button>
+        <Button variant="primary" loading iconStart={<RiCloudLine />}>
+          With Icon
+        </Button>
+      </Flex>
+
+      <Text>Secondary</Text>
+      <Flex align="center" gap="4">
+        <Button variant="secondary" size="small" loading>
+          Small Loading
+        </Button>
+        <Button variant="secondary" size="medium" loading>
+          Medium Loading
+        </Button>
+        <Button variant="secondary" loading iconStart={<RiCloudLine />}>
+          With Icon
+        </Button>
+      </Flex>
+
+      <Text>Tertiary</Text>
+      <Flex align="center" gap="4">
+        <Button variant="tertiary" size="small" loading>
+          Small Loading
+        </Button>
+        <Button variant="tertiary" size="medium" loading>
+          Medium Loading
+        </Button>
+        <Button variant="tertiary" loading iconStart={<RiCloudLine />}>
+          With Icon
+        </Button>
+      </Flex>
+
+      <Text>Loading vs Disabled</Text>
+      <Flex align="center" gap="4">
+        <Button variant="primary" loading>
+          Loading
+        </Button>
+        <Button variant="primary" isDisabled>
+          Disabled
+        </Button>
+        <Button variant="primary" loading isDisabled>
+          Both (Disabled Wins)
+        </Button>
+      </Flex>
     </Flex>
   ),
 };

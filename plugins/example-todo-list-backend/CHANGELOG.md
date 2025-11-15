@@ -1,5 +1,48 @@
 # @internal/plugin-todo-list-backend
 
+## 1.0.45-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 1.0.45-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+
+## 1.0.44
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+
+## 1.0.44-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+
+## 1.0.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3
+
+## 1.0.43-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
 ## 1.0.42
 
 ### Patch Changes

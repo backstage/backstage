@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
 import { MemoryRouter } from 'react-router-dom';
 import { Box } from '../Box';
@@ -452,6 +452,63 @@ export const RootPathMatching: Story = {
           "/catalog"
         </Text>
       </Box>
+    </MemoryRouter>
+  ),
+};
+
+export const AutoSelectionOfTabs: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/random-page']}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <Text style={{ fontSize: '16px', color: '#666' }}>
+          Current URL: <strong>/random-page</strong>
+        </Text>
+
+        {/* Without hrefs */}
+        <Text>
+          {' '}
+          <strong>Case 1: Without hrefs</strong>
+        </Text>
+        <Tabs>
+          <TabList>
+            <Tab id="settings">Settings</Tab>
+            <Tab id="preferences">Preferences</Tab>
+            <Tab id="advanced">Advanced</Tab>
+          </TabList>
+          <TabPanel id="settings">
+            <Text>Settings content - React Aria manages this selection</Text>
+          </TabPanel>
+          <TabPanel id="preferences">
+            <Text>Preferences content - works normally</Text>
+          </TabPanel>
+          <TabPanel id="advanced">
+            <Text>Advanced content - local state only</Text>
+          </TabPanel>
+        </Tabs>
+
+        {/* With hrefs */}
+        <Text>
+          {' '}
+          <strong>Case 2: With hrefs</strong> By default no selection is shown
+          because the URL doesn't match any tab's href.{' '}
+        </Text>
+        <Tabs>
+          <TabList>
+            <Tab id="catalog" href="/catalog">
+              Catalog
+            </Tab>
+            <Tab id="create" href="/create">
+              Create
+            </Tab>
+            <Tab id="docs" href="/docs">
+              Docs
+            </Tab>
+          </TabList>
+        </Tabs>
+      </div>
     </MemoryRouter>
   ),
 };

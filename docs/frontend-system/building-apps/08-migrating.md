@@ -913,7 +913,7 @@ const app = createApp({
 If you are not using the default `<CatalogIndexPage />` you can install your custom catalog page as an override for now instead, and fully migrate it to the new system later.
 
 ```tsx title="in packages/app/src/App.tsx"
-/* highlight-remove-start */
+/* highlight-add-start */
 const catalogPluginOverride = catalogPlugin.withOverrides({
   extensions: [
     catalogPlugin.getExtension('page:catalog').override({
@@ -928,13 +928,13 @@ const catalogPluginOverride = catalogPlugin.withOverrides({
     }),
   ],
 });
-/* highlight-remove-end */
+/* highlight-add-end */
 
 const app = createApp({
-  /* highlight-remove-next-line */
-  features: [catalogPlugin, convertedOptionsModule, ...convertedRootFeatures],
-  /* highlight-add-next-line */
   features: [
+    /* highlight-remove-next-line */
+    catalogPlugin,
+    /* highlight-add-next-line */
     catalogPluginOverride,
     convertedOptionsModule,
     ...convertedRootFeatures,
@@ -979,6 +979,7 @@ When creating a new Backstage app with `create-app` and using the `--next` flag 
           "@backstage/cli/templates/plugin-common-library",
           "@backstage/cli/templates/web-library",
           "@backstage/cli/templates/node-library",
+          "@backstage/cli/templates/catalog-provider-module",
           "@backstage/cli/templates/scaffolder-backend-module"
         ]
       }

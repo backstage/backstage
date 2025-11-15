@@ -81,8 +81,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -322,6 +322,7 @@ const _default: OverridableFrontendPlugin<
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}
@@ -330,8 +331,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -365,6 +366,7 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
+      icon?: JSX_2.Element;
     },
     'search.search-result-list-item.item',
     {}
@@ -373,8 +375,8 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
     [x: string]: ExtensionInput<
       ExtensionDataRef,
       {
-        optional: boolean;
         singleton: boolean;
+        optional: boolean;
       }
     >;
   };

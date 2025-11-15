@@ -1,5 +1,37 @@
 # e2e-test
 
+## 0.2.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.2.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.5
+
+## 0.2.33-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.5-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.2.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.4
+
 ## 0.2.32-next.0
 
 ### Patch Changes

@@ -30,11 +30,15 @@ class Node<T> {
     );
   }
 
-  private constructor(
-    readonly value: T,
-    readonly consumes: Set<string>,
-    readonly provides: Set<string>,
-  ) {}
+  readonly value: T;
+  readonly consumes: Set<string>;
+  readonly provides: Set<string>;
+
+  private constructor(value: T, consumes: Set<string>, provides: Set<string>) {
+    this.value = value;
+    this.consumes = consumes;
+    this.provides = provides;
+  }
 }
 
 /** @internal */

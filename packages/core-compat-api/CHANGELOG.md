@@ -1,5 +1,68 @@
 # @backstage/core-compat-api
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.2
+
+### Patch Changes
+
+- dc01d6f: Fix for `compatWrapper` creating many wrapping `Providers` when they should not
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+
+## 0.5.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+
+## 0.5.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+
 ## 0.5.2-next.0
 
 ### Patch Changes

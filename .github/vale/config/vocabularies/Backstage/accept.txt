@@ -21,9 +21,9 @@ asciidoc
 async
 Atlassian
 autofix
+autologout
 automations
 autoscaling
-Autoscaling
 autoselect
 Avro
 backend's
@@ -38,6 +38,7 @@ Bitrise
 Blackbox
 bool
 boolean
+breakpoint
 Brex
 broadcasted
 bugfixes
@@ -46,8 +47,10 @@ bundler
 bundlers
 bursty
 callout
+camelCase
 CDNs
 Chai
+Chainguard
 changeset
 changesets
 Changesets
@@ -56,6 +59,7 @@ Chanwit
 CI/CD
 classname
 cli
+CLIs
 cloudbuild
 Cloudflare
 Cloudformation
@@ -107,6 +111,7 @@ dependabot
 deps
 dequeue
 dequeueing
+dereferencing
 deserialization
 destructured
 destructuring
@@ -145,7 +150,9 @@ etag
 Expedia
 facto
 failover
+faq
 Fargate
+faqs
 featureful
 Figma
 firehydrant
@@ -175,6 +182,7 @@ graphql
 GraphQL
 graphviz
 Hackathons
+hackathon
 haproxy
 hardcoded
 hardcoding
@@ -218,11 +226,13 @@ jq
 js
 json
 jsonnet
+JSONSchema
 jsx
 JWTs
 Kaewkasi
 Kaswell
 keepalive
+Keycloak
 Keyv
 Knex
 knip
@@ -247,6 +257,8 @@ lockdown
 lockfile
 lockfiles
 lookbehind
+lookup
+lookups
 lowercased
 lunr
 Luxon
@@ -278,6 +290,7 @@ modularization
 monorepo
 Monorepo
 monorepos
+monospace
 morgan
 msgraph
 msw
@@ -314,6 +327,7 @@ onboarded
 onboarding
 Onboarding
 onelogin
+openapi
 OpenSearch
 OpenShift
 openssl
@@ -412,6 +426,7 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
+scalprum
 SCM
 SCMs
 scrollable
@@ -460,7 +475,10 @@ subfolders
 subheader
 subheaders
 subkey
+subpage
 subpath
+subpaths
+subroute
 subroutes
 substring
 subtree
@@ -485,6 +503,7 @@ templaters
 Templaters
 TFRecord
 theia
+Themer
 threenager
 thumbsup
 todo
@@ -555,3 +574,4 @@ Zolotusky
 zoomable
 zsh
 resizable
+enums

@@ -4,7 +4,7 @@
 
 | Name                              | Location     | Severity |
 | :-------------------------------- | :----------- | :------- |
-| @backstage/plugin-permission-node | package.json | error    |
-| semver                            | package.json | error    |
-| yn                                | package.json | error    |
+| @backstage/plugin-permission-node | plugins/devtools-backend/package.json | error    |
+| semver                            | plugins/devtools-backend/package.json | error    |
+| yn                                | plugins/devtools-backend/package.json | error    |
 

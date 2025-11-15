@@ -461,9 +461,21 @@ export type FeatureFlagsSaveOptions = {
 };
 
 // @public
-export enum FeatureFlagState {
-  Active = 1,
-  None = 0,
+export const FeatureFlagState: {
+  readonly None: 0;
+  readonly Active: 1;
+};
+
+// @public (undocumented)
+export type FeatureFlagState =
+  (typeof FeatureFlagState)[keyof typeof FeatureFlagState];
+
+// @public (undocumented)
+export namespace FeatureFlagState {
+  // (undocumented)
+  export type Active = typeof FeatureFlagState.Active;
+  // (undocumented)
+  export type None = typeof FeatureFlagState.None;
 }
 
 // @public
@@ -604,6 +616,11 @@ export type OpenIdConnectApi = {
   getIdToken(options?: AuthRequestOptions): Promise<string>;
 };
 
+// @public
+export const openshiftAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+>;
+
 // @public @deprecated
 export type OptionalParams<
   Params extends {
@@ -691,9 +708,20 @@ export type SessionApi = {
 };
 
 // @public
-export enum SessionState {
-  SignedIn = 'SignedIn',
-  SignedOut = 'SignedOut',
+export const SessionState: {
+  readonly SignedIn: 'SignedIn';
+  readonly SignedOut: 'SignedOut';
+};
+
+// @public (undocumented)
+export type SessionState = (typeof SessionState)[keyof typeof SessionState];
+
+// @public (undocumented)
+export namespace SessionState {
+  // (undocumented)
+  export type SignedIn = typeof SessionState.SignedIn;
+  // (undocumented)
+  export type SignedOut = typeof SessionState.SignedOut;
 }
 
 // @public

@@ -15,3 +15,4 @@
  */
 export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
 export { actionsServiceFactory } from './entrypoints/actions';
+export { instanceMetadataServiceFactory } from './entrypoints/instanceMetadata';

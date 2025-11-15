@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Checkbox } from './Checkbox';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
 
 const meta = {
   title: 'Backstage UI/Checkbox',
@@ -29,31 +28,20 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    label: 'Accept terms and conditions',
+    children: 'Accept terms and conditions',
   },
 };
 
 export const AllVariants: Story = {
+  ...Default,
   render: () => (
-    <Flex align="center">
-      <Checkbox />
-      <Checkbox checked />
-      <Checkbox label="Checkbox" />
-      <Checkbox label="Checkbox" checked />
-    </Flex>
-  ),
-};
-
-export const Playground: Story = {
-  render: () => (
-    <Flex>
-      <Text>All variants</Text>
-      <Flex align="center">
-        <Checkbox />
-        <Checkbox checked />
-        <Checkbox label="Checkbox" />
-        <Checkbox label="Checkbox" checked />
-      </Flex>
+    <Flex direction="column" gap="2">
+      <Checkbox>Unchecked</Checkbox>
+      <Checkbox isSelected>Checked</Checkbox>
+      <Checkbox isDisabled>Disabled</Checkbox>
+      <Checkbox isSelected isDisabled>
+        Checked & Disabled
+      </Checkbox>
     </Flex>
   ),
 };

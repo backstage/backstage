@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TextField } from './TextField';
 import { Form } from 'react-aria-components';
-import { Icon } from '../Icon';
 import { Flex } from '../Flex';
 import { FieldLabel } from '../FieldLabel';
+import { RiEyeLine, RiSparklingLine } from '@remixicon/react';
 
 const meta = {
   title: 'Backstage UI/TextField',
@@ -53,8 +53,8 @@ export const Sizes: Story = {
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
-      <TextField {...args} size="small" icon={<Icon name="sparkling" />} />
-      <TextField {...args} size="medium" icon={<Icon name="sparkling" />} />
+      <TextField {...args} size="small" icon={<RiSparklingLine />} />
+      <TextField {...args} size="medium" icon={<RiSparklingLine />} />
     </Flex>
   ),
 };
@@ -103,7 +103,7 @@ export const WithIcon: Story = {
       {...args}
       placeholder="Enter a URL"
       size="small"
-      icon={<Icon name="eye" />}
+      icon={<RiEyeLine />}
     />
   ),
 };
@@ -113,6 +113,7 @@ export const DisabledWithIcon: Story = {
     ...WithIcon.args,
     isDisabled: true,
   },
+  render: WithIcon.render,
 };
 
 export const ShowError: Story = {

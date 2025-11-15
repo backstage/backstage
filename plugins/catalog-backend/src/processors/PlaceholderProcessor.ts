@@ -41,7 +41,11 @@ export type PlaceholderProcessorOptions = {
  * @public
  */
 export class PlaceholderProcessor implements CatalogProcessor {
-  constructor(private readonly options: PlaceholderProcessorOptions) {}
+  private readonly options: PlaceholderProcessorOptions;
+
+  constructor(options: PlaceholderProcessorOptions) {
+    this.options = options;
+  }
 
   getProcessorName(): string {
     return 'PlaceholderProcessor';
@@ -138,9 +142,13 @@ export async function yamlPlaceholderResolver(
 
   params.emit(processingResult.refresh(`url:${url}`));
 
+  // YAML merge support enabled by default
+  const enableYamlMerge = false;
+  const parseOptions = { merge: enableYamlMerge };
+
   let documents: yaml.Document.Parsed[];
   try {
-    documents = yaml.parseAllDocuments(content).filter(d => d);
+    documents = yaml.parseAllDocuments(content, parseOptions).filter(d => d);
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} failed to parse YAML data at ${params.value}, ${e}`,

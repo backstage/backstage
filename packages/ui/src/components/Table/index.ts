@@ -23,7 +23,7 @@ export { Cell } from './components/Cell';
 export { CellProfile } from './components/CellProfile';
 export { useTable } from './hooks/useTable';
 
-export type { CellProps, CellProfileProps } from './types';
+export type { CellProps, CellProfileProps, ColumnProps } from './types';
 export type {
   UseTableConfig,
   UseTableResult,

@@ -1,5 +1,111 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.3-next.0
+
+### Patch Changes
+
+- 886a8a1: Fixed a bug in the Scaffolder's template parsing in the `useTemplateSchema` hook by removing the title instead of setting it to `undefined`
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/theme@0.7.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-scaffolder-common@1.7.3-next.0
+
+## 1.19.2
+
+### Patch Changes
+
+- e61f89e: Don't change loading to false until we've actually got some log state
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-react@0.4.37
+  - @backstage/plugin-scaffolder-common@1.7.2
+
+## 1.19.2-next.2
+
+### Patch Changes
+
+- e61f89e: Don't change loading to false until we've actually got some log state
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
+## 1.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-react@0.4.37-next.0
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-scaffolder-common@1.7.2-next.1
+  - @backstage/catalog-client@1.12.0
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/plugin-scaffolder-common@1.7.2-next.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.19.1
+
+### Patch Changes
+
+- 58fc108: Fix scaffolder task log stream not having a minimum height
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-common@1.7.1
+
+## 1.19.1-next.2
+
+### Patch Changes
+
+- 58fc108: Fix scaffolder task log stream not having a minimum height
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+  - @backstage/core-components@0.17.6-next.1
+
+## 1.19.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/plugin-scaffolder-common@1.7.1-next.0
+
 ## 1.19.1-next.0
 
 ### Patch Changes

@@ -80,10 +80,13 @@ async function findClosestPackageDir(
 
 /** @internal */
 export class PackageDiscoveryService {
-  constructor(
-    private readonly config: RootConfigService,
-    private readonly logger: RootLoggerService,
-  ) {}
+  private readonly config: RootConfigService;
+  private readonly logger: RootLoggerService;
+
+  constructor(config: RootConfigService, logger: RootLoggerService) {
+    this.config = config;
+    this.logger = logger;
+  }
 
   getDependencyNames(path: string) {
     const { dependencies } = require(path) as BackstagePackageJson;
@@ -175,6 +178,6 @@ export class PackageDiscoveryService {
       }
     }
 
-    return { features };
+    return { features: Array.from(new Set(features)) };
   }
 }

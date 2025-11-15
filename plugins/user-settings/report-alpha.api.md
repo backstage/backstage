@@ -123,7 +123,7 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'languageToggle.select': 'Select language {{language}}';
     readonly 'languageToggle.title': 'Language';
     readonly 'languageToggle.description': 'Change the language';
-    readonly 'themeToggle.select': 'Select theme {{theme}}';
+    readonly 'themeToggle.select': 'Select {{theme}}';
     readonly 'themeToggle.title': 'Theme';
     readonly 'themeToggle.description': 'Change the theme mode';
     readonly 'themeToggle.names.auto': 'Auto';

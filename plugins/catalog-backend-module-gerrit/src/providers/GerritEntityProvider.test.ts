@@ -120,7 +120,7 @@ describe('GerritEntityProvider', () => {
         res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
-          ctx.body(repoBuffer),
+          ctx.body(new Uint8Array(repoBuffer)),
         ),
       ),
     );
@@ -157,7 +157,7 @@ describe('GerritEntityProvider', () => {
         res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
-          ctx.body(repoBuffer),
+          ctx.body(new Uint8Array(repoBuffer)),
         ),
       ),
     );
@@ -192,7 +192,7 @@ describe('GerritEntityProvider', () => {
         res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
-          ctx.body(repoBuffer),
+          ctx.body(new Uint8Array(repoBuffer)),
         ),
       ),
       rest.get('https://g.com/gerrit/projects/:project/HEAD', (_, res, ctx) =>
@@ -400,7 +400,7 @@ describe('GerritEntityProvider', () => {
         res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
-          ctx.body(repoBuffer),
+          ctx.body(new Uint8Array(repoBuffer)),
         ),
       ),
     );

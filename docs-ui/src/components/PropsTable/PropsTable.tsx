@@ -3,7 +3,6 @@
 import * as Table from '../Table';
 import { Chip } from '../Chip';
 import { TypePopup } from './TypePopup';
-import { icons } from '../../../../packages/ui';
 
 import { PropDef } from '@/utils/propDefs';
 
@@ -33,10 +32,8 @@ export const PropsTable = <T extends Record<string, PropData>>({
       <Table.Body>
         {Object.keys(data).map(n => {
           const enumValues =
-            data[n].values === 'icon'
-              ? Object.keys(icons).map(icon => <Chip key={icon}>{icon}</Chip>)
-              : Array.isArray(data[n].values) &&
-                data[n].values.map(t => <Chip key={t}>{t}</Chip>);
+            Array.isArray(data[n].values) &&
+            data[n].values.map(t => <Chip key={t}>{t}</Chip>);
 
           return (
             <Table.Row key={n}>

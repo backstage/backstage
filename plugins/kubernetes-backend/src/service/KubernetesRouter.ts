@@ -69,7 +69,11 @@ export class KubernetesRouter {
     return new KubernetesRouter(env);
   }
 
-  constructor(protected readonly env: KubernetesEnvironment) {}
+  protected readonly env: KubernetesEnvironment;
+
+  constructor(env: KubernetesEnvironment) {
+    this.env = env;
+  }
 
   public async getRouter() {
     const {

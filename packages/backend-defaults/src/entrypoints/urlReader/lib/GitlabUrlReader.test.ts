@@ -310,7 +310,7 @@ describe('GitlabUrlReader', () => {
                   'content-disposition',
                   'attachment; filename="mock-main-sha123abc.zip"',
                 ),
-                ctx.body(archiveBuffer),
+                ctx.body(new Uint8Array(archiveBuffer)),
               ),
           ),
           rest.get(
@@ -388,7 +388,7 @@ describe('GitlabUrlReader', () => {
                   'content-disposition',
                   'attachment; filename="mock-main-sha123abc.zip"',
                 ),
-                ctx.body(archiveBuffer),
+                ctx.body(new Uint8Array(archiveBuffer)),
               ),
           ),
         );
@@ -437,7 +437,7 @@ describe('GitlabUrlReader', () => {
                 'content-disposition',
                 'attachment; filename="mock-main-sha123abc.zip"',
               ),
-              ctx.body(archiveBuffer),
+              ctx.body(new Uint8Array(archiveBuffer)),
             ),
         ),
       );
@@ -632,7 +632,7 @@ describe('GitlabUrlReader', () => {
                 'content-disposition',
                 `attachment; filename="${filename}"`,
               ),
-              ctx.body(body),
+              ctx.body(new Uint8Array(body)),
             );
           },
         ),
@@ -667,6 +667,17 @@ describe('GitlabUrlReader', () => {
             return res();
           },
         ),
+      );
+    });
+
+    it('works when there are multiple globs', async () => {
+      const result = await gitlabProcessor.search(
+        'https://gitlab.com/backstage/mock/tree/main/**/docs/**/index.*',
+      );
+      expect(result.etag).toBe('sha123abc');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://gitlab.com/backstage/mock/tree/main/docs/index.md',
       );
     });
 

@@ -30,6 +30,11 @@ export interface Config {
        */
       batchSize?: number;
       /**
+       * Defines the name of the field in each document that will be used to identify documents during a batch upload.
+       * If not provided, a custom ID will be generated for each document.
+       */
+      batchKeyField?: string;
+      /**
        * Options for configuring highlight settings
        * See https://www.elastic.co/guide/en/elasticsearch/reference/7.17/highlighting.html
        */

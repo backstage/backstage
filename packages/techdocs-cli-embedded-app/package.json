@@ -1,6 +1,6 @@
 {
   "name": "techdocs-cli-embedded-app",
-  "version": "0.2.112-next.0",
+  "version": "0.2.114-next.2",
   "backstage": {
     "role": "frontend"
   },
@@ -45,6 +45,7 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "history": "^5.0.0",

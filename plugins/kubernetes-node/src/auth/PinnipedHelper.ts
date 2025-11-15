@@ -50,7 +50,11 @@ export type PinnipedParameters = {
  * @public
  */
 export class PinnipedHelper {
-  constructor(private readonly logger: LoggerService) {}
+  private readonly logger: LoggerService;
+
+  constructor(logger: LoggerService) {
+    this.logger = logger;
+  }
 
   public async tokenCredentialRequest(
     clusterDetails: ClusterDetails,

@@ -63,13 +63,17 @@ const _default: OverridableFrontendPlugin<
       };
     }>;
     'entity-card:org/members-list': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'members-list';
       config: {
+        initialRelationAggregation: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle: boolean | undefined;
+      } & {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
+        showAggregateMembersToggle?: boolean | undefined;
+        initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+      } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -96,7 +100,17 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        [x: string]: ExtensionInput<
+          ExtensionDataRef,
+          {
+            singleton: boolean;
+            optional: boolean;
+          }
+        >;
+      };
+      kind: 'entity-card';
+      name: 'members-list';
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
@@ -104,13 +118,17 @@ const _default: OverridableFrontendPlugin<
       };
     }>;
     'entity-card:org/ownership': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'ownership';
       config: {
+        initialRelationAggregation: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle: boolean | undefined;
+      } & {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
+        showAggregateMembersToggle?: boolean | undefined;
+        initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+      } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -137,7 +155,17 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        [x: string]: ExtensionInput<
+          ExtensionDataRef,
+          {
+            singleton: boolean;
+            optional: boolean;
+          }
+        >;
+      };
+      kind: 'entity-card';
+      name: 'ownership';
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
@@ -186,8 +214,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };

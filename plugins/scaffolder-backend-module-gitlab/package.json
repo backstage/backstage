@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-gitlab",
-  "version": "0.9.4",
+  "version": "0.10.0-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
@@ -53,7 +53,6 @@
     "@gitbeaker/requester-utils": "^41.2.0",
     "@gitbeaker/rest": "^41.2.0",
     "luxon": "^3.0.0",
-    "winston": "^3.2.1",
     "yaml": "^2.0.0",
     "zod": "^3.22.4"
   },

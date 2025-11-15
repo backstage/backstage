@@ -539,6 +539,21 @@ const appPlugin: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'api:app/openshift-auth': ExtensionDefinition<{
+      kind: 'api';
+      name: 'openshift-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
     'api:app/permission': ExtensionDefinition<{
       kind: 'api';
       name: 'permission';
@@ -702,8 +717,8 @@ const appPlugin: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -721,8 +736,8 @@ const appPlugin: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };

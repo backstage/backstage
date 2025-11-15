@@ -16,7 +16,7 @@
 import { Select, SelectedItems } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
 import { useCallback } from 'react';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction } from '../../lib/types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { catalogGraphTranslationRef } from '../../translation';
 

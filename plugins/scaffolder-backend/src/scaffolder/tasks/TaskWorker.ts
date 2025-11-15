@@ -25,7 +25,7 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import PQueue from 'p-queue';
-import { TemplateActionRegistry } from '../actions';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';
@@ -36,8 +36,6 @@ const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
 /**
  * TaskWorkerOptions
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export type TaskWorkerOptions = {
   taskBroker: TaskBroker;
@@ -54,8 +52,6 @@ export type TaskWorkerOptions = {
 
 /**
  * CreateWorkerOptions
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
@@ -86,8 +82,6 @@ export type CreateWorkerOptions = {
 
 /**
  * TaskWorker
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export class TaskWorker {
   private taskQueue: PQueue;
@@ -96,11 +90,16 @@ export class TaskWorker {
   private parameterAuditTransform: ParameterAuditTransform;
   private stopWorkers: boolean;
 
+  private readonly options: TaskWorkerOptions & {
+    parameterAuditTransform: ParameterAuditTransform;
+  };
+
   private constructor(
-    private readonly options: TaskWorkerOptions & {
+    options: TaskWorkerOptions & {
       parameterAuditTransform: ParameterAuditTransform;
     },
   ) {
+    this.options = options;
     this.stopWorkers = false;
     this.logger = options.logger;
     this.auditor = options.auditor;

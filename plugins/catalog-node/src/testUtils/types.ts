@@ -31,6 +31,7 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  StreamEntitiesRequest,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
@@ -135,4 +136,9 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     location: AnalyzeLocationRequest,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<AnalyzeLocationResponse>;
+
+  streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): AsyncIterable<Entity[]>;
 }

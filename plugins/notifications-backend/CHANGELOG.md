@@ -1,5 +1,137 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.0-next.2
+
+### Minor Changes
+
+- 87e597c: Adds support for default configuration for an entire notification channel.
+  This setting will also be inherited down to origins and topics while still respecting the users individual choices.
+
+  This will be handy if you want to use a "opt-in" strategy.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.2
+  - @backstage/plugin-notifications-node@0.2.21-next.2
+
+## 0.5.12-next.1
+
+### Patch Changes
+
+- 15fb764: Show default settings for notifications even before receiving first notification.
+
+  Previously, it was not possible for the users to see or modify their notification settings until they had received at
+  least one notification from specific origin or topic.
+  This update ensures that default settings are displayed from the outset,
+  allowing users to customize their preferences immediately.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-notifications-node@0.2.21-next.1
+  - @backstage/plugin-signals-node@0.1.26-next.1
+
+## 0.5.12-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.2.21-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-notifications-common@0.1.2-next.0
+  - @backstage/plugin-signals-node@0.1.26-next.0
+
+## 0.5.11
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+- 3b8e156: Fixed exclude entity reference not working in notification sending
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-notifications-common@0.1.1
+  - @backstage/plugin-notifications-node@0.2.20
+  - @backstage/plugin-signals-node@0.1.25
+
+## 0.5.11-next.2
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+
+## 0.5.11-next.1
+
+### Patch Changes
+
+- 3b8e156: Fixed exclude entity reference not working in notification sending
+
+## 0.5.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-notifications-common@0.1.1-next.0
+  - @backstage/plugin-signals-node@0.1.25-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+  - @backstage/plugin-notifications-node@0.2.20-next.0
+
+## 0.5.10
+
+### Patch Changes
+
+- a95cebd: Internal refactoring for better type support
+- 7e7ed57: A new extension point was added that can be used to modify how the users receiving notifications
+  are resolved. The interface passed to the extension point should only return complete user entity references
+  based on the notification target references and the excluded entity references. Note that the inputs are lists
+  of entity references that can be any entity kind, not just user entities.
+
+  Using this extension point will override the default behavior of resolving users with the
+  `DefaultNotificationRecipientResolver`.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-node@0.2.19
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-signals-node@0.1.24
+
+## 0.5.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.1
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/plugin-notifications-node@0.2.19-next.1
+
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-signals-node@0.1.24-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+  - @backstage/plugin-notifications-node@0.2.19-next.0
+
 ## 0.5.9
 
 ### Patch Changes

@@ -15,7 +15,7 @@
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { InputError } from '@backstage/errors';
+import { ConflictError, InputError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 
 export const createGetCatalogEntityAction = ({
@@ -28,6 +28,11 @@ export const createGetCatalogEntityAction = ({
   actionsRegistry.register({
     name: 'get-catalog-entity',
     title: 'Get Catalog Entity',
+    attributes: {
+      destructive: false,
+      readOnly: true,
+      idempotent: true,
+    },
     description: `
 This allows you to get a single entity from the software catalog.
 Each entity in the software catalog has a unique name, kind, and namespace. The default namespace is "default".
@@ -76,7 +81,7 @@ Each entity is identified by a unique entity reference, which is a string of the
       }
 
       if (items.length > 1) {
-        throw new Error(
+        throw new ConflictError(
           `Multiple entities found with name "${
             input.name
           }", please provide more specific filters. Entities found: ${items

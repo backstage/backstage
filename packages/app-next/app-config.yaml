@@ -4,7 +4,6 @@ app:
   routes:
     bindings:
       catalog.viewTechDoc: techdocs.docRoot
-      catalog.createComponent: catalog-import.importPage
       org.catalogIndex: catalog.catalogIndex
 
   pluginOverrides:
@@ -22,6 +21,11 @@ app:
         ownerEntityRefs: [cubic-belugas]
 
   extensions:
+    - entity-card:org/members-list:
+        config:
+          showAggregateMembersToggle: true
+          initialRelationAggregation: aggregated
+
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
 

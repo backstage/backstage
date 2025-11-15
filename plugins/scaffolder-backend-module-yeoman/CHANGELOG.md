@@ -1,5 +1,73 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.5-next.1
+
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.5-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/types@1.2.2
+
+## 0.4.15
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.4
+
+## 0.4.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.4-next.1
+
+## 0.4.15-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.4-next.0
+
+## 0.4.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-node@0.11.1
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.3
+
+## 0.4.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.3-next.1
+
 ## 0.4.14-next.0
 
 ### Patch Changes
