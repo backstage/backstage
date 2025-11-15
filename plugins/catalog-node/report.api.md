@@ -60,6 +60,7 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
+  getPriority?(): number;
 };
 
 // @public
@@ -312,7 +313,14 @@ export function locationSpecToMetadataName(location: LocationSpec_2): string;
 export function parseEntityYaml(
   data: string | Buffer,
   location: LocationSpec_2,
+  options?: ParseEntityYamlOptions,
 ): Iterable<CatalogProcessorResult>;
+
+// @public
+export interface ParseEntityYamlOptions {
+  // (undocumented)
+  enableYamlMerge?: boolean;
+}
 
 // @public (undocumented)
 export type PlaceholderResolver = (

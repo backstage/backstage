@@ -177,11 +177,12 @@ Usage: backstage-cli package start [options]
 Start a package for local development
 
 Options:
-  --config <path>  Config files to load instead of app-config.yaml (default: [])
-  --role <name>    Run the command with an explicit package role
-  --check          Enable type checking and linting if available
-  --inspect        Enable debugger in Node.js environments
-  --inspect-brk    Enable debugger in Node.js environments, breaking before code starts
+  --config <path>      Config files to load instead of app-config.yaml (default: [])
+  --role <name>       Run the command with an explicit package role
+  --check             Enable type checking and linting if available
+  --inspect           Enable debugger in Node.js environments
+  --inspect-brk       Enable debugger in Node.js environments, breaking before code starts
+  --entrypoint <path> Entry directory path (uses index file) or entry file path (without extension). Defaults to "dev"
 ```
 
 ## package build

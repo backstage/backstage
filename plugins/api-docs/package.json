@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-api-docs",
-  "version": "0.12.11-next.2",
+  "version": "0.13.1-next.1",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
   "backstage": {
     "role": "frontend-plugin",
@@ -71,8 +71,7 @@
     "graphql": "^16.0.0",
     "graphql-config": "^5.0.2",
     "graphql-ws": "^5.4.1",
-    "isomorphic-form-data": "^2.0.0",
-    "swagger-ui-react": "^5.0.0"
+    "swagger-ui-react": "^5.27.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

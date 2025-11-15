@@ -1,5 +1,104 @@
 # @backstage/backend-test-utils
 
+## 1.10.0-next.2
+
+### Patch Changes
+
+- f3001fd: Tweak some of the mock services to have more precise types
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.2
+
+## 1.10.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-app-api@1.3.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- d57b13b: Added support for Postgres 18 to the available `TestDatabases`.
+
+  Note that the set of _default_ databases to test against for users of the `TestDatabases` class was also updated to include Postgres 14 and 18, instead of 13 and 17. If you need to override this, you can pass in an explicit `ids` argument, for example `ids: ['POSTGRES_17', 'POSTGRES_13', 'SQLITE_3']`.
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/backend-app-api@1.2.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 1.9.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/backend-app-api@1.2.8
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-common@0.9.2
+
+## 1.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/backend-app-api@1.2.8-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/backend-app-api@1.2.7
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/plugin-permission-common@0.9.1
+
+## 1.9.0
+
+### Minor Changes
+
+- 4e2c237: The `mockServices.rootConfig()` instance now has an `update` method that can be used to test configuration subscriptions and updates.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/types@1.2.2
+  - @backstage/backend-app-api@1.2.7
+  - @backstage/backend-plugin-api@1.4.3
+
 ## 1.9.0-next.1
 
 ### Patch Changes

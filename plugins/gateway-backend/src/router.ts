@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
-import { InstanceMetadataService } from '@backstage/backend-plugin-api/alpha';
+import {
+  DiscoveryService,
+  RootInstanceMetadataService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Request, Response, NextFunction } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { context } from '@opentelemetry/api';
 import { getRPCMetadata } from '@opentelemetry/core';
 
-export function createRouter({
+export async function createRouter({
   discovery,
   instanceMeta,
 }: {
   discovery: DiscoveryService;
-  instanceMeta: InstanceMetadataService;
+  instanceMeta: RootInstanceMetadataService;
   logger: LoggerService;
 }) {
-  const localPluginIds = new Set(
-    instanceMeta
-      .getInstalledFeatures()
-      .filter(f => f.type === 'plugin')
-      .map(f => f.pluginId),
-  );
+  const plugins = await instanceMeta.getInstalledPlugins();
+  const localPluginIds = new Set(plugins.map(f => f.pluginId));
 
   const proxy = createProxyMiddleware({
     changeOrigin: true,

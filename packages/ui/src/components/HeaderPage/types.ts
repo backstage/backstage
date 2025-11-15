@@ -26,6 +26,7 @@ export interface HeaderPageProps {
   customActions?: React.ReactNode;
   tabs?: HeaderTab[];
   breadcrumbs?: HeaderPageBreadcrumb[];
+  className?: string;
 }
 
 /**

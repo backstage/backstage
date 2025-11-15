@@ -1,5 +1,142 @@
 # @backstage/plugin-techdocs
 
+## 1.16.0-next.1
+
+### Minor Changes
+
+- a521911: Add support for customizable icons in `SearchResultListItemBlueprint` and related components
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- Updated dependencies
+  - @backstage/plugin-search-react@1.10.0-next.1
+  - @backstage/plugin-catalog-react@1.21.3-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
+## 1.15.2-next.0
+
+### Patch Changes
+
+- a4d4a70: Fixed an issue where the entire TechDocs page would re-render when navigating between pages within the same entity's documentation.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.9.6-next.0
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.12-next.0
+  - @backstage/theme@0.7.0
+  - @backstage/plugin-auth-react@0.1.21-next.0
+  - @backstage/plugin-search-common@1.2.21-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.5-next.0
+
+## 1.15.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/integration@1.18.1
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/plugin-search-react@1.9.5
+  - @backstage/config@1.3.5
+  - @backstage/theme@0.7.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/plugin-techdocs-react@1.3.4
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/integration-react@1.2.11
+  - @backstage/plugin-auth-react@0.1.20
+  - @backstage/plugin-search-common@1.2.20
+
+## 1.15.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+  - @backstage/plugin-search-react@1.9.5-next.2
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+
+## 1.15.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/integration-react@1.2.11-next.1
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/plugin-search-react@1.9.5-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-auth-react@0.1.20-next.1
+  - @backstage/plugin-search-common@1.2.20-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 1.15.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/integration-react@1.2.11-next.0
+  - @backstage/plugin-auth-react@0.1.20-next.0
+  - @backstage/plugin-search-react@1.9.5-next.0
+  - @backstage/plugin-techdocs-react@1.3.4-next.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.15.0
+
+### Minor Changes
+
+- a0b604c: Adding redirect handling for TechDocs URLs that reference entities that now reference an external entity for TechDocs. Including tests and documentation.
+
+### Patch Changes
+
+- 313cec7: Updated dependency `dompurify` to `^3.2.4`.
+- 8d18d23: TechDocs page titles have been improved, especially for deeply nested pages.
+- 1dfee19: Reverts a change in CSS layout that shifted the content of the Techdocs too far to the left.
+- 4ce5831: Support Techdocs redirect with dompurify 3.2.6+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/plugin-techdocs-react@1.3.3
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/plugin-auth-react@0.1.19
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/integration@1.18.0
+  - @backstage/core-components@0.18.0
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/plugin-search-react@1.9.4
+  - @backstage/integration-react@1.2.10
+
 ## 1.14.2-next.2
 
 ### Patch Changes

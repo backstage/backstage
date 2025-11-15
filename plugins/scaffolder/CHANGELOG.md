@@ -1,5 +1,132 @@
 # @backstage/plugin-scaffolder
 
+## 1.34.3-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.19.3-next.0
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.12-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-scaffolder-common@1.7.3-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.5-next.0
+
+## 1.34.2
+
+### Patch Changes
+
+- e0ffe84: Add missing `templatingExtensions` option to RouterProps.contextMenu to allow global control across scaffolder pages
+- d9aed74: Forward `ui:disabled` in `OwnedEntityPicker` to allow disabling it
+- 075e064: Added missing form fields for the new frontend system.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.19.2
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/integration@1.18.1
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/plugin-techdocs-react@1.3.4
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/integration-react@1.2.11
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-permission-react@0.4.37
+  - @backstage/plugin-scaffolder-common@1.7.2
+
+## 1.34.2-next.3
+
+### Patch Changes
+
+- d9aed74: Forward `ui:disabled` in `OwnedEntityPicker` to allow disabling it
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
+## 1.34.2-next.2
+
+### Patch Changes
+
+- 075e064: Added missing form fields for the new frontend system.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.19.2-next.2
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+
+## 1.34.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/integration-react@1.2.11-next.1
+  - @backstage/plugin-permission-react@0.4.37-next.0
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/plugin-scaffolder-react@1.19.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-scaffolder-common@1.7.2-next.1
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 1.34.2-next.0
+
+### Patch Changes
+
+- e0ffe84: Add missing `templatingExtensions` option to RouterProps.contextMenu to allow global control across scaffolder pages
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/plugin-scaffolder-react@1.19.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/integration-react@1.2.11-next.0
+  - @backstage/plugin-techdocs-react@1.3.4-next.0
+  - @backstage/plugin-scaffolder-common@1.7.2-next.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.34.1
+
+### Patch Changes
+
+- 0d415ae: Render a TechDocs link on the Scaffolder Template List page when templates include either `backstage.io/techdocs-ref` or `backstage.io/techdocs-entity` annotations, using the shared `buildTechDocsURL` helper. Also adds tests to verify both annotations and optional `backstage.io/techdocs-entity-path` are respected.
+- 7151260: Prevent the MultiEntityPicker from removing options present in form state when new options are selected
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/plugin-techdocs-react@1.3.3
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/integration@1.18.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/plugin-scaffolder-react@1.19.1
+  - @backstage/integration-react@1.2.10
+  - @backstage/plugin-scaffolder-common@1.7.1
+
 ## 1.34.1-next.2
 
 ### Patch Changes

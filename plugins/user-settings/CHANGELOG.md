@@ -1,5 +1,94 @@
 # @backstage/plugin-user-settings
 
+## 0.8.29-next.0
+
+### Patch Changes
+
+- 2b6fda3: Revert `storageApiRef` implementation
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.17-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.27
+
+### Patch Changes
+
+- 52fa068: Added user settings storage API blueprint
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-signals-react@0.0.16
+
+## 0.8.27-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
+## 0.8.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.1-next.0
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-signals-react@0.0.16-next.0
+
+## 0.8.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-app-api@1.19.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.15
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.26
+
+### Patch Changes
+
+- 320a9ac: Add the OpenShift authenticator provider to the default `user-settings` providers page.
+- b713b54: Tool-tip text correction for the Theme selection in settings page
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/core-app-api@1.19.0
+
 ## 0.8.26-next.2
 
 ### Patch Changes

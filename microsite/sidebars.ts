@@ -14,14 +14,16 @@ const catalogSidebar = tryToLoadCustomSidebar(
 const searchSidebar = tryToLoadCustomSidebar(
   '../docs/features/search/api/sidebar.ts',
 );
+const scaffolderSidebar = tryToLoadCustomSidebar(
+  '../docs/features/software-templates/api/sidebar.ts',
+);
 
 export default {
   docs: {
     Overview: [
       'overview/what-is-backstage',
+      'overview/technical-overview',
       'overview/architecture-overview',
-      'overview/background',
-      'overview/vision',
       'overview/roadmap',
       'overview/threat-model',
       'overview/versioning-policy',
@@ -35,7 +37,6 @@ export default {
           'getting-started/config/database',
           'getting-started/config/authentication',
           'getting-started/configure-app-with-plugins',
-          'getting-started/app-custom-theme',
           'getting-started/homepage',
         ],
       },
@@ -61,6 +62,42 @@ export default {
       'overview/support',
       'getting-started/keeping-backstage-updated',
     ],
+    ...(process.env.GOLDEN_PATH
+      ? {
+          'Golden Paths': [
+            {
+              type: 'category',
+              label: '001 - create-app',
+              items: [
+                'golden-path/create-app/index',
+                'golden-path/create-app/npx-create-app',
+                'golden-path/create-app/local-development',
+                'golden-path/create-app/installing-plugins',
+                'golden-path/create-app/logging-in',
+                'golden-path/create-app/custom-theme',
+                'golden-path/create-app/keeping-backstage-updated',
+              ],
+            },
+            {
+              type: 'category',
+              label: '002 - Plugins',
+              items: [
+                'golden-path/plugins/index',
+                'golden-path/plugins/why-build-plugins',
+                'golden-path/plugins/sustainable-plugin-development',
+                {
+                  type: 'category',
+                  label: 'Backend Plugins',
+                  items: [
+                    'golden-path/plugins/backend/001-first-steps',
+                    'golden-path/plugins/backend/002-poking-around',
+                  ],
+                },
+              ],
+            },
+          ],
+        }
+      : {}),
     'Core Features': [
       {
         type: 'category',
@@ -229,6 +266,22 @@ export default {
           'features/software-templates/dry-run-testing',
           'features/software-templates/experimental',
           'features/software-templates/templating-extensions',
+          {
+            type: 'category',
+            label: 'API',
+            link:
+              scaffolderSidebar.length > 0
+                ? {
+                    type: 'generated-index',
+                    title: 'Scaffolder API',
+                    slug: '/category/scaffolder-api',
+                  }
+                : {
+                    type: 'doc',
+                    id: 'openapi/generated-docs/404',
+                  },
+            items: scaffolderSidebar,
+          },
         ],
       },
       {
@@ -540,6 +593,16 @@ export default {
             ],
           },
           'tooling/package-metadata',
+        ],
+      },
+      {
+        type: 'category',
+        label: 'User Interface',
+        items: [
+          'conf/user-interface/index',
+          'conf/user-interface/logo',
+          'conf/user-interface/icons',
+          'conf/user-interface/sidebar',
         ],
       },
     ],

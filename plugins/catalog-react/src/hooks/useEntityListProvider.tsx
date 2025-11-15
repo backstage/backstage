@@ -298,6 +298,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       } else {
         const entityFilter = reduceEntityFilters(compacted);
         const backendFilter = reduceBackendCatalogFilters(compacted);
+        const { orderFields } = reduceCatalogFilters(compacted);
         const previousBackendFilter = reduceBackendCatalogFilters(
           compact(Object.values(outputState.appliedFilters)),
         );
@@ -310,6 +311,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           // fields + table columns
           const response = await catalogApi.getEntities({
             filter: backendFilter,
+            order: orderFields,
           });
           const entities = response.items.filter(entityFilter);
           return {

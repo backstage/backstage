@@ -30,4 +30,4 @@ check out https://developer.harness.io/docs/platform/automation/api/add-and-mana
 
 - `host`: The host of the Harness Code instance that you want to match on.
 - `token` (optional): The password or api token to authenticate with.
-- `apiKey` (optional): The apiKey to authenticate with.
+- `apiKey` (optional): The API key to authenticate with.

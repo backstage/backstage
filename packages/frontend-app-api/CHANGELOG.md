@@ -1,5 +1,71 @@
 # @backstage/frontend-app-api
 
+## 0.13.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.3.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.13.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/config@1.3.5
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/frontend-defaults@0.3.2
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-app-api@1.19.1-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/frontend-defaults@0.3.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.13.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.3.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.19.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.13.0
+
+### Minor Changes
+
+- 6516c3d: The `createSpecializedApp` no longer throws when encountering many common errors when starting up the app. It will instead return them through the `errors` property so that they can be handled more gracefully in the app.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/types@1.2.2
+  - @backstage/frontend-defaults@0.3.1
+  - @backstage/core-app-api@1.19.0
+
 ## 0.12.1-next.0
 
 ### Patch Changes

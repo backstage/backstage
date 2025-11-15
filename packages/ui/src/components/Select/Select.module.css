@@ -1,0 +1,259 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-Select,
+  .bui-SelectPopover {
+    &[data-size='small'] {
+      --select-item-height: 2rem;
+    }
+
+    &[data-size='medium'] {
+      --select-item-height: 2.5rem;
+    }
+  }
+
+  .bui-SelectPopover {
+    min-width: var(--trigger-width);
+  }
+
+  .bui-SelectTrigger {
+    box-sizing: border-box;
+    border-radius: var(--bui-radius-3);
+    border: 1px solid var(--bui-border);
+    background-color: var(--bui-bg-surface-1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    gap: var(--bui-space-2);
+    width: 100%;
+    height: var(--select-item-height);
+
+    .bui-Select[data-size='small'] & {
+      padding-inline: var(--bui-space-3) 0;
+    }
+
+    .bui-Select[data-size='medium'] & {
+      padding-inline: var(--bui-space-4) 0;
+    }
+
+    & svg {
+      flex-shrink: 0;
+      color: var(--bui-fg-secondary);
+
+      .bui-Select[data-size='small'] & {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .bui-Select[data-size='medium'] & {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+
+    &::placeholder {
+      color: var(--bui-fg-secondary);
+    }
+
+    &:hover {
+      transition: border-color 0.2s ease-in-out;
+      border-color: var(--bui-border-hover);
+    }
+
+    &:focus-visible {
+      border-color: var(--bui-border-pressed);
+      outline: 0;
+    }
+
+    .bui-Select[data-invalid] & {
+      border-color: var(--bui-fg-danger);
+
+      &:focus-visible,
+      &:hover {
+        outline: 1px solid var(--bui-fg-danger);
+      }
+    }
+
+    &[disabled] {
+      cursor: not-allowed;
+      border-color: var(--bui-border-disabled);
+      color: var(--bui-fg-disabled);
+    }
+  }
+
+  .bui-SelectTriggerChevron {
+    display: grid;
+    place-content: center;
+    width: var(--select-item-height);
+    height: var(--select-item-height);
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+
+  .bui-SelectValue {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    color: var(--bui-fg-primary);
+    text-align: left;
+
+    & .bui-SelectItemIndicator {
+      display: none;
+    }
+
+    &[disabled] {
+      color: var(--bui-fg-disabled);
+    }
+  }
+
+  .bui-SelectList:focus-visible {
+    /* Remove default focus-visible outline because React Aria
+     * triggers it on mouse click open of the list for some reason.
+     * On keyboard use, the top item receives the focus style,
+     * so it's not needed anyway. */
+    outline: none;
+  }
+
+  .bui-SelectItem {
+    box-sizing: border-box;
+    position: relative;
+    width: var(--anchor-width);
+    display: grid;
+    grid-template-areas: 'icon text';
+    grid-template-columns: 1rem 1fr;
+    align-items: center;
+    min-height: var(--select-item-height);
+    padding-block: var(--bui-space-1);
+    padding-left: var(--bui-space-3);
+    padding-right: var(--bui-space-4);
+    color: var(--bui-fg-primary);
+    cursor: pointer;
+    user-select: none;
+    font-size: var(--bui-font-size-3);
+    gap: var(--bui-space-2);
+    outline: none;
+
+    &[data-focused]::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline: var(--bui-space-1);
+      border-radius: var(--bui-radius-2);
+      background: var(--bui-bg-surface-2);
+      z-index: -1;
+    }
+
+    &[data-disabled] {
+      cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+    }
+
+    &[data-selected] .bui-SelectItemIndicator {
+      opacity: 1;
+    }
+  }
+
+  .bui-SelectItemIndicator {
+    grid-area: icon;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .bui-SelectItemLabel {
+    flex: 1;
+    grid-area: text;
+  }
+
+  .bui-SelectSearchWrapper {
+    flex-shrink: 0;
+    margin-bottom: var(--bui-space-1);
+    display: flex;
+    align-items: center;
+    padding-inline: var(--bui-space-3) 0;
+    border-bottom: 1px solid var(--bui-border);
+  }
+
+  .bui-SelectSearch {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    color: var(--bui-fg-primary);
+    flex: 1;
+    outline: none;
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    height: var(--select-item-height);
+    line-height: var(--select-item-height);
+
+    &::placeholder {
+      color: var(--bui-fg-secondary);
+    }
+
+    /* Hide native browser clear button */
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+    }
+  }
+
+  .bui-SelectSearchClear {
+    flex: 0 0 auto;
+    display: grid;
+    place-content: center;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    color: var(--bui-fg-secondary);
+    transition: color 0.2s ease-in-out;
+    width: var(--select-item-height);
+    height: var(--select-item-height);
+
+    input:placeholder-shown + & {
+      display: none;
+    }
+
+    &:hover {
+      color: var(--bui-fg-primary);
+    }
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .bui-SelectNoResults {
+    padding-inline: var(--bui-space-3);
+    padding-block: var(--bui-space-2);
+    color: var(--bui-fg-secondary);
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+  }
+}

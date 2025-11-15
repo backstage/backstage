@@ -50,12 +50,19 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
   private readonly lastStarted: Gauge;
   private readonly lastCompleted: Gauge;
 
+  private readonly pluginId: string;
+  private readonly databaseFactory: () => Promise<Knex>;
+  private readonly logger: LoggerService;
+
   constructor(
-    private readonly pluginId: string,
-    private readonly databaseFactory: () => Promise<Knex>,
-    private readonly logger: LoggerService,
+    pluginId: string,
+    databaseFactory: () => Promise<Knex>,
+    logger: LoggerService,
     rootLifecycle: RootLifecycleService,
   ) {
+    this.pluginId = pluginId;
+    this.databaseFactory = databaseFactory;
+    this.logger = logger;
     const meter = metrics.getMeter('default');
     this.counter = meter.createCounter('backend_tasks.task.runs.count', {
       description: 'Total number of times a task has been run',

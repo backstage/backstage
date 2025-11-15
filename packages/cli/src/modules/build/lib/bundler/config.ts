@@ -264,26 +264,26 @@ export async function createConfig(
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
-            import: false,
+            ...(isRemote && { import: false }),
           },
           'react-dom': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
-            import: false,
+            ...(isRemote && { import: false }),
           },
           // React Router
           'react-router': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
-            import: false,
+            ...(isRemote && { import: false }),
           },
           'react-router-dom': {
             singleton: true,
             requiredVersion: '*',
             eager: !isRemote,
-            import: false,
+            ...(isRemote && { import: false }),
           },
           // MUI v4
           // not setting import: false for MUI packages as this

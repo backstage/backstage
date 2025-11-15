@@ -1,5 +1,93 @@
 # @backstage/core-components
 
+## 0.18.3-next.2
+
+### Patch Changes
+
+- 96ad674: Line numbers in LogViewer will not be selectable in UI anymore
+
+## 0.18.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.1
+
+## 0.18.3-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.2
+
+### Patch Changes
+
+- d493126: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- 95935fb: Fixed dependency graph automatically scrolling forever
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/theme@0.7.0
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.18.2-next.3
+
+### Patch Changes
+
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+
+## 0.18.2-next.2
+
+### Patch Changes
+
+- 95935fb: Fixed dependency graph automatically scrolling forever
+- Updated dependencies
+  - @backstage/theme@0.6.9-next.0
+
+## 0.18.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- d493126: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.0
+
+### Minor Changes
+
+- b9a87f4: Add optional `distance` property to `DependencyEdge` to reflect the distance to a root.
+
+### Patch Changes
+
+- 1ad3d94: Dependency graph can now be opened in full screen mode
+- e409bec: Fixes for rendering initials in the avatar component.
+- ae7d426: update about card links style for pretty display with other language
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+
 ## 0.17.6-next.1
 
 ### Patch Changes

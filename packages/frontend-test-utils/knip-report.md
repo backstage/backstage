@@ -4,6 +4,6 @@
 
 | Name                      | Location     | Severity |
 | :------------------------ | :----------- | :------- |
-| @backstage/version-bridge | package.json | error    |
-| zod                       | package.json | error    |
+| @backstage/version-bridge | packages/frontend-test-utils/package.json | error    |
+| zod                       | packages/frontend-test-utils/package.json | error    |
 

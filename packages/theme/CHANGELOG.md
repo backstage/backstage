@@ -1,5 +1,27 @@
 # @backstage/theme
 
+## 0.7.0
+
+### Minor Changes
+
+- 865bce8: **BREAKING**: Removed the built-in `CssBaseline` from `UnifiedThemeProvider`. If your Backstage instance looks broken after this update, you likely forgot to add our new Backstage UI global CSS. To do that, please import `@backstage/ui/css/styles.css` in `packages/app/src/index.tsx`:
+
+  ```tsx
+  import '@backstage/ui/css/styles.css';
+  ```
+
+  This change also removes the `noCssBaseline` prop, which became redundant.
+
+### Patch Changes
+
+- d5cbdba: The `UnifiedThemeProvider` now coordinates theme attributes on the document `body` in case multiple theme providers are rendered.
+
+## 0.6.9-next.0
+
+### Patch Changes
+
+- d5cbdba: The `UnifiedThemeProvider` now coordinates theme attributes on the document `body` in case multiple theme providers are rendered.
+
 ## 0.6.8
 
 ### Patch Changes

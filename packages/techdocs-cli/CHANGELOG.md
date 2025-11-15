@@ -1,5 +1,59 @@
 # @techdocs/cli
 
+## 1.10.1-next.0
+
+### Patch Changes
+
+- c2a2017: Fix for missing styles due to move to BUI.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/cli-common@0.1.15
+
+## 1.10.0
+
+### Minor Changes
+
+- 43afbe5: Techdocs CLI serve supports automatic refresh, relying on `mkdocs` `watch` feature.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/config@1.3.5
+  - @backstage/plugin-techdocs-node@1.13.8
+
+## 1.9.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.8-next.1
+
+## 1.9.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/plugin-techdocs-node@1.13.8-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.3
+
+## 1.9.8
+
+### Patch Changes
+
+- db63208: Fixed an issue where `@techdocs/cli serve` command did not pick up the latest changes to TechDocs.
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/plugin-techdocs-node@1.13.7
+
 ## 1.9.8-next.0
 
 ### Patch Changes

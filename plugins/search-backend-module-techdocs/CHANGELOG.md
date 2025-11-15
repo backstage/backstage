@@ -1,5 +1,88 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.4.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-search-backend-node@1.3.17-next.1
+  - @backstage/plugin-techdocs-node@1.13.9-next.1
+
+## 0.4.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.17-next.0
+  - @backstage/plugin-techdocs-node@1.13.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-search-common@1.2.21-next.0
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-search-backend-node@1.3.16
+  - @backstage/plugin-search-common@1.2.20
+  - @backstage/plugin-techdocs-node@1.13.8
+
+## 0.4.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-search-backend-node@1.3.16-next.0
+  - @backstage/plugin-techdocs-node@1.13.8-next.1
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/plugin-search-common@1.2.20-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.15
+  - @backstage/plugin-techdocs-node@1.13.8-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-search-common@1.2.19
+
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-search-backend-node@1.3.15
+  - @backstage/plugin-techdocs-node@1.13.7
+
 ## 0.4.6-next.1
 
 ### Patch Changes

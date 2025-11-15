@@ -282,7 +282,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const clearLayout = () => {
-    setWidgets(widgets.filter(w => !w.deletable));
+    setWidgets(widgets.filter(w => w.deletable === false));
   };
 
   const changeEditMode = (mode: boolean) => {

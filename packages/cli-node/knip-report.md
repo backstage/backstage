@@ -4,5 +4,5 @@
 
 | Name   | Location     | Severity |
 | :----- | :----------- | :------- |
-| semver | package.json | error    |
+| semver | packages/cli-node/package.json | error    |
 
