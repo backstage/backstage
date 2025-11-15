@@ -23,7 +23,7 @@ import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { Message, PubSub, Subscription } from '@google-cloud/pubsub';
 import { Counter, metrics } from '@opentelemetry/api';
 import { readSubscriptionTasksFromConfig } from './config';
-import { SubscriptionTask } from './types';
+import { MessageContext, SubscriptionTask } from './types';
 
 /**
  * Reads messages off of Google Pub/Sub subscriptions and forwards them into the
@@ -197,14 +197,30 @@ export class GooglePubSubConsumingEventPublisher {
     message: Message,
     task: SubscriptionTask,
   ): EventParams | undefined {
-    const topic = task.mapToTopic(message);
+    const eventPayload = JSON.parse(message.data.toString());
+    const attributes = message.attributes;
+
+    const context: MessageContext = {
+      message: {
+        data: eventPayload,
+        attributes,
+      },
+    };
+
+    if (!task.filter(context)) {
+      return undefined;
+    }
+
+    const topic = task.mapToTopic(context);
     if (!topic) {
       return undefined;
     }
+
+    const metadata = task.mapToMetadata(context);
     return {
       topic,
-      eventPayload: JSON.parse(message.data.toString()),
-      metadata: task.mapToMetadata(message),
+      eventPayload,
+      metadata,
     };
   }
 }
