@@ -29,7 +29,7 @@ export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
 export type {
   MetricsService,
-  MetricServiceOpts,
+  MetricsServiceOptions,
   RootMetricsService,
   ObservableMetric,
 } from './MetricsService';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  MetricServiceOpts,
+  MetricsServiceOptions,
   MetricsService,
   ObservableMetric,
 } from '@backstage/backend-plugin-api/alpha';
@@ -31,6 +31,11 @@ import {
 } from '@opentelemetry/api';
 import z from 'zod';
 
+/**
+ * Schema for validating metric names. A metric name should follow snake_case convention
+ *
+ * {@link https://opentelemetry.io/docs/specs/semconv/general/metrics}
+ */
 const metricNameSchema = z
   .string()
   .min(1, 'Metric name cannot be empty')
@@ -39,21 +44,29 @@ const metricNameSchema = z
     "Metric name must follow snake_case convention (lowercase letters, numbers, and underscores only). Examples: 'request_count', 'api_response_time', 'http_errors'",
   );
 
+/**
+ * Schema for validating a namespace. A namespace is a string that is used to group metrics and cannot
+ * be empty. It is defined by the hierarchical structure of metrics.
+ *
+ * {@link https://opentelemetry.io/docs/specs/semconv/general/naming/#general-naming-considerations}
+ */
 const namespaceSchema = z
   .string()
   .min(1, 'Metric namespace is required and cannot be empty');
 
 /**
- * Factory for creating OpenTelemetry metrics instruments.
+ * Factory for creating instruments for a given namespace. Instruments are what produce metrics.
+ *
+ * @remarks
+ * Used by the {@link DefaultMetricsService} and {@link DefaultRootMetricsService} to create instruments and is not intended to be used directly.
  *
  * @internal
- * @alpha
  */
 export class InstrumentFactory implements MetricsService {
   private readonly meter: Meter;
   private readonly namespace: string;
 
-  constructor(opts: MetricServiceOpts) {
+  constructor(opts: MetricsServiceOptions) {
     if (!opts.meter) {
       throw new Error('Meter is required for metric instrument creation');
     }

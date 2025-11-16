@@ -15,7 +15,7 @@
  */
 
 import {
-  MetricServiceOpts,
+  MetricsServiceOptions,
   MetricsService,
   ObservableMetric,
 } from '@backstage/backend-plugin-api/alpha';
@@ -37,7 +37,7 @@ import { InstrumentFactory } from './InstrumentFactory';
 export class DefaultMetricsService implements MetricsService {
   private readonly instrumentFactory: InstrumentFactory;
 
-  constructor(opts: MetricServiceOpts) {
+  constructor(opts: MetricsServiceOptions) {
     this.instrumentFactory = new InstrumentFactory(opts);
   }
 
