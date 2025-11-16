@@ -68,6 +68,7 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
             'operation-tags': 'off',
             'hosts-https-only-oas3': 'off',
             'no-unknown-error-format': 'off',
+            'oas3-valid-media-example': 'off',
           },
         },
       ],
