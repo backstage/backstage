@@ -498,6 +498,29 @@ describe('<EntityListProvider pagination />', () => {
     });
   });
 
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+  });
+
   it('resolves query param filter values', async () => {
     const query = qs.stringify({
       filters: { kind: 'component', type: 'service' },
@@ -799,6 +822,29 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       expect(result.current.entities.length).toBe(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
   });
 
   it('resolves query param filter values', async () => {
