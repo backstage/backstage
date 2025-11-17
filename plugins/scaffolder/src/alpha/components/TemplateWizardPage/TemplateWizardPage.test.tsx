@@ -275,7 +275,7 @@ describe('TemplateWizardPage', () => {
 
       expect(visitsApiMock.updateName).toHaveBeenCalledWith(
         '/create/templates/default/test-template',
-        'Template Test Template Title',
+        'Test Template Title',
       );
     });
 
