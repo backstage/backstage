@@ -3804,31 +3804,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-dom-parser@npm:5.1.1":
-  version: 5.1.1
-  resolution: "html-dom-parser@npm:5.1.1"
+"html-dom-parser@npm:5.1.2":
+  version: 5.1.2
+  resolution: "html-dom-parser@npm:5.1.2"
   dependencies:
     domhandler: "npm:5.0.3"
     htmlparser2: "npm:10.0.0"
-  checksum: 10/85bbaa8699d40d54fd64f5472088199178a6c3dd6a907358ac476d9c511cb8ab10bff1469a785411e8b831a73ac08348392e56076eab6d100a3ec19dccc722ad
+  checksum: 10/d54fcdafbc0b2881c441a396965ad285072d2e4df62bebe7074d7aaa2a1fffc95e9286bcb81d6f241c4cdb10a84435fa623738985b635574acb3c84e994e8bb6
   languageName: node
   linkType: hard
 
 "html-react-parser@npm:^5.2.5":
-  version: 5.2.8
-  resolution: "html-react-parser@npm:5.2.8"
+  version: 5.2.10
+  resolution: "html-react-parser@npm:5.2.10"
   dependencies:
     domhandler: "npm:5.0.3"
-    html-dom-parser: "npm:5.1.1"
+    html-dom-parser: "npm:5.1.2"
     react-property: "npm:2.0.2"
-    style-to-js: "npm:1.1.19"
+    style-to-js: "npm:1.1.21"
   peerDependencies:
     "@types/react": 0.14 || 15 || 16 || 17 || 18 || 19
     react: 0.14 || 15 || 16 || 17 || 18 || 19
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/492d44f65c2a8647bb7d6db3865363739a00696687024b978f5f5e29475c40bd470c91e9ddefe0f1a846c85761f046e9a92fa3fe0e5581df43ac587787703b31
+  checksum: 10/3b0debac58e4b39d853731fd117b323a5d9582482cdc0b6dc5179d0c469acf63e64b8fdb3b678e758673633c579b09fd21d75d256c32104c65355f4434ba7f59
   languageName: node
   linkType: hard
 
@@ -3935,10 +3935,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inline-style-parser@npm:0.2.6":
-  version: 0.2.6
-  resolution: "inline-style-parser@npm:0.2.6"
-  checksum: 10/0be8356fcd766b7b170991293c9ad953f057ac9719960f51f4eb54af1a79c34638f591691f2ab43f57bef2e28e9c1239b8ae5f6b72bff2c652f828ccc621c08c
+"inline-style-parser@npm:0.2.7":
+  version: 0.2.7
+  resolution: "inline-style-parser@npm:0.2.7"
+  checksum: 10/cdfe719bd694b53bfbad20a645a9a4dda89c3ff56ee2b95945ad4eea86c541501f49f852d23bc2f73cd8127b6b62ea9027f697838e323a7f7d0d9b760e27a632
   languageName: node
   linkType: hard
 
@@ -6642,21 +6642,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-to-js@npm:1.1.19, style-to-js@npm:^1.0.0":
-  version: 1.1.19
-  resolution: "style-to-js@npm:1.1.19"
+"style-to-js@npm:1.1.21, style-to-js@npm:^1.0.0":
+  version: 1.1.21
+  resolution: "style-to-js@npm:1.1.21"
   dependencies:
-    style-to-object: "npm:1.0.12"
-  checksum: 10/c25f3a96368f258c90a886ec20b8a15ae035664e46eeea6c36f105fbc1e099ee81eaac355b7f5f948d8bb9d103c048a97b3d09e785c680ff2b4dd6d77cb76a95
+    style-to-object: "npm:1.0.14"
+  checksum: 10/5e30b4c52ed4e0294324adab2a43a0438b5495a77a72a6b1258637eebfc4dc8e0614f5ac7bf38a2f514879b3b448215d01fecf1f8d7468b8b95d90bed1d05d57
   languageName: node
   linkType: hard
 
-"style-to-object@npm:1.0.12":
-  version: 1.0.12
-  resolution: "style-to-object@npm:1.0.12"
+"style-to-object@npm:1.0.14":
+  version: 1.0.14
+  resolution: "style-to-object@npm:1.0.14"
   dependencies:
-    inline-style-parser: "npm:0.2.6"
-  checksum: 10/97b91c2056f4fedb573224accba080aaa96b48a7b120a007b83415c9b18b727d0d6588b9168a1b85da06dd1abacc328f6dd774e907721901e40503a2e7a78c89
+    inline-style-parser: "npm:0.2.7"
+  checksum: 10/06b86a5cf435dafac908d19082842983f9052d8cf3682915b1bd9251e3fe9b8065dbd2aef060dc5dfa0fa2ee24d717b587a5205f571513a10f30e3947f9d28ff
   languageName: node
   linkType: hard
 
