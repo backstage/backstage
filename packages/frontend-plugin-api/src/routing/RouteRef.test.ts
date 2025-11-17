@@ -15,12 +15,13 @@
  */
 
 import { AnyRouteRefParams } from './types';
-import { RouteRef, createRouteRef, toInternalRouteRef } from './RouteRef';
+import { RouteRef, createRouteRef } from './RouteRef';
+import { OpaqueRouteRef } from '@internal/frontend';
 
 describe('RouteRef', () => {
   it('should be created and have a mutable ID', () => {
     const routeRef: RouteRef<undefined> = createRouteRef();
-    const internal = toInternalRouteRef(routeRef);
+    const internal = OpaqueRouteRef.toInternal(routeRef);
     expect(internal.T).toBe(undefined);
     expect(internal.getParams()).toEqual([]);
     expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
@@ -49,7 +50,7 @@ describe('RouteRef', () => {
     }> = createRouteRef({
       params: ['x', 'y'],
     });
-    const internal = toInternalRouteRef(routeRef);
+    const internal = OpaqueRouteRef.toInternal(routeRef);
     expect(internal.getParams()).toEqual(['x', 'y']);
     expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
   });
