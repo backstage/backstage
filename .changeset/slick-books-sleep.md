@@ -2,4 +2,4 @@
 '@backstage/theme': patch
 ---
 
-Added `themeName` props to `UnifiedThemeProvider` to allow setting Backstage UI `data-theme-name`CSS attribute dynamically based on the active theme.
+Added a `themeName` prop to `UnifiedThemeProvider`, enabling Backstage UI `data-theme-name` CSS attribute to be set based on active theme.
