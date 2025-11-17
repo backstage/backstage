@@ -77,7 +77,7 @@ export function readBitbucketCloudIntegrationConfig(
   const appPassword = config.getOptionalString('appPassword')?.trim();
   const token = config.getOptionalString('token');
 
-  if (!token || !appPassword) {
+  if (!token && !appPassword) {
     throw new Error(
       `Bitbucket Cloud integration must be configured with as username and either a token or an appPassword.`,
     );
