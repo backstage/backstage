@@ -6,9 +6,9 @@
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
@@ -31,7 +31,7 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'page:mui-to-bui': ExtensionDefinition<{
+    'page:mui-to-bui': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {
