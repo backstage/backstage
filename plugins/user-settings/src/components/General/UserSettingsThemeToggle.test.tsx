@@ -41,11 +41,11 @@ const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
 
 const apiRegistry = TestApiRegistry.from([
   appThemeApiRef,
-  AppThemeSelector.createWithStorage(
-    [mockTheme],
-    mockApis.storage(),
-    mockErrorApi,
-  ),
+  AppThemeSelector.createWithStorage({
+    themes: [mockTheme],
+    storageApi: mockApis.storage(),
+    errorApi: mockErrorApi,
+  }),
 ]);
 
 describe('<UserSettingsThemeToggle />', () => {

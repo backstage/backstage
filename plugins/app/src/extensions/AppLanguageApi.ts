@@ -35,11 +35,16 @@ export const AppLanguageApi = ApiBlueprint.makeWithOverrides({
     return originalFactory(defineParams =>
       defineParams({
         api: appLanguageApiRef,
-        deps: {},
-        factory: () =>
+        deps: {
+          storageApi: storageApiRef,
+          errorApi: errorApiRef,
+        },
+        factory: ({ storageApi, errorApi }) =>
           AppLanguageSelector.createWithStorage({
             defaultLanguage: config.defaultLanguage,
             availableLanguages: config.availableLanguages,
+            storageApi,
+            errorApi,
           }),
       }),
     );
