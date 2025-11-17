@@ -368,6 +368,8 @@ export class CacheManager {
 
   private createValkeyStoreFactory(): StoreFactory {
     const KeyvValkey = require('@keyv/valkey').default;
+    // `@keyv/valkey` doesn't export a `createCluster` function, but is compatible with the one from `@keyv/redis`
+    // See https://keyv.org/docs/storage-adapters/valkey
     const { createCluster } = require('@keyv/redis');
     const stores: Record<string, typeof KeyvValkey> = {};
 
