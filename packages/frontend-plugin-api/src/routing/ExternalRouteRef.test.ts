@@ -25,10 +25,12 @@ describe('ExternalRouteRef', () => {
     expect(internal.getParams()).toEqual([]);
 
     expect(String(internal)).toMatch(
-      /^ExternalRouteRef\{created at '.*ExternalRouteRef\.test\.ts.*'\}$/,
+      /^externalRouteRef\{id=undefined,at='.*ExternalRouteRef\.test\.ts.*'\}$/,
     );
     internal.setId('some-id');
-    expect(String(internal)).toBe('ExternalRouteRef{some-id}');
+    expect(String(internal)).toMatch(
+      /^externalRouteRef\{id=some-id,at='.*ExternalRouteRef\.test\.ts.*'\}$/,
+    );
   });
 
   it('should be created with params', () => {
