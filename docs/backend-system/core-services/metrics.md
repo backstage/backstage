@@ -9,6 +9,10 @@ description: Documentation for the Metrics Service
 
 The Metrics Service is a core service designed to provide a unified interface for metrics instrumentation. This service allows plugins to create metrics instruments with well-defined namespaces and attributes, promoting consistency and reusability across the Backstage ecosystem.
 
+## Setting up OpenTelemetry
+
+If you are looking to set up OpenTelemetry for your Backstage instance, please refer to the [Setup OpenTelemetry](../../tutorials/setup-opentelemetry) tutorial.
+
 ## Using the Service
 
 ### Accessing the Service in a Plugin
@@ -28,21 +32,16 @@ export const myPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         metrics: metricsServiceRef,
-        logger: coreServices.logger,
       },
-      async init({ metrics, logger }) {
-        logger.info('Creating metrics...');
-
-        // Create a counter metric
-        const counter = metrics.createCounter('my-metric', {
+      async init({ metrics }) {
+        // Create a counter metric at the path `backstage.plugin.my_plugin.my_metric`
+        const counter = metrics.createCounter('my_metric', {
           description: 'My metric',
           unit: 'count',
         });
 
         // Add a value to the counter
         counter.add(1);
-
-        logger.info('Counter instrument created and incremented successfully');
       },
     });
   },
@@ -59,7 +58,7 @@ We strive to stay aligned with the OpenTelemetry best practices. When in doubt, 
 
 ### Building Blocks
 
-All Backstage metrics follow a hierarchical naming pattern that provides clear context about where the metric originates and what it measures. We recommend following this pattern for all metrics.
+All Backstage metrics follow a hierarchical naming pattern that provides clear context about where the metric originates and what it measures. We recommend following this pattern for all metrics. Notice that multi-word scope and metric names follow snake_case.
 
 ```md
 backstage.{scope}.{scope_name}.{metric_name}
@@ -78,7 +77,7 @@ where:
 
 **Pattern:** `backstage.plugin.{pluginId}.{metric_name}`
 
-Plugin-scoped metrics represent functionality specific to individual plugins. Each plugin operates as an independent microservice with its own metrics namespace.
+Plugin-scoped metrics represent functionality specific to individual plugins. Each plugin operates as an independent microservice with its own metrics namespace. All plugin metrics start with `backstage.plugin.` followed by the plugin ID and the metric name.
 
 **Examples:**
 
@@ -88,11 +87,13 @@ backstage.plugin.scaffolder.tasks.total
 backstage.plugin.techdocs.builds.duration
 ```
 
+We currently do not support module-scoped metrics since most modules should receive metrics from the plugin (extension point) they extend.
+
 #### Core Scope
 
 **Pattern:** `backstage.core.{metric_name}`
 
-Core-scoped metrics represent core services that support multiple plugins or provide cross-cutting functionality.
+Core-scoped metrics represent core services that support the core framework, root-level concerns, or provide cross-cutting functionality.
 
 **Examples:**
 
@@ -105,7 +106,7 @@ backstage.core.httpRouter.middleware.duration
 
 ### Metric Name Structure
 
-The `{metric_name}` component should be hierarchical using dot notation to create logical groupings.
+The `{metric_name}` component should be hierarchical using dot notation to create logical groupings. For multi-word metric names, use snake_case.
 
 ```md
 # Entity operations (use consolidated metrics with attributes)
@@ -126,20 +127,6 @@ operations.duration
 ```
 
 ## Finding Metrics in an example observability tool
-
-### Prometheus
-
-```md
-backstage_plugin_catalog_entities_operations_total
-```
-
-### Grafana
-
-```md
-backstage.plugin.catalog.entities.operations.total
-```
-
-### Example scenarios
 
 Show me all metrics related to the catalog plugin
 
