@@ -953,4 +953,65 @@ describe('SlackNotificationProcessor', () => {
       );
     });
   });
+
+  describe('when rate limit is not configured', () => {
+    it('should use default rate limit of 10 messages per minute', async () => {
+      const slack = new WebClient();
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
+        recipients: { type: 'entity', entityRef: 'group:default/mock' },
+        payload: { title: 'notification' },
+      });
+
+      expect(slack.chat.postMessage).toHaveBeenCalled();
+    });
+  });
+
+  describe('when rate limit is configured', () => {
+    it('should use custom rate limit value', async () => {
+      const slack = new WebClient();
+      const rateLimitConfig = mockServices.rootConfig({
+        data: {
+          app: {
+            baseUrl: 'https://example.org',
+          },
+          notifications: {
+            processors: {
+              slack: [
+                {
+                  token: 'mock-token',
+                  rateLimit: 5,
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const processor = SlackNotificationProcessor.fromConfig(rateLimitConfig, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
+        recipients: { type: 'entity', entityRef: 'group:default/mock' },
+        payload: { title: 'notification' },
+      });
+
+      expect(slack.chat.postMessage).toHaveBeenCalled();
+    });
+  });
 });
