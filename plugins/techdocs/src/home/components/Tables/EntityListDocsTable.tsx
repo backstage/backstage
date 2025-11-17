@@ -51,11 +51,22 @@ export type EntityListDocsTableProps = {
 };
 
 /**
+ * @public
+ */
+export interface EntityListDocsTableType {
+  (props: EntityListDocsTableProps): JSX.Element | null;
+  columns: Record<string, Function>;
+  actions: Record<string, Function>;
+}
+
+/**
  * Component which renders a table with entities from catalog.
  *
  * @public
  */
-export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
+const EntityListDocsTableComponent = (
+  props: EntityListDocsTableProps,
+): JSX.Element | null => {
   const { columns, actions, options } = props;
   const { loading, error, entities, filters, paginationMode, pageInfo } =
     useEntityList();
@@ -127,6 +138,12 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
     />
   );
 };
+
+/**
+ * @public
+ */
+export const EntityListDocsTable =
+  EntityListDocsTableComponent as EntityListDocsTableType;
 
 EntityListDocsTable.columns = columnFactories;
 EntityListDocsTable.actions = actionFactories;

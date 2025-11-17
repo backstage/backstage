@@ -49,11 +49,20 @@ export type DocsTableProps = {
 };
 
 /**
+ * @public
+ */
+export interface DocsTableType {
+  (props: DocsTableProps): JSX.Element | null;
+  columns: Record<string, Function>;
+  actions: Record<string, Function>;
+}
+
+/**
  * Component which renders a table documents
  *
  * @public
  */
-export const DocsTable = (props: DocsTableProps) => {
+const DocsTableComponent = (props: DocsTableProps): JSX.Element | null => {
   const { entities, title, loading, columns, actions, options } = props;
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
@@ -128,6 +137,11 @@ export const DocsTable = (props: DocsTableProps) => {
     </>
   );
 };
+
+/**
+ * @public
+ */
+export const DocsTable = DocsTableComponent as DocsTableType;
 
 DocsTable.columns = columnFactories;
 DocsTable.actions = actionFactories;
