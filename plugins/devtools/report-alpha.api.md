@@ -6,9 +6,11 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -58,8 +60,6 @@ const _default: OverridableFrontendPlugin<
       };
     }>;
     'page:devtools': ExtensionDefinition<{
-      kind: 'page';
-      name: undefined;
       config: {
         path: string | undefined;
       };
@@ -76,11 +76,31 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        contents: ExtensionInput<
+          | ConfigurableExtensionDataRef<string, 'core.title', {}>
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: true;
+          }
+        >;
+      };
+      kind: 'page';
+      name: undefined;
       params: {
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
+        loader: () => Promise</** @alpha */
+        JSX.Element>;
         routeRef?: RouteRef;
       };
     }>;

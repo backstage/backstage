@@ -27,7 +27,13 @@ export type DevToolsLayoutProps = {
 };
 
 // @public (undocumented)
-export const DevToolsPage: () => JSX_2.Element;
+export const DevToolsPage: ({ extensions }: DevToolsPageProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface DevToolsPageProps {
+  // (undocumented)
+  extensions?: any[];
+}
 
 // @public (undocumented)
 export const devToolsPlugin: BackstagePlugin<

@@ -21,6 +21,8 @@ import {
   ApiBlueprint,
   PageBlueprint,
   NavItemBlueprint,
+  createExtensionInput,
+  coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
@@ -46,14 +48,35 @@ export const devToolsApi = ApiBlueprint.make({
 });
 
 /** @alpha */
-export const devToolsPage = PageBlueprint.make({
-  params: {
-    path: '/devtools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
-    loader: () =>
-      import('../components/DevToolsPage').then(m =>
-        compatWrapper(<m.DevToolsPage />),
-      ),
+export const devToolsPage = PageBlueprint.makeWithOverrides({
+  inputs: {
+    contents: createExtensionInput(
+      [
+        coreExtensionData.reactElement,
+        coreExtensionData.routePath,
+        coreExtensionData.routeRef.optional(),
+        coreExtensionData.title,
+      ],
+      {
+        optional: true,
+      },
+    ),
+  },
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      path: '/devtools',
+      routeRef: convertLegacyRouteRef(rootRouteRef),
+      loader: () => {
+        const extensions = inputs.contents.map(content => ({
+          path: content.get(coreExtensionData.routePath),
+          title: content.get(coreExtensionData.title),
+          children: content.get(coreExtensionData.reactElement),
+        }));
+        return import('../components/DevToolsPage').then(m =>
+          compatWrapper(<m.DevToolsPage extensions={extensions} />),
+        );
+      },
+    });
   },
 });
 

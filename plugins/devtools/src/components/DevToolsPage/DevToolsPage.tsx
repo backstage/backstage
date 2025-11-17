@@ -17,8 +17,15 @@
 import { useOutlet } from 'react-router-dom';
 import { DefaultDevToolsPage } from '../DefaultDevToolsPage';
 
-export const DevToolsPage = () => {
+/**
+  @public
+ */
+export interface DevToolsPageProps {
+  extensions?: any[];
+}
+
+export const DevToolsPage = ({ extensions }: DevToolsPageProps) => {
   const outlet = useOutlet();
 
-  return <>{outlet || <DefaultDevToolsPage />}</>;
+  return <>{outlet || <DefaultDevToolsPage extensions={extensions} />}</>;
 };
