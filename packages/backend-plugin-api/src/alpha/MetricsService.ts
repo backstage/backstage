@@ -18,7 +18,6 @@ import {
   Counter,
   Gauge,
   Histogram,
-  Meter,
   MetricOptions,
   ObservableCallback,
   ObservableCounter,

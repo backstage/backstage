@@ -6,6 +6,8 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { InstanceMetadataService } from '@backstage/backend-plugin-api/alpha';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+import { RootMetricsService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -25,6 +27,20 @@ export const actionsServiceFactory: ServiceFactory<
 // @alpha @deprecated (undocumented)
 export const instanceMetadataServiceFactory: ServiceFactory<
   InstanceMetadataService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export const metricsServiceFactory: ServiceFactory<
+  MetricsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export const rootMetricsServiceFactory: ServiceFactory<
+  RootMetricsService,
   'plugin',
   'singleton'
 >;
