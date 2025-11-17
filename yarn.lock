@@ -27816,9 +27816,9 @@ __metadata:
   linkType: hard
 
 "ctrlc-windows@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "ctrlc-windows@npm:2.1.0"
-  checksum: 10/518015cf2ac9a12bc327d4eb68f5d5c9d17b7ee369b80d8bc94473a08343587f7a39cf32074bd9b4d4e4b441fad6399475cf353e1470eb443e4d230b80fa9c5f
+  version: 2.2.0
+  resolution: "ctrlc-windows@npm:2.2.0"
+  checksum: 10/3d044eda5aa8c58d35e34b05249f9330e7258bec88999e50f25fd21807c2bedabbcab28e10a24e60c15748267ef0ebf9a915d4e430f484d5ce2ec5c75663c352
   languageName: node
   linkType: hard
 
