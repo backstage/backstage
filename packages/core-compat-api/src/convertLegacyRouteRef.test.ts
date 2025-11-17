@@ -31,13 +31,11 @@ import {
   createExternalRouteRef as createNewExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { convertLegacyRouteRef } from './convertLegacyRouteRef';
-
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalRouteRef as toInternalNewRouteRef } from '../../frontend-plugin-api/src/routing/RouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalSubRouteRef as toInternalNewSubRouteRef } from '../../frontend-plugin-api/src/routing/SubRouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExternalRouteRef as toInternalNewExternalRouteRef } from '../../frontend-plugin-api/src/routing/ExternalRouteRef';
+import {
+  OpaqueExternalRouteRef,
+  OpaqueRouteRef,
+  OpaqueSubRouteRef,
+} from '@internal/frontend';
 
 describe('convertLegacyRouteRef', () => {
   it('converts old to new', () => {
@@ -85,13 +83,13 @@ describe('convertLegacyRouteRef', () => {
     expect(ref3).toBe(ref3Converted);
     expect(ref4).toBe(ref4Converted);
 
-    const ref1Internal = toInternalNewRouteRef(ref1Converted);
-    const ref2Internal = toInternalNewRouteRef(ref2Converted);
-    const ref1sub1Internal = toInternalNewSubRouteRef(ref1sub1Converted);
-    const ref1sub2Internal = toInternalNewSubRouteRef(ref1sub2Converted);
-    const ref2sub1Internal = toInternalNewSubRouteRef(ref2sub1Converted);
-    const ref3Internal = toInternalNewExternalRouteRef(ref3Converted);
-    const ref4Internal = toInternalNewExternalRouteRef(ref4Converted);
+    const ref1Internal = OpaqueRouteRef.toInternal(ref1Converted);
+    const ref2Internal = OpaqueRouteRef.toInternal(ref2Converted);
+    const ref1sub1Internal = OpaqueSubRouteRef.toInternal(ref1sub1Converted);
+    const ref1sub2Internal = OpaqueSubRouteRef.toInternal(ref1sub2Converted);
+    const ref2sub1Internal = OpaqueSubRouteRef.toInternal(ref2sub1Converted);
+    const ref3Internal = OpaqueExternalRouteRef.toInternal(ref3Converted);
+    const ref4Internal = OpaqueExternalRouteRef.toInternal(ref4Converted);
 
     expect(ref1Internal.getDescription()).toBe(
       'routeRef{type=absolute,id=ref1}',

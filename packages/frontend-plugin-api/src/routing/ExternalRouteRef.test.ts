@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  ExternalRouteRef,
-  createExternalRouteRef,
-  toInternalExternalRouteRef,
-} from './ExternalRouteRef';
+import { ExternalRouteRef, createExternalRouteRef } from './ExternalRouteRef';
+import { OpaqueExternalRouteRef } from '@internal/frontend';
 import { AnyRouteRefParams } from './types';
 
 describe('ExternalRouteRef', () => {
   it('should be created', () => {
     const routeRef: ExternalRouteRef<undefined> = createExternalRouteRef();
-    const internal = toInternalExternalRouteRef(routeRef);
+    const internal = OpaqueExternalRouteRef.toInternal(routeRef);
     expect(internal.getParams()).toEqual([]);
 
     expect(String(internal)).toMatch(
@@ -39,7 +36,7 @@ describe('ExternalRouteRef', () => {
       x: string;
       y: string;
     }> = createExternalRouteRef({ params: ['x', 'y'] });
-    const internal = toInternalExternalRouteRef(routeRef);
+    const internal = OpaqueExternalRouteRef.toInternal(routeRef);
     expect(internal.getParams()).toEqual(['x', 'y']);
   });
 

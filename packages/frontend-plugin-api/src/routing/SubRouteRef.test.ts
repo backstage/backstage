@@ -15,24 +15,21 @@
  */
 
 import { AnyRouteRefParams } from './types';
-import {
-  SubRouteRef,
-  createSubRouteRef,
-  toInternalSubRouteRef,
-} from './SubRouteRef';
-import { createRouteRef, toInternalRouteRef } from './RouteRef';
+import { SubRouteRef, createSubRouteRef } from './SubRouteRef';
+import { createRouteRef } from './RouteRef';
+import { OpaqueRouteRef, OpaqueSubRouteRef } from '@internal/frontend';
 
 const parent = createRouteRef();
 const parentX = createRouteRef({ params: ['x'] });
 
 describe('SubRouteRef', () => {
   it('should be created', () => {
-    const internalParent = toInternalRouteRef(createRouteRef());
+    const internalParent = OpaqueRouteRef.toInternal(createRouteRef());
     const routeRef: SubRouteRef = createSubRouteRef({
       parent: internalParent,
       path: '/foo',
     });
-    const internal = toInternalSubRouteRef(routeRef);
+    const internal = OpaqueSubRouteRef.toInternal(routeRef);
     expect(internal.path).toBe('/foo');
     expect(internal.T).toBe(undefined);
     expect(internal.getParent()).toBe(internalParent);
@@ -49,7 +46,7 @@ describe('SubRouteRef', () => {
       parent,
       path: '/foo/:bar',
     });
-    const internal = toInternalSubRouteRef(routeRef);
+    const internal = OpaqueSubRouteRef.toInternal(routeRef);
     expect(internal.path).toBe('/foo/:bar');
     expect(internal.getParent()).toBe(parent);
     expect(internal.getParams()).toEqual(['bar']);
@@ -64,7 +61,7 @@ describe('SubRouteRef', () => {
       parent: parentX,
       path: '/foo/:y/:z',
     });
-    const internal = toInternalSubRouteRef(routeRef);
+    const internal = OpaqueSubRouteRef.toInternal(routeRef);
     expect(internal.path).toBe('/foo/:y/:z');
     expect(internal.getParent()).toBe(parentX);
     expect(internal.getParams()).toEqual(['x', 'y', 'z']);
@@ -75,7 +72,7 @@ describe('SubRouteRef', () => {
       parent: parentX,
       path: '/foo/bar',
     });
-    const internal = toInternalSubRouteRef(routeRef);
+    const internal = OpaqueSubRouteRef.toInternal(routeRef);
     expect(internal.path).toBe('/foo/bar');
     expect(internal.getParent()).toBe(parentX);
     expect(internal.getParams()).toEqual(['x']);
