@@ -7,6 +7,11 @@ description: Documentation for the Metrics Service
 
 ## Overview
 
+```
+!!! warn
+    We do not recommend leveraging this service in production at this time. This is an alpha API and is likely to change. Early adopters should expect breaking changes and are encouraged to provide feedback and suggestions.
+```
+
 The Metrics Service is a core service designed to provide a unified interface for metrics instrumentation. This service allows plugins to create metrics instruments with well-defined namespaces and attributes, promoting consistency and reusability across the Backstage ecosystem.
 
 ## Setting up OpenTelemetry
