@@ -21686,11 +21686,11 @@ __metadata:
   linkType: hard
 
 "@types/rollup-plugin-peer-deps-external@npm:^2.2.0":
-  version: 2.2.5
-  resolution: "@types/rollup-plugin-peer-deps-external@npm:2.2.5"
-  dependencies:
-    rollup: "npm:^0.63.4"
-  checksum: 10/3f0d130fc15c80eac737391e180e77597da1200ff1f6d28a44f785a0de7f29144df805ab5b020ba38b243af6959e9da0757efa4141c4e737cd04eebe50f59c07
+  version: 2.2.6
+  resolution: "@types/rollup-plugin-peer-deps-external@npm:2.2.6"
+  peerDependencies:
+    rollup: "*"
+  checksum: 10/9fcee30d60d9d8de0f4bbf7694c254a18798b0ff415563a60fb2ed8c6c46423c64e1a977e0344b8393c26221dbd6e74d9e872c2694b518fcf149ba85d94e7eac
   languageName: node
   linkType: hard
 
@@ -44786,18 +44786,6 @@ __metadata:
   bin:
     rollup: ./bin/rollup
   checksum: 10/e84b8d547101bbb43568acbde410feb8e8a802655da9a7ccc7b7bf3177268765f750e1c19daa0b3fda8c4e79ef79b5e6f35b262140f4c25334e782c65435355e
-  languageName: node
-  linkType: hard
-
-"rollup@npm:^0.63.4":
-  version: 0.63.5
-  resolution: "rollup@npm:0.63.5"
-  dependencies:
-    "@types/estree": "npm:0.0.39"
-    "@types/node": "npm:*"
-  bin:
-    rollup: ./bin/rollup
-  checksum: 10/c52ad022bb732ea0e962b3ec45779d9d0523f75283bded8d0c97788f97946781d617b971e7e732ad7a63af60aad76ca534c415d8b101c7ff7d3f5cc879aba025
   languageName: node
   linkType: hard
 
