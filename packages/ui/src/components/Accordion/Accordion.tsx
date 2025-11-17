@@ -31,6 +31,7 @@ import type {
   AccordionGroupProps,
 } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { AccordionDefinition } from './definition';
 import styles from './Accordion.module.css';
 import { Flex } from '../Flex';
 
@@ -39,7 +40,7 @@ export const Accordion = forwardRef<
   React.ElementRef<typeof RADisclosure>,
   AccordionProps
 >(({ className, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles('Accordion', props);
+  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
 
   return (
     <RADisclosure
@@ -57,7 +58,7 @@ export const AccordionTrigger = forwardRef<
   React.ElementRef<typeof RAHeading>,
   AccordionTriggerProps
 >(({ className, title, subtitle, children, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles('Accordion', props);
+  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
 
   return (
     <RAHeading
@@ -120,7 +121,7 @@ export const AccordionPanel = forwardRef<
   React.ElementRef<typeof RADisclosurePanel>,
   AccordionPanelProps
 >(({ className, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles('Accordion', props);
+  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
 
   return (
     <RADisclosurePanel
@@ -138,7 +139,7 @@ export const AccordionGroup = forwardRef<
   React.ElementRef<typeof RADisclosureGroup>,
   AccordionGroupProps
 >(({ className, allowsMultiple = false, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles('Accordion', props);
+  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
 
   return (
     <RADisclosureGroup

@@ -6,6 +6,7 @@ import { switchPropDefs, snippetUsage } from './switch.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SwitchDefinition } from '../utils/definitions';
 
 <PageTitle
   title="Switch"
@@ -41,6 +42,6 @@ A switch can be disabled using the `isDisabled` prop.
   code={`<Switch isDisabled />`}
 />
 
-<Theming component="Switch" />
+<Theming definition={SwitchDefinition} />
 
 <ChangelogComponent component="switch" />

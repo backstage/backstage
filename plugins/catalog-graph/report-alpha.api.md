@@ -11,10 +11,10 @@ import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
@@ -60,7 +60,7 @@ const _default: OverridableFrontendPlugin<
     }>;
   },
   {
-    'api:catalog-graph': ExtensionDefinition<{
+    'api:catalog-graph': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -75,7 +75,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'entity-card:catalog-graph/relations': ExtensionDefinition<{
+    'entity-card:catalog-graph/relations': OverridableExtensionDefinition<{
       config: {
         kinds: string[] | undefined;
         relations: string[] | undefined;
@@ -148,7 +148,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'page:catalog-graph': ExtensionDefinition<{
+    'page:catalog-graph': OverridableExtensionDefinition<{
       config: {
         selectedKinds: string[] | undefined;
         selectedRelations: string[] | undefined;

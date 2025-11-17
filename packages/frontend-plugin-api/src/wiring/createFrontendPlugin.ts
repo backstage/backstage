@@ -18,7 +18,10 @@ import {
   OpaqueExtensionDefinition,
   OpaqueFrontendPlugin,
 } from '@internal/frontend';
-import { ExtensionDefinition } from './createExtension';
+import {
+  ExtensionDefinition,
+  OverridableExtensionDefinition,
+} from './createExtension';
 import {
   Extension,
   resolveExtensionDefinition,
@@ -104,7 +107,9 @@ export interface OverridableFrontendPlugin<
     [id in string]: ExtensionDefinition;
   },
 > extends FrontendPlugin<TRoutes, TExternalRoutes> {
-  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  getExtension<TId extends keyof TExtensionMap>(
+    id: TId,
+  ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
   withOverrides(options: {
     extensions: Array<ExtensionDefinition>;
 

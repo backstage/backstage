@@ -22,6 +22,7 @@ import {
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { TableDefinition } from '../utils/definitions';
 
 <PageTitle
   title="Table"
@@ -128,6 +129,6 @@ This feature is not available yet — let us know if you'd like us to explore it
 
 This feature is not available yet — let us know if you'd like us to explore it!
 
-<Theming component="Table" />
+<Theming definition={TableDefinition} />
 
 <ChangelogComponent component="table" />

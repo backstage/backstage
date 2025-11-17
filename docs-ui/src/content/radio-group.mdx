@@ -16,6 +16,7 @@ import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { CodeBlock } from '@/components/CodeBlock';
+import { RadioGroupDefinition } from '../utils/definitions';
 
 <PageTitle
   title="RadioGroup"
@@ -99,6 +100,6 @@ You can make the radio group read only by adding the `isReadOnly` prop to the `R
   code={radioGroupReadOnlySnippet}
 />
 
-<Theming component="RadioGroup" />
+<Theming definition={RadioGroupDefinition} />
 
 <ChangelogComponent component="radio-group" />

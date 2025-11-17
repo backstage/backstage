@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import { Link as AriaLink, RouterProvider } from 'react-aria-components';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { LinkDefinition } from './definition';
 import type { LinkProps } from './types';
 import { useNavigate, useHref } from 'react-router-dom';
 import { isExternalLink } from '../../utils/isExternalLink';
@@ -26,12 +27,15 @@ import styles from './Link.module.css';
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const navigate = useNavigate();
-  const { classNames, dataAttributes, cleanedProps } = useStyles('Link', {
-    variant: 'body',
-    weight: 'regular',
-    color: 'primary',
-    ...props,
-  });
+  const { classNames, dataAttributes, cleanedProps } = useStyles(
+    LinkDefinition,
+    {
+      variant: 'body',
+      weight: 'regular',
+      color: 'primary',
+      ...props,
+    },
+  );
 
   const { className, href, ...restProps } = cleanedProps;
 

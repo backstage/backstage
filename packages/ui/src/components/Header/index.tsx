@@ -15,4 +15,5 @@
  */
 
 export { Header } from './Header';
+export { HeaderDefinition } from './definition';
 export type { HeaderProps, HeaderTab } from './types';
