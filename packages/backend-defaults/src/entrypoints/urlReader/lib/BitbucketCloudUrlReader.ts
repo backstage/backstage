@@ -70,7 +70,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     this.deps = deps;
     const { host, username, appPassword, token } = integration.config;
 
-    if (username && (!token || !appPassword)) {
+    if (username && !token && !appPassword) {
       throw new Error(
         `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required token or appPassword.`,
       );
