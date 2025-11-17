@@ -20,16 +20,20 @@ import { Button as RAButton, ProgressBar } from 'react-aria-components';
 import { RiLoader4Line } from '@remixicon/react';
 import type { ButtonProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { ButtonDefinition } from './definition';
 import styles from './Button.module.css';
 
 /** @public */
 export const Button = forwardRef(
   (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
-    const { classNames, dataAttributes, cleanedProps } = useStyles('Button', {
-      size: 'small',
-      variant: 'primary',
-      ...props,
-    });
+    const { classNames, dataAttributes, cleanedProps } = useStyles(
+      ButtonDefinition,
+      {
+        size: 'small',
+        variant: 'primary',
+        ...props,
+      },
+    );
 
     const { children, className, iconStart, iconEnd, loading, ...rest } =
       cleanedProps;

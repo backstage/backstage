@@ -13,6 +13,7 @@ import {
 } from './button-link.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { ButtonLinkDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -91,6 +92,6 @@ Here's a view when buttons are responsive.
 
 <CodeBlock code={buttonLinkResponsiveSnippet} />
 
-<Theming component="ButtonLink" />
+<Theming definition={ButtonLinkDefinition} />
 
 <ChangelogComponent component="button-link" />

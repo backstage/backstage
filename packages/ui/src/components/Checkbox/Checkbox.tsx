@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { CheckboxDefinition } from './definition';
 import clsx from 'clsx';
 import styles from './Checkbox.module.css';
 import { RiCheckLine } from '@remixicon/react';
@@ -25,7 +26,7 @@ import { RiCheckLine } from '@remixicon/react';
 /** @public */
 export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
   (props, ref) => {
-    const { classNames } = useStyles('Checkbox');
+    const { classNames } = useStyles(CheckboxDefinition);
     const { className, children, ...rest } = props;
 
     return (

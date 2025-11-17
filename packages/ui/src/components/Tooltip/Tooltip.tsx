@@ -24,6 +24,7 @@ import {
 import clsx from 'clsx';
 import { TooltipProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { TooltipDefinition } from './definition';
 import styles from './Tooltip.module.css';
 
 /** @public */
@@ -36,7 +37,7 @@ export const TooltipTrigger = (props: TooltipTriggerComponentProps) => {
 /** @public */
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles('Tooltip', props);
+    const { classNames, cleanedProps } = useStyles(TooltipDefinition, props);
     const { className, children, ...rest } = cleanedProps;
 
     return (

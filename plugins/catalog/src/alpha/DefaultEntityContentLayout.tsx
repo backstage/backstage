@@ -15,7 +15,6 @@
  */
 
 import { Fragment } from 'react';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntitySwitch } from '../components/EntitySwitch';
@@ -42,6 +41,16 @@ const useStyles = makeStyles<
     flexFlow: 'column nowrap',
     gap: theme.spacing(3),
   },
+  warningArea: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(2),
+    marginBottom: theme.spacing(3),
+    '&:empty': {
+      marginBottom: 0,
+      display: 'none',
+    },
+  },
   mainContent: {
     display: 'flex',
     flexFlow: 'column',
@@ -52,7 +61,7 @@ const useStyles = makeStyles<
   infoArea: {
     display: 'flex',
     flexFlow: 'column nowrap',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     gap: theme.spacing(3),
     minWidth: 0,
     '& > *': {
@@ -62,10 +71,11 @@ const useStyles = makeStyles<
   },
   summaryArea: {
     minWidth: 0,
-    margin: theme.spacing(1.5), // To counteract MUI negative grid margin
+    margin: theme.spacing(1), // To counteract MUI negative grid margin
   },
   summaryCard: {
     flex: '0 0 auto',
+    width: '100%',
     '& + &': {
       marginLeft: theme.spacing(3),
     },
@@ -96,7 +106,7 @@ const useStyles = makeStyles<
     },
     summaryArea: {
       gridArea: 'summary',
-      marginBottom: theme.spacing(3),
+      margin: theme.spacing(1), // To counteract MUI negative grid margin
     },
     infoArea: {
       gridArea: 'info',
@@ -117,36 +127,11 @@ const useStyles = makeStyles<
         display: 'none',
       },
     },
+    summaryCard: {
+      width: 'auto',
+    },
   },
 }));
-
-const entityWarningContent = (
-  <>
-    <EntitySwitch>
-      <EntitySwitch.Case if={isOrphan}>
-        <Grid item xs={12}>
-          <EntityOrphanWarning />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
-
-    <EntitySwitch>
-      <EntitySwitch.Case if={hasRelationWarnings}>
-        <Grid item xs={12}>
-          <EntityRelationWarning />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
-
-    <EntitySwitch>
-      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
-        <Grid item xs={12}>
-          <EntityProcessingErrorsPanel />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
-  </>
-);
 
 export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
@@ -165,7 +150,25 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
 
   return (
     <>
-      {entityWarningContent}
+      <div className={classes.warningArea}>
+        <EntitySwitch>
+          <EntitySwitch.Case if={isOrphan}>
+            <EntityOrphanWarning />
+          </EntitySwitch.Case>
+        </EntitySwitch>
+
+        <EntitySwitch>
+          <EntitySwitch.Case if={hasRelationWarnings}>
+            <EntityRelationWarning />
+          </EntitySwitch.Case>
+        </EntitySwitch>
+
+        <EntitySwitch>
+          <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+            <EntityProcessingErrorsPanel />
+          </EntitySwitch.Case>
+        </EntitySwitch>
+      </div>
       <div className={classes.root}>
         {infoCards.length > 0 ? (
           <div className={classes.infoArea}>

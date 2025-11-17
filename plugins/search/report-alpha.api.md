@@ -9,10 +9,10 @@ import { ApiFactory } from '@backstage/core-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -27,7 +27,7 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:search': ExtensionDefinition<{
+    'api:search': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -42,7 +42,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'nav-item:search': ExtensionDefinition<{
+    'nav-item:search': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
@@ -63,7 +63,7 @@ const _default: OverridableFrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'page:search': ExtensionDefinition<{
+    'page:search': OverridableExtensionDefinition<{
       config: {
         noTrack: boolean;
       } & {
@@ -143,7 +143,7 @@ const _default: OverridableFrontendPlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const searchApi: ExtensionDefinition<{
+export const searchApi: OverridableExtensionDefinition<{
   kind: 'api';
   name: undefined;
   config: {};
@@ -160,7 +160,7 @@ export const searchApi: ExtensionDefinition<{
 }>;
 
 // @alpha (undocumented)
-export const searchNavItem: ExtensionDefinition<{
+export const searchNavItem: OverridableExtensionDefinition<{
   kind: 'nav-item';
   name: undefined;
   config: {};
@@ -183,7 +183,7 @@ export const searchNavItem: ExtensionDefinition<{
 }>;
 
 // @alpha (undocumented)
-export const searchPage: ExtensionDefinition<{
+export const searchPage: OverridableExtensionDefinition<{
   config: {
     noTrack: boolean;
   } & {

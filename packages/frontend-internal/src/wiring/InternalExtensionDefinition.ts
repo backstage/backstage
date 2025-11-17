@@ -20,7 +20,7 @@ import {
   ExtensionDefinitionAttachTo,
   ExtensionDataValue,
   ExtensionDataRef,
-  ExtensionDefinition,
+  OverridableExtensionDefinition,
   ExtensionDefinitionParameters,
   ExtensionInput,
   PortableSchema,
@@ -29,7 +29,7 @@ import {
 import { OpaqueType } from '@internal/opaque';
 
 export const OpaqueExtensionDefinition = OpaqueType.create<{
-  public: ExtensionDefinition<ExtensionDefinitionParameters>;
+  public: OverridableExtensionDefinition<ExtensionDefinitionParameters>;
   versions:
     | {
         readonly version: 'v1';

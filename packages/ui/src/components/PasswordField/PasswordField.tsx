@@ -26,6 +26,7 @@ import { FieldError } from '../FieldError';
 
 import type { PasswordFieldProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { PasswordFieldDefinition } from './definition';
 import { RiEyeLine, RiEyeOffLine } from '@remixicon/react';
 import stylesPasswordField from './PasswordField.module.css';
 
@@ -50,7 +51,7 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
       classNames: classNamesPasswordField,
       dataAttributes,
       cleanedProps,
-    } = useStyles('PasswordField', {
+    } = useStyles(PasswordFieldDefinition, {
       size: 'small',
       ...props,
     });

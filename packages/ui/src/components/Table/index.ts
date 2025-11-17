@@ -30,3 +30,5 @@ export type {
   UseTablePagination,
   UseTablePaginationConfig,
 } from './hooks/types';
+
+export { TableDefinition } from './definition';
