@@ -20457,11 +20457,12 @@ __metadata:
   linkType: hard
 
 "@types/compression@npm:^1.7.5":
-  version: 1.7.5
-  resolution: "@types/compression@npm:1.7.5"
+  version: 1.8.1
+  resolution: "@types/compression@npm:1.8.1"
   dependencies:
     "@types/express": "npm:*"
-  checksum: 10/9d65485bfb8e20035dedbbbebea06ea0c0554ac7bedb11ec3f2c6582cb082d121a10a03b4803b56315ae31705043eddf97eaf49c3dad6f9e39f7875b27c8feb4
+    "@types/node": "npm:*"
+  checksum: 10/cd746c830a5c981568d36989c3c43a55caf1872b54e3f9891b82fba04501de11882091df3ece11fbede2de01179c99d08639a08831e06c3966873f928407c01a
   languageName: node
   linkType: hard
 
@@ -26877,17 +26878,17 @@ __metadata:
   linkType: hard
 
 "compression@npm:^1.7.4":
-  version: 1.7.5
-  resolution: "compression@npm:1.7.5"
+  version: 1.8.1
+  resolution: "compression@npm:1.8.1"
   dependencies:
     bytes: "npm:3.1.2"
     compressible: "npm:~2.0.18"
     debug: "npm:2.6.9"
     negotiator: "npm:~0.6.4"
-    on-headers: "npm:~1.0.2"
+    on-headers: "npm:~1.1.0"
     safe-buffer: "npm:5.2.1"
     vary: "npm:~1.1.2"
-  checksum: 10/c69cf6da151db6f9db2e242b6a0039ad41975ee886c385cff2920c5f8f7050678e0ee9a021437af033536c451791de529de376851b8d31fee42ca2d6adca03f0
+  checksum: 10/e7552bfbd780f2003c6fe8decb44561f5cc6bc82f0c61e81122caff5ec656f37824084f52155b1e8ef31d7656cecbec9a2499b7a68e92e20780ffb39b479abb7
   languageName: node
   linkType: hard
 
@@ -40237,13 +40238,6 @@ __metadata:
   dependencies:
     ee-first: "npm:1.1.1"
   checksum: 10/1db595bd963b0124d6fa261d18320422407b8f01dc65863840f3ddaaf7bcad5b28ff6847286703ca53f4ec19595bd67a2f1253db79fc4094911ec6aa8df1671b
-  languageName: node
-  linkType: hard
-
-"on-headers@npm:~1.0.2":
-  version: 1.0.2
-  resolution: "on-headers@npm:1.0.2"
-  checksum: 10/870766c16345855e2012e9422ba1ab110c7e44ad5891a67790f84610bd70a72b67fdd71baf497295f1d1bf38dd4c92248f825d48729c53c0eae5262fb69fa171
   languageName: node
   linkType: hard
 
