@@ -35,10 +35,12 @@ describe('SubRouteRef', () => {
     expect(internal.getParent()).toBe(internalParent);
     expect(internal.getParams()).toEqual([]);
     expect(String(internal)).toMatch(
-      /SubRouteRef\{at \/foo with parent created at '.*SubRouteRef\.test\.ts.*'\}/,
+      /^subRouteRef\{path='\/foo',parent=routeRef\{id=undefined,at='.*SubRouteRef\.test\.ts.*'\}\}$/,
     );
     internalParent.setId('some-id');
-    expect(String(internal)).toBe('SubRouteRef{at /foo with parent some-id}');
+    expect(String(internal)).toMatch(
+      /^subRouteRef\{path='\/foo',parent=routeRef\{id=some-id,at='.*SubRouteRef\.test\.ts.*'\}\}$/,
+    );
   });
 
   it('should be created with params', () => {

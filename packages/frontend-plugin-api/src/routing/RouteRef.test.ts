@@ -27,7 +27,7 @@ describe('RouteRef', () => {
     expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
 
     expect(String(internal)).toMatch(
-      /^RouteRef\{created at .*RouteRef\.test\.ts.*\}$/,
+      /^routeRef\{id=undefined,at='.*RouteRef\.test\.ts.*'\}$/,
     );
 
     expect(() => internal.setId('')).toThrow(
@@ -35,7 +35,9 @@ describe('RouteRef', () => {
     );
 
     internal.setId('some-id');
-    expect(String(internal)).toBe('RouteRef{some-id}');
+    expect(String(internal)).toMatch(
+      /^routeRef\{id=some-id,at='.*RouteRef\.test\.ts.*'\}$/,
+    );
     internal.setId('some-id'); // Should allow same ID
 
     expect(() => internal.setId('some-other-id')).toThrow(

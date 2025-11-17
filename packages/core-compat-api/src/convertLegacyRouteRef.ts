@@ -187,7 +187,7 @@ function convertNewToOld(
       [routeRefType]: 'absolute',
       params: newRef.getParams(),
       title: newRef.getDescription(),
-    } as Omit<LegacyRouteRef, '$$routeRefType'>) as unknown as LegacyRouteRef;
+    } as Omit<LegacyRouteRef, '$$routeRefType' | keyof RouteRef>) as unknown as LegacyRouteRef;
   }
   if (ref.$$type === '@backstage/SubRouteRef') {
     const newRef = OpaqueSubRouteRef.toInternal(ref);
@@ -195,7 +195,7 @@ function convertNewToOld(
       [routeRefType]: 'sub',
       parent: convertLegacyRouteRef(newRef.getParent()),
       params: newRef.getParams(),
-    } as Omit<LegacySubRouteRef, '$$routeRefType' | 'path'>) as unknown as LegacySubRouteRef;
+    } as Omit<LegacySubRouteRef, '$$routeRefType' | keyof SubRouteRef>) as unknown as LegacySubRouteRef;
   }
   if (ref.$$type === '@backstage/ExternalRouteRef') {
     const newRef = OpaqueExternalRouteRef.toInternal(ref);
@@ -204,7 +204,7 @@ function convertNewToOld(
       optional: true,
       params: newRef.getParams(),
       defaultTarget: newRef.getDefaultTarget(),
-    } as Omit<LegacyExternalRouteRef, '$$routeRefType' | 'optional'>) as unknown as LegacyExternalRouteRef;
+    } as Omit<LegacyExternalRouteRef, '$$routeRefType' | keyof ExternalRouteRef>) as unknown as LegacyExternalRouteRef;
   }
 
   throw new Error(
