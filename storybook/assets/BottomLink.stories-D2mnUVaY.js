@@ -1,4 +1,0 @@
-import{j as i}from"./iframe-D1GFiJZo.js";import{B as o}from"./BottomLink-BFyTmqMM.js";import"./preload-helper-D9Z9MdNV.js";import"./ArrowForward-DKYzAO2n.js";import"./Box-_YREnRyM.js";import"./styled-CDUeIV7m.js";import"./Divider-CCA28OD_.js";import"./Link-B1KKwcLj.js";import"./lodash-CwBbdt2Q.js";import"./index-DKQ8ROEi.js";import"./useAnalytics-CoSsSvYs.js";import"./useApp-DQ-5E_lb.js";const f={title:"Layout/BottomLink",component:o},t=r=>i.jsx(o,{...r});t.args={link:"https://google.com",title:"This is bottom link"};t.__docgenInfo={description:"",methods:[],displayName:"Default",props:{link:{required:!0,tsType:{name:"string"},description:""},title:{required:!0,tsType:{name:"string"},description:""}}};t.parameters={...t.parameters,docs:{...t.parameters?.docs,source:{originalSource:`(args: {
-  link: string;
-  title: string;
-}) => <BottomLink {...args} />`,...t.parameters?.docs?.source}}};const x=["Default"];export{t as Default,x as __namedExportsOrder,f as default};
