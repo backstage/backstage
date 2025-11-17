@@ -143,19 +143,9 @@ export class CacheManager {
 
     switch (store) {
       case 'redis':
-        return CacheManager.parseRedisOptions(
-          store,
-          storeConfigPath,
-          config,
-          logger,
-        );
+        return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
       case 'valkey':
-        return CacheManager.parseValkeyOptions(
-          store,
-          storeConfigPath,
-          config,
-          logger,
-        );
+        return CacheManager.parseValkeyOptions(storeConfigPath, config, logger);
       case 'infinispan':
         return InfinispanOptionsMapper.parseInfinispanOptions(
           storeConfigPath,
@@ -171,13 +161,12 @@ export class CacheManager {
    * Parse Redis-specific options from configuration.
    */
   private static parseRedisOptions(
-    store: 'redis',
     storeConfigPath: string,
     config: RootConfigService,
     logger?: LoggerService,
   ): RedisCacheStoreOptions {
     const redisOptions: RedisCacheStoreOptions = {
-      type: store,
+      type: 'redis',
     };
 
     const redisConfig =
@@ -224,13 +213,12 @@ export class CacheManager {
    * Parse Valkey-specific options from configuration.
    */
   private static parseValkeyOptions(
-    store: 'valkey',
     storeConfigPath: string,
     config: RootConfigService,
     logger?: LoggerService,
   ): ValkeyCacheStoreOptions {
     const valkeyOptions: ValkeyCacheStoreOptions = {
-      type: store,
+      type: 'valkey',
     };
 
     const valkeyConfig =
@@ -245,7 +233,7 @@ export class CacheManager {
 
       if (!clusterConfig.has('rootNodes')) {
         logger?.warn(
-          `Redis cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
+          `Valkey cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
         );
         return valkeyOptions;
       }
