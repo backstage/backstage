@@ -68,10 +68,12 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       const slack = options.slack ?? new WebClient(token);
       const broadcastChannels = c.getOptionalStringArray('broadcastChannels');
       const username = c.getOptionalString('username');
+      const rateLimit = c.getOptionalNumber('rateLimit');
       return new SlackNotificationProcessor({
         slack,
         broadcastChannels,
         username,
+        rateLimit,
         ...options,
       });
     });
@@ -84,9 +86,17 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     catalog: CatalogService;
     broadcastChannels?: string[];
     username?: string;
+    rateLimit?: number;
   }) {
-    const { auth, catalog, logger, slack, broadcastChannels, username } =
-      options;
+    const {
+      auth,
+      catalog,
+      logger,
+      slack,
+      broadcastChannels,
+      username,
+      rateLimit,
+    } = options;
     this.logger = logger;
     this.catalog = catalog;
     this.auth = auth;
@@ -134,7 +144,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     );
 
     const throttle = pThrottle({
-      limit: 10,
+      limit: rateLimit ?? 10,
       interval: durationToMilliseconds({ minutes: 1 }),
     });
     const throttled = throttle((opts: ChatPostMessageArguments) =>
