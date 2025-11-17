@@ -167,6 +167,10 @@
                       "description": "A button which open the review step to verify the input prior to start the execution."
                     }
                   }
+                },
+                "showDescription": {
+                  "type": "boolean",
+                  "description": "Whether to show the description on the first page of the template wizard."
                 }
               }
             },
