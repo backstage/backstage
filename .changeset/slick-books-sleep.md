@@ -1,5 +1,4 @@
 ---
-'@backstage/core-app-api': patch
 '@backstage/theme': patch
 ---
 
