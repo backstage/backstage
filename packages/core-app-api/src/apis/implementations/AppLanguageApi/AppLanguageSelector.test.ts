@@ -33,7 +33,34 @@ describe('AppLanguageSelector', () => {
   });
 
   it('should select language', async () => {
-    const selector = AppLanguageSelector.create(baseOptions);
+    const observeSubscribers: any[] = [];
+    const mockObserve$ = jest.fn().mockReturnValue({
+      subscribe: jest.fn().mockImplementation(subscriber => {
+        observeSubscribers.push(subscriber);
+        return { unsubscribe: jest.fn() };
+      }),
+    });
+
+    const mockBucket = {
+      snapshot: jest.fn().mockReturnValue({ presence: 'unknown' }),
+      set: jest.fn().mockImplementation(async (_key, value) => {
+        // Simulate storage update by calling all observe$ subscribers
+        observeSubscribers.forEach(sub => {
+          sub.next({ value });
+        });
+      }),
+      observe$: mockObserve$,
+    };
+
+    const mockStorageApi = {
+      forBucket: jest.fn().mockReturnValue(mockBucket),
+    } as any;
+
+    const selector = AppLanguageSelector.createWithStorage({
+      ...baseOptions,
+      storageApi: mockStorageApi,
+      errorApi: mockErrorApi,
+    });
 
     expect(selector.getAvailableLanguages()).toEqual({
       languages: ['en', 'de'],
@@ -45,22 +72,13 @@ describe('AppLanguageSelector', () => {
     await 'wait a tick';
     expect(subFn).toHaveBeenLastCalledWith({ language: 'en' });
 
-    // Set up storage before calling setLanguage
-    const mockStorageApi = {
-      forBucket: jest.fn().mockReturnValue({
-        set: jest.fn().mockResolvedValue(undefined),
-        observe$: jest.fn().mockReturnValue({
-          subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
-        }),
-      }),
-    } as any;
-    selector.setStorage(mockStorageApi, mockErrorApi);
-
     selector.setLanguage('de');
+    await 'wait a tick';
     expect(subFn).toHaveBeenLastCalledWith({ language: 'de' });
     expect(selector.getLanguage()).toEqual({ language: 'de' });
 
     selector.setLanguage('en');
+    await 'wait a tick';
     expect(subFn).toHaveBeenLastCalledWith({ language: 'en' });
     expect(selector.getLanguage()).toEqual({ language: 'en' });
   });
@@ -83,46 +101,66 @@ describe('AppLanguageSelector', () => {
 
   it('should skip duplicates', async () => {
     const languages = ['en', 'de'];
-    const selector = AppLanguageSelector.create({
-      availableLanguages: languages,
+
+    const observeSubscribers: any[] = [];
+    const mockObserve$ = jest.fn().mockReturnValue({
+      subscribe: jest.fn().mockImplementation(subscriber => {
+        observeSubscribers.push(subscriber);
+        return { unsubscribe: jest.fn() };
+      }),
     });
 
-    // Set up storage before calling setLanguage
-    const mockStorageApi = {
-      forBucket: jest.fn().mockReturnValue({
-        set: jest.fn().mockResolvedValue(undefined),
-        observe$: jest.fn().mockReturnValue({
-          subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
-        }),
+    const mockBucket = {
+      snapshot: jest.fn().mockReturnValue({ presence: 'unknown' }),
+      set: jest.fn().mockImplementation(async (_key, value) => {
+        // Simulate storage update by calling all observe$ subscribers
+        observeSubscribers.forEach(sub => {
+          sub.next({ value });
+        });
       }),
+      observe$: mockObserve$,
+    };
+
+    const mockStorageApi = {
+      forBucket: jest.fn().mockReturnValue(mockBucket),
     } as any;
-    selector.setStorage(mockStorageApi, mockErrorApi);
+
+    const selector = AppLanguageSelector.createWithStorage({
+      availableLanguages: languages,
+      storageApi: mockStorageApi,
+      errorApi: mockErrorApi,
+    });
 
     const emitted = new Array<string>();
     selector.language$().subscribe(({ language }) => {
       emitted.push(language);
     });
-    selector.setLanguage('en');
-    selector.setLanguage('en');
-    selector.setLanguage('de');
-    selector.setLanguage('de');
-    selector.setLanguage('de');
-    selector.setLanguage('en');
-    selector.setLanguage('en');
-    selector.setLanguage('en');
+    await 'wait a tick'; // Wait for initial emission
+
+    selector.setLanguage('en'); // First call: valueToStore=null, lastStoredValue=undefined, so proceeds
+    await 'wait a tick';
+    selector.setLanguage('en'); // Second call: valueToStore=null, lastStoredValue=null, so skips
+    selector.setLanguage('de'); // valueToStore='de', lastStoredValue=null, so proceeds
+    await 'wait a tick';
+    selector.setLanguage('de'); // valueToStore='de', lastStoredValue='de', so skips
+    selector.setLanguage('de'); // valueToStore='de', lastStoredValue='de', so skips
+    selector.setLanguage('en'); // valueToStore=null, lastStoredValue='de', so proceeds
+    await 'wait a tick';
+    selector.setLanguage('en'); // valueToStore=null, lastStoredValue=null, so skips
+    selector.setLanguage('en'); // valueToStore=null, lastStoredValue=null, so skips
     await 'wait a tick';
 
+    // The implementation skips duplicates, so only unique changes are emitted
+    // Initial value is 'en' (default), then 'de', then 'en' again
+    // Note: The first setLanguage('en') may be skipped if lastStoredValue was already null
     expect(emitted).toEqual(['en', 'de', 'en']);
   });
 
   it('should be initialized from storage', () => {
-    // The selector now requires explicit setStorage() call to load from storage
-    // This prevents initial load from overwriting DB values
     expect(AppLanguageSelector.create(baseOptions).getLanguage()).toEqual({
       language: 'en',
     });
 
-    // Test that storage loading works when setStorage is called
     localStorage.setItem('language', 'de');
     const selector = AppLanguageSelector.create(baseOptions);
     // Note: The selector won't automatically load from localStorage until setStorage is called
@@ -135,23 +173,21 @@ describe('AppLanguageSelector', () => {
   });
 
   it('should sync with storage', async () => {
-    // This test demonstrates that setLanguage() requires setStorage() to be called first
-    const selector = AppLanguageSelector.create(baseOptions);
-
-    // Without setStorage(), setLanguage() should throw an error
-    expect(() => selector.setLanguage('de')).toThrow(
-      'Storage not configured. Call setStorage() after creating the selector with create().',
-    );
-
     const mockStorageApi = {
       forBucket: jest.fn().mockReturnValue({
+        snapshot: jest.fn().mockReturnValue({ presence: 'unknown' }),
         set: jest.fn().mockResolvedValue(undefined),
         observe$: jest.fn().mockReturnValue({
           subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
         }),
       }),
     } as any;
-    selector.setStorage(mockStorageApi, mockErrorApi);
+
+    const selector = AppLanguageSelector.createWithStorage({
+      ...baseOptions,
+      storageApi: mockStorageApi,
+      errorApi: mockErrorApi,
+    });
 
     selector.setLanguage('de');
     await 'wait a tick';
@@ -179,24 +215,24 @@ describe('AppLanguageSelector', () => {
       "Initial language must be one of the supported languages, got 'en'",
     );
 
-    const selector = AppLanguageSelector.create(baseOptions);
-
-    // First test that setLanguage() throws storage error without setStorage()
-    expect(() => selector.setLanguage('sv')).toThrow(
-      'Storage not configured. Call setStorage() after creating the selector with create().',
-    );
-
     // Set up storage and test language validation
     const mockStorageApi = {
       forBucket: jest.fn().mockReturnValue({
         set: jest.fn().mockResolvedValue(undefined),
+        snapshot: jest.fn().mockReturnValue({ presence: 'unknown' }),
         observe$: jest.fn().mockReturnValue({
           subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
         }),
       }),
     } as any;
-    selector.setStorage(mockStorageApi, mockErrorApi);
 
+    const selector = AppLanguageSelector.createWithStorage({
+      ...baseOptions,
+      storageApi: mockStorageApi,
+      errorApi: mockErrorApi,
+    });
+
+    // Test that setLanguage() throws error for invalid language
     expect(() => selector.setLanguage('sv')).toThrow(
       "Failed to change language to 'sv', available languages are 'en', 'de'",
     );
@@ -208,6 +244,7 @@ describe('AppLanguageSelector', () => {
     beforeEach(() => {
       mockStorageApi = {
         forBucket: jest.fn().mockReturnValue({
+          snapshot: jest.fn().mockReturnValue({ presence: 'absent' }),
           observe$: jest.fn().mockReturnValue({
             subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
           }),
@@ -217,11 +254,12 @@ describe('AppLanguageSelector', () => {
     });
 
     it('should support no en languages', () => {
-      const selector = AppLanguageSelector.create({
+      const selector = AppLanguageSelector.createWithStorage({
         availableLanguages: ['de'],
         defaultLanguage: 'de',
+        storageApi: mockStorageApi,
+        errorApi: mockErrorApi,
       });
-      selector.setStorage(mockStorageApi, mockErrorApi);
 
       expect(selector.getLanguage()).toEqual({ language: 'de' });
 
@@ -230,28 +268,12 @@ describe('AppLanguageSelector', () => {
       );
     });
 
-    it('should set up storage and signal API', () => {
-      const selector = AppLanguageSelector.create(baseOptions);
-
-      selector.setStorage(mockStorageApi, mockErrorApi);
-
-      expect(mockStorageApi.forBucket).toHaveBeenCalledWith('userSettings');
-    });
-
-    it('should clean up existing subscriptions when setting storage again', () => {
-      const selector = AppLanguageSelector.create(baseOptions);
-
-      // Set storage first time
-      selector.setStorage(mockStorageApi, mockErrorApi);
-
-      // Set storage second time
-      selector.setStorage(mockStorageApi, mockErrorApi);
-    });
-
     it('should handle initial load without overwriting storage', () => {
-      const selector = AppLanguageSelector.create(baseOptions);
-
-      selector.setStorage(mockStorageApi, mockErrorApi);
+      AppLanguageSelector.createWithStorage({
+        ...baseOptions,
+        storageApi: mockStorageApi,
+        errorApi: mockErrorApi,
+      });
 
       expect(
         (mockStorageApi.forBucket('userSettings') as any).set,
@@ -259,9 +281,11 @@ describe('AppLanguageSelector', () => {
     });
 
     it('should persist changes after initial load', async () => {
-      const selector = AppLanguageSelector.create(baseOptions);
-
-      selector.setStorage(mockStorageApi, mockErrorApi);
+      const selector = AppLanguageSelector.createWithStorage({
+        ...baseOptions,
+        storageApi: mockStorageApi,
+        errorApi: mockErrorApi,
+      });
 
       // Change language after initial load
       selector.setLanguage('de');
@@ -274,9 +298,11 @@ describe('AppLanguageSelector', () => {
     });
 
     it('should not update if language is not in available languages', () => {
-      const selector = AppLanguageSelector.create(baseOptions);
-
-      selector.setStorage(mockStorageApi, mockErrorApi);
+      const selector = AppLanguageSelector.createWithStorage({
+        ...baseOptions,
+        storageApi: mockStorageApi,
+        errorApi: mockErrorApi,
+      });
 
       // Mock storage to return an invalid language
       const mockObserve$ = jest.fn().mockReturnValue({
@@ -294,16 +320,22 @@ describe('AppLanguageSelector', () => {
 
   describe('destroy', () => {
     it('should clean up all subscriptions', () => {
-      const selector = AppLanguageSelector.create(baseOptions);
       const mockStorageApi = {
         forBucket: jest.fn().mockReturnValue({
+          snapshot: jest.fn().mockReturnValue({ presence: 'present' }),
+          set: jest.fn().mockResolvedValue(undefined),
           observe$: jest.fn().mockReturnValue({
             subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
           }),
         }),
       } as any;
 
-      selector.setStorage(mockStorageApi, mockErrorApi);
+      const selector = AppLanguageSelector.createWithStorage({
+        ...baseOptions,
+        storageApi: mockStorageApi,
+        errorApi: mockErrorApi,
+      });
+
       selector.destroy();
 
       expect(() => selector.destroy()).not.toThrow();

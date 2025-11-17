@@ -170,10 +170,12 @@ export class AppManager implements BackstageApp {
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
-  private readonly appLanguageApi: AppLanguageSelector;
+  private appLanguageApi: AppLanguageSelector;
   private readonly translationResources: Array<
     TranslationResource | TranslationMessages
   >;
+  private readonly defaultLanguage: string;
+  private readonly availableLanguages: string[];
 
   private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
@@ -194,6 +196,10 @@ export class AppManager implements BackstageApp {
       availableLanguages:
         options.__experimentalTranslations?.availableLanguages,
     });
+    this.defaultLanguage =
+      options.__experimentalTranslations?.defaultLanguage ?? 'en';
+    this.availableLanguages = options.__experimentalTranslations
+      ?.availableLanguages ?? ['en'];
     this.translationResources =
       options.__experimentalTranslations?.resources ?? [];
   }
@@ -325,7 +331,12 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
         const storageApi = this.getApiHolder().get(storageApiRef)!;
         const errorApi = this.getApiHolder().get(errorApiRef)!;
-        this.appLanguageApi.setStorage(storageApi, errorApi);
+        this.appLanguageApi = AppLanguageSelector.createWithStorage({
+          defaultLanguage: this.defaultLanguage,
+          availableLanguages: this.availableLanguages,
+          storageApi,
+          errorApi,
+        });
 
         if (featureFlagsApi) {
           for (const flag of this.featureFlags) {
@@ -440,13 +451,11 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       api: appThemeApiRef,
       deps: { storageApi: storageApiRef, errorApi: errorApiRef },
       factory: ({ storageApi, errorApi }) => {
-        const themeApi = AppThemeSelector.createWithStorage(
-          this.themes,
+        return AppThemeSelector.createWithStorage({
+          themes: this.themes,
           storageApi,
           errorApi,
-        );
-
-        return themeApi;
+        });
       },
     });
     this.apiFactoryRegistry.register('static', {

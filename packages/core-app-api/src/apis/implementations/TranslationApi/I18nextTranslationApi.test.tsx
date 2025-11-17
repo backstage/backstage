@@ -83,11 +83,11 @@ describe('I18nextTranslationApi', () => {
 
   it('should get a translation snapshot', () => {
     const translationApi = I18nextTranslationApi.create({
-      languageApi: AppLanguageSelector.createWithStorage(
-        { availableLanguages: ['en'] },
-        mockApis.storage(),
-        new MockErrorApi(),
-      ),
+      languageApi: AppLanguageSelector.createWithStorage({
+        availableLanguages: ['en'],
+        storageApi: mockApis.storage(),
+        errorApi: new MockErrorApi(),
+      }),
     });
 
     const snapshot = assertReady(translationApi.getTranslation(plainRef));

@@ -24,11 +24,12 @@ import {
   createExtensionInput,
   ThemeBlueprint,
   ApiBlueprint,
+  errorApiRef,
+  storageApiRef,
   appThemeApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeSelector } from '../../../../packages/core-app-api/src/apis/implementations';
-import { errorApiRef, storageApiRef } from '@backstage/core-plugin-api';
 
 /**
  * Contains the themes installed into the app.
@@ -49,11 +50,13 @@ export const AppThemeApi = ApiBlueprint.makeWithOverrides({
           errorApi: errorApiRef,
         },
         factory: ({ storageApi, errorApi }) =>
-          AppThemeSelector.createWithStorage(
-            inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
+          AppThemeSelector.createWithStorage({
+            themes: inputs.themes.map(i =>
+              i.get(ThemeBlueprint.dataRefs.theme),
+            ),
             storageApi,
             errorApi,
-          ),
+          }),
       }),
     );
   },
