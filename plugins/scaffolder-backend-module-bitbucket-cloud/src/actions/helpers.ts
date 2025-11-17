@@ -21,22 +21,24 @@ export const getBitbucketClient = (config: {
   username?: string;
   appPassword?: string;
 }) => {
-  if (config.username && config.appPassword) {
+  if (config.token) {
+    return new Bitbucket({
+      auth: {
+        token: config.token,
+      },
+    });
+  } else if (config.username && config.appPassword) {
+    // TODO: appPassword can be removed once fully
+    // deprecated by BitBucket on 9th June 2026.
     return new Bitbucket({
       auth: {
         username: config.username,
         password: config.appPassword,
       },
     });
-  } else if (config.token) {
-    return new Bitbucket({
-      auth: {
-        token: config.token,
-      },
-    });
   }
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
+    `Authorization has not been provided for Bitbucket Cloud. Please add either provide a username and token or  username and appPassword to the Integrations config`,
   );
 };
 
@@ -45,12 +47,13 @@ export const getAuthorizationHeader = (config: {
   appPassword?: string;
   token?: string;
 }) => {
-  if (config.username && config.appPassword) {
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
+  if (config.username && (config.token ?? config.appPassword)) {
     const buffer = Buffer.from(
-      `${config.username}:${config.appPassword}`,
+      `${config.username}:${config.token ?? config.appPassword}`,
       'utf8',
     );
-
     return `Basic ${buffer.toString('base64')}`;
   }
 
@@ -59,6 +62,6 @@ export const getAuthorizationHeader = (config: {
   }
 
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
+    `Authorization has not been provided for Bitbucket Cloud. Please add either provide a username and token or  username and appPassword to the Integrations config`,
   );
 };
