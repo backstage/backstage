@@ -96,8 +96,8 @@ For Redis and Valkey stores, you can configure a global namespace that will be p
 - **Without namespace**: Cache keys use only the plugin ID (e.g., `catalog:some-key`)
 - **With namespace**: Cache keys use the format `namespace:pluginId:key` (e.g., `my-app:catalog:some-key`)
 
-For Redis, `keyPrefixSeparator` controls what character is used between the namespace and plugin ID (defaults to `:`).
-For Valkey, you set the full `keyPrefix` including the separator.
+For **Redis**, `keyPrefixSeparator` controls what character is used between the namespace and plugin ID (defaults to `:`).
+For **Valkey**, you set the full `keyPrefix` including the separator.
 
 **Note**: In-memory, Memcache and Infinispan stores do not support namespace configuration and will always use the plugin ID directly.
 
