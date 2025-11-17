@@ -143,7 +143,9 @@ describe('readBitbucketCloudIntegrationConfig', () => {
         readBitbucketCloudIntegrationConfig(
           buildConfig({ ...valid, appPassword: undefined, token: undefined }),
         ),
-      ).toThrow(/must configure either a token or appPassword/);
+      ).toThrow(
+        /must be configured with as username and either a token or an appPassword/,
+      );
     });
 
     it('credentials hidden on the frontend', async () => {
