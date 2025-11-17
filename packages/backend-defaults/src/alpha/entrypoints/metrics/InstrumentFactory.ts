@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  MetricsServiceOptions,
   MetricsService,
   ObservableMetric,
 } from '@backstage/backend-plugin-api/alpha';
@@ -55,6 +54,26 @@ const namespaceSchema = z
   .min(1, 'Metric namespace is required and cannot be empty');
 
 /**
+ * Required options for a metrics service.
+ *
+ * Handled by the framework and not intended to be used directly.
+ *
+ * @alpha
+ * @internal
+ */
+export interface MetricsServiceOptions {
+  /**
+   * The meter for the metrics service.
+   */
+  meter: Meter;
+
+  /**
+   * The namespace for the metrics service.
+   */
+  namespace: string;
+}
+
+/**
  * Factory for creating instruments for a given namespace. Instruments are what produce metrics.
  *
  * @remarks
@@ -84,34 +103,30 @@ export class InstrumentFactory implements MetricsService {
   }
 
   createCounter(name: string, opts?: MetricOptions): Counter {
-    const validatedName = this.validateMetricName(name);
-
-    return this.meter.createCounter(this.prefixName(validatedName), opts);
+    this.validateMetricName(name);
+    return this.meter.createCounter(this.prefixName(name), opts);
   }
 
   createUpDownCounter(name: string, opts?: MetricOptions): UpDownCounter {
-    const validatedName = this.validateMetricName(name);
-
-    return this.meter.createUpDownCounter(this.prefixName(validatedName), opts);
+    this.validateMetricName(name);
+    return this.meter.createUpDownCounter(this.prefixName(name), opts);
   }
 
   createHistogram(name: string, opts?: MetricOptions): Histogram {
-    const validatedName = this.validateMetricName(name);
-
-    return this.meter.createHistogram(this.prefixName(validatedName), opts);
+    this.validateMetricName(name);
+    return this.meter.createHistogram(this.prefixName(name), opts);
   }
 
   createGauge(name: string, opts?: MetricOptions): Gauge {
-    const validatedName = this.validateMetricName(name);
-
-    return this.meter.createGauge(this.prefixName(validatedName), opts);
+    this.validateMetricName(name);
+    return this.meter.createGauge(this.prefixName(name), opts);
   }
 
   createObservableCounter(metric: ObservableMetric): ObservableCounter {
-    const validatedName = this.validateMetricName(metric.name);
+    this.validateMetricName(metric.name);
 
     const observable = this.meter.createObservableCounter(
-      this.prefixName(validatedName),
+      this.prefixName(metric.name),
       metric.opts,
     );
 
@@ -122,10 +137,10 @@ export class InstrumentFactory implements MetricsService {
   createObservableUpDownCounter(
     metric: ObservableMetric,
   ): ObservableUpDownCounter {
-    const validatedName = this.validateMetricName(metric.name);
+    this.validateMetricName(metric.name);
 
     const observable = this.meter.createObservableUpDownCounter(
-      this.prefixName(validatedName),
+      this.prefixName(metric.name),
       metric.opts,
     );
 
@@ -134,10 +149,10 @@ export class InstrumentFactory implements MetricsService {
   }
 
   createObservableGauge(metric: ObservableMetric): ObservableGauge {
-    const validatedName = this.validateMetricName(metric.name);
+    this.validateMetricName(metric.name);
 
     const observable = this.meter.createObservableGauge(
-      this.prefixName(validatedName),
+      this.prefixName(metric.name),
       metric.opts,
     );
 

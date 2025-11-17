@@ -50,21 +50,6 @@ export interface ObservableMetric {
 }
 
 /**
- * The options for a metrics service.
- *
- * @alpha
- * @internal
- */
-export interface MetricsServiceOptions {
-  meter: Meter;
-
-  /**
-   * The namespace for the metrics service.
-   */
-  namespace: string;
-}
-
-/**
  * A service that provides a metrics facility.
  *
  * @alpha

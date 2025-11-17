@@ -15,7 +15,6 @@
  */
 
 import {
-  MetricsServiceOptions,
   MetricsService,
   ObservableMetric,
 } from '@backstage/backend-plugin-api/alpha';
@@ -29,7 +28,7 @@ import {
   ObservableGauge,
   UpDownCounter,
 } from '@opentelemetry/api';
-import { InstrumentFactory } from './InstrumentFactory';
+import { InstrumentFactory, MetricsServiceOptions } from './InstrumentFactory';
 
 /**
  * @alpha
