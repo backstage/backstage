@@ -126,6 +126,10 @@ export interface TemplatePresentationV1beta3 extends JsonObject {
      */
     reviewButtonText?: string;
   };
+  /**
+   * Whether to show the description on the first page of the template wizard
+   */
+  showDescription?: boolean;
 }
 
 /**

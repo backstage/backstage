@@ -394,5 +394,99 @@ describe('TemplateWizardPage', () => {
 
       expect(queryByTestId('description-menu-item')).not.toBeInTheDocument();
     });
+
+    it('should always hide the description if spec.presentation.showDescription is false', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        // long description to ensure it is shown by default
+        description: 'More than 140 characters incoming! '.repeat(10),
+        steps: [],
+        presentation: {
+          showDescription: false,
+        },
+      });
+
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          // annotations are not set
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
+      });
+
+      const { queryByTestId, queryByText } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // open menu
+      const menu = queryByTestId('menu-button');
+      expect(menu).toBeInTheDocument();
+      fireEvent.click(menu!);
+
+      expect(queryByTestId('description-menu-item')).toBeInTheDocument();
+      expect(queryByText('Show Description')).toBeInTheDocument();
+    });
+
+    it('should always show the description if spec.presentation.showDescription is true', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        // long description to ensure it is shown by default
+        description: 'These are less than 140 characters.',
+        steps: [],
+        presentation: {
+          showDescription: true,
+        },
+      });
+
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          // annotations are not set
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
+      });
+
+      const { queryByTestId, queryByText } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // open menu
+      const menu = queryByTestId('menu-button');
+      expect(menu).toBeInTheDocument();
+      fireEvent.click(menu!);
+
+      expect(queryByTestId('description-menu-item')).toBeInTheDocument();
+      expect(queryByText('Hide Description')).toBeInTheDocument();
+    });
   });
 });

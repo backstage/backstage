@@ -138,10 +138,16 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   useEffect(() => {
     const desc = manifest?.description ?? '';
     setDescription(desc);
-    if (desc.length > descriptionPreviewThreshold) {
-      setShowDescription(true);
-    }
-  }, [manifest?.description, setDescription, setShowDescription]);
+    setShowDescription(
+      manifest?.presentation?.showDescription ??
+        desc.length > descriptionPreviewThreshold,
+    );
+  }, [
+    manifest?.description,
+    manifest?.presentation?.showDescription,
+    setDescription,
+    setShowDescription,
+  ]);
 
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
