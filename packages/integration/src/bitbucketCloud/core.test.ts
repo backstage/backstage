@@ -25,22 +25,38 @@ import {
   getBitbucketCloudRequestOptions,
 } from './core';
 
+// Mock constants
+const BITBUCKET_CLOUD_HOST = 'bitbucket.org';
+const BITBUCKET_CLOUD_API_BASE_URL = 'https://api.bitbucket.org/2.0';
+
 describe('bitbucketCloud core', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);
 
   describe('getBitbucketCloudRequestOptions', () => {
     it('insert basic auth when needed', () => {
+      const withUsernameAndToken: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        username: 'some-user@domain.com',
+        token: 'my-token',
+      };
+      // TODO: appPassword can be removed once fully
+      // deprecated by BitBucket on 9th June 2026.
       const withUsernameAndPassword: BitbucketCloudIntegrationConfig = {
-        host: 'bitbucket.org',
-        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
         username: 'some-user',
         appPassword: 'my-secret',
       };
-      const withoutUsernameAndPassword: BitbucketCloudIntegrationConfig = {
-        host: 'bitbucket.org',
-        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      const withoutUsername: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
       };
+      expect(
+        (getBitbucketCloudRequestOptions(withUsernameAndToken).headers as any)
+          .Authorization,
+      ).toEqual('Basic c29tZS11c2VyQGRvbWFpbi5jb206bXktdG9rZW4=');
       expect(
         (
           getBitbucketCloudRequestOptions(withUsernameAndPassword)
@@ -48,10 +64,8 @@ describe('bitbucketCloud core', () => {
         ).Authorization,
       ).toEqual('Basic c29tZS11c2VyOm15LXNlY3JldA==');
       expect(
-        (
-          getBitbucketCloudRequestOptions(withoutUsernameAndPassword)
-            .headers as any
-        ).Authorization,
+        (getBitbucketCloudRequestOptions(withoutUsername).headers as any)
+          .Authorization,
       ).toBeUndefined();
     });
   });
