@@ -5914,8 +5914,8 @@ __metadata:
   linkType: hard
 
 "docusaurus-plugin-openapi-docs@npm:^4.3.0":
-  version: 4.3.7
-  resolution: "docusaurus-plugin-openapi-docs@npm:4.3.7"
+  version: 4.5.1
+  resolution: "docusaurus-plugin-openapi-docs@npm:4.5.1"
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.5.4"
     "@redocly/openapi-core": "npm:^1.10.5"
@@ -5937,7 +5937,7 @@ __metadata:
     "@docusaurus/utils": ^3.5.0
     "@docusaurus/utils-validation": ^3.5.0
     react: ^16.8.4 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/ad011358b13fd5e574e33ad3e1b2bb002226e2dcab72e6a8c98c4ad5436a81e28815afe6f14252a48bb52f0c088b03dfd93a5955a8a6883fbda794bebf7d1792
+  checksum: 10/496ce49d494f06803a61eaa6c6810782668269574c12a1a55315742974884a7ffd6e2c75875d8fd9909611bdccaa4de42419e0debbf47def0db6974617b9e5ba
   languageName: node
   linkType: hard
 
