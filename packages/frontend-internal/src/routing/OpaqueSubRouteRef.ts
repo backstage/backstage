@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,19 @@
  * limitations under the License.
  */
 
-export * from './routing';
-export * from './wiring';
+import { RouteRef, SubRouteRef } from '@backstage/frontend-plugin-api';
+import { OpaqueType } from '@internal/opaque';
+
+export const OpaqueSubRouteRef = OpaqueType.create<{
+  public: SubRouteRef;
+  versions: {
+    readonly version: 'v1';
+
+    getParams(): string[];
+    getParent(): RouteRef;
+    getDescription(): string;
+  };
+}>({
+  type: '@backstage/SubRouteRef',
+  versions: ['v1'],
+});

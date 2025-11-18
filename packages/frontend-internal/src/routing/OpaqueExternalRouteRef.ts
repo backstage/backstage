@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,21 @@
  * limitations under the License.
  */
 
-export * from './routing';
-export * from './wiring';
+import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { OpaqueType } from '@internal/opaque';
+
+export const OpaqueExternalRouteRef = OpaqueType.create<{
+  public: ExternalRouteRef;
+  versions: {
+    readonly version: 'v1';
+
+    getParams(): string[];
+    getDescription(): string;
+    getDefaultTarget(): string | undefined;
+
+    setId(id: string): void;
+  };
+}>({
+  type: '@backstage/ExternalRouteRef',
+  versions: ['v1'],
+});

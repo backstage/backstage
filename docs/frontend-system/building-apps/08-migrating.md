@@ -9,7 +9,7 @@ description: How to migrate existing apps to the new frontend system
 
 This section describes how to migrate an existing Backstage app package to use the new frontend system. The app package is typically found at `packages/app` in your project and is responsible for wiring together the Backstage frontend application.
 
-> **Who is this for?**  
+> **Who is this for?**
 > This guide is intended for maintainers of Backstage app packages (`packages/app`) who want to upgrade from the legacy frontend system to the new extension-based architecture.
 
 > **Prerequisites:**
@@ -22,10 +22,10 @@ This section describes how to migrate an existing Backstage app package to use t
 
 We recommend a **two-phase migration process** to ensure a smooth and manageable transition:
 
-- **Phase 1: Minimal Changes for Hybrid Configuration**  
+- **Phase 1: Minimal Changes for Hybrid Configuration**
   In this phase, you make the smallest set of changes necessary to enable your app to run in a hybrid mode. This allows you to start using the new frontend system while still relying on compatibility helpers and legacy code. The goal is to unblock your migration quickly, so you can benefit from the new system without a full rewrite.
 
-- **Phase 2: Complete Transition to the New Frontend System**  
+- **Phase 2: Complete Transition to the New Frontend System**
   After your app is running in hybrid mode, you can gradually refactor your codebase to remove legacy code and compatibility helpers. This phase focuses on fully adopting the new frontend architecture, ensuring your codebase is clean, maintainable, and takes full advantage of the new features.
 
 :::warning
@@ -154,36 +154,6 @@ const app = createApp({
     // ...
     convertedOptionsModule,
   ],
-});
-```
-
-If you were binding routes from a legacy `createApp`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
-
-For example, if both the `catalogPlugin` and `scaffolderPlugin` are legacy plugins, you can bind their routes like this:
-
-```ts
-import { createApp } from '@backstage/frontend-defaults';
-import {
-  // ...
-  convertLegacyRouteRefs,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
-
-// Ommitting converted options changes
-//...
-
-const app = createApp({
-  features: [
-    // ...
-    convertedOptionsModule,
-  ],
-  // highlight-add-start
-  bindRoutes({ bind }) {
-    bind(convertLegacyRouteRefs(catalogPlugin.externalRoutes), {
-      createComponent: convertLegacyRouteRef(scaffolderPlugin.routes.root),
-    });
-  },
-  // highlight-add-end
 });
 ```
 
@@ -589,21 +559,6 @@ const app = createApp({
 #### `bindRoutes`
 
 Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/36-routes.md#binding-external-route-references) for more information.
-
-Note that if you are binding routes from a legacy plugin that was converted using `convertLegacyAppRoot`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
-
-For example, if both the `catalogPlugin` and `scaffolderPlugin` are legacy plugins, you can bind their routes like this:
-
-```ts
-const app = createApp({
-  features: convertLegacyAppRoot(...),
-  bindRoutes({ bind }) {
-    bind(convertLegacyRouteRefs(catalogPlugin.externalRoutes), {
-      createComponent: convertLegacyRouteRef(scaffolderPlugin.routes.root),
-    });
-  },
-});
-```
 
 #### `__experimentalTranslations`
 

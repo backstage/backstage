@@ -32,13 +32,11 @@ import {
   createSubRouteRef,
   createExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
-
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalRouteRef } from '../../frontend-plugin-api/src/routing/RouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalSubRouteRef } from '../../frontend-plugin-api/src/routing/SubRouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExternalRouteRef } from '../../frontend-plugin-api/src/routing/ExternalRouteRef';
+import {
+  OpaqueRouteRef,
+  OpaqueSubRouteRef,
+  OpaqueExternalRouteRef,
+} from '@internal/frontend';
 
 /**
  * Converts a legacy route ref type to the new system.
@@ -184,29 +182,29 @@ function convertNewToOld(
   ref: RouteRef | SubRouteRef | ExternalRouteRef,
 ): LegacyRouteRef | LegacySubRouteRef | LegacyExternalRouteRef {
   if (ref.$$type === '@backstage/RouteRef') {
-    const newRef = toInternalRouteRef(ref);
+    const newRef = OpaqueRouteRef.toInternal(ref);
     return Object.assign(ref, {
       [routeRefType]: 'absolute',
       params: newRef.getParams(),
       title: newRef.getDescription(),
-    } as Omit<LegacyRouteRef, '$$routeRefType'>) as unknown as LegacyRouteRef;
+    } as Omit<LegacyRouteRef, '$$routeRefType' | keyof RouteRef>) as unknown as LegacyRouteRef;
   }
   if (ref.$$type === '@backstage/SubRouteRef') {
-    const newRef = toInternalSubRouteRef(ref);
+    const newRef = OpaqueSubRouteRef.toInternal(ref);
     return Object.assign(ref, {
       [routeRefType]: 'sub',
       parent: convertLegacyRouteRef(newRef.getParent()),
       params: newRef.getParams(),
-    } as Omit<LegacySubRouteRef, '$$routeRefType' | 'path'>) as unknown as LegacySubRouteRef;
+    } as Omit<LegacySubRouteRef, '$$routeRefType' | keyof SubRouteRef>) as unknown as LegacySubRouteRef;
   }
   if (ref.$$type === '@backstage/ExternalRouteRef') {
-    const newRef = toInternalExternalRouteRef(ref);
+    const newRef = OpaqueExternalRouteRef.toInternal(ref);
     return Object.assign(ref, {
       [routeRefType]: 'external',
       optional: true,
       params: newRef.getParams(),
       defaultTarget: newRef.getDefaultTarget(),
-    } as Omit<LegacyExternalRouteRef, '$$routeRefType' | 'optional'>) as unknown as LegacyExternalRouteRef;
+    } as Omit<LegacyExternalRouteRef, '$$routeRefType' | keyof ExternalRouteRef>) as unknown as LegacyExternalRouteRef;
   }
 
   throw new Error(
@@ -221,7 +219,7 @@ function convertOldToNew(
   if (type === 'absolute') {
     const legacyRef = ref as LegacyRouteRef;
     const legacyRefStr = String(legacyRef);
-    const newRef = toInternalRouteRef(
+    const newRef = OpaqueRouteRef.toInternal(
       createRouteRef<{ [key in string]: string }>({
         params: legacyRef.params as string[],
       }),
@@ -247,7 +245,7 @@ function convertOldToNew(
   if (type === 'sub') {
     const legacyRef = ref as LegacySubRouteRef;
     const legacyRefStr = String(legacyRef);
-    const newRef = toInternalSubRouteRef(
+    const newRef = OpaqueSubRouteRef.toInternal(
       createSubRouteRef({
         path: legacyRef.path,
         parent: convertLegacyRouteRef(legacyRef.parent),
@@ -274,7 +272,7 @@ function convertOldToNew(
   if (type === 'external') {
     const legacyRef = ref as LegacyExternalRouteRef;
     const legacyRefStr = String(legacyRef);
-    const newRef = toInternalExternalRouteRef(
+    const newRef = OpaqueExternalRouteRef.toInternal(
       createExternalRouteRef<{ [key in string]: string }>({
         params: legacyRef.params as string[],
         defaultTarget:
