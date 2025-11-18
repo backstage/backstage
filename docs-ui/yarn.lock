@@ -31,8 +31,8 @@ __metadata:
   linkType: hard
 
 "@base-ui-components/react@npm:^1.0.0-beta.4":
-  version: 1.0.0-beta.5
-  resolution: "@base-ui-components/react@npm:1.0.0-beta.5"
+  version: 1.0.0-beta.6
+  resolution: "@base-ui-components/react@npm:1.0.0-beta.6"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@base-ui-components/utils": "npm:0.2.0"
@@ -48,7 +48,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/db53c9fc05301263419ac0f3c7f655aa67262a434b7f752e3af879430e75aa5d0d808ecf8c40d38b70fb699df8028b68baa11a9608e3153bcc4a5c57d6fab1f1
+  checksum: 10/b3cfa5449f596c6cb509017a33c31fad531c10ee3dc70ee98ca5a48dfc02a8333012bd29df660833f98b73ee895f34ff51037eeef35b58111492d98454881eee
   languageName: node
   linkType: hard
 
