@@ -161,6 +161,21 @@ describe('gateway', () => {
     expect(data).toEqual({ bar: true });
   });
 
+  it('should detect looped requests', async () => {
+    const response = await fetch(
+      'http://localhost:7777/api/nonexistent-plugin/foo',
+    );
+    expect(response.status).toBe(508);
+
+    const data = await response.json();
+    expect(data).toEqual({
+      error: {
+        name: 'LoopDetectedError',
+        message: 'Maximum proxy hop count exceeded (3)',
+      },
+    });
+  });
+
   it('should close the response for sse connections', async () => {
     const eventSource = new EventSource(
       'http://localhost:7777/api/external-plugin/endpoint-sse',
