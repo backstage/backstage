@@ -27007,12 +27007,12 @@ __metadata:
   linkType: hard
 
 "connect-session-knex@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "connect-session-knex@npm:4.0.0"
+  version: 4.0.2
+  resolution: "connect-session-knex@npm:4.0.2"
   dependencies:
     bluebird: "npm:^3.7.2"
     knex: "npm:3"
-  checksum: 10/edee2824abcfaef542bb15b81ddd519620ea47276ea136d9aec782be54c5a4ce296c03cc492f37273bac614b1cc3b9f9602b4dd2f663547cde07367e87239d09
+  checksum: 10/e8777e2191e64b1be415972fb1fc6022da87fecf33c1390c5239bfa7e4ceec09d1ab8709e85c399304d8162f5d7e70d713e703182c9d64dcb8813acbc2043343
   languageName: node
   linkType: hard
 
