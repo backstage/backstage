@@ -304,4 +304,59 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20251118120000_oauth_state_text.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(knex, '20251118120000_oauth_state_text.js');
+
+      // First create a client for the foreign key constraint
+      await knex
+        .insert({
+          client_id: 'test-client-id',
+          client_secret: 'test-client-secret',
+          client_name: 'Test Client',
+          response_types: JSON.stringify(['code']),
+          grant_types: JSON.stringify(['authorization_code']),
+          redirect_uris: JSON.stringify(['https://example.com/callback']),
+        })
+        .into('oidc_clients');
+
+      // Apply the migration that changes state to TEXT
+      await migrateUpOnce(knex);
+
+      // Test inserting a state parameter longer than 255 characters
+      // This is based on the real-world example from the issue
+      const longState = 'a'.repeat(280);
+
+      await knex
+        .insert({
+          id: 'test-long-state-session',
+          client_id: 'test-client-id',
+          redirect_uri: 'https://example.com/callback',
+          state: longState,
+          response_type: 'code',
+          status: 'pending',
+          expires_at: new Date(Date.now() + 3600000),
+        })
+        .into('oauth_authorization_sessions');
+
+      await expect(
+        knex('oauth_authorization_sessions')
+          .where('id', 'test-long-state-session')
+          .first(),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          id: 'test-long-state-session',
+          state: longState,
+        }),
+      );
+
+      await migrateDownOnce(knex);
+
+      await knex.destroy();
+    },
+  );
 });
