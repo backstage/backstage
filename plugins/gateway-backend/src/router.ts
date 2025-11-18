@@ -47,7 +47,7 @@ export async function createRouter({
     on: {
       proxyReq(proxyReq, req: Request<{ pluginId: string }>) {
         const currentHops =
-          parseInt(req.headers[HOPS_HEADER] as string, 10) || 0;
+          Math.max(parseInt(req.headers[HOPS_HEADER] as string, 10), 0) || 0;
 
         proxyReq.setHeader(HOPS_HEADER, currentHops + 1);
       },
