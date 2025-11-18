@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.3.6
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-kubernetes-common@0.9.8
+  - @backstage/catalog-model@1.7.6
+
 ## 0.3.6-next.2
 
 ### Patch Changes
