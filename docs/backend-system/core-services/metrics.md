@@ -16,7 +16,7 @@ The Metrics Service is a core service designed to provide a unified interface fo
 
 ## Setting up OpenTelemetry
 
-If you are looking to set up OpenTelemetry for your Backstage instance, please refer to the [Setup OpenTelemetry](../../tutorials/setup-opentelemetry) tutorial.
+If you are looking to set up OpenTelemetry for your Backstage instance, please refer to the [Setup OpenTelemetry](../../tutorials/setup-opentelemetry.md) tutorial.
 
 ## Using the Service
 
@@ -31,18 +31,18 @@ import {
 } from '@backstage/backend-plugin-api';
 import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
 
-export const myPlugin = createBackendPlugin({
-  pluginId: 'my-plugin',
+export const examplePlugin = createBackendPlugin({
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
         metrics: metricsServiceRef,
       },
       async init({ metrics }) {
-        // Create a counter metric at the path `backstage.plugin.my_plugin.my_metric`
+        // Create a counter metric at the path `backstage.plugin.example.my_metric`
         const counter = metrics.createCounter('my_metric', {
-          description: 'My metric',
-          unit: 'count',
+          description: 'My metric in milliseconds',
+          unit: 'ms',
         });
 
         // Add a value to the counter
