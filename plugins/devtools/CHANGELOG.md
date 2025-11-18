@@ -1,5 +1,17 @@
 # @backstage/plugin-devtools
 
+## 0.1.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-devtools-common@0.1.19
+  - @backstage/plugin-permission-react@0.4.38
+
 ## 0.1.33-next.0
 
 ### Patch Changes

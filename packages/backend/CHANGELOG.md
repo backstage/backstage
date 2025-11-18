@@ -1,5 +1,47 @@
 # example-backend
 
+## 0.0.44
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/plugin-catalog-backend@3.2.0
+  - @backstage/plugin-search-backend-module-elasticsearch@1.7.8
+  - @backstage/plugin-kubernetes-backend@0.20.4
+  - @backstage/plugin-techdocs-backend@2.1.2
+  - @backstage/plugin-signals-backend@0.3.10
+  - @backstage/plugin-notifications-backend@0.6.0
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.16
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-backend@0.7.6
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-search-backend@2.0.8
+  - @backstage/plugin-auth-backend@0.25.6
+  - @backstage/plugin-scaffolder-backend@3.0.1
+  - @backstage/plugin-search-backend-node@1.3.17
+  - @backstage/plugin-events-backend@0.5.8
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.8
+  - @backstage/plugin-devtools-backend@0.5.11
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.6
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-mcp-actions-backend@0.1.5
+  - @backstage/plugin-app-backend@0.5.8
+  - @backstage/plugin-auth-backend-module-github-provider@0.3.9
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.14
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.14
+  - @backstage/plugin-events-backend-module-google-pubsub@0.1.6
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.14
+  - @backstage/plugin-permission-node@0.10.6
+  - @backstage/plugin-proxy-backend@0.6.8
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.2
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.16
+  - @backstage/plugin-search-backend-module-catalog@0.3.10
+  - @backstage/plugin-search-backend-module-explore@0.3.9
+  - @backstage/plugin-search-backend-module-techdocs@0.4.8
+
 ## 0.0.44-next.2
 
 ### Patch Changes

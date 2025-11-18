@@ -1,5 +1,31 @@
 # @backstage/plugin-techdocs
 
+## 1.16.0
+
+### Minor Changes
+
+- a521911: Add support for customizable icons in `SearchResultListItemBlueprint` and related components
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- a4d4a70: Fixed an issue where the entire TechDocs page would re-render when navigating between pages within the same entity's documentation.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-search-react@1.10.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/integration@1.18.2
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-techdocs-react@1.3.5
+  - @backstage/catalog-client@1.12.1
+  - @backstage/integration-react@1.2.12
+  - @backstage/plugin-auth-react@0.1.21
+  - @backstage/plugin-search-common@1.2.21
+
 ## 1.16.0-next.1
 
 ### Minor Changes

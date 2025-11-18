@@ -1,5 +1,18 @@
 # @backstage/backend-app-api
 
+## 1.3.0
+
+### Minor Changes
+
+- a17d9df: Updates API for `instanceMetadata` service to return a list of plugins not features.
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+
 ## 1.3.0-next.1
 
 ### Minor Changes

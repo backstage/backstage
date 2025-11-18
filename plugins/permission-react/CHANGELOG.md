@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-react
 
+## 0.4.38
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/config@1.3.6
+
 ## 0.4.38-next.0
 
 ### Patch Changes
