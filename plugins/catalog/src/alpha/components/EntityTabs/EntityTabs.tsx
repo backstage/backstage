@@ -15,7 +15,7 @@
  */
 import { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
+import { matchRoutes, useParams, useRoutes, Outlet } from 'react-router-dom';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
 
@@ -33,17 +33,25 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 } {
   const params = useParams();
 
+  // For v7_relativeSplatPath: convert splat paths to parent/child structure
   const routes = subRoutes.map(({ path, children }) => ({
     caseSensitive: false,
-    path: `${path}/*`,
-    element: children,
+    path: path,
+    element: <Outlet />,
+    children: [
+      {
+        index: true,
+        element: children,
+      },
+      {
+        path: '*',
+        element: children,
+      },
+    ],
   }));
 
-  // TODO: remove once react-router updated
-  const sortedRoutes = routes.sort((a, b) =>
-    // remove "/*" symbols from path end before comparing
-    b.path.replace(/\/\*$/, '').localeCompare(a.path.replace(/\/\*$/, '')),
-  );
+  // Sort routes by path length (longest first) for proper matching
+  const sortedRoutes = routes.sort((a, b) => b.path.localeCompare(a.path));
 
   const element = useRoutes(sortedRoutes) ?? subRoutes[0]?.children;
 
@@ -57,7 +65,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
   const foundIndex = matchedRoute
-    ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
+    ? subRoutes.findIndex(t => t.path === matchedRoute.route.path)
     : 0;
 
   return {
