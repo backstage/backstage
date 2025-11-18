@@ -1298,7 +1298,7 @@ describe('BackendInitializer', () => {
         }),
       );
 
-      const result = await init.start();
+      const { result } = await init.start();
 
       expect(result.plugins).toHaveLength(2);
       expect(result.plugins[0]).toMatchObject({
@@ -1503,7 +1503,7 @@ describe('BackendInitializer', () => {
         }),
       );
 
-      const result = await init.start();
+      const { result } = await init.start();
 
       expect(result.plugins).toHaveLength(2);
       expect(result.plugins[0]).toMatchObject({
@@ -1574,7 +1574,7 @@ describe('BackendInitializer', () => {
         }),
       );
 
-      const result = await init.start();
+      const { result } = await init.start();
 
       expect(result.plugins).toHaveLength(1);
       expect(result.plugins[0]).toMatchObject({
@@ -1667,7 +1667,7 @@ describe('BackendInitializer', () => {
         }),
       );
 
-      const result = await init.start();
+      const { result } = await init.start();
 
       expect(result.plugins[0].modules).toHaveLength(3);
       expect(result.plugins[0].modules[0]).toMatchObject({
@@ -1698,7 +1698,7 @@ describe('BackendInitializer', () => {
         }),
       );
 
-      const result = await init.start();
+      const { result } = await init.start();
 
       expect(result.plugins).toHaveLength(1);
       expect(result.plugins[0]).toMatchObject({
@@ -1823,7 +1823,7 @@ describe('BackendInitializer', () => {
         }),
       );
 
-      const result = await init.start();
+      const { result } = await init.start();
 
       expect(result.plugins).toHaveLength(1);
       expect(result.plugins[0].pluginId).toBe('plugin1');

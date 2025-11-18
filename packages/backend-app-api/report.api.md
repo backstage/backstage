@@ -18,7 +18,9 @@ export interface Backend {
         }>,
   ): void;
   // (undocumented)
-  start(): Promise<BackendStartupResult>;
+  start(): Promise<{
+    result: BackendStartupResult;
+  }>;
   // (undocumented)
   stop(): Promise<void>;
 }
@@ -35,8 +37,8 @@ export class BackendStartupError extends CustomErrorBase {
 // @public
 export interface BackendStartupResult {
   beginAt: Date;
+  outcome: 'success' | 'failure';
   plugins: PluginStartupResult[];
-  result: 'success' | 'failure';
   resultAt: Date;
 }
 

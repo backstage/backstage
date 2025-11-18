@@ -45,7 +45,7 @@ The `Backend.start()` method returns a `BackendStartupResult` with detailed succ
 
 ```ts
 backend.start(
-  result => {
+  ({ result }) => {
     console.log(`Backend startup result: ${JSON.stringify(result, null, 2)}`);
   },
   error => {

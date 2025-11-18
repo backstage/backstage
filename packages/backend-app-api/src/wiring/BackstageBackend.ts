@@ -34,7 +34,7 @@ export class BackstageBackend implements Backend {
     }
   }
 
-  async start(): Promise<BackendStartupResult> {
+  async start(): Promise<{ result: BackendStartupResult }> {
     return await this.#initializer.start();
   }
 

@@ -150,7 +150,7 @@ function createRootInstanceMetadataServiceFactory(
 }
 
 export class BackendInitializer {
-  #startPromise?: Promise<BackendStartupResult>;
+  #startPromise?: Promise<{ result: BackendStartupResult }>;
   #stopPromise?: Promise<void>;
   #registrations = new Array<InternalBackendRegistrations>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
@@ -226,7 +226,7 @@ export class BackendInitializer {
     }
   }
 
-  async start(): Promise<BackendStartupResult> {
+  async start(): Promise<{ result: BackendStartupResult }> {
     if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
@@ -240,7 +240,7 @@ export class BackendInitializer {
     return await this.#startPromise;
   }
 
-  async #doStart(): Promise<BackendStartupResult> {
+  async #doStart(): Promise<{ result: BackendStartupResult }> {
     this.#serviceRegistry.checkForCircularDeps();
 
     for (const feature of this.#registeredFeatures) {
@@ -432,16 +432,16 @@ export class BackendInitializer {
       );
     });
 
-    const startupResult = resultCollector.finalize();
-    if (startupResult.result === 'failure') {
-      throw new BackendStartupError(startupResult);
+    const result = resultCollector.finalize();
+    if (result.outcome === 'failure') {
+      throw new BackendStartupError(result);
     }
 
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
     await lifecycleService.startup();
 
-    return startupResult;
+    return { result };
   }
 
   // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit

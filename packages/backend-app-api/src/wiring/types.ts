@@ -26,7 +26,7 @@ import {
  */
 export interface Backend {
   add(feature: BackendFeature | Promise<{ default: BackendFeature }>): void;
-  start(): Promise<BackendStartupResult>;
+  start(): Promise<{ result: BackendStartupResult }>;
   stop(): Promise<void>;
 }
 
@@ -124,7 +124,7 @@ export interface BackendStartupResult {
    */
   plugins: PluginStartupResult[];
   /**
-   * The result of the backend startup.
+   * The outcome of the backend startup.
    */
-  result: 'success' | 'failure';
+  outcome: 'success' | 'failure';
 }

@@ -170,7 +170,7 @@ export function createInitializationResultCollector(options: {
       return {
         beginAt,
         resultAt: new Date(),
-        result: hasDisallowedFailures ? 'failure' : 'success',
+        outcome: hasDisallowedFailures ? 'failure' : 'success',
         plugins: pluginResults,
       };
     },
