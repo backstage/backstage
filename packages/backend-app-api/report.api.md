@@ -17,9 +17,17 @@ export interface Backend {
         }>,
   ): void;
   // (undocumented)
-  start(): Promise<void>;
+  start(): Promise<BackendStartupResult>;
   // (undocumented)
   stop(): Promise<void>;
+}
+
+// @public
+export interface BackendStartupResult {
+  beginAt: Date;
+  plugins: PluginStartupResult[];
+  result: 'success' | 'failure';
+  resultAt: Date;
 }
 
 // @public (undocumented)
@@ -31,5 +39,26 @@ export function createSpecializedBackend(
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
   defaultServiceFactories: ServiceFactory[];
+}
+
+// @public
+export interface ModuleStartupResult {
+  failure?: {
+    error: Error;
+    allowed: boolean;
+  };
+  moduleId: string;
+  resultAt: Date;
+}
+
+// @public
+export interface PluginStartupResult {
+  failure?: {
+    error: Error;
+    allowed: boolean;
+  };
+  modules: ModuleStartupResult[];
+  pluginId: string;
+  resultAt: Date;
 }
 ```
