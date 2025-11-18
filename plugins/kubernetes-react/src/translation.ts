@@ -51,6 +51,7 @@ export const kubernetesReactTranslationRef = createTranslationRef({
         'There was a problem retrieving some Kubernetes resources for the entity: {{entityName}}. This could mean that the Error Reporting card is not completely accurate.',
       errorsLabel: 'Errors',
       clusterLabel: 'Cluster',
+      clusterLabelValue: 'Cluster: {{cluster}}',
       fetchError:
         'Error communicating with Kubernetes: {{errorType}}, message: {{message}}',
       resourceError:
@@ -83,8 +84,11 @@ export const kubernetesReactTranslationRef = createTranslationRef({
     hpa: {
       minReplicas: 'min replicas',
       maxReplicas: 'max replicas',
+      replicasSummary: 'min replicas {{min}} / max replicas {{max}}',
       currentCpuUsage: 'current CPU usage:',
+      currentCpuUsageLabel: 'current CPU usage: {{value}}%',
       targetCpuUsage: 'target CPU usage:',
+      targetCpuUsageLabel: 'target CPU usage: {{value}}%',
     },
     pods: {
       pods_one: '{{count}} pod',

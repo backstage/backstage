@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from 'react';
 import {
   ClusterAttributes,
   DetectedError,
@@ -65,35 +66,38 @@ export const ErrorReporting = ({
     })
     .sort(sortBySeverity);
 
-  const columns: TableColumn<Row>[] = [
-    {
-      title: String(t('errorReporting.columns.cluster')),
-      width: '10%',
-      render: (row: Row) => row.cluster.title || row.cluster.name,
-    },
-    {
-      title: String(t('errorReporting.columns.namespace')),
-      width: '10%',
-      render: (row: Row) => row.error.sourceRef.namespace,
-    },
-    {
-      title: String(t('errorReporting.columns.kind')),
-      width: '10%',
-      render: (row: Row) => row.error.sourceRef.kind,
-    },
-    {
-      title: String(t('errorReporting.columns.name')),
-      width: '30%',
-      render: (row: Row) => {
-        return <>{row.error.sourceRef.name} </>;
+  const columns: TableColumn<Row>[] = useMemo(
+    () => [
+      {
+        title: String(t('errorReporting.columns.cluster')),
+        width: '10%',
+        render: (row: Row) => row.cluster.title || row.cluster.name,
       },
-    },
-    {
-      title: String(t('errorReporting.columns.messages')),
-      width: '40%',
-      render: (row: Row) => row.error.message,
-    },
-  ];
+      {
+        title: String(t('errorReporting.columns.namespace')),
+        width: '10%',
+        render: (row: Row) => row.error.sourceRef.namespace,
+      },
+      {
+        title: String(t('errorReporting.columns.kind')),
+        width: '10%',
+        render: (row: Row) => row.error.sourceRef.kind,
+      },
+      {
+        title: String(t('errorReporting.columns.name')),
+        width: '30%',
+        render: (row: Row) => {
+          return <>{row.error.sourceRef.name} </>;
+        },
+      },
+      {
+        title: String(t('errorReporting.columns.messages')),
+        width: '40%',
+        render: (row: Row) => row.error.message,
+      },
+    ],
+    [t],
+  );
 
   return (
     <>

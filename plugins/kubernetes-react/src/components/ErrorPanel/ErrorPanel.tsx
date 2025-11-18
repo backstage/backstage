@@ -32,7 +32,9 @@ const clustersWithErrorsToErrorMessage = (
     return (
       <div key={i}>
         <Typography variant="body2">
-          {t('errorPanel.clusterLabel')}: {c.cluster.title || c.cluster.name}
+          {t('errorPanel.clusterLabelValue', {
+            cluster: c.cluster.title || c.cluster.name,
+          })}
         </Typography>
         {c.errors.map((e, j) => {
           return (

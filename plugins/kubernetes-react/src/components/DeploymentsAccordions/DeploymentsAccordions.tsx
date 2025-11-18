@@ -100,18 +100,20 @@ const DeploymentSummary = ({
             >
               <Grid item>
                 <Typography variant="subtitle2">
-                  {t('hpa.minReplicas')} {hpa.spec?.minReplicas ?? '?'} /{' '}
-                  {t('hpa.maxReplicas')} {hpa.spec?.maxReplicas ?? '?'}
+                  {t('hpa.replicasSummary', {
+                    min: hpa.spec?.minReplicas ?? '?',
+                    max: hpa.spec?.maxReplicas ?? '?',
+                  })}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  {t('hpa.currentCpuUsage')} {cpuUtil ?? '?'}%
+                  {t('hpa.currentCpuUsageLabel', { value: cpuUtil ?? '?' })}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  {t('hpa.targetCpuUsage')} {specCpuUtil ?? '?'}%
+                  {t('hpa.targetCpuUsageLabel', { value: specCpuUtil ?? '?' })}
                 </Typography>
               </Grid>
             </Grid>
