@@ -2,4 +2,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Add search functionality in MembersListCard
+Add search functionality in `MembersListCard`
