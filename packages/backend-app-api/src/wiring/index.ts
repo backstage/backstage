@@ -22,3 +22,4 @@ export type {
   ModuleStartupResult,
 } from './types';
 export { createSpecializedBackend } from './createSpecializedBackend';
+export { BackendStartupError } from './BackendStartupError';
