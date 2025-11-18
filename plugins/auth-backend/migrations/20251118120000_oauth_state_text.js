@@ -21,7 +21,7 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('oauth_authorization_sessions', table => {
-    table.text('state').nullable().alter();
+    table.text('state', 'longtext').nullable().alter();
   });
 };
 
