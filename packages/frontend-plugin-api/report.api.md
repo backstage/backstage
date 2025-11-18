@@ -625,7 +625,7 @@ export function createExternalRouteRef<
       }
     | undefined = undefined,
   TParamKeys extends string = string,
->(options?: {
+>(config?: {
   readonly params?: string extends TParamKeys
     ? (keyof TParams)[]
     : TParamKeys[];

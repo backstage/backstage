@@ -117,24 +117,28 @@ export function getBitbucketCloudFileFetchUrl(
 
 /**
  * Gets the request options necessary to make requests to a given provider.
+ * Returns headers for authenticating with Bitbucket Cloud.
+ * Supports both username/token and username/appPassword auth.
  *
  * @param config - The relevant provider config
  * @public
  */
 export function getBitbucketCloudRequestOptions(
   config: BitbucketCloudIntegrationConfig,
-): { headers: Record<string, string> } {
+): {
+  headers: Record<string, string>;
+} {
   const headers: Record<string, string> = {};
 
-  if (config.username && config.appPassword) {
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
+  if (config.username && (config.token ?? config.appPassword)) {
     const buffer = Buffer.from(
-      `${config.username}:${config.appPassword}`,
+      `${config.username}:${config.token ?? config.appPassword}`,
       'utf8',
     );
     headers.Authorization = `Basic ${buffer.toString('base64')}`;
   }
 
-  return {
-    headers,
-  };
+  return { headers };
 }

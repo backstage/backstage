@@ -429,6 +429,8 @@ export type ExternalRouteRef<
   $$routeRefType: 'external';
   params: ParamKeys<Params>;
   optional?: Optional;
+  readonly $$type: '@backstage/ExternalRouteRef';
+  readonly T: Params;
 };
 
 // @public
@@ -698,6 +700,8 @@ export type RouteFunc<Params extends AnyParams> = (
 export type RouteRef<Params extends AnyParams = any> = {
   $$routeRefType: 'absolute';
   params: ParamKeys<Params>;
+  readonly $$type: '@backstage/RouteRef';
+  readonly T: Params;
 };
 
 // @public
@@ -762,6 +766,8 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   parent: RouteRef;
   path: string;
   params: ParamKeys<Params>;
+  readonly $$type: '@backstage/SubRouteRef';
+  readonly T: Params;
 };
 
 // @public

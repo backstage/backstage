@@ -15,18 +15,19 @@
  */
 
 import { AnyRouteRefParams } from './types';
-import { RouteRef, createRouteRef, toInternalRouteRef } from './RouteRef';
+import { RouteRef, createRouteRef } from './RouteRef';
+import { OpaqueRouteRef } from '@internal/frontend';
 
 describe('RouteRef', () => {
   it('should be created and have a mutable ID', () => {
     const routeRef: RouteRef<undefined> = createRouteRef();
-    const internal = toInternalRouteRef(routeRef);
+    const internal = OpaqueRouteRef.toInternal(routeRef);
     expect(internal.T).toBe(undefined);
     expect(internal.getParams()).toEqual([]);
     expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
 
     expect(String(internal)).toMatch(
-      /^RouteRef\{created at .*RouteRef\.test\.ts.*\}$/,
+      /^routeRef\{id=undefined,at='.*RouteRef\.test\.ts.*'\}$/,
     );
 
     expect(() => internal.setId('')).toThrow(
@@ -34,7 +35,9 @@ describe('RouteRef', () => {
     );
 
     internal.setId('some-id');
-    expect(String(internal)).toBe('RouteRef{some-id}');
+    expect(String(internal)).toMatch(
+      /^routeRef\{id=some-id,at='.*RouteRef\.test\.ts.*'\}$/,
+    );
     internal.setId('some-id'); // Should allow same ID
 
     expect(() => internal.setId('some-other-id')).toThrow(
@@ -49,7 +52,7 @@ describe('RouteRef', () => {
     }> = createRouteRef({
       params: ['x', 'y'],
     });
-    const internal = toInternalRouteRef(routeRef);
+    const internal = OpaqueRouteRef.toInternal(routeRef);
     expect(internal.getParams()).toEqual(['x', 'y']);
     expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
   });

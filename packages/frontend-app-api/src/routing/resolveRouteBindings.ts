@@ -23,8 +23,7 @@ import { RouteRefsById } from './collectRouteIds';
 import { ErrorCollector } from '../wiring/createErrorCollector';
 import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
+import { OpaqueExternalRouteRef } from '@internal/frontend';
 
 /**
  * Extracts a union of the keys in a map whose value extends the given type
@@ -166,7 +165,7 @@ export function resolveRouteBindings(
   for (const externalRef of routesById.externalRoutes.values()) {
     if (!result.has(externalRef) && !disabledExternalRefs.has(externalRef)) {
       const defaultRefId =
-        toInternalExternalRouteRef(externalRef).getDefaultTarget();
+        OpaqueExternalRouteRef.toInternal(externalRef).getDefaultTarget();
       if (defaultRefId) {
         const defaultRef = routesById.routes.get(defaultRefId);
         if (defaultRef) {

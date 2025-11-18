@@ -14,11 +14,22 @@ plugin.
 
 ## Configuration
 
+API token usage example (recommended):
+
 ```yaml
 integrations:
   bitbucketCloud:
-    - username: ${BITBUCKET_CLOUD_USERNAME}
-      appPassword: ${BITBUCKET_CLOUD_PASSWORD}
+    - username: user@domain.com # username -> user email
+      token: my-token
+```
+
+Legacy:
+
+```yaml
+integrations:
+  bitbucketCloud:
+    - username: username
+      appPassword: my-password
 ```
 
 :::note Note
@@ -30,7 +41,7 @@ convenience, so you only need to list it if you want to supply credentials.
 
 :::note Note
 
-The credential used for this is type [App Password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/). An Atlassian Account API key will not work.
+The credential required for this type is either an [Api token](https://support.atlassian.com/bitbucket-cloud/docs/using-api-tokens/) or an [App Password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/). An Atlassian Account API key will not work.
 
 :::
 
@@ -42,4 +53,5 @@ This one entry will have the following elements:
 
 - `username`: The Bitbucket Cloud username to use in API requests. If
   neither a username nor token are supplied, anonymous access will be used.
+- `token`: The token used to authenticate requests.
 - `appPassword`: The app password for the Bitbucket Cloud user.
