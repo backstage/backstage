@@ -23,10 +23,21 @@ export type DbPageInfo =
       endCursor: string;
     };
 
+/**
+ * Represents the locations table.
+ */
 export type DbLocationsRow = {
   id: string;
   type: string;
   target: string;
+  /**
+   * The corresponding Location entity is named either by a hash of the location
+   * type and target, or by the id row in this table.
+   *
+   * Hash is the old standard, which was later switched to id, since it allows
+   * for performing moves / renames without incurring a deletion + insertion.
+   */
+  entity_naming: 'hash' | 'id';
 };
 
 /**
