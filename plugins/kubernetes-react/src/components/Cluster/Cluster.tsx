@@ -92,14 +92,12 @@ const ClusterSummary = ({
         spacing={0}
       >
         <Grid item>
-          <StatusOK>
-            {totalNumberOfPods} {t('cluster.pods')}
-          </StatusOK>
+          <StatusOK>{t('cluster.pods', { count: totalNumberOfPods })}</StatusOK>
         </Grid>
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
-              {numberOfPodsWithErrors} {t('cluster.podsWithErrors')}
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
             </StatusError>
           ) : (
             <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>

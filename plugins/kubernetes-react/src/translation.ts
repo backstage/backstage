@@ -23,10 +23,12 @@ export const kubernetesReactTranslationRef = createTranslationRef({
     cluster: {
       label: 'Cluster',
       pods: 'pods',
+      pods_one: '{{count}} pod',
+      pods_other: '{{count}} pods',
       podsWithErrors: 'pods with errors',
+      podsWithErrors_one: '{{count}} pod with errors',
+      podsWithErrors_other: '{{count}} pods with errors',
       noPodsWithErrors: 'No pods with errors',
-      podWithErrors_one: '{{count}} pod with errors',
-      podWithErrors_other: '{{count}} pods with errors',
     },
     podsTable: {
       columns: {
@@ -138,6 +140,7 @@ export const kubernetesReactTranslationRef = createTranslationRef({
     },
     namespace: {
       label: 'namespace:',
+      labelWithValue: 'namespace: {{namespace}}',
     },
     kubernetesDialog: {
       closeAriaLabel: 'close',

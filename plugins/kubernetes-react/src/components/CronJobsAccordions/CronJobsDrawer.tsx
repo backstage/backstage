@@ -62,7 +62,10 @@ export const CronJobDrawer = ({
         </Grid>
         {namespace && (
           <Grid item>
-            <Chip size="small" label={`${t('namespace.label')} ${namespace}`} />
+            <Chip
+              size="small"
+              label={t('namespace.labelWithValue', { namespace })}
+            />
           </Grid>
         )}
       </Grid>
