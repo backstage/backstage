@@ -18,7 +18,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { act } from 'react-dom/test-utils';
 import { BrowserRouter } from 'react-router-dom';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction } from '../../lib/types';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
 const wrapper = ({ children }: { children?: ReactNode }) => {

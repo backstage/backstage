@@ -13,17 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CheckboxProps as RACheckboxProps } from 'react-aria-components';
 
 /** @public */
-export interface CheckboxProps {
-  label?: string;
-  defaultChecked?: boolean;
-  checked?: boolean;
-  onChange?: (checked: boolean) => void;
-  disabled?: boolean;
-  required?: boolean;
-  className?: string;
-  name?: string;
-  value?: string;
-  style?: React.CSSProperties;
+export interface CheckboxProps extends RACheckboxProps {
+  children: React.ReactNode;
 }

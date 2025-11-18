@@ -15,20 +15,29 @@
  */
 
 import { useStyles } from '../../hooks/useStyles';
+import { SkeletonDefinition } from './definition';
 import { SkeletonProps } from './types';
+import styles from './Skeleton.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export const Skeleton = (props: SkeletonProps) => {
-  const { width = 80, height = 24, rounded = false, ...rest } = props;
-  const { classNames } = useStyles('Skeleton');
+  const { classNames, cleanedProps } = useStyles(SkeletonDefinition, {
+    width: 80,
+    height: 24,
+    rounded: false,
+    ...props,
+  });
+  const { className, width, height, rounded, style, ...rest } = cleanedProps;
 
   return (
     <div
-      className={classNames.root}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       data-rounded={rounded}
       style={{
         width,
         height,
+        ...style,
       }}
       {...rest}
     />

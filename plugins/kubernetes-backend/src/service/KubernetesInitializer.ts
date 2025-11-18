@@ -45,32 +45,26 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 
-export class KubernetesInitializer {
-  constructor(
-    private readonly opts: {
-      fetcher?: KubernetesFetcherFactory;
-      authStrategyMap?: Map<string, AuthenticationStrategy>;
-      clusterSupplier?: KubernetesClusterSupplierFactory;
-      logger: LoggerService;
-      config: RootConfigService;
-      catalog: CatalogService;
-      auth: AuthService;
-      serviceLocator?: KubernetesServiceLocatorFactory;
-      objectsProvider?: KubernetesObjectsProviderFactory;
-    },
-  ) {}
+type Opts = {
+  fetcher?: KubernetesFetcherFactory;
+  clusterSupplier?: KubernetesClusterSupplierFactory;
+  serviceLocator?: KubernetesServiceLocatorFactory;
+  objectsProvider?: KubernetesObjectsProviderFactory;
+  authStrategyMap?: Map<string, AuthenticationStrategy>;
+  logger: LoggerService;
+  config: RootConfigService;
+  catalog: CatalogService;
+  auth: AuthService;
+};
 
-  static create(opts: {
-    fetcher?: KubernetesFetcherFactory;
-    clusterSupplier?: KubernetesClusterSupplierFactory;
-    serviceLocator?: KubernetesServiceLocatorFactory;
-    objectsProvider?: KubernetesObjectsProviderFactory;
-    authStrategyMap?: Map<string, AuthenticationStrategy>;
-    logger: LoggerService;
-    config: RootConfigService;
-    catalog: CatalogService;
-    auth: AuthService;
-  }) {
+export class KubernetesInitializer {
+  private readonly opts: Opts;
+
+  constructor(opts: Opts) {
+    this.opts = opts;
+  }
+
+  static create(opts: Opts) {
     return new KubernetesInitializer(opts);
   }
 
@@ -177,14 +171,15 @@ export class KubernetesInitializer {
 
     return {
       customResources,
-      objectTypesToFetch: objectTypesToFetch ?? [],
+      objectTypesToFetch: objectTypesToFetch ?? DEFAULT_OBJECTS,
     };
   }
 
   async init() {
     const fetcher =
-      (await this.opts.fetcher?.({ getDefault: this.defaultFetcher })) ??
-      (await this.defaultFetcher());
+      (await this.opts.fetcher?.({
+        getDefault: () => this.defaultFetcher(),
+      })) ?? (await this.defaultFetcher());
 
     const authStrategyMap =
       this.opts.authStrategyMap ?? (await this.defaultAuthStrategy());

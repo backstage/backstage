@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import fs from 'fs-extra';
 import { Command } from 'commander';
 import * as runObj from '../../../../lib/run';
@@ -24,8 +23,8 @@ import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { NotFoundError } from '@backstage/errors';
 import {
-  MockDirectory,
   createMockDirectory,
+  MockDirectory,
 } from '@backstage/backend-test-utils';
 
 // Avoid mutating the global agents used in other tests
@@ -772,6 +771,7 @@ describe('bump', () => {
           res(
             ctx.status(200),
             ctx.json({
+              releaseVersion: '1.0.0',
               packages: [],
             }),
           ),
@@ -797,7 +797,7 @@ describe('bump', () => {
       'bumping @backstage-extra/custom in b to ^1.1.0',
       'bumping @backstage-extra/custom-two in b to ^2.0.0',
       'bumping @backstage/theme in b to ^2.0.0',
-      'Skipping backstage.json update as custom pattern is used',
+      'Your project is now at version 1.0.0, which has been written to backstage.json',
       'Running yarn install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
@@ -1053,5 +1053,312 @@ describe('createVersionFinder', () => {
     ).rejects.toThrow(
       "No time available for version '0.9.0' of @backstage/core",
     );
+  });
+});
+
+describe('environment variables', () => {
+  const worker = setupServer();
+  registerMswTestHooks(worker);
+
+  beforeEach(() => {
+    delete process.env.BACKSTAGE_MANIFEST_FILE;
+    process.env.BACKSTAGE_VERSIONS_BASE_URL = 'https://custom.example.com';
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  afterAll(() => {
+    delete process.env.BACKSTAGE_MANIFEST_FILE;
+    delete process.env.BACKSTAGE_VERSIONS_BASE_URL;
+  });
+
+  it('should use custom base URL when BACKSTAGE_VERSIONS_BASE_URL is set', async () => {
+    mockDir.setContent({
+      'yarn.lock': lockfileMock,
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '^1.0.5',
+            },
+          }),
+        },
+      },
+    });
+
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    worker.use(
+      rest.get(
+        'https://custom.example.com/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              releaseVersion: '1.5.0',
+              packages: [
+                {
+                  name: '@backstage/core',
+                  version: '1.5.0',
+                },
+              ],
+            }),
+          ),
+      ),
+    );
+
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+      await bump({ pattern: null, release: 'main' } as unknown as Command);
+    });
+
+    expectLogsToMatch(logs, [
+      'Using default pattern glob @backstage/*',
+      'Checking for updates of @backstage/core',
+      'Some packages are outdated, updating',
+      'bumping @backstage/core in a to ^1.5.0',
+      'Your project is now at version 1.5.0, which has been written to backstage.json',
+      'Running yarn install to install new versions',
+      'Checking for moved packages to the @backstage-community namespace...',
+      'Version bump complete!',
+    ]);
+
+    expect(runObj.run).toHaveBeenCalledTimes(1);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
+
+    const packageA = await fs.readJson(
+      mockDir.resolve('packages/a/package.json'),
+    );
+    expect(packageA).toEqual({
+      name: 'a',
+      dependencies: {
+        '@backstage/core': '^1.5.0',
+      },
+    });
+  });
+
+  it('should use custom manifest file when BACKSTAGE_MANIFEST_FILE is set', async () => {
+    const manifestPath = mockDir.resolve('custom-manifest.json');
+    process.env.BACKSTAGE_MANIFEST_FILE = manifestPath;
+
+    const customManifest = {
+      releaseVersion: '2.0.0',
+      packages: [
+        {
+          name: '@backstage/core',
+          version: '2.0.0',
+        },
+        {
+          name: '@backstage/theme',
+          version: '3.0.0',
+        },
+      ],
+    };
+
+    mockDir.setContent({
+      'custom-manifest.json': JSON.stringify(customManifest),
+      'yarn.lock': lockfileMock,
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '^1.0.5',
+              '@backstage/theme': '^1.0.0',
+            },
+          }),
+        },
+      },
+    });
+
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+      await bump({ pattern: null, release: 'main' } as unknown as Command);
+    });
+
+    expectLogsToMatch(logs, [
+      'Using default pattern glob @backstage/*',
+      'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Some packages are outdated, updating',
+      'bumping @backstage/core in a to ^2.0.0',
+      'bumping @backstage/theme in a to ^3.0.0',
+      'Your project is now at version 2.0.0, which has been written to backstage.json',
+      'Running yarn install to install new versions',
+      'Checking for moved packages to the @backstage-community namespace...',
+      '⚠️  The following packages may have breaking changes:',
+      '  @backstage/core : 1.0.6 ~> 2.0.0',
+      '    https://github.com/backstage/backstage/blob/master/packages/core/CHANGELOG.md',
+      '  @backstage/theme : 1.0.0 ~> 3.0.0',
+      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      'Version bump complete!',
+    ]);
+
+    // Should not make any HTTP requests since using local manifest
+    expect(mockFetchPackageInfo).not.toHaveBeenCalled();
+
+    expect(runObj.run).toHaveBeenCalledTimes(1);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
+
+    const packageA = await fs.readJson(
+      mockDir.resolve('packages/a/package.json'),
+    );
+    expect(packageA).toEqual({
+      name: 'a',
+      dependencies: {
+        '@backstage/core': '^2.0.0',
+        '@backstage/theme': '^3.0.0',
+      },
+    });
+  });
+
+  it('should use custom base URL for yarn plugin when BACKSTAGE_VERSIONS_BASE_URL is set with yarn plugin', async () => {
+    mockDir.setContent({
+      '.yarnrc.yml': yarnRcMock,
+      'yarn.lock': lockfileMock,
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '^1.0.5',
+            },
+          }),
+        },
+      },
+    });
+
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    worker.use(
+      rest.get(
+        'https://custom.example.com/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              releaseVersion: '1.5.0',
+              packages: [
+                {
+                  name: '@backstage/core',
+                  version: '1.5.0',
+                },
+              ],
+            }),
+          ),
+      ),
+    );
+
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+      await bump({ pattern: null, release: 'main' } as unknown as Command);
+    });
+
+    expectLogsToMatch(logs, [
+      'Using default pattern glob @backstage/*',
+      'Checking for updates of @backstage/core',
+      'NOTE: this bump used backstage:^ versions in package.json files, since the Backstage yarn plugin was detected in the repository. To migrate back to explicit npm versions, remove the plugin by running "yarn plugin remove @yarnpkg/plugin-backstage", then repeat this command.',
+      'Some packages are outdated, updating',
+      'bumping @backstage/core in a to ^1.5.0',
+      'Updating yarn plugin to v1.5.0...',
+      'Your project is now at version 1.5.0, which has been written to backstage.json',
+      'Running yarn install to install new versions',
+      'Checking for moved packages to the @backstage-community namespace...',
+      'Version bump complete!',
+    ]);
+
+    expect(runObj.run).toHaveBeenCalledTimes(2);
+    expect(runObj.run).toHaveBeenCalledWith('yarn', [
+      'plugin',
+      'import',
+      'https://custom.example.com/v1/releases/1.5.0/yarn-plugin',
+    ]);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
+  });
+
+  it('should handle missing manifest file when BACKSTAGE_MANIFEST_FILE is set', async () => {
+    process.env.BACKSTAGE_MANIFEST_FILE = '/nonexistent/manifest.json';
+
+    mockDir.setContent({
+      'yarn.lock': lockfileMock,
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '^1.0.5',
+            },
+          }),
+        },
+      },
+    });
+
+    await expect(
+      bump({ pattern: null, release: 'main' } as unknown as Command),
+    ).rejects.toThrow();
+  });
+
+  it('should handle network errors when using custom base URL', async () => {
+    mockDir.setContent({
+      'yarn.lock': lockfileMock,
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '^1.0.5',
+            },
+          }),
+        },
+      },
+    });
+
+    worker.use(
+      rest.get(
+        'https://custom.example.com/v1/tags/main/manifest.json',
+        (_, res, ctx) => res(ctx.status(500), ctx.json({})),
+      ),
+    );
+
+    await expect(
+      bump({ pattern: null, release: 'main' } as unknown as Command),
+    ).rejects.toThrow();
   });
 });

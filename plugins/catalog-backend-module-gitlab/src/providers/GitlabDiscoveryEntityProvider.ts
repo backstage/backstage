@@ -326,6 +326,11 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         ...(!this.config.includeArchivedRepos && { archived: false }),
         ...(this.config.membership && { membership: true }),
         ...(this.config.topics && { topics: this.config.topics }),
+        // Only use simple=true when we don't need to skip forked repos.
+        // The simple=true parameter reduces response size by returning fewer fields,
+        // but it excludes the 'forked_from_project' field which is required for fork detection.
+        // Therefore, we can only optimize with simple=true when skipForkedRepos is false.
+        ...(!this.config.skipForkedRepos && { simple: true }),
       },
     );
 
@@ -585,7 +590,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       this.config.fallbackBranch;
 
     const hasFile = await client.hasFile(
-      project.path_with_namespace ?? '',
+      project.id,
       project_branch,
       this.config.catalogFile,
     );

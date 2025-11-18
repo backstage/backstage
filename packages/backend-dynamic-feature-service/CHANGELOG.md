@@ -1,5 +1,182 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.2.0-next.1
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+  - @backstage/plugin-app-node@0.1.39-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-backend@0.5.8-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+  - @backstage/plugin-search-backend-node@1.3.17-next.1
+
+## 0.7.6-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-catalog-backend@3.1.3-next.0
+  - @backstage/plugin-search-backend-node@1.3.17-next.0
+  - @backstage/plugin-events-backend@0.5.8-next.0
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/config-loader@1.10.6-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/cli-node@0.2.15-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-app-node@0.1.39-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-search-common@1.2.21-next.0
+
+## 0.7.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.1.2
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config-loader@1.10.5
+  - @backstage/config@1.3.5
+  - @backstage/backend-openapi-utils@0.6.2
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-app-node@0.1.38
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-events-backend@0.5.7
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+  - @backstage/plugin-search-backend-node@1.3.16
+  - @backstage/plugin-search-common@1.2.20
+
+## 0.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.4-next.0
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/plugin-app-node@0.1.38-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-catalog-backend@3.1.1-next.1
+  - @backstage/plugin-events-backend@0.5.7-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+  - @backstage/plugin-search-backend-node@1.3.16-next.0
+  - @backstage/backend-openapi-utils@0.6.2-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+  - @backstage/cli-node@0.2.14
+  - @backstage/plugin-search-common@1.2.20-next.0
+
+## 0.7.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.1.1-next.0
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-events-backend@0.5.6
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/plugin-search-backend-node@1.3.15
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.14
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-app-node@0.1.37
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-search-common@1.2.19
+
+## 0.7.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/config-loader@1.10.3
+  - @backstage/plugin-catalog-backend@3.1.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-events-backend@0.5.6
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/types@1.2.2
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-app-node@0.1.37
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/plugin-scaffolder-node@0.11.1
+  - @backstage/plugin-search-backend-node@1.3.15
+
+## 0.7.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.3-next.0
+  - @backstage/backend-defaults@0.12.1-next.1
+  - @backstage/plugin-auth-node@0.6.7-next.1
+  - @backstage/plugin-catalog-backend@3.0.2-next.1
+  - @backstage/plugin-app-node@0.1.37-next.1
+
+## 0.7.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.0.2-next.0
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/backend-defaults@0.12.1-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-permission-node@0.10.4-next.0
+  - @backstage/plugin-events-backend@0.5.6-next.0
+  - @backstage/plugin-search-backend-node@1.3.15-next.0
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/plugin-app-node@0.1.37-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 0.7.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0
+  - @backstage/backend-defaults@0.12.0
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/plugin-catalog-backend@3.0.1
+  - @backstage/cli-node@0.2.14
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-events-backend@0.5.5
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/plugin-search-backend-node@1.3.14
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-app-node@0.1.36
+  - @backstage/plugin-events-node@0.4.14
+
 ## 0.7.3-next.0
 
 ### Patch Changes

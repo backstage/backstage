@@ -14,34 +14,48 @@
  * limitations under the License.
  */
 
-import {
-  Column as ReactAriaColumn,
-  type ColumnProps,
-} from 'react-aria-components';
-import { Icon } from '../../Icon';
+import { Column as ReactAriaColumn } from 'react-aria-components';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
+import styles from '../Table.module.css';
+import clsx from 'clsx';
+import { ColumnProps } from '../types';
+import { RiArrowUpLine, RiArrowDownLine } from '@remixicon/react';
 
 /** @public */
-export const Column = (
-  props: Omit<ColumnProps, 'children'> & { children?: React.ReactNode },
-) => {
-  const { classNames } = useStyles('Table');
+export const Column = (props: ColumnProps) => {
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
+  const { children, ...rest } = cleanedProps;
 
   return (
-    <ReactAriaColumn className={classNames.head} {...props}>
+    <ReactAriaColumn
+      className={clsx(classNames.head, styles[classNames.head])}
+      {...rest}
+    >
       {({ allowsSorting, sortDirection }) => (
-        <>
-          {props.children}
+        <div
+          className={clsx(
+            classNames.headContent,
+            styles[classNames.headContent],
+          )}
+        >
+          {children}
           {allowsSorting && (
-            <span aria-hidden="true" className={classNames.headSortButton}>
+            <span
+              aria-hidden="true"
+              className={clsx(
+                classNames.headSortButton,
+                styles[classNames.headSortButton],
+              )}
+            >
               {sortDirection === 'ascending' ? (
-                <Icon name="arrow-up" size={16} />
+                <RiArrowUpLine size={16} />
               ) : (
-                <Icon name="arrow-down" size={16} />
+                <RiArrowDownLine size={16} />
               )}
             </span>
           )}
-        </>
+        </div>
       )}
     </ReactAriaColumn>
   );

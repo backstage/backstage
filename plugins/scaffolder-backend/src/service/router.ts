@@ -26,6 +26,7 @@ import {
   resolveSafeChildPath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
+import { validate } from 'jsonschema';
 import {
   CompoundEntityRef,
   Entity,
@@ -40,10 +41,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { EventsService } from '@backstage/plugin-events-node';
 
 import {
-  createConditionAuthorizer,
-  createPermissionIntegrationRouter,
-  createConditionTransformer,
   ConditionTransformer,
+  createConditionAuthorizer,
+  createConditionTransformer,
+  createPermissionIntegrationRouter,
 } from '@backstage/plugin-permission-node';
 import {
   TaskSpec,
@@ -52,11 +53,11 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   RESOURCE_TYPE_SCAFFOLDER_TASK,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
-  scaffolderTaskPermissions,
   scaffolderPermissions,
+  scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
@@ -66,6 +67,7 @@ import {
 } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   TaskBroker,
+  TaskFilters,
   TaskStatus,
   TemplateAction,
   TemplateFilter,
@@ -79,15 +81,14 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject } from '@backstage/types';
 import express from 'express';
-import { validate } from 'jsonschema';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import {
   DatabaseTaskStore,
+  DefaultTemplateActionRegistry,
   TaskWorker,
-  TemplateActionRegistry,
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
@@ -114,23 +115,22 @@ import {
 } from '../util/templating';
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import {
-  ScaffolderPermissionRuleInput,
-  TaskPermissionRuleInput,
-  isTaskPermissionRuleInput,
   ActionPermissionRuleInput,
   isActionPermissionRuleInput,
+  isTaskPermissionRuleInput,
   isTemplatePermissionRuleInput,
+  ScaffolderPermissionRuleInput,
+  TaskPermissionRuleInput,
   TemplatePermissionRuleInput,
 } from './permissions';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 
 import {
   scaffolderActionRules,
-  scaffolderTemplateRules,
   scaffolderTaskRules,
+  scaffolderTemplateRules,
 } from './rules';
-
-import { TaskFilters } from '@backstage/plugin-scaffolder-node';
+import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * RouterOptions
@@ -163,6 +163,7 @@ export interface RouterOptions {
   events?: EventsService;
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
+  actionsRegistry: ActionsService;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -186,16 +187,19 @@ const readDuration = (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await createOpenApiRouter();
-  // Be generous in upload size to support a wide range of templates in dry-run mode.
-  router.use(express.json({ limit: '10MB' }));
+  const router = await createOpenApiRouter({
+    middleware: [
+      // Be generous in upload size to support a wide range of templates in dry-run mode.
+      express.json({ limit: '10MB' }),
+    ],
+  });
 
   const {
     logger: parentLogger,
     config,
     database,
     catalog,
-    actions,
+    actions = [],
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
@@ -207,6 +211,7 @@ export async function createRouter(
     auth,
     httpAuth,
     auditor,
+    actionsRegistry,
   } = options;
 
   const concurrentTasksLimit =
@@ -264,7 +269,10 @@ export async function createRouter(
     taskBroker = options.taskBroker;
   }
 
-  const actionRegistry = new TemplateActionRegistry();
+  const actionRegistry = new DefaultTemplateActionRegistry(
+    actionsRegistry,
+    logger,
+  );
 
   const templateExtensions = {
     additionalTemplateFilters: convertFiltersToRecord(
@@ -298,7 +306,9 @@ export async function createRouter(
     workers.push(worker);
   }
 
-  actions?.forEach(action => actionRegistry.register(action));
+  for (const action of actions) {
+    actionRegistry.register(action);
+  }
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
 
@@ -431,16 +441,20 @@ export async function createRouter(
         eventId: 'action-fetch',
         request: req,
       });
+      const credentials = await httpAuth.credentials(req);
 
       try {
-        const actionsList = actionRegistry.list().map(action => {
-          return {
-            id: action.id,
-            description: action.description,
-            examples: action.examples,
-            schema: action.schema,
-          };
-        });
+        const list = await actionRegistry.list({ credentials });
+        const actionsList = Array.from(list.values())
+          .map(action => {
+            return {
+              id: action.id,
+              description: action.description,
+              examples: action.examples,
+              schema: action.schema,
+            };
+          })
+          .sort((a, b) => a.id.localeCompare(b.id));
 
         await auditorEvent?.success();
 

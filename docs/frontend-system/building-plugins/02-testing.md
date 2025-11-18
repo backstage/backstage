@@ -7,12 +7,6 @@ description: Testing plugins in the frontend system
 
 # Testing Frontend Plugins
 
-:::note Note
-
-The new frontend system is in alpha, and some plugins do not yet fully implement it.
-
-:::
-
 Utilities for testing frontend features and components are available in `@backstage/frontend-test-utils`.
 
 ## Testing React components
@@ -98,7 +92,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should render a the index page', async () => {
+  it('should render the index page', async () => {
     await renderInTestApp(
       createExtensionTester(indexPageExtension).reactElement(),
     );
@@ -153,7 +147,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension, detailsPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should accepts a custom title via config', async () => {
+  it('should accept a custom title via config', async () => {
     const tester = createExtensionTester(indexPageExtension, {
       // Extension configuration for the index page
       config: { title: 'Custom page' },

@@ -1,5 +1,64 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-proxy-node@0.1.10-next.1
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-proxy-node@0.1.10-next.0
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-proxy-node@0.1.9
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-proxy-node@0.1.9-next.0
+
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-proxy-node@0.1.8
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-proxy-node@0.1.8-next.0
+
+## 0.6.5
+
+### Patch Changes
+
+- 0810cd8: correct rewrite rule to avoid extra subpath in proxy path
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-proxy-node@0.1.7
+
 ## 0.6.5-next.1
 
 ### Patch Changes

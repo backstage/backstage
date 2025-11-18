@@ -65,7 +65,9 @@ backend:
       - host: example.com
       - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
-
+  actions:
+    pluginSources:
+      - catalog
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
   endpoints:
@@ -209,6 +211,11 @@ scaffolder:
   defaultCommitMessage: 'Initial commit'
 
 auth:
+  experimentalDynamicClientRegistration:
+    enabled: true
+    allowedRedirectUriPatterns:
+      - cursor://*
+
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
   # the auth-backend.
   #

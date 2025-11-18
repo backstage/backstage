@@ -52,14 +52,15 @@ export function Changelog() {
           ${bumpEntries
             .map(e => {
               const prs =
-                e.prs.length > 0 &&
-                e.prs
-                  .map(
-                    pr =>
-                      `[#${pr}](https://github.com/backstage/backstage/pull/${pr})`,
-                  )
-                  .join(', ');
-              return `- ${e.description} ${prs}`;
+                e.prs.length > 0
+                  ? e.prs
+                      .map(
+                        pr =>
+                          `[#${pr}](https://github.com/backstage/backstage/pull/${pr})`,
+                      )
+                      .join(', ')
+                  : '';
+              return `- ${e.description}${prs ? ` ${prs}` : ''}`;
             })
             .join('\n')}`;
         })

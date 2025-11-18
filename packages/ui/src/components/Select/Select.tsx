@@ -15,44 +15,48 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import {
-  Select as AriaSelect,
-  SelectValue,
-  Button,
-  Popover,
-  ListBox,
-  ListBoxItem,
-  Text,
-} from 'react-aria-components';
+import { Select as AriaSelect, Popover } from 'react-aria-components';
 import clsx from 'clsx';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { SelectDefinition } from './definition';
+import { PopoverDefinition } from '../Popover/definition';
 import { FieldLabel } from '../FieldLabel';
-import { Icon } from '../Icon';
 import { FieldError } from '../FieldError';
+import styles from './Select.module.css';
+import stylesPopover from '../Popover/Popover.module.css';
+import { SelectTrigger } from './SelectTrigger';
+import { SelectContent } from './SelectContent';
 
 /** @public */
-export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
+export const Select = forwardRef<
+  HTMLDivElement,
+  SelectProps<'single' | 'multiple'>
+>((props, ref) => {
+  const { classNames: popoverClassNames } = useStyles(PopoverDefinition);
+  const { classNames, dataAttributes, cleanedProps } = useStyles(
+    SelectDefinition,
+    {
+      size: 'small',
+      placeholder: 'Select an option',
+      ...props,
+    },
+  );
+
   const {
     className,
     label,
     description,
     options,
-    placeholder = 'Select an option',
-    size = 'small',
     icon,
+    searchable,
+    searchPlaceholder,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     isRequired,
     secondaryLabel,
-    style,
     ...rest
-  } = props;
-
-  const { classNames: popoverClassNames } = useStyles('Popover');
-  const { classNames, dataAttributes } = useStyles('Select', {
-    size,
-  });
+  } = cleanedProps;
 
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -62,14 +66,15 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     }
   }, [label, ariaLabel, ariaLabelledBy]);
 
-  // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
   const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
 
   return (
     <AriaSelect
-      className={clsx(classNames.root, className)}
+      className={clsx(classNames.root, styles[classNames.root], className)}
       {...dataAttributes}
       ref={ref}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
       {...rest}
     >
       <FieldLabel
@@ -77,32 +82,22 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         secondaryLabel={secondaryLabelText}
         description={description}
       />
-      <Button
-        className={classNames.trigger}
-        data-size={dataAttributes['data-size']}
-      >
-        {icon}
-        <SelectValue className={classNames.value} />
-        <Icon aria-hidden="true" name="chevron-down" />
-      </Button>
+      <SelectTrigger icon={icon} />
       <FieldError />
-      <Popover className={popoverClassNames.root}>
-        <ListBox className={classNames.list}>
-          {options?.map(option => (
-            <ListBoxItem
-              key={option.value}
-              id={option.value}
-              className={classNames.item}
-            >
-              <div className={classNames.itemIndicator}>
-                <Icon name="check" />
-              </div>
-              <Text slot="label" className={classNames.itemLabel}>
-                {option.label}
-              </Text>
-            </ListBoxItem>
-          ))}
-        </ListBox>
+      <Popover
+        className={clsx(
+          popoverClassNames.root,
+          stylesPopover[popoverClassNames.root],
+          classNames.popover,
+          styles[classNames.popover],
+        )}
+        {...dataAttributes}
+      >
+        <SelectContent
+          searchable={searchable}
+          searchPlaceholder={searchPlaceholder}
+          options={options}
+        />
       </Popover>
     </AriaSelect>
   );

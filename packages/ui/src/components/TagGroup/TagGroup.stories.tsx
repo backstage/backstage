@@ -15,17 +15,23 @@
  */
 
 import { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TagGroup, Tag } from '.';
 import type { Selection } from 'react-aria-components';
-import { Flex, Icon, IconNames } from '../../';
+import { Flex } from '../../';
 import { useListData } from 'react-stately';
 import { MemoryRouter } from 'react-router-dom';
+import {
+  RiAccountCircleLine,
+  RiBugLine,
+  RiEyeLine,
+  RiHeartLine,
+} from '@remixicon/react';
 
 export interface ListItem {
   id: string;
   name: string;
-  icon: IconNames;
+  icon: React.ReactNode;
   isDisabled?: boolean;
 }
 
@@ -54,13 +60,18 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const initialList: ListItem[] = [
-  { id: 'banana', name: 'Banana', icon: 'bug' },
-  { id: 'apple', name: 'Apple', icon: 'account-circle', isDisabled: true },
-  { id: 'orange', name: 'Orange', icon: 'eye', isDisabled: true },
-  { id: 'pear', name: 'Pear', icon: 'heart' },
-  { id: 'grape', name: 'Grape', icon: 'bug' },
-  { id: 'pineapple', name: 'Pineapple', icon: 'eye' },
-  { id: 'strawberry', name: 'Strawberry', icon: 'heart' },
+  { id: 'banana', name: 'Banana', icon: <RiBugLine /> },
+  {
+    id: 'apple',
+    name: 'Apple',
+    icon: <RiAccountCircleLine />,
+    isDisabled: true,
+  },
+  { id: 'orange', name: 'Orange', icon: <RiEyeLine />, isDisabled: true },
+  { id: 'pear', name: 'Pear', icon: <RiHeartLine /> },
+  { id: 'grape', name: 'Grape', icon: <RiBugLine /> },
+  { id: 'pineapple', name: 'Pineapple', icon: <RiEyeLine /> },
+  { id: 'strawberry', name: 'Strawberry', icon: <RiHeartLine /> },
 ];
 
 export const Default: Story = {
@@ -84,14 +95,14 @@ export const Sizes: Story = {
     <Flex direction="column">
       <TagGroup {...args}>
         {initialList.map(item => (
-          <Tag key={item.id} size="small" icon={<Icon name={item.icon} />}>
+          <Tag key={item.id} size="small" icon={item.icon}>
             {item.name}
           </Tag>
         ))}
       </TagGroup>
       <TagGroup {...args}>
         {initialList.map(item => (
-          <Tag key={item.id} size="medium" icon={<Icon name={item.icon} />}>
+          <Tag key={item.id} size="medium" icon={item.icon}>
             {item.name}
           </Tag>
         ))}
@@ -151,10 +162,7 @@ export const WithIcon: Story = {
   render: args => (
     <TagGroup {...args}>
       {initialList.map(item => (
-        <Tag
-          key={item.id}
-          icon={item.icon ? <Icon name={item.icon} /> : undefined}
-        >
+        <Tag key={item.id} icon={item.icon ? item.icon : undefined}>
           {item.name}
         </Tag>
       ))}
@@ -231,9 +239,7 @@ export const WithIconAndRemoveButton: Story = {
         {...args}
       >
         {item => (
-          <Tag icon={item.icon ? <Icon name={item.icon} /> : undefined}>
-            {item.name}
-          </Tag>
+          <Tag icon={item.icon ? item.icon : undefined}>{item.name}</Tag>
         )}
       </TagGroup>
     );

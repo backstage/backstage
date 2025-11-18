@@ -18,47 +18,41 @@ import clsx from 'clsx';
 import { CellProfileProps } from '../types';
 import { Text } from '../../Text/Text';
 import { Link } from '../../Link/Link';
-import { Avatar } from '@base-ui-components/react/avatar';
+import { Avatar } from '../../Avatar';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import { Cell as ReactAriaCell } from 'react-aria-components';
+import styles from '../Table.module.css';
 
 /** @public */
 export const CellProfile = (props: CellProfileProps) => {
-  const {
-    className,
-    src,
-    name,
-    href,
-    description,
-    color = 'primary',
-    ...rest
-  } = props;
-  const { classNames } = useStyles('Table');
+  const { classNames, cleanedProps } = useStyles(TableDefinition, {
+    color: 'primary' as const,
+    ...props,
+  });
+  const { className, src, name, href, description, color, ...rest } =
+    cleanedProps;
 
   return (
-    <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>
-      <div className={classNames.cellContentWrapper}>
-        <div className={classNames.cellIcon}>
-          {src && (
-            <Avatar.Root className={classNames.cellProfileAvatar}>
-              <Avatar.Image
-                src={src}
-                width="20"
-                height="20"
-                className={classNames.cellProfileAvatarImage}
-              />
-              <Avatar.Fallback className={classNames.cellProfileAvatarFallback}>
-                {(name || '')
-                  .split(' ')
-                  .map(word => word[0])
-                  .join('')
-                  .toLocaleUpperCase('en-US')
-                  .slice(0, 1)}
-              </Avatar.Fallback>
-            </Avatar.Root>
+    <ReactAriaCell
+      className={clsx(classNames.cell, styles[classNames.cell], className)}
+      {...rest}
+    >
+      <div
+        className={clsx(
+          classNames.cellContentWrapper,
+          styles[classNames.cellContentWrapper],
+        )}
+      >
+        {src && name && (
+          <Avatar src={src} name={name} size="x-small" purpose="decoration" />
+        )}
+        <div
+          className={clsx(
+            classNames.cellContent,
+            styles[classNames.cellContent],
           )}
-        </div>
-        <div className={classNames.cellContent}>
+        >
           {name && href ? (
             <Link href={href}>{name}</Link>
           ) : (

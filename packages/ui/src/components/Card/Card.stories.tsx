@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Card, CardHeader, CardBody, CardFooter } from './Card';
-import { IconNames, Text } from '../..';
-
-export interface ListItem {
-  id: string;
-  name: string;
-  icon?: IconNames;
-}
+import { Text } from '../..';
 
 const meta = {
   title: 'Backstage UI/Card',

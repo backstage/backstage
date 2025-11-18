@@ -571,10 +571,8 @@ Finally, entity predicates also support value operators that can be used in plac
 ```json
 {
   "filter": {
-    {
-      "kind": "component",
-      "spec.type": { "$in": ["service", "website"] }
-    },
+    "kind": "component",
+    "spec.type": { "$in": ["service", "website"] }
   }
 }
 ```
@@ -695,7 +693,7 @@ filter:
   relations:
     $contains:
       type: ownedBy
-      target:
+      targetRef:
         $in: [group:default/admins, group:default/viewers]
 ```
 

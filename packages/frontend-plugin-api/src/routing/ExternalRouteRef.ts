@@ -71,13 +71,17 @@ class ExternalRouteRefImpl
   implements InternalExternalRouteRef
 {
   readonly $$type = '@backstage/ExternalRouteRef' as any;
+  readonly params: string[];
+  readonly defaultTarget: string | undefined;
 
   constructor(
-    readonly params: string[] = [],
-    readonly defaultTarget: string | undefined,
+    params: string[] = [],
+    defaultTarget: string | undefined,
     creationSite: string,
   ) {
     super(params, creationSite);
+    this.params = params;
+    this.defaultTarget = defaultTarget;
   }
 
   getDefaultTarget() {

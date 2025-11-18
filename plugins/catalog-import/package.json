@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-import",
-  "version": "0.13.4-next.2",
+  "version": "0.13.7-next.0",
   "description": "A Backstage plugin the helps you import entities into your catalog",
   "backstage": {
     "role": "frontend-plugin",
@@ -66,6 +66,7 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",

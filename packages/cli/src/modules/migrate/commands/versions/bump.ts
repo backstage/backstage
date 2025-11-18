@@ -16,19 +16,20 @@
 
 maybeBootstrapProxy();
 
+import { env } from 'process';
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import { minimatch } from 'minimatch';
 import semver from 'semver';
 import { OptionValues } from 'commander';
-import yaml from 'yaml';
-import z from 'zod';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../../../lib/paths';
+import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 import {
-  mapDependencies,
   fetchPackageInfo,
   Lockfile,
+  mapDependencies,
   YarnInfoInspectData,
 } from '../../../../lib/versioning';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
@@ -78,6 +79,14 @@ type PkgVersionInfo = {
   location: string;
 };
 
+function extendsDefaultPattern(pattern: string): boolean {
+  if (!pattern.endsWith('/*')) {
+    return false;
+  }
+
+  return minimatch('@backstage/', pattern.slice(0, -1));
+}
+
 export default async (opts: OptionValues) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
@@ -96,8 +105,14 @@ export default async (opts: OptionValues) => {
 
   let findTargetVersion: (name: string) => Promise<string>;
   let releaseManifest: ReleaseManifest;
-  // Specific release specified. Be strict when resolving versions
-  if (semver.valid(opts.release)) {
+  if (env.BACKSTAGE_MANIFEST_FILE) {
+    // Use specific manifest file if provided
+    releaseManifest = await fs.readJson(env.BACKSTAGE_MANIFEST_FILE);
+    findTargetVersion = createStrictVersionFinder({
+      releaseManifest,
+    });
+  } else if (semver.valid(opts.release)) {
+    // Specific release specified. Be strict when resolving versions
     releaseManifest = await getManifestByVersion({ version: opts.release });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
@@ -107,9 +122,11 @@ export default async (opts: OptionValues) => {
     if (opts.release === 'next') {
       const next = await getManifestByReleaseLine({
         releaseLine: 'next',
+        versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
       });
       const main = await getManifestByReleaseLine({
         releaseLine: 'main',
+        versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
       });
       // Prefer manifest with the latest release version
       releaseManifest = semver.gt(next.releaseVersion, main.releaseVersion)
@@ -118,6 +135,7 @@ export default async (opts: OptionValues) => {
     } else {
       releaseManifest = await getManifestByReleaseLine({
         releaseLine: opts.release,
+        versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
       });
     }
     findTargetVersion = createVersionFinder({
@@ -132,11 +150,12 @@ export default async (opts: OptionValues) => {
       `Updating yarn plugin to v${releaseManifest.releaseVersion}...`,
     );
     console.log();
-    await run('yarn', [
-      'plugin',
-      'import',
-      `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`,
-    ]);
+
+    const yarnPluginUrl = env.BACKSTAGE_VERSIONS_BASE_URL
+      ? `${env.BACKSTAGE_VERSIONS_BASE_URL}/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`
+      : `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`;
+
+    await run('yarn', ['plugin', 'import', yarnPluginUrl]);
     console.log();
   }
 
@@ -245,8 +264,8 @@ export default async (opts: OptionValues) => {
 
     console.log();
 
-    // Do not update backstage.json when upgrade patterns are used.
-    if (pattern === DEFAULT_PATTERN_GLOB) {
+    // Do not update backstage.json when default pattern is not covered
+    if (extendsDefaultPattern(pattern)) {
       await bumpBackstageJsonVersion(
         releaseManifest.releaseVersion,
         hasYarnPlugin,
@@ -487,43 +506,4 @@ async function asLockfileVersion(version: string) {
   }
 
   return version;
-}
-
-const yarnRcSchema = z.object({
-  plugins: z
-    .array(
-      z.object({
-        path: z.string(),
-      }),
-    )
-    .optional(),
-});
-
-async function getHasYarnPlugin() {
-  const yarnRcPath = paths.resolveTargetRoot('.yarnrc.yml');
-  const yarnRcContent = await fs.readFile(yarnRcPath, 'utf-8').catch(e => {
-    if (e.code === 'ENOENT') {
-      // gracefully continue in case the file doesn't exist
-      return '';
-    }
-    throw e;
-  });
-
-  if (!yarnRcContent) {
-    return false;
-  }
-
-  const parseResult = yarnRcSchema.safeParse(yaml.parse(yarnRcContent));
-
-  if (!parseResult.success) {
-    throw new Error(
-      `Unexpected content in .yarnrc.yml: ${parseResult.error.toString()}`,
-    );
-  }
-
-  const yarnRc = parseResult.data;
-
-  return yarnRc.plugins?.some(
-    plugin => plugin.path === '.yarn/plugins/@yarnpkg/plugin-backstage.cjs',
-  );
 }

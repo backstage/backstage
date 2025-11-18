@@ -20,28 +20,42 @@ import { Link } from '../../Link';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 import type { CellProps } from '../types';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
+import styles from '../Table.module.css';
 
 /** @public */
 const Cell = (props: CellProps) => {
-  const {
-    className,
-    title,
-    description,
-    color = 'primary',
-    leadingIcon,
-    href,
-    ...rest
-  } = props;
-
-  const { classNames } = useStyles('Table');
+  const { classNames, cleanedProps } = useStyles(TableDefinition, {
+    color: 'primary' as const,
+    ...props,
+  });
+  const { className, title, description, color, leadingIcon, href, ...rest } =
+    cleanedProps;
 
   return (
-    <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>
-      <div className={classNames.cellContentWrapper}>
-        {leadingIcon && (
-          <div className={classNames.cellIcon}>{leadingIcon}</div>
+    <ReactAriaCell
+      className={clsx(classNames.cell, styles[classNames.cell], className)}
+      {...rest}
+    >
+      <div
+        className={clsx(
+          classNames.cellContentWrapper,
+          styles[classNames.cellContentWrapper],
         )}
-        <div className={classNames.cellContent}>
+      >
+        {leadingIcon && (
+          <div
+            className={clsx(classNames.cellIcon, styles[classNames.cellIcon])}
+          >
+            {leadingIcon}
+          </div>
+        )}
+        <div
+          className={clsx(
+            classNames.cellContent,
+            styles[classNames.cellContent],
+          )}
+        >
           {href ? (
             <Link href={href} variant="body-medium" color={color}>
               {title}

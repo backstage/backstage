@@ -455,6 +455,10 @@ export interface SecretsFetchResponse {
   type: 'secrets';
 }
 
+// @public
+export const SERVICEACCOUNT_CA_PATH =
+  '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt';
+
 // @public (undocumented)
 export interface ServiceFetchResponse {
   // (undocumented)

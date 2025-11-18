@@ -171,6 +171,11 @@ html[data-theme='light'] {
   border-left: 3px solid rgb(255, 255, 255, 0.5);
 }
 
+table {
+  width: 100%;
+  display: table;
+}
+
 /* #endregion */
 
 /* For the docusaurus-pushfeedback plugin */

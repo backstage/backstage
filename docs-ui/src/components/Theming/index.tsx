@@ -1,18 +1,13 @@
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { formattedMDXComponents } from '@/mdx-components';
-import { Component } from '@/utils/changelog';
-import { componentDefinitions } from '../../../../packages/ui/src/utils/componentDefinitions';
-import type { DataAttributeValues } from '../../../../packages/ui/src/types';
+import type {
+  ComponentDefinition,
+  DataAttributeValues,
+} from '../../../../packages/ui/src/types';
 
-export function Theming({ component }: { component: Component }) {
-  const componentDefinition = componentDefinitions[component];
-
-  if (!componentDefinition) {
-    return null;
-  }
-
-  const classNames = componentDefinition.classNames;
-  const dataAttributes = componentDefinition.dataAttributes;
+export function Theming({ definition }: { definition: ComponentDefinition }) {
+  const classNames = definition.classNames;
+  const dataAttributes = definition.dataAttributes;
 
   // Get the first class name
   const firstClassName = Object.values(classNames)[0];

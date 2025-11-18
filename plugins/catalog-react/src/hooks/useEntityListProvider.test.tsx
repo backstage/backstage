@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import type { GetEntitiesResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   alertApiRef,
@@ -23,7 +23,10 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import { PropsWithChildren } from 'react';
@@ -37,10 +40,9 @@ import {
   EntityTypeFilter,
   EntityUserFilter,
 } from '../filters';
-import { EntityListProvider, useEntityList } from './useEntityListProvider';
-import { useMountEffect } from '@react-hookz/web';
-import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { createDeferred } from '@backstage/types';
 import { EntityListPagination } from '../types';
+import { EntityListProvider, useEntityList } from './useEntityListProvider';
 
 const entities: Entity[] = [
   {
@@ -144,6 +146,7 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -188,6 +191,7 @@ describe('<EntityListProvider />', () => {
       expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -262,6 +266,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api', 'spec.type': ['service'] },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -318,6 +323,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'user' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -339,7 +345,66 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'group' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
+  });
+
+  it('uses the last applied filter even if an earlier request finishes later', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    const firstResult = createDeferred<GetEntitiesResponse>();
+    const secondResult = createDeferred<GetEntitiesResponse>();
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBeGreaterThan(0);
+    });
+    expect(result.current.totalItems).toBe(2);
+    expect(result.current.backendEntities.length).toBe(2);
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+
+    mockCatalogApi.getEntities!.mockReturnValueOnce(firstResult);
+
+    await act(async () => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
+        filter: { kind: 'api' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
+      });
+    });
+
+    mockCatalogApi.getEntities!.mockReturnValueOnce(secondResult);
+
+    await act(async () => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('system', 'System'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(3, {
+        filter: { kind: 'system' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
+      });
+    });
+
+    await act(async () => {
+      secondResult.resolve({
+        items: [],
+      });
+      firstResult.resolve({
+        items: entities,
+      });
+    });
+
+    expect(result.current.filters.kind!.value).toBe('system');
+    expect(result.current.backendEntities.length).toBe(0);
   });
 });
 
@@ -431,6 +496,29 @@ describe('<EntityListProvider pagination />', () => {
       expect(result.current.entities.length).toBe(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
   });
 
   it('resolves query param filter values', async () => {
@@ -734,6 +822,29 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       expect(result.current.entities.length).toBe(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
   });
 
   it('resolves query param filter values', async () => {

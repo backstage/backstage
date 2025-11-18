@@ -53,6 +53,7 @@ import { version as repoTools } from '../../../repo-tools/package.json';
 import { version as ui } from '../../../ui/package.json';
 
 import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
+import { version as pluginAppVisualizer } from '../../../../plugins/app-visualizer/package.json';
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
 import { version as pluginAuthBackendModuleGithubProvider } from '../../../../plugins/auth-backend-module-github-provider/package.json';
@@ -117,6 +118,7 @@ export const packageVersions = {
   '@backstage/repo-tools': repoTools,
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
+  '@backstage/plugin-app-visualizer': pluginAppVisualizer,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
   '@backstage/plugin-auth-backend-module-github-provider':
     pluginAuthBackendModuleGithubProvider,

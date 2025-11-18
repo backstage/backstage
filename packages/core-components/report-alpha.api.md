@@ -61,6 +61,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'alertDisplay.message_other': '({{ count }} newer messages)';
     readonly 'autoLogout.stillTherePrompt.title': 'Logging out due to inactivity';
     readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
+    readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
   }
 >;

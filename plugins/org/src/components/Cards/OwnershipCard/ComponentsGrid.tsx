@@ -135,6 +135,7 @@ export const ComponentsGrid = ({
   entityLimit?: number;
 }) => {
   const catalogLink = useRouteRef(catalogIndexRouteRef);
+
   if (!relationsType && !relationAggregation) {
     throw new Error(
       'The relationAggregation property must be set as an EntityRelationAggregation type.',
@@ -161,7 +162,7 @@ export const ComponentsGrid = ({
             counter={c.counter}
             kind={c.kind}
             type={c.type}
-            url={catalogLink && `${catalogLink()}/?${c.queryParams}`}
+            url={catalogLink && `${catalogLink()}?${c.queryParams}`}
           />
         </Grid>
       ))}

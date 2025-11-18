@@ -115,14 +115,28 @@ export class LocalEventBus {
  * events backend if it is available.
  */
 class PluginEventsService implements EventsService {
+  private readonly pluginId: string;
+  private readonly localBus: LocalEventBus;
+  private readonly logger: LoggerService;
+  private readonly mode: EventBusMode;
+  private client?: DefaultApiClient;
+  private readonly auth?: AuthService;
+
   constructor(
-    private readonly pluginId: string,
-    private readonly localBus: LocalEventBus,
-    private readonly logger: LoggerService,
-    private readonly mode: EventBusMode,
-    private client?: DefaultApiClient,
-    private readonly auth?: AuthService,
-  ) {}
+    pluginId: string,
+    localBus: LocalEventBus,
+    logger: LoggerService,
+    mode: EventBusMode,
+    client?: DefaultApiClient,
+    auth?: AuthService,
+  ) {
+    this.pluginId = pluginId;
+    this.localBus = localBus;
+    this.logger = logger;
+    this.mode = mode;
+    this.client = client;
+    this.auth = auth;
+  }
 
   async publish(params: EventParams): Promise<void> {
     const lock = this.#getShutdownLock();
@@ -382,11 +396,19 @@ class PluginEventsService implements EventsService {
  */
 // TODO(pjungermann): add opentelemetry? (see plugins/catalog-backend/src/util/opentelemetry.ts, etc.)
 export class DefaultEventsService implements EventsService {
+  private readonly logger: LoggerService;
+  private readonly localBus: LocalEventBus;
+  private readonly mode: EventBusMode;
+
   private constructor(
-    private readonly logger: LoggerService,
-    private readonly localBus: LocalEventBus,
-    private readonly mode: EventBusMode,
-  ) {}
+    logger: LoggerService,
+    localBus: LocalEventBus,
+    mode: EventBusMode,
+  ) {
+    this.logger = logger;
+    this.localBus = localBus;
+    this.mode = mode;
+  }
 
   static create(options: {
     logger: LoggerService;

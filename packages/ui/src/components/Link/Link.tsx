@@ -18,58 +18,48 @@ import { forwardRef } from 'react';
 import { Link as AriaLink, RouterProvider } from 'react-aria-components';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { LinkDefinition } from './definition';
 import type { LinkProps } from './types';
 import { useNavigate, useHref } from 'react-router-dom';
 import { isExternalLink } from '../../utils/isExternalLink';
+import styles from './Link.module.css';
 
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const navigate = useNavigate();
-  const {
-    className,
-    variant = 'body',
-    weight = 'regular',
-    color = 'primary',
-    truncate,
-    href,
-    ...restProps
-  } = props;
+  const { classNames, dataAttributes, cleanedProps } = useStyles(
+    LinkDefinition,
+    {
+      variant: 'body',
+      weight: 'regular',
+      color: 'primary',
+      ...props,
+    },
+  );
 
-  const { classNames: linkClassNames } = useStyles('Link');
-  const { classNames: textClassNames, dataAttributes: textDataAttributes } =
-    useStyles('Text', {
-      variant,
-      weight,
-      color,
-    });
+  const { className, href, ...restProps } = cleanedProps;
 
   const isExternal = isExternalLink(href);
 
+  const component = (
+    <AriaLink
+      ref={ref}
+      className={clsx(classNames.root, styles[classNames.root], className)}
+      href={href}
+      {...dataAttributes}
+      {...restProps}
+    />
+  );
+
   // If it's an external link, render AriaLink without RouterProvider
   if (isExternal) {
-    return (
-      <AriaLink
-        ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
-        data-truncate={truncate}
-        href={href}
-        {...textDataAttributes}
-        {...restProps}
-      />
-    );
+    return component;
   }
 
   // For internal links, use RouterProvider
   return (
     <RouterProvider navigate={navigate} useHref={useHref}>
-      <AriaLink
-        ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
-        data-truncate={truncate}
-        {...textDataAttributes}
-        href={href}
-        {...restProps}
-      />
+      {component}
     </RouterProvider>
   );
 });

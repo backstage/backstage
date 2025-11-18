@@ -42,11 +42,14 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly catalog: CatalogService;
   private readonly auth: AuthService;
   private readonly slack: WebClient;
-  private readonly sendNotifications;
+  private readonly sendNotifications: (
+    opts: ChatPostMessageArguments[],
+  ) => Promise<void>;
   private readonly messagesSent: Counter;
   private readonly messagesFailed: Counter;
   private readonly broadcastChannels?: string[];
   private readonly entityLoader: DataLoader<string, Entity | undefined>;
+  private readonly username?: string;
 
   static fromConfig(
     config: Config,
@@ -64,9 +67,11 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       const token = c.getString('token');
       const slack = options.slack ?? new WebClient(token);
       const broadcastChannels = c.getOptionalStringArray('broadcastChannels');
+      const username = c.getOptionalString('username');
       return new SlackNotificationProcessor({
         slack,
         broadcastChannels,
+        username,
         ...options,
       });
     });
@@ -78,13 +83,16 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     logger: LoggerService;
     catalog: CatalogService;
     broadcastChannels?: string[];
+    username?: string;
   }) {
-    const { auth, catalog, logger, slack, broadcastChannels } = options;
+    const { auth, catalog, logger, slack, broadcastChannels, username } =
+      options;
     this.logger = logger;
     this.catalog = catalog;
     this.auth = auth;
     this.slack = slack;
     this.broadcastChannels = broadcastChannels;
+    this.username = username;
 
     this.entityLoader = new DataLoader<string, Entity | undefined>(
       async entityRefs => {
@@ -140,12 +148,12 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       let successCount = 0;
       let failureCount = 0;
 
-      results.forEach(result => {
+      results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
           successCount++;
         } else {
           this.logger.error(
-            `Failed to send Slack channel notification: ${result.reason.message}`,
+            `Failed to send Slack channel notification to ${opts[index].channel}: ${result.reason.message}`,
           );
           failureCount++;
         }
@@ -204,6 +212,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         const payload = toChatPostMessageArgs({
           channel,
           payload: options.payload,
+          username: this.username,
         });
 
         this.logger.debug(
@@ -259,7 +268,11 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       options.payload,
     );
     const outbound = destinations.map(channel =>
-      toChatPostMessageArgs({ channel, payload: formattedPayload }),
+      toChatPostMessageArgs({
+        channel,
+        payload: formattedPayload,
+        username: this.username,
+      }),
     );
 
     // Log debug info

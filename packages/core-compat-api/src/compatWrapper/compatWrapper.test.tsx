@@ -40,6 +40,32 @@ import {
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
 
+jest.mock('./BackwardsCompatProvider', () => ({
+  BackwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
+    const OriginalComponent = jest.requireActual(
+      './BackwardsCompatProvider',
+    ).BackwardsCompatProvider;
+    return (
+      <OriginalComponent>
+        <div data-testid="backwards-compat-provider">{children}</div>
+      </OriginalComponent>
+    );
+  },
+}));
+
+jest.mock('./ForwardsCompatProvider', () => ({
+  ForwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
+    const OriginalComponent = jest.requireActual(
+      './ForwardsCompatProvider',
+    ).ForwardsCompatProvider;
+    return (
+      <OriginalComponent>
+        <div data-testid="forwards-compat-provider">{children}</div>
+      </OriginalComponent>
+    );
+  },
+}));
+
 describe('BackwardsCompatProvider', () => {
   it('should convert the app context', () => {
     // TODO(Rugvip): Replace with the new renderInTestApp once it's available, and have some plugins
@@ -144,5 +170,20 @@ describe('ForwardsCompatProvider', () => {
     });
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
+  });
+});
+
+describe('BidirectionalCompatProvider', () => {
+  it('should never render a ForwardsCompatWrapper when in the new system, with one backwards compat provider', () => {
+    renderInNewTestApp(
+      compatWrapper(
+        compatWrapper(compatWrapper(<div data-testid="test-content" />)),
+      ),
+    );
+
+    expect(screen.getByTestId('test-content')).toBeInTheDocument();
+
+    expect(screen.queryAllByTestId('forwards-compat-provider').length).toBe(0);
+    expect(screen.queryAllByTestId('backwards-compat-provider').length).toBe(1);
   });
 });

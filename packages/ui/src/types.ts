@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { componentDefinitions } from './utils/componentDefinitions';
-
 /** @public */
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -78,7 +76,20 @@ export type BorderRadius =
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 /** @public */
-export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
+export type Columns =
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '10'
+  | '11'
+  | '12'
+  | 'auto';
 
 /** @public */
 export interface SpaceProps {
@@ -160,17 +171,5 @@ export type DataAttributesMap = Record<string, DataAttributeValues>;
 export interface ComponentDefinition {
   classNames: ClassNamesMap;
   dataAttributes?: DataAttributesMap;
+  utilityProps?: string[];
 }
-
-/**
- * Type utilities for extracting information from the component styles
- * @public
- */
-export type ComponentDefinitionName = keyof typeof componentDefinitions;
-
-/**
- * Helper type to extract class names for a component
- * @public
- */
-export type ComponentClassNames<T extends ComponentDefinitionName> =
-  (typeof componentDefinitions)[T]['classNames'];

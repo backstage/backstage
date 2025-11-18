@@ -14,40 +14,80 @@
  * limitations under the License.
  */
 
-import { forwardRef, ElementRef } from 'react';
-import { Avatar as AvatarPrimitive } from '@base-ui-components/react/avatar';
+import { forwardRef, useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { AvatarProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { AvatarDefinition } from './definition';
+import styles from './Avatar.module.css';
 
 /** @public */
-export const Avatar = forwardRef<
-  ElementRef<typeof AvatarPrimitive.Root>,
-  AvatarProps
->((props, ref) => {
-  const { className, src, name, size = 'medium', ...rest } = props;
-  const { classNames } = useStyles('Avatar', {
-    size,
-  });
+export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
+  const { classNames, dataAttributes, cleanedProps } = useStyles(
+    AvatarDefinition,
+    {
+      size: 'medium',
+      purpose: 'informative',
+      ...props,
+    },
+  );
+
+  const { className, src, name, purpose, ...rest } = cleanedProps;
+
+  const [imageStatus, setImageStatus] = useState<
+    'loading' | 'loaded' | 'error'
+  >('loading');
+
+  useEffect(() => {
+    setImageStatus('loading');
+    const img = new Image();
+    img.onload = () => setImageStatus('loaded');
+    img.onerror = () => setImageStatus('error');
+    img.src = src;
+
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [src]);
+
+  const initialsCount = ['x-small', 'small'].includes(cleanedProps.size)
+    ? 1
+    : 2;
+
+  const initials = name
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toLocaleUpperCase('en-US')
+    .slice(0, initialsCount);
 
   return (
-    <AvatarPrimitive.Root
+    <div
       ref={ref}
-      className={clsx(classNames.root, className)}
-      data-size={size}
+      role="img"
+      aria-label={purpose === 'informative' ? name : undefined}
+      aria-hidden={purpose === 'decoration' ? true : undefined}
+      className={clsx(classNames.root, styles[classNames.root], className)}
+      {...dataAttributes}
       {...rest}
     >
-      <AvatarPrimitive.Image className={classNames.image} src={src} />
-      <AvatarPrimitive.Fallback className={classNames.fallback}>
-        {(name || '')
-          .split(' ')
-          .map(word => word[0])
-          .join('')
-          .toLocaleUpperCase('en-US')
-          .slice(0, 2)}
-      </AvatarPrimitive.Fallback>
-    </AvatarPrimitive.Root>
+      {imageStatus === 'loaded' ? (
+        <img
+          src={src}
+          alt=""
+          className={clsx(classNames.image, styles[classNames.image])}
+        />
+      ) : (
+        <div
+          aria-hidden="true"
+          className={clsx(classNames.fallback, styles[classNames.fallback])}
+        >
+          {initials}
+        </div>
+      )}
+    </div>
   );
 });
 
-Avatar.displayName = AvatarPrimitive.Root.displayName;
+Avatar.displayName = 'Avatar';

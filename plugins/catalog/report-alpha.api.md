@@ -15,12 +15,12 @@ import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alp
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -137,7 +137,7 @@ const _default: OverridableFrontendPlugin<
     unregisterRedirect: ExternalRouteRef<undefined>;
   },
   {
-    'api:catalog': ExtensionDefinition<{
+    'api:catalog': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -152,7 +152,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:catalog/entity-presentation': ExtensionDefinition<{
+    'api:catalog/entity-presentation': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'entity-presentation';
       config: {};
@@ -167,7 +167,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:catalog/starred-entities': ExtensionDefinition<{
+    'api:catalog/starred-entities': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'starred-entities';
       config: {};
@@ -182,7 +182,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'catalog-content-header-item:catalog/create': ExtensionDefinition<{
+    'catalog-content-header-item:catalog/create': OverridableExtensionDefinition<{
       kind: 'catalog-content-header-item';
       name: 'create';
       config: {};
@@ -193,7 +193,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-content-header-item:catalog/support': ExtensionDefinition<{
+    'catalog-content-header-item:catalog/support': OverridableExtensionDefinition<{
       kind: 'catalog-content-header-item';
       name: 'support';
       config: {};
@@ -204,7 +204,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-filter:catalog/kind': ExtensionDefinition<{
+    'catalog-filter:catalog/kind': OverridableExtensionDefinition<{
       config: {
         initialFilter: string;
       };
@@ -216,8 +216,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -227,7 +227,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-filter:catalog/lifecycle': ExtensionDefinition<{
+    'catalog-filter:catalog/lifecycle': OverridableExtensionDefinition<{
       kind: 'catalog-filter';
       name: 'lifecycle';
       config: {};
@@ -238,7 +238,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-filter:catalog/list': ExtensionDefinition<{
+    'catalog-filter:catalog/list': OverridableExtensionDefinition<{
       config: {
         initialFilter: 'all' | 'owned' | 'starred';
       };
@@ -250,8 +250,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -261,7 +261,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-filter:catalog/mode': ExtensionDefinition<{
+    'catalog-filter:catalog/mode': OverridableExtensionDefinition<{
       config: {
         mode: 'all' | 'owners-only' | undefined;
       };
@@ -273,8 +273,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -284,7 +284,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-filter:catalog/namespace': ExtensionDefinition<{
+    'catalog-filter:catalog/namespace': OverridableExtensionDefinition<{
       kind: 'catalog-filter';
       name: 'namespace';
       config: {};
@@ -295,7 +295,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-filter:catalog/processing-status': ExtensionDefinition<{
+    'catalog-filter:catalog/processing-status': OverridableExtensionDefinition<{
       kind: 'catalog-filter';
       name: 'processing-status';
       config: {};
@@ -306,7 +306,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-filter:catalog/tag': ExtensionDefinition<{
+    'catalog-filter:catalog/tag': OverridableExtensionDefinition<{
       kind: 'catalog-filter';
       name: 'tag';
       config: {};
@@ -317,7 +317,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-filter:catalog/type': ExtensionDefinition<{
+    'catalog-filter:catalog/type': OverridableExtensionDefinition<{
       kind: 'catalog-filter';
       name: 'type';
       config: {};
@@ -328,7 +328,7 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'entity-card:catalog/about': ExtensionDefinition<{
+    'entity-card:catalog/about': OverridableExtensionDefinition<{
       config: {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
@@ -395,7 +395,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/depends-on-components': ExtensionDefinition<{
+    'entity-card:catalog/depends-on-components': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'depends-on-components';
       config: {
@@ -436,7 +436,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/depends-on-resources': ExtensionDefinition<{
+    'entity-card:catalog/depends-on-resources': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'depends-on-resources';
       config: {
@@ -477,7 +477,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/has-components': ExtensionDefinition<{
+    'entity-card:catalog/has-components': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'has-components';
       config: {
@@ -518,7 +518,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/has-resources': ExtensionDefinition<{
+    'entity-card:catalog/has-resources': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'has-resources';
       config: {
@@ -559,7 +559,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/has-subcomponents': ExtensionDefinition<{
+    'entity-card:catalog/has-subcomponents': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'has-subcomponents';
       config: {
@@ -600,7 +600,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/has-subdomains': ExtensionDefinition<{
+    'entity-card:catalog/has-subdomains': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'has-subdomains';
       config: {
@@ -641,7 +641,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/has-systems': ExtensionDefinition<{
+    'entity-card:catalog/has-systems': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'has-systems';
       config: {
@@ -682,7 +682,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/labels': ExtensionDefinition<{
+    'entity-card:catalog/labels': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'labels';
       config: {
@@ -723,7 +723,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:catalog/links': ExtensionDefinition<{
+    'entity-card:catalog/links': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'links';
       config: {
@@ -764,7 +764,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-content:catalog/overview': ExtensionDefinition<{
+    'entity-content:catalog/overview': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
         title: string | undefined;
@@ -879,7 +879,7 @@ const _default: OverridableFrontendPlugin<
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'entity-context-menu-item:catalog/copy-entity-url': ExtensionDefinition<{
+    'entity-context-menu-item:catalog/copy-entity-url': OverridableExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'copy-entity-url';
       config: {
@@ -900,7 +900,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
-    'entity-context-menu-item:catalog/inspect-entity': ExtensionDefinition<{
+    'entity-context-menu-item:catalog/inspect-entity': OverridableExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'inspect-entity';
       config: {
@@ -921,7 +921,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
-    'entity-context-menu-item:catalog/unregister-entity': ExtensionDefinition<{
+    'entity-context-menu-item:catalog/unregister-entity': OverridableExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'unregister-entity';
       config: {
@@ -942,7 +942,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
-    'entity-icon-link:catalog/view-source': ExtensionDefinition<{
+    'entity-icon-link:catalog/view-source': OverridableExtensionDefinition<{
       kind: 'entity-icon-link';
       name: 'view-source';
       config: {
@@ -981,7 +981,7 @@ const _default: OverridableFrontendPlugin<
         filter?: EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'nav-item:catalog': ExtensionDefinition<{
+    'nav-item:catalog': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
@@ -1002,7 +1002,7 @@ const _default: OverridableFrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'page:catalog': ExtensionDefinition<{
+    'page:catalog': OverridableExtensionDefinition<{
       config: {
         pagination:
           | boolean
@@ -1061,7 +1061,7 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
       };
     }>;
-    'page:catalog/entity': ExtensionDefinition<{
+    'page:catalog/entity': OverridableExtensionDefinition<{
       config: {
         groups:
           | Record<
@@ -1182,7 +1182,7 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
       };
     }>;
-    'search-result-list-item:catalog': ExtensionDefinition<{
+    'search-result-list-item:catalog': OverridableExtensionDefinition<{
       kind: 'search-result-list-item';
       name: undefined;
       config: {
@@ -1195,6 +1195,7 @@ const _default: OverridableFrontendPlugin<
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}

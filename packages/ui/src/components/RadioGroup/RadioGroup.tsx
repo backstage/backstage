@@ -23,12 +23,15 @@ import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { useStyles } from '../../hooks/useStyles';
+import { RadioGroupDefinition } from './definition';
+import styles from './RadioGroup.module.css';
 
 import type { RadioGroupProps, RadioProps } from './types';
 
 /** @public */
 export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
   (props, ref) => {
+    const { classNames, cleanedProps } = useStyles(RadioGroupDefinition, props);
     const {
       className,
       label,
@@ -39,9 +42,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
       'aria-labelledby': ariaLabelledBy,
       children,
       ...rest
-    } = props;
-
-    const { classNames } = useStyles('RadioGroup');
+    } = cleanedProps;
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -57,7 +58,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
 
     return (
       <AriaRadioGroup
-        className={clsx(classNames.root, className)}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         {...rest}
@@ -68,7 +69,9 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
           secondaryLabel={secondaryLabelText}
           description={description}
         />
-        <div className={classNames.content}>{children}</div>
+        <div className={clsx(classNames.content, styles[classNames.content])}>
+          {children}
+        </div>
         <FieldError />
       </AriaRadioGroup>
     );
@@ -81,11 +84,11 @@ RadioGroup.displayName = 'RadioGroup';
 export const Radio = forwardRef<HTMLLabelElement, RadioProps>((props, ref) => {
   const { className, ...rest } = props;
 
-  const { classNames } = useStyles('RadioGroup');
+  const { classNames } = useStyles(RadioGroupDefinition);
 
   return (
     <AriaRadio
-      className={clsx(classNames.radio, className)}
+      className={clsx(classNames.radio, styles[classNames.radio], className)}
       {...rest}
       ref={ref}
     />
