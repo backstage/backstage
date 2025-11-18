@@ -198,7 +198,17 @@ export interface AppRouterProps {
 function DefaultRouter(props: PropsWithChildren<{}>) {
   const configApi = useApi(configApiRef);
   const basePath = getBasePath(configApi);
-  return <BrowserRouter basename={basePath}>{props.children}</BrowserRouter>;
+  return (
+    <BrowserRouter
+      basename={basePath}
+      future={{
+        v7_relativeSplatPath: true,
+        v7_startTransition: true,
+      }}
+    >
+      {props.children}
+    </BrowserRouter>
+  );
 }
 
 /**
