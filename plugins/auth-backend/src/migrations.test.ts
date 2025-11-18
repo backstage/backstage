@@ -324,8 +324,34 @@ describe('migrations', () => {
         })
         .into('oidc_clients');
 
+      // Insert a session with state before migration
+      const existingState = 'existing-short-state';
+      await knex
+        .insert({
+          id: 'test-existing-session',
+          client_id: 'test-client-id',
+          redirect_uri: 'https://example.com/callback',
+          state: existingState,
+          response_type: 'code',
+          status: 'pending',
+          expires_at: new Date(Date.now() + 3600000),
+        })
+        .into('oauth_authorization_sessions');
+
       // Apply the migration that changes state to TEXT
       await migrateUpOnce(knex);
+
+      // Verify existing state persists after migration
+      await expect(
+        knex('oauth_authorization_sessions')
+          .where('id', 'test-existing-session')
+          .first(),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          id: 'test-existing-session',
+          state: existingState,
+        }),
+      );
 
       // Test inserting a state parameter longer than 255 characters
       // This is based on the real-world example from the issue
