@@ -34,6 +34,10 @@ export class SearchClient implements SearchApi {
     query: SearchQuery,
     options?: { signal?: AbortSignal },
   ): Promise<SearchResultSet> {
+    if (!query.term || !query.term.trim()) {
+      const empty: SearchResultSet = { results: [] };
+      return empty;
+    }
     const queryString = qs.stringify(query);
     const url = `${await this.discoveryApi.getBaseUrl(
       'search',
