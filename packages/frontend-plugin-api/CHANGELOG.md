@@ -1,5 +1,34 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.0
+
+### Minor Changes
+
+- 7d87b4f: Renamed `ExtensionDefinition` to `OverridableExtensionDefinition` and introduced a slimmer `ExtensionDefinition` type that does not include override methods. The overridable type is generally used as an output type, while plain `ExtensionDefinition`s are used for input. This reduces type conflicts across different of `@backstage/frontend-plugin-api`, improving long-term compatibility.
+
+### Patch Changes
+
+- 4d03f08: Internal refactor of route reference implementations with minor updates to the `toString` implementations.
+- 7c6a66d: Added support for plugin-relative `attachTo` declarations for extension definitions. This allows for the creation of extension and extension blueprints that attach to other extensions of a particular `kind` in the same plugin, rather than needing to provide the exact extension ID. This is particularly useful when wanting to provide extension blueprints with a built-in hierarchy where the extensions created from one blueprint attach to extensions created from the other blueprint, for example:
+
+  ```ts
+  // kind: 'tabbed-page'
+  const parentPage = TabbedPageBlueprint.make({
+    params: {....}
+  })
+  // attachTo: { kind: 'tabbed-page', input: 'tabs' }
+  const child1 = TabContentBlueprint.make({
+    name: 'tab1',
+    params: {....}
+  })
+  ```
+
+- 878c251: Updated to `ExtensionInput` to make all type parameters optional.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+
 ## 0.12.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/plugin-user-settings
 
+## 0.8.29
+
+### Patch Changes
+
+- 2b6fda3: Revert `storageApiRef` implementation
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/core-app-api@1.19.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-signals-react@0.0.17
+
 ## 0.8.29-next.0
 
 ### Patch Changes

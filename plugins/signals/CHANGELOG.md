@@ -1,5 +1,19 @@
 # @backstage/plugin-signals
 
+## 0.0.25
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- f0f006e: Fixes a bug where the `SignalClient` would try to subscribe to the same channel twice after an error, instead of just once.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-signals-react@0.0.17
+
 ## 0.0.25-next.1
 
 ### Patch Changes
