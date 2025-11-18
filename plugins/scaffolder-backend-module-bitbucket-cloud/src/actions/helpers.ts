@@ -38,7 +38,7 @@ export const getBitbucketClient = (config: {
     });
   }
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either provide a username and token or  username and appPassword to the Integrations config`,
+    `Authorization has not been provided for Bitbucket Cloud. Please add either provide a username and token or username and appPassword to the Integrations config`,
   );
 };
 
