@@ -22,9 +22,9 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 
-const catalogSupportCatalogContentHeaderItem =
+const catalogSupportButtonCatalogContentHeaderItem =
   CatalogContentHeaderItemBlueprint.make({
-    name: 'support',
+    name: 'support-button',
     params: {
       loader: async () => {
         const { SupportButton } = await import('@backstage/core-components');
@@ -41,9 +41,9 @@ const catalogSupportCatalogContentHeaderItem =
     },
   });
 
-const catalogCreateCatalogContentHeaderItem =
+const catalogCreateButtonCatalogContentHeaderItem =
   CatalogContentHeaderItemBlueprint.make({
-    name: 'create',
+    name: 'create-button',
     params: {
       loader: async () => {
         const { CreateButton } = await import('@backstage/core-components');
@@ -71,6 +71,6 @@ const catalogCreateCatalogContentHeaderItem =
 
 // this is the default order that the content header items will be applied in (from right to left)
 export default [
-  catalogSupportCatalogContentHeaderItem,
-  catalogCreateCatalogContentHeaderItem,
+  catalogSupportButtonCatalogContentHeaderItem,
+  catalogCreateButtonCatalogContentHeaderItem,
 ];

@@ -734,6 +734,6 @@ const customCatalogModule = createFrontendModule({
 });
 ```
 
-This will add an additional element to the the catalog content header:
+This will add an additional element to the catalog content header:
 
 ![screenshot of missing component button](../../assets/software-catalog/catalog-customization-content-header.png)

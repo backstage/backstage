@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-react': minor
 ---
 
-Added CatalogContentHeaderItemBlueprint for customizing content header
+Added CatalogContentHeaderItemBlueprint for making the content header customizable
