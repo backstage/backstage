@@ -4289,7 +4289,7 @@ __metadata:
     docusaurus-plugin-sass: "npm:^0.2.3"
     docusaurus-pushfeedback: "npm:^1.0.0"
     docusaurus-theme-openapi-docs: "npm:^4.3.0"
-    js-yaml: "npm:^4.1.0"
+    js-yaml: "npm:^4.1.1"
     luxon: "npm:^3.0.0"
     prettier: "npm:^2.6.2"
     prism-react-renderer: "npm:^2.1.0"
@@ -8531,7 +8531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^4.1.0":
+"js-yaml@npm:^4.1.0, js-yaml@npm:^4.1.1":
   version: 4.1.1
   resolution: "js-yaml@npm:4.1.1"
   dependencies:
