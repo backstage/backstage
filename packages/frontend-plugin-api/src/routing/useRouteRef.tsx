@@ -15,12 +15,12 @@
  */
 
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
+import { useLocation } from './hooks';
 
 /**
  * React hook for constructing URLs to routes.

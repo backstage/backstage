@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react';
+import { render, renderHook, fireEvent, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
-import { MemoryRouter, Router } from 'react-router-dom';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { useRouteRef } from './useRouteRef';
 import { createRouteRef } from './RouteRef';
-import { createBrowserHistory } from 'history';
-import { TestApiProvider } from '@backstage/test-utils';
+import {
+  TestApiProvider,
+  TestRouterProvider,
+} from '@backstage/frontend-test-utils';
 import { routeResolutionApiRef } from '../apis';
+import { useNavigate } from './hooks';
 
 describe('v1 consumer', () => {
   const context = createVersionedContextForTesting('routing-context');
@@ -39,7 +41,10 @@ describe('v1 consumer', () => {
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
-          <MemoryRouter initialEntries={['/my-page']} children={children} />
+          <TestRouterProvider
+            initialEntries={['/my-page']}
+            children={children}
+          />
         </TestApiProvider>
       ),
     });
@@ -62,7 +67,10 @@ describe('v1 consumer', () => {
         <TestApiProvider
           apis={[[routeResolutionApiRef, { resolve: () => undefined }]]}
         >
-          <MemoryRouter initialEntries={['/my-page']} children={children} />
+          <TestRouterProvider
+            initialEntries={['/my-page']}
+            children={children}
+          />
         </TestApiProvider>
       ),
     });
@@ -73,111 +81,117 @@ describe('v1 consumer', () => {
 
   it('re-resolves the routeFunc when the search parameters change', () => {
     const resolve = jest.fn(() => () => '/hello');
-
     const routeRef = createRouteRef();
-    const history = createBrowserHistory();
-    history.push('/my-page');
 
-    const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
-          <Router
-            location={history.location}
-            navigator={history}
-            children={children}
-          />
-        </TestApiProvider>
-      ),
-    });
+    const Helper = () => {
+      const routeFunc = useRouteRef(routeRef);
+      const navigate = useNavigate();
+      return (
+        <div>
+          <span data-testid="res">{routeFunc ? routeFunc() : 'undefined'}</span>
+          <button onClick={() => navigate('/my-new-page')}>Go</button>
+        </div>
+      );
+    };
+
+    render(
+      <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
+        <TestRouterProvider initialEntries={['/my-page']}>
+          <Helper />
+        </TestRouterProvider>
+      </TestApiProvider>,
+    );
 
     expect(resolve).toHaveBeenCalledTimes(1);
 
-    history.push('/my-new-page');
-    rerender();
+    fireEvent.click(screen.getByText('Go'));
 
     expect(resolve).toHaveBeenCalledTimes(2);
   });
 
   it('does not re-resolve the routeFunc the location pathname does not change', () => {
     const resolve = jest.fn(() => () => '/hello');
-    const api = { resolve };
-
     const routeRef = createRouteRef();
-    const history = createBrowserHistory();
-    history.push('/my-page');
 
-    const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
-          <Router
-            location={history.location}
-            navigator={history}
-            children={children}
-          />
-        </TestApiProvider>
-      ),
-    });
+    const Helper = () => {
+      useRouteRef(routeRef);
+      const navigate = useNavigate();
+      return (
+        <div>
+          <button onClick={() => navigate('/my-page')}>Go</button>
+        </div>
+      );
+    };
+
+    render(
+      <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
+        <TestRouterProvider initialEntries={['/my-page']}>
+          <Helper />
+        </TestRouterProvider>
+      </TestApiProvider>,
+    );
 
     expect(resolve).toHaveBeenCalledTimes(1);
 
-    history.push('/my-page');
-    rerender();
+    fireEvent.click(screen.getByText('Go'));
 
     expect(resolve).toHaveBeenCalledTimes(1);
   });
 
   it('does not re-resolve the routeFunc when the search parameter changes', () => {
     const resolve = jest.fn(() => () => '/hello');
-    const api = { resolve };
-
     const routeRef = createRouteRef();
-    const history = createBrowserHistory();
-    history.push('/my-page');
 
-    const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
-          <Router
-            location={history.location}
-            navigator={history}
-            children={children}
-          />
-        </TestApiProvider>
-      ),
-    });
+    const Helper = () => {
+      useRouteRef(routeRef);
+      const navigate = useNavigate();
+      return (
+        <div>
+          <button onClick={() => navigate('/my-page?foo=bar')}>Go</button>
+        </div>
+      );
+    };
+
+    render(
+      <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
+        <TestRouterProvider initialEntries={['/my-page']}>
+          <Helper />
+        </TestRouterProvider>
+      </TestApiProvider>,
+    );
 
     expect(resolve).toHaveBeenCalledTimes(1);
 
-    history.push('/my-page?foo=bar');
-    rerender();
+    fireEvent.click(screen.getByText('Go'));
 
     expect(resolve).toHaveBeenCalledTimes(1);
   });
 
   it('does not re-resolve the routeFunc when the hash parameter changes', () => {
     const resolve = jest.fn(() => () => '/hello');
-    const api = { resolve };
-
     const routeRef = createRouteRef();
-    const history = createBrowserHistory();
-    history.push('/my-page');
 
-    const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
-          <Router
-            location={history.location}
-            navigator={history}
-            children={children}
-          />
-        </TestApiProvider>
-      ),
-    });
+    const Helper = () => {
+      useRouteRef(routeRef);
+      const navigate = useNavigate();
+      return (
+        <div>
+          <button onClick={() => navigate('/my-page#foo')}>Go</button>
+        </div>
+      );
+    };
+
+    render(
+      <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
+        <TestRouterProvider initialEntries={['/my-page']}>
+          <Helper />
+        </TestRouterProvider>
+      </TestApiProvider>,
+    );
 
     expect(resolve).toHaveBeenCalledTimes(1);
 
-    history.push('/my-page#foo');
-    rerender();
+    fireEvent.click(screen.getByText('Go'));
 
     expect(resolve).toHaveBeenCalledTimes(1);
   });

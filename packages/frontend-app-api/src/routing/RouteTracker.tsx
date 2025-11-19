@@ -15,11 +15,12 @@
  */
 
 import { useEffect } from 'react';
-import { matchRoutes, useLocation } from 'react-router-dom';
 import {
   useAnalytics,
   AnalyticsContext,
   AnalyticsEventAttributes,
+  useLocation,
+  matchRoutes,
 } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 
