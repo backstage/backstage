@@ -1318,4 +1318,26 @@ describe('createExtension', () => {
       );
     });
   });
+
+  it('should old inputs without context support', () => {
+    const legacyInput = createExtensionInput([numberDataRef]);
+
+    // old API without context
+    delete (legacyInput as any).context;
+    delete (legacyInput as any).withContext;
+
+    const extension = createExtension({
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef],
+      inputs: {
+        foo: legacyInput,
+      },
+      factory({ inputs }) {
+        unused(inputs.foo);
+        return [stringDataRef('output')];
+      },
+    });
+
+    expect(extension.inputs.foo).toBe(legacyInput);
+  });
 });
