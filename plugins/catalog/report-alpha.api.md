@@ -182,9 +182,9 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'catalog-content-header-item:catalog/create': OverridableExtensionDefinition<{
+    'catalog-content-header-item:catalog/create-button': OverridableExtensionDefinition<{
       kind: 'catalog-content-header-item';
-      name: 'create';
+      name: 'create-button';
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
@@ -193,9 +193,9 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
       };
     }>;
-    'catalog-content-header-item:catalog/support': OverridableExtensionDefinition<{
+    'catalog-content-header-item:catalog/support-button': OverridableExtensionDefinition<{
       kind: 'catalog-content-header-item';
-      name: 'support';
+      name: 'support-button';
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
@@ -1048,7 +1048,7 @@ const _default: OverridableFrontendPlugin<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: false;
-            optional: true;
+            optional: false;
           }
         >;
       };
