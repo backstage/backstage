@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-frontend-module-react-router-v6
+  description: React Router 6 implementation of the RouterApi for Backstage frontend
+  title: '@backstage/frontend-module-react-router-v6'
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: framework-maintainers

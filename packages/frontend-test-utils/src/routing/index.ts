@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  AppNode,
-  ExternalRouteRef,
-  RouteRef,
-  SubRouteRef,
-  RouteObject,
-} from '@backstage/frontend-plugin-api';
-
-/** @internal */
-export type AnyRouteRef = RouteRef | SubRouteRef | ExternalRouteRef;
-
-/**
- * A duplicate of the RouterApi RouteObject, but with routeRef added
- * @internal
- */
-export interface BackstageRouteObject extends RouteObject {
-  caseSensitive: boolean;
-  children?: BackstageRouteObject[];
-  element: React.ReactNode;
-  path: string;
-  routeRefs: Set<RouteRef>;
-  appNode?: AppNode;
-}
+export {
+  TestRouterProvider,
+  type TestRouterProviderProps,
+} from './TestRouterProvider';

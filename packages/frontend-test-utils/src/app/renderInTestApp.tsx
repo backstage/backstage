@@ -15,7 +15,7 @@
  */
 
 import { Fragment } from 'react';
-import { Link, MemoryRouter } from 'react-router-dom';
+import { TestRouterProvider } from '../routing/TestRouterProvider';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
@@ -31,6 +31,7 @@ import {
   createFrontendPlugin,
   FrontendFeature,
   createFrontendModule,
+  Link,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
@@ -187,9 +188,9 @@ export function renderInTestApp(
         RouterBlueprint.make({
           params: {
             component: ({ children }) => (
-              <MemoryRouter initialEntries={options?.initialRouteEntries}>
+              <TestRouterProvider initialEntries={options?.initialRouteEntries}>
                 {children}
-              </MemoryRouter>
+              </TestRouterProvider>
             ),
           },
         }),

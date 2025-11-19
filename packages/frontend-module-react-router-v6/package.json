@@ -1,6 +1,7 @@
 {
-  "name": "@backstage/frontend-dynamic-feature-loader",
-  "version": "0.1.9-next.0",
+  "name": "@backstage/frontend-module-react-router-v6",
+  "version": "0.0.0",
+  "description": "React Router 6 implementation of the RouterApi for Backstage frontend",
   "backstage": {
     "role": "web-library"
   },
@@ -12,14 +13,13 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/frontend-dynamic-feature-loader"
+    "directory": "packages/frontend-module-react-router-v6"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "config.d.ts",
     "dist"
   ],
   "scripts": {
@@ -32,21 +32,12 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/config": "workspace:^",
-    "@backstage/frontend-plugin-api": "workspace:^",
-    "@module-federation/enhanced": "^0.9.0",
-    "@module-federation/runtime": "^0.9.0",
-    "@module-federation/sdk": "^0.9.0",
-    "cross-fetch": "^4.0.0",
-    "uri-template": "^2.0.0"
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@types/react": "^18.0.0",
-    "msw": "^1.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2"
   },
@@ -59,6 +50,5 @@
     "@types/react": {
       "optional": true
     }
-  },
-  "configSchema": "config.d.ts"
+  }
 }
