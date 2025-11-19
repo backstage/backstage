@@ -130,7 +130,7 @@ const StatefulSetSummary = ({
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
-              {t('cluster.podWithErrors', { count: numberOfPodsWithErrors })}
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
             </StatusError>
           ) : (
             <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>

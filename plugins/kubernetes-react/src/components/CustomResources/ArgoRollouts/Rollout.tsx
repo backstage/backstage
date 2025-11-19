@@ -129,19 +129,23 @@ const RolloutSummary = ({
               <Grid item>
                 <Typography variant="subtitle2">
                   {t('hpa.replicasSummary', {
-                    min: hpa.spec?.minReplicas ?? '?',
-                    max: hpa.spec?.maxReplicas ?? '?',
+                    min: String(hpa.spec?.minReplicas ?? '?'),
+                    max: String(hpa.spec?.maxReplicas ?? '?'),
                   })}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  {t('hpa.currentCpuUsageLabel', { value: cpuUtil ?? '?' })}
+                  {t('hpa.currentCpuUsageLabel', {
+                    value: String(cpuUtil ?? '?'),
+                  })}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  {t('hpa.targetCpuUsageLabel', { value: specCpuUtil ?? '?' })}
+                  {t('hpa.targetCpuUsageLabel', {
+                    value: String(specCpuUtil ?? '?'),
+                  })}
                 </Typography>
               </Grid>
             </Grid>
@@ -163,7 +167,7 @@ const RolloutSummary = ({
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
-              {t('cluster.podWithErrors', { count: numberOfPodsWithErrors })}
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
             </StatusError>
           ) : (
             <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>
