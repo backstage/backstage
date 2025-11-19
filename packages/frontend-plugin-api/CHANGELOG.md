@@ -1,5 +1,11 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.1
+
+### Patch Changes
+
+- eea6b51: Fixed a versioning conflict that could result in a `.withContext` is not a function error.
+
 ## 0.13.0
 
 ### Minor Changes
