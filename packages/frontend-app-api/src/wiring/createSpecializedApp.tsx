@@ -28,9 +28,11 @@ import {
   RouteResolutionApi,
   createApiFactory,
   routeResolutionApiRef,
+  routerApiRef,
   AppNode,
   ExtensionFactoryMiddleware,
   FrontendFeature,
+  RouterApi,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -77,7 +79,6 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { matchRoutes } from 'react-router-dom';
 import {
   createPluginInfoAttacher,
   FrontendPluginInfoResolver,
@@ -117,10 +118,16 @@ class AppTreeApiProxy implements AppTreeApi {
   #routeInfo?: RouteInfo;
   private readonly tree: AppTree;
   private readonly appBasePath: string;
+  private matchRoutes: RouterApi['matchRoutes'];
 
-  constructor(tree: AppTree, appBasePath: string) {
+  constructor(
+    tree: AppTree,
+    appBasePath: string,
+    matchRoutes: RouterApi['matchRoutes'],
+  ) {
     this.tree = tree;
     this.appBasePath = appBasePath;
+    this.matchRoutes = matchRoutes;
   }
 
   private checkIfInitialized() {
@@ -145,7 +152,9 @@ class AppTreeApiProxy implements AppTreeApi {
       path = path.slice(this.appBasePath.length);
     }
 
-    const matchedRoutes = matchRoutes(this.#routeInfo!.routeObjects, path);
+    const matchedRoutes = this.matchRoutes(this.#routeInfo!.routeObjects, {
+      pathname: path,
+    });
 
     const matchedAppNodes =
       matchedRoutes
@@ -167,13 +176,19 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 
   private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
   private readonly appBasePath: string;
+  private readonly matchRoutes: RouterApi['matchRoutes'];
+  private readonly generatePath: RouterApi['generatePath'];
 
   constructor(
     routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
     appBasePath: string,
+    matchRoutes: RouterApi['matchRoutes'],
+    generatePath: RouterApi['generatePath'],
   ) {
     this.routeBindings = routeBindings;
     this.appBasePath = appBasePath;
+    this.matchRoutes = matchRoutes;
+    this.generatePath = generatePath;
   }
 
   resolve<TParams extends AnyRouteRefParams>(
@@ -204,6 +219,8 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
       this.appBasePath,
       routeInfo.routeAliasResolver,
       routeRefsById,
+      this.matchRoutes,
+      this.generatePath,
     );
     this.#routeObjects = routeInfo.routeObjects;
 
@@ -318,13 +335,26 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   );
 
   const factories = createApiFactories({ tree, collector });
+
+  // Find the router API from factories
+  const routerApiFactory = factories.find(f => f.api.id === routerApiRef.id);
+  if (!routerApiFactory) {
+    throw new Error(
+      'No RouterApi factory found. Make sure the app plugin is included in your features.',
+    );
+  }
+  const routerApi = routerApiFactory.factory({}) as RouterApi;
+  const { matchRoutes, generatePath } = routerApi;
+
   const appBasePath = getBasePath(config);
-  const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
+  const appTreeApi = new AppTreeApiProxy(tree, appBasePath, matchRoutes);
 
   const routeRefsById = collectRouteIds(features, collector);
   const routeResolutionApi = new RouteResolutionApiProxy(
     resolveRouteBindings(options?.bindRoutes, config, routeRefsById, collector),
     appBasePath,
+    matchRoutes,
+    generatePath,
   );
 
   const appIdentityProxy = new AppIdentityProxy();
