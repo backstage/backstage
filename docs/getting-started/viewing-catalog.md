@@ -73,7 +73,7 @@ You can modify the columns associated with each kind of entity, following the in
 For each entity, there are a set of actions that are available.
 
 - View - View the `catalog-info.yaml` file that defines the entity.
-- Edit - Edit the `catalog-info.yaml` file that defines the entity. See [Updating a Component](../getting-started/uiguide/update-a-component.md)
+- Edit - Edit the `catalog-info.yaml` file that defines the entity. See [Updating a Component](../getting-started/update-a-component.md)
 - Star - Designate the entity as a favorite. You can filter and search for starred entities.
 
 ![Screenshot explaining entity actions.](../assets/uiguide/entity-actions.png)
@@ -124,4 +124,5 @@ A page is displayed that includes a **Relations** section. This section displays
 Selecting any of the related entities allows you to drill down further through the system model.
 
 ![Screenshot of the example-website Relations panel.](../assets/uiguide/example-website-relationships.png)
+
 
