@@ -368,11 +368,11 @@ function bindInputs(
   return Object.fromEntries(
     Object.entries(inputs).map(([inputName, input]) => [
       inputName,
-      OpaqueExtensionInput.toInternal(input).withContext({
+      OpaqueExtensionInput.toInternal(input).withContext?.({
         kind,
         name,
         input: inputName,
-      }),
+      }) ?? input,
     ]),
   );
 }
