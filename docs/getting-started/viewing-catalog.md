@@ -1,0 +1,121 @@
+---
+id: viewing-catalog
+title: Viewing the Catalog
+sidebar_label: Viewing the Catalog
+description: Viewing the Catalog
+---
+
+Audience: Developers
+
+## Overview
+
+When you first log into your standalone Backstage App, `Home` is selected in the sidebar, which displays the Catalog in the main panel.
+
+![Screenshot explaining entity actions.](../assets/uiguide/entity-actions.png)
+
+The [Techical Overview](../overview/technical-overview.md) provides greater detail, but the catalog displays two main kinds of registered entities:
+
+- **Core Entities**
+
+  - `Components` - Individual pieces of software that can be tracked in source control and can implement APIs for other components to consume.
+  - `APIs` - Implemented by components and form the boundaries between different components. The API can be either public, restricted, or private.
+  - `Resources` - The physical or virtual infrastructure needed to operate a component.
+
+- **Organizational Entities**
+  - `User` - A person, such as an employee, contractor, or similar.
+  - `Group` - An organizational entity, such as a team, business unit, and so on.
+
+There are three additional items that can be part of the system model:
+
+- `Location` - A marker that references other places to look for catalog data.
+- `Type` - It has no set meaning. You can assign your own types and use them as desired.
+- `Template` - Describes both the parameters that are rendered in the frontend part of the scaffolding wizard, and the steps that are executed when scaffolding that component.
+
+It should be noted that you can also [create your own kinds of entities](../features/software-catalog/extending-the-model.md#adding-a-new-kind), if you need to model something in your organization that does not map to one of the existing entity types.
+
+Initially, the Catalog displays registered entities matching the following filter settings:
+
+- **Kind** - Component
+- **Type** - all
+- **Owner** - Owned
+- **Lifecycle** - list of lifecycle values of entites in the Catalog
+- **Processing Status** - normal
+- **Namespace** - The ID of a [namespace](../features/software-catalog/descriptor-format.md#namespace-optional) to which the entity belongs
+
+You can change the initial setting for each filter. [Catalog Customization](../features/software-catalog/catalog-customization.md) provides additional information.
+
+## Informational columns for each entity
+
+For each kind of entity, a set of columns display information regarding the entity. For example, the default set of information for a `Component` is:
+
+- `Name` - the name of the component
+- `System` - an optional field that references the system to which the component belongs
+- `Owner` - the owner of the component
+- `Type` - common types are as follows, but you can [create a new type](../features/software-catalog/extending-the-model.md#adding-a-new-kind) to meet your organization's needs
+  - `service` - a backend service, typically exposing an API
+  - `website` - a website
+  - `library` - a software library, such as an npm module or a Java library
+- `Lifecyle`
+  - `experimental` - an experiment or early, non-production component, signaling
+    that users may not prefer to consume it over other more established
+    components, or that there are low or no reliability guarantees
+  - `production` - an established, owned, maintained component
+  - `deprecated` - a component that is at the end of its lifecycle, and may
+    disappear at a later point in time
+- `Description` - an optional field that describes the component.
+- `Tags` - an optional field that can be used for searching
+- `Actions` - see [Catalog Actions](#catalog-actions)
+
+You can modify the columns associated with each kind of entity, following the instructions in [Customize Columns](../features/software-catalog/catalog-customization.md#customize-actions).
+
+## Catalog Actions
+
+For each entity, there are a set of actions that are available.
+
+- View - View the `catalog-info.yaml` file that defines the entity.
+- Edit - Edit the `catalog-info.yaml` file that defines the entity. See [Updating a Component](../getting-started/uiguide/update-a-component.md)
+- Star - Designate the entity as a favorite. You can filter and search for starred entities.
+
+![Screenshot explaining entity actions.](../assets/uiguide/entity-actions.png)
+
+[Customize Actions](../features/software-catalog/catalog-customization.md#customize-actions) describes how you can modify the actions that are displayed.
+
+## Viewing entity details
+
+Selecting a entity in the main panel displays details of the entity. The type of details depends on the type of entity. For example, selecting a Component, such as `example-website`, displays the following details:
+
+- About - Metadata for the entity, such as description, owner,tags,and domain.
+- Relations - see [Viewing entity relations](#viewing-entitiy-relationships)
+- Links - any links associated with the entity
+- Has subcomponents - An entity reference to another component of which the component is a part
+
+Selecting a System, such as `examples`, displays `About`, `Relations`, and `Links` similar to a Component, but it also includes `Has components`, `APIs` and `Has Resources`.
+
+![Details of system entity.](../assets/uiguide/details-system-entity.png)
+
+## Viewing what you own
+
+To view the entities that you own:
+
+1. Select `Home` in the sidebar.
+2. Select `User` in the `Kind` dropdown list.
+3. Select your username in the `All Users` list.
+
+A page is displayed that shows the entities of which you have owenership, either directly, or through a group of which you are a member. You can toggle between showing:
+
+- `Direct Relations` - entities that you directly own
+- `Aggregated Relations` - entities that you own through your group
+
+![Entities guest user owns.](../assets/uiguide/entities-owned-by-me.png)
+
+## Viewing entitiy relationships
+
+Each of the entities in the Catalog have various relationships to each other. For example, the demo data includes an API that provides data to a website. `guests` is the owner of the API and the website, and anyone signed in as part of the `guests` group can maintain them. To see these relationships, select the name of the component in the main panel, in this example, **example-website**.
+
+![Screenshot of the Backstage portal with example-website selected.](../assets/uiguide/select-example-website.png)
+
+A page is displayed that includes a **Relations** section. This section displays the selected entity and any other types of entities to which it is related. Each relationship is also designated, such as `hasPart/partOf` and `apiProvidedBy/providesApi`. [Well-known Relations between Catalog Entities](../features/software-catalog/well-known-relations.md) describes the most common relationships but you can also [create your own relationships](../features/software-catalog/extending-the-model.md#adding-a-new-relation-type).
+
+Selecting any of the related entities allows you to drill down further through the system model.
+
+![Screenshot of the example-website Relations panel.](../assets/uiguide/example-website-relationships.png)
