@@ -29082,18 +29082,11 @@ __metadata:
   linkType: hard
 
 "elastic-builder@npm:^2.16.0":
-  version: 2.30.0
-  resolution: "elastic-builder@npm:2.30.0"
+  version: 2.31.1
+  resolution: "elastic-builder@npm:2.31.1"
   dependencies:
-    lodash.has: "npm:^4.5.2"
-    lodash.hasin: "npm:^4.5.2"
-    lodash.head: "npm:^4.0.1"
-    lodash.isempty: "npm:^4.4.0"
-    lodash.isnil: "npm:^4.0.0"
-    lodash.isobject: "npm:^3.0.2"
-    lodash.isstring: "npm:^4.0.1"
-    lodash.omit: "npm:^4.5.0"
-  checksum: 10/10b3e0cd3b24c680a9be6a480e4eb7869daf52ff536b56132f9b906fd577cea8eabfd5baf691768ed92cbb23454575b85ec760a72f7a743ee35b43d199749a4e
+    lodash: "npm:^4.17.21"
+  checksum: 10/8aadd17710114ddd313c9ed3d023769985257877888e466783230d7bdcc5a7747ce0542ad27802af62a0a99791099e470e2f2b83c114007c445d6d0061496719
   languageName: node
   linkType: hard
 
@@ -36995,20 +36988,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.hasin@npm:^4.5.2":
-  version: 4.5.2
-  resolution: "lodash.hasin@npm:4.5.2"
-  checksum: 10/d491be2eb53bcd004ac7eeefdc072fe6b76c701088bf95e8ca406a0b00e45739507ca6ffbce3829bdc9bc13e034877a2bbc08229e3f24d4095c3aa75f927d96a
-  languageName: node
-  linkType: hard
-
-"lodash.head@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "lodash.head@npm:4.0.1"
-  checksum: 10/37666c4f96ad907025754a0e76db49adab148bd2d1a1f4597c4bf7a006d4daad802453e162dffe08d2a488c1283a29f5366c1fc3a1bd2300423c32b0ecb26156
-  languageName: node
-  linkType: hard
-
 "lodash.isarguments@npm:^3.1.0":
   version: 3.1.0
   resolution: "lodash.isarguments@npm:3.1.0"
@@ -37034,20 +37013,6 @@ __metadata:
   version: 3.0.9
   resolution: "lodash.isfunction@npm:3.0.9"
   checksum: 10/99e54c34b1e8a9ba75c034deb39cedbd2aca7af685815e67a2a8ec4f73ec9748cda6ebee5a07d7de4b938e90d421fd280e9c385cc190f903ac217ac8aff30314
-  languageName: node
-  linkType: hard
-
-"lodash.isnil@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "lodash.isnil@npm:4.0.0"
-  checksum: 10/ebf8df69879badd6ad99c4f64c54c470248df5cf92b208ca730861b1d8ac058da7b632ac811d18b0929d93cbac8d8fc866e781ee816b0142c56952e85edc682f
-  languageName: node
-  linkType: hard
-
-"lodash.isobject@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "lodash.isobject@npm:3.0.2"
-  checksum: 10/6c1667cbc4494d0a13a3617a4b23278d6d02dac520311f2bbb43f16f2cf71d2e6eb9dec8057315b77459df4890c756a256a087d3f4baa44a79ab5d6c968b060e
   languageName: node
   linkType: hard
 
