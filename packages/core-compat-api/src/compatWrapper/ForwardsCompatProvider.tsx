@@ -38,10 +38,12 @@ import {
   swappableComponentsApiRef,
   iconsApiRef,
   routeResolutionApiRef,
+  routerApiRef,
   Progress,
   NotFoundErrorPage,
   ErrorDisplay,
 } from '@backstage/frontend-plugin-api';
+import { ReactRouter6RouterApi } from '@backstage/frontend-module-react-router-v6';
 import { ComponentType, createElement, useMemo } from 'react';
 import { ReactNode } from 'react';
 import { toLegacyPlugin } from './BackwardsCompatProvider';
@@ -137,11 +139,13 @@ class ForwardsCompatApis implements ApiHolder {
   readonly #componentsApi: SwappableComponentsApi;
   readonly #iconsApi: IconsApi;
   readonly #routeResolutionApi: RouteResolutionApi;
+  readonly #routerApi: ReactRouter6RouterApi;
 
   constructor(app: AppContext, routeResolver: RouteResolver) {
     this.#componentsApi = new CompatComponentsApi(app);
     this.#iconsApi = new CompatIconsApi(app);
     this.#routeResolutionApi = new CompatRouteResolutionApi(routeResolver);
+    this.#routerApi = new ReactRouter6RouterApi();
   }
 
   get<T>(ref: ApiRef<any>): T | undefined {
@@ -151,6 +155,8 @@ class ForwardsCompatApis implements ApiHolder {
       return this.#iconsApi as T;
     } else if (ref.id === routeResolutionApiRef.id) {
       return this.#routeResolutionApi as T;
+    } else if (ref.id === routerApiRef.id) {
+      return this.#routerApi as T;
     }
     return undefined;
   }

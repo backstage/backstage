@@ -31,12 +31,12 @@ import { render, type RenderResult } from '@testing-library/react';
 import appPlugin from '@backstage/plugin-app';
 import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
-import { MemoryRouter } from 'react-router-dom';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import { getMockApiFactory } from '../apis/MockWithApiFactory';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 import { TestApiPairs } from '../apis/TestApiProvider';
+import { TestMemoryRouterProvider } from '../routing/TestMemoryRouterProvider';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -150,15 +150,11 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
         RouterBlueprint.make({
           params: {
             component: ({ children }) => (
-              <MemoryRouter
+              <TestMemoryRouterProvider
                 initialEntries={options?.initialRouteEntries}
-                future={{
-                  v7_relativeSplatPath: false,
-                  v7_startTransition: false,
-                }}
               >
                 {children}
-              </MemoryRouter>
+              </TestMemoryRouterProvider>
             ),
           },
         }),

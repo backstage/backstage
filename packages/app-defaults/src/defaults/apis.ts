@@ -65,8 +65,15 @@ import {
   permissionApiRef,
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
+import { routerApiRef } from '@backstage/frontend-plugin-api';
+import { ReactRouter6RouterApi } from '@backstage/frontend-module-react-router-v6';
 
 export const apis = [
+  createApiFactory({
+    api: routerApiRef,
+    deps: {},
+    factory: () => new ReactRouter6RouterApi(),
+  }),
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },

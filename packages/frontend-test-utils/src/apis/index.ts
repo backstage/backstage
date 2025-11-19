@@ -104,3 +104,11 @@ export type { MockStorageApi } from './StorageApi';
  * @deprecated Use `mockApis.translation()` instead.
  */
 export type { MockTranslationApi } from './TranslationApi';
+
+export {
+  BaseReactRouterV6Api,
+  MockMemoryRouterApi,
+  type MockMemoryRouterApiOptions,
+  MockBrowserRouterApi,
+  type MockBrowserRouterApiOptions,
+} from './RouterApi';

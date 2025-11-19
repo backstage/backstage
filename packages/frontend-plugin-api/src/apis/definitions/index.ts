@@ -46,6 +46,7 @@ export * from './IdentityApi';
 export * from './DialogApi';
 export * from './OAuthRequestApi';
 export * from './RouteResolutionApi';
+export * from './RouterApi';
 export * from './StorageApi';
 export * from './AnalyticsApi';
 export * from './TranslationApi';

@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 const componentDataRef = createExtensionDataRef<
-  (props: { children: ReactNode }) => JSX.Element | null
+  (props: { children: ReactNode; basePath?: string }) => JSX.Element | null
 >().with({ id: 'app.router.wrapper' });
 
 /**
@@ -39,7 +39,10 @@ export const RouterBlueprint = createExtensionBlueprint({
   *factory(params: {
     /** @deprecated use the `component` parameter instead */
     Component?: [error: 'Use the `component` parameter instead'];
-    component: (props: { children: ReactNode }) => JSX.Element | null;
+    component: (props: {
+      children: ReactNode;
+      basePath?: string;
+    }) => JSX.Element | null;
   }) {
     yield componentDataRef(params.component);
   },

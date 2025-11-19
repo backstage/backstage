@@ -23,6 +23,7 @@ import {
   useApp,
   useRouteRef,
 } from '@backstage/core-plugin-api';
+import { routerApiRef } from '@backstage/frontend-plugin-api';
 import { withLogCollector } from './logCollector';
 import { render } from '@testing-library/react';
 import { useEffect } from 'react';
@@ -177,6 +178,16 @@ describe('wrapInTestApp', () => {
     expect(root).toBeInTheDocument();
     expect(root.children.length).toBe(1);
     expect(root.children[0].textContent).toBe('foo');
+  });
+
+  it('should provide routerApi via mockApis', async () => {
+    const MyComponent = () => {
+      const routerApi = useApi(routerApiRef);
+      return <p>{routerApi ? 'has router api' : 'missing'}</p>;
+    };
+
+    const rendered = await renderInTestApp(<MyComponent />);
+    expect(rendered.getByText('has router api')).toBeInTheDocument();
   });
 
   it('should support rerenders', async () => {

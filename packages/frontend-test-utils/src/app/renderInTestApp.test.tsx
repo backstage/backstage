@@ -17,8 +17,7 @@
 import { useCallback } from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
-import { useAnalytics } from '@backstage/frontend-plugin-api';
-import { Routes, Route } from 'react-router-dom';
+import { useAnalytics, Routes, Route } from '@backstage/frontend-plugin-api';
 import { renderInTestApp } from './renderInTestApp';
 
 describe('renderInTestApp', () => {

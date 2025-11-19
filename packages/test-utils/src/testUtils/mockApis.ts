@@ -21,6 +21,8 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { routerApiRef } from '@backstage/frontend-plugin-api';
+import { ReactRouter6RouterApi } from '@backstage/frontend-module-react-router-v6';
 import { MockErrorApi, MockFetchApi, MockStorageApi } from './apis';
 import { MockTranslationApi } from './apis/TranslationApi';
 
@@ -29,4 +31,5 @@ export const mockApis = [
   createApiFactory(fetchApiRef, new MockFetchApi()),
   createApiFactory(storageApiRef, MockStorageApi.create()),
   createApiFactory(translationApiRef, MockTranslationApi.create()),
+  createApiFactory(routerApiRef, new ReactRouter6RouterApi()),
 ];

@@ -28,12 +28,17 @@ import {
   createSubRouteRef as createLegacySubRouteRef,
   createExternalRouteRef as createLegacyExternalRouteRef,
 } from '@backstage/core-plugin-api';
+import { MockMemoryRouterApi } from '@backstage/frontend-test-utils';
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 import {
   createExactRouteAliasResolver,
   createRouteAliasResolver,
 } from './RouteAliasResolver';
+
+const mockRouter = new MockMemoryRouterApi();
+const matchRoutes = mockRouter.matchRoutes.bind(mockRouter);
+const generatePath = mockRouter.generatePath.bind(mockRouter);
 
 const rest = {
   element: null,
@@ -68,6 +73,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe(undefined);
@@ -91,6 +98,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
@@ -132,6 +141,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
@@ -173,6 +184,8 @@ describe('RouteResolver', () => {
         externalRoutes: new Map(),
       }),
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
@@ -224,6 +237,8 @@ describe('RouteResolver', () => {
         ['test.root', subRef1],
         ['test.param', ref2],
       ]),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(externalRef1, src('/'))?.()).toBe('/my-route');
@@ -280,6 +295,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref2, src('/'))?.({ x: 'x' })).toBe('/root/x');
@@ -337,6 +354,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     const l = '/my-grandparent/my-y/my-parent/my-x';
@@ -412,9 +431,11 @@ describe('RouteResolver', () => {
         },
       ],
       new Map(),
-      '/base',
+      '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref2, src('/'))?.({ x: 'a/#&?b' })).toBe(
@@ -463,6 +484,8 @@ describe('RouteResolver', () => {
         '',
         emptyResolver,
         new Map(),
+        matchRoutes,
+        generatePath,
       );
 
       expect(r.resolve(legacyRef1, src('/'))?.()).toBe(undefined);
@@ -488,6 +511,8 @@ describe('RouteResolver', () => {
         '',
         emptyResolver,
         new Map(),
+        matchRoutes,
+        generatePath,
       );
 
       expect(r.resolve(legacyRef1, src('/'))?.()).toBe('/my-route');
@@ -531,6 +556,8 @@ describe('RouteResolver', () => {
         '',
         emptyResolver,
         new Map(),
+        matchRoutes,
+        generatePath,
       );
 
       expect(r.resolve(legacyRef1, src('/'))?.()).toBe('/my-route');
@@ -591,6 +618,8 @@ describe('RouteResolver', () => {
         '',
         emptyResolver,
         new Map(),
+        matchRoutes,
+        generatePath,
       );
 
       expect(r.resolve(legacyRef2, src('/'))?.({ x: 'x' })).toBe('/root/x');
