@@ -114,15 +114,16 @@ Each of the entities in the Catalog have various relationships to each other. Fo
 
 To see these relationships:
 
-1. select the name of the component in the main panel, in this example, **example-website**.
+1. Select the name of the component in the main panel, in this example, **example-website**.
 
    ![Screenshot of the Backstage portal with example-website selected.](../assets/uiguide/select-example-website.png)
 
 
-A page is displayed that includes a **Relations** section. This section displays the selected entity and any other types of entities to which it is related. Each relationship is also designated, such as `hasPart/partOf` and `apiProvidedBy/providesApi`. [Well-known Relations between Catalog Entities](../features/software-catalog/well-known-relations.md) describes the most common relationships but you can also [create your own relationships](../features/software-catalog/extending-the-model.md#adding-a-new-relation-type).
+A page is displayed that includes a `Relations` section. This section displays the selected entity and any other types of entities to which it is related. Each relationship is also designated, such as `hasPart/partOf` and `apiProvidedBy/providesApi`. [Well-known Relations between Catalog Entities](../features/software-catalog/well-known-relations.md) describes the most common relationships but you can also [create your own relationships](../features/software-catalog/extending-the-model.md#adding-a-new-relation-type).
 
 Selecting any of the related entities allows you to drill down further through the system model.
 
 ![Screenshot of the example-website Relations panel.](../assets/uiguide/example-website-relationships.png)
+
 
 
