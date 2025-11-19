@@ -3275,7 +3275,6 @@ __metadata:
     nodemon: "npm:^3.0.1"
     ora: "npm:^5.3.0"
     recursive-readdir: "npm:^2.2.2"
-    undici: "npm:^7.2.3"
   bin:
     backstage-create-app: bin/backstage-create-app
   languageName: unknown

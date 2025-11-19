@@ -15,10 +15,10 @@
  */
 import { bootstrapEnvProxyAgents } from './proxyBootstrap';
 
+// Avoid mutating the global agents used in other tests
 jest.mock('global-agent', () => ({
   bootstrap: jest.fn(),
 }));
-
 jest.mock('undici', () => ({
   setGlobalDispatcher: jest.fn(),
   EnvHttpProxyAgent: jest.fn(),

@@ -36,15 +36,6 @@ import {
 import { http, HttpResponse, delay } from 'msw';
 import { setupServer } from 'msw/node';
 
-// Avoid mutating the global agents used in other tests
-jest.mock('global-agent', () => ({
-  bootstrap: jest.fn(),
-}));
-jest.mock('undici', () => ({
-  setGlobalDispatcher: jest.fn(),
-  EnvHttpProxyAgent: class {},
-}));
-
 jest.spyOn(Task, 'log').mockReturnValue(undefined);
 jest.spyOn(Task, 'error').mockReturnValue(undefined);
 jest.spyOn(Task, 'section').mockReturnValue(undefined);
