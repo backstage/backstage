@@ -3261,14 +3261,12 @@ __metadata:
     "@backstage/cli-common": "workspace:^"
     "@types/command-exists": "npm:^1.2.0"
     "@types/fs-extra": "npm:^11.0.0"
-    "@types/global-agent": "npm:^3"
     "@types/inquirer": "npm:^8.1.3"
     "@types/node": "npm:^20.16.0"
     "@types/recursive-readdir": "npm:^2.2.0"
     chalk: "npm:^4.0.0"
     commander: "npm:^12.0.0"
     fs-extra: "npm:^11.2.0"
-    global-agent: "npm:^3.0.0"
     handlebars: "npm:^4.7.3"
     inquirer: "npm:^8.2.0"
     msw: "npm:^2.0.0"
@@ -19973,13 +19971,6 @@ __metadata:
   version: 2.1.3
   resolution: "@types/global-agent@npm:2.1.3"
   checksum: 10/6129b6d5ba871b9d111ddf91e6f9a1725d3f28bf2aa6869ec83bebd14c688cde4275ebea6fa45b0b1c00d78109d022c935f952e9e4876d76289d4706484776c3
-  languageName: node
-  linkType: hard
-
-"@types/global-agent@npm:^3":
-  version: 3.0.0
-  resolution: "@types/global-agent@npm:3.0.0"
-  checksum: 10/f961aaf493176e651dcb1bdb8f31b3f933f7ba86a74901c40399622e7f09621d84e0c12cca62ddee12bd8d783656359d25ec88aa57bba3fbcbd58f60f8cbdb18
   languageName: node
   linkType: hard
 
