@@ -80,7 +80,7 @@ describe('resolveExtensionDefinition', () => {
       resolveExtensionDefinition(
         OpaqueExtensionDefinition.toInternal({
           ...baseDef,
-          attachTo: baseInpuf.withContext({
+          attachTo: baseInpuf.withContext?.({
             kind: 'parent',
             name: 'example',
             input: 'children',
@@ -97,7 +97,7 @@ describe('resolveExtensionDefinition', () => {
       resolveExtensionDefinition(
         OpaqueExtensionDefinition.toInternal({
           ...baseDef,
-          attachTo: baseInpuf.withContext({
+          attachTo: baseInpuf.withContext?.({
             name: 'example',
             input: 'children',
           }),
@@ -113,7 +113,7 @@ describe('resolveExtensionDefinition', () => {
       resolveExtensionDefinition(
         OpaqueExtensionDefinition.toInternal({
           ...baseDef,
-          attachTo: baseInpuf.withContext({
+          attachTo: baseInpuf.withContext?.({
             kind: 'parent',
             input: 'children',
           }),
@@ -129,7 +129,7 @@ describe('resolveExtensionDefinition', () => {
       resolveExtensionDefinition(
         OpaqueExtensionDefinition.toInternal({
           ...baseDef,
-          attachTo: baseInpuf.withContext({
+          attachTo: baseInpuf.withContext?.({
             input: 'children',
           }),
         }),
@@ -145,15 +145,15 @@ describe('resolveExtensionDefinition', () => {
         OpaqueExtensionDefinition.toInternal({
           ...baseDef,
           attachTo: [
-            baseInpuf.withContext({
+            baseInpuf.withContext?.({
               kind: 'k1',
               input: 'children',
             }),
-            baseInpuf.withContext({
+            baseInpuf.withContext?.({
               kind: 'k2',
               input: 'children',
             }),
-            baseInpuf.withContext({
+            baseInpuf.withContext?.({
               kind: 'k3',
               input: 'children',
             }),
