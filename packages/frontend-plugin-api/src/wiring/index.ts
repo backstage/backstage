@@ -15,12 +15,13 @@
  */
 
 export { coreExtensionData } from './coreExtensionData';
+export { createExtension } from './createExtension';
 export {
-  createExtension,
   type ExtensionDefinition,
+  type ExtensionDefinitionAttachTo,
   type ExtensionDefinitionParameters,
-  type ExtensionAttachToSpec,
   type CreateExtensionOptions,
+  type OverridableExtensionDefinition,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
 } from './createExtension';
@@ -54,7 +55,11 @@ export {
   type FrontendFeatureLoader,
   type CreateFrontendFeatureLoaderOptions,
 } from './createFrontendFeatureLoader';
-export { type Extension } from './resolveExtensionDefinition';
+export {
+  type Extension,
+  type ExtensionAttachTo,
+  type ExtensionAttachToSpec,
+} from './resolveExtensionDefinition';
 export {
   type ExtensionDataContainer,
   type FeatureFlagConfig,

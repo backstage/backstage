@@ -12,11 +12,11 @@ import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
@@ -25,8 +25,11 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 export const apiDocsTranslationRef: TranslationRef<
   'api-docs',
   {
+    readonly 'apiDefinitionCard.error.title': 'Could not fetch the API';
+    readonly 'apiDefinitionCard.rawButtonTitle': 'Raw';
     readonly 'apiDefinitionDialog.closeButtonTitle': 'Close';
     readonly 'apiDefinitionDialog.tabsAriaLabel': 'API definition options';
+    readonly 'apiDefinitionDialog.rawButtonTitle': 'Raw';
     readonly 'apiDefinitionDialog.toggleButtonAriaLabel': 'Toggle API Definition Dialog';
     readonly 'defaultApiExplorerPage.title': 'APIs';
     readonly 'defaultApiExplorerPage.subtitle': '{{orgName}} API Explorer';
@@ -63,7 +66,7 @@ const _default: OverridableFrontendPlugin<
     registerApi: ExternalRouteRef<undefined>;
   },
   {
-    'api:api-docs/config': ExtensionDefinition<{
+    'api:api-docs/config': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'config';
       config: {};
@@ -78,7 +81,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'entity-card:api-docs/consumed-apis': ExtensionDefinition<{
+    'entity-card:api-docs/consumed-apis': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'consumed-apis';
       config: {
@@ -119,7 +122,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/consuming-components': ExtensionDefinition<{
+    'entity-card:api-docs/consuming-components': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'consuming-components';
       config: {
@@ -160,7 +163,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/definition': ExtensionDefinition<{
+    'entity-card:api-docs/definition': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'definition';
       config: {
@@ -201,7 +204,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/has-apis': ExtensionDefinition<{
+    'entity-card:api-docs/has-apis': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'has-apis';
       config: {
@@ -242,7 +245,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/provided-apis': ExtensionDefinition<{
+    'entity-card:api-docs/provided-apis': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'provided-apis';
       config: {
@@ -283,7 +286,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/providing-components': ExtensionDefinition<{
+    'entity-card:api-docs/providing-components': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'providing-components';
       config: {
@@ -324,7 +327,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-content:api-docs/apis': ExtensionDefinition<{
+    'entity-content:api-docs/apis': OverridableExtensionDefinition<{
       kind: 'entity-content';
       name: 'apis';
       config: {
@@ -384,7 +387,7 @@ const _default: OverridableFrontendPlugin<
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'entity-content:api-docs/definition': ExtensionDefinition<{
+    'entity-content:api-docs/definition': OverridableExtensionDefinition<{
       kind: 'entity-content';
       name: 'definition';
       config: {
@@ -444,7 +447,7 @@ const _default: OverridableFrontendPlugin<
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'nav-item:api-docs': ExtensionDefinition<{
+    'nav-item:api-docs': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
@@ -465,7 +468,7 @@ const _default: OverridableFrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'page:api-docs': ExtensionDefinition<{
+    'page:api-docs': OverridableExtensionDefinition<{
       config: {
         initiallySelectedFilter: 'all' | 'owned' | 'starred' | undefined;
       } & {
@@ -490,8 +493,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };

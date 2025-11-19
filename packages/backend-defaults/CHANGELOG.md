@@ -1,5 +1,48 @@
 # @backstage/backend-defaults
 
+## 0.13.1
+
+### Patch Changes
+
+- 9bcfa77: Adjusted the log line wording of task worker starting
+- 91ab2eb: Fix a bug in the Gitlab URL reader where `search` did not handle multiple globs
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- b2f6a5a: Fix #31348 issue where BitbucketUrlReader ignored provided token and instead always used integration credentials
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/backend-app-api@1.3.0
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config-loader@1.10.6
+  - @backstage/config@1.3.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/plugin-permission-node@0.10.6
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- 91ab2eb: Fix a bug in the Gitlab URL reader where `search` did not handle multiple globs
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-app-api@1.3.0-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
 ## 0.13.1-next.0
 
 ### Patch Changes

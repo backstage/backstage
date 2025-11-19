@@ -35,6 +35,8 @@ import {
 import { CatalogImportClient, catalogImportApiRef } from './api';
 import { rootRouteRef } from './plugin';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 
 export * from './translation';
 
@@ -46,7 +48,11 @@ const catalogImportPage = PageBlueprint.make({
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
       import('./components/ImportPage').then(m =>
-        compatWrapper(<m.ImportPage />),
+        compatWrapper(
+          <RequirePermission permission={catalogEntityCreatePermission}>
+            <m.ImportPage />
+          </RequirePermission>,
+        ),
       ),
   },
 });

@@ -1,5 +1,28 @@
 # @backstage/plugin-gateway-backend
 
+## 1.1.0
+
+### Minor Changes
+
+- 229f63e: Added hop count tracking to prevent proxy loops. The gateway now tracks the number of proxy hops using the `backstage-gateway-hops` header and rejects requests that exceed 3 hops with a 508 Loop Detected error.
+- a17d9df: Update usage of the `instanceMetadata` service.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- a17d9df: Update usage of the `instanceMetadata` service.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
 ## 1.0.7-next.0
 
 ### Patch Changes

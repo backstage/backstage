@@ -12,11 +12,11 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -37,7 +37,7 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:techdocs': ExtensionDefinition<{
+    'api:techdocs': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -52,7 +52,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:techdocs/storage': ExtensionDefinition<{
+    'api:techdocs/storage': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'storage';
       config: {};
@@ -67,7 +67,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'empty-state:techdocs/entity-content': ExtensionDefinition<{
+    'empty-state:techdocs/entity-content': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<
@@ -81,8 +81,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -90,7 +90,7 @@ const _default: OverridableFrontendPlugin<
       kind: 'empty-state';
       name: 'entity-content';
     }>;
-    'entity-content:techdocs': ExtensionDefinition<{
+    'entity-content:techdocs': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
         title: string | undefined;
@@ -175,7 +175,7 @@ const _default: OverridableFrontendPlugin<
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'entity-icon-link:techdocs/read-docs': ExtensionDefinition<{
+    'entity-icon-link:techdocs/read-docs': OverridableExtensionDefinition<{
       kind: 'entity-icon-link';
       name: 'read-docs';
       config: {
@@ -214,7 +214,7 @@ const _default: OverridableFrontendPlugin<
         filter?: EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'nav-item:techdocs': ExtensionDefinition<{
+    'nav-item:techdocs': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
@@ -235,7 +235,7 @@ const _default: OverridableFrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'page:techdocs': ExtensionDefinition<{
+    'page:techdocs': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {
@@ -262,7 +262,7 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
       };
     }>;
-    'page:techdocs/reader': ExtensionDefinition<{
+    'page:techdocs/reader': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
       };
@@ -301,7 +301,7 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
       };
     }>;
-    'search-result-list-item:techdocs': ExtensionDefinition<{
+    'search-result-list-item:techdocs': OverridableExtensionDefinition<{
       config: {
         title: string | undefined;
         lineClamp: number;
@@ -322,6 +322,7 @@ const _default: OverridableFrontendPlugin<
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}
@@ -330,8 +331,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -344,7 +345,7 @@ const _default: OverridableFrontendPlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
+export const techDocsSearchResultListItemExtension: OverridableExtensionDefinition<{
   config: {
     title: string | undefined;
     lineClamp: number;
@@ -365,6 +366,7 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
+      icon?: JSX_2.Element;
     },
     'search.search-result-list-item.item',
     {}
@@ -373,8 +375,8 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
     [x: string]: ExtensionInput<
       ExtensionDataRef,
       {
-        optional: boolean;
         singleton: boolean;
+        optional: boolean;
       }
     >;
   };

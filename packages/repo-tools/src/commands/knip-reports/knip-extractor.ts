@@ -58,7 +58,7 @@ async function generateKnipConfig({ knipConfigPath }: KnipConfigOptions) {
     workspaces: {
       '.': {},
       '{packages,plugins}/*': {
-        entry: ['dev/index.{ts,tsx}', 'src/index.{ts,tsx}'],
+        entry: ['dev/**/*.{ts,tsx}', 'src/index.{ts,tsx}'],
         ignore: [
           '.eslintrc.js',
           'config.d.ts',

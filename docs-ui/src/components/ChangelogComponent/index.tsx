@@ -17,14 +17,17 @@ export const ChangelogComponent = ({ component }: { component: Component }) => {
         ${componentChangelog
           ?.map(change => {
             const prs =
-              change.prs.length > 0 &&
-              change.prs
-                .map(
-                  pr =>
-                    `[#${pr}](https://github.com/backstage/backstage/pull/${pr})`,
-                )
-                .join(', ');
-            return `- \`${change.version}\` - ${change.description} ${prs}`;
+              change.prs.length > 0
+                ? change.prs
+                    .map(
+                      pr =>
+                        `[#${pr}](https://github.com/backstage/backstage/pull/${pr})`,
+                    )
+                    .join(', ')
+                : '';
+            return `- \`${change.version}\` - ${change.description}${
+              prs ? ` ${prs}` : ''
+            }`;
           })
           .join('\n')}`}
     />

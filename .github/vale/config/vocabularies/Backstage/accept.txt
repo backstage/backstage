@@ -59,6 +59,7 @@ Chanwit
 CI/CD
 classname
 cli
+CLIs
 cloudbuild
 Cloudflare
 Cloudformation
@@ -110,6 +111,7 @@ dependabot
 deps
 dequeue
 dequeueing
+dereferencing
 deserialization
 destructured
 destructuring
@@ -148,6 +150,7 @@ etag
 Expedia
 facto
 failover
+faq
 Fargate
 faqs
 featureful
@@ -229,6 +232,7 @@ JWTs
 Kaewkasi
 Kaswell
 keepalive
+Keycloak
 Keyv
 Knex
 knip
@@ -323,6 +327,7 @@ onboarded
 onboarding
 Onboarding
 onelogin
+openapi
 OpenSearch
 OpenShift
 openssl
@@ -569,3 +574,4 @@ Zolotusky
 zoomable
 zsh
 resizable
+enums

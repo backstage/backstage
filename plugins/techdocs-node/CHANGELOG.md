@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-node
 
+## 1.13.9
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/plugin-search-common@1.2.21
+
+## 1.13.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
 ## 1.13.9-next.0
 
 ### Patch Changes

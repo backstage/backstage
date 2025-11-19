@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SearchEntry } from 'ldapjs';
+import { Entry } from 'ldapts';
 
 /**
  * An LDAP Vendor handles unique nuances between different vendors.
@@ -37,7 +37,7 @@ export type LdapVendor = {
    * @param entry - The ldap entry
    * @param name - The attribute to decode
    */
-  decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
+  decodeStringAttribute: (entry: Entry, name: string) => string[];
 };
 
 export const DefaultLdapVendor: LdapVendor = {
@@ -106,11 +106,11 @@ export const LLDAPVendor: LdapVendor = {
 
 // Decode an attribute to a consumer
 function decode(
-  entry: SearchEntry,
+  entry: Entry,
   attributeName: string,
   decoder: (value: string | Buffer) => string,
 ): string[] {
-  const values = entry.raw[attributeName];
+  const values = entry[attributeName];
   if (Array.isArray(values)) {
     return values.map(v => {
       return decoder(v);

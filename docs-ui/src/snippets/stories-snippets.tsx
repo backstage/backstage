@@ -15,7 +15,7 @@ import * as SelectStories from '../../../packages/ui/src/components/Select/Selec
 import * as MenuStories from '../../../packages/ui/src/components/Menu/Menu.stories';
 import * as LinkStories from '../../../packages/ui/src/components/Link/Link.stories';
 import * as AvatarStories from '../../../packages/ui/src/components/Avatar/Avatar.stories';
-import * as CollapsibleStories from '../../../packages/ui/src/components/Collapsible/Collapsible.stories';
+import * as AccordionStories from '../../../packages/ui/src/components/Accordion/Accordion.stories';
 import * as DialogStories from '../../../packages/ui/src/components/Dialog/Dialog.stories';
 import * as RadioGroupStories from '../../../packages/ui/src/components/RadioGroup/RadioGroup.stories';
 import * as TabsStories from '../../../packages/ui/src/components/Tabs/Tabs.stories';
@@ -62,7 +62,7 @@ export const SelectSnippet = createSnippetComponent(SelectStories);
 export const MenuSnippet = createSnippetComponent(MenuStories);
 export const LinkSnippet = createSnippetComponent(LinkStories);
 export const AvatarSnippet = createSnippetComponent(AvatarStories);
-export const CollapsibleSnippet = createSnippetComponent(CollapsibleStories);
+export const AccordionSnippet = createSnippetComponent(AccordionStories);
 export const DialogSnippet = createSnippetComponent(DialogStories);
 export const RadioGroupSnippet = createSnippetComponent(RadioGroupStories);
 export const TabsSnippet = createSnippetComponent(TabsStories);

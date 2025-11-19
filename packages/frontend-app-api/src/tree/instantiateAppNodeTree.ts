@@ -243,20 +243,10 @@ function resolveV1Inputs(
 }
 
 function resolveV2Inputs(
-  inputMap: {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  inputMap: { [inputName in string]: ExtensionInput },
   attachments: ReadonlyMap<string, AppNode[]>,
   parentCollector: ErrorCollector<{ node: AppNode }>,
-): ResolvedExtensionInputs<{
-  [inputName in string]: ExtensionInput<
-    ExtensionDataRef,
-    { optional: boolean; singleton: boolean }
-  >;
-}> {
+): ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }> {
   return mapValues(inputMap, (input, inputName) => {
     const attachedNodes = attachments.get(inputName) ?? [];
     const collector = parentCollector.child({ inputName });
@@ -297,12 +287,7 @@ function resolveV2Inputs(
         collector,
       ),
     );
-  }) as ResolvedExtensionInputs<{
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  }>;
+  }) as ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }>;
 }
 
 /** @internal */

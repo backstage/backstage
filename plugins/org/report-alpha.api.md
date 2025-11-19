@@ -7,10 +7,10 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
@@ -21,7 +21,7 @@ const _default: OverridableFrontendPlugin<
     catalogIndex: ExternalRouteRef<undefined>;
   },
   {
-    'entity-card:org/group-profile': ExtensionDefinition<{
+    'entity-card:org/group-profile': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'group-profile';
       config: {
@@ -62,7 +62,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:org/members-list': ExtensionDefinition<{
+    'entity-card:org/members-list': OverridableExtensionDefinition<{
       config: {
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
@@ -104,8 +104,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -117,7 +117,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:org/ownership': ExtensionDefinition<{
+    'entity-card:org/ownership': OverridableExtensionDefinition<{
       config: {
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
@@ -159,8 +159,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -172,7 +172,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:org/user-profile': ExtensionDefinition<{
+    'entity-card:org/user-profile': OverridableExtensionDefinition<{
       config: {
         maxRelations: number | undefined;
         hideIcons: boolean;
@@ -214,8 +214,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };

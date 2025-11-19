@@ -26,6 +26,7 @@ import type { ReactNode } from 'react';
 import { RiCloseCircleLine } from '@remixicon/react';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { TagGroupDefinition } from './definition';
 import { isExternalLink } from '../../utils/isExternalLink';
 import { useNavigate, useHref } from 'react-router-dom';
 import styles from './TagGroup.module.css';
@@ -36,7 +37,7 @@ import styles from './TagGroup.module.css';
  * @public
  */
 export const TagGroup = <T extends object>(props: TagGroupProps<T>) => {
-  const { classNames, cleanedProps } = useStyles('TagGroup', props);
+  const { classNames, cleanedProps } = useStyles(TagGroupDefinition, props);
   const { items, children, renderEmptyState, ...rest } = cleanedProps;
 
   return (
@@ -61,7 +62,7 @@ export const TagGroup = <T extends object>(props: TagGroupProps<T>) => {
  * @public
  */
 export const Tag = (props: TagProps) => {
-  const { classNames, cleanedProps } = useStyles('TagGroup', {
+  const { classNames, cleanedProps } = useStyles(TagGroupDefinition, {
     size: 'small',
     ...props,
   });

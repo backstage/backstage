@@ -146,6 +146,7 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -190,6 +191,7 @@ describe('<EntityListProvider />', () => {
       expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -264,6 +266,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api', 'spec.type': ['service'] },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -320,6 +323,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'user' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -341,6 +345,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'group' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -370,6 +375,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
 
@@ -384,6 +390,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(3, {
         filter: { kind: 'system' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
 
@@ -489,6 +496,29 @@ describe('<EntityListProvider pagination />', () => {
       expect(result.current.entities.length).toBe(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
   });
 
   it('resolves query param filter values', async () => {
@@ -792,6 +822,29 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       expect(result.current.entities.length).toBe(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
   });
 
   it('resolves query param filter values', async () => {

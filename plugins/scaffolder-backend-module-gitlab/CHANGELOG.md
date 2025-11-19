@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.10.0
+
+### Minor Changes
+
+- ff96d7e: fix scaffolder action createDeployToken to allow usage of oauth tokens
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-scaffolder-node@0.12.1
+
+## 0.10.0-next.1
+
+### Minor Changes
+
+- ff96d7e: fix scaffolder action createDeployToken to allow usage of oauth tokens
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
 ## 0.9.7-next.0
 
 ### Patch Changes

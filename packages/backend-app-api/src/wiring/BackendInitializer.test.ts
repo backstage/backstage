@@ -22,9 +22,9 @@ import {
   createExtensionPoint,
   createBackendFeatureLoader,
   ServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const baseFactories = [
@@ -1110,7 +1110,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should properly add plugins + modules to the instance metadata service', async () => {
-    expect.assertions(2);
+    expect.assertions(1);
     const backend = new BackendInitializer(baseFactories);
     const plugin = createBackendPlugin({
       pluginId: 'test',
@@ -1126,31 +1126,25 @@ describe('BackendInitializer', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            instanceMetadata: instanceMetadataServiceRef,
+            instanceMetadata: coreServices.rootInstanceMetadata,
           },
           async init({ instanceMetadata }) {
-            expect(instanceMetadata.getInstalledFeatures()).toEqual([
+            await expect(
+              instanceMetadata.getInstalledPlugins(),
+            ).resolves.toEqual([
               {
                 pluginId: 'test',
-                type: 'plugin',
-              },
-              {
-                pluginId: 'test',
-                moduleId: 'test',
-                type: 'module',
+                modules: [
+                  {
+                    moduleId: 'test',
+                  },
+                ],
               },
               {
                 pluginId: 'instance-metadata',
-                type: 'plugin',
+                modules: [],
               },
             ]);
-            expect(instanceMetadata.getInstalledFeatures().map(String)).toEqual(
-              [
-                'plugin{pluginId=test}',
-                'module{moduleId=test,pluginId=test}',
-                'plugin{pluginId=instance-metadata}',
-              ],
-            );
           },
         });
       },
@@ -1168,6 +1162,67 @@ describe('BackendInitializer', () => {
     backend.add(plugin);
     backend.add(module);
     backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
+  it('should ignore modules that do not have a matching plugin', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const instanceMetadataPlugin = createBackendPlugin({
+      pluginId: 'instance-metadata',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.rootInstanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            await expect(
+              instanceMetadata.getInstalledPlugins(),
+            ).resolves.toEqual([
+              {
+                pluginId: 'instance-metadata',
+                modules: [],
+              },
+            ]);
+          },
+        });
+      },
+    });
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    backend.add(module);
+    backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
+  it('should prevent writes to the instance metadata service', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.rootInstanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            const plugins = await instanceMetadata.getInstalledPlugins();
+            await expect(() => {
+              (plugins[0] as any).pluginId = 'foo';
+            }).toThrow(/Cannot assign to read only property/);
+          },
+        });
+      },
+    });
+    backend.add(plugin);
     await backend.start();
   });
 

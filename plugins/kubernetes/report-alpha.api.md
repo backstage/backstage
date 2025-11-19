@@ -11,8 +11,8 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -24,7 +24,7 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:kubernetes': ExtensionDefinition<{
+    'api:kubernetes': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -39,7 +39,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:kubernetes/auth-providers': ExtensionDefinition<{
+    'api:kubernetes/auth-providers': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'auth-providers';
       config: {};
@@ -54,7 +54,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:kubernetes/cluster-link-formatter': ExtensionDefinition<{
+    'api:kubernetes/cluster-link-formatter': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'cluster-link-formatter';
       config: {};
@@ -69,7 +69,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:kubernetes/proxy': ExtensionDefinition<{
+    'api:kubernetes/proxy': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'proxy';
       config: {};
@@ -84,7 +84,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'entity-content:kubernetes/kubernetes': ExtensionDefinition<{
+    'entity-content:kubernetes/kubernetes': OverridableExtensionDefinition<{
       kind: 'entity-content';
       name: 'kubernetes';
       config: {
@@ -144,7 +144,7 @@ const _default: OverridableFrontendPlugin<
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'page:kubernetes': ExtensionDefinition<{
+    'page:kubernetes': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {

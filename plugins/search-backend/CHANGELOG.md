@@ -1,5 +1,34 @@
 # @backstage/plugin-search-backend
 
+## 2.0.8
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-search-backend-node@1.3.17
+  - @backstage/config@1.3.6
+  - @backstage/backend-openapi-utils@0.6.3
+  - @backstage/plugin-permission-node@0.10.6
+  - @backstage/plugin-search-common@1.2.21
+
+## 2.0.8-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+  - @backstage/plugin-search-backend-node@1.3.17-next.1
+
 ## 2.0.8-next.0
 
 ### Patch Changes

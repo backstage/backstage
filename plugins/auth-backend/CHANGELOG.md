@@ -1,5 +1,35 @@
 # @backstage/plugin-auth-backend
 
+## 0.25.6
+
+### Patch Changes
+
+- a9315d0: Change internal `state` column to `text` to support state of over 255 characters
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- 51ff7d8: Allow configuring dynamic client registration token expiration with config `auth.experimentalDynamicClientRegistration.tokenExpiration`.
+
+  Maximum expiration for the DCR token is 24 hours. Default expiration is 1 hour.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+
+## 0.25.6-next.1
+
+### Patch Changes
+
+- 51ff7d8: Allow configuring dynamic client registration token expiration with config `auth.experimentalDynamicClientRegistration.tokenExpiration`.
+
+  Maximum expiration for the DCR token is 24 hours. Default expiration is 1 hour.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+
 ## 0.25.6-next.0
 
 ### Patch Changes

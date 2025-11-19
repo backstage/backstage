@@ -79,7 +79,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    */
   nodes: Types.DependencyNode<NodeData>[];
   /**
-   * Graph {@link DependencyGraphTypes.Direction | direction}
+   * Graph {@link DependencyGraphTypes.(Direction:namespace) | direction}
    *
    * @remarks
    *
@@ -87,7 +87,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    */
   direction?: Types.Direction;
   /**
-   * Node {@link DependencyGraphTypes.Alignment | alignment}
+   * Node {@link DependencyGraphTypes.(Alignment:namespace) | alignment}
    */
   align?: Types.Alignment;
   /**
@@ -135,7 +135,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    */
   acyclicer?: 'greedy';
   /**
-   * {@link DependencyGraphTypes.Ranker | Algorithm} used to rank nodes
+   * {@link DependencyGraphTypes.(Ranker:namespace) | Algorithm} used to rank nodes
    *
    * @remarks
    *
@@ -143,7 +143,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    */
   ranker?: Types.Ranker;
   /**
-   * {@link DependencyGraphTypes.LabelPosition | Position} of label in relation to edge
+   * {@link DependencyGraphTypes.(LabelPosition:namespace) | Position} of label in relation to edge
    *
    * @remarks
    *
@@ -533,7 +533,7 @@ export function DependencyGraph<NodeData, EdgeData>(
               height={graphHeight}
               y={maxHeight / 2 - graphHeight / 2}
               x={maxWidth / 2 - graphWidth / 2}
-              viewBox={`-25 -25 ${graphWidth + 50} ${graphHeight + 50}`}
+              viewBox={`0 0 ${graphWidth} ${graphHeight}`}
             >
               {graphEdges.map(e => {
                 const edge = graph.current.edge(e) as GraphEdge<EdgeData>;

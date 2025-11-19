@@ -1,5 +1,30 @@
 # @backstage/cli
 
+## 0.34.5
+
+### Patch Changes
+
+- fc7cbfc: The templates executed with the `yarn new` command now supports templating filenames.
+- da19cb5: Fix inconsistent behavior in the `new` command for the `@internal` scope: it now consistently defaults to the `backstage-plugin-` infix whether the `--scope` option is not set or it's set to `internal`.
+- fc7cbfc: Added a template for the `yarn new` command to create an catalog entity provider. To add this template to an explicit list in the root `package.json`, use `@backstage/cli/templates/catalog-provider-module`.
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- 279279c: Fixes an issue where using the `backstage-cli new --scope` command with a scope that already includes the `@` symbol (e.g., `@backstage-community`) would result in a double `@@` prefix in the generated package name, causing invalid `package.json` files.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/eslint-plugin@0.2.0
+  - @backstage/config-loader@1.10.6
+  - @backstage/config@1.3.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/catalog-model@1.7.6
+
+## 0.34.5-next.1
+
+### Patch Changes
+
+- da19cb5: Fix inconsistent behavior in the `new` command for the `@internal` scope: it now consistently defaults to the `backstage-plugin-` infix whether the `--scope` option is not set or it's set to `internal`.
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+
 ## 0.34.5-next.0
 
 ### Patch Changes
