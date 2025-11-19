@@ -23,3 +23,12 @@ export {
 } from './ExternalRouteRef';
 export { useRouteRef } from './useRouteRef';
 export { useRouteRefParams } from './useRouteRefParams';
+
+export {
+  type RoutingContextType,
+  type RoutingLocation,
+  type ResolvedPath,
+  type RouteObject,
+  type RouteMatch,
+} from './RoutingContext';
+export { useRouting } from './hooks';

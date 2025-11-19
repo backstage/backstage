@@ -15,12 +15,12 @@
  */
 
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
+import { useRouting } from './hooks';
 
 /**
  * React hook for constructing URLs to routes.
@@ -39,12 +39,14 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
     | SubRouteRef<TParams>
     | ExternalRouteRef<TParams>,
 ): RouteFunc<TParams> | undefined {
-  const { pathname } = useLocation();
+  const { useLocation } = useRouting();
+  const location = useLocation();
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
   const routeFunc = useMemo(
-    () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
-    [routeResolutionApi, routeRef, pathname],
+    () =>
+      routeResolutionApi.resolve(routeRef, { sourcePath: location.pathname }),
+    [routeResolutionApi, routeRef, location.pathname],
   );
 
   return routeFunc;

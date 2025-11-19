@@ -19,6 +19,7 @@ import {
   ExternalRouteRef,
   RouteRef,
   SubRouteRef,
+  RouteObject,
 } from '@backstage/frontend-plugin-api';
 
 /** @internal */
@@ -28,7 +29,7 @@ export type AnyRouteRef = RouteRef | SubRouteRef | ExternalRouteRef;
  * A duplicate of the react-router RouteObject, but with routeRef added
  * @internal
  */
-export interface BackstageRouteObject {
+export interface BackstageRouteObject extends RouteObject {
   caseSensitive: boolean;
   children?: BackstageRouteObject[];
   element: React.ReactNode;

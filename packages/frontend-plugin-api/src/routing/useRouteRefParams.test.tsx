@@ -15,9 +15,10 @@
  */
 
 import { render } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { TestRouterProvider } from '@backstage/frontend-test-utils';
 import { useRouteRefParams } from './useRouteRefParams';
 import { createRouteRef } from './RouteRef';
+import { useRouting } from './hooks';
 
 describe('useRouteRefParams', () => {
   it('should provide types params', () => {
@@ -36,12 +37,19 @@ describe('useRouteRefParams', () => {
       );
     };
 
-    const { getByText } = render(
-      <MemoryRouter initialEntries={['/foo/bar']}>
+    const Wrapper = () => {
+      const { Routes, Route } = useRouting();
+      return (
         <Routes>
           <Route path="/:a/:b" element={<Page />} />
         </Routes>
-      </MemoryRouter>,
+      );
+    };
+
+    const { getByText } = render(
+      <TestRouterProvider initialEntries={['/foo/bar']}>
+        <Wrapper />
+      </TestRouterProvider>,
     );
 
     expect(getByText('foo')).toBeInTheDocument();

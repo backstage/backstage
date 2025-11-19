@@ -32,7 +32,7 @@ import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import { configApiRef, featureFlagsApiRef } from '@backstage/core-plugin-api';
-import { MemoryRouter } from 'react-router-dom';
+import { TestRouterProvider } from '@backstage/frontend-test-utils';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { Fragment } from 'react';
 
@@ -462,13 +462,13 @@ describe('createSpecializedApp', () => {
             return [
               coreExtensionData.reactElement(
                 <ApiProvider apis={apis}>
-                  <MemoryRouter>
+                  <TestRouterProvider>
                     {inputs.children.map(i => (
                       <Fragment key={i.node.spec.id}>
                         {i.get(coreExtensionData.reactElement)}
                       </Fragment>
                     ))}
-                  </MemoryRouter>
+                  </TestRouterProvider>
                 </ApiProvider>,
               ),
             ];

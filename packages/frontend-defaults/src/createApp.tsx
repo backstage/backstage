@@ -21,6 +21,7 @@ import {
   ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
+  RoutingContextType,
 } from '@backstage/frontend-plugin-api';
 import { Progress } from '@backstage/core-components';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -100,6 +101,14 @@ export interface CreateAppOptions {
      * Allows for customizing how plugin info is retrieved.
      */
     pluginInfoResolver?: FrontendPluginInfoResolver;
+
+    /**
+     * Allows for customizing the routing implementation.
+     */
+    router?: {
+      matchRoutes: RoutingContextType['matchRoutes'];
+      generatePath: RoutingContextType['generatePath'];
+    };
   };
 }
 

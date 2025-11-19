@@ -15,3 +15,7 @@
  */
 
 export { type CreateAppRouteBinder } from './resolveRouteBindings';
+export {
+  ReactRouter6Router,
+  ReactRouter6Provider,
+} from './ReactRouter6Provider';

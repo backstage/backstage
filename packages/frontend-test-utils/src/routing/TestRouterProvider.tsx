@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { AnyRouteRefParams } from './types';
-import { RouteRef } from './RouteRef';
-import { SubRouteRef } from './SubRouteRef';
-import { useRouting } from './hooks';
+import { ReactRouter6Provider } from '@backstage/frontend-app-api';
+import { MemoryRouter, MemoryRouterProps } from 'react-router-dom';
 
 /**
- * React hook for retrieving dynamic params from the current URL.
- * @param _routeRef - Ref of the current route.
+ * A Backstage router and provider for testing that uses MemoryRouter from React Router v6.
+ *
  * @public
  */
-export function useRouteRefParams<Params extends AnyRouteRefParams>(
-  _routeRef: RouteRef<Params> | SubRouteRef<Params>,
-): Params {
-  const { useParams } = useRouting();
-  const params = useParams();
-  return params as Params;
-}
+export const TestRouterProvider = ({
+  children,
+  ...props
+}: MemoryRouterProps) => {
+  return (
+    <MemoryRouter {...props}>
+      <ReactRouter6Provider>{children}</ReactRouter6Provider>
+    </MemoryRouter>
+  );
+};

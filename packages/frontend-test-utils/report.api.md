@@ -14,6 +14,8 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { MemoryRouterProps } from 'react-router-dom';
 import { mockApis } from '@backstage/test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
 import { MockErrorApi } from '@backstage/test-utils';
@@ -148,6 +150,12 @@ export type TestAppOptions = {
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
 };
+
+// @public
+export const TestRouterProvider: ({
+  children,
+  ...props
+}: MemoryRouterProps) => JSX_2.Element;
 
 export { withLogCollector };
 ```

@@ -1910,12 +1910,50 @@ export type ResolvedExtensionInputs<
     : Expand<ResolvedExtensionInput<TInputs[InputName]> | undefined>;
 };
 
+// @public (undocumented)
+export interface ResolvedPath {
+  // (undocumented)
+  hash: string;
+  // (undocumented)
+  pathname: string;
+  // (undocumented)
+  search: string;
+}
+
 // @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (
   ...[params]: TParams extends undefined
     ? readonly []
     : readonly [params: TParams]
 ) => string;
+
+// @public (undocumented)
+export interface RouteMatch<T extends RouteObject = RouteObject> {
+  // (undocumented)
+  params: Record<string, string | undefined>;
+  // (undocumented)
+  pathname: string;
+  // (undocumented)
+  route: T;
+}
+
+// @public (undocumented)
+export interface RouteObject {
+  // (undocumented)
+  [key: string]: unknown;
+  // (undocumented)
+  appNode?: AppNode;
+  // (undocumented)
+  caseSensitive?: boolean;
+  // (undocumented)
+  children?: RouteObject[];
+  // (undocumented)
+  element?: ReactNode;
+  // (undocumented)
+  path?: string;
+  // (undocumented)
+  routeRefs?: Set<RouteRef<AnyRouteRefParams>>;
+}
 
 // @public (undocumented)
 export const RouterBlueprint: ExtensionBlueprint_2<{
@@ -1967,6 +2005,85 @@ export interface RouteResolutionApi {
 
 // @public
 export const routeResolutionApiRef: ApiRef_2<RouteResolutionApi>;
+
+// @public (undocumented)
+export interface RoutingContextType {
+  // (undocumented)
+  generatePath: (
+    path: string,
+    params?: Record<string, string | undefined>,
+  ) => string;
+  // (undocumented)
+  Link: React.ComponentType<{
+    to: string;
+    children?: ReactNode;
+    className?: string;
+  }>;
+  // (undocumented)
+  matchRoutes: <T extends RouteObject = RouteObject>(
+    routes: T[],
+    location: {
+      pathname: string;
+    },
+  ) => RouteMatch<T>[] | null;
+  // (undocumented)
+  NavLink: React.ComponentType<{
+    to: string;
+    children?: ReactNode;
+    className?: string | ((props: { isActive: boolean }) => string);
+    style?:
+      | React.CSSProperties
+      | ((props: { isActive: boolean }) => React.CSSProperties);
+    end?: boolean;
+  }>;
+  // (undocumented)
+  Outlet: React.ComponentType<{}>;
+  // (undocumented)
+  resolvePath: (to: string, fromPathname?: string) => ResolvedPath;
+  // (undocumented)
+  Route: React.ComponentType<{
+    path?: string;
+    element?: ReactNode;
+    children?: ReactNode;
+  }>;
+  // (undocumented)
+  Routes: React.ComponentType<{
+    children?: ReactNode;
+  }>;
+  // (undocumented)
+  useHref: () => (to: string) => string;
+  // (undocumented)
+  useLocation: () => RoutingLocation;
+  // (undocumented)
+  useNavigate: () => (to: string) => void;
+  // (undocumented)
+  useOutlet: () => () => ReactNode | null;
+  // (undocumented)
+  useParams: () => Record<string, string | undefined>;
+  // (undocumented)
+  useResolvedPath: () => (to: string) => ResolvedPath;
+  // (undocumented)
+  useRoutes: () => (routes: RouteObject[]) => ReactNode | null;
+  // (undocumented)
+  useSearchParams: () => [
+    URLSearchParams,
+    (
+      nextParams:
+        | URLSearchParams
+        | ((prev: URLSearchParams) => URLSearchParams),
+    ) => void,
+  ];
+}
+
+// @public (undocumented)
+export interface RoutingLocation {
+  // (undocumented)
+  hash: string;
+  // (undocumented)
+  pathname: string;
+  // (undocumented)
+  search: string;
+}
 
 // @public
 export type SessionApi = {
@@ -2396,6 +2513,9 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
+
+// @public
+export function useRouting(): RoutingContextType;
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(

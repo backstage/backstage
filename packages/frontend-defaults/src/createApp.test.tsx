@@ -225,7 +225,7 @@ describe('createApp', () => {
     });
 
     await expect(renderWithEffects(app.createRoot())).rejects.toThrow(
-      /Failed to read frontend features from loader created at '.*\/createApp\.test\.tsx:\d+:\d+': TypeError: boom/,
+      /Failed to read frontend features from loader created at '.*[\\/]createApp\.test\.tsx:\d+:\d+': TypeError: boom/,
     );
   });
 

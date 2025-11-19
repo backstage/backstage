@@ -13,7 +13,10 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RoutingContextType } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -158,6 +161,10 @@ export type CreateSpecializedAppOptions = {
       | ExtensionFactoryMiddleware
       | ExtensionFactoryMiddleware[];
     pluginInfoResolver?: FrontendPluginInfoResolver;
+    router?: {
+      matchRoutes: RoutingContextType['matchRoutes'];
+      generatePath: RoutingContextType['generatePath'];
+    };
   };
 };
 
@@ -174,4 +181,18 @@ export type FrontendPluginInfoResolver = (ctx: {
 }) => Promise<{
   info: FrontendPluginInfo;
 }>;
+
+// @public
+export const ReactRouter6Provider: ({
+  children,
+}: {
+  children: ReactNode;
+}) => JSX_2.Element;
+
+// @public
+export const ReactRouter6Router: ({
+  children,
+}: {
+  children: ReactNode;
+}) => JSX_2.Element;
 ```

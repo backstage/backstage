@@ -50,6 +50,7 @@ import { useVersionedContext } from '@backstage/version-bridge';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { type RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
+import { ReactRouter6Provider } from '@backstage/frontend-app-api';
 
 class CompatComponentsApi implements SwappableComponentsApi {
   readonly #Progress: ComponentType<ProgressProps>;
@@ -172,5 +173,9 @@ function NewAppApisProvider(props: { children: ReactNode }) {
 }
 
 export function ForwardsCompatProvider(props: { children: ReactNode }) {
-  return <NewAppApisProvider>{props.children}</NewAppApisProvider>;
+  return (
+    <NewAppApisProvider>
+      <ReactRouter6Provider>{props.children}</ReactRouter6Provider>
+    </NewAppApisProvider>
+  );
 }
