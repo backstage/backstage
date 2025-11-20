@@ -31,5 +31,5 @@ Under the hood this leverages a new `useBackstageSteamedDownload` hook that is l
 Affected packages:
 
 - `catalog` - with new CatalogExportButton
-- new `catalog-backend-module-export`
+- New `catalog-backend-module-export`
 - Example app and example backend
