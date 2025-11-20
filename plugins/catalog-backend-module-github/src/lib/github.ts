@@ -182,14 +182,15 @@ export type Connection<T> = {
  * @param tokenType - The type of GitHub credential
  * @param userTransformer - Optional transformer for user entities
  * @param pageSizes - Optional page sizes configuration
+ * @param excludeSuspendedUsers - Optional flag to exclude suspended users (only for GitHub Enterprise instances)
  */
 export async function getOrganizationUsers(
   client: typeof graphql,
   org: string,
   tokenType: GithubCredentialType,
-  excludeSuspendedUsers: boolean = false,
   userTransformer: UserTransformer = defaultUserTransformer,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
+  excludeSuspendedUsers: boolean = false,
 ): Promise<{ users: Entity[] }> {
   const suspendedAtField = excludeSuspendedUsers ? 'suspendedAt,' : '';
   const query = `

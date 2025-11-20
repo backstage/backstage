@@ -134,13 +134,13 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
   id: string;
   githubUrl: string;
   orgs?: string[];
-  excludeSuspendedUsers?: boolean;
   schedule: SchedulerServiceTaskScheduleDefinition;
   pageSizes?: {
     teams?: number;
     teamMembers?: number;
     organizationMembers?: number;
   };
+  excludeSuspendedUsers?: boolean;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
   const baseConfig = rootConfig.getOptional(baseKey);
@@ -156,8 +156,6 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     id: c.getString('id'),
     githubUrl: c.getString('githubUrl'),
     orgs: c.getOptionalStringArray('orgs'),
-    excludeSuspendedUsers:
-      c.getOptionalBoolean('excludeSuspendedUsers') ?? false,
     schedule: readSchedulerServiceTaskScheduleDefinitionFromConfig(
       c.getConfig('schedule'),
     ),
@@ -170,5 +168,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
           ),
         }
       : undefined,
+    excludeSuspendedUsers:
+      c.getOptionalBoolean('excludeSuspendedUsers') ?? false,
   }));
 }

@@ -211,7 +211,7 @@ describe('github', () => {
       );
 
       await expect(
-        getOrganizationUsers(graphql, 'a', 'token', true),
+        getOrganizationUsers(graphql, 'a', 'token', undefined, undefined, true),
       ).resolves.toEqual(output);
     });
   });
@@ -274,13 +274,7 @@ describe('github', () => {
       );
 
       await expect(
-        getOrganizationUsers(
-          graphql,
-          'a',
-          'token',
-          false,
-          customUserTransformer,
-        ),
+        getOrganizationUsers(graphql, 'a', 'token', customUserTransformer),
       ).resolves.toEqual(output);
     });
 
@@ -327,7 +321,6 @@ describe('github', () => {
         graphql,
         'a',
         'token',
-        false,
         customUserTransformer,
       );
 
@@ -385,8 +378,9 @@ describe('github', () => {
           graphql,
           'a',
           'token',
-          false,
           customUserTransformer,
+          undefined,
+          false,
         ),
       ).resolves.toEqual(output);
     });
@@ -1044,19 +1038,12 @@ describe('github', () => {
         }),
       );
 
-      await getOrganizationUsers(
-        graphql as any,
-        org,
-        'token',
-        false,
-        undefined,
-        {
-          teams: 10,
-          teamMembers: 20,
-          organizationMembers: 30,
-          repositories: 10,
-        },
-      );
+      await getOrganizationUsers(graphql as any, org, 'token', undefined, {
+        teams: 10,
+        teamMembers: 20,
+        organizationMembers: 30,
+        repositories: 10,
+      });
     });
 
     it('uses custom page sizes for getOrganizationRepositories', async () => {

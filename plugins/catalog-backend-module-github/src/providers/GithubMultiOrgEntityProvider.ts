@@ -314,9 +314,9 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         client,
         org,
         tokenType,
-        this.options.excludeSuspendedUsers,
         this.options.userTransformer,
         pageSizes,
+        this.options.excludeSuspendedUsers,
       );
 
       const { teams } = await getOrganizationTeams(
@@ -467,9 +467,9 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
-      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
       pageSizes,
+      this.options.excludeSuspendedUsers,
     );
 
     const { teams } = await getOrganizationTeams(
@@ -702,9 +702,9 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
-      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
       pageSizes,
+      this.options.excludeSuspendedUsers,
     );
 
     const usersFromChangedGroup = isGroupEntity(team)

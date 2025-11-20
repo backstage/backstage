@@ -53,6 +53,7 @@ import {
   createGraphqlClient,
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
+  DEFAULT_PAGE_SIZES,
   DeferredEntitiesBuilder,
   getOrganizationTeam,
   getOrganizationTeams,
@@ -245,8 +246,9 @@ export class GithubOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
-      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
+      DEFAULT_PAGE_SIZES,
+      this.options.excludeSuspendedUsers,
     );
     const { teams } = await getOrganizationTeams(
       client,
@@ -374,8 +376,9 @@ export class GithubOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
-      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
+      DEFAULT_PAGE_SIZES,
+      this.options.excludeSuspendedUsers,
     );
 
     if (!isGroupEntity(team)) {
@@ -466,8 +469,9 @@ export class GithubOrgEntityProvider implements EntityProvider {
       client,
       org,
       tokenType,
-      this.options.excludeSuspendedUsers,
       this.options.userTransformer,
+      DEFAULT_PAGE_SIZES,
+      this.options.excludeSuspendedUsers,
     );
 
     const usersToRebuild = users.filter(u => u.metadata.name === userLogin);
