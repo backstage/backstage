@@ -22,9 +22,8 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { getExporter } from '../exporters';
-import { MiddlewareFactory } from '@backstage/backend-defaults';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { DEFAULT_COLUMNS, ExportFormat } from '../index.ts';
-import { toEntityFilterQuery } from './service.ts';
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -40,25 +39,27 @@ export const createRouter = (options: RouterOptions): express.Router => {
   router.use(express.json());
 
   router.post('/', async (request, response) => {
-    const exportFormat = String(
-      request.query.exportFormat ?? ExportFormat.CSV,
-    ) as ExportFormat;
-    const filter = toEntityFilterQuery(request.query);
+    const exportFormat = (request.query.exportFormat ??
+      ExportFormat.CSV) as ExportFormat;
+    const backendFilters = { ...request.query };
+    delete backendFilters.exportFormat;
     logger.info(
       `Exporting catalog format=${exportFormat} filter=${JSON.stringify(
-        filter,
+        backendFilters,
       )}`,
     );
 
     const credentials = await httpAuth.credentials(request);
     const { items: entities } = await catalogApi.getEntities(
-      { filter },
+      { filter: backendFilters as Record<string, string> },
       { credentials },
     );
 
     const exporter = getExporter(exportFormat);
-    // TODO: later make this customizable via a query param
+
+    // later make this customizable via a query param
     const columns = DEFAULT_COLUMNS;
+
     const body = await exporter.serialize(entities, columns);
 
     response.attachment(exporter.filename);

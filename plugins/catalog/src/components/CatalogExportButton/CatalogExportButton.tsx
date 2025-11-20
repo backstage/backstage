@@ -30,6 +30,8 @@ import {
   useBackstageStreamedDownload,
   type BackstageStreamedDownloadOptions,
 } from './file-download';
+import { setEnabledBackendFilters } from './setEnabledBackendFilters.ts';
+import { useEntityList } from '@backstage/plugin-catalog-react';
 
 export enum CatalogExportType {
   CSV = 'csv',
@@ -37,6 +39,7 @@ export enum CatalogExportType {
 }
 
 export const CatalogExportButton = () => {
+  const { filters } = useEntityList();
   const {
     download: postExport,
     loading,
@@ -70,10 +73,9 @@ export const CatalogExportButton = () => {
   const handleExport = useCallback(async () => {
     setIsExporting(true);
 
-    const newSearchParams = new URLSearchParams(window.location.search);
-    newSearchParams.delete('limit');
-    newSearchParams.delete('cursor');
+    const newSearchParams = new URLSearchParams();
     newSearchParams.set('exportFormat', exportFormat);
+    setEnabledBackendFilters(filters, newSearchParams);
 
     const options: BackstageStreamedDownloadOptions = {
       url: '/api/catalog/export',
@@ -81,7 +83,7 @@ export const CatalogExportButton = () => {
       searchParams: newSearchParams,
     };
     await postExport(options);
-  }, [exportFormat, postExport]);
+  }, [filters, exportFormat, postExport]);
 
   return (
     <>
