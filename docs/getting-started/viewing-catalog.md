@@ -74,7 +74,7 @@ For each entity, there are a set of actions that are available.
 
 - View - View the `catalog-info.yaml` file that defines the entity.
 - Edit - Edit the `catalog-info.yaml` file that defines the entity. See [Updating a Component](../getting-started/update-a-component.md)
-- Star - Designate the entity as a favorite. You can filter and search for starred entities.
+- Star - Designate the entity as a favorite. You can filter and [search](../getting-started/search-catalog.md) for starred entities.
 
 ![Screenshot explaining entity actions.](../assets/uiguide/entity-actions.png)
 
@@ -92,38 +92,5 @@ Selecting a entity in the main panel displays details of the entity. The type of
 Selecting a System, such as `examples`, displays `About`, `Relations`, and `Links` similar to a Component, but it also includes `Has components`, `APIs` and `Has Resources`.
 
 ![Details of system entity.](../assets/uiguide/details-system-entity.png)
-
-## Viewing what you own
-
-To view the entities that you own:
-
-1. Select `Home` in the sidebar.
-2. Select `User` in the `Kind` dropdown list.
-3. Select your username in the `All Users` list.
-
-A page is displayed that shows the entities of which you have owenership, either directly, or through a group of which you are a member. You can toggle between showing:
-
-- `Direct Relations` - entities that you directly own
-- `Aggregated Relations` - entities that you own through your group
-
-![Entities guest user owns.](../assets/uiguide/entities-owned-by-me.png)
-
-## Viewing entitiy relationships
-
-Each of the entities in the Catalog have various relationships to each other. For example, the demo data includes an API that provides data to a website. `guests` is the owner of the API and the website, and anyone signed in as part of the `guests` group can maintain them.
-
-To see these relationships:
-
-1. Select the name of the component in the main panel, in this example, **example-website**.
-
-   ![Screenshot of the Backstage portal with example-website selected.](../assets/uiguide/select-example-website.png)
-
-
-A page is displayed that includes a `Relations` section. This section displays the selected entity and any other types of entities to which it is related. Each relationship is also designated, such as `hasPart/partOf` and `apiProvidedBy/providesApi`. [Well-known Relations between Catalog Entities](../features/software-catalog/well-known-relations.md) describes the most common relationships but you can also [create your own relationships](../features/software-catalog/extending-the-model.md#adding-a-new-relation-type).
-
-Selecting any of the related entities allows you to drill down further through the system model.
-
-![Screenshot of the example-website Relations panel.](../assets/uiguide/example-website-relationships.png)
-
 
 
