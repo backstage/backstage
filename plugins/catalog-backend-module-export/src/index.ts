@@ -18,9 +18,6 @@
  * The export backend module for the catalog plugin.
  *
  * @packageDocumentation
+ * @public
  */
-
 export { catalogModuleExport as default } from './module';
-export * from './exporters';
-export * from './types';
-export * from './util';

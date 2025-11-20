@@ -23,7 +23,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { getExporter } from '../exporters';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { DEFAULT_COLUMNS, ExportFormat } from '../index.ts';
+import { DEFAULT_COLUMNS, ExportFormat } from '../types';
 
 export interface RouterOptions {
   logger: LoggerService;

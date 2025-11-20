@@ -50,7 +50,7 @@ describe('CsvExporter', () => {
     ] as any;
 
     // Mock getEntityDataFromColumns to return deterministic rows based on entity
-    getEntityDataMock.mockImplementation((entity: any, cols: any) => {
+    getEntityDataMock.mockImplementation((entity: any, _: any) => {
       return {
         name: entity.metadata?.name,
         owner: `${entity.metadata?.name}-owner`,

@@ -43,6 +43,12 @@ export enum CatalogExportType {
   JSON = 'json',
 }
 
+/**
+ * A button that opens a dialog to export the current catalog selection.
+ *
+ * @param buttonProps - Props to pass to the export button
+ * @public
+ */
 export const CatalogExportButton = ({
   buttonProps,
 }: {

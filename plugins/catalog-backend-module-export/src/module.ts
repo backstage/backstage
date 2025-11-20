@@ -20,6 +20,10 @@ import {
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { createRouter } from './router/router';
 
+/**
+ * The export backend module for the catalog plugin.
+ * @public
+ */
 export const catalogModuleExport = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'export',
