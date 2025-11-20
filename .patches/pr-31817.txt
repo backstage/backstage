@@ -1,0 +1,1 @@
+Fixed an issue where the `useTable` hook from `@backstage/ui` did not use the provided `rowCount`
