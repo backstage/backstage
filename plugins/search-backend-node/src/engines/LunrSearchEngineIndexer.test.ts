@@ -106,4 +106,26 @@ describe('LunrSearchEngineIndexer', () => {
       ...[lunr.trimmer, lunr.stopWordFilter, lunr.stemmer],
     );
   });
+
+  it('should tokenize input on non-alphanumeric characters', () => {
+    const input =
+      'Tokenize_test string, entity-name. Unicode support also!三 stjärna عربي';
+    const expectedTokens = [
+      'tokenize',
+      'test',
+      'string',
+      'entity',
+      'name',
+      'unicode',
+      'support',
+      'also',
+      '三',
+      'stjärna',
+      'عربي',
+    ];
+
+    const tokens = lunr.tokenizer(input).map(token => token.toString());
+
+    expect(tokens).toEqual(expectedTokens);
+  });
 });
