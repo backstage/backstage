@@ -1,6 +1,5 @@
 ---
 '@backstage/plugin-catalog-backend-module-export': patch
-'example-backend': patch
 '@backstage/plugin-catalog': patch
 ---
 
