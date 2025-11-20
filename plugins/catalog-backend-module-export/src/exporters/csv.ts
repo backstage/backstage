@@ -26,7 +26,7 @@ export class CsvExporter implements Exporter {
     const rows = entities.map(e => getEntityDataFromColumns(e, columns));
     return stringifySync(rows, {
       header: true,
-      columns: columns.map(c => ({ key: c.entityFilterKey, header: c.title })),
+      columns: columns.map(c => ({ key: c.title, header: c.title })),
       cast: {
         // Preserve newlines, as the JSON exporter does this as well
         string: (value: string) => value.replace(/(\r\n|\n|\r)/gm, '\\n'),

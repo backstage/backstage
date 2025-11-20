@@ -15,6 +15,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
+import type { ButtonProps } from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -25,7 +26,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Box from '@material-ui/core/Box';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  discoveryApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 import {
   useBackstageStreamedDownload,
   type BackstageStreamedDownloadOptions,
@@ -38,7 +43,12 @@ export enum CatalogExportType {
   JSON = 'json',
 }
 
-export const CatalogExportButton = () => {
+export const CatalogExportButton = ({
+  buttonProps,
+}: {
+  buttonProps?: ButtonProps;
+}) => {
+  const discoveryApi = useApi(discoveryApiRef);
   const { filters } = useEntityList();
   const {
     download: postExport,
@@ -77,24 +87,25 @@ export const CatalogExportButton = () => {
     newSearchParams.set('exportFormat', exportFormat);
     setEnabledBackendFilters(filters, newSearchParams);
 
+    const baseUrl = await discoveryApi.getBaseUrl('catalog');
     const options: BackstageStreamedDownloadOptions = {
-      url: '/api/catalog/export',
+      url: `${baseUrl}/export`,
       filename: `catalog-export.${exportFormat}`,
       searchParams: newSearchParams,
     };
     await postExport(options);
-  }, [filters, exportFormat, postExport]);
+  }, [filters, exportFormat, postExport, discoveryApi]);
 
   return (
     <>
       <Button
-        variant="contained"
-        color="primary"
-        onClick={() => setOpen(true)}
-        endIcon={<GetAppIcon />}
-        style={{ marginRight: 16 }}
+        {...buttonProps}
+        variant={buttonProps?.variant ?? 'contained'}
+        color={buttonProps?.color ?? 'primary'}
+        onClick={buttonProps?.onClick ?? (() => setOpen(true))}
+        endIcon={buttonProps?.endIcon ?? <GetAppIcon />}
       >
-        Export selection
+        {buttonProps?.children ?? 'Export selection'}
       </Button>
 
       <Dialog

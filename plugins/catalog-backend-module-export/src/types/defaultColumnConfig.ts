@@ -15,23 +15,9 @@
  */
 import { Column } from './column';
 
-// Map API request input to entity filter
-export const REQUEST_COLUMN_ENTITY_FILTER_MAP: Record<string, string> = {
-  type: 'spec.type',
-  lifecycle: 'spec.lifecycle',
-  owner: 'spec.owner',
-  namespace: 'metadata.namespace',
-  name: 'metadata.name',
-  title: 'metadata.title',
-  description: 'metadata.description',
-  tags: 'metadata.tags',
-};
-
 export const DEFAULT_COLUMNS: Column[] = [
+  { entityFilterKey: 'metadata.name', title: 'Name' },
   { entityFilterKey: 'spec.type', title: 'Type' },
-  { entityFilterKey: 'metadata.title', title: 'Title' },
-  { entityFilterKey: 'metadata.description', title: 'Description' },
   { entityFilterKey: 'spec.owner', title: 'Owner' },
-  { entityFilterKey: 'spec.additionalOwners', title: 'Additional owners' },
-  { entityFilterKey: 'metadata.criticality', title: 'Criticality' },
+  { entityFilterKey: 'metadata.description', title: 'Description' },
 ];

@@ -33,8 +33,6 @@ export const catalogModuleExport = createBackendModule({
         config: coreServices.rootConfig,
       },
       async init({ logger, httpRouter, catalog, httpAuth, config }) {
-        logger.info('Initializing catalog-export backend');
-
         const router = createRouter({
           logger,
           catalogApi: catalog,

@@ -38,7 +38,7 @@ export const createRouter = (options: RouterOptions): express.Router => {
   const router = Router();
   router.use(express.json());
 
-  router.post('/', async (request, response) => {
+  router.post('/export', async (request, response) => {
     const exportFormat = (request.query.exportFormat ??
       ExportFormat.CSV) as ExportFormat;
     const backendFilters = { ...request.query };
