@@ -1,0 +1,296 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-IAvatarRoot {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+    border-radius: 100%;
+    user-select: none;
+    font-weight: 500;
+    color: var(--bui-fg-primary);
+    background-color: var(--bui-bg-surface-2);
+    font-size: 1rem;
+    line-height: 1;
+    overflow: hidden;
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .bui-IAvatarRoot:hover {
+    cursor: pointer;
+  }
+
+  .bui-IAvatarRoot[data-size='x-small'] {
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+
+  .bui-IAvatarRoot[data-size='small'] {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+
+  .bui-IAvatarRoot[data-size='medium'] {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .bui-IAvatarRoot[data-size='large'] {
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+
+  .bui-IAvatarRoot[data-size='x-large'] {
+    height: 3rem;
+    width: 3rem;
+  }
+
+  .bui-IAvatarImage {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    display: block;
+  }
+
+  .bui-IAvatarFallback {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    font-size: var(--bui-font-size-3);
+    font-weight: var(--bui-font-weight-regular);
+    box-shadow: inset 0 0 0 1px var(--bui-border);
+    border-radius: var(--bui-radius-full);
+  }
+
+  /* container tweaks so we can position the status and pseudo-element */
+  .bui-IAvatarRoot {
+    position: relative;
+    overflow: visible; /* allow shadow pseudo-element */
+  }
+
+  /* when an image has loaded we add a helper class that shows a soft ring via ::after */
+  .hasImage::after,
+  .hasFallback::after,
+  .bui-IAvatarHasImage::after,
+  .bui-IAvatarHasFallback::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    transition: box-shadow 160ms ease;
+  }
+
+  /* ensure image / fallback content is above shadow */
+  .bui-IAvatarImage,
+  .bui-IAvatarFallback {
+    position: relative;
+    z-index: 1;
+    border-radius: var(--bui-radius-full);
+  }
+
+  /* status indicator (small circle, bottom-right) */
+  .bui-IAvatarStatusIndicator,
+  .statusIndicator {
+    position: absolute;
+    right: 0.125rem;
+    bottom: 0.125rem;
+    width: 0.75rem; /* 12px */
+    height: 0.75rem;
+    border-radius: 50%;
+    border: 2px solid var(--bui-bg-surface-2, #fff);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    z-index: 2;
+    background-color: #9e9e9e;
+    transition: background-color 120ms ease, box-shadow 120ms ease;
+  }
+
+  /* status color variants - applied either on the root or on the indicator element */
+  .bui-IAvatarStatusActive .bui-IAvatarStatusIndicator,
+  .bui-IAvatarStatusIndicator.bui-IAvatarStatusActive,
+  .statusActive.statusIndicator,
+  .statusActive .statusIndicator {
+    background-color: #28a745; /* green */
+    /* RGB components for use in rgba(...) so shadows can vary alpha and follow theme */
+    --bui-status-rgb: 40, 167, 69;
+  }
+
+  .bui-IAvatarStatusBusy .bui-IAvatarStatusIndicator,
+  .bui-IAvatarStatusIndicator.bui-IAvatarStatusBusy,
+  .statusBusy.statusIndicator,
+  .statusBusy .statusIndicator {
+    background-color: #d73a49; /* red */
+    --bui-status-rgb: 215, 58, 73;
+  }
+
+  .bui-IAvatarStatusUnavailable .bui-IAvatarStatusIndicator,
+  .bui-IAvatarStatusIndicator.bui-IAvatarStatusUnavailable,
+  .statusUnavailable.statusIndicator,
+  .statusUnavailable .statusIndicator {
+    background-color: #9e9e9e; /* grey */
+    --bui-status-rgb: 158, 158, 158;
+  }
+
+  /* soft coloured ring around avatar when image present, per status */
+  .bui-IAvatarStatusActive.hasImage::after,
+  .bui-IAvatarStatusActive.hasFallback::after,
+  .statusActive.hasImage::after,
+  .statusActive.hasFallback::after,
+  .bui-IAvatarStatusActive.bui-IAvatarHasImage::after,
+  .bui-IAvatarStatusActive.bui-IAvatarHasFallback::after {
+    box-shadow: 0 0 0 6px rgba(var(--bui-status-rgb, 40, 167, 69), 0.14);
+  }
+
+  .bui-IAvatarStatusBusy.hasImage::after,
+  .bui-IAvatarStatusBusy.hasFallback::after,
+  .statusBusy.hasImage::after,
+  .statusBusy.hasFallback::after,
+  .bui-IAvatarStatusBusy.bui-IAvatarHasImage::after,
+  .bui-IAvatarStatusBusy.bui-IAvatarHasFallback::after {
+    box-shadow: 0 0 0 6px rgba(var(--bui-status-rgb, 215, 58, 73), 0.14);
+  }
+
+  .bui-IAvatarStatusUnavailable.hasImage::after,
+  .bui-IAvatarStatusUnavailable.hasFallback::after,
+  .statusUnavailable.hasImage::after,
+  .statusUnavailable.hasFallback::after,
+  .bui-IAvatarStatusUnavailable.bui-IAvatarHasImage::after,
+  .bui-IAvatarStatusUnavailable.bui-IAvatarHasFallback::after {
+    box-shadow: 0 0 0 6px rgba(var(--bui-status-rgb, 158, 158, 158), 0.12);
+  }
+
+  /* Hover states: increase alpha (darker) and add an external coloured box-shadow */
+  /* Active (green) */
+  .statusActive.hasImage:hover::after,
+  .statusActive.hasFallback:hover::after,
+  .statusActive:hover::after {
+    box-shadow: 0 0 0 8px rgba(var(--bui-status-rgb, 40, 167, 69), 0.22);
+  }
+
+  .statusActive:hover {
+    box-shadow: rgba(var(--bui-status-rgb, 40, 167, 69), 0.18) 0px 7px 29px 0px;
+  }
+
+  /* Busy (red) */
+  .statusBusy.hasImage:hover::after,
+  .statusBusy.hasFallback:hover::after,
+  .statusBusy:hover::after {
+    box-shadow: 0 0 0 8px rgba(var(--bui-status-rgb, 215, 58, 73), 0.22);
+  }
+
+  .statusBusy:hover {
+    box-shadow: rgba(var(--bui-status-rgb, 215, 58, 73), 0.18) 0px 7px 29px 0px;
+  }
+
+  /* Unavailable (grey) */
+  .statusUnavailable.hasImage:hover::after,
+  .statusUnavailable.hasFallback:hover::after,
+  .statusUnavailable:hover::after {
+    box-shadow: 0 0 0 8px rgba(var(--bui-status-rgb, 158, 158, 158), 0.18);
+  }
+
+  .statusUnavailable:hover {
+    box-shadow: rgba(var(--bui-status-rgb, 158, 158, 158), 0.14) 0px 7px 29px
+      0px;
+  }
+
+  /* hide status indicator when avatar is marked decorative */
+  [aria-hidden='true'] .bui-IAvatarStatusIndicator,
+  [aria-hidden='true'] .statusIndicator {
+    display: none;
+  }
+
+  /* hover card - hidden by default, shown when hovering the root */
+  .bui-IAvatarHoverCard,
+  .hoverCard {
+    position: absolute;
+    left: calc(100% + 0.5rem);
+    top: 50%;
+    transform: translateY(-50%) translateY(6px) scale(0.98);
+    min-width: 12rem;
+    max-width: 18rem;
+    padding: 0.5rem 0.625rem;
+    background: var(--bui-bg-surface-1);
+    border-radius: 0.5rem;
+    box-shadow: var(
+      --bui-surface-elevation-shadow,
+      0 6px 18px rgba(16, 24, 40, 0.08)
+    );
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+    color: var(--bui-fg-primary);
+    border: 1px solid var(--bui-border, rgba(16, 24, 40, 0.04));
+  }
+
+  /* Reveal the card when hovering the avatar root */
+  .bui-IAvatarRoot:hover .bui-IAvatarHoverCard,
+  .bui-IAvatarRoot:hover .hoverCard,
+  .statusActive:hover .hoverCard,
+  .statusBusy:hover .hoverCard,
+  .statusUnavailable:hover .hoverCard {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .bui-IAvatarHoverCardName,
+  .hoverCardName {
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.1;
+    margin-bottom: 0.125rem;
+  }
+
+  .bui-IAvatarHoverCardId,
+  .hoverCardId {
+    font-size: 0.8rem;
+    color: var(--bui-fg-muted, #6b7280);
+    margin-bottom: 0.5rem;
+  }
+
+  .bui-IAvatarHoverCardDivider,
+  .hoverCardDivider {
+    height: 1px;
+    background: var(--bui-border, rgba(16, 24, 40, 0.04));
+    margin-bottom: 0.5rem;
+  }
+
+  .bui-IAvatarHoverCardStatusRow,
+  .hoverCardStatusRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: capitalize;
+  }
+
+  .bui-IAvatarHoverCardStatusText,
+  .hoverCardStatusText {
+    color: var(--bui-fg-primary);
+  }
+}
