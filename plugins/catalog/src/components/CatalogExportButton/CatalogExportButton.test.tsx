@@ -17,14 +17,17 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CatalogExportButton } from './CatalogExportButton';
 import { useBackstageStreamedDownload } from './file-download';
+import {
+  catalogApiRef,
+  EntityListProvider,
+} from '@backstage/plugin-catalog-react';
+import { MemoryRouter } from 'react-router-dom';
+import { TestApiProvider } from '@backstage/test-utils';
+import { alertApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
 
 const mockAlertApi = {
   post: jest.fn(),
 };
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: () => mockAlertApi,
-}));
 
 jest.mock('./file-download/useBackstageStreamedDownload', () => ({
   useBackstageStreamedDownload: jest.fn(),
@@ -33,9 +36,27 @@ const useBackstageStreamedDownloadMock =
   useBackstageStreamedDownload as jest.Mock;
 const mockDownload = jest.fn();
 
+const getComponent = () => (
+  <TestApiProvider
+    apis={[
+      [
+        discoveryApiRef,
+        { getBaseUrl: (_: string) => Promise.resolve('/api/catalog') },
+      ],
+      [alertApiRef, mockAlertApi],
+      [catalogApiRef, {}],
+    ]}
+  >
+    <MemoryRouter>
+      <EntityListProvider>
+        <CatalogExportButton />
+      </EntityListProvider>
+    </MemoryRouter>
+  </TestApiProvider>
+);
+
 describe('CatalogExportButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     useBackstageStreamedDownloadMock.mockReturnValue({
       download: mockDownload,
       loading: false,
@@ -43,15 +64,19 @@ describe('CatalogExportButton', () => {
     });
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders the export button', () => {
-    render(<CatalogExportButton />);
+    render(getComponent());
     expect(
       screen.getByRole('button', { name: /Export selection/i }),
     ).toBeInTheDocument();
   });
 
   it('opens and closes the dialog', async () => {
-    render(<CatalogExportButton />);
+    render(getComponent());
     await userEvent.click(
       screen.getByRole('button', { name: /Export selection/i }),
     );
@@ -65,61 +90,27 @@ describe('CatalogExportButton', () => {
   });
 
   it('handles successful export', async () => {
-    const { rerender } = render(<CatalogExportButton />);
+    mockDownload.mockResolvedValueOnce(undefined);
+
+    render(getComponent());
 
     await userEvent.click(
       screen.getByRole('button', { name: /Export selection/i }),
     );
-
-    useBackstageStreamedDownloadMock.mockReturnValue({
-      download: mockDownload,
-      loading: true,
-      error: null,
-    });
-
     await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
 
-    useBackstageStreamedDownloadMock.mockReturnValue({
-      download: mockDownload,
-      loading: false,
-      error: null,
-    });
-    rerender(<CatalogExportButton />);
-
     await waitFor(() => {
+      expect(mockDownload).toHaveBeenCalledTimes(1);
       expect(mockAlertApi.post).toHaveBeenCalledWith({
         message: 'Catalog exported successfully',
         severity: 'success',
       });
-    });
-
-    expect(mockDownload).toHaveBeenCalledTimes(1);
-    await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 
   it('handles failed export', async () => {
     const testError = new Error('Network error');
-    useBackstageStreamedDownloadMock.mockReturnValue({
-      download: mockDownload,
-      loading: false,
-      error: null,
-    });
-
-    const { rerender } = render(<CatalogExportButton />);
-
-    await userEvent.click(
-      screen.getByRole('button', { name: /Export selection/i }),
-    );
-
-    useBackstageStreamedDownloadMock.mockReturnValue({
-      download: mockDownload,
-      loading: true,
-      error: null,
-    });
-
-    await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
 
     useBackstageStreamedDownloadMock.mockReturnValue({
       download: mockDownload,
@@ -127,23 +118,25 @@ describe('CatalogExportButton', () => {
       error: testError,
     });
 
-    rerender(<CatalogExportButton />);
+    render(getComponent());
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
 
     await waitFor(() => {
+      expect(mockDownload).toHaveBeenCalledTimes(1);
       expect(mockAlertApi.post).toHaveBeenCalledWith({
         message: `Failed to export catalog: ${testError.message}`,
         severity: 'error',
       });
-    });
-
-    expect(mockDownload).toHaveBeenCalledTimes(1);
-    await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 
   it('allows changing the export format and calls download with it', async () => {
-    render(<CatalogExportButton />);
+    render(getComponent());
 
     await userEvent.click(
       screen.getByRole('button', { name: /Export selection/i }),

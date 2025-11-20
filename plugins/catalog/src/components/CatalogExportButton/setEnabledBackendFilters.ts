@@ -37,6 +37,7 @@ function setBackendFilter(
 }
 
 // Based on: https://github.com/backstage/backstage/blob/bfdf8a87264838aaff6607681375deb1c62f8538/plugins/catalog-react/src/utils/filters.ts#L48
+// Utility that sets enabled catalog backend filters into the given URLSearchParams
 export const setEnabledBackendFilters = (
   filters: DefaultEntityFilters,
   searchParams: URLSearchParams,

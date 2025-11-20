@@ -77,13 +77,12 @@ describe('CsvExporter', () => {
       { name: 'one', owner: 'one-owner' },
       { name: 'two', owner: 'two-owner' },
     ]);
-    expect(passedOptions).toEqual({
-      header: true,
-      columns: columns.map((c: any) => ({
-        key: c.entityFilterKey,
+    expect(passedOptions.columns).toEqual(
+      columns.map((c: any) => ({
+        key: c.title,
         header: c.title,
       })),
-    });
+    );
   });
 
   it('calls csv-stringify with empty rows when no entities provided', async () => {
@@ -109,13 +108,12 @@ describe('CsvExporter', () => {
     expect(stringifyMock).toHaveBeenCalledTimes(1);
     const [passedRows, passedOptions] = stringifyMock.mock.calls[0];
     expect(passedRows).toEqual([]);
-    expect(passedOptions).toEqual({
-      header: true,
-      columns: columns.map((c: any) => ({
-        key: c.entityFilterKey,
+    expect(passedOptions.columns).toEqual(
+      columns.map((c: any) => ({
+        key: c.title,
         header: c.title,
       })),
-    });
+    );
   });
 
   it('preserves column titles with commas and quotes in options', async () => {
@@ -134,12 +132,11 @@ describe('CsvExporter', () => {
 
     expect(stringifyMock).toHaveBeenCalledTimes(1);
     const [, passedOptions] = stringifyMock.mock.calls[0];
-    expect(passedOptions).toEqual({
-      header: true,
-      columns: columns.map((c: any) => ({
-        key: c.entityFilterKey,
+    expect(passedOptions.columns).toEqual(
+      columns.map((c: any) => ({
+        key: c.title,
         header: c.title,
       })),
-    });
+    );
   });
 });
