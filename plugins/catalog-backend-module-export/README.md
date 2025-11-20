@@ -4,7 +4,7 @@ The export backend module for the catalog plugin.
 
 This module adds a `catalog/export` API that can be used with any catalog backend filter enabled to create exports in either JSON or CSV.
 
-To activate the export mode, simply update your `App.tsx` as follows:
+To activate the export mode, update your `App.tsx` as follows:
 
 ```diff
 const routes = (
@@ -15,7 +15,13 @@ const routes = (
     ...
 ```
 
-The feature is implemented with a `CatalogExportButton` that can also be embedded manually on custom catalog index pages.
+And add this module to your backend `index.ts`:
+
+```diff
++  backend.add(import('@backstage/plugin-catalog-backend-module-export'));
+```
+
+The feature is implemented with a `CatalogExportButton` that can also be embedded manually on a custom `CatalogIndexPage`.
 
 Future improvements:
 

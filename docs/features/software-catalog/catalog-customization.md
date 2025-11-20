@@ -14,6 +14,23 @@ Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of
 <Route path="/catalog" element={<CatalogIndexPage pagination />} />
 ```
 
+## Export
+
+The `CatalogIndexPage` was added in v1.46.0 of Backstage, so make sure you are on that version or newer to use this feature. To enable export you need to pass in the `enableExport` prop like this:
+
+```tsx title="packages/app/src/App.tsx"
+<Route path="/catalog" element={<CatalogIndexPage enableExport />} />
+```
+
+This will enable a simple CSV and JSON export of the catalog table, including the enabled backend filters in the current user's view.
+Alternatively, you can embed the `CatalogExportButton` on your custom `CatalogIndexPage`.
+
+And install the catalog export backend module in your backend `index.ts`:
+
+```tsx title="packages/backend/src/index.tsx"
+backend.add(import('@backstage/plugin-catalog-backend-module-export'));
+```
+
 ## Initially Selected Filter
 
 By default, the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
