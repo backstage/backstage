@@ -421,69 +421,6 @@ export class GitLabClient {
     return true;
   }
 
-  async getCommitsTouchingFile(
-    projectPath: string,
-    filePath: string,
-    since?: string,
-  ): Promise<{
-    added: boolean;
-    modified: boolean;
-    deleted: boolean;
-  }> {
-    const options: any = {
-      path: filePath,
-      per_page: 100,
-    };
-
-    if (since) {
-      options.since = since;
-    }
-
-    try {
-      const commits = await this.getProjectCommits(projectPath, options);
-
-      if (commits.items.length === 0) {
-        return { added: false, modified: false, deleted: false };
-      }
-
-      // Check if file exists now
-      const hasFileNow = await this.hasFile(projectPath, 'HEAD', filePath);
-
-      if (hasFileNow) {
-        // File exists now - check if it existed before the 'since' date
-        // by getting all commits for this file and checking if the first one is after 'since'
-        const allCommitsForFile = await this.getProjectCommits(projectPath, {
-          path: filePath,
-          per_page: 1,
-        });
-
-        if (allCommitsForFile.items.length > 0 && since) {
-          const firstCommitDate = new Date(
-            allCommitsForFile.items[0].created_at,
-          );
-          const sinceDate = new Date(since);
-
-          if (firstCommitDate >= sinceDate) {
-            // First commit for this file is after our 'since' date -> file was added
-            return { added: true, modified: false, deleted: false };
-          }
-        }
-
-        // File existed before and exists now -> modified
-        return { added: false, modified: true, deleted: false };
-      }
-
-      // File doesn't exist now but we have commits -> deleted
-      return { added: false, modified: false, deleted: true };
-    } catch (error) {
-      this.logger.warn(
-        `Error checking commits for file ${filePath} in project ${projectPath}: ${error}`,
-      );
-      // On error, assume modified to be safe
-      return { added: false, modified: true, deleted: false };
-    }
-  }
-
   /**
    * Performs a request against a given paginated GitLab endpoint.
    *
