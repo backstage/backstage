@@ -5892,6 +5892,7 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/types": "workspace:^"
     "@kubernetes/client-node": "npm:1.4.0"
+    "@types/express": "npm:^4.17.6"
     msw: "npm:^1.3.1"
     node-fetch: "npm:^2.7.0"
     supertest: "npm:^7.0.0"
