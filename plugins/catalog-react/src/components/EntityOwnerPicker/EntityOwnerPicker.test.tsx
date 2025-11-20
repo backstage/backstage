@@ -413,7 +413,6 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       owners: undefined,
     });
 
-    // fireEvent.click(screen.getByTestId('owner-picker-expand'));
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: 'Some-Owner' } });
 
