@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-made the github urls case insensitive
+Made the github urls case insensitive.
