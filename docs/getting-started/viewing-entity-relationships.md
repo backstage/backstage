@@ -22,7 +22,7 @@ Selecting any of the related entities allows you to drill down further through t
 
 ## Filtering the relationships
 
-You can also view the relationships in the [Catalog Graph](../features/software-catalog/creating-the-catalog-graph.md)). This view allows you to filter what entities and relationships to display.
+You can also view the relationships in the [Catalog Graph](../features/software-catalog/creating-the-catalog-graph.md). This view allows you to filter what entities and relationships to display.
 
 To display the Catalog Graph:
 
@@ -70,3 +70,4 @@ You can also toggle:
   - Off = You only see relations from the selected entity to its nodes.
 
   ![Graphic showing results of toggling Merge relations.](../assets/uiguide/simplify-merge-relations-on-off.png)
+
