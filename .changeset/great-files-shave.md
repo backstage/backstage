@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-react': patch
 ---
 
-Updated the entity owner picker to convert text to lower case before filtering owner options
+Fixed an issue where `EntityOwnerPicker` failed to filter options when the input text contained uppercase characters.
