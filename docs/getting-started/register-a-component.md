@@ -23,7 +23,7 @@ When registering a component, you can:
 - Link to a repository: All `catalog-info.yaml` files are discovered in the repository and their defined entities are added to the Scaffolded Backstage App catalog. For example, `https://github.com/backstage/backstage`.
 
   :::note Note
-  If no entites are found, a Pull Request is created that adds an example `catalog-info.yaml` file to the repository. When the Pull Request is merged, the Scaffolded Backstage App catalog loads all of the defined entities.
+  If no entities are found, a Pull Request is created that adds an example `catalog-info.yaml` file to the repository. When the Pull Request is merged, the Scaffolded Backstage App catalog loads all of the defined entities.
 
   :::
 
