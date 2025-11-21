@@ -39,7 +39,7 @@ export function createInitializationResultCollector(options: {
 } {
   const logger = options.logger?.child({ type: 'initialization' });
   const beginAt = new Date();
-  const starting = new Set(options.pluginIds);
+  const starting = new Set(options.pluginIds.toSorted());
   const started = new Set<string>();
 
   let hasDisallowedFailures = false;
