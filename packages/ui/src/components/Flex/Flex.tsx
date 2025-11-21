@@ -18,12 +18,13 @@ import { forwardRef } from 'react';
 import { FlexProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { FlexDefinition } from './definition';
 import styles from './Flex.module.css';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
   const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'Flex',
+    FlexDefinition,
     { gap: '4', ...props },
   );
 

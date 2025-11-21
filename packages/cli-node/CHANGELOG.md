@@ -1,5 +1,11 @@
 # @backstage/cli-node
 
+## 0.2.15
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+
 ## 0.2.15-next.0
 
 ### Patch Changes

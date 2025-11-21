@@ -15,4 +15,5 @@
  */
 
 export * from './ButtonIcon';
+export { ButtonIconDefinition } from './definition';
 export * from './types';

@@ -19,6 +19,7 @@ import { Button, SelectValue } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { SelectDefinition } from './definition';
 import styles from './Select.module.css';
 
 interface SelectTriggerProps {
@@ -26,7 +27,7 @@ interface SelectTriggerProps {
 }
 
 export function SelectTrigger({ icon }: SelectTriggerProps) {
-  const { classNames } = useStyles('Select');
+  const { classNames } = useStyles(SelectDefinition);
 
   return (
     <Button className={clsx(classNames.trigger, styles[classNames.trigger])}>

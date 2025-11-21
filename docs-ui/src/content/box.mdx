@@ -12,6 +12,7 @@ import {
 import { spacingPropDefs } from '@/utils/propDefs';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { BoxDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -60,6 +61,6 @@ Here's a view when buttons are responsive.
 
 <CodeBlock code={boxResponsiveSnippet} />
 
-<Theming component="Box" />
+<Theming definition={BoxDefinition} />
 
 <ChangelogComponent component="box" />

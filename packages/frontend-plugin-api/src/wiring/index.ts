@@ -15,12 +15,13 @@
  */
 
 export { coreExtensionData } from './coreExtensionData';
+export { createExtension } from './createExtension';
 export {
-  createExtension,
   type ExtensionDefinition,
   type ExtensionDefinitionAttachTo,
   type ExtensionDefinitionParameters,
   type CreateExtensionOptions,
+  type OverridableExtensionDefinition,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
 } from './createExtension';

@@ -8,6 +8,8 @@
     "lint": "next lint",
     "prestart": "yarn sync:css",
     "start": "next dev",
+    "sync:changelog": "node scripts/sync-changelog.mjs",
+    "sync:changelog:dry-run": "node scripts/sync-changelog.mjs --dry-run",
     "sync:css": "node scripts/sync-css.js",
     "sync:css:watch": "node scripts/sync-css.js --watch"
   },
@@ -39,6 +41,7 @@
     "storybook": "^8.6.12"
   },
   "devDependencies": {
+    "@octokit/rest": "^22.0.1",
     "@shikijs/transformers": "^3.13.0",
     "@types/mdx": "^2.0.13",
     "@types/node": "^20",
@@ -48,6 +51,7 @@
     "eslint": "^8",
     "eslint-config-next": "15.3.4",
     "lightningcss": "^1.28.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "unified": "^11.0.4"
   }
 }

@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.3
+
+### Patch Changes
+
+- 886a8a1: Fixed a bug in the Scaffolder's template parsing in the `useTemplateSchema` hook by removing the title instead of setting it to `undefined`
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-react@0.4.38
+  - @backstage/catalog-model@1.7.6
+  - @backstage/catalog-client@1.12.1
+  - @backstage/plugin-scaffolder-common@1.7.3
+
 ## 1.19.3-next.0
 
 ### Patch Changes

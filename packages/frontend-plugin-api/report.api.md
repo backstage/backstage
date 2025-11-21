@@ -418,7 +418,7 @@ export function createExtension<
     UFactoryOutput,
     UParentInputs
   >,
-): ExtensionDefinition<{
+): OverridableExtensionDefinition<{
   config: string extends keyof TConfigSchema
     ? {}
     : {
@@ -625,7 +625,7 @@ export function createExternalRouteRef<
       }
     | undefined = undefined,
   TParamKeys extends string = string,
->(options?: {
+>(config?: {
   readonly params?: string extends TParamKeys
     ? (keyof TParams)[]
     : TParamKeys[];
@@ -881,7 +881,7 @@ export interface ExtensionBlueprint<
       : T['params'] extends ExtensionBlueprintDefineParams
       ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: defineParams => defineParams(<params>) })`'
       : T['params'];
-  }): ExtensionDefinition<{
+  }): OverridableExtensionDefinition<{
     kind: T['kind'];
     name: string | undefined extends TName ? undefined : TName;
     config: T['config'];
@@ -953,7 +953,7 @@ export interface ExtensionBlueprint<
           : UNewOutput,
         UFactoryOutput
       >;
-  }): ExtensionDefinition<{
+  }): OverridableExtensionDefinition<{
     config: (string extends keyof TExtensionConfigSchema
       ? {}
       : {
@@ -1088,117 +1088,14 @@ export type ExtensionDataValue<TData, TId extends string> = {
 };
 
 // @public (undocumented)
-export type ExtensionDefinition<
-  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
-> = {
+export interface ExtensionDefinition<
+  TParams extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> {
+  // (undocumented)
   $$type: '@backstage/ExtensionDefinition';
-  readonly T: T;
-  readonly inputs: {
-    [K in keyof T['inputs']]: ExtensionInput<
-      T['inputs'][K] extends ExtensionInput<infer IData> ? IData : never
-    >;
-  };
-  override<
-    TExtensionConfigSchema extends {
-      [key in string]: (zImpl: typeof z) => z.ZodType;
-    },
-    UFactoryOutput extends ExtensionDataValue<any, any>,
-    UNewOutput extends ExtensionDataRef,
-    TExtraInputs extends {
-      [inputName in string]: ExtensionInput;
-    },
-    TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
-    UParentInputs extends ExtensionDataRef,
-  >(
-    args: Expand<
-      {
-        attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
-          VerifyExtensionAttachTo<
-            ExtensionDataRef extends UNewOutput
-              ? NonNullable<T['output']>
-              : UNewOutput,
-            UParentInputs
-          >;
-        disabled?: boolean;
-        inputs?: TExtraInputs & {
-          [KName in keyof T['inputs']]?: `Error: Input '${KName &
-            string}' is already defined in parent definition`;
-        };
-        output?: Array<UNewOutput>;
-        config?: {
-          schema: TExtensionConfigSchema & {
-            [KName in keyof T['config']]?: `Error: Config key '${KName &
-              string}' is already defined in parent schema`;
-          };
-        };
-        factory?(
-          originalFactory: <
-            TFactoryParamsReturn extends AnyParamsInput_2<
-              NonNullable<T['params']>
-            >,
-          >(
-            context?: Expand<
-              {
-                config?: T['config'];
-                inputs?: ResolvedInputValueOverrides<NonNullable<T['inputs']>>;
-              } & ([T['params']] extends [never]
-                ? {}
-                : {
-                    params?: TFactoryParamsReturn extends ExtensionBlueprintDefineParams
-                      ? TFactoryParamsReturn
-                      : T['params'] extends ExtensionBlueprintDefineParams
-                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
-                      : Partial<T['params']>;
-                  })
-            >,
-          ) => ExtensionDataContainer<NonNullable<T['output']>>,
-          context: {
-            node: AppNode;
-            apis: ApiHolder;
-            config: T['config'] & {
-              [key in keyof TExtensionConfigSchema]: z.infer<
-                ReturnType<TExtensionConfigSchema[key]>
-              >;
-            };
-            inputs: Expand<ResolvedExtensionInputs<T['inputs'] & TExtraInputs>>;
-          },
-        ): Iterable<UFactoryOutput>;
-      } & ([T['params']] extends [never]
-        ? {}
-        : {
-            params?: TParamsInput extends ExtensionBlueprintDefineParams
-              ? TParamsInput
-              : T['params'] extends ExtensionBlueprintDefineParams
-              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
-              : Partial<T['params']>;
-          })
-    > &
-      VerifyExtensionFactoryOutput<
-        ExtensionDataRef extends UNewOutput
-          ? NonNullable<T['output']>
-          : UNewOutput,
-        UFactoryOutput
-      >,
-  ): ExtensionDefinition<{
-    kind: T['kind'];
-    name: T['name'];
-    output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
-    inputs: T['inputs'] & TExtraInputs;
-    config: T['config'] & {
-      [key in keyof TExtensionConfigSchema]: z.infer<
-        ReturnType<TExtensionConfigSchema[key]>
-      >;
-    };
-    configInput: T['configInput'] &
-      z.input<
-        z.ZodObject<{
-          [key in keyof TExtensionConfigSchema]: ReturnType<
-            TExtensionConfigSchema[key]
-          >;
-        }>
-      >;
-  }>;
-};
+  // (undocumented)
+  readonly T: TParams;
+}
 
 // @public
 export type ExtensionDefinitionAttachTo<
@@ -1544,6 +1441,118 @@ export { OpenIdConnectApi };
 
 export { openshiftAuthApiRef };
 
+// @public (undocumented)
+export interface OverridableExtensionDefinition<
+  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> extends ExtensionDefinition<T> {
+  readonly inputs: {
+    [K in keyof T['inputs']]: ExtensionInput<
+      T['inputs'][K] extends ExtensionInput<infer IData> ? IData : never
+    >;
+  };
+  // (undocumented)
+  override<
+    TExtensionConfigSchema extends {
+      [key in string]: (zImpl: typeof z) => z.ZodType;
+    },
+    UFactoryOutput extends ExtensionDataValue<any, any>,
+    UNewOutput extends ExtensionDataRef,
+    TExtraInputs extends {
+      [inputName in string]: ExtensionInput;
+    },
+    TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
+    UParentInputs extends ExtensionDataRef,
+  >(
+    args: Expand<
+      {
+        attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+          VerifyExtensionAttachTo<
+            ExtensionDataRef extends UNewOutput
+              ? NonNullable<T['output']>
+              : UNewOutput,
+            UParentInputs
+          >;
+        disabled?: boolean;
+        inputs?: TExtraInputs & {
+          [KName in keyof T['inputs']]?: `Error: Input '${KName &
+            string}' is already defined in parent definition`;
+        };
+        output?: Array<UNewOutput>;
+        config?: {
+          schema: TExtensionConfigSchema & {
+            [KName in keyof T['config']]?: `Error: Config key '${KName &
+              string}' is already defined in parent schema`;
+          };
+        };
+        factory?(
+          originalFactory: <
+            TFactoryParamsReturn extends AnyParamsInput_2<
+              NonNullable<T['params']>
+            >,
+          >(
+            context?: Expand<
+              {
+                config?: T['config'];
+                inputs?: ResolvedInputValueOverrides<NonNullable<T['inputs']>>;
+              } & ([T['params']] extends [never]
+                ? {}
+                : {
+                    params?: TFactoryParamsReturn extends ExtensionBlueprintDefineParams
+                      ? TFactoryParamsReturn
+                      : T['params'] extends ExtensionBlueprintDefineParams
+                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
+                      : Partial<T['params']>;
+                  })
+            >,
+          ) => ExtensionDataContainer<NonNullable<T['output']>>,
+          context: {
+            node: AppNode;
+            apis: ApiHolder;
+            config: T['config'] & {
+              [key in keyof TExtensionConfigSchema]: z.infer<
+                ReturnType<TExtensionConfigSchema[key]>
+              >;
+            };
+            inputs: Expand<ResolvedExtensionInputs<T['inputs'] & TExtraInputs>>;
+          },
+        ): Iterable<UFactoryOutput>;
+      } & ([T['params']] extends [never]
+        ? {}
+        : {
+            params?: TParamsInput extends ExtensionBlueprintDefineParams
+              ? TParamsInput
+              : T['params'] extends ExtensionBlueprintDefineParams
+              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
+              : Partial<T['params']>;
+          })
+    > &
+      VerifyExtensionFactoryOutput<
+        ExtensionDataRef extends UNewOutput
+          ? NonNullable<T['output']>
+          : UNewOutput,
+        UFactoryOutput
+      >,
+  ): OverridableExtensionDefinition<{
+    kind: T['kind'];
+    name: T['name'];
+    output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    inputs: T['inputs'] & TExtraInputs;
+    config: T['config'] & {
+      [key in keyof TExtensionConfigSchema]: z.infer<
+        ReturnType<TExtensionConfigSchema[key]>
+      >;
+    };
+    configInput: T['configInput'] &
+      z.input<
+        z.ZodObject<{
+          [key in keyof TExtensionConfigSchema]: ReturnType<
+            TExtensionConfigSchema[key]
+          >;
+        }>
+      >;
+  }>;
+}
+
 // @public
 export interface OverridableFrontendPlugin<
   TRoutes extends {
@@ -1563,7 +1572,9 @@ export interface OverridableFrontendPlugin<
   },
 > extends FrontendPlugin<TRoutes, TExternalRoutes> {
   // (undocumented)
-  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  getExtension<TId extends keyof TExtensionMap>(
+    id: TId,
+  ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
   // (undocumented)
   withOverrides(options: {
     extensions: Array<ExtensionDefinition>;

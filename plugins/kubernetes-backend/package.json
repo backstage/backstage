@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-backend",
-  "version": "0.20.4-next.2",
+  "version": "0.20.4",
   "description": "A Backstage backend plugin that integrates towards Kubernetes",
   "backstage": {
     "role": "backend-plugin",
@@ -45,7 +45,6 @@
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.0.0",
     "@aws-sdk/credential-providers": "^3.350.0",
-    "@aws-sdk/signature-v4": "^3.347.0",
     "@azure/identity": "^4.0.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
@@ -62,6 +61,7 @@
     "@google-cloud/container": "^5.0.0",
     "@jest-mock/express": "^2.0.1",
     "@kubernetes/client-node": "1.4.0",
+    "@smithy/signature-v4": "^4.1.0",
     "@types/http-proxy-middleware": "^1.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

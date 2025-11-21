@@ -13,6 +13,7 @@ import {
 } from './tabs.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { TabsDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -79,6 +80,6 @@ You can use the `matchStrategy` prop on the tab to control how the tab is matche
   open
 />
 
-<Theming component="Tabs" />
+<Theming definition={TabsDefinition} />
 
 <ChangelogComponent component="tabs" />

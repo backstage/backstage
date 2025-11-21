@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 export { Container } from './Container';
+export { ContainerDefinition } from './definition';
 export type { ContainerProps } from './types';

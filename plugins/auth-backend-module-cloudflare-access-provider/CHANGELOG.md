@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.4.9
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+
 ## 0.4.9-next.1
 
 ### Patch Changes

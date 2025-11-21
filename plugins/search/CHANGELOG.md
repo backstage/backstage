@@ -1,5 +1,22 @@
 # @backstage/plugin-search
 
+## 1.5.0
+
+### Minor Changes
+
+- a521911: Add support for customizable icons in `SearchResultListItemBlueprint` and related components
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-search-react@1.10.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-search-common@1.2.21
+
 ## 1.5.0-next.1
 
 ### Minor Changes

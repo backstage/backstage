@@ -22,10 +22,17 @@ import { createTranslationRef } from '@backstage/frontend-plugin-api';
 export const apiDocsTranslationRef = createTranslationRef({
   id: 'api-docs',
   messages: {
+    apiDefinitionCard: {
+      error: {
+        title: 'Could not fetch the API',
+      },
+      rawButtonTitle: 'Raw',
+    },
     apiDefinitionDialog: {
       closeButtonTitle: 'Close',
       tabsAriaLabel: 'API definition options',
       toggleButtonAriaLabel: 'Toggle API Definition Dialog',
+      rawButtonTitle: 'Raw',
     },
     defaultApiExplorerPage: {
       title: 'APIs',

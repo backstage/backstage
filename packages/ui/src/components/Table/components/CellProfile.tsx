@@ -20,18 +20,16 @@ import { Text } from '../../Text/Text';
 import { Link } from '../../Link/Link';
 import { Avatar } from '../../Avatar';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 import styles from '../Table.module.css';
 
 /** @public */
 export const CellProfile = (props: CellProfileProps) => {
-  const { classNames, cleanedProps } = useStyles<'Table', CellProfileProps>(
-    'Table',
-    {
-      color: 'primary',
-      ...props,
-    },
-  );
+  const { classNames, cleanedProps } = useStyles(TableDefinition, {
+    color: 'primary' as const,
+    ...props,
+  });
   const { className, src, name, href, description, color, ...rest } =
     cleanedProps;
 

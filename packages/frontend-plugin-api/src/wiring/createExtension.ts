@@ -233,12 +233,17 @@ type AnyParamsInput<TParams extends object | ExtensionBlueprintDefineParams> =
           ) => ReturnType<ExtensionBlueprintDefineParams<TParams, TParams>>);
 
 /** @public */
-export type ExtensionDefinition<
-  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
-> = {
+export interface ExtensionDefinition<
+  TParams extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> {
   $$type: '@backstage/ExtensionDefinition';
-  readonly T: T;
+  readonly T: TParams;
+}
 
+/** @public */
+export interface OverridableExtensionDefinition<
+  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> extends ExtensionDefinition<T> {
   /**
    * References to the inputs of this extension, which can be used to attach child extensions.
    */
@@ -327,7 +332,7 @@ export type ExtensionDefinition<
           : UNewOutput,
         UFactoryOutput
       >,
-  ): ExtensionDefinition<{
+  ): OverridableExtensionDefinition<{
     kind: T['kind'];
     name: T['name'];
     output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
@@ -346,7 +351,7 @@ export type ExtensionDefinition<
         }>
       >;
   }>;
-};
+}
 
 /**
  * @internal
@@ -363,11 +368,11 @@ function bindInputs(
   return Object.fromEntries(
     Object.entries(inputs).map(([inputName, input]) => [
       inputName,
-      OpaqueExtensionInput.toInternal(input).withContext({
+      OpaqueExtensionInput.toInternal(input).withContext?.({
         kind,
         name,
         input: inputName,
-      }),
+      }) ?? input,
     ]),
   );
 }
@@ -425,7 +430,7 @@ export function createExtension<
     UFactoryOutput,
     UParentInputs
   >,
-): ExtensionDefinition<{
+): OverridableExtensionDefinition<{
   config: string extends keyof TConfigSchema
     ? {}
     : {
@@ -638,7 +643,7 @@ export function createExtension<
 
           return deduplicatedResult.values();
         },
-      }) as ExtensionDefinition<any>;
+      }) as OverridableExtensionDefinition<any>;
     },
   });
 }
