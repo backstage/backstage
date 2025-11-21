@@ -70,5 +70,3 @@ You can also toggle:
   - Off = You only see relations from the selected entity to its nodes.
 
   ![Graphic showing results of toggling Merge relations.](../assets/uiguide/simplify-merge-relations-on-off.png)
-
-
