@@ -51,7 +51,7 @@ export function Row<T extends object>(props: RowProps<T>) {
     </>
   );
 
-  if (isExternal) {
+  if (!href || isExternal) {
     return (
       <ReactAriaRow
         id={id}
