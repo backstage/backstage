@@ -34,9 +34,9 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@module-federation/enhanced": "^0.9.0",
-    "@module-federation/runtime": "^0.9.0",
-    "@module-federation/sdk": "^0.9.0",
+    "@module-federation/enhanced": "^0.21.6",
+    "@module-federation/runtime": "^0.21.6",
+    "@module-federation/sdk": "^0.21.6",
     "cross-fetch": "^4.0.0",
     "uri-template": "^2.0.0"
   },
