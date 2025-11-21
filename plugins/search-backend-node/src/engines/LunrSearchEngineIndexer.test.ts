@@ -109,13 +109,18 @@ describe('LunrSearchEngineIndexer', () => {
 
   it('should tokenize input on non-alphanumeric characters', () => {
     const input =
-      'Tokenize_test string, entity-name. Unicode support also!三 stjärna عربي';
+      "Tokenize_test string, entity-name. Doesn't break abc123def - also Unicode support also!三 stjärna عربي";
     const expectedTokens = [
       'tokenize',
       'test',
       'string',
       'entity',
       'name',
+      'doesn',
+      't',
+      'break',
+      'abc123def',
+      'also',
       'unicode',
       'support',
       'also',
