@@ -48,10 +48,10 @@ export const Column = (props: ColumnProps) => {
                 styles[classNames.headSortButton],
               )}
             >
-              {sortDirection === 'ascending' ? (
-                <RiArrowUpLine size={16} />
-              ) : (
+              {sortDirection === 'descending' ? (
                 <RiArrowDownLine size={16} />
+              ) : (
+                <RiArrowUpLine size={16} />
               )}
             </span>
           )}
