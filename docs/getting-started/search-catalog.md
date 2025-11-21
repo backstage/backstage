@@ -8,11 +8,11 @@ Audience: Developers
 
 ## Overview
 
-The Catalog can be searched by any combination of owner, kind, type, lifecycle, prcoessing status, namespace, and name.
+The Catalog can be searched by any combination of owner, kind, type, lifecycle, processing status, namespace, and name.
 
 ![Catalog search options](../assets/uiguide/catalog-search-options.png)
 
-The [Techical Overview](../overview/technical-overview.md) provides greater detail, but the catalog displays two main types of entities:
+The [Technical Overview](../overview/technical-overview.md) provides greater detail, but the catalog displays two main types of entities:
 
 - Core Entities
 
@@ -58,7 +58,7 @@ There are three additional items that can be part of the system model:
 
   Use the`Owner` dropdown to filter the catalog list by who owns the entity.
 
-- **Search by Lifecysle**
+- **Search by Lifecycle**
 
   Use the `Lifecycle` dropdown to filter the catalog list by lifecycle.
 
@@ -69,4 +69,5 @@ There are three additional items that can be part of the system model:
 - **Search by Namespace**
 
   Use the `Namespace` dropdown to filter the catalog list by namespace associated with the entity.
+
 
