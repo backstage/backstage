@@ -38,6 +38,8 @@ import request from 'supertest';
 import path from 'path';
 import fs from 'fs-extra';
 import { AwsS3Publish } from './awsS3';
+
+jest.setTimeout(30_000);
 import { Readable } from 'stream';
 import {
   createMockDirectory,
@@ -45,7 +47,9 @@ import {
 } from '@backstage/backend-test-utils';
 
 const env = process.env;
-let s3Mock: any;
+let s3Mock: ReturnType<typeof mockClient> & {
+  send: (command: any) => Promise<any>;
+};
 
 // Create a new MockDirectory for each test to avoid Windows file locking issues
 let mockDir: ReturnType<typeof createMockDirectory>;
@@ -514,7 +518,7 @@ describe('AwsS3Publish', () => {
           `default/component/backstage/assets/main.css`,
         ]),
       });
-    }, 30000);
+    });
 
     it('should publish a directory as well when legacy casing is used', async () => {
       const publisher = await createPublisherFromConfig({
@@ -527,7 +531,7 @@ describe('AwsS3Publish', () => {
           `default/Component/backstage/assets/main.css`,
         ]),
       });
-    }, 30000);
+    });
 
     it('should publish a directory when root path is specified', async () => {
       const publisher = await createPublisherFromConfig({
@@ -540,7 +544,7 @@ describe('AwsS3Publish', () => {
           `backstage-data/techdocs/default/component/backstage/assets/main.css`,
         ]),
       });
-    }, 30000);
+    });
 
     it('should publish a directory when root path is specified and legacy casing is used', async () => {
       const publisher = await createPublisherFromConfig({
@@ -554,7 +558,7 @@ describe('AwsS3Publish', () => {
           `backstage-data/techdocs/default/Component/backstage/assets/main.css`,
         ]),
       });
-    }, 30000);
+    });
 
     it('should publish a directory when sse is specified', async () => {
       const publisher = await createPublisherFromConfig({
@@ -567,7 +571,7 @@ describe('AwsS3Publish', () => {
           'default/component/backstage/assets/main.css',
         ]),
       });
-    }, 30000);
+    });
 
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = mockDir.resolve(
@@ -602,7 +606,7 @@ describe('AwsS3Publish', () => {
       expect(loggerInfoSpy).toHaveBeenCalledWith(
         `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
       );
-    }, 30000);
+    });
 
     it('should log error when the stale files deletion fails', async () => {
       const bucketName = 'delete_stale_files_error';
@@ -613,7 +617,7 @@ describe('AwsS3Publish', () => {
       expect(loggerErrorSpy).toHaveBeenLastCalledWith(
         'Unable to delete file(s) from AWS S3. Error: Message',
       );
-    }, 30000);
+    });
   });
 
   describe('hasDocsBeenGenerated', () => {
@@ -621,7 +625,7 @@ describe('AwsS3Publish', () => {
       const publisher = await createPublisherFromConfig();
       await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-    }, 30000);
+    });
 
     it('should return true if docs has been generated even if the legacy case is enabled', async () => {
       const publisher = await createPublisherFromConfig({
@@ -629,7 +633,7 @@ describe('AwsS3Publish', () => {
       });
       await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-    }, 30000);
+    });
 
     it('should return true if docs has been generated if root path is specified', async () => {
       const publisher = await createPublisherFromConfig({
@@ -637,7 +641,7 @@ describe('AwsS3Publish', () => {
       });
       await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-    }, 30000);
+    });
 
     it('should return true if docs has been generated if root path is specified and legacy casing is used', async () => {
       const publisher = await createPublisherFromConfig({
@@ -646,7 +650,7 @@ describe('AwsS3Publish', () => {
       });
       await publisher.publish({ entity, directory });
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-    }, 30000);
+    });
 
     it('should return false if docs has not been generated', async () => {
       const publisher = await createPublisherFromConfig();
@@ -669,7 +673,7 @@ describe('AwsS3Publish', () => {
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
-    }, 30000);
+    });
 
     it('should return tech docs metadata even if the legacy case is enabled', async () => {
       const publisher = await createPublisherFromConfig({
@@ -679,7 +683,7 @@ describe('AwsS3Publish', () => {
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
-    }, 30000);
+    });
 
     it('should return tech docs metadata even if root path is specified', async () => {
       const publisher = await createPublisherFromConfig({
@@ -689,7 +693,7 @@ describe('AwsS3Publish', () => {
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
-    }, 30000);
+    });
 
     it('should return tech docs metadata if root path is specified and legacy casing is used', async () => {
       const publisher = await createPublisherFromConfig({
@@ -700,7 +704,7 @@ describe('AwsS3Publish', () => {
       expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
         techdocsMetadata,
       );
-    }, 30000);
+    });
 
     it('should return tech docs metadata when json encoded with single quotes', async () => {
       const techdocsMetadataPath = path.join(
@@ -722,7 +726,7 @@ describe('AwsS3Publish', () => {
       );
 
       fs.writeFileSync(techdocsMetadataPath, techdocsMetadataContent);
-    }, 30000);
+    });
 
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const publisher = await createPublisherFromConfig();
@@ -776,7 +780,7 @@ describe('AwsS3Publish', () => {
       const publisher = await createPublisherFromConfig();
       await publisher.publish({ entity, directory });
       app = express().use(publisher.docsRouter());
-    }, 30000);
+    });
 
     it('should pass expected object path to bucket', async () => {
       // Ensures leading slash is trimmed and encoded path is decoded.

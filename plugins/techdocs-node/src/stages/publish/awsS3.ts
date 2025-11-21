@@ -173,7 +173,7 @@ export class AwsS3Publish implements PublisherBase {
       'techdocs.publisher.awsS3.s3ForcePathStyle',
     );
 
-    // AWS MAX ATTEMPTS is an optional config. If missing, default value of 3 is used
+    // AWS MAX ATTEMPTS is an optional config. If missing, default value of 5 is used
     const maxAttempts = config.getOptionalNumber(
       'techdocs.publisher.awsS3.maxAttempts',
     );
@@ -434,11 +434,8 @@ export class AwsS3Publish implements PublisherBase {
       // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
       absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
-      let uploadCounter = 0;
-
       await bulkStorageOperation(
         async absoluteFilePath => {
-          uploadCounter++;
           const relativeFilePath = path.relative(directory, absoluteFilePath);
           const s3Key = getCloudPathForLocalPath(
             entity,
@@ -446,10 +443,14 @@ export class AwsS3Publish implements PublisherBase {
             useLegacyPathCasing,
             bucketRootPath,
           );
+          // Create params without the Body because the body must be the
+          // actual file contents (Buffer or Readable), not the path string.
+          // For multipart uploads we attach a Readable stream to avoid
+          // buffering large files in memory. For simple uploads we attach
+          // a Buffer read from disk.
           const params: PutObjectCommandInput = {
             Bucket: this.bucketName,
             Key: s3Key,
-            Body: absoluteFilePath,
             ...(sse && { ServerSideEncryption: sse }),
           };
 
@@ -462,15 +463,23 @@ export class AwsS3Publish implements PublisherBase {
           if (fileSizeInBytes >= MAX_SINGLE_UPLOAD_BYTES) {
             // Try multipart upload for large files
             try {
-              const upload = new Upload({
-                client: this.storageClient,
-                params,
-                partSize: MAX_SINGLE_UPLOAD_BYTES,
-                queueSize: 3,
-                leavePartsOnError: false,
-              });
+              // Create stream and Upload inside retry closure so stream is
+              // recreated on each retry attempt (streams are consumable once).
               await this.retryOperation(
-                () => upload.done(),
+                () => {
+                  // Create a fresh stream on each attempt
+                  const fileStream = fs.createReadStream(absoluteFilePath);
+                  const uploadParams = { ...params, Body: fileStream };
+
+                  const upload = new Upload({
+                    client: this.storageClient,
+                    params: uploadParams,
+                    partSize: MAX_SINGLE_UPLOAD_BYTES,
+                    queueSize: 3,
+                    leavePartsOnError: false,
+                  });
+                  return upload.done();
+                },
                 `Upload-${params.Key}`,
                 this.maxAttempts,
               );
