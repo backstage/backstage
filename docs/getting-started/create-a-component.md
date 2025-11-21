@@ -63,9 +63,9 @@ Perform the following steps:
 2. Enter `CTRL-C` in the terminal window to stop the Backstage frontend and backend.
 3. In the terminal window, enter:
 
-    ```
-     export NODE_OPTIONS=--no-node-snapshot
-    ```
+   ```
+   export NODE_OPTIONS=--no-node-snapshot
+   ```
 
 4. Enter `yarn start` to restart the Backstage application.
 5. Repeat steps to create the component.
