@@ -64,10 +64,8 @@ There are three additional items that can be part of the system model:
 
 - **Search by Processing Status**
 
-  Use the `Processing Status` dropdown to restrict the displayed list to only include those entities which are [orphaned](../features/software-catalog/life-of-an-entity.md#orphaning) or in error.
+  Use the `Processing Status` dropdown to restrict the displayed list to only include those entities which are [orphaned](../features/software-catalog/life-of-an-entity.md#orphaning) or [in error](../features/software-catalog/life-of-an-entity.md#errors).
 
 - **Search by Namespace**
 
   Use the `Namespace` dropdown to filter the catalog list by namespace associated with the entity.
-
-
