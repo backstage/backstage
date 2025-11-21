@@ -314,7 +314,13 @@ async function main(args) {
   // Generate PR body
   let body;
   if (descriptions) {
-    const descriptionList = descriptions.map(desc => `- ${desc}`).join('\n');
+    const descriptionList = descriptions
+      .map((desc, index) => {
+        const prNumber = prNumbers[index];
+        const prLink = `https://github.com/${owner}/${repo}/pull/${prNumber}`;
+        return `- ${desc} ([#${prNumber}](${prLink}))`;
+      })
+      .join('\n');
     body = `This patch release includes the following fixes:\n\n${descriptionList}`;
   } else {
     body = 'This release fixes an issue where';
