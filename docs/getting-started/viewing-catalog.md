@@ -13,7 +13,7 @@ When you first log into your standalone Backstage App, `Home` is selected in the
 
 ![Portal with annotations.](../assets/uiguide/portal-with-annotations.png)
 
-The [Techical Overview](../overview/technical-overview.md) provides greater detail, but the catalog displays two main kinds of registered entities:
+The [Technical Overview](../overview/technical-overview.md) provides greater detail, but the catalog displays two main kinds of registered entities:
 
 - **Core Entities**
 
@@ -38,7 +38,7 @@ Initially, the Catalog displays registered entities matching the following filte
 - **Kind** - Component
 - **Type** - all
 - **Owner** - Owned
-- **Lifecycle** - list of lifecycle values of entites in the Catalog
+- **Lifecycle** - list of lifecycle values of entities in the Catalog
 - **Processing Status** - normal
 - **Namespace** - The ID of a [namespace](../features/software-catalog/descriptor-format.md#namespace-optional) to which the entity belongs
 
@@ -92,5 +92,6 @@ Selecting a entity in the main panel displays details of the entity. The type of
 Selecting a System, such as `examples`, displays `About`, `Relations`, and `Links` similar to a Component, but it also includes `Has components`, `APIs` and `Has Resources`.
 
 ![Details of system entity.](../assets/uiguide/details-system-entity.png)
+
 
 
