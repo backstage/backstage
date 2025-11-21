@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.9.1
+
+### Patch Changes
+
+- bf950f8: Fixed `useTable` hook to prioritize `providedRowCount` over data length for accurate row count in server-side pagination scenarios.
+
 ## 0.9.0
 
 ### Minor Changes
