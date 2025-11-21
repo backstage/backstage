@@ -42,12 +42,12 @@ You can set the following filters:
 
 - `MAX DEPTH` - 1 or infinite
 
-  ![Max Depth at 1 and inifite.](../assets/uiguide/max-depth-1-and-infinite.png)
+  ![Max Depth at 1 and infinite.](../assets/uiguide/max-depth-1-and-infinite.png)
 
 - `KINDS` - select what kinds of entities you want to view, default is all kinds
 - `RELATIONS` - select which relationships you want to view, default is all relationships
 - `Direction`- orientation in which you want to view the entity and its associated nodes
-  - Top to botton
+  - Top to bottom
   - Bottom to top
   - Left to right
   - Right to left
@@ -70,4 +70,5 @@ You can also toggle:
   - Off = You only see relations from the selected entity to its nodes.
 
   ![Graphic showing results of toggling Merge relations.](../assets/uiguide/simplify-merge-relations-on-off.png)
+
 
