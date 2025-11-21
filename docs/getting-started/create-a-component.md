@@ -8,7 +8,7 @@ Audience: Developers
 
 ## Overview
 
-Components in the software catalog are created using a software template. Templates load skeletons of code, which can include some variables, and incorporate your company's best pracitces. The templates are published to a location, such as GitHub or GitLab.
+Components in the software catalog are created using a software template. Templates load skeletons of code, which can include some variables, and incorporate your company's best practices. The templates are published to a location, such as GitHub or GitLab.
 
 The standalone Backstage application includes the `Example Node.js Template`, which is an example template for the scaffolder that creates and registers a simple Node.js service. You can also [create your own templates](../features/software-templates/adding-templates.md).
 
@@ -111,4 +111,4 @@ Selecting `OPEN IN CATALOG` displays details of the new component, such as its r
 
 Selecting `Home` in the sidebar, displays the new `tutorial` component in the catalog.
 
-![new turorial component in software catalog](../assets/uiguide/new-tutorial-component-in-software-catalog.png)
+![new tutorial component in software catalog](../assets/uiguide/new-tutorial-component-in-software-catalog.png)
