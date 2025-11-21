@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
 
 describe('createAllowBootFailurePredicate', () => {
@@ -32,17 +32,19 @@ describe('createAllowBootFailurePredicate', () => {
 
   describe('default plugin boot failure configuration', () => {
     it('should use abort as default when not configured', () => {
-      const config = new ConfigReader({});
+      const config = mockServices.rootConfig();
       const predicate = createAllowBootFailurePredicate(config);
       expect(predicate('test-plugin')).toBe(false);
     });
 
     it('should use continue when default is set to continue', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'continue',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginBootFailure: 'continue',
+              },
             },
           },
         },
@@ -52,11 +54,13 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should use abort when default is set to abort', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginBootFailure: 'abort',
+              },
             },
           },
         },
@@ -68,17 +72,19 @@ describe('createAllowBootFailurePredicate', () => {
 
   describe('default module boot failure configuration', () => {
     it('should use abort as default when not configured', () => {
-      const config = new ConfigReader({});
+      const config = mockServices.rootConfig();
       const predicate = createAllowBootFailurePredicate(config);
       expect(predicate('test-plugin', 'test-module')).toBe(false);
     });
 
     it('should use continue when default is set to continue', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'continue',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'continue',
+              },
             },
           },
         },
@@ -88,11 +94,13 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should use abort when default is set to abort', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'abort',
+              },
             },
           },
         },
@@ -104,15 +112,17 @@ describe('createAllowBootFailurePredicate', () => {
 
   describe('plugin-specific overrides', () => {
     it('should override default with plugin-specific continue', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'abort',
-            },
-            plugins: {
-              'test-plugin': {
-                onPluginBootFailure: 'continue',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginBootFailure: 'abort',
+              },
+              plugins: {
+                'test-plugin': {
+                  onPluginBootFailure: 'continue',
+                },
               },
             },
           },
@@ -123,15 +133,17 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should override default with plugin-specific abort', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'continue',
-            },
-            plugins: {
-              'test-plugin': {
-                onPluginBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginBootFailure: 'continue',
+              },
+              plugins: {
+                'test-plugin': {
+                  onPluginBootFailure: 'abort',
+                },
               },
             },
           },
@@ -142,15 +154,17 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should use default when plugin-specific config is not set', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'continue',
-            },
-            plugins: {
-              'other-plugin': {
-                onPluginBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginBootFailure: 'continue',
+              },
+              plugins: {
+                'other-plugin': {
+                  onPluginBootFailure: 'abort',
+                },
               },
             },
           },
@@ -161,21 +175,23 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should handle multiple plugins independently', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'abort',
-            },
-            plugins: {
-              'plugin-a': {
-                onPluginBootFailure: 'continue',
-              },
-              'plugin-b': {
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
                 onPluginBootFailure: 'abort',
               },
-              'plugin-c': {
-                // No override, uses default
+              plugins: {
+                'plugin-a': {
+                  onPluginBootFailure: 'continue',
+                },
+                'plugin-b': {
+                  onPluginBootFailure: 'abort',
+                },
+                'plugin-c': {
+                  // No override, uses default
+                },
               },
             },
           },
@@ -190,17 +206,19 @@ describe('createAllowBootFailurePredicate', () => {
 
   describe('module-specific overrides', () => {
     it('should override default with module-specific continue', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'abort',
-            },
-            plugins: {
-              'test-plugin': {
-                modules: {
-                  'test-module': {
-                    onPluginModuleBootFailure: 'continue',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'abort',
+              },
+              plugins: {
+                'test-plugin': {
+                  modules: {
+                    'test-module': {
+                      onPluginModuleBootFailure: 'continue',
+                    },
                   },
                 },
               },
@@ -213,17 +231,19 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should override default with module-specific abort', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'continue',
-            },
-            plugins: {
-              'test-plugin': {
-                modules: {
-                  'test-module': {
-                    onPluginModuleBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'continue',
+              },
+              plugins: {
+                'test-plugin': {
+                  modules: {
+                    'test-module': {
+                      onPluginModuleBootFailure: 'abort',
+                    },
                   },
                 },
               },
@@ -236,17 +256,19 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should use default when module-specific config is not set', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'continue',
-            },
-            plugins: {
-              'test-plugin': {
-                modules: {
-                  'other-module': {
-                    onPluginModuleBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'continue',
+              },
+              plugins: {
+                'test-plugin': {
+                  modules: {
+                    'other-module': {
+                      onPluginModuleBootFailure: 'abort',
+                    },
                   },
                 },
               },
@@ -259,23 +281,25 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should handle multiple modules independently', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'abort',
-            },
-            plugins: {
-              'test-plugin': {
-                modules: {
-                  'module-a': {
-                    onPluginModuleBootFailure: 'continue',
-                  },
-                  'module-b': {
-                    onPluginModuleBootFailure: 'abort',
-                  },
-                  'module-c': {
-                    // No override, uses default
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'abort',
+              },
+              plugins: {
+                'test-plugin': {
+                  modules: {
+                    'module-a': {
+                      onPluginModuleBootFailure: 'continue',
+                    },
+                    'module-b': {
+                      onPluginModuleBootFailure: 'abort',
+                    },
+                    'module-c': {
+                      // No override, uses default
+                    },
                   },
                 },
               },
@@ -290,24 +314,26 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should handle modules across different plugins', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'abort',
-            },
-            plugins: {
-              'plugin-a': {
-                modules: {
-                  'module-x': {
-                    onPluginModuleBootFailure: 'continue',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'abort',
+              },
+              plugins: {
+                'plugin-a': {
+                  modules: {
+                    'module-x': {
+                      onPluginModuleBootFailure: 'continue',
+                    },
                   },
                 },
-              },
-              'plugin-b': {
-                modules: {
-                  'module-y': {
-                    onPluginModuleBootFailure: 'abort',
+                'plugin-b': {
+                  modules: {
+                    'module-y': {
+                      onPluginModuleBootFailure: 'abort',
+                    },
                   },
                 },
               },
@@ -323,19 +349,21 @@ describe('createAllowBootFailurePredicate', () => {
 
   describe('combined plugin and module configurations', () => {
     it('should use module config when both plugin and module configs exist', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'abort',
-              onPluginModuleBootFailure: 'abort',
-            },
-            plugins: {
-              'test-plugin': {
-                onPluginBootFailure: 'continue',
-                modules: {
-                  'test-module': {
-                    onPluginModuleBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginBootFailure: 'abort',
+                onPluginModuleBootFailure: 'abort',
+              },
+              plugins: {
+                'test-plugin': {
+                  onPluginBootFailure: 'continue',
+                  modules: {
+                    'test-module': {
+                      onPluginModuleBootFailure: 'abort',
+                    },
                   },
                 },
               },
@@ -349,19 +377,21 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should use plugin default when module config does not exist', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'abort',
-              onPluginModuleBootFailure: 'abort',
-            },
-            plugins: {
-              'test-plugin': {
-                onPluginBootFailure: 'continue',
-                modules: {
-                  'other-module': {
-                    onPluginModuleBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginBootFailure: 'abort',
+                onPluginModuleBootFailure: 'abort',
+              },
+              plugins: {
+                'test-plugin': {
+                  onPluginBootFailure: 'continue',
+                  modules: {
+                    'other-module': {
+                      onPluginModuleBootFailure: 'abort',
+                    },
                   },
                 },
               },
@@ -377,13 +407,15 @@ describe('createAllowBootFailurePredicate', () => {
 
   describe('edge cases', () => {
     it('should handle empty plugins config', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginBootFailure: 'continue',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginBootFailure: 'continue',
+              },
+              plugins: {},
             },
-            plugins: {},
           },
         },
       });
@@ -392,15 +424,17 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should handle plugin with empty modules config', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'continue',
-            },
-            plugins: {
-              'test-plugin': {
-                modules: {},
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'continue',
+              },
+              plugins: {
+                'test-plugin': {
+                  modules: {},
+                },
               },
             },
           },
@@ -411,15 +445,17 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should handle plugin without modules config', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            default: {
-              onPluginModuleBootFailure: 'continue',
-            },
-            plugins: {
-              'test-plugin': {
-                onPluginBootFailure: 'abort',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              default: {
+                onPluginModuleBootFailure: 'continue',
+              },
+              plugins: {
+                'test-plugin': {
+                  onPluginBootFailure: 'abort',
+                },
               },
             },
           },
@@ -430,12 +466,14 @@ describe('createAllowBootFailurePredicate', () => {
     });
 
     it('should handle case sensitivity correctly', () => {
-      const config = new ConfigReader({
-        backend: {
-          startup: {
-            plugins: {
-              'Test-Plugin': {
-                onPluginBootFailure: 'continue',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            startup: {
+              plugins: {
+                'Test-Plugin': {
+                  onPluginBootFailure: 'continue',
+                },
               },
             },
           },
@@ -468,7 +506,7 @@ describe('createAllowBootFailurePredicate', () => {
           },
         },
       };
-      const config = new ConfigReader(configData);
+      const config = mockServices.rootConfig({ data: configData });
       const predicate = createAllowBootFailurePredicate(config);
 
       // Call predicate multiple times - should use cached values
