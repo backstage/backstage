@@ -20,4 +20,3 @@ A page is displayed that shows the entities of which you have ownership, either 
 - `Aggregated Relations `- entities that you own through your group
 
 ![Screenshot of the Backstage portal entities owned by guest user.](../assets/uiguide/entities-owned-by-me.png)
-
