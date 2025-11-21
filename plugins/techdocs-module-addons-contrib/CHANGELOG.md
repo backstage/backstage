@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.30
+
+### Patch Changes
+
+- 6929480: ExpandableCollapse Techdocs Addon was breaking native sidebar collapse on Firefox
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/integration@1.18.2
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-techdocs-react@1.3.5
+  - @backstage/integration-react@1.2.12
+
 ## 1.1.30-next.1
 
 ### Patch Changes

@@ -12,6 +12,7 @@ import {
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SkeletonDefinition } from '../utils/definitions';
 
 <PageTitle
   title="Skeleton"
@@ -59,6 +60,6 @@ You can use a mix of different sizes to create a more complex skeleton.
   open
 />
 
-<Theming component="Skeleton" />
+<Theming definition={SkeletonDefinition} />
 
 <ChangelogComponent component="skeleton" />

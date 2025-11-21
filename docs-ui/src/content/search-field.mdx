@@ -13,6 +13,7 @@ import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { CodeBlock } from '@/components/CodeBlock';
+import { SearchFieldDefinition } from '../utils/definitions';
 
 <PageTitle
   title="SearchField"
@@ -72,6 +73,6 @@ You can make the SearchField collapsible by setting the `startCollapsed` prop to
   code={searchFieldCollapsibleSnippet}
 />
 
-<Theming component="SearchField" />
+<Theming definition={SearchFieldDefinition} />
 
 <ChangelogComponent component="search-field" />

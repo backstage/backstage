@@ -18,6 +18,7 @@ import {
 } from './dialog.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { DialogDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -102,6 +103,6 @@ You can also control the dialog using your own states.
 
 <CodeBlock code={dialogWithNoTriggerSnippet} />
 
-<Theming component="Dialog" />
+<Theming definition={DialogDefinition} />
 
 <ChangelogComponent component="dialog" />

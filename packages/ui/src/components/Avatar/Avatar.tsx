@@ -18,15 +18,19 @@ import { forwardRef, useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { AvatarProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { AvatarDefinition } from './definition';
 import styles from './Avatar.module.css';
 
 /** @public */
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
-  const { classNames, dataAttributes, cleanedProps } = useStyles('Avatar', {
-    size: 'medium',
-    purpose: 'informative',
-    ...props,
-  });
+  const { classNames, dataAttributes, cleanedProps } = useStyles(
+    AvatarDefinition,
+    {
+      size: 'medium',
+      purpose: 'informative',
+      ...props,
+    },
+  );
 
   const { className, src, name, purpose, ...rest } = cleanedProps;
 

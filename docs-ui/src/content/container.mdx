@@ -11,6 +11,7 @@ import {
 } from './container.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { ContainerDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -48,6 +49,6 @@ create responsive designs.
 
 <CodeBlock code={containerResponsiveSnippet} />
 
-<Theming component="Container" />
+<Theming definition={ContainerDefinition} />
 
 <ChangelogComponent component="container" />

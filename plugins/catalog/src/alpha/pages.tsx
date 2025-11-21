@@ -108,7 +108,13 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
       path: '/catalog/:namespace/:kind/:name',
-      routeRef: convertLegacyRouteRef(entityRouteRef),
+      // NOTE: The `convertLegacyRouteRef` call here ensures that this route ref
+      // is mutated to support the new frontend system. Removing this conversion
+      // is a potentially breaking change since this is a singleton and the
+      // route refs from `core-plugin-api` used to not support the new format.
+      // This shouldn't be removed until we completely deprecate the
+      // `core-compat-api` package.
+      routeRef: convertLegacyRouteRef(entityRouteRef), // READ THE ABOVE
       loader: async () => {
         const { EntityLayout } = await import('./components/EntityLayout');
 

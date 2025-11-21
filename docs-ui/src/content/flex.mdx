@@ -14,6 +14,7 @@ import {
 import { spacingPropDefs } from '@/utils/propDefs';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { FlexDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -63,6 +64,6 @@ create responsive designs.
 
 <CodeBlock code={flexAlignSnippet} />
 
-<Theming component="Flex" />
+<Theming definition={FlexDefinition} />
 
 <ChangelogComponent component="flex" />
