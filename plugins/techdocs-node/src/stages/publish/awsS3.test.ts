@@ -32,24 +32,22 @@ import {
   AwsCredentialProviderOptions,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
-import { mockClient } from 'aws-sdk-client-mock';
+import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import express from 'express';
 import request from 'supertest';
 import path from 'path';
 import fs from 'fs-extra';
 import { AwsS3Publish } from './awsS3';
-
-jest.setTimeout(30_000);
 import { Readable } from 'stream';
 import {
   createMockDirectory,
   mockServices,
 } from '@backstage/backend-test-utils';
 
+jest.setTimeout(30_000);
+
 const env = process.env;
-let s3Mock: ReturnType<typeof mockClient> & {
-  send: (command: any) => Promise<any>;
-};
+let s3Mock: AwsClientStub<S3Client>;
 
 // Create a new MockDirectory for each test to avoid Windows file locking issues
 let mockDir: ReturnType<typeof createMockDirectory>;
@@ -326,7 +324,7 @@ describe('AwsS3Publish', () => {
 
       await (publisher as any).retryOperation(
         async () => {
-          return s3Mock.send(
+          return (s3Mock.send as any)(
             new ListObjectsV2Command({ Bucket: 'bucketName' }),
           );
         },
@@ -353,7 +351,7 @@ describe('AwsS3Publish', () => {
 
       await (publisher as any).retryOperation(
         async () => {
-          return s3Mock.send(
+          return (s3Mock.send as any)(
             new ListObjectsV2Command({ Bucket: 'bucketName' }),
           );
         },
@@ -377,7 +375,7 @@ describe('AwsS3Publish', () => {
 
       await (publisher as any).retryOperation(
         async () => {
-          return s3Mock.send(
+          return (s3Mock.send as any)(
             new ListObjectsV2Command({ Bucket: 'bucketName' }),
           );
         },
@@ -401,7 +399,7 @@ describe('AwsS3Publish', () => {
 
       await (publisher as any).retryOperation(
         async () => {
-          return s3Mock.send(
+          return (s3Mock.send as any)(
             new ListObjectsV2Command({ Bucket: 'bucketName' }),
           );
         },
@@ -423,7 +421,7 @@ describe('AwsS3Publish', () => {
       await expect(
         (publisher as any).retryOperation(
           async () => {
-            return s3Mock.send(
+            return (s3Mock.send as any)(
               new ListObjectsV2Command({ Bucket: 'bucketName' }),
             );
           },
@@ -449,7 +447,7 @@ describe('AwsS3Publish', () => {
 
       await (publisher as any).retryOperation(
         async () => {
-          return s3Mock.send(
+          return (s3Mock.send as any)(
             new ListObjectsV2Command({ Bucket: 'bucketName' }),
           );
         },
@@ -475,7 +473,7 @@ describe('AwsS3Publish', () => {
 
       await (publisher as any).retryOperation(
         async () => {
-          return s3Mock.send(
+          return (s3Mock.send as any)(
             new ListObjectsV2Command({ Bucket: 'bucketName' }),
           );
         },
