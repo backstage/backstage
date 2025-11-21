@@ -58,6 +58,20 @@ export const Accordion: ForwardRefExoticComponent<
   AccordionProps & RefAttributes<HTMLDivElement>
 >;
 
+// @public
+export const AccordionDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Accordion';
+    readonly trigger: 'bui-AccordionTrigger';
+    readonly triggerButton: 'bui-AccordionTriggerButton';
+    readonly triggerTitle: 'bui-AccordionTriggerTitle';
+    readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
+    readonly triggerIcon: 'bui-AccordionTriggerIcon';
+    readonly panel: 'bui-AccordionPanel';
+    readonly group: 'bui-AccordionGroup';
+  };
+};
+
 // @public (undocumented)
 export const AccordionGroup: ForwardRefExoticComponent<
   AccordionGroupProps & RefAttributes<HTMLDivElement>
@@ -112,6 +126,18 @@ export const Avatar: ForwardRefExoticComponent<
   AvatarProps & RefAttributes<HTMLDivElement>
 >;
 
+// @public
+export const AvatarDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-AvatarRoot';
+    readonly image: 'bui-AvatarImage';
+    readonly fallback: 'bui-AvatarFallback';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium', 'large'];
+  };
+};
+
 // @public (undocumented)
 export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
   name: string;
@@ -138,6 +164,37 @@ export type BorderRadius =
 export const Box: ForwardRefExoticComponent<
   BoxProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const BoxDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Box';
+  };
+  readonly utilityProps: [
+    'm',
+    'mb',
+    'ml',
+    'mr',
+    'mt',
+    'mx',
+    'my',
+    'p',
+    'pb',
+    'pl',
+    'pr',
+    'pt',
+    'px',
+    'py',
+    'position',
+    'display',
+    'width',
+    'minWidth',
+    'maxWidth',
+    'height',
+    'minHeight',
+    'maxHeight',
+  ];
+};
 
 // @public (undocumented)
 export interface BoxProps extends SpaceProps {
@@ -177,15 +234,40 @@ export const Button: ForwardRefExoticComponent<
   ButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
+// @public
+export const ButtonDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Button';
+    readonly content: 'bui-ButtonContent';
+    readonly spinner: 'bui-ButtonSpinner';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium', 'large'];
+    readonly variant: readonly ['primary', 'secondary', 'tertiary'];
+    readonly loading: readonly [true, false];
+  };
+};
+
 // @public (undocumented)
 export const ButtonIcon: ForwardRefExoticComponent<
   ButtonIconProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public
+export const ButtonIconDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-ButtonIcon';
+    readonly content: 'bui-ButtonIconContent';
+    readonly spinner: 'bui-ButtonIconSpinner';
+  };
+};
+
+// @public
 export interface ButtonIconProps extends ButtonProps_2 {
   // (undocumented)
   icon?: ReactElement;
+  // (undocumented)
+  loading?: boolean;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
@@ -200,6 +282,13 @@ export interface ButtonIconProps extends ButtonProps_2 {
 export const ButtonLink: ForwardRefExoticComponent<
   ButtonLinkProps & RefAttributes<HTMLAnchorElement>
 >;
+
+// @public
+export const ButtonLinkDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-ButtonLink';
+  };
+};
 
 // @public
 export interface ButtonLinkProps extends LinkProps_2 {
@@ -228,6 +317,8 @@ export interface ButtonProps extends ButtonProps_2 {
   // (undocumented)
   iconStart?: ReactElement;
   // (undocumented)
+  loading?: boolean;
+  // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
@@ -252,6 +343,16 @@ export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   children?: React.ReactNode;
 }
+
+// @public
+export const CardDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Card';
+    readonly header: 'bui-CardHeader';
+    readonly body: 'bui-CardBody';
+    readonly footer: 'bui-CardFooter';
+  };
+};
 
 // @public
 export const CardFooter: ForwardRefExoticComponent<
@@ -293,7 +394,7 @@ export const CellProfile: (props: CellProfileProps) => JSX_2.Element;
 // @public (undocumented)
 export interface CellProfileProps extends CellProps_2 {
   // (undocumented)
-  color?: 'primary' | 'secondary';
+  color?: TextColors;
   // (undocumented)
   description?: string;
   // (undocumented)
@@ -307,7 +408,7 @@ export interface CellProfileProps extends CellProps_2 {
 // @public (undocumented)
 export interface CellProps extends CellProps_2 {
   // (undocumented)
-  color?: 'primary' | 'secondary';
+  color?: TextColors;
   // (undocumented)
   description?: string;
   // (undocumented)
@@ -322,6 +423,17 @@ export interface CellProps extends CellProps_2 {
 export const Checkbox: ForwardRefExoticComponent<
   CheckboxProps & RefAttributes<HTMLLabelElement>
 >;
+
+// @public
+export const CheckboxDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Checkbox';
+    readonly indicator: 'bui-CheckboxIndicator';
+  };
+  readonly dataAttributes: {
+    readonly selected: readonly [true, false];
+  };
+};
 
 // @public (undocumented)
 export interface CheckboxProps extends CheckboxProps_2 {
@@ -358,10 +470,6 @@ export type Columns =
   | 'auto';
 
 // @public
-export type ComponentClassNames<T extends ComponentDefinitionName> =
-  (typeof componentDefinitions)[T]['classNames'];
-
-// @public
 export interface ComponentDefinition {
   // (undocumented)
   classNames: ClassNamesMap;
@@ -371,418 +479,18 @@ export interface ComponentDefinition {
   utilityProps?: string[];
 }
 
-// @public
-export type ComponentDefinitionName = keyof typeof componentDefinitions;
-
-// @public
-export const componentDefinitions: {
-  readonly Avatar: {
-    readonly classNames: {
-      readonly root: 'bui-AvatarRoot';
-      readonly image: 'bui-AvatarImage';
-      readonly fallback: 'bui-AvatarFallback';
-    };
-    readonly dataAttributes: {
-      readonly size: readonly ['small', 'medium', 'large'];
-    };
-  };
-  readonly Box: {
-    readonly classNames: {
-      readonly root: 'bui-Box';
-    };
-    readonly utilityProps: [
-      'm',
-      'mb',
-      'ml',
-      'mr',
-      'mt',
-      'mx',
-      'my',
-      'p',
-      'pb',
-      'pl',
-      'pr',
-      'pt',
-      'px',
-      'py',
-      'position',
-      'display',
-      'width',
-      'minWidth',
-      'maxWidth',
-      'height',
-      'minHeight',
-      'maxHeight',
-    ];
-  };
-  readonly Button: {
-    readonly classNames: {
-      readonly root: 'bui-Button';
-    };
-    readonly dataAttributes: {
-      readonly size: readonly ['small', 'medium', 'large'];
-      readonly variant: readonly ['primary', 'secondary', 'tertiary'];
-    };
-  };
-  readonly ButtonIcon: {
-    readonly classNames: {
-      readonly root: 'bui-ButtonIcon';
-    };
-  };
-  readonly ButtonLink: {
-    readonly classNames: {
-      readonly root: 'bui-ButtonLink';
-    };
-  };
-  readonly Card: {
-    readonly classNames: {
-      readonly root: 'bui-Card';
-      readonly header: 'bui-CardHeader';
-      readonly body: 'bui-CardBody';
-      readonly footer: 'bui-CardFooter';
-    };
-  };
-  readonly Checkbox: {
-    readonly classNames: {
-      readonly root: 'bui-Checkbox';
-      readonly indicator: 'bui-CheckboxIndicator';
-    };
-    readonly dataAttributes: {
-      readonly selected: readonly [true, false];
-    };
-  };
-  readonly Container: {
-    readonly classNames: {
-      readonly root: 'bui-Container';
-    };
-    readonly utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'];
-  };
-  readonly Dialog: {
-    readonly classNames: {
-      readonly overlay: 'bui-DialogOverlay';
-      readonly dialog: 'bui-Dialog';
-      readonly header: 'bui-DialogHeader';
-      readonly headerTitle: 'bui-DialogHeaderTitle';
-      readonly body: 'bui-DialogBody';
-      readonly footer: 'bui-DialogFooter';
-    };
-  };
-  readonly Accordion: {
-    readonly classNames: {
-      readonly root: 'bui-Accordion';
-      readonly trigger: 'bui-AccordionTrigger';
-      readonly triggerButton: 'bui-AccordionTriggerButton';
-      readonly triggerTitle: 'bui-AccordionTriggerTitle';
-      readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
-      readonly triggerIcon: 'bui-AccordionTriggerIcon';
-      readonly panel: 'bui-AccordionPanel';
-      readonly group: 'bui-AccordionGroup';
-    };
-  };
-  readonly FieldError: {
-    readonly classNames: {
-      readonly root: 'bui-FieldError';
-    };
-  };
-  readonly FieldLabel: {
-    readonly classNames: {
-      readonly root: 'bui-FieldLabelWrapper';
-      readonly label: 'bui-FieldLabel';
-      readonly secondaryLabel: 'bui-FieldSecondaryLabel';
-      readonly description: 'bui-FieldDescription';
-    };
-  };
-  readonly Flex: {
-    readonly classNames: {
-      readonly root: 'bui-Flex';
-    };
-    readonly utilityProps: [
-      'm',
-      'mb',
-      'ml',
-      'mr',
-      'mt',
-      'mx',
-      'my',
-      'p',
-      'pb',
-      'pl',
-      'pr',
-      'pt',
-      'px',
-      'py',
-      'gap',
-      'align',
-      'justify',
-      'direction',
-    ];
-  };
-  readonly Grid: {
-    readonly classNames: {
-      readonly root: 'bui-Grid';
-    };
-    readonly utilityProps: [
-      'columns',
-      'gap',
-      'm',
-      'mb',
-      'ml',
-      'mr',
-      'mt',
-      'mx',
-      'my',
-      'p',
-      'pb',
-      'pl',
-      'pr',
-      'pt',
-      'px',
-      'py',
-    ];
-  };
-  readonly GridItem: {
-    readonly classNames: {
-      readonly root: 'bui-GridItem';
-    };
-    readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
-  };
-  readonly Header: {
-    readonly classNames: {
-      readonly toolbar: 'bui-HeaderToolbar';
-      readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
-      readonly toolbarContent: 'bui-HeaderToolbarContent';
-      readonly toolbarControls: 'bui-HeaderToolbarControls';
-      readonly toolbarIcon: 'bui-HeaderToolbarIcon';
-      readonly toolbarName: 'bui-HeaderToolbarName';
-      readonly tabsWrapper: 'bui-HeaderTabsWrapper';
-    };
-  };
-  readonly HeaderPage: {
-    readonly classNames: {
-      readonly root: 'bui-HeaderPage';
-      readonly content: 'bui-HeaderPageContent';
-      readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
-      readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
-      readonly controls: 'bui-HeaderPageControls';
-    };
-  };
-  readonly Heading: {
-    readonly classNames: {
-      readonly root: 'bui-Heading';
-    };
-    readonly dataAttributes: {
-      readonly variant: readonly ['title1', 'title2', 'title3', 'subtitle'];
-      readonly color: readonly ['primary', 'secondary', 'muted'];
-      readonly truncate: readonly [true, false];
-    };
-  };
-  readonly Icon: {
-    readonly classNames: {
-      readonly root: 'bui-Icon';
-    };
-  };
-  readonly Link: {
-    readonly classNames: {
-      readonly root: 'bui-Link';
-    };
-    readonly dataAttributes: {
-      readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
-      readonly weight: readonly ['regular', 'bold'];
-      readonly color: readonly [
-        'primary',
-        'secondary',
-        'danger',
-        'warning',
-        'success',
-      ];
-      readonly truncate: readonly [true, false];
-    };
-  };
-  readonly List: {
-    readonly classNames: {
-      readonly root: 'bui-List';
-      readonly row: 'bui-ListRow';
-      readonly label: 'bui-ListLabel';
-    };
-  };
-  readonly Menu: {
-    readonly classNames: {
-      readonly root: 'bui-Menu';
-      readonly popover: 'bui-MenuPopover';
-      readonly content: 'bui-MenuContent';
-      readonly section: 'bui-MenuSection';
-      readonly sectionHeader: 'bui-MenuSectionHeader';
-      readonly item: 'bui-MenuItem';
-      readonly itemListBox: 'bui-MenuItemListBox';
-      readonly itemListBoxCheck: 'bui-MenuItemListBoxCheck';
-      readonly itemWrapper: 'bui-MenuItemWrapper';
-      readonly itemContent: 'bui-MenuItemContent';
-      readonly itemArrow: 'bui-MenuItemArrow';
-      readonly separator: 'bui-MenuSeparator';
-      readonly searchField: 'bui-MenuSearchField';
-      readonly searchFieldInput: 'bui-MenuSearchFieldInput';
-      readonly searchFieldClear: 'bui-MenuSearchFieldClear';
-      readonly emptyState: 'bui-MenuEmptyState';
-    };
-  };
-  readonly PasswordField: {
-    readonly classNames: {
-      readonly root: 'bui-PasswordField';
-      readonly inputVisibility: 'bui-InputVisibility';
-    };
-    readonly dataAttributes: {
-      readonly size: readonly ['small', 'medium'];
-    };
-  };
-  readonly Popover: {
-    readonly classNames: {
-      readonly root: 'bui-Popover';
-    };
-  };
-  readonly RadioGroup: {
-    readonly classNames: {
-      readonly root: 'bui-RadioGroup';
-      readonly content: 'bui-RadioGroupContent';
-      readonly radio: 'bui-Radio';
-    };
-  };
-  readonly SearchField: {
-    readonly classNames: {
-      readonly root: 'bui-SearchField';
-      readonly clear: 'bui-SearchFieldClear';
-      readonly inputWrapper: 'bui-SearchFieldWrapper';
-      readonly input: 'bui-SearchFieldInput';
-      readonly inputIcon: 'bui-SearchFieldInputIcon';
-    };
-    readonly dataAttributes: {
-      readonly startCollapsed: readonly [true, false];
-      readonly size: readonly ['small', 'medium'];
-    };
-  };
-  readonly Select: {
-    readonly classNames: {
-      readonly root: 'bui-Select';
-      readonly popover: 'bui-SelectPopover';
-      readonly trigger: 'bui-SelectTrigger';
-      readonly value: 'bui-SelectValue';
-      readonly icon: 'bui-SelectIcon';
-      readonly list: 'bui-SelectList';
-      readonly item: 'bui-SelectItem';
-      readonly itemIndicator: 'bui-SelectItemIndicator';
-      readonly itemLabel: 'bui-SelectItemLabel';
-    };
-    readonly dataAttributes: {
-      readonly size: readonly ['small', 'medium'];
-    };
-  };
-  readonly Skeleton: {
-    readonly classNames: {
-      readonly root: 'bui-Skeleton';
-    };
-  };
-  readonly Switch: {
-    readonly classNames: {
-      readonly root: 'bui-Switch';
-      readonly indicator: 'bui-SwitchIndicator';
-    };
-  };
-  readonly Table: {
-    readonly classNames: {
-      readonly table: 'bui-Table';
-      readonly header: 'bui-TableHeader';
-      readonly body: 'bui-TableBody';
-      readonly row: 'bui-TableRow';
-      readonly head: 'bui-TableHead';
-      readonly headContent: 'bui-TableHeadContent';
-      readonly headSortButton: 'bui-TableHeadSortButton';
-      readonly caption: 'bui-TableCaption';
-      readonly cell: 'bui-TableCell';
-      readonly cellContentWrapper: 'bui-TableCellContentWrapper';
-      readonly cellContent: 'bui-TableCellContent';
-      readonly cellIcon: 'bui-TableCellIcon';
-      readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
-      readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
-      readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
-      readonly cellProfileName: 'bui-TableCellProfileName';
-      readonly cellProfileLink: 'bui-TableCellProfileLink';
-    };
-  };
-  readonly TablePagination: {
-    readonly classNames: {
-      readonly root: 'bui-TablePagination';
-      readonly left: 'bui-TablePaginationLeft';
-      readonly right: 'bui-TablePaginationRight';
-      readonly select: 'bui-TablePaginationSelect';
-    };
-  };
-  readonly Tabs: {
-    readonly classNames: {
-      readonly tabs: 'bui-Tabs';
-      readonly tabList: 'bui-TabList';
-      readonly tabListWrapper: 'bui-TabListWrapper';
-      readonly tab: 'bui-Tab';
-      readonly tabActive: 'bui-TabActive';
-      readonly tabHovered: 'bui-TabHovered';
-      readonly panel: 'bui-TabPanel';
-    };
-  };
-  readonly TagGroup: {
-    readonly classNames: {
-      readonly group: 'bui-TagGroup';
-      readonly list: 'bui-TagList';
-      readonly tag: 'bui-Tag';
-      readonly tagIcon: 'bui-TagIcon';
-      readonly tagRemoveButton: 'bui-TagRemoveButton';
-    };
-  };
-  readonly Text: {
-    readonly classNames: {
-      readonly root: 'bui-Text';
-    };
-    readonly dataAttributes: {
-      readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
-      readonly weight: readonly ['regular', 'bold'];
-      readonly color: readonly [
-        'primary',
-        'secondary',
-        'danger',
-        'warning',
-        'success',
-      ];
-      readonly truncate: readonly [true, false];
-    };
-  };
-  readonly TextField: {
-    readonly classNames: {
-      readonly root: 'bui-TextField';
-      readonly inputWrapper: 'bui-InputWrapper';
-      readonly input: 'bui-Input';
-      readonly inputIcon: 'bui-InputIcon';
-      readonly inputAction: 'bui-InputAction';
-    };
-    readonly dataAttributes: {
-      readonly invalid: readonly [true, false];
-      readonly disabled: readonly [true, false];
-      readonly size: readonly ['small', 'medium'];
-    };
-  };
-  readonly Tooltip: {
-    readonly classNames: {
-      readonly tooltip: 'bui-Tooltip';
-      readonly arrow: 'bui-TooltipArrow';
-    };
-  };
-  readonly VisuallyHidden: {
-    readonly classNames: {
-      readonly root: 'bui-VisuallyHidden';
-    };
-  };
-};
-
 // @public (undocumented)
 export const Container: ForwardRefExoticComponent<
   ContainerProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const ContainerDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Container';
+  };
+  readonly utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'];
+};
 
 // @public (undocumented)
 export interface ContainerProps {
@@ -829,6 +537,18 @@ export interface DialogBodyProps {
   // (undocumented)
   className?: string;
 }
+
+// @public
+export const DialogDefinition: {
+  readonly classNames: {
+    readonly overlay: 'bui-DialogOverlay';
+    readonly dialog: 'bui-Dialog';
+    readonly header: 'bui-DialogHeader';
+    readonly headerTitle: 'bui-DialogHeaderTitle';
+    readonly body: 'bui-DialogBody';
+    readonly footer: 'bui-DialogFooter';
+  };
+};
 
 // @public (undocumented)
 export const DialogFooter: ForwardRefExoticComponent<
@@ -878,6 +598,16 @@ export const FieldLabel: ForwardRefExoticComponent<
   FieldLabelProps & RefAttributes<HTMLDivElement>
 >;
 
+// @public
+export const FieldLabelDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-FieldLabelWrapper';
+    readonly label: 'bui-FieldLabel';
+    readonly secondaryLabel: 'bui-FieldSecondaryLabel';
+    readonly description: 'bui-FieldDescription';
+  };
+};
+
 // @public (undocumented)
 export interface FieldLabelProps
   extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
@@ -892,6 +622,33 @@ export interface FieldLabelProps
 export const Flex: ForwardRefExoticComponent<
   FlexProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const FlexDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Flex';
+  };
+  readonly utilityProps: [
+    'm',
+    'mb',
+    'ml',
+    'mr',
+    'mt',
+    'mx',
+    'my',
+    'p',
+    'pb',
+    'pl',
+    'pr',
+    'pt',
+    'px',
+    'py',
+    'gap',
+    'align',
+    'justify',
+    'direction',
+  ];
+};
 
 // @public (undocumented)
 export type FlexDirection = 'row' | 'column';
@@ -923,6 +680,39 @@ export const Grid: {
   Item: ForwardRefExoticComponent<
     GridItemProps & RefAttributes<HTMLDivElement>
   >;
+};
+
+// @public
+export const GridDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Grid';
+  };
+  readonly utilityProps: [
+    'columns',
+    'gap',
+    'm',
+    'mb',
+    'ml',
+    'mr',
+    'mt',
+    'mx',
+    'my',
+    'p',
+    'pb',
+    'pl',
+    'pr',
+    'pt',
+    'px',
+    'py',
+  ];
+};
+
+// @public
+export const GridItemDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-GridItem';
+  };
+  readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
 };
 
 // @public (undocumented)
@@ -961,6 +751,19 @@ export interface GridProps extends SpaceProps {
 export const Header: (props: HeaderProps) => JSX_2.Element;
 
 // @public
+export const HeaderDefinition: {
+  readonly classNames: {
+    readonly toolbar: 'bui-HeaderToolbar';
+    readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
+    readonly toolbarContent: 'bui-HeaderToolbarContent';
+    readonly toolbarControls: 'bui-HeaderToolbarControls';
+    readonly toolbarIcon: 'bui-HeaderToolbarIcon';
+    readonly toolbarName: 'bui-HeaderToolbarName';
+    readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+  };
+};
+
+// @public
 export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
 
 // @public
@@ -970,6 +773,17 @@ export interface HeaderPageBreadcrumb {
   // (undocumented)
   label: string;
 }
+
+// @public
+export const HeaderPageDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-HeaderPage';
+    readonly content: 'bui-HeaderPageContent';
+    readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
+    readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
+    readonly controls: 'bui-HeaderPageControls';
+  };
+};
 
 // @public
 export interface HeaderPageProps {
@@ -1027,6 +841,25 @@ export type JustifyContent =
 export const Link: ForwardRefExoticComponent<
   LinkProps & RefAttributes<HTMLAnchorElement>
 >;
+
+// @public
+export const LinkDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Link';
+  };
+  readonly dataAttributes: {
+    readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
+    readonly weight: readonly ['regular', 'bold'];
+    readonly color: readonly [
+      'primary',
+      'secondary',
+      'danger',
+      'warning',
+      'success',
+    ];
+    readonly truncate: readonly [true, false];
+  };
+};
 
 // @public (undocumented)
 export interface LinkProps extends LinkProps_2 {
@@ -1087,6 +920,28 @@ export interface MenuAutocompleteProps<T>
   // (undocumented)
   virtualized?: boolean;
 }
+
+// @public
+export const MenuDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Menu';
+    readonly popover: 'bui-MenuPopover';
+    readonly content: 'bui-MenuContent';
+    readonly section: 'bui-MenuSection';
+    readonly sectionHeader: 'bui-MenuSectionHeader';
+    readonly item: 'bui-MenuItem';
+    readonly itemListBox: 'bui-MenuItemListBox';
+    readonly itemListBoxCheck: 'bui-MenuItemListBoxCheck';
+    readonly itemWrapper: 'bui-MenuItemWrapper';
+    readonly itemContent: 'bui-MenuItemContent';
+    readonly itemArrow: 'bui-MenuItemArrow';
+    readonly separator: 'bui-MenuSeparator';
+    readonly searchField: 'bui-MenuSearchField';
+    readonly searchFieldInput: 'bui-MenuSearchFieldInput';
+    readonly searchFieldClear: 'bui-MenuSearchFieldClear';
+    readonly emptyState: 'bui-MenuEmptyState';
+  };
+};
 
 // @public (undocumented)
 export const MenuItem: (props: MenuItemProps) => JSX_2.Element;
@@ -1171,6 +1026,14 @@ export const MenuTrigger: (props: MenuTriggerProps) => JSX_2.Element;
 export interface MenuTriggerProps extends MenuTriggerProps_2 {}
 
 // @public (undocumented)
+type Option_2 = {
+  value: string;
+  label: string;
+  disabled?: boolean;
+};
+export { Option_2 as Option };
+
+// @public (undocumented)
 export const Radio: ForwardRefExoticComponent<
   RadioProps & RefAttributes<HTMLLabelElement>
 >;
@@ -1179,6 +1042,15 @@ export const Radio: ForwardRefExoticComponent<
 export const RadioGroup: ForwardRefExoticComponent<
   RadioGroupProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const RadioGroupDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-RadioGroup';
+    readonly content: 'bui-RadioGroupContent';
+    readonly radio: 'bui-Radio';
+  };
+};
 
 // @public (undocumented)
 export interface RadioGroupProps
@@ -1202,6 +1074,21 @@ export const SearchField: ForwardRefExoticComponent<
   SearchFieldProps & RefAttributes<HTMLDivElement>
 >;
 
+// @public
+export const SearchFieldDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-SearchField';
+    readonly clear: 'bui-SearchFieldClear';
+    readonly inputWrapper: 'bui-SearchFieldInputWrapper';
+    readonly input: 'bui-SearchFieldInput';
+    readonly inputIcon: 'bui-SearchFieldInputIcon';
+  };
+  readonly dataAttributes: {
+    readonly startCollapsed: readonly [true, false];
+    readonly size: readonly ['small', 'medium'];
+  };
+};
+
 // @public (undocumented)
 export interface SearchFieldProps
   extends SearchFieldProps_2,
@@ -1214,27 +1101,52 @@ export interface SearchFieldProps
 
 // @public (undocumented)
 export const Select: ForwardRefExoticComponent<
-  SelectProps & RefAttributes<HTMLDivElement>
+  SelectProps<'multiple' | 'single'> & RefAttributes<HTMLDivElement>
 >;
 
+// @public
+export const SelectDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Select';
+    readonly popover: 'bui-SelectPopover';
+    readonly trigger: 'bui-SelectTrigger';
+    readonly chevron: 'bui-SelectTriggerChevron';
+    readonly value: 'bui-SelectValue';
+    readonly list: 'bui-SelectList';
+    readonly item: 'bui-SelectItem';
+    readonly itemIndicator: 'bui-SelectItemIndicator';
+    readonly itemLabel: 'bui-SelectItemLabel';
+    readonly searchWrapper: 'bui-SelectSearchWrapper';
+    readonly search: 'bui-SelectSearch';
+    readonly searchClear: 'bui-SelectSearchClear';
+    readonly noResults: 'bui-SelectNoResults';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium'];
+  };
+};
+
 // @public (undocumented)
-export interface SelectProps
-  extends SelectProps_2<{
-      name: string;
-      value: string;
-    }>,
+export interface SelectProps<T extends 'single' | 'multiple'>
+  extends SelectProps_2<Option_2, T>,
     Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   icon?: ReactNode;
-  options?: Array<{
-    value: string;
-    label: string;
-    disabled?: boolean;
-  }>;
+  options?: Array<Option_2>;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  selectionMode?: T;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
 // @public (undocumented)
 export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
+
+// @public
+export const SkeletonDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Skeleton';
+  };
+};
 
 // @public (undocumented)
 export interface SkeletonProps extends ComponentProps<'div'> {
@@ -1309,6 +1221,14 @@ export const Switch: ForwardRefExoticComponent<
   SwitchProps & RefAttributes<HTMLLabelElement>
 >;
 
+// @public
+export const SwitchDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Switch';
+    readonly indicator: 'bui-SwitchIndicator';
+  };
+};
+
 // @public (undocumented)
 export interface SwitchProps extends SwitchProps_2 {
   label?: string;
@@ -1325,6 +1245,29 @@ export const TableBody: <T extends object>(
   props: TableBodyProps<T>,
 ) => JSX_2.Element;
 
+// @public
+export const TableDefinition: {
+  readonly classNames: {
+    readonly table: 'bui-Table';
+    readonly header: 'bui-TableHeader';
+    readonly body: 'bui-TableBody';
+    readonly row: 'bui-TableRow';
+    readonly head: 'bui-TableHead';
+    readonly headContent: 'bui-TableHeadContent';
+    readonly headSortButton: 'bui-TableHeadSortButton';
+    readonly caption: 'bui-TableCaption';
+    readonly cell: 'bui-TableCell';
+    readonly cellContentWrapper: 'bui-TableCellContentWrapper';
+    readonly cellContent: 'bui-TableCellContent';
+    readonly cellIcon: 'bui-TableCellIcon';
+    readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
+    readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
+    readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
+    readonly cellProfileName: 'bui-TableCellProfileName';
+    readonly cellProfileLink: 'bui-TableCellProfileLink';
+  };
+};
+
 // @public (undocumented)
 export const TableHeader: <T extends object>(
   props: TableHeaderProps<T>,
@@ -1332,6 +1275,16 @@ export const TableHeader: <T extends object>(
 
 // @public
 export function TablePagination(props: TablePaginationProps): JSX_2.Element;
+
+// @public
+export const TablePaginationDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-TablePagination';
+    readonly left: 'bui-TablePaginationLeft';
+    readonly right: 'bui-TablePaginationRight';
+    readonly select: 'bui-TablePaginationSelect';
+  };
+};
 
 // @public (undocumented)
 export interface TablePaginationProps
@@ -1380,6 +1333,19 @@ export interface TabProps extends TabProps_2 {
 export const Tabs: (props: TabsProps) => JSX_2.Element | null;
 
 // @public
+export const TabsDefinition: {
+  readonly classNames: {
+    readonly tabs: 'bui-Tabs';
+    readonly tabList: 'bui-TabList';
+    readonly tabListWrapper: 'bui-TabListWrapper';
+    readonly tab: 'bui-Tab';
+    readonly tabActive: 'bui-TabActive';
+    readonly tabHovered: 'bui-TabHovered';
+    readonly panel: 'bui-TabPanel';
+  };
+};
+
+// @public
 export interface TabsProps extends TabsProps_2 {}
 
 // @public
@@ -1389,6 +1355,17 @@ export const Tag: (props: TagProps) => JSX_2.Element;
 export const TagGroup: <T extends object>(
   props: TagGroupProps<T>,
 ) => JSX_2.Element;
+
+// @public
+export const TagGroupDefinition: {
+  readonly classNames: {
+    readonly group: 'bui-TagGroup';
+    readonly list: 'bui-TagList';
+    readonly tag: 'bui-Tag';
+    readonly tagIcon: 'bui-TagIcon';
+    readonly tagRemoveButton: 'bui-TagRemoveButton';
+  };
+};
 
 // @public
 export interface TagGroupProps<T>
@@ -1418,10 +1395,45 @@ export type TextColors = 'primary' | 'secondary';
 // @public (undocumented)
 export type TextColorStatus = 'danger' | 'warning' | 'success';
 
+// @public
+export const TextDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Text';
+  };
+  readonly dataAttributes: {
+    readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
+    readonly weight: readonly ['regular', 'bold'];
+    readonly color: readonly [
+      'primary',
+      'secondary',
+      'danger',
+      'warning',
+      'success',
+    ];
+    readonly truncate: readonly [true, false];
+  };
+};
+
 // @public (undocumented)
 export const TextField: ForwardRefExoticComponent<
   TextFieldProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const TextFieldDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-TextField';
+    readonly inputWrapper: 'bui-InputWrapper';
+    readonly input: 'bui-Input';
+    readonly inputIcon: 'bui-InputIcon';
+    readonly inputAction: 'bui-InputAction';
+  };
+  readonly dataAttributes: {
+    readonly invalid: readonly [true, false];
+    readonly disabled: readonly [true, false];
+    readonly size: readonly ['small', 'medium'];
+  };
+};
 
 // @public (undocumented)
 export interface TextFieldProps
@@ -1481,6 +1493,14 @@ export type TextWeights = 'regular' | 'bold';
 export const Tooltip: ForwardRefExoticComponent<
   TooltipProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const TooltipDefinition: {
+  readonly classNames: {
+    readonly tooltip: 'bui-Tooltip';
+    readonly arrow: 'bui-TooltipArrow';
+  };
+};
 
 // @public (undocumented)
 export interface TooltipProps extends Omit<TooltipProps_2, 'children'> {
@@ -1576,6 +1596,13 @@ export interface UtilityProps extends SpaceProps {
 
 // @public
 export const VisuallyHidden: (props: VisuallyHiddenProps) => JSX_2.Element;
+
+// @public
+export const VisuallyHiddenDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-VisuallyHidden';
+  };
+};
 
 // @public
 export interface VisuallyHiddenProps extends ComponentProps<'div'> {

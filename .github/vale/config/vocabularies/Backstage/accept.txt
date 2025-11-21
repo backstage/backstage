@@ -59,6 +59,7 @@ Chanwit
 CI/CD
 classname
 cli
+CLIs
 cloudbuild
 Cloudflare
 Cloudformation
@@ -149,6 +150,7 @@ etag
 Expedia
 facto
 failover
+faq
 Fargate
 faqs
 featureful
@@ -325,6 +327,7 @@ onboarded
 onboarding
 Onboarding
 onelogin
+openapi
 OpenSearch
 OpenShift
 openssl

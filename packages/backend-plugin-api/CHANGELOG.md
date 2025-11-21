@@ -1,5 +1,26 @@
 # @backstage/backend-plugin-api
 
+## 1.5.0
+
+### Minor Changes
+
+- a17d9df: Promote `instanceMetadata` service to main entrypoint.
+- 62fc2de: Explicitly mark `coreServices.rootInstanceMetadata` as a root service.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+  - @backstage/plugin-permission-node@0.10.6
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- 62fc2de: Explicitly mark `coreServices.rootInstanceMetadata` as a root service.
+
 ## 1.5.0-next.1
 
 ### Minor Changes

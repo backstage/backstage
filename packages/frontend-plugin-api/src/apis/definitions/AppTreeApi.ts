@@ -15,12 +15,8 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import {
-  FrontendPlugin,
-  Extension,
-  ExtensionDataRef,
-  ExtensionAttachToSpec,
-} from '../../wiring';
+import { FrontendPlugin, Extension, ExtensionDataRef } from '../../wiring';
+import { ExtensionAttachTo } from '../../wiring/resolveExtensionDefinition';
 
 /**
  * The specification for this {@link AppNode} in the {@link AppTree}.
@@ -33,7 +29,7 @@ import {
  */
 export interface AppNodeSpec {
   readonly id: string;
-  readonly attachTo: ExtensionAttachToSpec;
+  readonly attachTo: ExtensionAttachTo;
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;

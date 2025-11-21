@@ -1,5 +1,15 @@
 # @backstage/core-compat-api
 
+## 0.5.4
+
+### Patch Changes
+
+- 4d03f08: Internal refactor of route reference implementations with minor updates to the `toString` implementations.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-plugin-api@1.12.0
+
 ## 0.5.4-next.0
 
 ### Patch Changes

@@ -13,7 +13,6 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
@@ -25,6 +24,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { PathParams } from '@backstage/core-plugin-api';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
@@ -58,7 +58,7 @@ const _default: OverridableFrontendPlugin<
     }>;
   },
   {
-    'api:scaffolder': ExtensionDefinition<{
+    'api:scaffolder': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -73,7 +73,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:scaffolder/form-decorators': ExtensionDefinition<{
+    'api:scaffolder/form-decorators': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -100,7 +100,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:scaffolder/form-fields': ExtensionDefinition<{
+    'api:scaffolder/form-fields': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -127,7 +127,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'entity-icon-link:scaffolder/launch-template': ExtensionDefinition<{
+    'entity-icon-link:scaffolder/launch-template': OverridableExtensionDefinition<{
       kind: 'entity-icon-link';
       name: 'launch-template';
       config: {
@@ -166,7 +166,7 @@ const _default: OverridableFrontendPlugin<
         filter?: EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'nav-item:scaffolder': ExtensionDefinition<{
+    'nav-item:scaffolder': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
@@ -187,7 +187,7 @@ const _default: OverridableFrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'page:scaffolder': ExtensionDefinition<{
+    'page:scaffolder': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
       };
@@ -226,7 +226,7 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
       };
     }>;
-    'scaffolder-form-field:scaffolder/entity-name-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/entity-name-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'entity-name-picker';
       config: {};
@@ -241,7 +241,7 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
-    'scaffolder-form-field:scaffolder/entity-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/entity-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'entity-picker';
       config: {};
@@ -256,7 +256,7 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
-    'scaffolder-form-field:scaffolder/entity-tags-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/entity-tags-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'entity-tags-picker';
       config: {};
@@ -271,7 +271,7 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
-    'scaffolder-form-field:scaffolder/multi-entity-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/multi-entity-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'multi-entity-picker';
       config: {};
@@ -286,7 +286,7 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
-    'scaffolder-form-field:scaffolder/my-groups-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/my-groups-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'my-groups-picker';
       config: {};
@@ -301,7 +301,7 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
-    'scaffolder-form-field:scaffolder/owned-entity-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/owned-entity-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'owned-entity-picker';
       config: {};
@@ -316,7 +316,7 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
-    'scaffolder-form-field:scaffolder/owner-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/owner-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'owner-picker';
       config: {};
@@ -331,7 +331,7 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
-    'scaffolder-form-field:scaffolder/repo-branch-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/repo-branch-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'repo-branch-picker';
       config: {};
@@ -346,7 +346,7 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
-    'scaffolder-form-field:scaffolder/repo-url-picker': ExtensionDefinition<{
+    'scaffolder-form-field:scaffolder/repo-url-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'repo-url-picker';
       config: {};
@@ -378,7 +378,7 @@ export class DefaultScaffolderFormDecoratorsApi
 }
 
 // @alpha (undocumented)
-export const formDecoratorsApi: ExtensionDefinition<{
+export const formDecoratorsApi: OverridableExtensionDefinition<{
   config: {};
   configInput: {};
   output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;

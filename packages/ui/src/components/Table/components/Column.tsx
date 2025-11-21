@@ -16,6 +16,7 @@
 
 import { Column as ReactAriaColumn } from 'react-aria-components';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
 import { ColumnProps } from '../types';
@@ -23,10 +24,7 @@ import { RiArrowUpLine, RiArrowDownLine } from '@remixicon/react';
 
 /** @public */
 export const Column = (props: ColumnProps) => {
-  const { classNames, cleanedProps } = useStyles<'Table', ColumnProps>(
-    'Table',
-    props,
-  );
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
   const { children, ...rest } = cleanedProps;
 
   return (

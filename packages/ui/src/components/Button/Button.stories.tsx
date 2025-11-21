@@ -19,6 +19,7 @@ import { Button } from './Button';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
+import { useState } from 'react';
 
 const meta = {
   title: 'Backstage UI/Button',
@@ -209,6 +210,83 @@ export const Playground: Story = {
           ))}
         </Flex>
       ))}
+    </Flex>
+  ),
+};
+
+export const Loading: Story = {
+  render: () => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleClick = () => {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+    };
+
+    return (
+      <Button variant="primary" loading={isLoading} onPress={handleClick}>
+        Load more items
+      </Button>
+    );
+  },
+};
+
+export const LoadingVariants: Story = {
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Text>Primary</Text>
+      <Flex align="center" gap="4">
+        <Button variant="primary" size="small" loading>
+          Small Loading
+        </Button>
+        <Button variant="primary" size="medium" loading>
+          Medium Loading
+        </Button>
+        <Button variant="primary" loading iconStart={<RiCloudLine />}>
+          With Icon
+        </Button>
+      </Flex>
+
+      <Text>Secondary</Text>
+      <Flex align="center" gap="4">
+        <Button variant="secondary" size="small" loading>
+          Small Loading
+        </Button>
+        <Button variant="secondary" size="medium" loading>
+          Medium Loading
+        </Button>
+        <Button variant="secondary" loading iconStart={<RiCloudLine />}>
+          With Icon
+        </Button>
+      </Flex>
+
+      <Text>Tertiary</Text>
+      <Flex align="center" gap="4">
+        <Button variant="tertiary" size="small" loading>
+          Small Loading
+        </Button>
+        <Button variant="tertiary" size="medium" loading>
+          Medium Loading
+        </Button>
+        <Button variant="tertiary" loading iconStart={<RiCloudLine />}>
+          With Icon
+        </Button>
+      </Flex>
+
+      <Text>Loading vs Disabled</Text>
+      <Flex align="center" gap="4">
+        <Button variant="primary" loading>
+          Loading
+        </Button>
+        <Button variant="primary" isDisabled>
+          Disabled
+        </Button>
+        <Button variant="primary" loading isDisabled>
+          Both (Disabled Wins)
+        </Button>
+      </Flex>
     </Flex>
   ),
 };

@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.2.15
+
+### Patch Changes
+
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-bitbucket-cloud-common@0.3.4
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-scaffolder-node@0.12.1
+
 ## 0.2.15-next.1
 
 ### Patch Changes

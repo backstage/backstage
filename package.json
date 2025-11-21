@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.45.0-next.2",
+  "version": "1.45.0",
   "backstage": {
     "cli": {
       "new": {
@@ -47,6 +47,7 @@
     "lint:type-deps": "backstage-repo-tools type-deps",
     "mui-to-bui": "node scripts/mui-to-bui/backstage-migration-analytics.js",
     "new": "backstage-cli new",
+    "patch-pr": "node .patches/create-pr-patch.js",
     "prepare": "husky",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
@@ -65,8 +66,8 @@
     "test": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test",
     "test:all": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test --coverage",
     "test:e2e": "NODE_OPTIONS=--no-node-snapshot playwright test",
-    "tsc": "tsc",
-    "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false"
+    "tsc": "NODE_OPTIONS='--max-old-space-size=8192' tsc",
+    "tsc:full": "backstage-cli repo clean && NODE_OPTIONS='--max-old-space-size=8192' tsc --skipLibCheck false --incremental false"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [

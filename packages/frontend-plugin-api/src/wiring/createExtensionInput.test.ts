@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { OpaqueExtensionInput } from '@internal/frontend';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { ExtensionInput, createExtensionInput } from './createExtensionInput';
 
@@ -29,6 +30,7 @@ describe('createExtensionInput', () => {
       $$type: '@backstage/ExtensionInput',
       extensionData: [stringDataRef, numberDataRef],
       config: { singleton: false, optional: false },
+      withContext: expect.any(Function),
     });
 
     const x1: ExtensionInput<
@@ -54,6 +56,20 @@ describe('createExtensionInput', () => {
     unused(x1, x2, x3, x4);
   });
 
+  it('should attach a context to the input', () => {
+    const input = createExtensionInput([stringDataRef, numberDataRef]);
+    const context = { input: 'test1', kind: 'test2', name: 'test3' };
+    const inputWithContext =
+      OpaqueExtensionInput.toInternal(input).withContext?.(context);
+    expect(inputWithContext).toEqual({
+      $$type: '@backstage/ExtensionInput',
+      extensionData: [stringDataRef, numberDataRef],
+      config: { singleton: false, optional: false },
+      withContext: expect.any(Function),
+      context,
+    });
+  });
+
   it('should create a singleton input', () => {
     const input = createExtensionInput([stringDataRef, numberDataRef], {
       singleton: true,
@@ -62,6 +78,7 @@ describe('createExtensionInput', () => {
       $$type: '@backstage/ExtensionInput',
       extensionData: [stringDataRef, numberDataRef],
       config: { singleton: true, optional: false },
+      withContext: expect.any(Function),
     });
 
     const x1: ExtensionInput<
@@ -96,6 +113,7 @@ describe('createExtensionInput', () => {
       $$type: '@backstage/ExtensionInput',
       extensionData: [stringDataRef, numberDataRef],
       config: { singleton: true, optional: true },
+      withContext: expect.any(Function),
     });
 
     const x1: ExtensionInput<

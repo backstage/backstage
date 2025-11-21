@@ -9,12 +9,14 @@ import {
   buttonSizesSnippet,
   buttonIconsSnippet,
   buttonDisabledSnippet,
+  buttonLoadingSnippet,
   buttonResponsiveSnippet,
   buttonAsLinkSnippet,
 } from './button.props';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { ButtonDefinition } from '../utils/definitions';
 
 <PageTitle
   title="Button"
@@ -86,6 +88,18 @@ Here's a view when buttons are disabled.
   code={buttonDisabledSnippet}
 />
 
+### Loading
+
+Here's a view when buttons are in a loading state.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonSnippet story="Loading" />}
+  code={buttonLoadingSnippet}
+/>
+
 ### Responsive
 
 Here's a view when buttons are responsive.
@@ -104,6 +118,6 @@ If you want to use a button as a link, please use the `ButtonLink` component.
   code={buttonAsLinkSnippet}
 />
 
-<Theming component="Button" />
+<Theming definition={ButtonDefinition} />
 
 <ChangelogComponent component="button" />

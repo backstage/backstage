@@ -1,5 +1,28 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/plugin-catalog-backend@3.2.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-search-backend-node@1.3.17
+  - @backstage/plugin-events-backend@0.5.8
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config-loader@1.10.6
+  - @backstage/config@1.3.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/plugin-scaffolder-node@0.12.1
+  - @backstage/backend-openapi-utils@0.6.3
+  - @backstage/plugin-app-node@0.1.39
+  - @backstage/plugin-permission-node@0.10.6
+  - @backstage/plugin-search-common@1.2.21
+
 ## 0.7.6-next.1
 
 ### Patch Changes

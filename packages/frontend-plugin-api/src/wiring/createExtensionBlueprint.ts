@@ -18,12 +18,13 @@ import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '@backstage/types';
 import { OpaqueType } from '@internal/opaque';
 import {
-  ExtensionAttachToSpec,
-  ExtensionDefinition,
+  ExtensionDefinitionAttachTo,
+  OverridableExtensionDefinition,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
   createExtension,
   ctxParamsSymbol,
+  VerifyExtensionAttachTo,
 } from './createExtension';
 import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
@@ -107,9 +108,11 @@ export type CreateExtensionBlueprintOptions<
   TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TDataRefs extends { [name in string]: ExtensionDataRef },
+  UParentInputs extends ExtensionDataRef,
 > = {
   kind: TKind;
-  attachTo: ExtensionAttachToSpec;
+  attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
+    VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -212,16 +215,18 @@ export interface ExtensionBlueprint<
   make<
     TName extends string | undefined,
     TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+    UParentInputs extends ExtensionDataRef,
   >(args: {
     name?: TName;
-    attachTo?: ExtensionAttachToSpec;
+    attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+      VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
     disabled?: boolean;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintDefineParams
       ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: defineParams => defineParams(<params>) })`'
       : T['params'];
-  }): ExtensionDefinition<{
+  }): OverridableExtensionDefinition<{
     kind: T['kind'];
     name: string | undefined extends TName ? undefined : TName;
     config: T['config'];
@@ -245,9 +250,16 @@ export interface ExtensionBlueprint<
     UFactoryOutput extends ExtensionDataValue<any, any>,
     UNewOutput extends ExtensionDataRef,
     TExtraInputs extends { [inputName in string]: ExtensionInput },
+    UParentInputs extends ExtensionDataRef,
   >(args: {
     name?: TName;
-    attachTo?: ExtensionAttachToSpec;
+    attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+      VerifyExtensionAttachTo<
+        ExtensionDataRef extends UNewOutput
+          ? NonNullable<T['output']>
+          : UNewOutput,
+        UParentInputs
+      >;
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -291,7 +303,7 @@ export interface ExtensionBlueprint<
           : UNewOutput,
         UFactoryOutput
       >;
-  }): ExtensionDefinition<{
+  }): OverridableExtensionDefinition<{
     config: (string extends keyof TExtensionConfigSchema
       ? {}
       : {
@@ -444,6 +456,7 @@ export function createExtensionBlueprint<
   TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TKind extends string,
+  UParentInputs extends ExtensionDataRef,
   TDataRefs extends { [name in string]: ExtensionDataRef } = never,
 >(
   options: CreateExtensionBlueprintOptions<
@@ -453,7 +466,8 @@ export function createExtensionBlueprint<
     TInputs,
     TConfigSchema,
     UFactoryOutput,
-    TDataRefs
+    TDataRefs,
+    UParentInputs
   >,
 ): ExtensionBlueprint<{
   kind: TKind;
@@ -489,7 +503,8 @@ export function createExtensionBlueprint<
       return createExtension({
         kind: options.kind,
         name: args.name,
-        attachTo: args.attachTo ?? options.attachTo,
+        attachTo: (args.attachTo ??
+          options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: args.disabled ?? options.disabled,
         inputs: options.inputs,
         output: options.output as ExtensionDataRef[],
@@ -499,13 +514,14 @@ export function createExtensionBlueprint<
             unwrapParams(args.params, ctx, defineParams, options.kind),
             ctx,
           ) as Iterable<ExtensionDataValue<any, any>>,
-      }) as ExtensionDefinition;
+      }) as OverridableExtensionDefinition;
     },
     makeWithOverrides(args) {
       return createExtension({
         kind: options.kind,
         name: args.name,
-        attachTo: args.attachTo ?? options.attachTo,
+        attachTo: (args.attachTo ??
+          options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: args.disabled ?? options.disabled,
         inputs: { ...args.inputs, ...options.inputs },
         output: (args.output ?? options.output) as ExtensionDataRef[],
@@ -556,7 +572,7 @@ export function createExtensionBlueprint<
             },
           ) as Iterable<ExtensionDataValue<any, any>>;
         },
-      }) as ExtensionDefinition;
+      }) as OverridableExtensionDefinition;
     },
   } as ExtensionBlueprint<{
     kind: TKind;

@@ -1,5 +1,27 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.25
+
+### Patch Changes
+
+- e81b3f0: Improve tree visualizer to use a horizontal layout and fill the content space.
+- 722e2df: Migrated to use `@backstage/ui`.
+- Updated dependencies
+  - @backstage/ui@0.9.0
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- 722e2df: Migrated to use `@backstage/ui`.
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.3
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
 ## 0.1.25-next.1
 
 ### Patch Changes
