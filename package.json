@@ -47,6 +47,7 @@
     "lint:type-deps": "backstage-repo-tools type-deps",
     "mui-to-bui": "node scripts/mui-to-bui/backstage-migration-analytics.js",
     "new": "backstage-cli new",
+    "patch-pr": "node .patches/create-pr-patch.js",
     "prepare": "husky",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
