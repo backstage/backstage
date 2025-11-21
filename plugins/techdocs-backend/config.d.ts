@@ -76,6 +76,14 @@ export interface Config {
          * @see https://www.mkdocs.org/user-guide/configuration/#hooks
          */
         dangerouslyAllowAdditionalKeys?: string[];
+        
+        /**
+         * Disable external fonts for all TechDocs sites.
+         * If not set, the default value is false.
+         * If set to true, the external font will be disabled for all TechDocs sites.
+         * If set to false, the external font will be enabled for all TechDocs sites.
+         */
+        disableExternalFonts?: boolean;
       };
     };
 
