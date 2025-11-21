@@ -201,14 +201,14 @@ describe('AwsS3Publish', () => {
 
     s3Mock = mockClient(S3Client);
 
-    s3Mock.on(HeadObjectCommand).callsFake((input: { Key: string }) => {
+    s3Mock.on(HeadObjectCommand).callsFake(input => {
       if (!fs.pathExistsSync(mockDir.resolve(input.Key))) {
         throw new Error('File does not exist');
       }
       return {};
     });
 
-    s3Mock.on(GetObjectCommand).callsFake((input: { Key: string }) => {
+    s3Mock.on(GetObjectCommand).callsFake(input => {
       if (fs.pathExistsSync(mockDir.resolve(input.Key))) {
         return {
           Body: Readable.from(fs.readFileSync(mockDir.resolve(input.Key))),
@@ -218,14 +218,14 @@ describe('AwsS3Publish', () => {
       throw new Error(`The file ${input.Key} does not exist!`);
     });
 
-    s3Mock.on(HeadBucketCommand).callsFake((input: { Bucket: string }) => {
+    s3Mock.on(HeadBucketCommand).callsFake(input => {
       if (input.Bucket === 'errorBucket') {
         throw new Error('Bucket does not exist');
       }
       return {};
     });
 
-    s3Mock.on(ListObjectsV2Command).callsFake((input: { Bucket: string }) => {
+    s3Mock.on(ListObjectsV2Command).callsFake(input => {
       if (
         input.Bucket === 'delete_stale_files_success' ||
         input.Bucket === 'delete_stale_files_error'
@@ -237,7 +237,7 @@ describe('AwsS3Publish', () => {
       return {};
     });
 
-    s3Mock.on(DeleteObjectCommand).callsFake((input: { Bucket: string }) => {
+    s3Mock.on(DeleteObjectCommand).callsFake(input => {
       if (input.Bucket === 'delete_stale_files_error') {
         throw new Error('Message');
       }
@@ -245,11 +245,9 @@ describe('AwsS3Publish', () => {
     });
 
     s3Mock.on(UploadPartCommand).rejects();
-    s3Mock
-      .on(PutObjectCommand)
-      .callsFake((input: { Key: string; Body: any }) => {
-        mockDir.addContent({ [input.Key]: input.Body });
-      });
+    s3Mock.on(PutObjectCommand).callsFake(input => {
+      mockDir.addContent({ [input.Key]: input.Body });
+    });
   });
 
   afterEach(() => {
@@ -306,7 +304,7 @@ describe('AwsS3Publish', () => {
 
   describe('retry mechanism', () => {
     it('should retry with custom retry strategy', async () => {
-      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const publisher = await createPublisherFromConfig();
       const customRetryStrategy = jest.fn((error: any) => {
         return error.name === 'NetworkingError';
       });
@@ -337,7 +335,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use default retry strategy when no custom strategy provided', async () => {
-      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const publisher = await createPublisherFromConfig();
       s3Mock
         .on(ListObjectsV2Command)
         .rejectsOnce(
@@ -361,7 +359,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should retry on server errors (5xx)', async () => {
-      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const publisher = await createPublisherFromConfig();
       s3Mock
         .on(ListObjectsV2Command)
         .rejectsOnce(
@@ -385,7 +383,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should retry on specific 4xx errors that are transient', async () => {
-      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const publisher = await createPublisherFromConfig();
       s3Mock
         .on(ListObjectsV2Command)
         .rejectsOnce(
@@ -409,7 +407,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should not retry on non-retriable 4xx errors', async () => {
-      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const publisher = await createPublisherFromConfig();
       s3Mock.on(ListObjectsV2Command).rejectsOnce(
         new S3ServiceException({
           name: 'BadRequest',
@@ -432,7 +430,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use exact error code matching for transient errors', async () => {
-      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const publisher = await createPublisherFromConfig();
       // Test that ConnectionError (exact match) is retried, but ConnectionErrorSomething (substring) is not
       s3Mock
         .on(ListObjectsV2Command)
@@ -457,7 +455,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should apply exponential backoff with correct calculation', async () => {
-      const publisher = (await createPublisherFromConfig()) as AwsS3Publish;
+      const publisher = await createPublisherFromConfig();
       const startTime = Date.now();
 
       s3Mock
