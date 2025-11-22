@@ -45,6 +45,20 @@ Scope: The catalog plugin and catalog model
 | Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
 | Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
+### Community Plugins
+
+Team: @backstage/community-plugins-maintainers
+
+Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
+
+| Name                 | Organization  | GitHub                                      | Discord      |
+| -------------------- | ------------- | ------------------------------------------- | ------------ |
+| André Wanlin         | Spotify       | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
+| Bethany Griggs       | Red Hat       | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
+| Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)         | `kashh._.`   |
+| Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
+| Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M) | `parsifal`   |
+
 ### Design System
 
 Team: @backstage/design-system-maintainers
@@ -205,20 +219,6 @@ Scope: The auditor core service, along with auditor usage in the main repository
 | Name         | Organization | GitHub                                          | Discord        |
 | ------------ | ------------ | ----------------------------------------------- | -------------- |
 | Paul Schultz | Red Hat      | [schultzp2020](https://github.com/schultzp2020) | `schultzp2020` |
-
-### Community Plugins
-
-Team: @backstage/community-plugins-maintainers
-
-Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
-
-| Name                 | Organization  | GitHub                                      | Discord      |
-| -------------------- | ------------- | ------------------------------------------- | ------------ |
-| André Wanlin         | Spotify       | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
-| Bethany Griggs       | Red Hat       | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
-| Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)         | `kashh._.`   |
-| Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
-| Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M) | `parsifal`   |
 
 ### Events
 
