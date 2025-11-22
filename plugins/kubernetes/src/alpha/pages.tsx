@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { PageBlueprint } from '@backstage/frontend-plugin-api'; // Add this line to import React
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { rootCatalogKubernetesRouteRef } from '../plugin';
 
 export const kubernetesPage = PageBlueprint.make({
@@ -28,6 +25,6 @@ export const kubernetesPage = PageBlueprint.make({
     // by wrapping into the convertLegacyRouteRef.
     routeRef: convertLegacyRouteRef(rootCatalogKubernetesRouteRef),
     // these inputs usually match the props required by the component.
-    loader: () => import('../Router').then(m => compatWrapper(<m.Router />)),
+    loader: () => import('../Router').then(m => <m.Router />),
   },
 });

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  compatWrapper,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
+import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { catalogIndexRouteRef } from './routes';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
@@ -29,8 +26,8 @@ const EntityGroupProfileCard = EntityCardBlueprint.make({
     type: 'info',
     filter: { kind: 'group' },
     loader: async () =>
-      import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(m =>
-        compatWrapper(<m.GroupProfileCard />),
+      import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(
+        m => <m.GroupProfileCard />,
       ),
   },
 });
@@ -49,12 +46,12 @@ const EntityMembersListCard = EntityCardBlueprint.makeWithOverrides({
     return originalFactory({
       filter: { kind: 'group' },
       loader: async () =>
-        import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
-          compatWrapper(
+        import('./components/Cards/Group/MembersList/MembersListCard').then(
+          m => (
             <m.MembersListCard
               relationAggregation={config.initialRelationAggregation}
               showAggregateMembersToggle={config.showAggregateMembersToggle}
-            />,
+            />
           ),
         ),
     });
@@ -75,19 +72,16 @@ const EntityOwnershipCard = EntityCardBlueprint.makeWithOverrides({
     return originalFactory({
       filter: { kind: { $in: ['group', 'user'] } },
       loader: async () =>
-        import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
-          compatWrapper(
-            <m.OwnershipCard
-              relationAggregation={config.initialRelationAggregation}
-              // harmonize the exposed alpha endpoints, but keep the default behaviour
-              hideRelationsToggle={
-                config.showAggregateMembersToggle === undefined
-                  ? undefined
-                  : !config.showAggregateMembersToggle
-              }
-            />,
-          ),
-        ),
+        import('./components/Cards/OwnershipCard/OwnershipCard').then(m => (
+          <m.OwnershipCard
+            relationAggregation={config.initialRelationAggregation}
+            hideRelationsToggle={
+              config.showAggregateMembersToggle === undefined
+                ? undefined
+                : !config.showAggregateMembersToggle
+            }
+          />
+        )),
     });
   },
 });
@@ -107,13 +101,12 @@ const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
       filter: { kind: 'user' },
       loader: async () =>
         import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
-          m =>
-            compatWrapper(
-              <m.UserProfileCard
-                maxRelations={config.maxRelations}
-                hideIcons={config.hideIcons}
-              />,
-            ),
+          m => (
+            <m.UserProfileCard
+              maxRelations={config.maxRelations}
+              hideIcons={config.hideIcons}
+            />
+          ),
         ),
     });
   },

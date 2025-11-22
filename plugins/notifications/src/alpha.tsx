@@ -23,7 +23,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from './routes';
 import {
-  compatWrapper,
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
@@ -34,9 +33,9 @@ const page = PageBlueprint.make({
     path: '/notifications',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
-      import('./components/NotificationsPage').then(m =>
-        compatWrapper(<m.NotificationsPage />),
-      ),
+      import('./components/NotificationsPage').then(m => (
+        <m.NotificationsPage />
+      )),
   },
 });
 

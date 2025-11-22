@@ -24,10 +24,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
 
@@ -51,9 +48,7 @@ export const devToolsPage = PageBlueprint.make({
     path: '/devtools',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
-      import('../components/DevToolsPage').then(m =>
-        compatWrapper(<m.DevToolsPage />),
-      ),
+      import('../components/DevToolsPage').then(m => <m.DevToolsPage />),
   },
 });
 

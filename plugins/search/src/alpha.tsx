@@ -69,7 +69,6 @@ import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
 import {
-  compatWrapper,
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
@@ -254,11 +253,11 @@ export const searchPage = PageBlueprint.makeWithOverrides({
           );
         };
 
-        return compatWrapper(
+        return (
           <SearchContextProvider>
             <UrlUpdater />
             <Component />
-          </SearchContextProvider>,
+          </SearchContextProvider>
         );
       },
     });

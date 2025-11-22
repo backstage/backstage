@@ -30,7 +30,6 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import {
-  compatWrapper,
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
@@ -123,10 +122,9 @@ export const techDocsSearchResultListItemExtension =
           const { TechDocsSearchResultListItem } = await import(
             '../search/components/TechDocsSearchResultListItem'
           );
-          return props =>
-            compatWrapper(
-              <TechDocsSearchResultListItem {...props} {...config} />,
-            );
+          return props => (
+            <TechDocsSearchResultListItem {...props} {...config} />
+          );
         },
       });
     },
@@ -142,9 +140,9 @@ const techDocsPage = PageBlueprint.make({
     path: '/docs',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
-      import('../home/components/TechDocsIndexPage').then(m =>
-        compatWrapper(<m.TechDocsIndexPage />),
-      ),
+      import('../home/components/TechDocsIndexPage').then(m => (
+        <m.TechDocsIndexPage />
+      )),
   },
 });
 
@@ -170,14 +168,12 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
       path: '/docs/:namespace/:kind/:name',
       routeRef: convertLegacyRouteRef(rootDocsRouteRef),
       loader: async () =>
-        await import('../Router').then(({ TechDocsReaderRouter }) => {
-          return compatWrapper(
-            <TechDocsReaderRouter>
-              <TechDocsReaderLayout />
-              <TechDocsAddons>{addons}</TechDocsAddons>
-            </TechDocsReaderRouter>,
-          );
-        }),
+        await import('../Router').then(({ TechDocsReaderRouter }) => (
+          <TechDocsReaderRouter>
+            <TechDocsReaderLayout />
+            <TechDocsAddons>{addons}</TechDocsAddons>
+          </TechDocsReaderRouter>
+        )),
     });
   },
 });
@@ -212,14 +208,14 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
               attachTechDocsAddonComponentData(Addon, options);
               return <Addon key={options.name} />;
             });
-            return compatWrapper(
+            return (
               <EmbeddedDocsRouter
                 emptyState={context.inputs.emptyState?.get(
                   coreExtensionData.reactElement,
                 )}
               >
                 <TechDocsAddons>{addons}</TechDocsAddons>
-              </EmbeddedDocsRouter>,
+              </EmbeddedDocsRouter>
             );
           }),
       },

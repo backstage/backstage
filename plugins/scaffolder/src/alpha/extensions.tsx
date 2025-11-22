@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   ApiBlueprint,
   createExtensionInput,
@@ -48,11 +45,9 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
       routeRef: convertLegacyRouteRef(rootRouteRef),
       path: '/create',
       loader: () =>
-        import('../components/Router/Router').then(m =>
-          compatWrapper(
-            <m.InternalRouter formFieldLoaders={formFieldLoaders} />,
-          ),
-        ),
+        import('../components/Router/Router').then(m => (
+          <m.InternalRouter formFieldLoaders={formFieldLoaders} />
+        )),
     });
   },
 });

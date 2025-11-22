@@ -23,7 +23,6 @@ import {
 import {
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
-  compatWrapper,
 } from '@backstage/core-compat-api';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from './plugin';
@@ -42,15 +41,13 @@ const userSettingsPage = PageBlueprint.makeWithOverrides({
       path: '/settings',
       routeRef: convertLegacyRouteRef(settingsRouteRef),
       loader: () =>
-        import('./components/SettingsPage').then(m =>
-          compatWrapper(
-            <m.SettingsPage
-              providerSettings={inputs.providerSettings?.get(
-                coreExtensionData.reactElement,
-              )}
-            />,
-          ),
-        ),
+        import('./components/SettingsPage').then(m => (
+          <m.SettingsPage
+            providerSettings={inputs.providerSettings?.get(
+              coreExtensionData.reactElement,
+            )}
+          />
+        )),
     });
   },
 });

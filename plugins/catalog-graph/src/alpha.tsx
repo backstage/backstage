@@ -19,10 +19,7 @@ import {
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
 import {
@@ -53,9 +50,9 @@ const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   factory(originalFactory, { config }) {
     return originalFactory({
       loader: async () =>
-        import('./components/CatalogGraphCard').then(m =>
-          compatWrapper(<m.CatalogGraphCard {...config} />),
-        ),
+        import('./components/CatalogGraphCard').then(m => (
+          <m.CatalogGraphCard {...config} />
+        )),
     });
   },
 });
@@ -83,9 +80,9 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
       path: '/catalog-graph',
       routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
       loader: () =>
-        import('./components/CatalogGraphPage').then(m =>
-          compatWrapper(<m.CatalogGraphPage {...config} />),
-        ),
+        import('./components/CatalogGraphPage').then(m => (
+          <m.CatalogGraphPage {...config} />
+        )),
     });
   },
 });

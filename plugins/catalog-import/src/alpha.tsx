@@ -19,10 +19,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   createFrontendPlugin,
   PageBlueprint,
@@ -47,13 +44,11 @@ const catalogImportPage = PageBlueprint.make({
     path: '/catalog-import',
     routeRef: convertLegacyRouteRef(rootRouteRef),
     loader: () =>
-      import('./components/ImportPage').then(m =>
-        compatWrapper(
-          <RequirePermission permission={catalogEntityCreatePermission}>
-            <m.ImportPage />
-          </RequirePermission>,
-        ),
-      ),
+      import('./components/ImportPage').then(m => (
+        <RequirePermission permission={catalogEntityCreatePermission}>
+          <m.ImportPage />
+        </RequirePermission>
+      )),
   },
 });
 
