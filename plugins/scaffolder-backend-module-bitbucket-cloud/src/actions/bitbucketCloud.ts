@@ -216,7 +216,7 @@ export function createPublishBitbucketCloudAction(options: {
         );
       }
 
-      const authorization = getAuthorizationHeader(
+      const authorization = await getAuthorizationHeader(
         ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
       );
 
