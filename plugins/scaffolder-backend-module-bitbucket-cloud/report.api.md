@@ -25,6 +25,12 @@ export const createBitbucketPipelinesRunAction: (options: {
             | {
                 type?: string | undefined;
                 source?: string | undefined;
+                selector?:
+                  | {
+                      type: string;
+                      pattern: string;
+                    }
+                  | undefined;
                 pull_request?:
                   | {
                       id: string;
@@ -39,12 +45,6 @@ export const createBitbucketPipelinesRunAction: (options: {
                 destination?: string | undefined;
                 ref_name?: string | undefined;
                 ref_type?: string | undefined;
-                selector?:
-                  | {
-                      type: string;
-                      pattern: string;
-                    }
-                  | undefined;
                 destination_commit?:
                   | {
                       hash: string;

@@ -69,16 +69,11 @@ describe('bitbucketCloud core', () => {
       ).toBeUndefined();
     });
 
-    it('uses OAuth Bearer token when clientId and clientSecret provided', async () => {
+    it('handles OAuth token fetch errors', async () => {
+      // Test error handling
       worker.use(
         rest.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              access_token: 'test-oauth-token',
-              expires_in: 3600,
-            }),
-          ),
+          res(ctx.status(401), ctx.json({ error: 'invalid_client' })),
         ),
       );
 
@@ -89,11 +84,13 @@ describe('bitbucketCloud core', () => {
         clientSecret: 'test-client-secret',
       };
 
-      const result = await getBitbucketCloudRequestOptions(withOAuth);
-      expect(result.headers.Authorization).toEqual('Bearer test-oauth-token');
+      await expect(getBitbucketCloudRequestOptions(withOAuth)).rejects.toThrow(
+        /Failed to fetch OAuth token/,
+      );
     });
 
-    it('caches OAuth tokens', async () => {
+    it('uses OAuth Bearer token and caches it', async () => {
+      // Test OAuth + caching
       let callCount = 0;
       worker.use(
         rest.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, (_, res, ctx) => {
@@ -101,7 +98,7 @@ describe('bitbucketCloud core', () => {
           return res(
             ctx.status(200),
             ctx.json({
-              access_token: 'cached-oauth-token',
+              access_token: 'test-oauth-token',
               expires_in: 3600,
             }),
           );
@@ -111,42 +108,19 @@ describe('bitbucketCloud core', () => {
       const withOAuth: BitbucketCloudIntegrationConfig = {
         host: BITBUCKET_CLOUD_HOST,
         apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
-        clientId: 'cache-test-client',
-        clientSecret: 'cache-test-secret',
+        clientId: 'test-client-id',
+        clientSecret: 'test-client-secret',
       };
 
       // First call should fetch token
       const result1 = await getBitbucketCloudRequestOptions(withOAuth);
-      expect(result1.headers.Authorization).toEqual(
-        'Bearer cached-oauth-token',
-      );
+      expect(result1.headers.Authorization).toEqual('Bearer test-oauth-token');
       expect(callCount).toBe(1);
 
-      // Second call should use cached token
+      // Second call should use cached token (proves caching works)
       const result2 = await getBitbucketCloudRequestOptions(withOAuth);
-      expect(result2.headers.Authorization).toEqual(
-        'Bearer cached-oauth-token',
-      );
-      expect(callCount).toBe(1); // Should still be 1
-    });
-
-    it('handles OAuth token fetch errors', async () => {
-      worker.use(
-        rest.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, (_, res, ctx) =>
-          res(ctx.status(401), ctx.json({ error: 'invalid_client' })),
-        ),
-      );
-
-      const withOAuth: BitbucketCloudIntegrationConfig = {
-        host: BITBUCKET_CLOUD_HOST,
-        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
-        clientId: 'invalid-client',
-        clientSecret: 'invalid-secret',
-      };
-
-      await expect(getBitbucketCloudRequestOptions(withOAuth)).rejects.toThrow(
-        /Failed to fetch OAuth token/,
-      );
+      expect(result2.headers.Authorization).toEqual('Bearer test-oauth-token');
+      expect(callCount).toBe(1); // Still 1, proving cache was used
     });
   });
 
