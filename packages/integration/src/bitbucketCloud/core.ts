@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createHash } from 'crypto';
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { BitbucketCloudIntegrationConfig } from './config';
@@ -25,21 +24,11 @@ type OAuthTokenData = {
   expiresAt: DateTime;
 };
 
-// In-memory token cache keyed by hashed credentials
-const tokenCache = new Map<string, OAuthTokenData>();
+// In-memory token cache (single entry since there's only one Bitbucket Cloud integration)
+let cachedToken: OAuthTokenData | undefined;
 
-// Track in-flight token refresh requests to prevent concurrent fetches
-const refreshPromises = new Map<string, Promise<string>>();
-
-/**
- * Creates a cache key from OAuth credentials by hashing them.
- * This prevents storing credentials in memory in plain text.
- */
-function createCacheKey(clientId: string, clientSecret: string): string {
-  return createHash('sha256')
-    .update(`${clientId}:${clientSecret}`)
-    .digest('hex');
-}
+// Track in-flight token refresh request to prevent concurrent fetches
+let refreshPromise: Promise<string> | undefined;
 
 /**
  * Fetches an OAuth access token from Bitbucket Cloud using client credentials flow.
@@ -54,22 +43,18 @@ export async function getBitbucketCloudOAuthToken(
   clientId: string,
   clientSecret: string,
 ): Promise<string> {
-  const cacheKey = createCacheKey(clientId, clientSecret);
-
   // Check cache
-  const cached = tokenCache.get(cacheKey);
-  if (cached && DateTime.now() < cached.expiresAt) {
-    return cached.token;
+  if (cachedToken && DateTime.now() < cachedToken.expiresAt) {
+    return cachedToken.token;
   }
 
   // Check if there's already a refresh in progress
-  const inFlight = refreshPromises.get(cacheKey);
-  if (inFlight) {
-    return inFlight;
+  if (refreshPromise) {
+    return refreshPromise;
   }
 
   // Start a new token fetch and track it
-  const refreshPromise = (async () => {
+  refreshPromise = (async () => {
     try {
       // Fetch new token
       const credentials = Buffer.from(
@@ -108,10 +93,10 @@ export async function getBitbucketCloudOAuthToken(
         .minus({ minutes: 10 });
 
       // Cache the token
-      tokenCache.set(cacheKey, {
+      cachedToken = {
         token: data.access_token,
         expiresAt,
-      });
+      };
 
       return data.access_token;
     } catch (error) {
@@ -120,11 +105,10 @@ export async function getBitbucketCloudOAuthToken(
       );
     } finally {
       // Clean up the in-flight promise tracking
-      refreshPromises.delete(cacheKey);
+      refreshPromise = undefined;
     }
   })();
 
-  refreshPromises.set(cacheKey, refreshPromise);
   return refreshPromise;
 }
 
