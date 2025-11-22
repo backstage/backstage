@@ -109,8 +109,12 @@ integrations:
       token: ${GITLAB_TOKEN}
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
+  #   # Using API token
   #   - username: ${BITBUCKET_USERNAME}
   #     token: ${BITBUCKET_API_TOKEN}
+  #   # Using OAuth
+  #   - clientId: ${BITBUCKET_CLIENT_ID}
+  #     clientSecret: ${BITBUCKET_CLIENT_SECRET}
   ### Example for how to add your bitbucket server instance using the API:
   # - host: server.bitbucket.com
   #   apiBaseUrl: server.bitbucket.com
