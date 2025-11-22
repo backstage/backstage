@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  TranslationMessages,
-  TranslationRef,
-} from '@backstage/core-plugin-api/alpha';
+import { TranslationMessages } from './TranslationMessages';
+import { TranslationRef } from './TranslationRef';
 
-/** @alpha */
+/** @public */
 export interface TranslationResource<TId extends string = string> {
   $$type: '@backstage/TranslationResource';
   id: TId;
@@ -55,7 +53,7 @@ export function toInternalTranslationResource<TId extends string>(
   return r;
 }
 
-/** @alpha */
+/** @public */
 export interface TranslationResourceOptions<
   TId extends string,
   TMessages extends { [key in string]: string },
@@ -72,7 +70,7 @@ export interface TranslationResourceOptions<
   translations: TTranslations;
 }
 
-/** @alpha */
+/** @public */
 export function createTranslationResource<
   TId extends string,
   TMessages extends { [key in string]: string },
