@@ -18,6 +18,10 @@ import { useMemo } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
+  routeResolutionApiRef,
+  useApiHolder,
+} from '@backstage/frontend-plugin-api';
+import {
   AnyParams,
   ExternalRouteRef,
   RouteFunc,
@@ -86,30 +90,53 @@ export function useRouteRef<Params extends AnyParams>(
     | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
   const { pathname } = useLocation();
+  const apiHolder = useApiHolder();
+  const routeResolutionApi = apiHolder.get(routeResolutionApiRef);
   const versionedContext = useVersionedContext<{ 1: RouteResolver }>(
     'routing-context',
   );
-  if (!versionedContext) {
-    throw new Error('Routing context is not available');
-  }
 
-  const resolver = versionedContext.atVersion(1);
-  const routeFunc = useMemo(
+  const resolver = versionedContext?.atVersion(1);
+
+  const newRouteFunc = useMemo(() => {
+    if (!routeResolutionApi) {
+      return null;
+    }
+
+    try {
+      return routeResolutionApi.resolve(routeRef, {
+        sourcePath: pathname,
+      });
+    } catch {
+      return null;
+    }
+  }, [routeResolutionApi, routeRef, pathname]);
+
+  const legacyRouteFunc = useMemo(
     () => resolver && resolver.resolve(routeRef, { pathname }),
     [resolver, routeRef, pathname],
   );
 
-  if (!versionedContext) {
-    throw new Error('useRouteRef used outside of routing context');
+  if (newRouteFunc !== null) {
+    const isOptional = 'optional' in routeRef && routeRef.optional;
+    if (!newRouteFunc && !isOptional) {
+      throw new Error(`No path for ${routeRef}`);
+    }
+    return newRouteFunc;
   }
+
+  if (!versionedContext) {
+    throw new Error('Routing context is not available');
+  }
+
   if (!resolver) {
     throw new Error('RoutingContext v1 not available');
   }
 
   const isOptional = 'optional' in routeRef && routeRef.optional;
-  if (!routeFunc && !isOptional) {
+  if (!legacyRouteFunc && !isOptional) {
     throw new Error(`No path for ${routeRef}`);
   }
 
-  return routeFunc;
+  return legacyRouteFunc;
 }
