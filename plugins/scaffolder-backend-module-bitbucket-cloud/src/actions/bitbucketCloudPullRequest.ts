@@ -317,7 +317,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         );
       }
 
-      const authorization = getAuthorizationHeader(
+      const authorization = await getAuthorizationHeader(
         ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
       );
 

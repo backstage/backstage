@@ -15,12 +15,28 @@
  */
 
 import { Bitbucket } from 'bitbucket';
+import { getBitbucketCloudOAuthToken } from '@backstage/integration';
 
-export const getBitbucketClient = (config: {
+export const getBitbucketClient = async (config: {
   token?: string;
   username?: string;
   appPassword?: string;
+  clientId?: string;
+  clientSecret?: string;
 }) => {
+  // If OAuth credentials provided, fetch token
+  if (config.clientId && config.clientSecret) {
+    const token = await getBitbucketCloudOAuthToken(
+      config.clientId,
+      config.clientSecret,
+    );
+    return new Bitbucket({
+      auth: {
+        token,
+      },
+    });
+  }
+
   if (config.token) {
     return new Bitbucket({
       auth: {
@@ -38,15 +54,26 @@ export const getBitbucketClient = (config: {
     });
   }
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either provide a username and token or username and appPassword to the Integrations config`,
+    `Authorization has not been provided for Bitbucket Cloud. Please provide either OAuth credentials (clientId/clientSecret), username and token, or username and appPassword in the Integrations config`,
   );
 };
 
-export const getAuthorizationHeader = (config: {
+export const getAuthorizationHeader = async (config: {
   username?: string;
   appPassword?: string;
   token?: string;
-}) => {
+  clientId?: string;
+  clientSecret?: string;
+}): Promise<string> => {
+  // OAuth authentication
+  if (config.clientId && config.clientSecret) {
+    const token = await getBitbucketCloudOAuthToken(
+      config.clientId,
+      config.clientSecret,
+    );
+    return `Bearer ${token}`;
+  }
+
   // TODO: appPassword can be removed once fully
   // deprecated by BitBucket on 9th June 2026.
   if (config.username && (config.token ?? config.appPassword)) {
@@ -62,6 +89,6 @@ export const getAuthorizationHeader = (config: {
   }
 
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either provide a username and token or username and appPassword to the Integrations config`,
+    `Authorization has not been provided for Bitbucket Cloud. Please provide either OAuth credentials (clientId/clientSecret), username and token, or username and appPassword in the Integrations config`,
   );
 };
