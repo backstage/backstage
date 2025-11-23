@@ -19,7 +19,6 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   createFrontendPlugin,
   PageBlueprint,
@@ -42,7 +41,7 @@ export * from './translation';
 const catalogImportPage = PageBlueprint.make({
   params: {
     path: '/catalog-import',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
       import('./components/ImportPage').then(m => (
         <RequirePermission permission={catalogEntityCreatePermission}>
@@ -89,7 +88,7 @@ export default createFrontendPlugin({
   info: { packageJson: () => import('../package.json') },
   extensions: [catalogImportApi, catalogImportPage],
   routes: {
-    importPage: convertLegacyRouteRef(rootRouteRef),
+    importPage: rootRouteRef,
   },
 });
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { catalogIndexRouteRef } from './routes';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
@@ -122,9 +121,9 @@ export default createFrontendPlugin({
     EntityOwnershipCard,
     EntityUserProfileCard,
   ],
-  externalRoutes: convertLegacyRouteRefs({
+  externalRoutes: {
     catalogIndex: catalogIndexRouteRef,
-  }),
+  },
 });
 
 export { orgTranslationRef } from './translation';

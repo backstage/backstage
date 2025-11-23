@@ -19,7 +19,6 @@ import {
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
 import {
@@ -78,7 +77,7 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { config }) {
     return originalFactory({
       path: '/catalog-graph',
-      routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
+      routeRef: catalogGraphRouteRef,
       loader: () =>
         import('./components/CatalogGraphPage').then(m => (
           <m.CatalogGraphPage {...config} />
@@ -100,10 +99,10 @@ export default createFrontendPlugin({
   pluginId: 'catalog-graph',
   info: { packageJson: () => import('../package.json') },
   routes: {
-    catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),
+    catalogGraph: catalogGraphRouteRef,
   },
   externalRoutes: {
-    catalogEntity: convertLegacyRouteRef(catalogEntityRouteRef),
+    catalogEntity: catalogEntityRouteRef,
   },
   extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi],
 });

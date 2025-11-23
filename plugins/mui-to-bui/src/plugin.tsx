@@ -15,10 +15,6 @@
  */
 
 import {
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
-import {
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
@@ -57,11 +53,11 @@ export default createFrontendPlugin({
         path: '/mui-to-bui',
         loader: () =>
           import('./components/BuiThemerPage').then(m => <m.BuiThemerPage />),
-        routeRef: convertLegacyRouteRef(rootRouteRef),
+        routeRef: rootRouteRef,
       },
     }),
   ],
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: rootRouteRef,
-  }),
+  },
 });

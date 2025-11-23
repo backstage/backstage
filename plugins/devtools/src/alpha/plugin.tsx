@@ -24,7 +24,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
 
@@ -46,7 +45,7 @@ export const devToolsApi = ApiBlueprint.make({
 export const devToolsPage = PageBlueprint.make({
   params: {
     path: '/devtools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
       import('../components/DevToolsPage').then(m => <m.DevToolsPage />),
   },
@@ -56,7 +55,7 @@ export const devToolsPage = PageBlueprint.make({
 export const devToolsNavItem = NavItemBlueprint.make({
   params: {
     title: 'DevTools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     icon: BuildIcon,
   },
 });
@@ -66,7 +65,7 @@ export default createFrontendPlugin({
   pluginId: 'devtools',
   info: { packageJson: () => import('../../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
+    root: rootRouteRef,
   },
   extensions: [devToolsApi, devToolsPage, devToolsNavItem],
 });

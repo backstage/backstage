@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   ApiBlueprint,
   createExtensionInput,
@@ -42,7 +41,7 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
       i.get(FormFieldBlueprint.dataRefs.formFieldLoader),
     );
     return originalFactory({
-      routeRef: convertLegacyRouteRef(rootRouteRef),
+      routeRef: rootRouteRef,
       path: '/create',
       loader: () =>
         import('../components/Router/Router').then(m => (
@@ -54,7 +53,7 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
 
 export const scaffolderNavItem = NavItemBlueprint.make({
   params: {
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     title: 'Create...',
     icon: CreateComponentIcon,
   },

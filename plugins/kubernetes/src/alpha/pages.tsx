@@ -15,16 +15,12 @@
  */
 
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { rootCatalogKubernetesRouteRef } from '../plugin';
 
 export const kubernetesPage = PageBlueprint.make({
   params: {
     path: '/kubernetes',
-    // you can reuse the existing routeRef
-    // by wrapping into the convertLegacyRouteRef.
-    routeRef: convertLegacyRouteRef(rootCatalogKubernetesRouteRef),
-    // these inputs usually match the props required by the component.
+    routeRef: rootCatalogKubernetesRouteRef,
     loader: () => import('../Router').then(m => <m.Router />),
   },
 });

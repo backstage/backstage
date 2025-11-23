@@ -30,10 +30,6 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import {
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
-import {
   EntityContentBlueprint,
   EntityIconLinkBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
@@ -138,7 +134,7 @@ export const techDocsSearchResultListItemExtension =
 const techDocsPage = PageBlueprint.make({
   params: {
     path: '/docs',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
       import('../home/components/TechDocsIndexPage').then(m => (
         <m.TechDocsIndexPage />
@@ -166,7 +162,7 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
 
     return originalFactory({
       path: '/docs/:namespace/:kind/:name',
-      routeRef: convertLegacyRouteRef(rootDocsRouteRef),
+      routeRef: rootDocsRouteRef,
       loader: async () =>
         await import('../Router').then(({ TechDocsReaderRouter }) => (
           <TechDocsReaderRouter>
@@ -199,7 +195,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
       {
         path: 'docs',
         title: 'TechDocs',
-        routeRef: convertLegacyRouteRef(rootCatalogDocsRouteRef),
+        routeRef: rootCatalogDocsRouteRef,
         loader: () =>
           import('../Router').then(({ EmbeddedDocsRouter }) => {
             const addons = context.inputs.addons.map(output => {
@@ -237,7 +233,7 @@ const techDocsNavItem = NavItemBlueprint.make({
   params: {
     icon: LibraryBooks,
     title: 'Docs',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
   },
 });
 
@@ -256,9 +252,9 @@ export default createFrontendPlugin({
     techDocsEntityContentEmptyState,
     techDocsSearchResultListItemExtension,
   ],
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: rootRouteRef,
     docRoot: rootDocsRouteRef,
     entityContent: rootCatalogDocsRouteRef,
-  }),
+  },
 });

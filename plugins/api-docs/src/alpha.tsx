@@ -23,8 +23,6 @@ import {
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
-
 import {
   ApiEntity,
   parseEntityRef,
@@ -44,7 +42,7 @@ import {
 const apiDocsNavItem = NavItemBlueprint.make({
   params: {
     title: 'APIs',
-    routeRef: convertLegacyRouteRef(rootRoute),
+    routeRef: rootRoute,
     icon: () => <AppIcon id="kind:api" />,
   },
 });
@@ -77,7 +75,7 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { config }) {
     return originalFactory({
       path: '/api-docs',
-      routeRef: convertLegacyRouteRef(rootRoute),
+      routeRef: rootRoute,
       loader: () =>
         import('./components/ApiExplorerPage').then(m => (
           <m.ApiExplorerIndexPage
@@ -212,10 +210,10 @@ export default createFrontendPlugin({
   pluginId: 'api-docs',
   info: { packageJson: () => import('../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRoute),
+    root: rootRoute,
   },
   externalRoutes: {
-    registerApi: convertLegacyRouteRef(registerComponentRouteRef),
+    registerApi: registerComponentRouteRef,
   },
   extensions: [
     apiDocsNavItem,

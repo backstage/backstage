@@ -27,7 +27,6 @@ import {
   catalogUnprocessedEntitiesApiRef,
   CatalogUnprocessedEntitiesClient,
 } from '../api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import QueueIcon from '@material-ui/icons/Queue';
 import { rootRouteRef } from '../routes';
 
@@ -49,7 +48,7 @@ export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
 export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
   params: {
     path: '/catalog-unprocessed-entities',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
       import('../components/UnprocessedEntities').then(m => (
         <m.UnprocessedEntities />
@@ -61,7 +60,7 @@ export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
 export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
   params: {
     title: 'Unprocessed Entities',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     icon: QueueIcon,
   },
 });
@@ -71,7 +70,7 @@ export default createFrontendPlugin({
   pluginId: 'catalog-unprocessed-entities',
   info: { packageJson: () => import('../../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
+    root: rootRouteRef,
   },
   extensions: [
     catalogUnprocessedEntitiesApi,

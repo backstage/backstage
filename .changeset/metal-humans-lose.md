@@ -18,4 +18,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Remove unnecessary use of `compatWrapper` for the new frontend system.
+Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.

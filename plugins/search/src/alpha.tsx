@@ -68,10 +68,6 @@ import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
-import {
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
 
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
@@ -115,7 +111,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
       path: '/search',
-      routeRef: convertLegacyRouteRef(rootRouteRef),
+      routeRef: rootRouteRef,
       loader: async () => {
         const getResultItemComponent = (result: SearchResult) => {
           const value = inputs.items.find(item =>
@@ -267,7 +263,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
 /** @alpha */
 export const searchNavItem = NavItemBlueprint.make({
   params: {
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     title: 'Search',
     icon: SearchIcon,
   },
@@ -278,9 +274,9 @@ export default createFrontendPlugin({
   pluginId: 'search',
   info: { packageJson: () => import('../package.json') },
   extensions: [searchApi, searchPage, searchNavItem],
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: rootRouteRef,
-  }),
+  },
 });
 
 /** @alpha */
