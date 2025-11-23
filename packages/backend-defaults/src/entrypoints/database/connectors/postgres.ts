@@ -15,9 +15,17 @@
  */
 
 import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
-import { Config, ConfigReader } from '@backstage/config';
+import {
+  Config,
+  ConfigReader,
+  readDurationFromConfig,
+} from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
+import {
+  durationToMilliseconds,
+  HumanDuration,
+  JsonObject,
+} from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
@@ -27,6 +35,7 @@ import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 import format from 'pg-format';
+import { AccessToken, TokenCredential } from '@azure/identity';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
@@ -82,15 +91,113 @@ export async function buildPgDatabaseConfig(
   // Trim additional properties from the connection object passed to knex
   delete sanitizedConfig.connection.type;
   delete sanitizedConfig.connection.instance;
+  delete sanitizedConfig.connection.tokenCredential;
 
   if (config.connection.type === 'default' || !config.connection.type) {
     return sanitizedConfig;
   }
 
-  if (config.connection.type !== 'cloudsql') {
-    throw new Error(`Unknown connection type: ${config.connection.type}`);
+  switch (config.connection.type) {
+    case 'azure':
+      return buildAzurePgConfig(config, sanitizedConfig);
+    case 'cloudsql':
+      return buildCloudSqlConfig(config, sanitizedConfig);
+    default:
+      throw new Error(`Unknown connection type: ${config.connection.type}`);
+  }
+}
+
+/* Note: the following type definition is intentionally duplicated in
+ * /packages/backend-defaults/config.d.ts so the clientSecret property
+ * can be annotated with "@visibility secret" there.
+ */
+export type AzureTokenCredentialConfig = {
+  /**
+   * How early before an access token expires to refresh it with a new one.
+   * Defaults to 5 minutes
+   * Supported formats:
+   * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+   *   library.
+   * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+   * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+   */
+  tokenRenewalOffsetTime?: string | HumanDuration;
+  /**
+   * The client ID of a user-assigned managed identity.
+   * If not provided, the system-assigned managed identity is used.
+   */
+  clientId?: string;
+  clientSecret?: string;
+  tenantId?: string;
+};
+
+export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
+  const {
+    DefaultAzureCredential,
+    ManagedIdentityCredential,
+    ClientSecretCredential,
+  } = require('@azure/identity');
+
+  let tokenRenewalOffsetMs = 300_000;
+
+  const configReader = new ConfigReader(config);
+  if (configReader.has('connection.tokenCredential.tokenRenewalOffsetTime')) {
+    tokenRenewalOffsetMs = durationToMilliseconds(
+      readDurationFromConfig(configReader, {
+        key: 'connection.tokenCredential.tokenRenewalOffsetTime',
+      }),
+    );
   }
 
+  let credential: TokenCredential;
+  const tokenConfig = (configReader.getOptional('connection.tokenCredential') ??
+    {}) as AzureTokenCredentialConfig;
+
+  /**
+   * Determine which TokenCredential to use based on provided config
+   * 1. If clientId, tenantId and clientSecret are provided, use ClientSecretCredential
+   * 2. If only clientId is provided, use ManagedIdentityCredential with user-assigned identity
+   * 3. Otherwise, use DefaultAzureCredential (which may use system-assigned identity among other methods)
+   */
+  if (
+    tokenConfig.clientId &&
+    tokenConfig.tenantId &&
+    tokenConfig.clientSecret
+  ) {
+    credential = new ClientSecretCredential(
+      tokenConfig.tenantId,
+      tokenConfig.clientId,
+      tokenConfig.clientSecret,
+    );
+  } else if (tokenConfig.clientId) {
+    credential = new ManagedIdentityCredential(tokenConfig.clientId);
+  } else {
+    credential = new DefaultAzureCredential();
+  }
+
+  async function getConnectionConfig() {
+    const token = (await credential.getToken(
+      'https://ossrdbms-aad.database.windows.net/.default',
+    )) as AccessToken; // This cast is safe since we know all of our TokenCredential implementations return this type.
+
+    const connectionConfig = {
+      ...sanitizedConfig.connection,
+      password: token.token,
+      expirationChecker: () =>
+        /* return true if the token is within the renewal offset time */
+        token.expiresOnTimestamp - tokenRenewalOffsetMs <= Date.now(),
+    };
+
+    return connectionConfig;
+  }
+
+  return {
+    ...sanitizedConfig,
+    connection: getConnectionConfig,
+  };
+}
+
+export async function buildCloudSqlConfig(config: any, sanitizedConfig: any) {
   if (config.client !== 'pg') {
     throw new Error('Cloud SQL only supports the pg client');
   }
