@@ -65,10 +65,14 @@ describe('executeShellCommand', () => {
   });
 
   it('should execute without logger or logStream', async () => {
-    await executeShellCommand({
+    const promise = executeShellCommand({
       command: 'echo',
       args: ['Hello World'],
     });
+
+    mockProcess.emitClose(0);
+
+    await promise;
 
     expect(mockSpawn).toHaveBeenCalledWith('echo', ['Hello World'], undefined);
   });
