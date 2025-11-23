@@ -18,8 +18,9 @@ import { useMemo } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
+  RouteResolutionApi,
   routeResolutionApiRef,
-  useApiHolder,
+  useApi,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyParams,
@@ -40,6 +41,14 @@ export interface RouteResolver {
       | ExternalRouteRef<Params, any>,
     sourceLocation: Parameters<typeof matchRoutes>[1],
   ): RouteFunc<Params> | undefined;
+}
+
+function useRouteResolutionApi(): RouteResolutionApi | undefined {
+  try {
+    return useApi(routeResolutionApiRef);
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -90,8 +99,7 @@ export function useRouteRef<Params extends AnyParams>(
     | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
   const { pathname } = useLocation();
-  const apiHolder = useApiHolder();
-  const routeResolutionApi = apiHolder.get(routeResolutionApiRef);
+  const routeResolutionApi = useRouteResolutionApi();
   const versionedContext = useVersionedContext<{ 1: RouteResolver }>(
     'routing-context',
   );
@@ -104,7 +112,7 @@ export function useRouteRef<Params extends AnyParams>(
     }
 
     try {
-      return routeResolutionApi.resolve(routeRef, {
+      return routeResolutionApi?.resolve(routeRef, {
         sourcePath: pathname,
       });
     } catch {

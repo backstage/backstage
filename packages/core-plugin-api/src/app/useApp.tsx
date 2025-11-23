@@ -25,6 +25,7 @@ import {
   Progress,
   createFrontendPlugin,
   FrontendPlugin,
+  ApiHolder,
 } from '@backstage/frontend-plugin-api';
 import {
   AppComponents,
@@ -75,26 +76,34 @@ function toNewPlugin(plugin: BackstagePlugin): FrontendPlugin {
   });
 }
 
+function useOptionalApiHolder(): ApiHolder | undefined {
+  try {
+    return useApiHolder();
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * React hook providing {@link AppContext}.
  *
  * @public
  */
 export const useApp = (): AppContextV1 => {
-  const apiHolder = useApiHolder();
-  const appTreeApi = apiHolder.get(appTreeApiRef);
+  const apiHolder = useOptionalApiHolder();
+  const appTreeApi = apiHolder?.get(appTreeApiRef);
+  const iconsApi = apiHolder?.get(iconsApiRef);
   const versionedContext = useVersionedContext<{ 1: AppContextV1 }>(
     'app-context',
   );
 
-  const newAppContext = useMemo<AppContextV1 | null>(() => {
+  const newAppContext = useMemo<AppContextV1 | undefined>(() => {
     if (!appTreeApi) {
-      return null;
+      return undefined;
     }
 
-    const iconsApi = apiHolder.get(iconsApiRef);
     if (!iconsApi) {
-      return null;
+      return undefined;
     }
 
     const { tree } = appTreeApi.getTree();
@@ -152,7 +161,7 @@ export const useApp = (): AppContextV1 => {
         };
       },
     };
-  }, [appTreeApi, apiHolder]);
+  }, [appTreeApi, iconsApi]);
 
   if (newAppContext) {
     return newAppContext;
