@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 import { ComponentType, PropsWithChildren } from 'react';
-import { Routes, Route, useOutlet } from 'react-router-dom';
+import { Route, Routes, useOutlet } from 'react-router-dom';
 
 import {
   FieldExtensionOptions,
   FormProps,
   ReviewStepProps,
-  TemplateGroupFilter,
-} from '@backstage/plugin-scaffolder-react';
-import {
   ScaffolderTaskOutput,
   SecretsContextProvider,
+  TemplateGroupFilter,
   useCustomFieldExtensions,
   useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
@@ -34,8 +32,8 @@ import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
   actionsRouteRef,
-  editorRouteRef,
   customFieldsRouteRef,
+  editorRouteRef,
   editRouteRef,
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
@@ -54,10 +52,10 @@ import {
 import { TemplateListPage, TemplateWizardPage } from '../../alpha/components';
 import { OngoingTask } from '../OngoingTask';
 import {
+  CustomFieldsPage,
+  TemplateEditorPage,
   TemplateFormPage,
   TemplateIntroPage,
-  TemplateEditorPage,
-  CustomFieldsPage,
 } from '../../alpha/components/TemplateEditorPage';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
@@ -131,6 +129,7 @@ export const InternalRouter = (
         TemplateWizardPageComponent = TemplateWizardPage,
     } = {},
   } = props;
+
   const outlet = useOutlet() || props.children;
   const customFieldExtensions = useCustomFieldExtensions(outlet);
   const loadedFieldExtensions = useFormFieldLoaders(props.formFieldLoaders);

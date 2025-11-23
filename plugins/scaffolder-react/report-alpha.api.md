@@ -115,6 +115,15 @@ export function createScaffolderFormDecorator<
 }): ScaffolderFormDecorator<TInput>;
 
 // @alpha
+export const DefaultReviewStep: (
+  props: ReviewStepProps & {
+    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    backButtonLabel?: ReactNode;
+    createButtonLabel?: ReactNode;
+  },
+) => JSX_2.Element;
+
+// @alpha
 export const DefaultTemplateOutputs: (props: {
   output?: ScaffolderTaskOutput;
 }) => JSX_2.Element | null;

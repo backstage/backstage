@@ -30,4 +30,6 @@ export {
   type ScaffolderFormFieldsApi,
 } from '@backstage/plugin-scaffolder-react/alpha';
 
+export * from './swappableComponents';
+
 export { default } from './plugin';
