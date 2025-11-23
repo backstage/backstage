@@ -25,6 +25,7 @@ import {
 
 import { Config } from '@backstage/config';
 import { getAuthorizationHeader } from './helpers';
+import { getBitbucketCloudOAuthToken } from '@backstage/integration';
 import { examples } from './bitbucketCloud.examples';
 
 const createRepository = async (opts: {
@@ -248,6 +249,18 @@ export function createPublishBitbucketCloudAction(options: {
         auth = {
           username: 'x-token-auth',
           password: ctx.input.token,
+        };
+      } else if (
+        integrationConfig.config.clientId &&
+        integrationConfig.config.clientSecret
+      ) {
+        const token = await getBitbucketCloudOAuthToken(
+          integrationConfig.config.clientId,
+          integrationConfig.config.clientSecret,
+        );
+        auth = {
+          username: 'x-token-auth',
+          password: token,
         };
       } else {
         if (
