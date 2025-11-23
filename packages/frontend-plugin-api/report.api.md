@@ -20,7 +20,6 @@ import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
-import { SignInPageProps } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
 // @public
@@ -2012,6 +2011,12 @@ export const SignInPageBlueprint: ExtensionBlueprint<{
     >;
   };
 }>;
+
+// @public
+export type SignInPageProps = {
+  onSignInSuccess(identityApi: IdentityApi): void;
+  children?: ReactNode;
+};
 
 // @public
 export interface StorageApi {
