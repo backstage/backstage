@@ -57,7 +57,6 @@
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
