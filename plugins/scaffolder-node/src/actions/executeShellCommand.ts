@@ -73,19 +73,19 @@ export type ExecuteShellCommandOptions = {
    *
    * @example
    * // Log all stderr as info
-   * { stderrLogging: { level: 'info' } }
+   * \{ stderrLogging: \{ level: 'info' \} \}
    *
    * @example
    * // Use a selector function to route messages
-   * {
-   *   stderrLogging: {
-   *     selector: (msg) => {
+   * \{
+   *   stderrLogging: \{
+   *     selector: (msg) =\> \{
    *       if (msg.includes('ERROR') || msg.includes('FATAL')) return 'error';
    *       if (msg.includes('WARN')) return 'warn';
    *       return 'info';
-   *     }
-   *   }
-   * }
+   *     \}
+   *   \}
+   * \}
    */
   stderrLogging?: StderrLoggingOptions;
 };
