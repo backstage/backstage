@@ -19,6 +19,36 @@ import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import { PassThrough, Writable } from 'stream';
 
 /**
+ * Log levels available for stderr output.
+ *
+ * @public
+ */
+export type StderrLogLevel = 'error' | 'warn' | 'info' | 'debug';
+
+/**
+ * Function to determine the log level for a stderr message.
+ * This allows inspection of stderr content to route messages appropriately.
+ *
+ * @public
+ */
+export type StderrLogLevelSelector = (message: string) => StderrLogLevel | null;
+
+/**
+ * Options for configuring stderr logging behavior.
+ *
+ * @public
+ */
+export type StderrLoggingOptions =
+  | {
+      /** Use a fixed log level for all stderr output */
+      level: StderrLogLevel;
+    }
+  | {
+      /** Use a function to determine log level per message. Return null to skip logging. */
+      selector: StderrLogLevelSelector;
+    };
+
+/**
  * Options for {@link executeShellCommand}.
  *
  * @public
@@ -37,6 +67,27 @@ export type ExecuteShellCommandOptions = {
    * @deprecated  please provide a logger instead.
    */
   logStream?: Writable;
+  /**
+   * Configuration for how stderr output is logged.
+   * If not provided, defaults to logging all stderr as 'error' (backward compatible behavior).
+   *
+   * @example
+   * // Log all stderr as info
+   * { stderrLogging: { level: 'info' } }
+   *
+   * @example
+   * // Use a selector function to route messages
+   * {
+   *   stderrLogging: {
+   *     selector: (msg) => {
+   *       if (msg.includes('ERROR') || msg.includes('FATAL')) return 'error';
+   *       if (msg.includes('WARN')) return 'warn';
+   *       return 'info';
+   *     }
+   *   }
+   * }
+   */
+  stderrLogging?: StderrLoggingOptions;
 };
 
 /**
@@ -53,7 +104,53 @@ export async function executeShellCommand(
     options: spawnOptions,
     logger,
     logStream = new PassThrough(),
+    stderrLogging,
   } = options;
+
+  // Determine how to log stderr messages
+  const getStderrLogLevel = (message: string): StderrLogLevel | null => {
+    if (!stderrLogging) {
+      // Default backward-compatible behavior: log all stderr as error
+      return 'error';
+    }
+    if ('level' in stderrLogging) {
+      return stderrLogging.level;
+    }
+    // Use selector function
+    return stderrLogging.selector(message);
+  };
+
+  // Get the appropriate logger method for a log level
+  const logStderr = (message: string) => {
+    const level = getStderrLogLevel(message);
+    if (level === null || !logger) {
+      return; // Skip logging if selector returns null or no logger
+    }
+
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) {
+      return; // Skip empty messages
+    }
+
+    switch (level) {
+      case 'error':
+        logger.error(trimmedMessage);
+        break;
+      case 'warn':
+        logger.warn(trimmedMessage);
+        break;
+      case 'info':
+        logger.info(trimmedMessage);
+        break;
+      case 'debug':
+        logger.debug(trimmedMessage);
+        break;
+      default:
+        // This should never happen due to TypeScript typing, but satisfies linter
+        logger.error(trimmedMessage);
+        break;
+    }
+  };
 
   await new Promise<void>((resolve, reject) => {
     const process = spawn(command, args, spawnOptions);
@@ -66,9 +163,8 @@ export async function executeShellCommand(
     });
     process.stderr.on('data', chunk => {
       logStream?.write(chunk);
-      logger?.error(
-        Buffer.isBuffer(chunk) ? chunk.toString('utf8').trim() : chunk.trim(),
-      );
+      const message = Buffer.isBuffer(chunk) ? chunk.toString('utf8') : chunk;
+      logStderr(message);
     });
     process.on('error', error => {
       return reject(error);
