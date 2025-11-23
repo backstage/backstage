@@ -94,15 +94,15 @@ export const AwesomeUsersTable = () => {
 
 This section describes the steps to wrap your API client in a [Utility API](../api/utility-apis.md), which are:
 
-- use [`createApiRef`](../reference/core-plugin-api.createapiref.md) to create a
-  new [`ApiRef`](../reference/core-plugin-api.apiref.md)
-- register an [`ApiFactory`](../reference/core-plugin-api.apifactory.md) with
+- use [`createApiRef`](../reference/frontend-plugin-api.createapiref.md) to create a
+  new [`ApiRef`](../reference/frontend-plugin-api.apiref.md)
+- register an [`ApiFactory`](../reference/frontend-plugin-api.apifactory.md) with
   your plugin using
-  [`createApiFactory`](../reference/core-plugin-api.createapifactory.md). This
+  [`createApiFactory`](../reference/frontend-plugin-api.createapifactory.md). This
   will wrap your API implementation, associate your `ApiRef` with your
   implementation and tell backstage how to instantiate it
 - finally, you can use your API in your components by calling
-  [`useApi`](../reference/core-plugin-api.useapi.md)
+  [`useApi`](../reference/frontend-plugin-api.useapi.md)
 
 ### Defining the API client interface
 
@@ -187,8 +187,8 @@ export class MyAwesomeApiClient implements MyAwesomeApi {
 ```
 
 > Check out the docs for more information on the
-> [DiscoveryApi](../reference/core-plugin-api.discoveryapi.md) or the
-> [FetchApi](../reference/core-plugin-api.fetchapi.md)
+> [DiscoveryApi](../reference/frontend-plugin-api.discoveryapi.md) or the
+> [FetchApi](../reference/frontend-plugin-api.fetchapi.md)
 
 ### Bundling your ApiRef with your plugin
 
@@ -233,7 +233,7 @@ export const myCustomPlugin = createPlugin({
 ### Using the API in your components
 
 Now you should be able to access your API using the backstage hook
-[`useApi`](../reference/core-plugin-api.useapi.md) from within your plugin code.
+[`useApi`](../reference/frontend-plugin-api.useapi.md) from within your plugin code.
 
 ```ts title="plugins/my-awesome-plugin/src/components/AwesomeUsersTable.tsx"
 import { useApi } from '@backstage/core-plugin-api';
