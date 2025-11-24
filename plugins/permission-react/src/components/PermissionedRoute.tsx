@@ -60,7 +60,11 @@ export const PermissionedRoute = (
   const { NotFoundErrorPage } = app.getComponents();
 
   let shownElement: ReactElement | null | undefined =
-    errorComponent === undefined ? <NotFoundErrorPage /> : errorComponent;
+    errorComponent === undefined ? (
+      <NotFoundErrorPage status="403" statusMessage="Forbidden" />
+    ) : (
+      errorComponent
+    );
 
   if (permissionResult.loading) {
     shownElement = null;

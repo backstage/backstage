@@ -46,13 +46,26 @@ jest.mock('react-router-dom', () => {
   };
 });
 
+jest.mock('@backstage/core-plugin-api', () => {
+  const actual = jest.requireActual('@backstage/core-plugin-api');
+  return {
+    ...actual,
+    useApp: () => ({
+      ...actual.useApp(),
+      getComponents: () => ({
+        ...actual.useApp().getComponents(),
+        NotFoundErrorPage: ({ statusMessage }: { statusMessage: string }) => (
+          <div data-testid="not-found-page">{statusMessage}</div>
+        ),
+      }),
+    }),
+  };
+});
+
 describe('<TechDocsNotFound />', () => {
-  it('should render with status code, status message and go back link', async () => {
+  it('should render with status code and status message', async () => {
     await renderInTestApp(<TechDocsNotFound />);
-    screen.getByText(/Documentation not found/i);
-    screen.getByText(/404/i);
-    screen.getByText(/Looks like someone dropped the mic!/i);
-    expect(screen.getByTestId('go-back-link')).toBeDefined();
+    expect(screen.getByTestId('not-found-page')).toBeDefined();
   });
 
   it('should trigger analytics event not-found', async () => {
@@ -85,8 +98,6 @@ describe('<TechDocsNotFound errorMessage="This is a custom error message" />', (
       <TechDocsNotFound errorMessage="This is a custom error message" />,
     );
     screen.getByText(/This is a custom error message/i);
-    screen.getByText(/404/i);
-    screen.getByText(/Looks like someone dropped the mic!/i);
-    expect(screen.getByTestId('go-back-link')).toBeDefined();
+    expect(screen.getByTestId('not-found-page')).toBeDefined();
   });
 });

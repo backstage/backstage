@@ -119,6 +119,20 @@ jest.mock('@backstage/core-components', () => ({
   Page: jest.fn(),
 }));
 
+jest.mock('@backstage/core-plugin-api', () => {
+  const actual = jest.requireActual('@backstage/core-plugin-api');
+  return {
+    ...actual,
+    useApp: () => ({
+      ...actual.useApp(),
+      getComponents: () => ({
+        ...actual.useApp().getComponents(),
+        NotFoundErrorPage: () => <div data-testid="not-found-page" />,
+      }),
+    }),
+  };
+});
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
