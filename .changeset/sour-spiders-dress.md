@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-bitbucket-server': patch
 ---
 
-feat(catalog): add optional branch to bitbucket-server
+Added optional branch to the Bitbucket Server entity provider filters
