@@ -84,7 +84,7 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
 };
 
 export class AwsS3Publish implements PublisherBase {
-  private readonly storageClient: S3Client;
+  public readonly storageClient: S3Client;
   private readonly bucketName: string;
   private readonly legacyPathCasing: boolean;
   private readonly logger: LoggerService;
@@ -268,7 +268,7 @@ export class AwsS3Publish implements PublisherBase {
   /**
    * Custom retry wrapper for S3 operations with detailed error handling.
    */
-  private async retryOperation<TOutput>(
+  public async retryOperation<TOutput>(
     operation: () => Promise<TOutput>,
     operationName: string,
     maxAttempts: number = 3,

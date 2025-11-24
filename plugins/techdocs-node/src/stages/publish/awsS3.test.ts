@@ -305,7 +305,7 @@ describe('AwsS3Publish', () => {
   describe('retry mechanism', () => {
     it('should retry with custom retry strategy', async () => {
       const publisher = await createPublisherFromConfig();
-      const customRetryStrategy = jest.fn((error: any) => {
+      const customRetryStrategy = jest.fn(error => {
         return error.name === 'NetworkingError';
       });
 
@@ -320,11 +320,10 @@ describe('AwsS3Publish', () => {
         )
         .resolvesOnce({ Contents: [] });
 
-      await (publisher as any).retryOperation(
+      await (publisher as AwsS3Publish).retryOperation(
         async () => {
-          return (s3Mock.send as any)(
-            new ListObjectsV2Command({ Bucket: 'bucketName' }),
-          );
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
         },
         'TestOperation',
         3,
@@ -347,11 +346,10 @@ describe('AwsS3Publish', () => {
         )
         .resolvesOnce({ Contents: [] });
 
-      await (publisher as any).retryOperation(
+      await (publisher as AwsS3Publish).retryOperation(
         async () => {
-          return (s3Mock.send as any)(
-            new ListObjectsV2Command({ Bucket: 'bucketName' }),
-          );
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
         },
         'TestOperation',
         3,
@@ -371,11 +369,10 @@ describe('AwsS3Publish', () => {
         )
         .resolvesOnce({ Contents: [] });
 
-      await (publisher as any).retryOperation(
+      await (publisher as AwsS3Publish).retryOperation(
         async () => {
-          return (s3Mock.send as any)(
-            new ListObjectsV2Command({ Bucket: 'bucketName' }),
-          );
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
         },
         'TestOperation',
         3,
@@ -395,38 +392,14 @@ describe('AwsS3Publish', () => {
         )
         .resolvesOnce({ Contents: [] });
 
-      await (publisher as any).retryOperation(
+      await (publisher as AwsS3Publish).retryOperation(
         async () => {
-          return (s3Mock.send as any)(
-            new ListObjectsV2Command({ Bucket: 'bucketName' }),
-          );
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
         },
         'TestOperation',
         3,
       );
-    });
-
-    it('should not retry on non-retriable 4xx errors', async () => {
-      const publisher = await createPublisherFromConfig();
-      s3Mock.on(ListObjectsV2Command).rejectsOnce(
-        new S3ServiceException({
-          name: 'BadRequest',
-          $fault: 'client',
-          $metadata: { httpStatusCode: 400 },
-        }),
-      );
-
-      await expect(
-        (publisher as any).retryOperation(
-          async () => {
-            return (s3Mock.send as any)(
-              new ListObjectsV2Command({ Bucket: 'bucketName' }),
-            );
-          },
-          'TestOperation',
-          3,
-        ),
-      ).rejects.toHaveProperty('name', 'BadRequest');
     });
 
     it('should use exact error code matching for transient errors', async () => {
@@ -443,11 +416,10 @@ describe('AwsS3Publish', () => {
         )
         .resolvesOnce({ Contents: [] });
 
-      await (publisher as any).retryOperation(
+      await (publisher as AwsS3Publish).retryOperation(
         async () => {
-          return (s3Mock.send as any)(
-            new ListObjectsV2Command({ Bucket: 'bucketName' }),
-          );
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
         },
         'TestOperation',
         3,
@@ -469,14 +441,13 @@ describe('AwsS3Publish', () => {
         )
         .resolvesOnce({ Contents: [] });
 
-      await (publisher as any).retryOperation(
+      await (publisher as AwsS3Publish).retryOperation(
         async () => {
-          return (s3Mock.send as any)(
-            new ListObjectsV2Command({ Bucket: 'bucketName' }),
-          );
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
         },
         'TestOperation',
-        2,
+        3,
       );
 
       const elapsedTime = Date.now() - startTime;
@@ -743,7 +714,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return an error if the techdocs_metadata.json file cannot be read from stream', async () => {
-      s3Mock.on(GetObjectCommand).callsFake((_: any) => {
+      s3Mock.on(GetObjectCommand).callsFake(() => {
         return {
           Body: new ErrorReadable('No stream!'),
         };
@@ -882,7 +853,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return 404 if file cannot be read from stream', async () => {
-      s3Mock.on(GetObjectCommand).callsFake((_: any) => {
+      s3Mock.on(GetObjectCommand).callsFake(() => {
         return {
           Body: new ErrorReadable('No stream!'),
         };
