@@ -1,5 +1,21 @@
 # @backstage/repo-tools
 
+## 0.16.0
+
+### Minor Changes
+
+- 11c61f2: The `package-docs` command will now automatically use a `typedoc.json` file if one exists at the root of your project.
+
+### Patch Changes
+
+- 8f56eae: Updated knip-reports to detect dependencies in dev/alpha pattern
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config-loader@1.10.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/catalog-model@1.7.6
+
 ## 0.16.0-next.2
 
 ### Minor Changes

@@ -60,7 +60,7 @@ describe('createExtensionInput', () => {
     const input = createExtensionInput([stringDataRef, numberDataRef]);
     const context = { input: 'test1', kind: 'test2', name: 'test3' };
     const inputWithContext =
-      OpaqueExtensionInput.toInternal(input).withContext(context);
+      OpaqueExtensionInput.toInternal(input).withContext?.(context);
     expect(inputWithContext).toEqual({
       $$type: '@backstage/ExtensionInput',
       extensionData: [stringDataRef, numberDataRef],

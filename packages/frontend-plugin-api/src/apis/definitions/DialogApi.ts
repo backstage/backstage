@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../system';
 
 /**
  * A handle for an open dialog that can be used to interact with it.

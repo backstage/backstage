@@ -1,5 +1,17 @@
 # @backstage/plugin-permission-backend
 
+## 0.7.6
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+  - @backstage/plugin-permission-node@0.10.6
+
 ## 0.7.6-next.1
 
 ### Patch Changes

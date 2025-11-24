@@ -8,7 +8,7 @@ import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -18,7 +18,7 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 const _default: OverridableFrontendPlugin<
   {},
   {
-    catalogIndex: ExternalRouteRef<undefined>;
+    catalogIndex: ExternalRouteRef<undefined, true>;
   },
   {
     'entity-card:org/group-profile': OverridableExtensionDefinition<{
