@@ -59,10 +59,6 @@ export class DefaultRootMetricsService implements RootMetricsService {
   }
 
   forPlugin(pluginId: string): MetricsService {
-    this.rootLogger?.info('Creating plugin-scoped metrics service', {
-      pluginId,
-    });
-
     const namespace = `${this.rootNamespace}.plugin.${pluginId}`;
     const meter = this.globalMeterProvider.getMeter(namespace);
 

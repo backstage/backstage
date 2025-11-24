@@ -75,4 +75,5 @@ export const rootMetricsServiceRef = createServiceRef<
   import('./MetricsService').RootMetricsService
 >({
   id: 'alpha.core.rootMetrics',
+  scope: 'root',
 });

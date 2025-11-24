@@ -99,7 +99,7 @@ export class InstrumentFactory implements MetricsService {
   }
 
   private prefixName(name: string): string {
-    return `${this.namespace}.${name}`.toLowerCase();
+    return `${this.namespace}.${name}`.toLocaleLowerCase('en-US');
   }
 
   createCounter(name: string, opts?: MetricOptions): Counter {
