@@ -65,7 +65,7 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
-          branch: 'master' # optional; string
+          branch: 'main' # optional; string
           skipArchivedRepos: true # optional; boolean
         validateLocationsExist: false # optional; boolean
         schedule: # same options as in SchedulerServiceTaskScheduleDefinition
