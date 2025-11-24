@@ -63,7 +63,7 @@ We strive to stay aligned with the OpenTelemetry best practices. When in doubt, 
 
 ### Building Blocks
 
-All Backstage metrics follow a hierarchical naming pattern that provides clear context about where the metric originates and what it measures. We recommend following this pattern for all metrics. Notice that multi-word scope and metric names follow snake_case.
+All Backstage metrics follow a hierarchical naming pattern that provides clear context about where the metric originates and what it measures. We recommend following this pattern for all metrics. Notice that multi-word scope and metric names follow `snake_case`.
 
 ```md
 backstage.{scope}.{scope_name}.{metric_name}
