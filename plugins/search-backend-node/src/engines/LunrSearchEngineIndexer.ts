@@ -29,8 +29,8 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
 
   constructor() {
     super({ batchSize: 1000 });
-
     this.builder = new lunr.Builder();
+    this.builder.tokenizer.separator = /[^\p{L}\p{N}]+/u;
     this.builder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
     this.builder.searchPipeline.add(lunr.stemmer);
     this.builder.metadataWhitelist = ['position'];
