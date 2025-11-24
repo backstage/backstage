@@ -66,6 +66,7 @@
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/plugin-signals": "workspace:^",
+    "@backstage/plugin-signals-react": "workspace:^",
     "@backstage/plugin-techdocs": "workspace:^",
     "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^",
     "@backstage/plugin-techdocs-react": "workspace:^",

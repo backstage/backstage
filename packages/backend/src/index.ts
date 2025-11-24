@@ -15,12 +15,15 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import { mikroOrmServiceFactory } from '@backstage/backend-defaults/mikroOrm';
 import {
   coreServices,
   createBackendFeatureLoader,
 } from '@backstage/backend-plugin-api';
 
 const backend = createBackend();
+
+backend.add(mikroOrmServiceFactory);
 
 // An example of how to group together and load multiple features. You can also
 // access root-scoped services by adding `deps`.
@@ -43,6 +46,7 @@ backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('./authModuleGithubProvider'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-openshift-provider'));
+backend.add(import('@backstage/plugin-user-settings-backend'));
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(

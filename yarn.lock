@@ -7591,7 +7591,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend":
+"@backstage/plugin-user-settings-backend@workspace:^, @backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend"
   dependencies:
@@ -30476,6 +30476,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-signals": "workspace:^"
+    "@backstage/plugin-signals-react": "workspace:^"
     "@backstage/plugin-techdocs": "workspace:^"
     "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
@@ -30550,6 +30551,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
+    "@backstage/plugin-user-settings-backend": "workspace:^"
     "@opentelemetry/auto-instrumentations-node": "npm:^0.61.0"
     "@opentelemetry/exporter-prometheus": "npm:^0.54.0"
     "@opentelemetry/sdk-node": "npm:^0.54.0"

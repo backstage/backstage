@@ -24,8 +24,10 @@ import {
   configApiRef,
   createApiFactory,
   discoveryApiRef,
+  errorApiRef,
   fetchApiRef,
   identityApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
 import { formDecoratorsApiRef } from '@backstage/plugin-scaffolder/alpha';
@@ -33,6 +35,8 @@ import { DefaultScaffolderFormDecoratorsApi } from '@backstage/plugin-scaffolder
 import { mockDecorator } from './components/scaffolder/decorators';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '@backstage/plugin-scaffolder';
+import { UserSettingsStorage } from '@backstage/plugin-user-settings';
+import { signalApiRef } from '@backstage/plugin-signals-react';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -71,6 +75,18 @@ export const apis: AnyApiFactory[] = [
       DefaultScaffolderFormDecoratorsApi.create({
         decorators: [mockDecorator],
       }),
+  }),
+
+  createApiFactory({
+    api: storageApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      errorApi: errorApiRef,
+      fetchApi: fetchApiRef,
+      identityApi: identityApiRef,
+      signalApi: signalApiRef,
+    },
+    factory: deps => UserSettingsStorage.create(deps),
   }),
 
   ScmAuth.createDefaultApiFactory(),
