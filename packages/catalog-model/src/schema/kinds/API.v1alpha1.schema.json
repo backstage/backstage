@@ -70,7 +70,36 @@
               "type": "string",
               "description": "The definition of the API, based on the format defined by the type.",
               "minLength": 1
+            },
+            "visibility": {
+              "type": "string",
+              "description": "The visibility of the API. Required when type is mcp-server.",
+              "enum": ["public", "private"]
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "mcp-server"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "object",
+            "required": ["visibility"]
           }
         }
       }

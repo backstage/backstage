@@ -36,6 +36,7 @@ export interface ApiEntityV1alpha1 extends Entity {
     owner: string;
     definition: string;
     system?: string;
+    visibility?: 'public' | 'private';
   };
 }
 

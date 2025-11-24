@@ -180,4 +180,47 @@ components:
     (entity as any).annotations = 'Test';
     await expect(validator.check(entity)).rejects.toThrow(/annotations/);
   });
+
+  describe('visibility field for mcp-server APIs', () => {
+    it('rejects missing visibility when type is mcp-server', async () => {
+      entity.spec.type = 'mcp-server';
+      await expect(validator.check(entity)).rejects.toThrow(/visibility/);
+    });
+
+    it('accepts public visibility for mcp-server', async () => {
+      entity.spec.type = 'mcp-server';
+      (entity.spec as any).visibility = 'public';
+      await expect(validator.check(entity)).resolves.toBe(true);
+    });
+
+    it('accepts private visibility for mcp-server', async () => {
+      entity.spec.type = 'mcp-server';
+      (entity.spec as any).visibility = 'private';
+      await expect(validator.check(entity)).resolves.toBe(true);
+    });
+
+    it('rejects invalid visibility values', async () => {
+      entity.spec.type = 'mcp-server';
+      (entity.spec as any).visibility = 'internal';
+      await expect(validator.check(entity)).rejects.toThrow(/visibility/);
+    });
+
+    it('rejects empty visibility for mcp-server', async () => {
+      entity.spec.type = 'mcp-server';
+      (entity.spec as any).visibility = '';
+      await expect(validator.check(entity)).rejects.toThrow(/visibility/);
+    });
+
+    it('accepts missing visibility when type is not mcp-server', async () => {
+      entity.spec.type = 'openapi';
+      // no visibility field set
+      await expect(validator.check(entity)).resolves.toBe(true);
+    });
+
+    it('accepts valid visibility even when type is not mcp-server', async () => {
+      entity.spec.type = 'openapi';
+      (entity.spec as any).visibility = 'public';
+      await expect(validator.check(entity)).resolves.toBe(true);
+    });
+  });
 });
