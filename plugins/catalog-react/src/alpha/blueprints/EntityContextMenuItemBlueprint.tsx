@@ -14,40 +14,52 @@
  * limitations under the License.
  */
 
-import { ReactNode, JSX } from 'react';
+import { JSX, ReactNode } from 'react';
 import {
   coreExtensionData,
   createExtensionBlueprint,
+  createExtensionDataRef,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
-import { EntityPredicate } from '../predicates/types';
-import { entityPredicateToFilterFunction } from '../predicates/entityPredicateToFilterFunction';
+import {
+  EntityPredicate,
+  entityPredicateToFilterFunction,
+} from '../predicates';
 import type { Entity } from '@backstage/catalog-model';
 import { entityFilterFunctionDataRef } from './extensionData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+
 /** @alpha */
-export type UseProps = () =>
+export type UseProps = () => {
+  title: ReactNode;
+  disabled?: boolean;
+} & (
   | {
-      title: ReactNode;
       href: string;
-      disabled?: boolean;
     }
   | {
-      title: ReactNode;
       onClick: () => void | Promise<void>;
-      disabled?: boolean;
-    };
+    }
+);
 
 /** @alpha */
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
+  /**
+   * A portal to render for this context menu item
+   */
+  usePortal?: () => ReactNode;
   icon: JSX.Element;
   filter?: EntityPredicate | ((entity: Entity) => boolean);
 };
+
+const portalElement = createExtensionDataRef<JSX.Element>().with({
+  id: 'catalog.entity-context-menu-item.portal',
+});
 
 /** @alpha */
 export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
@@ -56,9 +68,11 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   output: [
     coreExtensionData.reactElement,
     entityFilterFunctionDataRef.optional(),
+    portalElement.optional(),
   ],
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
+    portalElement: portalElement,
   },
   config: {
     schema: {
@@ -95,6 +109,18 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
     };
 
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
+
+    const usePortal = params.usePortal;
+    if (usePortal) {
+      const portalLoader = async () => {
+        const Component = () => {
+          return usePortal();
+        };
+
+        return <Component />;
+      };
+      yield portalElement(ExtensionBoundary.lazy(node, portalLoader));
+    }
 
     if (config.filter) {
       yield entityFilterFunctionDataRef(

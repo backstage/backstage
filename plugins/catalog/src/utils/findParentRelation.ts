@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-export * from './blueprints';
-export * from './converters';
-export * from './hooks';
-export * from './predicates';
-export { catalogReactTranslationRef } from '../translation';
-export * from './types';
-export { isOwnerOf } from '../utils/isOwnerOf';
-export { useEntityPermission } from '../hooks/useEntityPermission';
-export * from '../components/EntityTable/TitleColumn';
+import { EntityRelation } from '@backstage/catalog-model';
+
+export function findParentRelation(
+  entityRelations: EntityRelation[] = [],
+  relationTypes: string[] = [],
+) {
+  for (const type of relationTypes) {
+    const foundRelation = entityRelations.find(
+      relation => relation.type === type,
+    );
+    if (foundRelation) {
+      return foundRelation; // Return the first found relation and stop
+    }
+  }
+  return null;
+}
