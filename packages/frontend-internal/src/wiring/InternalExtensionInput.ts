@@ -28,7 +28,7 @@ export const OpaqueExtensionInput = OpaqueType.create<{
   versions: {
     readonly version: undefined;
     readonly context?: ExtensionInputContext;
-    withContext(context: ExtensionInputContext): ExtensionInput;
+    withContext?(context: ExtensionInputContext): ExtensionInput;
   };
 }>({
   type: '@backstage/ExtensionInput',
