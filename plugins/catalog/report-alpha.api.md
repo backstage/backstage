@@ -182,6 +182,28 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'catalog-content-header-item:catalog/create-button': OverridableExtensionDefinition<{
+      kind: 'catalog-content-header-item';
+      name: 'create-button';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-content-header-item:catalog/support-button': OverridableExtensionDefinition<{
+      kind: 'catalog-content-header-item';
+      name: 'support-button';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
     'catalog-filter:catalog/kind': OverridableExtensionDefinition<{
       config: {
         initialFilter: string;
@@ -804,7 +826,8 @@ const _default: OverridableFrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              (props: EntityContentLayoutProps) => React.JSX.Element,
+              (props: EntityContentLayoutProps) => React./** @alpha */
+              JSX.Element,
               'catalog.entity-content-layout.component',
               {}
             >,
@@ -1015,6 +1038,13 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {
         filters: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+        contentHeaderItems: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: false;

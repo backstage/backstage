@@ -696,3 +696,44 @@ filter:
       targetRef:
         $in: [group:default/admins, group:default/viewers]
 ```
+
+### Catalog Content Header
+
+The catalog page comes with a content header containing default elements, but you may want to add your own elements to it.
+
+You can do so by creating an extension based on the `CatalogContentHeaderItemBlueprint` blueprint:
+
+```tsx
+const catalogMissingComponentButtonCatalogContentHeaderItem =
+  CatalogContentHeaderItemBlueprint.make({
+    name: 'missing-component-button',
+    params: {
+      loader: async () => {
+        const { default: Button } = await import('@material-ui/core/Button');
+        const { default: SearchIcon } = await import(
+          '@material-ui/icons/Search'
+        );
+
+        return (
+          <Button
+            variant="outlined"
+            color="primary"
+            style={{ marginRight: '10px' }}
+            startIcon={<SearchIcon />}
+          >
+            Missing a component?
+          </Button>
+        );
+      },
+    },
+  });
+
+const customCatalogModule = createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [catalogMissingComponentButtonCatalogContentHeaderItem],
+});
+```
+
+This will add an additional element to the catalog content header:
+
+![screenshot of missing component button](../../assets/software-catalog/catalog-customization-content-header.png)

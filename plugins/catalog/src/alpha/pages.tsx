@@ -40,6 +40,7 @@ import { buildFilterFn } from './filter/FilterWrapper';
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
+    contentHeaderItems: createExtensionInput([coreExtensionData.reactElement]),
   },
   config: {
     schema: {
@@ -65,10 +66,14 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
+        const contentHeaderItems = inputs.contentHeaderItems
+          .map(item => item.get(coreExtensionData.reactElement))
+          .reverse();
         return compatWrapper(
           <BaseCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
+            contentHeaderItems={<>{contentHeaderItems}</>}
           />,
         );
       },
