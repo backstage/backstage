@@ -26,17 +26,23 @@ export const SearchFilterBlueprint: ExtensionBlueprint<{
   output: ExtensionDataRef<
     {
       component: SearchFilterExtensionComponent;
+      typeFilter?: (types: string[]) => boolean;
     },
     'search.filters.filter',
     {}
   >;
   inputs: {};
-  config: {};
-  configInput: {};
+  config: {
+    types: string[] | undefined;
+  };
+  configInput: {
+    types?: string[] | undefined;
+  };
   dataRefs: {
     searchFilters: ConfigurableExtensionDataRef<
       {
         component: SearchFilterExtensionComponent;
+        typeFilter?: (types: string[]) => boolean;
       },
       'search.filters.filter',
       {}
@@ -48,6 +54,7 @@ export const SearchFilterBlueprint: ExtensionBlueprint<{
 export interface SearchFilterBlueprintParams {
   // (undocumented)
   component: SearchFilterExtensionComponent;
+  typeFilter?: (types: string[]) => boolean;
 }
 
 // @alpha (undocumented)

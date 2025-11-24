@@ -42,7 +42,23 @@ describe('SearchFilterBlueprint', () => {
           "id": "page:search",
           "input": "searchFilters",
         },
-        "configSchema": undefined,
+        "configSchema": {
+          "parse": [Function],
+          "schema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "types": {
+                "description": "A list of result types where this search filter should be shown for",
+                "items": {
+                  "type": "string",
+                },
+                "type": "array",
+              },
+            },
+            "type": "object",
+          },
+        },
         "disabled": false,
         "factory": [Function],
         "inputs": {},
@@ -56,6 +72,113 @@ describe('SearchFilterBlueprint', () => {
         "version": "v2",
       }
     `);
+  });
+
+  it('should create typeFilter from config types when provided', () => {
+    const component = (props: any) => <p {...props}>test filter</p>;
+    const extension = SearchFilterBlueprint.make({
+      name: 'test',
+      params: {
+        component: component,
+      },
+    });
+
+    const tester = createExtensionTester(extension, {
+      config: { types: ['software-catalog', 'techdocs'] },
+    });
+    const searchFilterData = tester.get(
+      SearchFilterBlueprint.dataRefs.searchFilters,
+    );
+    expect(searchFilterData.component).toBe(component);
+    expect(searchFilterData.typeFilter).toBeDefined();
+
+    // Test that typeFilter works correctly with config types
+    expect(searchFilterData.typeFilter!(['software-catalog'])).toBe(true);
+    expect(searchFilterData.typeFilter!(['techdocs'])).toBe(true);
+    expect(searchFilterData.typeFilter!(['other-type'])).toBe(false);
+    expect(
+      searchFilterData.typeFilter!(['software-catalog', 'other-type']),
+    ).toBe(true);
+  });
+
+  it('should use params typeFilter when config types are not provided', () => {
+    const mockTypeFilter = jest.fn().mockReturnValue(true);
+
+    const extension = SearchFilterBlueprint.make({
+      name: 'test',
+      params: {
+        component: props => <p {...props}>Test Filter</p>,
+        typeFilter: mockTypeFilter,
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+    const searchFilterData = tester.get(
+      SearchFilterBlueprint.dataRefs.searchFilters,
+    );
+
+    expect(searchFilterData.typeFilter).toBe(mockTypeFilter);
+  });
+
+  it('should use params typeFilter when config types is empty', () => {
+    const mockTypeFilter = jest.fn().mockReturnValue(true);
+
+    const extension = SearchFilterBlueprint.make({
+      name: 'test',
+      params: {
+        component: props => <p {...props}>Test Filter</p>,
+        typeFilter: mockTypeFilter,
+      },
+    });
+
+    const tester = createExtensionTester(extension, {
+      config: { types: [] },
+    });
+    const searchFilterData = tester.get(
+      SearchFilterBlueprint.dataRefs.searchFilters,
+    );
+
+    expect(searchFilterData.typeFilter).toBe(mockTypeFilter);
+  });
+
+  it('should have no typeFilter when neither config types nor params typeFilter are provided', () => {
+    const extension = SearchFilterBlueprint.make({
+      name: 'test',
+      params: {
+        component: props => <p {...props}>Test Filter</p>,
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+    const searchFilterData = tester.get(
+      SearchFilterBlueprint.dataRefs.searchFilters,
+    );
+
+    expect(searchFilterData.typeFilter).toBe(undefined);
+  });
+
+  it('should prioritize config types over params typeFilter', () => {
+    const mockTypeFilter = jest.fn().mockReturnValue(false);
+
+    const extension = SearchFilterBlueprint.make({
+      name: 'test',
+      params: {
+        component: props => <p {...props}>Test Filter</p>,
+        typeFilter: mockTypeFilter,
+      },
+    });
+
+    const tester = createExtensionTester(extension, {
+      config: { types: ['software-catalog'] },
+    });
+    const searchFilterData = tester.get(
+      SearchFilterBlueprint.dataRefs.searchFilters,
+    );
+
+    // Should use config-based typeFilter, not the params one
+    expect(searchFilterData.typeFilter).not.toBe(mockTypeFilter);
+    expect(searchFilterData.typeFilter!(['software-catalog'])).toBe(true);
+    expect(searchFilterData.typeFilter!(['other-type'])).toBe(false);
   });
 
   it('should render filter components', async () => {
