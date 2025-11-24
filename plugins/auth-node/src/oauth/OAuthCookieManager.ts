@@ -189,7 +189,7 @@ export class OAuthCookieManager {
       const { hostname: domain } = new URL(this.options.callbackUrl);
       output = output.cookie(name, '', {
         ...this.getRemoveCookieOptions(),
-        domain: `.${domain}`,
+        domain: domain,
       });
     }
 
