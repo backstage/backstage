@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../system';
 import { FrontendPlugin, Extension, ExtensionDataRef } from '../../wiring';
 import { ExtensionAttachTo } from '../../wiring/resolveExtensionDefinition';
 

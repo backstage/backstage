@@ -5,9 +5,7 @@
     "role": "web-library"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -16,8 +14,19 @@
   },
   "license": "Apache-2.0",
   "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
@@ -31,8 +40,9 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
-    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.4",

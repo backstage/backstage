@@ -16,7 +16,7 @@
 
 import { createExtensionInput } from '../wiring';
 import { ApiBlueprint } from './ApiBlueprint';
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../apis/system';
 
 describe('ApiBlueprint', () => {
   it('should create an extension with sensible defaults', () => {

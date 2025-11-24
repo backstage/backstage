@@ -51,6 +51,7 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "history": "^5.0.0",
@@ -59,7 +60,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
-    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",

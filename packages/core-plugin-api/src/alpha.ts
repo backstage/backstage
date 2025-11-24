@@ -14,5 +14,26 @@
  * limitations under the License.
  */
 
-export * from './translation';
-export * from './apis/alpha';
+// Translation exports
+export {
+  type TranslationMessages,
+  type TranslationMessagesOptions,
+  createTranslationMessages,
+  type TranslationResource,
+  type TranslationResourceOptions,
+  createTranslationResource,
+  type TranslationRef,
+  type TranslationRefOptions,
+  createTranslationRef,
+  useTranslationRef,
+} from '@backstage/frontend-plugin-api';
+
+// API definition exports
+export {
+  appLanguageApiRef,
+  type AppLanguageApi,
+  translationApiRef,
+  type TranslationApi,
+  type TranslationFunction,
+  type TranslationSnapshot,
+} from '@backstage/frontend-plugin-api';

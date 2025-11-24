@@ -19,7 +19,7 @@ import {
   TranslationResource,
 } from './TranslationResource';
 
-/** @alpha */
+/** @public */
 export interface TranslationRef<
   TId extends string = string,
   TMessages extends { [key in string]: string } = { [key in string]: string },
@@ -83,7 +83,7 @@ export interface InternalTranslationRef<
   getDefaultResource(): TranslationResource | undefined;
 }
 
-/** @alpha */
+/** @public */
 export interface TranslationRefOptions<
   TId extends string,
   TNestedMessages extends AnyNestedMessages,
@@ -164,7 +164,7 @@ class TranslationRefImpl<
   }
 }
 
-/** @alpha */
+/** @public */
 export function createTranslationRef<
   TId extends string,
   const TNestedMessages extends AnyNestedMessages,
