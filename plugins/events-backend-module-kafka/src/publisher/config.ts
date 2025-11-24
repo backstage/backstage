@@ -21,6 +21,8 @@ export interface KafkaConsumerConfig {
   backstageTopic: string;
   consumerConfig: ConsumerConfig;
   consumerSubscribeTopics: ConsumerSubscribeTopics;
+  autoCommit: boolean;
+  pauseOnError: boolean;
 }
 
 export interface KafkaEventSourceConfig {
@@ -132,7 +134,12 @@ export const readConfig = (
         },
         consumerSubscribeTopics: {
           topics: topic.getStringArray('kafka.topics'),
+          fromBeginning: topic.getOptionalBoolean('kafka.fromBeginning'),
         },
+        // Default autoCommit to true to match KafkaJS default and ensure consistency
+        // between KafkaJS's auto-commit behavior and our manual commit logic
+        autoCommit: topic.getOptionalBoolean('kafka.autoCommit') ?? true,
+        pauseOnError: topic.getOptionalBoolean('kafka.pauseOnError') ?? false,
       };
     });
 
