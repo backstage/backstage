@@ -676,8 +676,6 @@ createApp({
         AppRootWrapperBlueprint.make({
           name: 'custom-app-barrier',
           params: {
-            // Whenever your component uses legacy core packages, wrap it with "compatWrapper"
-            // e.g. props => compatWrapper(<CustomAppBarrier {...props} />)
             Component: CustomAppBarrier,
           },
         }),
@@ -700,41 +698,37 @@ import { SidebarContent } from './Sidebar';
 
 export const navModule = createFrontendModule({
   pluginId: 'app',
-  extensions: [SidebarContent],
+  extensions: [sidebarContent],
 });
 ```
 
-Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where the component that is passed to the `compatWrapper` is the entire `Sidebar` component from your `Root` component.
-
-The `compatWrapper` is there to ensure that any legacy plugins using things like `useRouteRef` work well in the new system, so if you run into some errors which look like compatibility issues, make sure that this wrapper is used in the relevant places.
+Then in the actual implementation for the `sidebarContent` extension, you can provide something like the following, where you implement the entire `Sidebar` component.
 
 ```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
-import { compatWrapper } from '@backstage/core-compat-api';
 import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
 
-export const SidebarContent = NavContentBlueprint.make({
+export const sidebarContent = NavContentBlueprint.make({
   params: {
-    component: ({ items }) =>
-      compatWrapper(
-        <Sidebar>
-          <SidebarLogo />
-          <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-            <SidebarSearchModal />
-          </SidebarGroup>
-          <SidebarDivider />
-          <SidebarGroup label="Menu" icon={<MenuIcon />}>
-            ...
-          </SidebarGroup>
-          <SidebarGroup label="Plugins">
-            <SidebarScrollWrapper>
-              {/* Items in this group will be scrollable if they run out of space */}
-              {items.map((item, index) => (
-                <SidebarItem {...item} key={index} />
-              ))}
-            </SidebarScrollWrapper>
-          </SidebarGroup>
-        </Sidebar>,
-      ),
+    component: ({ items }) => (
+      <Sidebar>
+        <SidebarLogo />
+        <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+        </SidebarGroup>
+        <SidebarDivider />
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          ...
+        </SidebarGroup>
+        <SidebarGroup label="Plugins">
+          <SidebarScrollWrapper>
+            {/* Items in this group will be scrollable if they run out of space */}
+            {items.map((item, index) => (
+              <SidebarItem {...item} key={index} />
+            ))}
+          </SidebarScrollWrapper>
+        </SidebarGroup>
+      </Sidebar>
+    ),
   },
 });
 ```

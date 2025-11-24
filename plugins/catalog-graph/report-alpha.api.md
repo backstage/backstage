@@ -12,11 +12,12 @@ import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -53,11 +54,14 @@ const _default: OverridableFrontendPlugin<
     catalogGraph: RouteRef<undefined>;
   },
   {
-    catalogEntity: ExternalRouteRef<{
-      name: string;
-      kind: string;
-      namespace: string;
-    }>;
+    catalogEntity: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
   },
   {
     'api:catalog-graph': OverridableExtensionDefinition<{
@@ -187,7 +191,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -208,7 +212,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
   }
