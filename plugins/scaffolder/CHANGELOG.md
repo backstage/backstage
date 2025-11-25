@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder
 
+## 1.34.4
+
+### Patch Changes
+
+- Added default ordering to the `EntityPicker` (and therefore `OwnerPicker`) so that catalog results are returned in a stable alphabetical order even when `catalog.enableRelationsCompatibility` is disabled. We can override this ordering by supplying `ui:options.orderFields` in your template schema.
+
 ## 1.34.3
 
 ### Patch Changes

@@ -43,6 +43,10 @@ export const OwnerPicker = (props: OwnerPickerProps) => {
   const catalogFilter = uiSchema['ui:options']?.catalogFilter || {
     kind: allowedKinds || ['Group', 'User'],
   };
+  const orderFields = uiSchema['ui:options']?.orderFields || [
+    { field: 'spec.profile.displayName', order: 'asc' },
+    { field: 'metadata.name', order: 'asc' },
+  ];
 
   const ownerUiSchema = {
     ...uiSchema,
@@ -51,6 +55,7 @@ export const OwnerPicker = (props: OwnerPickerProps) => {
       defaultKind: 'Group',
       allowArbitraryValues:
         uiSchema['ui:options']?.allowArbitraryValues ?? true,
+      orderFields,
       ...(defaultNamespace !== undefined ? { defaultNamespace } : {}),
     },
   };
