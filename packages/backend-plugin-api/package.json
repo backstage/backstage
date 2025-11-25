@@ -60,6 +60,7 @@
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@mikro-orm/core": "^6.6.1",
     "@types/express": "^4.17.6",
     "@types/json-schema": "^7.0.6",
     "@types/luxon": "^3.0.0",

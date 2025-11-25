@@ -89,4 +89,5 @@ export type {
   RootInstanceMetadataService,
   RootInstanceMetadataServicePluginInfo,
 } from './RootInstanceMetadataService';
+export type { MikroOrmService } from './MikroOrmService';
 export { coreServices } from './coreServices';

@@ -28,6 +28,8 @@ import Keyv from 'keyv';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MikroORM } from '@mikro-orm/core';
+import { MikroOrmService } from '@backstage/backend-plugin-api';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
@@ -275,6 +277,16 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<LoggerService> | undefined,
       ) => ServiceMock<LoggerService>;
+  }
+  export function mikroOrm(options: { orm: MikroORM }): MikroOrmService;
+  // (undocumented)
+  export namespace mikroOrm {
+    const factory: (options?: {
+      orm: MikroORM;
+    }) => ServiceFactory<MikroOrmService, 'plugin', 'singleton'>;
+    const mock: (
+      partialImpl?: Partial<MikroOrmService> | undefined,
+    ) => ServiceMock<MikroOrmService>;
   }
   export function permissions(options?: {
     result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
