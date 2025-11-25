@@ -47,12 +47,15 @@ export const OwnerPicker = (props: OwnerPickerProps) => {
   const catalogFilter = uiSchema['ui:options']?.catalogFilter || {
     kind: allowedKinds || ['Group', 'User'],
   };
-  const orderFields: EntityPickerUiOptions['orderFields'] = uiSchema[
-    'ui:options'
-  ]?.orderFields || [
+
+  const defaultOrderFields: EntityPickerUiOptions['orderFields'] = [
     { field: 'spec.profile.displayName', order: 'asc' },
     { field: 'metadata.name', order: 'asc' },
   ];
+  const orderFields = Array.isArray(uiSchema['ui:options']?.orderFields)
+    ? (uiSchema['ui:options']
+        ?.orderFields as EntityPickerUiOptions['orderFields'])
+    : defaultOrderFields;
 
   const ownerUiSchema: EntityPickerProps['uiSchema'] = {
     ...uiSchema,
