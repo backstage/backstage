@@ -1,12 +1,5 @@
 import { releases } from './releases';
-
-function tryToLoadCustomSidebar(ref) {
-  try {
-    return require(ref);
-  } catch (e) {
-    return [];
-  }
-}
+import { tryToLoadCustomSidebar } from './helper';
 
 const catalogSidebar = tryToLoadCustomSidebar(
   '../docs/features/software-catalog/api/sidebar.ts',
