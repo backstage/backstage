@@ -16,7 +16,7 @@ However, you are also able to manually unregister an entity from the catalog or 
 
 ## Unregistering an entity
 
-You can unregister an entity so it will not be displayed in the Catalog but still keep its catalog-info.yaml file in the repository. This provides the ability to register the entity with the Catalog again in the future.
+You can unregister an entity so it will not be displayed in the Catalog but still keep its `catalog-info.yaml` file in the repository. This provides the ability to register the entity with the Catalog again in the future.
 
 To unregister an entity:
 
@@ -42,7 +42,7 @@ To delete an entity:
 
    - catalog-info.yaml
    - index.js
-   - packaage.json
+   - package.json
 
 2. In the Backstage App Catalog view, select the entity being deleted. In this example, `mytutorial` is being deleted.
 
@@ -64,3 +64,4 @@ To delete an entity:
    ![Screenshot of selecting delete entity.](../assets/uiguide/select-delete-entity.png)
 
 A confirmation message that the entity has been successfully deleted is briefly displayed.The entity is no longer displayed in the Catalog.
+
