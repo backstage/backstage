@@ -17,44 +17,57 @@ import { render } from '@testing-library/react';
 
 import { ErrorList } from './ErrorList';
 import { Pod } from 'kubernetes-models/v1';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('ErrorList', () => {
+  const translationApi = mockApis.translation();
+  const errorApi = { post: jest.fn(), error$: jest.fn() };
+
   it('error highlight should render', () => {
     const { getByText } = render(
-      <ErrorList
-        podAndErrors={[
-          {
-            cluster: { name: 'some-cluster' },
-            pod: {
-              metadata: {
-                name: 'some-pod',
-                namespace: 'some-namespace',
-              },
-            } as Pod,
-            errors: [
-              {
-                type: 'some-error',
-                severity: 10,
-                message: 'some error message',
-                occurrenceCount: 1,
-                sourceRef: {
+      <TestApiProvider
+        apis={[
+          [translationApiRef, translationApi],
+          [errorApiRef, errorApi],
+        ]}
+      >
+        <ErrorList
+          podAndErrors={[
+            {
+              cluster: { name: 'some-cluster' },
+              pod: {
+                metadata: {
                   name: 'some-pod',
                   namespace: 'some-namespace',
-                  kind: 'Pod',
-                  apiGroup: 'v1',
                 },
-                proposedFix: {
-                  type: 'logs',
-                  container: 'some-container',
-                  errorType: 'some error type',
-                  rootCauseExplanation: 'some root cause',
-                  actions: ['fix1', 'fix2'],
+              } as Pod,
+              errors: [
+                {
+                  type: 'some-error',
+                  severity: 10,
+                  message: 'some error message',
+                  occurrenceCount: 1,
+                  sourceRef: {
+                    name: 'some-pod',
+                    namespace: 'some-namespace',
+                    kind: 'Pod',
+                    apiGroup: 'v1',
+                  },
+                  proposedFix: {
+                    type: 'logs',
+                    container: 'some-container',
+                    errorType: 'some error type',
+                    rootCauseExplanation: 'some root cause',
+                    actions: ['fix1', 'fix2'],
+                  },
                 },
-              },
-            ],
-          },
-        ]}
-      />,
+              ],
+            },
+          ]}
+        />
+      </TestApiProvider>,
     );
     expect(getByText('some-pod')).toBeInTheDocument();
     expect(getByText('some error message')).toBeInTheDocument();
