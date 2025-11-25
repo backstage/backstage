@@ -1,5 +1,18 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 79ef471: Clarify error handling in readme and update handleError.ts to include all backstage/errors
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.1.5
 
 ### Patch Changes

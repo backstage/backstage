@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.19.3-next.0
+
+### Patch Changes
+
+- 97cd16f: Internal update of translation imports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 1.19.2
 
 ### Patch Changes
