@@ -575,3 +575,4 @@ zoomable
 zsh
 resizable
 enums
+patcher
