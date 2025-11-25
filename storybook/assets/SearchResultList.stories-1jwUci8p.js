@@ -1,0 +1,75 @@
+import{j as e,T as h,r as o}from"./iframe-DVllq_JJ.js";import{s as y,M as S}from"./api-CuPwg010.js";import{c as L}from"./SearchResult-6NSDeWcU.js";import{S as s}from"./SearchResultList-C7jxeYjc.js";import{S as R}from"./Grid-GLf92srY.js";import{S as q}from"./SearchContext-CaUhcdO1.js";import{L as f}from"./ListItemText-C9klhbSR.js";import{H as x}from"./DefaultResultListItem-BkWHsgTS.js";import{C as j}from"./icons-CG4ski2O.js";import{L as P}from"./ListItem-DLfoHZ9h.js";import{L as C}from"./ListItemIcon-YeiYafbr.js";import{w,c as A}from"./appWrappers-C9euYDcG.js";import{c as _}from"./Plugin-DZCzK3PC.js";import{L as W}from"./Link-Dfj65VZ1.js";import"./preload-helper-D9Z9MdNV.js";import"./useAsync-2B4YlYUd.js";import"./useMountedState-CAQUPkod.js";import"./lodash-CwBbdt2Q.js";import"./List-B5MAQ6Y4.js";import"./ListContext-DE_PmqSG.js";import"./useElementFilter-T0HMKVXR.js";import"./componentData-ir7sX7tS.js";import"./useAnalytics-gDAqv4j8.js";import"./translation-Cmglqo59.js";import"./EmptyState-Dxiok2Gr.js";import"./Progress-DB4UOi34.js";import"./LinearProgress-CF1c1hdt.js";import"./Box-DvszX2T2.js";import"./styled-DfELtcUs.js";import"./ResponseErrorPanel-HgW860PY.js";import"./ErrorPanel-Yv09NjH-.js";import"./WarningPanel-CTVbrDnl.js";import"./ExpandMore-DeLbxlk1.js";import"./AccordionDetails-Df6QxQno.js";import"./index-DnL3XN75.js";import"./Collapse-BPkQPj1V.js";import"./MarkdownContent-C4WJ4LoY.js";import"./CodeSnippet-pYWcNvfR.js";import"./CopyTextButton-DyV_pNjJ.js";import"./useCopyToClipboard-DQH_xRRB.js";import"./Tooltip-CArIk1uN.js";import"./Popper-Bc5fPVw6.js";import"./Portal-BdFeljN4.js";import"./Divider-CjoboeOw.js";import"./useApp-CkFK6AHh.js";import"./useObservable-cKfOObA8.js";import"./useIsomorphicLayoutEffect-DMTlV3dY.js";import"./isSymbol-DhO4cmIY.js";import"./isObject--vsEa_js.js";import"./toString-Cr1IARFv.js";import"./index-CuC9x3hw.js";import"./useRouteRef-Dq-yTMyo.js";const v=A({id:"storybook.search.results.list.route"}),N=new S({results:[{type:"techdocs",document:{location:"search/search-result1",title:"Search Result 1",text:"Some text from the search result 1"}},{type:"custom",document:{location:"search/search-result2",title:"Search Result 2",text:"Some text from the search result 2"}}]}),Ne={title:"Plugins/Search/SearchResultList",component:s,decorators:[t=>w(e.jsx(h,{apis:[[y,N]],children:e.jsx(R,{container:!0,direction:"row",children:e.jsx(R,{item:!0,xs:12,children:e.jsx(t,{})})})}),{mountedRoutes:{"/":v}})]},i=()=>e.jsx(q,{children:e.jsx(s,{})}),a=()=>{const[t]=o.useState({types:["techdocs"]});return e.jsx(s,{query:t})},c=()=>{const[t]=o.useState({types:["techdocs"]});return e.jsx(h,{apis:[[y,{query:()=>new Promise(()=>{})}]],children:e.jsx(s,{query:t})})},u=()=>{const[t]=o.useState({types:["techdocs"]});return e.jsx(h,{apis:[[y,{query:()=>new Promise(()=>{throw new Error})}]],children:e.jsx(s,{query:t})})},m=()=>{const[t]=o.useState({types:["techdocs"]});return e.jsx(h,{apis:[[y,new S]],children:e.jsx(s,{query:t})})},p=()=>{const[t]=o.useState({types:["techdocs"]});return e.jsx(h,{apis:[[y,new S]],children:e.jsx(s,{query:t,noResultsComponent:e.jsx(f,{primary:"No results were found"})})})},D=t=>{const{icon:n,result:r}=t;return e.jsx(W,{to:r.location,children:e.jsxs(P,{alignItems:"flex-start",divider:!0,children:[n&&e.jsx(C,{children:n}),e.jsx(f,{primary:r.title,primaryTypographyProps:{variant:"h6"},secondary:r.text})]})})},l=()=>{const[t]=o.useState({types:["custom"]});return e.jsx(s,{query:t,renderResultItem:({type:n,document:r,highlight:g,rank:I})=>{switch(n){case"custom":return e.jsx(D,{icon:e.jsx(j,{}),result:r,highlight:g,rank:I},r.location);default:return e.jsx(x,{result:r},r.location)}}})},d=()=>{const[t]=o.useState({types:["techdocs"]}),r=_({id:"plugin"}).provide(L({name:"DefaultResultListItem",component:async()=>x}));return e.jsx(s,{query:t,children:e.jsx(r,{})})};i.__docgenInfo={description:"",methods:[],displayName:"Default"};a.__docgenInfo={description:"",methods:[],displayName:"WithQuery"};c.__docgenInfo={description:"",methods:[],displayName:"Loading"};u.__docgenInfo={description:"",methods:[],displayName:"WithError"};m.__docgenInfo={description:"",methods:[],displayName:"WithDefaultNoResultsComponent"};p.__docgenInfo={description:"",methods:[],displayName:"WithCustomNoResultsComponent"};l.__docgenInfo={description:"",methods:[],displayName:"WithCustomResultItem"};d.__docgenInfo={description:"",methods:[],displayName:"WithResultItemExtensions"};i.parameters={...i.parameters,docs:{...i.parameters?.docs,source:{originalSource:`() => {
+  return <SearchContextProvider>
+      <SearchResultList />
+    </SearchContextProvider>;
+}`,...i.parameters?.docs?.source}}};a.parameters={...a.parameters,docs:{...a.parameters?.docs,source:{originalSource:`() => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs']
+  });
+  return <SearchResultList query={query} />;
+}`,...a.parameters?.docs?.source}}};c.parameters={...c.parameters,docs:{...c.parameters?.docs,source:{originalSource:`() => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs']
+  });
+  return <TestApiProvider apis={[[searchApiRef, {
+    query: () => new Promise<SearchResultSet>(() => {})
+  }]]}>
+      <SearchResultList query={query} />
+    </TestApiProvider>;
+}`,...c.parameters?.docs?.source}}};u.parameters={...u.parameters,docs:{...u.parameters?.docs,source:{originalSource:`() => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs']
+  });
+  return <TestApiProvider apis={[[searchApiRef, {
+    query: () => new Promise<SearchResultSet>(() => {
+      throw new Error();
+    })
+  }]]}>
+      <SearchResultList query={query} />
+    </TestApiProvider>;
+}`,...u.parameters?.docs?.source}}};m.parameters={...m.parameters,docs:{...m.parameters?.docs,source:{originalSource:`() => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs']
+  });
+  return <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+      <SearchResultList query={query} />
+    </TestApiProvider>;
+}`,...m.parameters?.docs?.source}}};p.parameters={...p.parameters,docs:{...p.parameters?.docs,source:{originalSource:`() => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs']
+  });
+  return <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+      <SearchResultList query={query} noResultsComponent={<ListItemText primary="No results were found" />} />
+    </TestApiProvider>;
+}`,...p.parameters?.docs?.source}}};l.parameters={...l.parameters,docs:{...l.parameters?.docs,source:{originalSource:`() => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['custom']
+  });
+  return <SearchResultList query={query} renderResultItem={({
+    type,
+    document,
+    highlight,
+    rank
+  }) => {
+    switch (type) {
+      case 'custom':
+        return <CustomResultListItem key={document.location} icon={<CatalogIcon />} result={document} highlight={highlight} rank={rank} />;
+      default:
+        return <DefaultResultListItem key={document.location} result={document} />;
+    }
+  }} />;
+}`,...l.parameters?.docs?.source}}};d.parameters={...d.parameters,docs:{...d.parameters?.docs,source:{originalSource:`() => {
+  const [query] = useState<Partial<SearchQuery>>({
+    types: ['techdocs']
+  });
+  const plugin = createPlugin({
+    id: 'plugin'
+  });
+  const DefaultSearchResultListItem = plugin.provide(createSearchResultListItemExtension({
+    name: 'DefaultResultListItem',
+    component: async () => DefaultResultListItem
+  }));
+  return <SearchResultList query={query}>
+      <DefaultSearchResultListItem />
+    </SearchResultList>;
+}`,...d.parameters?.docs?.source}}};const De=["Default","WithQuery","Loading","WithError","WithDefaultNoResultsComponent","WithCustomNoResultsComponent","WithCustomResultItem","WithResultItemExtensions"];export{i as Default,c as Loading,p as WithCustomNoResultsComponent,l as WithCustomResultItem,m as WithDefaultNoResultsComponent,u as WithError,a as WithQuery,d as WithResultItemExtensions,De as __namedExportsOrder,Ne as default};
