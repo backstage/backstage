@@ -236,4 +236,11 @@ export class AzureUrl {
   getRef(): string | undefined {
     return this.#ref;
   }
+
+  /**
+   * Returns the git prefix in the repo if the URL contains one.
+   */
+  getPrefix(): string | undefined {
+    return this.#prefix;
+  }
 }
