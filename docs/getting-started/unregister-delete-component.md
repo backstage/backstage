@@ -14,13 +14,13 @@ URLs to YAML files that you registered either using the `Create` button or by ad
 
 However, you are also able to manually unregister an entity from the catalog or perform a direct, [explicit deletion](../features/software-catalog/life-of-an-entity.md#explicit-deletion), of individual entities. This is especially useful for removing [orphaned entities](../features/software-catalog/life-of-an-entity.md#orphaning).
 
-## Unregisteing an entity
+## Unregistering an entity
 
-You can unregister an entity so it will not be displayed in the Catalog but still keep its catalog-info.yaml file in the repository. This provides the ability to register the entity again in the future.
+You can unregister an entity so it will not be displayed in the Catalog but still keep its catalog-info.yaml file in the repository. This provides the ability to register the entity with the Catalog again in the future.
 
 To unregister an entity:
 
-1. In the Catalog, select the entity you want to delete. In this example, `mytutorial` is being deleted.
+1. In the Catalog, select the entity you want to unregister. In this example, `mytutorial` is being unregistered.
 
 2. Select the three dots.
 3. Select `Unregister entity` in the dropdown menu.
