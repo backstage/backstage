@@ -269,7 +269,7 @@ export function readGeneratorConfig(
       'techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys',
     ),
     disableExternalFonts: config.getOptionalBoolean(
-      'techdocs.generator.mkdocs.disableExternalFonts'
+      'techdocs.generator.mkdocs.disableExternalFonts',
     ),
   };
 }

@@ -71,6 +71,11 @@ export function registerCommands(program: Command) {
       false,
     )
     .option(
+      '--disableExternalFonts',
+      'Disable external font downloads for all TechDocs sites. Useful for air-gapped environments where Google fonts cannot be accessed.',
+      false,
+    )
+    .option(
       '--defaultPlugin [defaultPlugins...]',
       'Plugins which should be added automatically to the mkdocs.yaml file',
       [],

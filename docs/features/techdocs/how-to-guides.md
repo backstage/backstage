@@ -593,6 +593,18 @@ only adds `font: false` when the `font` property is not already configured.
 
 :::
 
+#### Using techdocs-cli in CI/CD
+
+When generating TechDocs sites in CI/CD workflows using `techdocs-cli`, you can
+use the `--disableExternalFonts` flag:
+
+```bash
+techdocs-cli generate --disableExternalFonts
+```
+
+This will automatically patch the `mkdocs.yml` file during the generation
+process, just like the `app-config.yaml` option does for local generation.
+
 ## How to enable iframes in TechDocs
 
 TechDocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) library to

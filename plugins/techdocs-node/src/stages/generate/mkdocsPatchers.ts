@@ -210,14 +210,25 @@ export const patchMkdocsYmlWithFontDisabled = async (
       return true;
     }
 
-    // Theme section exists, check if font is not configured, add font: false
+    // Theme section exists. Only modify it when the configured theme is Material
     if (
       mkdocsYml.theme &&
       typeof mkdocsYml.theme === 'object' &&
+      (mkdocsYml.theme as any).name === MATERIAL_THEME &&
       !('font' in mkdocsYml.theme)
     ) {
       mkdocsYml.theme.font = false;
       return true;
+    }
+
+    if (
+      mkdocsYml.theme &&
+      typeof mkdocsYml.theme === 'object' &&
+      (mkdocsYml.theme as any).name !== MATERIAL_THEME
+    ) {
+      logger.debug(
+        'mkdocs.yml theme is not "material"; skipping font disabling patch',
+      );
     }
 
     return false;
@@ -288,4 +299,3 @@ export const sanitizeMkdocsYml = async (
     return true;
   });
 };
-
