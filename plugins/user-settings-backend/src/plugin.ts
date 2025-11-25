@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
-import { DatabaseUserSettingsStore } from './database/DatabaseUserSettingsStore';
+import { MikroOrmUserSettingsStore } from './database/MikroOrmUserSettingsStore';
 
 /**
  * The user settings backend plugin.
@@ -32,14 +32,14 @@ export default createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        database: coreServices.database,
+        mikroOrm: coreServices.mikroOrm,
         httpAuth: coreServices.httpAuth,
         httpRouter: coreServices.httpRouter,
         signals: signalsServiceRef,
       },
-      async init({ database, httpAuth, httpRouter, signals }) {
-        const userSettingsStore = await DatabaseUserSettingsStore.create({
-          database,
+      async init({ mikroOrm, httpAuth, httpRouter, signals }) {
+        const userSettingsStore = await MikroOrmUserSettingsStore.create({
+          mikroOrm,
         });
         httpRouter.use(
           await createRouter({ userSettingsStore, httpAuth, signals }),

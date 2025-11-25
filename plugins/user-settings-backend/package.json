@@ -55,6 +55,7 @@
     "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/plugin-user-settings-common": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@mikro-orm/core": "^6.6.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0"
@@ -63,6 +64,8 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@mikro-orm/better-sqlite": "^6.6.1",
+    "@mikro-orm/postgresql": "^6.6.1",
     "@types/express": "^4.17.6",
     "@types/supertest": "^2.0.8",
     "supertest": "^7.0.0"
