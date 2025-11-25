@@ -76,6 +76,12 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    orderFields?:
+      | {
+          field: string;
+          order?: 'desc' | 'asc' | undefined;
+        }[]
+      | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -105,6 +111,12 @@ export const EntityPickerFieldSchema: FieldSchema_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    orderFields?:
+      | {
+          field: string;
+          order?: 'desc' | 'asc' | undefined;
+        }[]
+      | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -251,6 +263,12 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    orderFields?:
+      | {
+          field: string;
+          order?: 'desc' | 'asc' | undefined;
+        }[]
+      | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -280,6 +298,12 @@ export const OwnedEntityPickerFieldSchema: FieldSchema_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    orderFields?:
+      | {
+          field: string;
+          order?: 'desc' | 'asc' | undefined;
+        }[]
+      | undefined;
     catalogFilter?:
       | Record<
           string,
