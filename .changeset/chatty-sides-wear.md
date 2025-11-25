@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-graph': patch
 ---
 
-fix zoom out description (replace &amp; with &)
+Fixed zoom out description (replace `&amp;` with &)
