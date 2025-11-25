@@ -12,7 +12,8 @@ const scaffolderSidebar = tryToLoadCustomSidebar(
 );
 
 export default {
-  docs:[ {
+  docs: [
+    {
       type: 'category',
       label: 'Overview',
       link: { type: 'generated-index', title: 'Overview', slug: '/overview' },
@@ -25,7 +26,7 @@ export default {
         'overview/versioning-policy',
       ],
     },
-     {
+    {
       type: 'category',
       label: 'Getting Started',
       link: {
@@ -83,7 +84,7 @@ export default {
         'getting-started/keeping-backstage-updated',
       ],
     },
-     {
+    {
       type: 'category',
       label: 'Core Features',
       link: {
@@ -302,7 +303,7 @@ export default {
         },
       ],
     },
-     {
+    {
       type: 'category',
       label: 'Integrations',
       link: {
@@ -439,7 +440,7 @@ export default {
         },
       ],
     },
-     {
+    {
       type: 'category',
       label: 'Plugins',
       link: { type: 'generated-index', title: 'Plugins', slug: '/plugins' },
@@ -501,7 +502,7 @@ export default {
         },
       ],
     },
-     {
+    {
       type: 'category',
       label: 'Configuration',
       link: {
@@ -511,7 +512,7 @@ export default {
       },
       items: ['conf/index', 'conf/reading', 'conf/writing', 'conf/defining'],
     },
-     {
+    {
       type: 'category',
       label: 'Framework',
       link: { type: 'generated-index', title: 'Framework', slug: '/framework' },
@@ -784,13 +785,13 @@ export default {
         },
       ],
     },
-     {
+    {
       type: 'category',
       label: 'FAQ',
       link: { type: 'generated-index', title: 'FAQ', slug: '/faq' },
       items: ['faq/index', 'faq/product', 'faq/technical'],
     },
-     {
+    {
       type: 'category',
       label: 'Contribute',
       link: {
@@ -804,7 +805,7 @@ export default {
         'contribute/project-structure',
       ],
     },
-     {
+    {
       type: 'category',
       label: 'References',
       link: {
@@ -861,43 +862,44 @@ export default {
       ],
     },
     {
-    ...(process.env.GOLDEN_PATH
-      ? {
-          'Golden Paths': [
-            {
-              type: 'category',
-              label: '001 - create-app',
-              items: [
-                'golden-path/create-app/index',
-                'golden-path/create-app/npx-create-app',
-                'golden-path/create-app/local-development',
-                'golden-path/create-app/installing-plugins',
-                'golden-path/create-app/logging-in',
-                'golden-path/create-app/custom-theme',
-                'golden-path/create-app/keeping-backstage-updated',
-              ],
-            },
-            {
-              type: 'category',
-              label: '002 - Plugins',
-              items: [
-                'golden-path/plugins/index',
-                'golden-path/plugins/why-build-plugins',
-                'golden-path/plugins/sustainable-plugin-development',
-                {
-                  type: 'category',
-                  label: 'Backend Plugins',
-                  items: [
-                    'golden-path/plugins/backend/001-first-steps',
-                    'golden-path/plugins/backend/002-poking-around',
-                  ],
-                },
-              ],
-            },
-          ],
-        }
-      : {}),
-  }],
+      ...(process.env.GOLDEN_PATH
+        ? {
+            'Golden Paths': [
+              {
+                type: 'category',
+                label: '001 - create-app',
+                items: [
+                  'golden-path/create-app/index',
+                  'golden-path/create-app/npx-create-app',
+                  'golden-path/create-app/local-development',
+                  'golden-path/create-app/installing-plugins',
+                  'golden-path/create-app/logging-in',
+                  'golden-path/create-app/custom-theme',
+                  'golden-path/create-app/keeping-backstage-updated',
+                ],
+              },
+              {
+                type: 'category',
+                label: '002 - Plugins',
+                items: [
+                  'golden-path/plugins/index',
+                  'golden-path/plugins/why-build-plugins',
+                  'golden-path/plugins/sustainable-plugin-development',
+                  {
+                    type: 'category',
+                    label: 'Backend Plugins',
+                    items: [
+                      'golden-path/plugins/backend/001-first-steps',
+                      'golden-path/plugins/backend/002-poking-around',
+                    ],
+                  },
+                ],
+              },
+            ],
+          }
+        : {}),
+    },
+  ],
   releases: {
     'Release Notes': releases.map(release => `releases/${release}`),
   },
