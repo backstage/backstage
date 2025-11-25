@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 import { EntityPicker } from '../EntityPicker/EntityPicker';
+import type {
+  EntityPickerProps,
+  EntityPickerUiOptions,
+} from '../EntityPicker/schema';
 import { OwnerPickerProps } from './schema';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -43,12 +47,14 @@ export const OwnerPicker = (props: OwnerPickerProps) => {
   const catalogFilter = uiSchema['ui:options']?.catalogFilter || {
     kind: allowedKinds || ['Group', 'User'],
   };
-  const orderFields = uiSchema['ui:options']?.orderFields || [
+  const orderFields: EntityPickerUiOptions['orderFields'] = uiSchema[
+    'ui:options'
+  ]?.orderFields || [
     { field: 'spec.profile.displayName', order: 'asc' },
     { field: 'metadata.name', order: 'asc' },
   ];
 
-  const ownerUiSchema = {
+  const ownerUiSchema: EntityPickerProps['uiSchema'] = {
     ...uiSchema,
     'ui:options': {
       catalogFilter,
