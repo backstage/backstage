@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.14-next.0
+
+### Patch Changes
+
+- f15d5f1: add missing i18n support for kubernetes and kubernetes-react
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.8
+
 ## 0.5.13
 
 ### Patch Changes

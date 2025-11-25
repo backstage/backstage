@@ -1,5 +1,18 @@
 # @backstage/core-plugin-api
 
+## 1.12.1-next.0
+
+### Patch Changes
+
+- 358c6f7: The `useApp` and `useRouteRef` functions are now forwards compatible with the new frontend system. Along with the previous route reference changes this means that there is no longer a need to use `compatWrapper` from `@backstage/core-compat-api` to make code based on `@backstage/core-plugin-api` compatible with `@backstage/frontend-plugin-api` APIs.
+- 97cd16f: Reversed the relationship between the old `@backstage/core-plugin-api` and the new `@backstage/frontend-plugin-api`. Previously, the a lot of API definitions and utilities where defined in the old and re-exported from the old, but this change flips that around so that they now reside in the new package and are re-exported from the old. The external API of both packages remain the same, but this is a step towards being able to add further compatibility with the new frontend system built into the old.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 1.12.0
 
 ### Minor Changes

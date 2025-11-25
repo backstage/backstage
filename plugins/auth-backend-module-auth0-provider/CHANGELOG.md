@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.2.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+
 ## 0.2.9
 
 ### Patch Changes
