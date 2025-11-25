@@ -34,6 +34,10 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
+  "dependencies": {
+    "global-agent": "^3.0.0",
+    "undici": "^7.2.3"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/node": "^20.16.0"

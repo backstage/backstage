@@ -3141,6 +3141,8 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@types/node": "npm:^20.16.0"
+    global-agent: "npm:^3.0.0"
+    undici: "npm:^7.2.3"
   languageName: unknown
   linkType: soft
 
