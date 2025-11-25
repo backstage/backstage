@@ -23,13 +23,12 @@ To unregister an entity:
 1. In the Catalog, select the entity you want to unregister. In this example, `mytutorial` is being unregistered.
 
 2. Select the three dots.
+
 3. Select `Unregister entity` in the dropdown menu.
 
    ![Screenshot of selecting unregister entity.](../assets/uiguide/select-unregister-entity-from-three-dots.png)
 
-4. Select `UNREGISTER LOCATION`.
-
-   The entity is removed from the Catalog.
+4. Select `UNREGISTER LOCATION`. The entity is removed from the Catalog.
 
    ![Screenshot of confirming unregister entity.](../assets/uiguide/confirm-unregister-entity.png)
 
@@ -64,4 +63,4 @@ To delete an entity:
 
    ![Screenshot of selecting delete entity.](../assets/uiguide/select-delete-entity.png)
 
-   A confirmation message that the entity has been successfully deleted is briefly displayed.The entity is no longer displayed in the Catalog.
+A confirmation message that the entity has been successfully deleted is briefly displayed.The entity is no longer displayed in the Catalog.
