@@ -275,4 +275,3 @@ export const sanitizeMkdocsYml = async (
     return true;
   });
 };
-

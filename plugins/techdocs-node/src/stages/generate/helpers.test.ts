@@ -37,7 +37,7 @@ import {
   patchMkdocsYmlPreBuild,
   patchMkdocsYmlWithPlugins,
   sanitizeMkdocsYml,
-  patchMkdocsYmlWithFontDisabled
+  patchMkdocsYmlWithFontDisabled,
 } from './mkdocsPatchers';
 import yaml from 'js-yaml';
 

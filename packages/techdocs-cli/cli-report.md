@@ -27,6 +27,7 @@ Usage: techdocs-cli generate|build [options]
 
 Options:
   --defaultPlugin [defaultPlugins...]
+  --disableExternalFonts
   --docker-image <DOCKER_IMAGE>
   --etag <ETAG>
   --legacyCopyReadmeMdToIndexMd
