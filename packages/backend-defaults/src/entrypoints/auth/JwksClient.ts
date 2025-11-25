@@ -53,24 +53,28 @@ export class JwksClient {
     const header = await decodeProtectedHeader(rawJwtToken);
 
     // Refresh public keys if needed
-    let keyStoreHasKey;
+    let keyStoreHasKey = false;
     try {
       if (this.#keyStore) {
         // Check if the key is present in the keystore
         const [_, rawPayload, rawSignature] = rawJwtToken.split('.');
-        keyStoreHasKey = await this.#keyStore(header, {
+        keyStoreHasKey = !!(await this.#keyStore(header, {
           payload: rawPayload,
           signature: rawSignature,
-        });
+        }));
       }
     } catch (error) {
       keyStoreHasKey = false;
     }
     // Refresh public key URL if needed
+    // If keystore doesn't exist, always refresh
+    // If key is missing from keystore, refresh (regardless of iat timing) to handle
+    // cases where a new key was published to JWKS after the keystore was cached
+    // Also refresh if token was issued after last refresh (to catch newly published keys)
     // Add a small margin in case clocks are out of sync
     const issuedAfterLastRefresh =
       payload?.iat && payload.iat > this.#keyStoreUpdated - CLOCK_MARGIN_S;
-    if (!this.#keyStore || (!keyStoreHasKey && issuedAfterLastRefresh)) {
+    if (!this.#keyStore || !keyStoreHasKey || issuedAfterLastRefresh) {
       const endpoint = await this.getEndpoint();
       this.#keyStore = createRemoteJWKSet(endpoint);
       this.#keyStoreUpdated = Date.now() / 1000;

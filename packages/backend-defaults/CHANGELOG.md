@@ -1,5 +1,12 @@
 # @backstage/backend-defaults
 
+## 0.13.2
+
+### Patch Changes
+
+- Fix JWT signature verification failures when a freshly-published signing key (kid) is not present in the cached JWKS keystore. The keystore now refreshes deterministically when a token's kid is missing, regardless of token issuance time.
+- Fix invalid limited-user token creation when `payload.uip` is missing. `createLimitedUserToken` now returns the original token instead of creating an invalid token.
+
 ## 0.13.1
 
 ### Patch Changes
