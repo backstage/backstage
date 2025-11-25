@@ -22,7 +22,7 @@ jobs:
 
       # We need to checkout the `.github/ISSUE_TEMPLATE` for the advanced labeler action to be able to read the templates
       # While at it we might as well checkout all of `.github` so that the labeling actions don't need to fetch their configs
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           sparse-checkout: .github
 
