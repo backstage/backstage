@@ -1,5 +1,29 @@
 # @backstage/backend-defaults
 
+## 0.14.0-next.0
+
+### Minor Changes
+
+- fa43826: Move `better-sqlite3` from dependencies to peer dependencies
+
+### Patch Changes
+
+- d9759a1: **BREAKING ALPHA**: The old `instanceMetadataService` has been removed from alpha. Please switch over to using the stable `coreServices.rootInstanceMetadata` and related types instead, available from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-app-api@1.4.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/cli-node@0.2.16-next.0
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/config-loader@1.10.7-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.13.1
 
 ### Patch Changes

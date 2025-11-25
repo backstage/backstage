@@ -1,5 +1,19 @@
 # @backstage/plugin-notifications
 
+## 0.5.12-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-signals-react@0.0.18-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-notifications-common@0.2.0
+
 ## 0.5.11
 
 ### Patch Changes
