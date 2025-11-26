@@ -211,17 +211,6 @@ export async function getOrganizationUsers(
       }
     }`;
 
-  // Transformer to filter out suspended users, only for GitHub Enterprise instances.
-  const suspendedUserFilteringTransformer = async (
-    item: GithubUser,
-    ctx: TransformerContext,
-  ): Promise<Entity | undefined> => {
-    if (excludeSuspendedUsers && item.suspendedAt) {
-      return undefined;
-    }
-    return userTransformer(item, ctx);
-  };
-
   // There is no user -> teams edge, so we leave the memberships empty for
   // now and let the team iteration handle it instead
 
@@ -230,12 +219,13 @@ export async function getOrganizationUsers(
     query,
     org,
     r => r.organization?.membersWithRole,
-    suspendedUserFilteringTransformer,
+    userTransformer,
     {
       org,
       email: tokenType === 'token',
       organizationMembersPageSize: pageSizes.organizationMembers,
     },
+    u => (excludeSuspendedUsers ? !u.suspendedAt : true),
   );
 
   return { users };
@@ -772,6 +762,7 @@ export async function getTeamMembers(
  * @param transformer - A function that, given one of the nodes in the Connection,
  *               returns the model mapped form of it
  * @param variables - The variable values that the query needs, minus the cursor
+ * @param filter - An optional filter function to filter the nodes before transforming them
  */
 export async function queryWithPaging<
   GraphqlType,
@@ -788,6 +779,7 @@ export async function queryWithPaging<
     ctx: TransformerContext,
   ) => Promise<OutputType | undefined>,
   variables: Variables,
+  filter?: (item: GraphqlType) => boolean,
 ): Promise<OutputType[]> {
   const result: OutputType[] = [];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -805,6 +797,9 @@ export async function queryWithPaging<
     }
 
     for (const node of conn.nodes) {
+      if (filter && !filter(node)) {
+        continue;
+      }
       const transformedNode = await transformer(node, {
         client,
         query,
