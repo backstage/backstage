@@ -12501,8 +12501,8 @@ __metadata:
   linkType: hard
 
 "@openapitools/openapi-generator-cli@npm:^2.4.26, @openapitools/openapi-generator-cli@npm:^2.7.0":
-  version: 2.25.1
-  resolution: "@openapitools/openapi-generator-cli@npm:2.25.1"
+  version: 2.25.2
+  resolution: "@openapitools/openapi-generator-cli@npm:2.25.2"
   dependencies:
     "@nestjs/axios": "npm:4.0.1"
     "@nestjs/common": "npm:11.1.9"
@@ -12515,7 +12515,7 @@ __metadata:
     concurrently: "npm:9.2.1"
     console.table: "npm:0.10.0"
     fs-extra: "npm:11.3.2"
-    glob: "npm:12.0.0"
+    glob: "npm:13.0.0"
     inquirer: "npm:8.2.7"
     proxy-agent: "npm:6.5.0"
     reflect-metadata: "npm:0.2.2"
@@ -12523,7 +12523,7 @@ __metadata:
     tslib: "npm:2.8.1"
   bin:
     openapi-generator-cli: main.js
-  checksum: 10/4c414eb359de26c0b10e8cbec101298cfa1cc2745a36b982b95bb970a8260c3557fa0b2aa116fa5cb36e4b2e5146b81d7a75a2e5da71f1d529038304a02b59fc
+  checksum: 10/8a6e2990f4816aadb8ac6f390aeb169fe2f842f8874417dd288ea4b177af9238a7af59c699953e644d17eeb6c5d712faf63ce3bf9419e429e71504e2033de7b6
   languageName: node
   linkType: hard
 
@@ -31865,19 +31865,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:12.0.0":
-  version: 12.0.0
-  resolution: "glob@npm:12.0.0"
+"glob@npm:13.0.0":
+  version: 13.0.0
+  resolution: "glob@npm:13.0.0"
   dependencies:
-    foreground-child: "npm:^3.3.1"
-    jackspeak: "npm:^4.1.1"
     minimatch: "npm:^10.1.1"
     minipass: "npm:^7.1.2"
-    package-json-from-dist: "npm:^1.0.0"
     path-scurry: "npm:^2.0.0"
-  bin:
-    glob: dist/esm/bin.mjs
-  checksum: 10/6e21b3f1f1fa635836d45e54bbe50704884cc3e310e0cc011cfb5429db65a030e12936d99b07e66236370efe45dc8c8b26fa5334dbf555d6f8709e0315c77c30
+  checksum: 10/de390721d29ee1c9ea41e40ec2aa0de2cabafa68022e237dc4297665a5e4d650776f2573191984ea1640aba1bf0ea34eddef2d8cbfbfc2ad24b5fb0af41d8846
   languageName: node
   linkType: hard
 
