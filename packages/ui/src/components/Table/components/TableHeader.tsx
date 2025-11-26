@@ -28,7 +28,7 @@ import clsx from 'clsx';
 
 /** @public */
 export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
-  let { selectionBehavior, selectionMode, allowsDragging } = useTableOptions();
+  let { selectionBehavior, selectionMode } = useTableOptions();
 
   const { classNames, cleanedProps } = useStyles(TableDefinition, props);
   const { columns, children, ...rest } = cleanedProps;
@@ -38,8 +38,6 @@ export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
       className={clsx(classNames.header, styles[classNames.header])}
       {...rest}
     >
-      {/* Add extra columns for drag and drop and selection. */}
-      {allowsDragging && <Column />}
       {selectionBehavior === 'toggle' && (
         <Column>
           {selectionMode === 'multiple' && <Checkbox slot="selection" />}
