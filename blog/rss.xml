@@ -4,17 +4,105 @@
         <title>Backstage Software Catalog and Developer Platform Blog</title>
         <link>https://backstage.io/blog</link>
         <description>Backstage Software Catalog and Developer Platform Blog</description>
-        <lastBuildDate>Wed, 15 Oct 2025 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 25 Nov 2025 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Backstage in Atlanta: Highlights from BackstageCon and KubeCon + CloudNativeCon North America 2025]]></title>
+            <link>https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta</link>
+            <guid>https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta</guid>
+            <pubDate>Tue, 25 Nov 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[Backstage in Atlanta: Highlights from BackstageCon and KubeCon + CloudNativeCon North America 2025]]></description>
+            <content:encoded><![CDATA[<p><img decoding="async" loading="lazy" alt="Backstage in Atlanta: Highlights from BackstageCon and KubeCon + CloudNativeCon North America 2025" src="https://backstage.io/assets/images/backstagecon-kubecon-na-2025-header-3fc0b4a7e31564e1b17028ea9611e247.png" width="1200" height="628" class="img_ev3q"></p>
+<p>Cancelled flights and wonky Wi-Fi couldn't hold us back from having an amazing time in the Big Peach! It was great to head south and commune with the community in person at <a href="https://colocatedeventsna2025.sched.com/overview/type/BackstageCon" target="_blank" rel="noopener noreferrer">BackstageCon</a> and <a href="https://kccncna2025.sched.com/" target="_blank" rel="noopener noreferrer">KubeCon + CloudNativeCon North America 2025</a> in Atlanta. We gave talks, shared insights, chatted without having to type into little text boxes, and tackled issues elbow-to-elbow during <a href="https://backstage.io/blog/2025/10/15/backstage-contribfest-kubecon-guide" target="_blank" rel="noopener noreferrer">ContribFest</a>. The week was capped off with the <a href="https://www.youtube.com/watch?v=evmmr-uxNsc&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Backstage maintainers talk</a> where we celebrated a year of milestones, the release of the adoption-ready New Frontend System, and work towards an AI-Native Backstage. Catch up with recordings of <a href="https://www.youtube.com/playlist?list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">all the Backstage talks</a> and check out highlights from our week in the Big A below.</p>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="scenes-from-backstagecon-and-beyond">Scenes from BackstageCon (and beyond)<a href="https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta#scenes-from-backstagecon-and-beyond" class="hash-link" aria-label="Direct link to Scenes from BackstageCon (and beyond)" title="Direct link to Scenes from BackstageCon (and beyond)">​</a></h2>
+<p><img decoding="async" loading="lazy" alt="Scenes from BackstageCon and KubeCon + CloudNativeCon NA 2025" src="https://backstage.io/assets/images/kcon25-atl-slideshow-80d0c3c88c2250dc90de0ab343d0ea8f.gif" width="800" height="533" class="img_ev3q"><br>
+<em>📸 <a href="https://www.flickr.com/photos/143247548@N03/albums/72177720330018728/" target="_blank" rel="noopener noreferrer">CNCF</a></em></p>
+<p>Brrr…it was a cold start with “Hot 'Lanta” bringing a serious autumn chill on Monday morning. But all the spicy DevEx insights would soon heat things up in the halls of the Georgia World Conference Center. Throughout the day, we heard discussions around how organizations adopt Backstage and scale it for productivity, as well as practical lessons on governance, deployment models, change management, and standardizing best practices around Backstage.</p>
+<p>And despite an unfortunate amount of flight disruptions waylaying some of the speakers, the organizers were able to work around all the last-minute issues for a day full of presentations, demos, lightning talks, and keynotes. Check out our community YouTube channel to watch recordings of <a href="https://www.youtube.com/playlist?list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">all the Backstage talks</a> from Atlanta. Not sure where to start?</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="a-few-personal-picks">A few personal picks<a href="https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta#a-few-personal-picks" class="hash-link" aria-label="Direct link to A few personal picks" title="Direct link to A few personal picks">​</a></h3>
+<p>Here are six BackstageCon talks that we attended and thought were worth sharing. They feature Backstage adopters across a range of industries — from finance and healthcare, to networking, automotive experiences, and beyond — all sharing use cases that relate to almost any engineering org:</p>
+<ul>
+<li>
+<p>🏦 <a href="https://www.youtube.com/watch?v=0m94ERF0k4Q&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Supercharging Backstage Scaffolder for Workflows</a>: Jonathan Chan and Francis Hackenberger, engineers from the Royal Bank of Canada's cloud team, talk about how they scale up the power of Backstage Software Templates at one of Canada's largest banks.</p>
+</li>
+<li>
+<p>🩺 <a href="https://www.youtube.com/watch?v=ZCM9i1zD364&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">From Friction to Flow: How Backstage Transformed Our Security Experience</a>: In this lightning talk, Christopher Diaz, principal engineer at RVO Health, squeezes three years' worth of Backstage learnings into a 10-minute lightning talk — including how Backstage has unlocked an inner source culture within their org, with teams building custom plugins to extend their instance (“That's what makes it so much fun to build on Backstage: everything you need to solve a problem is literally just a pull request away” 🙌).</p>
+</li>
+<li>
+<p>📶 <a href="https://www.youtube.com/watch?v=1mDEkiN4NTs&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">How Ericsson Scaled Developer Experience with Backstage</a>: Ericsson principal engineer Damien O'Toole and engineering manager Kieran Egan share what they learned on the way to scaling internal Backstage adoption to over 1,260 users and over 4,073 weekly visits.</p>
+</li>
+<li>
+<p>🚗 <a href="https://www.youtube.com/watch?v=pFSSpDHB2rU&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Cruising the AI Highway: Standardized MCP Deployment and Governance with Backstage</a>: Engineers from Toyota Connected — “recovering system administrator” Rob Heckel and platform engineer Tyler Rothenberg — share how they deploy MCP servers across their org in an easy, secure, and sustainable way, covering everything from the basics of MCP to deploying MCP servers using cloud native tools and integrating them with Backstage.</p>
+</li>
+<li>
+<p>📊 <a href="https://www.youtube.com/watch?v=IdLXeK8motg&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Lego Bricks for Developers: Turning Insights into Golden Paths at Neo4j</a>: Developer advocate Jeremy Adams (stepping in for a waylayed Chris Heisz) joins engineer Luke Beamish to talk about how they use Golden Paths at Neo4j, a leader in graph technology whose tech is used for cancer research, GenAI, and NASA's mission to Mars.</p>
+</li>
+<li>
+<p>🔔 <a href="https://www.youtube.com/watch?v=N4gCLbhxTHA&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Driving Adoption by Generating High Value Notifications in Backstage</a>: How do notifications work in Backstage and what makes them such a powerful way to drive Backstage adoption within your org? Watch this talk by Spotify engineering manager Avantika Iyer and customer success engineer/Backstage community maintainer André Wanlin. [Hey, that's me! Seriously, tho, notifications are the jam. — AW]</p>
+</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="backstage-at-kubecon">Backstage at KubeCon<a href="https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta#backstage-at-kubecon" class="hash-link" aria-label="Direct link to Backstage at KubeCon" title="Direct link to Backstage at KubeCon">​</a></h3>
+<p>The Backstage-related talks continued throughout the week during KubeCon + CloudNativeCon, including:</p>
+<ul>
+<li>
+<p>🚀 <a href="https://www.youtube.com/watch?v=l7OQdrUkoVI&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">The Journey of Deploying Backstage in a Large Organization</a>, as told by engineers Mathieu Girard and Teddy Poingt from Beneva, Canada's largest mutual insurance company.</p>
+</li>
+<li>
+<p>📚 <a href="https://www.youtube.com/watch?v=eqxKB6Gq7oc&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Build Your Internal Developer Platform with the Experts</a> in this hands-on workshop led by CNCF ambassadors and project maintainers.</p>
+</li>
+<li>
+<p>🎵 <a href="https://www.youtube.com/watch?v=2t_Pdiu3B1E&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Harmonizing Strategy and Engineering: Lessons Learnt in Building a Platform Plugin for Diverse Users</a> from Spotify senior product manager Sri Chandrasekaran and senior engineer Kate Klymkovska. [Hey, that's me! What André said, except product vision instead of notifications. — KK]</p>
+</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="watch-em-all">Watch 'em all!<a href="https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta#watch-em-all" class="hash-link" aria-label="Direct link to Watch 'em all!" title="Direct link to Watch 'em all!">​</a></h3>
+<p>📺 There's much more to explore and dive into. Head over to the Backstage Community YouTube channel to <a href="https://www.youtube.com/playlist?list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">watch all the Backstage talks</a> from BackstageCon and KubeCon.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="our-third-backstage-contribfest">Our third Backstage ContribFest<a href="https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta#our-third-backstage-contribfest" class="hash-link" aria-label="Direct link to Our third Backstage ContribFest" title="Direct link to Our third Backstage ContribFest">​</a></h2>
+<p><img decoding="async" loading="lazy" alt="Backstage ContribFest at KubeCon + CloudNativeCon NA 2025!" src="https://backstage.io/assets/images/kcon25-atl-contribfest-b92a27361da7f3bc16b3b957d716ac60.jpg" width="1200" height="857" class="img_ev3q"></p>
+<p>We talked about Backstage a ton, but we also invited attendees to help us build it. In Atlanta, we co-hosted our third <a href="https://backstage.io/blog/2025/10/15/backstage-contribfest-kubecon-guide" target="_blank" rel="noopener noreferrer">Backstage Contribfest</a> with participants of all experience and skill levels diving into the Backstage repos to tackle issues together — and with plenty of Backstage maintainers and contributors close at hand to help out.</p>
+<p>A few ContribFest-fueled pull requests have already popped up in the repos:</p>
+<ul>
+<li>fix(ui): render html in gfm mode in MarkdownContent component (<a href="https://github.com/backstage/backstage/pull/31770" target="_blank" rel="noopener noreferrer">#31770</a>)</li>
+<li>catalog-react: OwnerEntityPicker case insensitive (<a href="https://github.com/backstage/backstage/pull/31756" target="_blank" rel="noopener noreferrer">#31756</a>)</li>
+<li>fix: making the github urls case insensitive (<a href="https://github.com/backstage/backstage/pull/31754" target="_blank" rel="noopener noreferrer">#31754</a>)</li>
+<li>fix: success announcements should be transient (<a href="https://github.com/backstage/community-plugins/pull/6041" target="_blank" rel="noopener noreferrer">#6041</a> — ✅ merged!)</li>
+</ul>
+<p>Many thanks to all the participants and to our fellow hosts — Kurt King from Procore and Aramis Sennyey from DoorDash!🙏</p>
+<p>🛠️ If you haven't yet joined our worldwide community of contributors, <a href="https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">there's no time like the present</a>!</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="maintainers-talk-stable-foundations-mcp-innovations">Maintainers talk: Stable foundations, MCP innovations<a href="https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta#maintainers-talk-stable-foundations-mcp-innovations" class="hash-link" aria-label="Direct link to Maintainers talk: Stable foundations, MCP innovations" title="Direct link to Maintainers talk: Stable foundations, MCP innovations">​</a></h2>
+<p><img decoding="async" loading="lazy" alt="Backstage Maintainers Track at KubeCon + CloudNativeCon NA 2025!" src="https://backstage.io/assets/images/kcon25-atl-maintainers-0e2ead604bbf36999dd9e02fee2900be.gif" width="800" height="450" class="img_ev3q"></p>
+<p>As always, the main event for the community is the Maintainers Track session. Backstage core maintainers Ben Lambert and Patrik Oldsberg closed out the week celebrating a year of milestones — including contributions big and small from the community — while looking ahead to what's next for the framework.</p>
+<p>In their talk, <a href="https://www.youtube.com/watch?v=evmmr-uxNsc&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Backstage Celebrations: Stable Foundations and MCP Innovations</a>, they shared:</p>
+<ul>
+<li>
+<p><strong>Project Updates:</strong> Adopters, plugins, and stars — and all the other ways the Backstage community continues to grow, including in the community-plugins repo. Plus, improvements to issue handling and more.</p>
+</li>
+<li>
+<p><strong>Project Maturity:</strong> With the new backend (<a href="https://backstage.io/docs/releases/v1.31.0/" target="_blank" rel="noopener noreferrer">released as a stable 1.0 last year</a>) and new frontend (<a href="https://backstage.io/docs/releases/v1.42.0" target="_blank" rel="noopener noreferrer">adoption-ready as of this year</a>) now both in place, the Backstage framework has modern foundations built for the future. With more emphasis on declarative integration (and less TypeScript code), Backstage is more accessible and easier to maintain — and plugins are simpler than ever to build and integrate. Make sure to watch the demo to see how quickly you can install plugins into a fresh Backstage instance.</p>
+</li>
+<li>
+<p><strong>New Stuff ✨:</strong> MCP, MCP, MCP, and MCP: What happens when you combine your AI tools with your engineering source of truth? Learn about Backstage + MCP, the latest improvements to the Backstage Actions Registry, authorization via new dynamic client registration and CLI authentication, and a live demo. Plus, all the latest on the framework's new design system, <a href="https://ui.backstage.io/" target="_blank" rel="noopener noreferrer">Backstage UI</a> (BUI).</p>
+</li>
+<li>
+<p><strong>Roadmap:</strong> Looking ahead to what's next for the New Frontend System, the Backstage UI rollout, the plugin ecosystem, MCP, CLI, and the release process.</p>
+</li>
+</ul>
+<p>📺 Watch the entire <a href="https://www.youtube.com/watch?v=evmmr-uxNsc&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">Backstage maintainers talk</a> to dig into the past, present, and future of the framework, including live demos showcasing the newest features and capabilities.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="see-you-in-amsterdam">See you in 🌷Amsterdam!<a href="https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta#see-you-in-amsterdam" class="hash-link" aria-label="Direct link to See you in 🌷Amsterdam!" title="Direct link to See you in 🌷Amsterdam!">​</a></h2>
+<p><img decoding="async" loading="lazy" alt="Cloud native puppies improving developer experience at KubeCon + CloudNativeCon NA 2025!" src="https://backstage.io/assets/images/kcon25-atl-puppies-d51ac2427809ed626aba8db893c39653.gif" width="800" height="533" class="img_ev3q"><br>
+<em>Cloud native puppies improving developer experience in Atlanta. 📸 <a href="https://www.flickr.com/photos/143247548@N03/albums/72177720330018728/" target="_blank" rel="noopener noreferrer">CNCF</a></em></p>
+<p>And that's a wrap for Atlanta! We say goodbye to the home of 🎤 trap music and get ready to say hello to a <a href="https://en.wikipedia.org/wiki/Stroopwafel" target="_blank" rel="noopener noreferrer">stroopwafel</a> fika 🧇.</p>
+<p>See you next year at <a href="https://events.linuxfoundation.org/kubecon-cloudnativecon-europe/co-located-events/backstagecon/" target="_blank" rel="noopener noreferrer">BackstageCon</a> and <a href="https://events.linuxfoundation.org/kubecon-cloudnativecon-europe/" target="_blank" rel="noopener noreferrer">KubeCon + CloudNativeCon Europe 2026</a> in Amsterdam!</p>]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Get ready for Backstage ContribFest at KubeCon!]]></title>
             <link>https://backstage.io/blog/2025/10/15/backstage-contribfest-kubecon-guide</link>
             <guid>https://backstage.io/blog/2025/10/15/backstage-contribfest-kubecon-guide</guid>
             <pubDate>Wed, 15 Oct 2025 00:00:00 GMT</pubDate>
             <description><![CDATA[Get ready for Backstage ContribFest at KubeCon!]]></description>
-            <content:encoded><![CDATA[<p><img decoding="async" loading="lazy" alt="Get ready for Backstage ContribFest at KubeCon!" src="https://backstage.io/assets/images/backstage-contribfest-kubecon-guide-header-9850fe29fe8abc085e985b25ea00427c.png" width="1200" height="628" class="img_ev3q"></p>
+            <content:encoded><![CDATA[<p><img decoding="async" loading="lazy" alt="Get ready for Backstage ContribFest at KubeCon!" src="https://backstage.io/assets/images/backstage-contribfest-kubecon-guide-header-fe03d676bef5d0494147e64e4aba5261.png" width="1800" height="945" class="img_ev3q"></p>
 <p>Pack your laptop and mark your calendars! Backstage will once again be taking part in the ContribFest track at KubeCon! Join us at KubeCon 2025 North America in Atlanta on Monday, November 13. Feel free to <a href="https://kccncna2025.sched.com/event/27Nl6/contribfest-level-up-your-open-source-journey-hands-on-backstage-contributions-andre-wanlin-patrik-oldsberg-emma-indal-spotify-aramis-sennyey-doordash-kurt-king-procore" target="_blank" rel="noopener noreferrer">bookmark it on your schedule</a>. Then read on to get yourself prepared for the session beforehand to maximize your time working with other contributors and Backstage experts during the session.</p>
 <!-- -->
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="contrib-what">Contrib-what?<a href="https://backstage.io/blog/2025/10/15/backstage-contribfest-kubecon-guide#contrib-what" class="hash-link" aria-label="Direct link to Contrib-what?" title="Direct link to Contrib-what?">​</a></h2>
@@ -1429,27 +1517,6 @@ Pulumi will then create a container based deployment in Amazon Lightsail.</p>
 <li><a href="https://www.pulumi.com/docs/" target="_blank" rel="noopener noreferrer">Pulumi docs</a></li>
 <li><a href="https://discord.com/channels/687207715902193673/995973463208644678" target="_blank" rel="noopener noreferrer">#deployment</a> channel in Discord</li>
 </ul>]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[ICYMI: KubeCon EU 2023]]></title>
-            <link>https://backstage.io/blog/2023/04/26/kubecon-eu-2023</link>
-            <guid>https://backstage.io/blog/2023/04/26/kubecon-eu-2023</guid>
-            <pubDate>Wed, 26 Apr 2023 00:00:00 GMT</pubDate>
-            <description><![CDATA[KubeCon CloudNativeCon Europe 2023 banner]]></description>
-            <content:encoded><![CDATA[<p><img decoding="async" loading="lazy" alt="KubeCon CloudNativeCon Europe 2023 banner" src="https://backstage.io/assets/images/Backstage_News_3-7-23_KubeCon-1dd81577fd9d32d74556788871b49b6e.png" width="973" height="511" class="img_ev3q"></p>
-<p>We had a blast talking all things Backstage at KubeCon EU 2023 in Amsterdam last week. In case you missed it, here’s a quick recap:</p>
-<!-- -->
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="backstage-project-meeting">Backstage Project Meeting<a href="https://backstage.io/blog/2023/04/26/kubecon-eu-2023#backstage-project-meeting" class="hash-link" aria-label="Direct link to Backstage Project Meeting" title="Direct link to Backstage Project Meeting">​</a></h2>
-<p><img decoding="async" loading="lazy" alt="A packed room for the Backstage project meeting" src="https://backstage.io/assets/images/IMG_2522-7a7840942e7eb7aef401eb4b39a4090d.png" width="4032" height="3024" class="img_ev3q"></p>
-<p>On Tuesday the Backstage maintainers hosted a jam-packed project meeting. The community welcomed many teams and individuals that were early in their Backstage journey, either actively adopting, preparing for the POC phase, or learning about the capabilities of Backstage. Many of the newcomers were eager to learn about how Backstage could help streamline their development workflows and improve developer productivity. During the project meeting, the maintainers covered a “day in the life” of a core maintainer, walked through spinning up a new instance of Backstage in a live demo, and opened it up to questions from the community. It’s super exciting to see so much growing interest in Backstage and all of the ways adopters are adapting it to their needs.</p>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="state-of-backstage-in-2023">State of Backstage in 2023<a href="https://backstage.io/blog/2023/04/26/kubecon-eu-2023#state-of-backstage-in-2023" class="hash-link" aria-label="Direct link to State of Backstage in 2023" title="Direct link to State of Backstage in 2023">​</a></h2>
-<p><img decoding="async" loading="lazy" alt="Patrik and Ben onstage for the State of Backstage talk" src="https://backstage.io/assets/images/IMG_0120-e48f024139019c95c4b7394e89ed83cf.png" width="1024" height="683" class="img_ev3q"></p>
-<p>Core maintainers <a href="https://github.com/benjdlambert" target="_blank" rel="noopener noreferrer">Ben Lambert</a> and <a href="https://github.com/Rugvip" target="_blank" rel="noopener noreferrer">Patrik Oldsberg</a> took center stage on Wednesday for the Backstage Maintainer Track: State of Backstage in 2023 talk. Backstage has officially hit over 1,000 adopters and 1,000 contributors – so it’s apt timing to modernize the governance model for the project. Taking pointers from the <a href="https://contribute.cncf.io/maintainers/templates/" target="_blank" rel="noopener noreferrer">CNCF Contributor Ladder Governance Template</a>, a new <a href="https://github.com/backstage/community/blob/main/GOVERNANCE.md" target="_blank" rel="noopener noreferrer">Backstage Governance Model</a> is now in effect! Patrik walked us through the new ladder model which introduces a number of changes, one being the addition of <a href="https://github.com/backstage/community/blob/main/GOVERNANCE.md#project-area-maintainer" target="_blank" rel="noopener noreferrer">project area maintainers</a>. This role lets members of the community take increased ownership over a specific area of interest, like Catalog, Discoverability, TechDocs, Helm Charts, and Kubernetes. New project areas that will be added include Permissions and Software Templates. New project areas can be proposed by nominating a project area maintainer for the area. The new model also adds an organization member role for contributors who want to take a more active role in the Backstage community. You can open an issue to become an organization member <a href="https://github.com/backstage/community/issues/new/choose" target="_blank" rel="noopener noreferrer">here</a>.</p>
-<p><img decoding="async" loading="lazy" alt="Contributor ladder" src="https://backstage.io/assets/images/contributor_ladder-d93202ae2e6cfe92c23405e59925a4a6.png" width="2114" height="1034" class="img_ev3q"></p>
-<p>Ben and Patrik also covered new capabilities for Software Templates and framework updates. Lots of exciting new features are planned for Software Templates including a new UI, async validation for CustomFieldExtensions, and embedded workflows. Lastly, the maintainers also announced a new focus on declarative integration – permitting plugin installation without TypeScript. Development is still early, but we can’t wait to see this in action!</p>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="other-kubecon-excitement">Other KubeCon excitement!<a href="https://backstage.io/blog/2023/04/26/kubecon-eu-2023#other-kubecon-excitement" class="hash-link" aria-label="Direct link to Other KubeCon excitement!" title="Direct link to Other KubeCon excitement!">​</a></h2>
-<p>Throughout the week, we also heard success stories of adopters, like AppsFlyer’s talk, “How We Migrated Over 1000 Services to Backstage Using GitOps and Survived to Talk About It!” AppsFlyer has over 1,000 services and processes over 200 billion events per day – so migrating to Backstage as their service catalog platform was no small feat. As part of their migration, they also integrated GitOps and Terraform into their Backstage instance. Many attendees found interest in these case studies where you could see the adoption and POC process directly from other adopters. It was exciting to see firsthand how teams can extend Backstage to fit their needs on the fly.</p>
-<p>We were thrilled to see so much excitement and interest brewing around Backstage this year! If you missed it, you can catch up as soon as more talks are added to the <a href="https://www.youtube.com/@cncf/featured" target="_blank" rel="noopener noreferrer">CNCF YouTube channel</a>. We can’t wait to catch up with you all again soon at KubeCon North America in Chicago.</p>]]></content:encoded>
         </item>
     </channel>
 </rss>
