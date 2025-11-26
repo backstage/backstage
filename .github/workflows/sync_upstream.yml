@@ -33,8 +33,10 @@ jobs:
 
       - name: Fetch upstream changes
         run: |
-          git fetch upstream --tags
+          # Fetch branches first
           git fetch upstream
+          # Fetch tags with --force to update existing tags that may have conflicts
+          git fetch upstream --tags --force
 
       - name: Sync master branch
         run: |
