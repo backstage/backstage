@@ -35,18 +35,15 @@ import { InstrumentFactory } from './InstrumentFactory';
 export class DefaultMetricsService implements MetricsService {
   private readonly instrumentFactory: InstrumentFactory;
 
-  private constructor(pluginId: string) {
-    // TODO: putting this namespace here default this service to being a "PluginMetricsService" which is not what we want.
-    const namespace = `backstage.plugin.${pluginId}`;
-
+  private constructor(namespace: string) {
     this.instrumentFactory = new InstrumentFactory({
       meter: metrics.getMeter(namespace),
       namespace,
     });
   }
 
-  static create(pluginId: string): MetricsService {
-    return new DefaultMetricsService(pluginId);
+  static create(namespace: string): MetricsService {
+    return new DefaultMetricsService(namespace);
   }
 
   createCounter<TAttributes extends Attributes = Attributes>(

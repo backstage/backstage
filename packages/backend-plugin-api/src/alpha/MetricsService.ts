@@ -121,4 +121,20 @@ export interface MetricsService {
  *
  * @alpha
  */
-export interface RootMetricsService extends MetricsService {}
+export interface RootMetricsService extends MetricsService {
+  /**
+   * Creates a new metrics service for a given service.
+   *
+   * @param serviceId - The ID of the service.
+   * @returns The metrics service.
+   */
+  forService(serviceId: string): MetricsService;
+
+  /**
+   * Creates a new metrics service for a given plugin.
+   *
+   * @param pluginId - The ID of the plugin.
+   * @returns The metrics service.
+   */
+  forPlugin(pluginId: string): MetricsService;
+}

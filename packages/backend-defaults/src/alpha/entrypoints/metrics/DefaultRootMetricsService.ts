@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RootMetricsService } from '@backstage/backend-plugin-api/alpha';
+import {
+  MetricsService,
+  RootMetricsService,
+} from '@backstage/backend-plugin-api/alpha';
 import {
   Histogram,
   Counter,
@@ -28,23 +31,43 @@ import {
   Attributes,
 } from '@opentelemetry/api';
 import { InstrumentFactory } from './InstrumentFactory';
+import { DefaultMetricsService } from './DefaultMetricsService';
 
-export class DefaultRootMetricsService {
+function normalizeNamespace(id: string): string {
+  return id.toLowerCase().replace(/-/g, '_').replace(/\./g, '_');
+}
+
+export class DefaultRootMetricsService implements RootMetricsService {
   private readonly rootNamespace: string = 'backstage';
-  private readonly rootMetricsPrefix: string = `${this.rootNamespace}.core`;
+  private readonly serviceNamespace: string = `${this.rootNamespace}.service`;
+  private readonly pluginNamespace: string = `${this.rootNamespace}.plugin`;
+  private readonly instrumentFactory: InstrumentFactory;
+
   private readonly globalMeterProvider: MeterProvider =
     metrics.getMeterProvider();
-  private readonly instrumentFactory: InstrumentFactory;
 
   private constructor() {
     this.instrumentFactory = new InstrumentFactory({
       meter: this.globalMeterProvider.getMeter(this.rootNamespace),
-      namespace: this.rootMetricsPrefix,
+      namespace: this.rootNamespace,
     });
   }
 
   static create(): RootMetricsService {
     return new DefaultRootMetricsService();
+  }
+
+  forService(serviceId: string): MetricsService {
+    const namespace = `${this.serviceNamespace}.${normalizeNamespace(
+      serviceId,
+    )}`;
+
+    return DefaultMetricsService.create(namespace);
+  }
+
+  forPlugin(pluginId: string): MetricsService {
+    const namespace = `${this.pluginNamespace}.${normalizeNamespace(pluginId)}`;
+    return DefaultMetricsService.create(namespace);
   }
 
   createCounter<TAttributes extends Attributes = Attributes>(

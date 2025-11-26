@@ -16,7 +16,10 @@
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { coreServices } from '@backstage/backend-plugin-api';
 import { DefaultActionsService } from './DefaultActionsService';
-import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  actionsServiceRef,
+  rootMetricsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
  * @public
@@ -28,12 +31,14 @@ export const actionsServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
     logger: coreServices.logger,
     auth: coreServices.auth,
+    metrics: rootMetricsServiceRef,
   },
-  factory: ({ discovery, config, logger, auth }) =>
+  factory: ({ discovery, config, logger, auth, metrics }) =>
     DefaultActionsService.create({
       discovery,
       config,
       logger,
       auth,
+      metrics: metrics.forService(actionsServiceRef.id),
     }),
 });

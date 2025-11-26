@@ -25,7 +25,21 @@ import { JsonObject } from '@backstage/types';
 import {
   ActionsService,
   ActionsServiceAction,
+  MetricsService,
 } from '@backstage/backend-plugin-api/alpha';
+import { performance } from 'perf_hooks';
+import { ATTR_ERROR_TYPE } from '@opentelemetry/semantic-conventions';
+import { Attributes } from '@opentelemetry/api';
+
+// todo: the start of Backstage metric names that could be in a semantic convention
+export const METRIC_BACKSTAGE_ACTIONS_DURATION =
+  'actions.request.duration' as const;
+export const METRIC_BACKSTAGE_ACTIONS_COUNT = 'actions.request.count' as const;
+
+// todo: the start of Backstage attributes that could be in a semantic convention
+export const ATTR_BACKSTAGE_ACTION_ID = 'backstage.action.id' as const;
+export const ATTR_BACKSTAGE_PLUGIN_SOURCE = 'backstage.plugin.source' as const;
+export const ATTR_BACKSTAGE_ACTION_METHOD = 'backstage.action.method' as const;
 
 export class DefaultActionsService implements ActionsService {
   private readonly discovery: DiscoveryService;
@@ -33,16 +47,37 @@ export class DefaultActionsService implements ActionsService {
   private readonly logger: LoggerService;
   private readonly auth: AuthService;
 
+  private readonly requestCounter: ReturnType<MetricsService['createCounter']>;
+  private readonly requestDuration: ReturnType<
+    MetricsService['createHistogram']
+  >;
+
   private constructor(
     discovery: DiscoveryService,
     config: RootConfigService,
     logger: LoggerService,
     auth: AuthService,
+    metrics: MetricsService,
   ) {
     this.discovery = discovery;
     this.config = config;
     this.logger = logger;
     this.auth = auth;
+
+    this.requestDuration = metrics.createHistogram(
+      METRIC_BACKSTAGE_ACTIONS_DURATION,
+      {
+        description: 'Duration of action requests',
+        unit: 'ms',
+      },
+    );
+
+    this.requestCounter = metrics.createCounter(
+      METRIC_BACKSTAGE_ACTIONS_COUNT,
+      {
+        description: 'Total number of action requests',
+      },
+    );
   }
 
   static create({
@@ -50,43 +85,60 @@ export class DefaultActionsService implements ActionsService {
     config,
     logger,
     auth,
+    metrics,
   }: {
     discovery: DiscoveryService;
     config: RootConfigService;
     logger: LoggerService;
     auth: AuthService;
+    metrics: MetricsService;
   }) {
-    return new DefaultActionsService(discovery, config, logger, auth);
+    return new DefaultActionsService(discovery, config, logger, auth, metrics);
   }
 
   async list({ credentials }: { credentials: BackstageCredentials }) {
+    const startTime = performance.now();
+    const attributes: Attributes = {
+      [ATTR_BACKSTAGE_ACTION_METHOD]: 'list',
+    };
+
     const pluginSources =
       this.config.getOptionalStringArray('backend.actions.pluginSources') ?? [];
 
-    const remoteActionsList = await Promise.all(
-      pluginSources.map(async source => {
-        try {
-          const response = await this.makeRequest({
-            path: `/.backstage/actions/v1/actions`,
-            pluginId: source,
-            credentials,
-          });
-          if (!response.ok) {
-            throw await ResponseError.fromResponse(response);
+    try {
+      const remoteActionsList = await Promise.all(
+        pluginSources.map(async source => {
+          try {
+            const response = await this.makeRequest({
+              path: `/.backstage/actions/v1/actions`,
+              pluginId: source,
+              credentials,
+            });
+            if (!response.ok) {
+              throw await ResponseError.fromResponse(response);
+            }
+            const { actions } = (await response.json()) as {
+              actions: ActionsServiceAction;
+            };
+
+            return actions;
+          } catch (error) {
+            this.logger.warn(`Failed to fetch actions from ${source}`, error);
+            return [];
           }
-          const { actions } = (await response.json()) as {
-            actions: ActionsServiceAction;
-          };
+        }),
+      );
 
-          return actions;
-        } catch (error) {
-          this.logger.warn(`Failed to fetch actions from ${source}`, error);
-          return [];
-        }
-      }),
-    );
-
-    return { actions: remoteActionsList.flat() };
+      return { actions: remoteActionsList.flat() };
+    } catch (error) {
+      attributes[ATTR_ERROR_TYPE] =
+        error instanceof Error ? error.name : 'Error';
+      throw error;
+    } finally {
+      const duration = performance.now() - startTime;
+      this.requestCounter.add(1, attributes);
+      this.requestDuration.record(duration, attributes);
+    }
   }
 
   async invoke(opts: {
@@ -94,28 +146,48 @@ export class DefaultActionsService implements ActionsService {
     input?: JsonObject;
     credentials: BackstageCredentials;
   }) {
+    const startTime = performance.now();
+    const method = 'invoke';
     const pluginId = this.pluginIdFromActionId(opts.id);
-    const response = await this.makeRequest({
-      path: `/.backstage/actions/v1/actions/${encodeURIComponent(
-        opts.id,
-      )}/invoke`,
-      pluginId,
-      credentials: opts.credentials,
-      options: {
-        method: 'POST',
-        body: JSON.stringify(opts.input),
-        headers: {
-          'Content-Type': 'application/json',
+
+    const attributes: Attributes = {
+      [ATTR_BACKSTAGE_ACTION_METHOD]: method,
+      [ATTR_BACKSTAGE_ACTION_ID]: opts.id,
+      [ATTR_BACKSTAGE_PLUGIN_SOURCE]: pluginId,
+    };
+
+    try {
+      const response = await this.makeRequest({
+        path: `/.backstage/actions/v1/actions/${encodeURIComponent(
+          opts.id,
+        )}/invoke`,
+        pluginId,
+        credentials: opts.credentials,
+        options: {
+          method: 'POST',
+          body: JSON.stringify(opts.input),
+          headers: { 'Content-Type': 'application/json' },
         },
-      },
-    });
+      });
 
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
+      if (!response.ok) {
+        throw await ResponseError.fromResponse(response);
+      }
+
+      const { output } = await response.json();
+      return { output };
+    } catch (error) {
+      // Add error.type attribute per OTEL spec
+      attributes[ATTR_ERROR_TYPE] =
+        error instanceof Error ? error.name : 'Error';
+
+      throw error;
+    } finally {
+      const duration = performance.now() - startTime;
+
+      this.requestCounter.add(1, attributes);
+      this.requestDuration.record(duration, attributes);
     }
-
-    const { output } = await response.json();
-    return { output };
   }
 
   private async makeRequest(opts: {

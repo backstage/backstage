@@ -152,7 +152,10 @@ export const metricsServiceRef: ServiceRef<
 >;
 
 // @alpha
-export interface RootMetricsService extends MetricsService {}
+export interface RootMetricsService extends MetricsService {
+  forPlugin(pluginId: string): MetricsService;
+  forService(serviceId: string): MetricsService;
+}
 
 // @alpha
 export const rootMetricsServiceRef: ServiceRef<
