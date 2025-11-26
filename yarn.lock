@@ -20966,12 +20966,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/multer@npm:^1.4.12":
-  version: 1.4.12
-  resolution: "@types/multer@npm:1.4.12"
+"@types/multer@npm:^1.4.13":
+  version: 1.4.13
+  resolution: "@types/multer@npm:1.4.13"
   dependencies:
     "@types/express": "npm:*"
-  checksum: 10/3d2b32da58ddd67f972d4ef1021492f78d65f33f936b6fb25dd461bb6cc7b03bfd1de1a11562c4310680dac8054e4398038db51767a0ffbf1fe62457b3706e95
+  checksum: 10/f650a9f431007f05a5c51d6359140bea5f77d1299668d45a0791ddbf7789f1c220a3e038039c5e0de6608e273d5ee8001e9649c606d7e0e847e8774ccc5d1d68
   languageName: node
   linkType: hard
 
@@ -30333,11 +30333,11 @@ __metadata:
   linkType: hard
 
 "express-openapi-validator@npm:^5.5.8":
-  version: 5.5.8
-  resolution: "express-openapi-validator@npm:5.5.8"
+  version: 5.6.0
+  resolution: "express-openapi-validator@npm:5.6.0"
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^14.0.3"
-    "@types/multer": "npm:^1.4.12"
+    "@types/multer": "npm:^1.4.13"
     ajv: "npm:^8.17.1"
     ajv-draft-04: "npm:^1.0.0"
     ajv-formats: "npm:^3.0.1"
@@ -30352,7 +30352,7 @@ __metadata:
     qs: "npm:^6.14.0"
   peerDependencies:
     express: "*"
-  checksum: 10/0396d4fd253fcd61725b632adcd805ac4ced940c34907775bedce39701d3b884e7a60357fa29c59d282407381c1fdcecceae6d0011684103e7ffe104038cb661
+  checksum: 10/03b5d26f16d9b1cc4742b9bd87570c6429fabb856b385658c0f0b323d53d241969c1572bda068ba59e694e45ded094d085674f860665aacf0a6a820f0317cef4
   languageName: node
   linkType: hard
 
