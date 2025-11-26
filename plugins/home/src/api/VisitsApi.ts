@@ -149,7 +149,7 @@ export interface VisitsApi {
    * @param pathname - the pathname of the visit to update
    * @param name - the new name for the visit
    */
-  updateName(pathname: string, name: string): Promise<void>;
+  updateName?(pathname: string, name: string): Promise<void>;
 }
 
 /** @public */

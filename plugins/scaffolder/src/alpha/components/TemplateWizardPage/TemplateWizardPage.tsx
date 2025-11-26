@@ -59,7 +59,7 @@ import { useFormDecorators } from '../../hooks';
 import { useLocation } from 'react-router-dom';
 
 const visitsApiRef = createApiRef<{
-  updateName: (pathname: string, name: string) => Promise<void>;
+  updateName?: (pathname: string, name: string) => Promise<void>;
 }>({
   id: 'homepage.visits',
 });
@@ -73,7 +73,7 @@ const useUpdateVisitName = (manifest: TemplateParameterSchema | undefined) => {
     if (!manifest?.title) return;
 
     const visitsApi = apiHolder.get(visitsApiRef);
-    if (!visitsApi) {
+    if (!visitsApi?.updateName) {
       return;
     }
 

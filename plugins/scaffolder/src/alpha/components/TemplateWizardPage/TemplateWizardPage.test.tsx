@@ -37,7 +37,7 @@ import { formDecoratorsApiRef } from '../../api/ref';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 const visitsApiRef = createApiRef<{
-  updateName: (pathname: string, name: string) => Promise<void>;
+  updateName?: (pathname: string, name: string) => Promise<void>;
 }>({
   id: 'homepage.visits',
 });
@@ -321,6 +321,39 @@ describe('TemplateWizardPage', () => {
         },
       );
 
+      expect(visitsApiMock.updateName).not.toHaveBeenCalled();
+    });
+
+    it('should work gracefully when visits API does not have updateName method (backwards compatibility)', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+        title: 'Test Template Title',
+      });
+      catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+      const visitsApiWithoutUpdateName = {};
+      const apisWithOldVisitsApi = TestApiRegistry.from(
+        [scaffolderApiRef, scaffolderApiMock],
+        [formDecoratorsApiRef, scaffolderDecoratorsMock],
+        [catalogApiRef, catalogApi],
+        [analyticsApiRef, analyticsApi],
+        [visitsApiRef, visitsApiWithoutUpdateName],
+      );
+
+      await renderInTestApp(
+        <ApiProvider apis={apisWithOldVisitsApi}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // Should not throw an error even though updateName doesn't exist
       expect(visitsApiMock.updateName).not.toHaveBeenCalled();
     });
   });
