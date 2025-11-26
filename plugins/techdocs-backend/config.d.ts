@@ -21,7 +21,7 @@ export interface Config {
    * Configuration options for the techdocs-backend plugin
    * @see http://backstage.io/docs/features/techdocs/configuration
    */
-  techdocs: {
+  techdocs?: {
     /**
      * Documentation building process depends on the builder attr
      * @visibility frontend
