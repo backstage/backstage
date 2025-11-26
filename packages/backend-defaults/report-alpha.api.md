@@ -41,7 +41,7 @@ export const metricsServiceFactory: ServiceFactory<
 // @alpha
 export const rootMetricsServiceFactory: ServiceFactory<
   RootMetricsService,
-  'plugin',
+  'root',
   'singleton'
 >;
 

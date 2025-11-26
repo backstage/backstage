@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  MetricsService,
-  ObservableMetric,
-} from '@backstage/backend-plugin-api/alpha';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import {
   Counter,
   Histogram,
@@ -27,8 +24,10 @@ import {
   ObservableUpDownCounter,
   ObservableGauge,
   UpDownCounter,
+  Attributes,
+  metrics,
 } from '@opentelemetry/api';
-import { InstrumentFactory, MetricsServiceOptions } from './InstrumentFactory';
+import { InstrumentFactory } from './InstrumentFactory';
 
 /**
  * @alpha
@@ -36,37 +35,66 @@ import { InstrumentFactory, MetricsServiceOptions } from './InstrumentFactory';
 export class DefaultMetricsService implements MetricsService {
   private readonly instrumentFactory: InstrumentFactory;
 
-  constructor(opts: MetricsServiceOptions) {
-    this.instrumentFactory = new InstrumentFactory(opts);
+  private constructor(pluginId: string) {
+    // TODO: putting this namespace here default this service to being a "PluginMetricsService" which is not what we want.
+    const namespace = `backstage.plugin.${pluginId}`;
+
+    this.instrumentFactory = new InstrumentFactory({
+      meter: metrics.getMeter(namespace),
+      namespace,
+    });
   }
 
-  createCounter(name: string, opts?: MetricOptions): Counter {
+  static create(pluginId: string): MetricsService {
+    return new DefaultMetricsService(pluginId);
+  }
+
+  createCounter<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Counter<TAttributes> {
     return this.instrumentFactory.createCounter(name, opts);
   }
 
-  createUpDownCounter(name: string, opts?: MetricOptions): UpDownCounter {
+  createUpDownCounter<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): UpDownCounter<TAttributes> {
     return this.instrumentFactory.createUpDownCounter(name, opts);
   }
 
-  createHistogram(name: string, opts?: MetricOptions): Histogram {
+  createHistogram<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Histogram<TAttributes> {
     return this.instrumentFactory.createHistogram(name, opts);
   }
 
-  createGauge(name: string, opts?: MetricOptions): Gauge {
+  createGauge<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Gauge<TAttributes> {
     return this.instrumentFactory.createGauge(name, opts);
   }
 
-  createObservableCounter(metric: ObservableMetric): ObservableCounter {
-    return this.instrumentFactory.createObservableCounter(metric);
+  createObservableCounter<TAttributes extends Attributes = Attributes>(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableCounter<TAttributes> {
+    return this.instrumentFactory.createObservableCounter(name, options);
   }
 
-  createObservableUpDownCounter(
-    metric: ObservableMetric,
-  ): ObservableUpDownCounter {
-    return this.instrumentFactory.createObservableUpDownCounter(metric);
+  createObservableUpDownCounter<TAttributes extends Attributes = Attributes>(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableUpDownCounter<TAttributes> {
+    return this.instrumentFactory.createObservableUpDownCounter(name, options);
   }
 
-  createObservableGauge(metric: ObservableMetric): ObservableGauge {
-    return this.instrumentFactory.createObservableGauge(metric);
+  createObservableGauge<TAttributes extends Attributes = Attributes>(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableGauge<TAttributes> {
+    return this.instrumentFactory.createObservableGauge(name, options);
   }
 }

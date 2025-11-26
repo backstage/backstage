@@ -22,6 +22,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { DefaultMetricsService } from './DefaultMetricsService';
 
 /**
  * Service factory for collecting plugin-scoped metrics.
@@ -35,7 +36,7 @@ export const metricsServiceFactory = createServiceFactory({
     rootMetrics: rootMetricsServiceRef,
     pluginMetadata: coreServices.pluginMetadata,
   },
-  factory: ({ rootMetrics, pluginMetadata }) => {
-    return rootMetrics.forPlugin(pluginMetadata.getId());
+  factory: ({ pluginMetadata }) => {
+    return DefaultMetricsService.create(pluginMetadata.getId());
   },
 });

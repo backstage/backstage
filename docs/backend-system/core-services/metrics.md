@@ -92,8 +92,6 @@ backstage.plugin.scaffolder.tasks.total
 backstage.plugin.techdocs.builds.duration
 ```
 
-We currently do not support module-scoped metrics since most modules should receive metrics from the plugin (extension point) they extend.
-
 #### Core Scope
 
 **Pattern:** `backstage.core.{metric_name}`
@@ -111,7 +109,7 @@ backstage.core.httpRouter.middleware.duration
 
 ### Metric Name Structure
 
-The `{metric_name}` component should be hierarchical using dot notation to create logical groupings. For multi-word metric names, use snake_case.
+The `{metric_name}` component should be hierarchical using dot notation to create logical groupings. For multi-word metric names, use `snake_case` notation.
 
 ```md
 # Entity operations (use consolidated metrics with attributes)

@@ -14,7 +14,6 @@ import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricOptions } from '@opentelemetry/api';
-import { ObservableCallback } from '@opentelemetry/api';
 import { ObservableCounter } from '@opentelemetry/api';
 import { ObservableGauge } from '@opentelemetry/api';
 import { ObservableUpDownCounter } from '@opentelemetry/api';
@@ -140,15 +139,34 @@ export const instanceMetadataServiceRef: ServiceRef<
 
 // @alpha
 export interface MetricsService {
-  createCounter(name: string, opts?: MetricOptions): Counter;
-  createGauge(name: string, opts?: MetricOptions): Gauge;
-  createHistogram(name: string, opts?: MetricOptions): Histogram;
-  createObservableCounter(metric: ObservableMetric): ObservableCounter;
-  createObservableGauge(metric: ObservableMetric): ObservableGauge;
-  createObservableUpDownCounter(
-    metric: ObservableMetric,
-  ): ObservableUpDownCounter;
-  createUpDownCounter(name: string, opts?: MetricOptions): UpDownCounter;
+  createCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Counter<TAttributes>;
+  createGauge<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Gauge<TAttributes>;
+  createHistogram<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Histogram<TAttributes>;
+  createObservableCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableCounter<TAttributes>;
+  createObservableGauge<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableGauge<TAttributes>;
+  createObservableUpDownCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableUpDownCounter<TAttributes>;
+  createUpDownCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): UpDownCounter<TAttributes>;
 }
 
 // @alpha
@@ -159,21 +177,12 @@ export const metricsServiceRef: ServiceRef<
 >;
 
 // @alpha
-export interface ObservableMetric {
-  name: string;
-  observable: ObservableCallback<Attributes>;
-  opts: MetricOptions;
-}
-
-// @alpha
-export interface RootMetricsService extends MetricsService {
-  forPlugin(pluginId: string): MetricsService;
-}
+export interface RootMetricsService extends MetricsService {}
 
 // @alpha
 export const rootMetricsServiceRef: ServiceRef<
   RootMetricsService,
-  'plugin',
+  'root',
   'singleton'
 >;
 

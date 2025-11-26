@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RootLoggerService } from '@backstage/backend-plugin-api';
-import {
-  MetricsService,
-  ObservableMetric,
-  RootMetricsService,
-} from '@backstage/backend-plugin-api/alpha';
+import { RootMetricsService } from '@backstage/backend-plugin-api/alpha';
 import {
   Histogram,
   Counter,
@@ -30,71 +25,74 @@ import {
   ObservableUpDownCounter,
   Gauge,
   ObservableCounter,
+  Attributes,
 } from '@opentelemetry/api';
-import { DefaultMetricsService } from './DefaultMetricsService';
 import { InstrumentFactory } from './InstrumentFactory';
 
-export class DefaultRootMetricsService implements RootMetricsService {
+export class DefaultRootMetricsService {
   private readonly rootNamespace: string = 'backstage';
-  private readonly rootMetricsPrefix: string = 'backstage.core';
-  private readonly globalMeterProvider: MeterProvider;
-  private readonly rootLogger?: RootLoggerService;
+  private readonly rootMetricsPrefix: string = `${this.rootNamespace}.core`;
+  private readonly globalMeterProvider: MeterProvider =
+    metrics.getMeterProvider();
   private readonly instrumentFactory: InstrumentFactory;
 
-  private constructor({ rootLogger }: { rootLogger?: RootLoggerService }) {
-    this.rootLogger = rootLogger;
-    this.globalMeterProvider = metrics.getMeterProvider();
+  private constructor() {
     this.instrumentFactory = new InstrumentFactory({
       meter: this.globalMeterProvider.getMeter(this.rootNamespace),
       namespace: this.rootMetricsPrefix,
     });
   }
 
-  static forRoot(opts?: {
-    rootLogger?: RootLoggerService;
-  }): RootMetricsService {
-    return new DefaultRootMetricsService({
-      rootLogger: opts?.rootLogger,
-    });
+  static create(): RootMetricsService {
+    return new DefaultRootMetricsService();
   }
 
-  forPlugin(pluginId: string): MetricsService {
-    const namespace = `${this.rootNamespace}.plugin.${pluginId}`;
-    const meter = this.globalMeterProvider.getMeter(namespace);
-
-    return new DefaultMetricsService({
-      meter,
-      namespace: pluginId,
-    });
-  }
-
-  createCounter(name: string, opts?: MetricOptions): Counter {
+  createCounter<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Counter<TAttributes> {
     return this.instrumentFactory.createCounter(name, opts);
   }
 
-  createUpDownCounter(name: string, opts?: MetricOptions): UpDownCounter {
+  createUpDownCounter<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): UpDownCounter<TAttributes> {
     return this.instrumentFactory.createUpDownCounter(name, opts);
   }
 
-  createHistogram(name: string, opts?: MetricOptions): Histogram {
+  createHistogram<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Histogram<TAttributes> {
     return this.instrumentFactory.createHistogram(name, opts);
   }
 
-  createGauge(name: string, opts?: MetricOptions): Gauge {
+  createGauge<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Gauge<TAttributes> {
     return this.instrumentFactory.createGauge(name, opts);
   }
 
-  createObservableCounter(metric: ObservableMetric): ObservableCounter {
-    return this.instrumentFactory.createObservableCounter(metric);
+  createObservableCounter<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableCounter<TAttributes> {
+    return this.instrumentFactory.createObservableCounter(name, opts);
   }
 
-  createObservableUpDownCounter(
-    metric: ObservableMetric,
-  ): ObservableUpDownCounter {
-    return this.instrumentFactory.createObservableUpDownCounter(metric);
+  createObservableUpDownCounter<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableUpDownCounter<TAttributes> {
+    return this.instrumentFactory.createObservableUpDownCounter(name, opts);
   }
 
-  createObservableGauge(metric: ObservableMetric): ObservableGauge {
-    return this.instrumentFactory.createObservableGauge(metric);
+  createObservableGauge<TAttributes extends Attributes = Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableGauge<TAttributes> {
+    return this.instrumentFactory.createObservableGauge(name, opts);
   }
 }

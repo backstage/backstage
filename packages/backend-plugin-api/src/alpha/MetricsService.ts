@@ -19,7 +19,6 @@ import {
   Gauge,
   Histogram,
   MetricOptions,
-  ObservableCallback,
   ObservableCounter,
   ObservableGauge,
   ObservableUpDownCounter,
@@ -27,29 +26,7 @@ import {
 } from '@opentelemetry/api';
 
 /**
- * A metric instrument that can be observed.
- *
- * @alpha
- */
-export interface ObservableMetric {
-  /**
-   * The name of the instrument.
-   */
-  name: string;
-
-  /**
-   * The callback to be called when the instrument is observed.
-   */
-  observable: ObservableCallback<Attributes>;
-
-  /**
-   * The options for the instrument.
-   */
-  opts: MetricOptions;
-}
-
-/**
- * A service that provides a metrics facility.
+ * A service that provides a facility for emitting metrics.
  *
  * @alpha
  */
@@ -61,7 +38,10 @@ export interface MetricsService {
    * @param opts - The options for the metric.
    * @returns The counter metric.
    */
-  createCounter(name: string, opts?: MetricOptions): Counter;
+  createCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Counter<TAttributes>;
 
   /**
    * Creates a new up-down counter metric.
@@ -70,7 +50,10 @@ export interface MetricsService {
    * @param opts - The options for the metric.
    * @returns The up-down counter metric.
    */
-  createUpDownCounter(name: string, opts?: MetricOptions): UpDownCounter;
+  createUpDownCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): UpDownCounter<TAttributes>;
 
   /**
    * Creates a new histogram metric.
@@ -79,7 +62,10 @@ export interface MetricsService {
    * @param opts - The options for the metric.
    * @returns The histogram metric.
    */
-  createHistogram(name: string, opts?: MetricOptions): Histogram;
+  createHistogram<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Histogram<TAttributes>;
 
   /**
    * Creates a new gauge metric.
@@ -88,46 +74,51 @@ export interface MetricsService {
    * @param opts - The options for the metric.
    * @returns The gauge metric.
    */
-  createGauge(name: string, opts?: MetricOptions): Gauge;
+  createGauge<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Gauge<TAttributes>;
 
   /**
    * Creates a new observable counter metric.
    *
-   * @param metric - The metric to create.
+   * @param name - The name of the metric.
+   * @param opts - The options for the metric.
    * @returns The observable counter metric.
    */
-  createObservableCounter(metric: ObservableMetric): ObservableCounter;
+  createObservableCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableCounter<TAttributes>;
 
   /**
    * Creates a new observable up-down counter metric.
    *
-   * @param metric - The metric to create.
+   * @param name - The name of the metric.
+   * @param opts - The options for the metric.
    * @returns The observable up-down counter metric.
    */
-  createObservableUpDownCounter(
-    metric: ObservableMetric,
-  ): ObservableUpDownCounter;
+  createObservableUpDownCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableUpDownCounter<TAttributes>;
 
   /**
    * Creates a new observable gauge metric.
    *
-   * @param metric - The metric to create.
+   * @param name - The name of the metric.
+   * @param opts - The options for the metric.
    * @returns The observable gauge metric.
    */
-  createObservableGauge(metric: ObservableMetric): ObservableGauge;
+  createObservableGauge<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableGauge<TAttributes>;
 }
 
 /**
- * A service that provides root scoped metrics utilities
+ * A service that provides a facility for emitting root-scoped metrics.
  *
  * @alpha
  */
-export interface RootMetricsService extends MetricsService {
-  /**
-   * Creates a new metrics service for a plugin.
-   *
-   * @param pluginId - The ID of the plugin.
-   * @returns The metrics service for the plugin.
-   */
-  forPlugin(pluginId: string): MetricsService;
-}
+export interface RootMetricsService extends MetricsService {}

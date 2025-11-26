@@ -15,10 +15,7 @@
  */
 import { rootMetricsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DefaultRootMetricsService } from './DefaultRootMetricsService';
-import {
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 
 /**
  * Service factory responsible for creating the root metrics service
@@ -27,9 +24,6 @@ import {
  */
 export const rootMetricsServiceFactory = createServiceFactory({
   service: rootMetricsServiceRef,
-  deps: {
-    rootLogger: coreServices.rootLogger,
-  },
-  factory: ({ rootLogger }) =>
-    DefaultRootMetricsService.forRoot({ rootLogger }),
+  deps: {},
+  factory: () => DefaultRootMetricsService.create(),
 });

@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  MetricsService,
-  ObservableMetric,
-} from '@backstage/backend-plugin-api/alpha';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import {
   Counter,
   Histogram,
@@ -31,7 +28,7 @@ import {
 import z from 'zod';
 
 /**
- * Schema for validating metric names. A metric name should follow snake_case convention
+ * Schema for validating metric names. A metric name should follow `snake_case` convention
  *
  * {@link https://opentelemetry.io/docs/specs/semconv/general/metrics}
  */
@@ -40,7 +37,7 @@ const metricNameSchema = z
   .min(1, 'Metric name cannot be empty')
   .regex(
     /^[a-z0-9]+(_[a-z0-9]+)*$/,
-    "Metric name must follow snake_case convention (lowercase letters, numbers, and underscores only). Examples: 'request_count', 'api_response_time', 'http_errors'",
+    'Metric name must follow `snake_case` convention (lowercase letters, numbers, and underscores only).',
   );
 
 /**
@@ -122,41 +119,33 @@ export class InstrumentFactory implements MetricsService {
     return this.meter.createGauge(this.prefixName(name), opts);
   }
 
-  createObservableCounter(metric: ObservableMetric): ObservableCounter {
-    this.validateMetricName(metric.name);
+  createObservableCounter(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableCounter {
+    this.validateMetricName(name);
 
-    const observable = this.meter.createObservableCounter(
-      this.prefixName(metric.name),
-      metric.opts,
-    );
-
-    observable.addCallback(metric.observable);
-    return observable;
+    return this.meter.createObservableCounter(this.prefixName(name), options);
   }
 
   createObservableUpDownCounter(
-    metric: ObservableMetric,
+    name: string,
+    options?: MetricOptions,
   ): ObservableUpDownCounter {
-    this.validateMetricName(metric.name);
+    this.validateMetricName(name);
 
-    const observable = this.meter.createObservableUpDownCounter(
-      this.prefixName(metric.name),
-      metric.opts,
+    return this.meter.createObservableUpDownCounter(
+      this.prefixName(name),
+      options,
     );
-
-    observable.addCallback(metric.observable);
-    return observable;
   }
 
-  createObservableGauge(metric: ObservableMetric): ObservableGauge {
-    this.validateMetricName(metric.name);
+  createObservableGauge(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableGauge {
+    this.validateMetricName(name);
 
-    const observable = this.meter.createObservableGauge(
-      this.prefixName(metric.name),
-      metric.opts,
-    );
-
-    observable.addCallback(metric.observable);
-    return observable;
+    return this.meter.createObservableGauge(this.prefixName(name), options);
   }
 }
