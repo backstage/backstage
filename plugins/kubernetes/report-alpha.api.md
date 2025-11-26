@@ -180,6 +180,10 @@ export default _default;
 export const kubernetesTranslationRef: TranslationRef<
   'kubernetes',
   {
+    readonly 'entityContent.title': 'Kubernetes';
+    readonly 'kubernetesContentPage.title': 'Your Clusters';
+    readonly 'kubernetesContentPage.emptyState.title': 'No Kubernetes resources';
+    readonly 'kubernetesContentPage.emptyState.description': 'No resources on any known clusters for {{entityName}}';
     readonly 'kubernetesContentPage.permissionAlert.message': "To view Kubernetes objects, contact your portal administrator to give you the 'kubernetes.clusters.read' and 'kubernetes.resources.read' permission.";
     readonly 'kubernetesContentPage.permissionAlert.title': 'Permission required';
   }

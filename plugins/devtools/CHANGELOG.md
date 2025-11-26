@@ -1,5 +1,18 @@
 # @backstage/plugin-devtools
 
+## 0.1.34-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-permission-react@0.4.39-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.19
+
 ## 0.1.33
 
 ### Patch Changes

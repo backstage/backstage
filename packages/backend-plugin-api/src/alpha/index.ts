@@ -15,11 +15,6 @@
  */
 
 export type {
-  BackendFeatureMeta,
-  InstanceMetadataService,
-} from './InstanceMetadataService';
-
-export type {
   ActionsRegistryService,
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
@@ -32,7 +27,6 @@ export type { MetricsService, RootMetricsService } from './MetricsService';
 export {
   actionsRegistryServiceRef,
   actionsServiceRef,
-  instanceMetadataServiceRef,
   metricsServiceRef,
   rootMetricsServiceRef,
 } from './refs';

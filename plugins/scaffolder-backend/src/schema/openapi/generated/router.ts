@@ -173,7 +173,7 @@ export const spec = {
           description: {
             type: 'string',
           },
-          "'examples'": {
+          examples: {
             type: 'array',
             items: {
               $ref: '#/components/schemas/ActionExample',
@@ -588,7 +588,7 @@ export const spec = {
               },
             },
           },
-          "'examples'": {
+          examples: {
             type: 'array',
             items: {
               $ref: '#/components/schemas/ScaffolderUsageExample',
@@ -636,7 +636,7 @@ export const spec = {
               },
             },
           },
-          "'examples'": {
+          examples: {
             type: 'array',
             items: {
               $ref: '#/components/schemas/ScaffolderUsageExample',

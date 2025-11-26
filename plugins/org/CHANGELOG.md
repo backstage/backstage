@@ -1,5 +1,18 @@
 # @backstage/plugin-org
 
+## 0.6.47-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.7
+
 ## 0.6.46
 
 ### Patch Changes

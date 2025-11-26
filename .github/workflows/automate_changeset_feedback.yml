@@ -27,7 +27,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history

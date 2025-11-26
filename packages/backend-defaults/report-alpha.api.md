@@ -5,7 +5,6 @@
 ```ts
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
-import { InstanceMetadataService } from '@backstage/backend-plugin-api/alpha';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { RootMetricsService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
@@ -20,13 +19,6 @@ export const actionsRegistryServiceFactory: ServiceFactory<
 // @public (undocumented)
 export const actionsServiceFactory: ServiceFactory<
   ActionsService,
-  'plugin',
-  'singleton'
->;
-
-// @alpha @deprecated (undocumented)
-export const instanceMetadataServiceFactory: ServiceFactory<
-  InstanceMetadataService,
   'plugin',
   'singleton'
 >;

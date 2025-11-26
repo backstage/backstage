@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.18.3-next.0
+
+### Patch Changes
+
+- e15fdae: Made the github urls case insensitive.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
 ## 1.18.2
 
 ### Patch Changes
