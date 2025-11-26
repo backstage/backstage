@@ -458,9 +458,7 @@ describe('NotificationsEmailProcessor', () => {
             sender: 'backstage@backstage.io',
             replyTo: 'no-reply@backstage.io',
             sesConfig: {
-              sourceArn:
-                'arn:aws:ses:us-west-2:123456789012:identity/example.com',
-              fromArn:
+              fromEmailAddressIdentityArn:
                 'arn:aws:ses:us-west-2:123456789012:identity/example.com',
             },
           },
@@ -497,8 +495,8 @@ describe('NotificationsEmailProcessor', () => {
       text: 'https://example.org/notifications',
       to: 'mock@backstage.io',
       ses: {
-        SourceArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com',
-        FromArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com',
+        FromEmailAddressIdentityArn:
+          'arn:aws:ses:us-west-2:123456789012:identity/example.com',
       },
     });
   });

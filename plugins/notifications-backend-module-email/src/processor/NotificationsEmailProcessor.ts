@@ -45,6 +45,7 @@ import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { NotificationTemplateRenderer } from '../extensions';
 import Mail from 'nodemailer/lib/mailer';
 import pThrottle from 'p-throttle';
+import { SendEmailCommandInput } from '@aws-sdk/client-sesv2';
 
 export class NotificationsEmailProcessor implements NotificationProcessor {
   private transporter: any;
@@ -307,19 +308,22 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     return contentParts.join('\n\n');
   }
 
-  private async getSesOptions() {
+  private async getSesOptions(): Promise<
+    Partial<SendEmailCommandInput> | undefined
+  > {
     if (!this.sesConfig) {
       return undefined;
     }
-    const ses: Record<string, string> = {};
-    const sourceArn = this.sesConfig.getOptionalString('sourceArn');
-    const fromArn = this.sesConfig.getOptionalString('fromArn');
+    const ses: Partial<SendEmailCommandInput> = {};
+    const fromEmailAddressIdentityArn = this.sesConfig.getOptionalString(
+      'fromEmailAddressIdentityArn',
+    );
     const configurationSetName = this.sesConfig.getOptionalString(
       'configurationSetName',
     );
 
-    if (sourceArn) ses.SourceArn = sourceArn;
-    if (fromArn) ses.FromArn = fromArn;
+    if (fromEmailAddressIdentityArn)
+      ses.FromEmailAddressIdentityArn = fromEmailAddressIdentityArn;
     if (configurationSetName) ses.ConfigurationSetName = configurationSetName;
 
     return Object.keys(ses).length > 0 ? ses : undefined;
