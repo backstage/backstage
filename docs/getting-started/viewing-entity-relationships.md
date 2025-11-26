@@ -56,17 +56,16 @@ You can set the following filters:
   - Monotone
   - Step Before
 
-  ![Curve at Monotone and Step Before.](../assets/uiguide/curve-monotone-step-before.png)
+    ![Curve at Monotone and Step Before.](../assets/uiguide/curve-monotone-step-before.png)
 
 You can also toggle:
 
 - `Simplified`
-  - On = simple view
-  - Off = detailed view
+- On = simple view
+- Off = detailed view
 - `Merge relations`
 
   - On = You see the relationship from the selected entity to the nodes and from the nodes to the selected entity.
-
   - Off = You only see relations from the selected entity to its nodes.
 
-![Graphic showing results of toggling Merge relations.](../assets/uiguide/simplify-merge-relations-on-off.png)
+    ![Graphic showing results of toggling Merge relations.](../assets/uiguide/simplify-merge-relations-on-off.png)
