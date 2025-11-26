@@ -15,7 +15,7 @@
  */
 
 import { relative as relativePath } from 'path';
-import { spawn } from 'child_process';
+import spawn from 'cross-spawn';
 import { OptionValues } from 'commander';
 import { findPaths } from '@backstage/cli-common';
 import { platform } from 'os';
@@ -64,7 +64,6 @@ export function createCodemodAction(name: string) {
 
     const child = spawn(command, args, {
       stdio: 'inherit',
-      shell: true,
       env: {
         ...process.env,
         FORCE_COLOR: 'true',

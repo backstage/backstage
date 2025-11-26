@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { spawnSync } from 'child_process';
+import { sync as spawnSync } from 'cross-spawn';
 import { paths as cliPaths } from '../../../lib/paths';
 
 /**
@@ -40,7 +40,6 @@ export async function generateTypeDeclarations(tsconfigFilePath: string) {
     ].flat(),
     {
       stdio: 'inherit',
-      shell: true,
       cwd: cliPaths.targetRoot,
     },
   );

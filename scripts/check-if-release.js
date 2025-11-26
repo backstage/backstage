@@ -36,7 +36,7 @@ const execFile = promisify(execFileCb);
 
 async function runPlain(cmd, ...args) {
   try {
-    const { stdout } = await execFile(cmd, args, { shell: true });
+    const { stdout } = await execFile(cmd, args);
     return stdout.trim();
   } catch (error) {
     if (error.stderr) {

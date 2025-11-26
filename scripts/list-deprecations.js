@@ -50,11 +50,11 @@ class ReleaseProvider {
     );
     const releasePromise = Promise.resolve().then(async () => {
       // Find all tags that contain the commit
-      const { stdout: tagOutput } = await execFile(
-        'git',
-        ['tag', '--contains', commitSha],
-        { shell: true },
-      );
+      const { stdout: tagOutput } = await execFile('git', [
+        'tag',
+        '--contains',
+        commitSha,
+      ]);
 
       // Filter out just the releases
       const releases = tagOutput.split('\n').filter(l => l.startsWith('v'));
@@ -65,21 +65,19 @@ class ReleaseProvider {
         let newVersion;
 
         try {
-          const { stdout: content } = await execFile(
-            'git',
-            ['show', `${release}^:${pkgJsonPath}`],
-            { shell: true },
-          );
+          const { stdout: content } = await execFile('git', [
+            'show',
+            `${release}^:${pkgJsonPath}`,
+          ]);
           oldVersion = JSON.parse(content).version;
         } catch {
           /* */
         }
         try {
-          const { stdout: content } = await execFile(
-            'git',
-            ['show', `${release}:${pkgJsonPath}`],
-            { shell: true },
-          );
+          const { stdout: content } = await execFile('git', [
+            'show',
+            `${release}:${pkgJsonPath}`,
+          ]);
           newVersion = JSON.parse(content).version;
         } catch {
           /* */
@@ -165,11 +163,12 @@ async function main() {
           const deprecation = deprecationQueue.pop();
 
           const { file, packageDir, lineNumber: n, lineContent } = deprecation;
-          const { stdout: blameOutput } = await execFile(
-            'git',
-            ['blame', '--porcelain', `-L ${n},${n}`, file],
-            { shell: true },
-          );
+          const { stdout: blameOutput } = await execFile('git', [
+            'blame',
+            '--porcelain',
+            `-L ${n},${n}`,
+            file,
+          ]);
 
           const blameInfo = Object.fromEntries(
             blameOutput

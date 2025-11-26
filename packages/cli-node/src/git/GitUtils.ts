@@ -23,7 +23,6 @@ import { execFile, paths } from '../util';
 export async function runGit(...args: string[]) {
   try {
     const { stdout } = await execFile('git', args, {
-      shell: true,
       cwd: paths.targetRoot,
     });
     return stdout.trim().split(/\r\n|\r|\n/);
@@ -84,7 +83,6 @@ export class GitUtils {
     }
 
     const { stdout } = await execFile('git', ['show', `${showRef}:${path}`], {
-      shell: true,
       cwd: paths.targetRoot,
       maxBuffer: 1024 * 1024 * 50,
     });

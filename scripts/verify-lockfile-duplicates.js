@@ -72,7 +72,6 @@ async function main() {
         'yarn',
         ['dedupe', ...(fix ? [] : ['--check'])],
         {
-          shell: true,
           cwd: lockFile.directoryAbsolute,
         },
       );

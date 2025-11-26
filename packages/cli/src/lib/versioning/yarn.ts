@@ -31,7 +31,6 @@ export function detectYarnVersion(dir?: string): Promise<'classic' | 'berry'> {
   const promise = Promise.resolve().then(async () => {
     try {
       const { stdout } = await execFile('yarn', ['--version'], {
-        shell: true,
         cwd,
       });
       return stdout.trim().startsWith('1.') ? 'classic' : 'berry';

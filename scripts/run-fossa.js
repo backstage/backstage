@@ -82,11 +82,11 @@ async function runAnalyze(githubRef) {
   for (let attempt = 1; attempt <= 3; attempt++) {
     console.error(`Running fossa analyze, attempt ${attempt}`);
     try {
-      const { stdout, stderr } = await execFile(
-        'fossa',
-        ['analyze', '--branch', githubRef],
-        { shell: true },
-      );
+      const { stdout, stderr } = await execFile('fossa', [
+        'analyze',
+        '--branch',
+        githubRef,
+      ]);
       console.error(stderr);
       console.log(stdout);
 
