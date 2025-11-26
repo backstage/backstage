@@ -16,11 +16,11 @@
 
 import { assertError } from '@backstage/errors';
 import {
+  spawn,
   execFile as execFileCb,
   SpawnOptions,
   ChildProcess,
 } from 'child_process';
-import spawn from 'cross-spawn';
 import { promisify } from 'util';
 
 const execFile = promisify(execFileCb);
@@ -38,6 +38,7 @@ export function spawnPiped(cmd: string[], options?: SpawnOptions) {
 
   const child = spawn(cmd[0], cmd.slice(1), {
     stdio: 'pipe',
+    shell: true,
     ...options,
   });
   child.on('error', exitWithError);
@@ -59,6 +60,7 @@ export async function runPlain(cmd: string[], options?: SpawnOptions) {
   try {
     const { stdout } = await execFile(cmd[0], cmd.slice(1), {
       ...options,
+      shell: true,
     });
     return stdout.trim();
   } catch (error) {

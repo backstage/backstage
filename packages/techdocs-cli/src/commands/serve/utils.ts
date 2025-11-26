@@ -24,7 +24,7 @@ export async function checkIfDockerIsOperational(
   logger.info('Checking Docker status...');
   try {
     const runCheck = promisify(execFile);
-    await runCheck('docker', ['info']);
+    await runCheck('docker', ['info'], { shell: true });
     logger.info(
       'Docker is up and running. Proceed to starting up mkdocs server',
     );

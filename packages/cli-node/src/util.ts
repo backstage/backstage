@@ -17,9 +17,9 @@
 import {
   ChildProcess,
   execFile as execFileCb,
+  spawn,
   SpawnOptions,
 } from 'child_process';
-import spawn from 'cross-spawn';
 import { promisify } from 'util';
 import { findPaths } from '@backstage/cli-common';
 import { ExitCodeError } from './errors';
@@ -70,6 +70,7 @@ export async function run(
 
   const child = spawn(name, args, {
     stdio,
+    shell: true,
     ...options,
     env,
   });

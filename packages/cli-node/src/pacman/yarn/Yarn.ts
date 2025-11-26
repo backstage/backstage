@@ -99,6 +99,7 @@ function detectYarnVersion(dir?: string): Promise<YarnVersion> {
   const promise = Promise.resolve().then(async () => {
     try {
       const { stdout } = await execFile('yarn', ['--version'], {
+        shell: true,
         cwd,
       });
       const versionString = stdout.trim();

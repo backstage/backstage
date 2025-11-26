@@ -46,6 +46,7 @@ export async function command(): Promise<void> {
         } else if (cleanScript) {
           const result = await execFile('yarn', ['run', 'clean'], {
             cwd: pkg.dir,
+            shell: true,
           });
           process.stdout.write(result.stdout);
           process.stderr.write(result.stderr);

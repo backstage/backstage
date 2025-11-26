@@ -84,6 +84,7 @@ async function findCurrentReleaseVersion(repo) {
 async function findTipOfPatchBranch(repo, release) {
   try {
     await execFile('git', ['fetch', 'origin', PATCH_BRANCH_PREFIX + release], {
+      shell: true,
       cwd: repo.root.dir,
     });
   } catch (error) {
@@ -291,7 +292,7 @@ async function getCurrentBranch(repo) {
   const { stdout } = await execFile(
     'git',
     ['rev-parse', '--abbrev-ref', 'HEAD'],
-    { cwd: repo.root.dir },
+    { cwd: repo.root.dir, shell: true },
   );
   return stdout.trim();
 }

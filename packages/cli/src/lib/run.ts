@@ -16,10 +16,10 @@
 
 import {
   SpawnOptions,
+  spawn,
   ChildProcess,
   execFile as execFileCb,
 } from 'child_process';
-import spawn from 'cross-spawn';
 import { ExitCodeError } from './errors';
 import { promisify } from 'util';
 import { assertError, ForwardedError } from '@backstage/errors';
@@ -57,6 +57,7 @@ export async function run(
 
   const child = spawn(name, args, {
     stdio,
+    shell: true,
     ...options,
     env,
   });
@@ -73,7 +74,7 @@ export async function run(
 
 export async function runPlain(cmd: string, ...args: string[]) {
   try {
-    const { stdout } = await execFile(cmd, args);
+    const { stdout } = await execFile(cmd, args, { shell: true });
     return stdout.trim();
   } catch (error) {
     assertError(error);
@@ -89,7 +90,7 @@ export async function runPlain(cmd: string, ...args: string[]) {
 
 export async function runCheck(cmd: string, ...args: string[]) {
   try {
-    await execFile(cmd, args);
+    await execFile(cmd, args, { shell: true });
     return true;
   } catch (error) {
     return false;

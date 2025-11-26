@@ -54,7 +54,11 @@ export async function fetchPackageInfo(
 
   const cmd = yarnVersion === 'classic' ? ['info'] : ['npm', 'info'];
   try {
-    const { stdout: output } = await execFile('yarn', [...cmd, '--json', name]);
+    const { stdout: output } = await execFile(
+      'yarn',
+      [...cmd, '--json', name],
+      { shell: true },
+    );
 
     if (!output) {
       throw new NotFoundError(

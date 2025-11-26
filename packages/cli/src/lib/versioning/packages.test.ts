@@ -48,11 +48,11 @@ describe('fetchPackageInfo', () => {
     await expect(fetchPackageInfo('my-package')).resolves.toEqual({
       the: 'data',
     });
-    expect(runObj.execFile).toHaveBeenCalledWith('yarn', [
-      'info',
-      '--json',
-      'my-package',
-    ]);
+    expect(runObj.execFile).toHaveBeenCalledWith(
+      'yarn',
+      ['info', '--json', 'my-package'],
+      { shell: true },
+    );
   });
 
   it('should forward info for yarn berry', async () => {
@@ -64,12 +64,11 @@ describe('fetchPackageInfo', () => {
     await expect(fetchPackageInfo('my-package')).resolves.toEqual({
       the: 'data',
     });
-    expect(runObj.execFile).toHaveBeenCalledWith('yarn', [
-      'npm',
-      'info',
-      '--json',
-      'my-package',
-    ]);
+    expect(runObj.execFile).toHaveBeenCalledWith(
+      'yarn',
+      ['npm', 'info', '--json', 'my-package'],
+      { shell: true },
+    );
   });
 
   it('should throw if no info with yarn classic', async () => {
