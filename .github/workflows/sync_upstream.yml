@@ -20,6 +20,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Configure Git
         run: |
@@ -47,18 +48,49 @@ jobs:
           }
 
       - name: Push changes
+        continue-on-error: true
+        id: push_tags
         run: |
           git push origin master
-          git push origin --tags --force
+          git push origin --tags --force 2>&1 | tee push_output.txt || true
 
-      - name: Create summary
-        if: success()
+      - name: Report tag sync status
         run: |
-          echo "### :white_check_mark: Fork sync completed successfully" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Synced branches:** master" >> $GITHUB_STEP_SUMMARY
-          echo "**Tags synced:** All upstream tags" >> $GITHUB_STEP_SUMMARY
+          if grep -q "remote rejected" push_output.txt; then
+            echo "::warning::Some tags could not be synced due to permissions (workflow files in tags require 'workflows' permission)"
+            echo "### :warning: Partial sync completed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Synced branches:** master ✅" >> $GITHUB_STEP_SUMMARY
+            echo "**Tags synced:** Partial (some tags skipped due to workflow file permissions)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Tags containing workflow files require a Personal Access Token with 'workflows' scope." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### :white_check_mark: Fork sync completed successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Synced branches:** master ✅" >> $GITHUB_STEP_SUMMARY
+            echo "**Tags synced:** All upstream tags ✅" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+          rm -f push_output.txt
+
+      - name: Report tag sync status
+        run: |
+          if grep -q "remote rejected" push_output.txt; then
+            echo "::warning::Some tags could not be synced due to permissions (workflow files in tags require 'workflows' permission)"
+            echo "### :warning: Partial sync completed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Synced branches:** master ✅" >> $GITHUB_STEP_SUMMARY
+            echo "**Tags synced:** Partial (some tags skipped due to workflow file permissions)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Tags containing workflow files require a Personal Access Token with 'workflows' scope." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### :white_check_mark: Fork sync completed successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Synced branches:** master ✅" >> $GITHUB_STEP_SUMMARY
+            echo "**Tags synced:** All upstream tags ✅" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+          rm -f push_output.txt
 
       - name: Create failure summary
         if: failure()
