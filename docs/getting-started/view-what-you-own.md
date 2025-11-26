@@ -6,7 +6,7 @@ description: View the entities that you own either directly or through a group
 
 Audience: Developers
 
-You can own entities either directly or through a group of which you are a part.
+You can own entities either directly or through a group that you're part of.
 
 To view the entities that you own:
 
