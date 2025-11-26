@@ -49,7 +49,7 @@ jobs:
       - name: Push changes
         run: |
           git push origin master
-          git push origin --tags
+          git push origin --tags --force
 
       - name: Create summary
         if: success()
