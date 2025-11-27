@@ -64,7 +64,6 @@ export const ButtonIcon = forwardRef(
                 classNamesButtonIcon.content,
                 stylesButton[classNames.content],
                 stylesButtonIcon[classNamesButtonIcon.content],
-                className,
               )}
             >
               {icon}
@@ -79,7 +78,6 @@ export const ButtonIcon = forwardRef(
                   classNamesButtonIcon.spinner,
                   stylesButton[classNames.spinner],
                   stylesButtonIcon[classNamesButtonIcon.spinner],
-                  className,
                 )}
               >
                 <RiLoader4Line aria-hidden="true" />

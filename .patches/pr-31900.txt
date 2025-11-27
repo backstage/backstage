@@ -1,0 +1,1 @@
+Fix incorrectly applying className to three elements internally in ButtonIcon.

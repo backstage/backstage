@@ -1,5 +1,23 @@
 # @backstage/ui
 
+## 0.9.1
+
+### Patch Changes
+
+- 4514097: Fixed Checkbox indicator showing checkmark color when unchecked.
+
+  Affected components: Checkbox
+
+- 3fc4aeb: Fixed `ButtonIcon` incorrectly applying `className` to inner elements instead of only the root element.
+
+  Affected components: ButtonIcon
+
+- d43f3ce: Fixed Table Row component to correctly handle cases where no `href` is provided, preventing unnecessary router provider wrapping and fixing the cursor incorrectly showing as a pointer despite the element not being a link.
+
+  Affected components: Row
+
+- 2e92b5a: Fixed `useTable` hook to prioritize `providedRowCount` over data length for accurate row count in server-side pagination scenarios.
+
 ## 0.9.0
 
 ### Minor Changes
