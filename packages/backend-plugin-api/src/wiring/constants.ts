@@ -19,7 +19,7 @@
  *
  * @remarks
  * ids must only contain the letters `a` through `z` and digits, in groups separated by
- * dashes. Additionally, the very first character of each such group
+ * dashes. Additionally, the very first character of the first group
  * must be a letter, not a digit
  *
  * @public
