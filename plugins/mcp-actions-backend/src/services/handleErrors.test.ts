@@ -19,7 +19,6 @@ import {
   ForwardedError,
   InputError,
   NotFoundError,
-  ResponseError,
 } from '@backstage/errors';
 import { handleErrors } from './handleErrors';
 
