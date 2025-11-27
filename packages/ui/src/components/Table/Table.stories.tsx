@@ -16,6 +16,7 @@
 
 import { useState } from 'react';
 import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
+import { type Selection } from 'react-aria-components';
 import {
   Table,
   TableHeader,
@@ -26,6 +27,8 @@ import {
   CellProfile as CellProfileBUI,
   useTable,
 } from '.';
+import { RadioGroup, Radio } from '../RadioGroup';
+import { Flex } from '../Flex';
 import { MemoryRouter } from 'react-router-dom';
 import { data as data1Raw } from './mocked-data1';
 import { data as data2 } from './mocked-data2';
@@ -33,6 +36,7 @@ import { data as data3 } from './mocked-data3';
 import { data as data4 } from './mocked-data4';
 import { RiCactusLine } from '@remixicon/react';
 import { TablePagination } from '../TablePagination';
+import { Text } from '../Text';
 
 const meta = {
   title: 'Backstage UI/Table',
@@ -364,6 +368,511 @@ export const CellProfile: Story = {
           ))}
         </TableBody>
       </Table>
+    );
+  },
+};
+
+export const SelectionSingleToggle: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="single"
+        selectionBehavior="toggle"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2">
+            <Cell title="API Gateway" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionMultiToggle: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="multiple"
+        selectionBehavior="toggle"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2">
+            <Cell title="API Gateway" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionSingleReplace: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="single"
+        selectionBehavior="replace"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2">
+            <Cell title="API Gateway" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionMultiReplace: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="multiple"
+        selectionBehavior="replace"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2">
+            <Cell title="API Gateway" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionToggleWithActions: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="multiple"
+        selectionBehavior="toggle"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+        onRowAction={key => alert(`Opening ${key}`)}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2">
+            <Cell title="API Gateway" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionReplaceWithActions: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="multiple"
+        selectionBehavior="replace"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+        onRowAction={key => alert(`Opening ${key}`)}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2">
+            <Cell title="API Gateway" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionToggleWithLinks: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="multiple"
+        selectionBehavior="toggle"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1" href="https://example.com/library">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2" href="https://example.com/gateway">
+            <Cell title="API Gateway" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3" href="https://example.com/docs">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionReplaceWithLinks: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="multiple"
+        selectionBehavior="replace"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1" href="https://example.com/library">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2" href="https://example.com/gateway">
+            <Cell title="API Gateway" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3" href="https://example.com/docs">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionWithDisabledRows: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Table
+        selectionMode="multiple"
+        selectionBehavior="toggle"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+        disabledKeys={['2']}
+      >
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+          <Column>Owner</Column>
+          <Column>Type</Column>
+        </TableHeader>
+        <TableBody>
+          <Row id="1">
+            <Cell title="Component Library" />
+            <Cell title="Design System" />
+            <Cell title="library" />
+          </Row>
+          <Row id="2">
+            <Cell title="API Gateway (Disabled)" />
+            <Cell title="Platform" />
+            <Cell title="service" />
+          </Row>
+          <Row id="3">
+            <Cell title="Documentation Site" />
+            <Cell title="DevEx" />
+            <Cell title="website" />
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const SelectionWithPagination: Story = {
+  render: () => {
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    const { data, paginationProps } = useTable({
+      data: data1,
+      pagination: {
+        defaultPageSize: 5,
+      },
+    });
+
+    return (
+      <>
+        <Table
+          selectionMode="multiple"
+          selectionBehavior="toggle"
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
+        >
+          <TableHeader>
+            <Column isRowHeader>Name</Column>
+            <Column>Owner</Column>
+            <Column>Type</Column>
+          </TableHeader>
+          <TableBody>
+            {data?.map(item => (
+              <Row key={item.name} id={item.name}>
+                <Cell title={item.name} />
+                <Cell title={item.owner.name} />
+                <Cell title={item.type} />
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination {...paginationProps} />
+      </>
+    );
+  },
+};
+
+export const SelectionModePlayground: Story = {
+  render: () => {
+    const [selectionMode, setSelectionMode] = useState<'single' | 'multiple'>(
+      'multiple',
+    );
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Flex direction="column" gap="8">
+        <Table
+          selectionMode={selectionMode}
+          selectionBehavior="toggle"
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
+        >
+          <TableHeader>
+            <Column isRowHeader>Name</Column>
+            <Column>Owner</Column>
+            <Column>Type</Column>
+          </TableHeader>
+          <TableBody>
+            <Row id="1">
+              <Cell title="Component Library" />
+              <Cell title="Design System" />
+              <Cell title="library" />
+            </Row>
+            <Row id="2">
+              <Cell title="API Gateway" />
+              <Cell title="Platform" />
+              <Cell title="service" />
+            </Row>
+            <Row id="3">
+              <Cell title="Documentation Site" />
+              <Cell title="DevEx" />
+              <Cell title="website" />
+            </Row>
+          </TableBody>
+        </Table>
+        <div>
+          <Text as="h4" style={{ marginBottom: 'var(--bui-space-2)' }}>
+            Selection mode:
+          </Text>
+          <RadioGroup
+            aria-label="Selection mode"
+            orientation="horizontal"
+            value={selectionMode}
+            onChange={value => {
+              setSelectionMode(value as 'single' | 'multiple');
+              setSelectedKeys(new Set([]));
+            }}
+          >
+            <Radio value="single">single</Radio>
+            <Radio value="multiple">multiple</Radio>
+          </RadioGroup>
+        </div>
+      </Flex>
+    );
+  },
+};
+
+export const SelectionBehaviorPlayground: Story = {
+  render: () => {
+    const [selectionBehavior, setSelectionBehavior] = useState<
+      'toggle' | 'replace'
+    >('toggle');
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+
+    return (
+      <Flex direction="column" gap="8">
+        <Table
+          selectionMode="multiple"
+          selectionBehavior={selectionBehavior}
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
+        >
+          <TableHeader>
+            <Column isRowHeader>Name</Column>
+            <Column>Owner</Column>
+            <Column>Type</Column>
+          </TableHeader>
+          <TableBody>
+            <Row id="1">
+              <Cell title="Component Library" />
+              <Cell title="Design System" />
+              <Cell title="library" />
+            </Row>
+            <Row id="2">
+              <Cell title="API Gateway" />
+              <Cell title="Platform" />
+              <Cell title="service" />
+            </Row>
+            <Row id="3">
+              <Cell title="Documentation Site" />
+              <Cell title="DevEx" />
+              <Cell title="website" />
+            </Row>
+          </TableBody>
+        </Table>
+        <div>
+          <Text as="h4" style={{ marginBottom: 'var(--bui-space-2)' }}>
+            Selection behavior:
+          </Text>
+          <RadioGroup
+            aria-label="Selection behavior"
+            orientation="horizontal"
+            value={selectionBehavior}
+            onChange={value => {
+              setSelectionBehavior(value as 'toggle' | 'replace');
+              setSelectedKeys(new Set([]));
+            }}
+          >
+            <Radio value="toggle">toggle</Radio>
+            <Radio value="replace">replace</Radio>
+          </RadioGroup>
+        </div>
+      </Flex>
     );
   },
 };
