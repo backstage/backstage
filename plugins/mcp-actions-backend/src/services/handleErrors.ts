@@ -15,25 +15,15 @@
  */
 
 import {
+  CustomErrorBase,
   ErrorLike,
   ForwardedError,
   isError,
+  ResponseError,
   serializeError,
 } from '@backstage/errors';
 
 import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
-
-const knownErrors = new Set([
-  'InputError',
-  'AuthenticationError',
-  'NotAllowedError',
-  'NotFoundError',
-  'ConflictError',
-  'NotModifiedError',
-  'NotImplementedError',
-  'ResponseError',
-  'ServiceUnavailableError',
-]);
 
 // Extracts the cause error, if the provided error is `ResponseError` or
 // `ForwardedError` with a cause.
@@ -59,7 +49,9 @@ function describeError(err: unknown): string {
 
     const { name, message } = extractCause(serialized);
 
-    if (knownErrors.has(name)) {
+    // All Backstage errors except ResponseError extends CustomErrorBase, so we need
+    // to explicitly check both CustomErrorBase and ResponseError
+    if (err instanceof CustomErrorBase || err instanceof ResponseError) {
       return `${name}: ${message}`;
     }
   }
