@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
+import { ButtonLink } from '@backstage/ui';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Link as RouterLink, LinkProps } from 'react-router-dom';
@@ -56,8 +56,6 @@ export function CreateButton(props: CreateButtonProps) {
       <AddCircleOutline />
     </IconButton>
   ) : (
-    <Button component={RouterLink} variant="contained" color="primary" to={to}>
-      {title}
-    </Button>
+    <ButtonLink href={to as string}>{title}</ButtonLink>
   );
 }

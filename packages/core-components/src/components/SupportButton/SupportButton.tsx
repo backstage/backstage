@@ -15,24 +15,21 @@
  */
 
 import { configApiRef, useApi, useApp } from '@backstage/core-plugin-api';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import { Button, ButtonIcon, Flex, Text } from '@backstage/ui';
 import DialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
+import MaterialMenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
 import { Theme, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { ReactNode, Children, MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
-import { HelpIcon } from '../../icons';
 import { Link } from '../Link';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { RiQuestionLine } from '@remixicon/react';
 
 type SupportButtonProps = {
   title?: string;
@@ -57,7 +54,9 @@ const useStyles = makeStyles(
 
 const SupportIcon = ({ icon }: { icon: string | undefined }) => {
   const app = useApp();
-  const Icon = icon ? app.getSystemIcon(icon) ?? HelpIcon : HelpIcon;
+  const Icon = icon
+    ? app.getSystemIcon(icon) ?? RiQuestionLine
+    : RiQuestionLine;
   return <Icon />;
 };
 
@@ -67,7 +66,7 @@ const SupportLink = ({ link }: { link: SupportItemLink }) => (
 
 const SupportListItem = ({ item }: { item: SupportItem }) => {
   return (
-    <MenuItem button={false}>
+    <MaterialMenuItem button={false}>
       <ListItemIcon>
         <SupportIcon icon={item.icon} />
       </ListItemIcon>
@@ -82,7 +81,7 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
           [],
         )}
       />
-    </MenuItem>
+    </MaterialMenuItem>
   );
 };
 
@@ -114,29 +113,28 @@ export function SupportButton(props: SupportButtonProps) {
 
   return (
     <>
-      <Box display="flex" ml={1}>
+      <Flex ml="1">
         {isSmallScreen ? (
-          <IconButton
-            color="primary"
+          <ButtonIcon
             size="small"
             onClick={onClickHandler}
             data-testid="support-button"
             aria-label="Support"
-          >
-            <HelpIcon />
-          </IconButton>
+            icon={<RiQuestionLine />}
+            variant="secondary"
+          />
         ) : (
           <Button
             data-testid="support-button"
             aria-label="Support"
-            color="primary"
             onClick={onClickHandler}
-            startIcon={<HelpIcon />}
+            iconStart={<RiQuestionLine />}
+            variant="secondary"
           >
             {t('supportButton.title')}
           </Button>
         )}
-      </Box>
+      </Flex>
       <Popover
         data-testid="support-button-popover"
         open={popoverOpen}
@@ -156,23 +154,23 @@ export function SupportButton(props: SupportButtonProps) {
           autoFocusItem={Boolean(anchorEl)}
         >
           {title && (
-            <MenuItem
+            <MaterialMenuItem
               button={false}
               alignItems="flex-start"
               className={classes.menuItem}
             >
-              <Typography variant="subtitle1">{title}</Typography>
-            </MenuItem>
+              <Text variant="body-large">{title}</Text>
+            </MaterialMenuItem>
           )}
           {Children.map(children, (child, i) => (
-            <MenuItem
+            <MaterialMenuItem
               button={false}
               alignItems="flex-start"
               key={`child-${i}`}
               className={classes.menuItem}
             >
               {child}
-            </MenuItem>
+            </MaterialMenuItem>
           ))}
           {(items ?? configItems).map((item, i) => (
             <SupportListItem item={item} key={`item-${i}`} />
@@ -180,7 +178,7 @@ export function SupportButton(props: SupportButtonProps) {
         </MenuList>
         <DialogActions>
           <Button
-            color="primary"
+            variant="secondary"
             onClick={popoverCloseHandler}
             aria-label="Close"
           >
