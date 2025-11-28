@@ -128,6 +128,9 @@ export const coreComponentsTranslationRef = createTranslationRef({
         'You do not appear to be signed in. Please try reloading the browser page.',
     },
     logViewer: {
+      downloadBtn: {
+        tooltip: 'Download logs',
+      },
       searchField: {
         placeholder: 'Search',
       },

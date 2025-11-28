@@ -75,4 +75,41 @@ describe('RealLogViewer', () => {
 
     expect(copyToClipboard).toHaveBeenCalledWith('Derp');
   });
+
+  it('should render download button when showDownloadButton is true', async () => {
+    const onDownloadLog = jest.fn();
+    const rendered = await renderInTestApp(
+      <RealLogViewer
+        text={testText}
+        showDownloadButton
+        onDownloadLog={onDownloadLog}
+      />,
+    );
+
+    const downloadButton = rendered.getByRole('button', { name: /download/i });
+    expect(downloadButton).toBeInTheDocument();
+
+    await userEvent.click(downloadButton);
+    expect(onDownloadLog).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not render download button when showDownloadButton is false', async () => {
+    const rendered = await renderInTestApp(
+      <RealLogViewer text={testText} showDownloadButton={false} />,
+    );
+
+    const downloadButton = rendered.queryByRole('button', {
+      name: /download/i,
+    });
+    expect(downloadButton).not.toBeInTheDocument();
+  });
+
+  it('should not render download button by default', async () => {
+    const rendered = await renderInTestApp(<RealLogViewer text={testText} />);
+
+    const downloadButton = rendered.queryByRole('button', {
+      name: /download/i,
+    });
+    expect(downloadButton).not.toBeInTheDocument();
+  });
 });
