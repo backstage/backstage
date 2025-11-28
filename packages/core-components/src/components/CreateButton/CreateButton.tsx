@@ -15,11 +15,8 @@
  */
 
 import { ButtonLink } from '@backstage/ui';
-import IconButton from '@material-ui/core/IconButton';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { Link as RouterLink, LinkProps } from 'react-router-dom';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
-import { Theme } from '@material-ui/core/styles';
+import { LinkProps } from 'react-router-dom';
+import { RiAddLine } from '@remixicon/react';
 
 /**
  * Properties for {@link CreateButton}
@@ -37,25 +34,14 @@ export type CreateButtonProps = {
  */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;
-  const isXSScreen = useMediaQuery<Theme>(theme =>
-    theme.breakpoints.down('xs'),
-  );
 
   if (!to) {
     return null;
   }
 
-  return isXSScreen ? (
-    <IconButton
-      component={RouterLink}
-      color="primary"
-      title={title}
-      size="small"
-      to={to}
-    >
-      <AddCircleOutline />
-    </IconButton>
-  ) : (
-    <ButtonLink href={to as string}>{title}</ButtonLink>
+  return (
+    <ButtonLink href={to as string} iconStart={<RiAddLine />}>
+      {title}
+    </ButtonLink>
   );
 }
