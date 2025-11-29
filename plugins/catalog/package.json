@@ -81,6 +81,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@mui/utils": "^5.14.15",
+    "@remixicon/react": "^4.6.0",
     "classnames": "^2.3.1",
     "dataloader": "^2.0.0",
     "history": "^5.0.0",
