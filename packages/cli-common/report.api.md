@@ -53,13 +53,13 @@ export interface RunChildProcess extends ChildProcess {
 }
 
 // @public
-export type RunLogFunc = (data: Buffer) => void;
+export type RunOnOutput = (data: Buffer) => void;
 
 // @public
 export type RunOptions = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
-  stdoutLogFunc?: RunLogFunc;
-  stderrLogFunc?: RunLogFunc;
+  onStdout?: RunOnOutput;
+  onStderr?: RunOnOutput;
   stdio?: SpawnOptions['stdio'];
 };
 

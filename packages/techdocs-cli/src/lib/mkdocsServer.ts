@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { run, RunChildProcess, RunLogFunc } from '@backstage/cli-common';
+import { run, RunChildProcess, RunOnOutput } from '@backstage/cli-common';
 
 export const runMkdocsServer = (options: {
   port?: string;
@@ -22,8 +22,8 @@ export const runMkdocsServer = (options: {
   dockerImage?: string;
   dockerEntrypoint?: string;
   dockerOptions?: string[];
-  stdoutLogFunc?: RunLogFunc;
-  stderrLogFunc?: RunLogFunc;
+  onStdout?: RunOnOutput;
+  onStderr?: RunOnOutput;
   mkdocsConfigFileName?: string;
   mkdocsParameterClean?: boolean;
   mkdocsParameterDirtyReload?: boolean;
@@ -62,8 +62,8 @@ export const runMkdocsServer = (options: {
         ...(options.mkdocsParameterStrict ? ['--strict'] : []),
       ],
       {
-        stdoutLogFunc: options.stdoutLogFunc,
-        stderrLogFunc: options.stderrLogFunc,
+        onStdout: options.onStdout,
+        onStderr: options.onStderr,
       },
     );
   }
@@ -82,8 +82,8 @@ export const runMkdocsServer = (options: {
       ...(options.mkdocsParameterStrict ? ['--strict'] : []),
     ],
     {
-      stdoutLogFunc: options.stdoutLogFunc,
-      stderrLogFunc: options.stderrLogFunc,
+      onStdout: options.onStdout,
+      onStderr: options.onStderr,
     },
   );
 };

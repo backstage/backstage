@@ -39,8 +39,8 @@ export async function runYarnInstall() {
           ),
         ),
       },
-      stdoutLogFunc: data => installOutput.push(data),
-      stderrLogFunc: data => installOutput.push(data),
+      onStdout: data => installOutput.push(data),
+      onStderr: data => installOutput.push(data),
     }).waitForExit();
     spinner.succeed();
   } catch (error) {

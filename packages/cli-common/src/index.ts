@@ -30,6 +30,6 @@ export {
   runCheck,
   type RunChildProcess,
   type RunOptions,
-  type RunLogFunc,
+  type RunOnOutput,
 } from './run';
 export { ExitCodeError } from './errors';

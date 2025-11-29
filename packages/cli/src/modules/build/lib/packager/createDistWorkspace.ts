@@ -230,8 +230,8 @@ export async function createDistWorkspace(
         worker: async ({ name, dir, args }) => {
           await run(['yarn', 'run', 'build', ...(args || [])], {
             cwd: dir,
-            stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
-            stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),
+            onStdout: prefixLogFunc(`${name}: `, 'stdout'),
+            onStderr: prefixLogFunc(`${name}: `, 'stderr'),
           }).waitForExit();
         },
       });

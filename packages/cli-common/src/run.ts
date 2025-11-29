@@ -24,7 +24,7 @@ import { assertError } from '@backstage/errors';
  *
  * @public
  */
-export type RunLogFunc = (data: Buffer) => void;
+export type RunOnOutput = (data: Buffer) => void;
 
 /**
  * Options for running a child process with {@link run} or related functions.
@@ -33,8 +33,8 @@ export type RunLogFunc = (data: Buffer) => void;
  */
 export type RunOptions = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
-  stdoutLogFunc?: RunLogFunc;
-  stderrLogFunc?: RunLogFunc;
+  onStdout?: RunOnOutput;
+  onStderr?: RunOnOutput;
   stdio?: SpawnOptions['stdio'];
 };
 
@@ -69,12 +69,7 @@ export function run(args: string[], options: RunOptions = {}): RunChildProcess {
 
   const [name, ...cmdArgs] = args;
 
-  const {
-    stdoutLogFunc,
-    stderrLogFunc,
-    stdio: customStdio,
-    ...spawnOptions
-  } = options;
+  const { onStdout, onStderr, stdio: customStdio, ...spawnOptions } = options;
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     FORCE_COLOR: 'true',
@@ -85,8 +80,8 @@ export function run(args: string[], options: RunOptions = {}): RunChildProcess {
     customStdio ??
     ([
       'inherit',
-      stdoutLogFunc ? 'pipe' : 'inherit',
-      stderrLogFunc ? 'pipe' : 'inherit',
+      onStdout ? 'pipe' : 'inherit',
+      onStderr ? 'pipe' : 'inherit',
     ] as ('inherit' | 'pipe')[]);
 
   const child = spawn(name, cmdArgs, {
@@ -95,11 +90,11 @@ export function run(args: string[], options: RunOptions = {}): RunChildProcess {
     env,
   }) as RunChildProcess;
 
-  if (stdoutLogFunc && child.stdout) {
-    child.stdout.on('data', stdoutLogFunc);
+  if (onStdout && child.stdout) {
+    child.stdout.on('data', onStdout);
   }
-  if (stderrLogFunc && child.stderr) {
-    child.stderr.on('data', stderrLogFunc);
+  if (onStderr && child.stderr) {
+    child.stderr.on('data', onStderr);
   }
 
   const commandName = args.join(' ');
@@ -175,13 +170,13 @@ export async function runOutput(
   try {
     await run(args, {
       ...options,
-      stdoutLogFunc: data => {
+      onStdout: data => {
         stdoutChunks.push(data);
-        options?.stdoutLogFunc?.(data);
+        options?.onStdout?.(data);
       },
-      stderrLogFunc: data => {
+      onStderr: data => {
         stderrChunks.push(data);
-        options?.stderrLogFunc?.(data);
+        options?.onStderr?.(data);
       },
     }).waitForExit();
 

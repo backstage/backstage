@@ -17,7 +17,7 @@
 import { OptionValues } from 'commander';
 import path from 'path';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { findPaths, RunLogFunc } from '@backstage/cli-common';
+import { findPaths, RunOnOutput } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { createLogger } from '../../lib/utility';
@@ -82,7 +82,7 @@ export default async function serve(opts: OptionValues) {
   }
 
   let mkdocsServerHasStarted = false;
-  const mkdocsLogFunc: RunLogFunc = data => {
+  const mkdocsLogFunc: RunOnOutput = data => {
     // Sometimes the lines contain an unnecessary extra new line
     const logLines = data.toString().split('\n');
     const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
@@ -112,8 +112,8 @@ export default async function serve(opts: OptionValues) {
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
-    stdoutLogFunc: mkdocsLogFunc,
-    stderrLogFunc: mkdocsLogFunc,
+    onStdout: mkdocsLogFunc,
+    onStderr: mkdocsLogFunc,
     mkdocsConfigFileName: mkdocsYmlPath,
     mkdocsParameterClean: opts.mkdocsParameterClean,
     mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyreload,
