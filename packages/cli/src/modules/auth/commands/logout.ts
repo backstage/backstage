@@ -24,7 +24,7 @@ import {
 import { httpJson } from '../lib/http';
 import { pickInstance } from '../lib/prompt';
 
-export default async function main(argv: string[]) {
+export async function logout(argv: string[]) {
   const parsed = await yargs(argv)
     .option('instance', {
       type: 'string',
