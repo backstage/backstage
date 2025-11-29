@@ -18,7 +18,7 @@ import yargs from 'yargs';
 import { setSelectedInstance } from '../lib/storage';
 import { pickInstance } from '../lib/prompt';
 
-export default async function main(argv: string[]) {
+export async function select(argv: string[]) {
   const parsed = await yargs(argv)
     .option('instance', {
       type: 'string',

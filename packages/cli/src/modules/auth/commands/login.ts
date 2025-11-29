@@ -33,7 +33,7 @@ import glob from 'glob';
 import YAML from 'yaml';
 import inquirer from 'inquirer';
 
-export default async function main(argv: string[]) {
+export async function login(argv: string[]) {
   const parsed = await yargs(argv)
     .option('backend-url', { type: 'string', desc: 'Backend base URL' })
     .option('no-browser', {
