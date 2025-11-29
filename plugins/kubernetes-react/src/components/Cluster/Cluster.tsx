@@ -47,7 +47,6 @@ import { PodMetricsContext } from '../../hooks/usePodMetrics';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { kubernetesReactTranslationRef } from '../../translation';
 import { SecretsAccordions } from '../SecretsAccordions';
-import { PersistentVolumesAccordions } from '../PersistentVolumesAccordions';
 
 type ClusterSummaryProps = {
   clusterName: string;
