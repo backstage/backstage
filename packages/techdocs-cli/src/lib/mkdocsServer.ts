@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-import { ChildProcess } from 'child_process';
-import { run, LogFunc } from './run';
+import { run, RunChildProcess, RunLogFunc } from '@backstage/cli-common';
 
-export const runMkdocsServer = async (options: {
+export const runMkdocsServer = (options: {
   port?: string;
   useDocker?: boolean;
   dockerImage?: string;
   dockerEntrypoint?: string;
   dockerOptions?: string[];
-  stdoutLogFunc?: LogFunc;
-  stderrLogFunc?: LogFunc;
+  stdoutLogFunc?: RunLogFunc;
+  stderrLogFunc?: RunLogFunc;
   mkdocsConfigFileName?: string;
   mkdocsParameterClean?: boolean;
   mkdocsParameterDirtyReload?: boolean;
   mkdocsParameterStrict?: boolean;
-}): Promise<ChildProcess> => {
+}): RunChildProcess => {
   const port = options.port ?? '8000';
   const useDocker = options.useDocker ?? true;
   const dockerImage = options.dockerImage ?? 'spotify/techdocs';
 
   if (useDocker) {
-    return await run(
-      'docker',
+    return run(
       [
+        'docker',
         'run',
         '--rm',
         '-w',
@@ -69,9 +68,9 @@ export const runMkdocsServer = async (options: {
     );
   }
 
-  return await run(
-    'mkdocs',
+  return run(
     [
+      'mkdocs',
       'serve',
       '--dev-addr',
       `127.0.0.1:${port}`,

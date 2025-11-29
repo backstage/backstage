@@ -17,10 +17,9 @@
 import { OptionValues } from 'commander';
 import path from 'path';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { findPaths } from '@backstage/cli-common';
+import { findPaths, RunLogFunc } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
-import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
@@ -83,7 +82,7 @@ export default async function serve(opts: OptionValues) {
   }
 
   let mkdocsServerHasStarted = false;
-  const mkdocsLogFunc: LogFunc = data => {
+  const mkdocsLogFunc: RunLogFunc = data => {
     // Sometimes the lines contain an unnecessary extra new line
     const logLines = data.toString().split('\n');
     const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
@@ -107,7 +106,7 @@ export default async function serve(opts: OptionValues) {
   // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
   // Had me questioning this whole implementation for half an hour.
   logger.info('Starting mkdocs server.');
-  const mkdocsChildProcess = await runMkdocsServer({
+  const mkdocsChildProcess = runMkdocsServer({
     port: opts.mkdocsPort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
@@ -161,7 +160,7 @@ export default async function serve(opts: OptionValues) {
       );
     });
 
-  await waitForSignal([mkdocsChildProcess]);
+  await mkdocsChildProcess.waitForExit();
 
   if (configIsTemporary) {
     process.on('exit', async () => {
