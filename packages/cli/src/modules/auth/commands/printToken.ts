@@ -18,7 +18,7 @@ import yargs from 'yargs';
 import { accessTokenNeedsRefresh, refreshAccessToken } from '../lib/auth';
 import { getSelectedInstance } from '../lib/storage';
 
-export default async function main(argv: string[]) {
+export async function printToken(argv: string[]) {
   const parsed = await yargs(argv)
     .option('instance', {
       type: 'string',

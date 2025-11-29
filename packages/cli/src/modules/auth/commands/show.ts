@@ -19,7 +19,7 @@ import { httpJson } from '../lib/http';
 import { getSelectedInstance } from '../lib/storage';
 import { accessTokenNeedsRefresh, refreshAccessToken } from '../lib/auth';
 
-export default async function main(argv: string[]) {
+export async function show(argv: string[]) {
   const parsed = await yargs(argv)
     .option('instance', {
       type: 'string',

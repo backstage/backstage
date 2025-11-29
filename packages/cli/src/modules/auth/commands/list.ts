@@ -16,7 +16,7 @@
 
 import { getAllInstances } from '../lib/storage';
 
-export default async function main(_argv: string[]) {
+export async function list(_argv: string[]) {
   const { instances, selected } = await getAllInstances();
   if (!instances.length) {
     process.stderr.write('No instances found\n');

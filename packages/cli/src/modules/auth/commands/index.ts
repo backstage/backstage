@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export { default as login } from './login';
-export { default as logout } from './logout';
-export { default as show } from './show';
-export { default as list } from './list';
-export { default as printToken } from './printToken';
-export { default as select } from './select';
+export { login } from './login';
+export { logout } from './logout';
+export { show } from './show';
+export { list } from './list';
+export { printToken } from './printToken';
+export { select } from './select';
