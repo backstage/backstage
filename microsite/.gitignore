@@ -3,3 +3,6 @@
 build
 i18n
 .docusaurus
+versioned_docs
+versioned_sidebars
+versions.json

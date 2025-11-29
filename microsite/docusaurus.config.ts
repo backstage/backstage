@@ -24,9 +24,12 @@ import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
 import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
+import semver from 'semver';
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
+
+const backstageVersion = require('../package.json').version;
 
 const useVersionedDocs = require('fs').existsSync('versions.json');
 
@@ -195,7 +198,7 @@ const config: Config = {
         redirects: [
           {
             from: '/docs',
-            to: '/docs/overview/what-is-backstage',
+            to: '/docs/landing-page/doc-landing-page',
           },
           {
             from: '/docs/features/software-catalog/software-catalog-overview',
@@ -273,6 +276,14 @@ const config: Config = {
             from: '/docs/getting-started/app-custom-theme',
             to: '/docs/conf/user-interface',
           },
+          ...(semver.gt(backstageVersion, '1.40.0')
+            ? [
+                {
+                  from: '/docs/not-a-real-path',
+                  to: '/docs/auth/not-a-real-path',
+                },
+              ]
+            : []),
         ],
       }),
     [
