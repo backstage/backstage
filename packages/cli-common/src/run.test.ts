@@ -122,9 +122,41 @@ describe('run', () => {
       activeChildren.push(child);
       // Wait for it to complete
       await child.waitForExit();
-      await expect(
-        Promise.race([child.waitForExit(), 'pending']),
-      ).resolves.not.toBe('pending');
+      // Call waitForExit again - should return immediately
+      await expect(child.waitForExit()).resolves.not.toThrow();
+    });
+
+    it('should handle multiple simultaneous calls to waitForExit', async () => {
+      const child = run(['node', '--version']);
+      activeChildren.push(child);
+      // Call waitForExit multiple times simultaneously
+      const [result1, result2, result3] = await Promise.all([
+        child.waitForExit(),
+        child.waitForExit(),
+        child.waitForExit(),
+      ]);
+      // All should resolve successfully
+      expect(result1).toBeUndefined();
+      expect(result2).toBeUndefined();
+      expect(result3).toBeUndefined();
+    });
+
+    it('should handle multiple simultaneous calls to waitForExit with error', async () => {
+      const child = run(['node', '--eval', 'process.exit(1)']);
+      activeChildren.push(child);
+      // Call waitForExit multiple times simultaneously
+      const promises = [
+        child.waitForExit(),
+        child.waitForExit(),
+        child.waitForExit(),
+      ];
+      // All should reject with the same error
+      for (const promise of promises) {
+        await expect(promise).rejects.toThrow(ExitCodeError);
+        await expect(promise).rejects.toThrow(
+          /Command 'node --eval process\.exit\(1\)' exited with code 1/,
+        );
+      }
     });
 
     it('should handle signal handlers cleanup', async () => {

@@ -99,49 +99,60 @@ export function run(args: string[], options: RunOptions = {}): RunChildProcess {
 
   const commandName = args.join(' ');
 
-  let signalHandlersRegistered = false;
-  const handleSignal = () => {
-    if (!child.killed && child.exitCode === null) {
-      child.kill();
-    }
-  };
+  let waitPromise: Promise<void> | undefined;
 
   child.waitForExit = async (): Promise<void> => {
-    // Register signal handlers to kill child process on SIGINT/SIGTERM
-    if (!signalHandlersRegistered) {
-      for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-        process.on(signal, handleSignal);
-      }
-      signalHandlersRegistered = true;
+    if (waitPromise) {
+      return waitPromise;
     }
 
-    try {
+    waitPromise = new Promise<void>((resolve, reject) => {
       if (typeof child.exitCode === 'number') {
         if (child.exitCode) {
-          throw new ExitCodeError(child.exitCode, commandName);
+          reject(new ExitCodeError(child.exitCode, commandName));
+        } else {
+          resolve();
         }
         return;
       }
 
-      await new Promise<void>((resolve, reject) => {
-        child.once('error', reject);
-        child.once('exit', code => {
-          if (code) {
-            reject(new ExitCodeError(code, commandName));
-          } else {
-            resolve();
-          }
-        });
-      });
-    } finally {
-      // Clean up signal handlers when done waiting
-      if (signalHandlersRegistered) {
-        for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-          process.removeListener(signal, handleSignal);
-        }
-        signalHandlersRegistered = false;
+      function onError(error: Error) {
+        cleanup();
+        reject(error);
       }
-    }
+
+      function onExit(code: number | null) {
+        cleanup();
+        if (code) {
+          reject(new ExitCodeError(code, commandName));
+        } else {
+          resolve();
+        }
+      }
+
+      function onSignal() {
+        if (!child.killed && child.exitCode === null) {
+          child.kill();
+        }
+      }
+
+      function cleanup() {
+        for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+          process.removeListener(signal, onSignal);
+        }
+        child.removeListener('error', onError);
+        child.removeListener('exit', onExit);
+      }
+
+      child.once('error', onError);
+      child.once('exit', onExit);
+
+      for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+        process.addListener(signal, onSignal);
+      }
+    });
+
+    return waitPromise;
   };
 
   return child;
