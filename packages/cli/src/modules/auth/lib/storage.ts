@@ -103,7 +103,7 @@ export async function getSelectedInstance(
   const { selected } = await getAllInstances();
   if (!selected) {
     throw new Error(
-      'Not instances found. Run "auth login" to authenticate first.',
+      'No instances found. Run "auth login" to authenticate first.',
     );
   }
   return selected;
