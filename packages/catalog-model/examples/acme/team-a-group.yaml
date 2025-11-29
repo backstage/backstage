@@ -54,7 +54,7 @@ metadata:
   name: guest
 spec:
   profile:
-    displayName: Guest User
+    displayName: Guest User 
     email: guest@example.com
   memberOf: [team-a]
 ---
