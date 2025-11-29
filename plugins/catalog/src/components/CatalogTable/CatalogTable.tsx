@@ -34,10 +34,7 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import Typography from '@material-ui/core/Typography';
 import { visuallyHidden } from '@mui/utils';
-import Edit from '@material-ui/icons/Edit';
-import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import { ReactNode, useMemo } from 'react';
@@ -49,6 +46,8 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
 import { FavoriteToggleIcon } from '@backstage/core-components';
+import { Text } from '@backstage/ui';
+import { RiEdit2Line, RiExternalLinkLine } from '@remixicon/react';
 
 /**
  * Props for {@link CatalogTable}.
@@ -136,8 +135,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography style={visuallyHidden}>{title}</Typography>
-            <OpenInNew fontSize="small" />
+            <Text style={visuallyHidden}>{title}</Text>
+            <RiExternalLinkLine fontSize="small" />
           </>
         ),
         tooltip: title,
@@ -155,8 +154,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography style={visuallyHidden}>{title}</Typography>
-            <Edit fontSize="small" />
+            <Text style={visuallyHidden}>{title}</Text>
+            <RiEdit2Line fontSize="small" />
           </>
         ),
         tooltip: title,
@@ -224,9 +223,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
         emptyContent={emptyContent}
         isLoading={loading}
         title={title}
-        actions={actions}
+        // TODO: Add actions back in, or not?
+        // actions={actions}
         subtitle={subtitle}
-        options={options}
+        // TODO: Add options back in, or not?
+        // options={options}
         data={entities.map(toEntityRow)}
       />
     );
