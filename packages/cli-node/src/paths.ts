@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-import { paths } from '../paths';
-import fs from 'fs-extra';
+import { findPaths } from '@backstage/cli-common';
 
-/**
- * Returns try if the current project is a monorepo.
- *
- * @public
- */
-export async function isMonoRepo(): Promise<boolean> {
-  const rootPackageJsonPath = paths.resolveTargetRoot('package.json');
-  try {
-    const pkg = await fs.readJson(rootPackageJsonPath);
-    return Boolean(pkg?.workspaces?.packages);
-  } catch (error) {
-    return false;
-  }
-}
+/* eslint-disable-next-line no-restricted-syntax */
+export const paths = findPaths(__dirname);
