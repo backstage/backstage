@@ -205,7 +205,7 @@ describe('storage', () => {
 
     it('should throw error if no instances exist', async () => {
       await expect(getSelectedInstance()).rejects.toThrow(
-        'Not instances found. Run "auth login" to authenticate first.',
+        'No instances found. Run "auth login" to authenticate first.',
       );
     });
   });
