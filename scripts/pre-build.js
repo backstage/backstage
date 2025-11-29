@@ -22,7 +22,7 @@ id: "index"
 title: "Package Index"
 description: "Index of all Backstage Packages"
 ---
-Run \`yarn build:api-docs\` to generate the API docs.
+Please use [the new API documentation](https://backstage.io/api/stable) for more information.
 `;
 
 async function main() {
