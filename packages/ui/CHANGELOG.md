@@ -1,5 +1,18 @@
 # @backstage/ui
 
+## 0.9.1-next.0
+
+### Patch Changes
+
+- b3ad928: Fixed Table Row component to correctly handle cases where no `href` is provided, preventing unnecessary router provider wrapping and fixing the cursor incorrectly showing as a pointer despite the element not being a link.
+
+  Affected components: Row
+
+- fe7c751: Fixed `useTable` hook to prioritize `providedRowCount` over data length for accurate row count in server-side pagination scenarios.
+- c145031: Fixed Table column sorting indicator to show up arrow when no sort is active, correctly indicating that clicking will sort ascending.
+
+  Affected components: Column
+
 ## 0.9.0
 
 ### Minor Changes

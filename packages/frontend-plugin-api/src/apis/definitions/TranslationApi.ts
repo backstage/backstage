@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
+import { ApiRef, createApiRef } from '../system';
 import { Expand, ExpandRecursive, Observable } from '@backstage/types';
-import { TranslationRef } from '../../translation/TranslationRef';
+import { TranslationRef } from '../../translation';
 import { JSX } from 'react';
 
 /**
@@ -305,7 +305,7 @@ type TranslationFunctionOptions<
   >
 >;
 
-/** @alpha */
+/** @public */
 export type TranslationFunction<TMessages extends { [key in string]: string }> =
   CollapsedMessages<TMessages> extends infer IMessages extends {
     [key in string]: string;
@@ -340,11 +340,11 @@ export type TranslationFunction<TMessages extends { [key in string]: string }> =
       }
     : never;
 
-/** @alpha */
+/** @public */
 export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
   { ready: false } | { ready: true; t: TranslationFunction<TMessages> };
 
-/** @alpha */
+/** @public */
 export type TranslationApi = {
   getTranslation<TMessages extends { [key in string]: string }>(
     translationRef: TranslationRef<string, TMessages>,
@@ -356,7 +356,7 @@ export type TranslationApi = {
 };
 
 /**
- * @alpha
+ * @public
  */
 export const translationApiRef: ApiRef<TranslationApi> = createApiRef({
   id: 'core.translation',

@@ -31,6 +31,8 @@ import { useEvents } from './useEvents';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { DismissableBanner } from '@backstage/core-components';
 import { Event } from 'kubernetes-models/v1';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 /**
  * Props for Events
@@ -59,8 +61,9 @@ export const EventsContent = ({
   events,
   warningEventsOnly,
 }: EventsContentProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   if (events.length === 0) {
-    return <Typography>No events found</Typography>;
+    return <Typography>{t('events.noEventsFound')}</Typography>;
   }
 
   return (

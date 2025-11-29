@@ -1,5 +1,18 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.2-next.0
+
+### Patch Changes
+
+- 0bc1ce9: Fixed a versioning conflict that could result in a `.withContext` is not a function error.
+- 97cd16f: Reversed the relationship between the old `@backstage/core-plugin-api` and the new `@backstage/frontend-plugin-api`. Previously, the a lot of API definitions and utilities where defined in the old and re-exported from the old, but this change flips that around so that they now reside in the new package and are re-exported from the old. The external API of both packages remain the same, but this is a step towards being able to add further compatibility with the new frontend system built into the old.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 0.13.0
 
 ### Minor Changes

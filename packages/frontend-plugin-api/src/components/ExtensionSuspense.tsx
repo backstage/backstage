@@ -15,7 +15,7 @@
  */
 
 import { ReactNode, Suspense } from 'react';
-import { useApp } from '@backstage/core-plugin-api';
+import { Progress } from './DefaultSwappableComponents';
 
 /** @public */
 export interface ExtensionSuspenseProps {
@@ -25,9 +25,6 @@ export interface ExtensionSuspenseProps {
 /** @public */
 export function ExtensionSuspense(props: ExtensionSuspenseProps) {
   const { children } = props;
-
-  const app = useApp();
-  const { Progress } = app.getComponents();
 
   return <Suspense fallback={<Progress />}>{children}</Suspense>;
 }

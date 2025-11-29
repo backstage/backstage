@@ -160,6 +160,10 @@ export type WorkflowResponse = { output: { [key: string]: JsonValue } };
 
 export interface WorkflowRunner {
   execute(task: TaskContext): Promise<WorkflowResponse>;
+  getEnvironmentConfig?(): Promise<{
+    parameters: JsonObject;
+    secrets?: TaskSecrets;
+  }>;
 }
 
 export type TaskTrackType = {

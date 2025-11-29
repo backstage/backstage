@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications",
-  "version": "0.5.11",
+  "version": "0.5.12-next.0",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "notifications",
@@ -51,7 +51,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",

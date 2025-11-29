@@ -1265,6 +1265,8 @@ export const TableDefinition: {
     readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
     readonly cellProfileName: 'bui-TableCellProfileName';
     readonly cellProfileLink: 'bui-TableCellProfileLink';
+    readonly headSelection: 'bui-TableHeadSelection';
+    readonly cellSelection: 'bui-TableCellSelection';
   };
 };
 

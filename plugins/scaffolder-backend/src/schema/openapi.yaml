@@ -113,7 +113,7 @@ components:
           type: string
         description:
           type: string
-        "'examples'":
+        examples:
           type: array
           items:
             $ref: '#/components/schemas/ActionExample'
@@ -417,7 +417,7 @@ components:
                 $ref: '#/components/schemas/JsonObject'
             output:
               $ref: '#/components/schemas/JsonObject'
-        "'examples'":
+        examples:
           type: array
           items:
             $ref: '#/components/schemas/ScaffolderUsageExample'
@@ -449,7 +449,7 @@ components:
                 $ref: '#/components/schemas/JsonObject'
             output:
               $ref: '#/components/schemas/JsonObject'
-        "'examples'":
+        examples:
           type: array
           items:
             $ref: '#/components/schemas/ScaffolderUsageExample'

@@ -20,13 +20,13 @@ import {
   translationApiRef,
   TranslationFunction,
   TranslationSnapshot,
-} from '../apis/alpha';
+} from '../apis/definitions/TranslationApi';
 import { TranslationRef } from './TranslationRef';
 
 // Make sure we don't fill the logs with loading errors for the same ref
 const loggedRefs = new WeakSet<TranslationRef<string, {}>>();
 
-/** @alpha */
+/** @public */
 export const useTranslationRef = <
   TMessages extends { [key in string]: string },
 >(

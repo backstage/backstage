@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import {
   actionsRouteRef,
@@ -60,7 +59,7 @@ const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'scaffolder',
   info: { packageJson: () => import('../../package.json') },
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: rootRouteRef,
     selectedTemplate: selectedTemplateRouteRef,
     ongoingTask: scaffolderTaskRouteRef,
@@ -68,11 +67,11 @@ export default createFrontendPlugin({
     listTasks: scaffolderListTaskRouteRef,
     edit: editRouteRef,
     templatingExtensions: templatingExtensionsRouteRef,
-  }),
-  externalRoutes: convertLegacyRouteRefs({
+  },
+  externalRoutes: {
     registerComponent: registerComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
-  }),
+  },
   extensions: [
     scaffolderApi,
     scaffolderPage,

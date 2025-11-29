@@ -27,11 +27,11 @@ import { useTranslationRef } from './useTranslationRef';
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../..//core-app-api/src/apis/implementations/AppLanguageApi';
+import { createTranslationResource } from './TranslationResource';
 import {
-  createTranslationResource,
   TranslationApi,
   translationApiRef,
-} from '../alpha';
+} from '../apis/definitions/TranslationApi';
 import { ErrorApi, errorApiRef } from '../apis';
 
 const plainRef = createTranslationRef({

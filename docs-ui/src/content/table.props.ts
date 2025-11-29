@@ -326,3 +326,52 @@ const { data: paginatedData, paginationProps } = useTable({
   </TableBody>
 </Table>
 <TablePagination {...paginationProps} />`;
+
+export const tableSelectionActionsSnippet = `import { Table, TableHeader, TableBody, Column, Row, Cell } from '@backstage/ui';
+
+function MyTable() {
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
+
+  return (
+    <Table
+      selectionMode="multiple"
+      selectionBehavior="toggle"
+      selectedKeys={selectedKeys}
+      onSelectionChange={setSelectedKeys}
+      onRowAction={(key) => console.log('Opening', key)}
+    >
+      <TableHeader>
+        <Column isRowHeader>Name</Column>
+        <Column>Status</Column>
+      </TableHeader>
+      <TableBody>
+        <Row id="1">
+          <Cell title="Component A" />
+          <Cell title="Active" />
+        </Row>
+        <Row id="2">
+          <Cell title="Component B" />
+          <Cell title="Inactive" />
+        </Row>
+      </TableBody>
+    </Table>
+  );
+}`;
+
+export const tableSelectionModeSnippet = `<Table
+  selectionMode="multiple" // or "single"
+  selectionBehavior="toggle"
+  selectedKeys={selectedKeys}
+  onSelectionChange={setSelectedKeys}
+>
+  {/* ... */}
+</Table>`;
+
+export const tableSelectionBehaviorSnippet = `<Table
+  selectionMode="multiple"
+  selectionBehavior="toggle" // or "replace"
+  selectedKeys={selectedKeys}
+  onSelectionChange={setSelectedKeys}
+>
+  {/* ... */}
+</Table>`;

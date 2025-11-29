@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-unprocessed-entities",
-  "version": "0.2.23",
+  "version": "0.2.24-next.0",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog-unprocessed-entities",
@@ -51,7 +51,6 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",

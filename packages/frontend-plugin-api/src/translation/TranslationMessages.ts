@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef } from './TranslationRef';
 
 /**
  * Represents a collection of messages to be provided for a given translation ref.
  *
- * @alpha
+ * @public
  * @remarks
  *
  * This collection of messages can either be used directly as an override for the
@@ -43,7 +43,7 @@ export interface TranslationMessages<
 /**
  * Options for {@link createTranslationMessages}.
  *
- * @alpha
+ * @public
  */
 export interface TranslationMessagesOptions<
   TId extends string,
@@ -62,7 +62,7 @@ export interface TranslationMessagesOptions<
 /**
  * Creates a collection of messages for a given translation ref.
  *
- * @alpha
+ * @public
  */
 export function createTranslationMessages<
   TId extends string,

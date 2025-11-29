@@ -106,7 +106,6 @@ it can be migrated as the following, keeping in mind that you may need to switch
 
 ```tsx
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { compatWrapper } from '@backstage/core-compat-api';
 
 const fooPage = PageBlueprint.make({
   params: {
@@ -116,12 +115,7 @@ const fooPage = PageBlueprint.make({
     // You can reuse the existing routeRef.
     routeRef: rootRouteRef,
     // these inputs usually match the props required by the component.
-    loader: () =>
-      import('./components/').then(m =>
-        // The compatWrapper utility allows you to keep using @backstage/core-plugin-api in the
-        // implementation of the component and switch to @backstage/frontend-plugin-api later.
-        compatWrapper(<m.FooPage />),
-      ),
+    loader: () => import('./components/').then(m => <m.FooPage />),
   },
 });
 ```

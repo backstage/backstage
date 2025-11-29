@@ -24,7 +24,6 @@ import {
   RootLifecycleService,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -38,9 +37,12 @@ import type { InternalServiceFactory } from '../../../backend-plugin-api/src/ser
 import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
-import { createInitializationLogger } from './createInitializationLogger';
+import { createInitializationResultCollector } from './createInitializationResultCollector';
 import { deepFreeze, unwrapFeature } from './helpers';
 import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
+import { BackendStartupResult } from './types';
+import { BackendStartupError } from './BackendStartupError';
+import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -148,7 +150,7 @@ function createRootInstanceMetadataServiceFactory(
 }
 
 export class BackendInitializer {
-  #startPromise?: Promise<void>;
+  #startPromise?: Promise<{ result: BackendStartupResult }>;
   #stopPromise?: Promise<void>;
   #registrations = new Array<InternalBackendRegistrations>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
@@ -224,7 +226,7 @@ export class BackendInitializer {
     }
   }
 
-  async start(): Promise<void> {
+  async start(): Promise<{ result: BackendStartupResult }> {
     if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
@@ -235,10 +237,10 @@ export class BackendInitializer {
     instanceRegistry.register(this);
 
     this.#startPromise = this.#doStart();
-    await this.#startPromise;
+    return await this.#startPromise;
   }
 
-  async #doStart(): Promise<void> {
+  async #doStart(): Promise<{ result: BackendStartupResult }> {
     this.#serviceRegistry.checkForCircularDeps();
 
     for (const feature of this.#registeredFeatures) {
@@ -332,26 +334,26 @@ export class BackendInitializer {
       }
     }
 
-    const allPluginIds = [...pluginInits.keys()];
-
-    const initLogger = createInitializationLogger(
-      allPluginIds,
-      await this.#serviceRegistry.get(coreServices.rootLogger, 'root'),
-    );
+    const pluginIds = [...pluginInits.keys()];
 
     const rootConfig = await this.#serviceRegistry.get(
       coreServices.rootConfig,
       'root',
     );
+    const rootLogger = await this.#serviceRegistry.get(
+      coreServices.rootLogger,
+      'root',
+    );
+
+    const resultCollector = createInitializationResultCollector({
+      pluginIds,
+      logger: rootLogger,
+      allowBootFailurePredicate: createAllowBootFailurePredicate(rootConfig),
+    });
 
     // All plugins are initialized in parallel
-    const results = await Promise.allSettled(
-      allPluginIds.map(async pluginId => {
-        const isBootFailurePermitted = this.#getPluginBootFailurePredicate(
-          pluginId,
-          rootConfig,
-        );
-
+    await Promise.all(
+      pluginIds.map(async pluginId => {
         try {
           // Initialize all eager services
           await this.#serviceRegistry.initializeEagerServicesWithScope(
@@ -382,37 +384,21 @@ export class BackendInitializer {
             }
             await tree.parallelTopologicalTraversal(
               async ({ moduleId, moduleInit }) => {
-                const isModuleBootFailurePermitted =
-                  this.#getPluginModuleBootFailurePredicate(
-                    pluginId,
-                    moduleId,
-                    rootConfig,
-                  );
-
                 try {
                   const moduleDeps = await this.#getInitDeps(
                     moduleInit.init.deps,
                     pluginId,
                     moduleId,
                   );
-                  await moduleInit.init.func(moduleDeps).catch(error => {
-                    throw new ForwardedError(
-                      `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                      error,
-                    );
-                  });
+                  await moduleInit.init.func(moduleDeps);
+                  resultCollector.onPluginModuleResult(pluginId, moduleId);
                 } catch (error: unknown) {
                   assertError(error);
-                  if (isModuleBootFailurePermitted) {
-                    initLogger.onPermittedPluginModuleFailure(
-                      pluginId,
-                      moduleId,
-                      error,
-                    );
-                  } else {
-                    initLogger.onPluginModuleFailed(pluginId, moduleId, error);
-                    throw error;
-                  }
+                  resultCollector.onPluginModuleResult(
+                    pluginId,
+                    moduleId,
+                    error,
+                  );
                 }
               },
             );
@@ -426,46 +412,36 @@ export class BackendInitializer {
               pluginInit.init.deps,
               pluginId,
             );
-            await pluginInit.init.func(pluginDeps).catch(error => {
-              throw new ForwardedError(
-                `Plugin '${pluginId}' startup failed`,
-                error,
-              );
-            });
+            await pluginInit.init.func(pluginDeps);
           }
 
-          initLogger.onPluginStarted(pluginId);
+          resultCollector.onPluginResult(pluginId);
 
           // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
           const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
           await lifecycleService.startup();
         } catch (error: unknown) {
           assertError(error);
-          if (isBootFailurePermitted) {
-            initLogger.onPermittedPluginFailure(pluginId, error);
-          } else {
-            initLogger.onPluginFailed(pluginId, error);
-            throw error;
-          }
+          resultCollector.onPluginResult(pluginId, error);
         }
       }),
-    );
+    ).catch(error => {
+      throw new ForwardedError(
+        'Unexpected uncaught backend startup error',
+        error,
+      );
+    });
 
-    const initErrors = results.flatMap(r =>
-      r.status === 'rejected' ? [r.reason] : [],
-    );
-    if (initErrors.length === 1) {
-      throw initErrors[0];
-    } else if (initErrors.length > 1) {
-      // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
-      throw new (AggregateError as any)(initErrors, 'Backend startup failed');
+    const result = resultCollector.finalize();
+    if (result.outcome === 'failure') {
+      throw new BackendStartupError(result);
     }
 
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
     await lifecycleService.startup();
 
-    initLogger.onAllStarted();
+    return { result };
   }
 
   // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit
@@ -653,38 +629,6 @@ export class BackendInitializer {
         await this.#applyBackendFeatureLoaders(newLoaders);
       }
     }
-  }
-
-  #getPluginBootFailurePredicate(pluginId: string, config?: Config): boolean {
-    const defaultStartupBootFailureValue =
-      config?.getOptionalString(
-        'backend.startup.default.onPluginBootFailure',
-      ) ?? 'abort';
-
-    const pluginStartupBootFailureValue =
-      config?.getOptionalString(
-        `backend.startup.plugins.${pluginId}.onPluginBootFailure`,
-      ) ?? defaultStartupBootFailureValue;
-
-    return pluginStartupBootFailureValue === 'continue';
-  }
-
-  #getPluginModuleBootFailurePredicate(
-    pluginId: string,
-    moduleId: string,
-    config?: Config,
-  ): boolean {
-    const defaultStartupBootFailureValue =
-      config?.getOptionalString(
-        'backend.startup.default.onPluginModuleBootFailure',
-      ) ?? 'abort';
-
-    const pluginModuleStartupBootFailureValue =
-      config?.getOptionalString(
-        `backend.startup.plugins.${pluginId}.modules.${moduleId}.onPluginModuleBootFailure`,
-      ) ?? defaultStartupBootFailureValue;
-
-    return pluginModuleStartupBootFailureValue === 'continue';
   }
 }
 
