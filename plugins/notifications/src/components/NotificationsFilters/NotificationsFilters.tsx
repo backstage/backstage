@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 import { ChangeEvent } from 'react';
-
-import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
 import { GetNotificationsOptions } from '../../api';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
@@ -200,11 +197,6 @@ export const NotificationsFilters = ({
   return (
     <>
       <Grid container>
-        <Grid item xs={12}>
-          <Typography variant="h6">Filters</Typography>
-          <Divider variant="fullWidth" />
-        </Grid>
-
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel id="notifications-filter-view">View</InputLabel>
