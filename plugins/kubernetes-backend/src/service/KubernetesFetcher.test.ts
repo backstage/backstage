@@ -1381,4 +1381,42 @@ describe('KubernetesFetcher', () => {
       });
     });
   });
+
+  describe('transformResources', () => {
+    let fetcher: KubernetesClientBasedFetcher;
+
+    beforeEach(() => {
+      fetcher = new KubernetesClientBasedFetcher({
+        logger: mockServices.logger.mock(),
+      });
+    });
+
+    it('removes List suffix from custom resource kinds', () => {
+      const result = (fetcher as any).transformResources(
+        'customresources',
+        'HelloWorldList',
+        [{ name: 'foo' }],
+      );
+      expect(result[0].kind).toBe('HelloWorld');
+    });
+
+    it('masks secret data values', () => {
+      const result = (fetcher as any).transformResources(
+        'secrets',
+        'SecretList',
+        [{ data: { password: 'secret123' } }],
+      );
+      expect(result[0].data.password).toBe('***');
+    });
+
+    it('returns other types unchanged', () => {
+      const items = [{ name: 'pod' }];
+      const result = (fetcher as any).transformResources(
+        'pods',
+        'PodList',
+        items,
+      );
+      expect(result).toBe(items);
+    });
+  });
 });
