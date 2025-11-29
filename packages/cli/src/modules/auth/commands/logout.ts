@@ -28,7 +28,7 @@ export async function logout(argv: string[]) {
   const parsed = await yargs(argv)
     .option('instance', {
       type: 'string',
-      desc: 'Name of the instance to logout',
+      desc: 'Name of the instance to log out',
     })
     .parse();
 
