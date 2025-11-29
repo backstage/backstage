@@ -86,6 +86,7 @@
     "history": "^5.0.0",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
+    "react-aria-components": "^1.13.0",
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0"

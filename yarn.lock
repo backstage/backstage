@@ -5374,6 +5374,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     pluralize: "npm:^8.0.0"
     react: "npm:^18.0.2"
+    react-aria-components: "npm:^1.13.0"
     react-dom: "npm:^18.0.2"
     react-helmet: "npm:6.1.0"
     react-router-dom: "npm:^6.3.0"
