@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-/**
- * Common functionality used by cli, backend, and create-app
- *
- * @packageDocumentation
- */
+import { CustomErrorBase } from '@backstage/errors';
 
-export { findPaths, BACKSTAGE_JSON } from './paths';
-export { isChildPath } from './isChildPath';
-export type { Paths, ResolveFunc } from './paths';
-export { bootstrapEnvProxyAgents } from './proxyBootstrap';
-export {
-  run,
-  runOutput,
-  runCheck,
-  type RunChildProcess,
-  type RunOptions,
-  type RunLogFunc,
-} from './run';
-export { ExitCodeError } from './errors';
+/**
+ * Error thrown when a child process exits with a non-zero code.
+ * @public
+ */
+export class ExitCodeError extends CustomErrorBase {
+  readonly code: number;
+
+  constructor(code: number, command?: string) {
+    super(
+      command
+        ? `Command '${command}' exited with code ${code}`
+        : `Child exited with code ${code}`,
+    );
+    this.code = code;
+  }
+}

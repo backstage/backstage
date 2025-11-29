@@ -3140,7 +3140,10 @@ __metadata:
   resolution: "@backstage/cli-common@workspace:packages/cli-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@types/cross-spawn": "npm:^6.0.2"
     "@types/node": "npm:^20.16.0"
+    cross-spawn: "npm:^7.0.3"
     global-agent: "npm:^3.0.0"
     undici: "npm:^7.2.3"
   languageName: unknown
