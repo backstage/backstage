@@ -39,7 +39,7 @@ describe('http', () => {
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/api',
         expect.objectContaining({
-          signal: expect.any(AbortSignal),
+          body: undefined,
         }),
       );
       expect(result).toEqual({ data: 'test' });
@@ -66,7 +66,6 @@ describe('http', () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          signal: expect.any(AbortSignal),
         }),
       );
       expect(result).toEqual({ success: true });
@@ -140,9 +139,8 @@ describe('http', () => {
       }
     });
 
-    it('should abort request after 30 seconds timeout', async () => {
-      jest.useFakeTimers();
-
+    it('should pass through abort signal from caller', async () => {
+      const abortController = new AbortController();
       let rejectFn: (error: Error) => void;
       const mockResponse = new Promise((_, reject) => {
         rejectFn = reject;
@@ -159,15 +157,15 @@ describe('http', () => {
         return mockResponse as any;
       });
 
-      const requestPromise = httpJson('https://example.com/api');
+      const requestPromise = httpJson('https://example.com/api', {
+        signal: abortController.signal,
+      });
 
-      // Fast-forward time by 30 seconds to trigger the abort
-      jest.advanceTimersByTime(30000);
+      // Abort the request
+      abortController.abort();
 
-      await expect(requestPromise).rejects.toThrow();
-
-      jest.useRealTimers();
-    }, 10000);
+      await expect(requestPromise).rejects.toThrow('The operation was aborted');
+    });
 
     it('should handle JSON parsing errors gracefully', async () => {
       const mockResponse = {

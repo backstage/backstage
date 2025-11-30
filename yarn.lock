@@ -4706,6 +4706,8 @@ __metadata:
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
+    zod: "npm:^3.22.4"
+    zod-validation-error: "npm:^3.4.0"
   languageName: unknown
   linkType: soft
 
