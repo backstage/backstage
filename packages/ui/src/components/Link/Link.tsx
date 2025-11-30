@@ -70,6 +70,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     <a
       {...linkProps}
       {...dataAttributes}
+      {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       ref={linkRef}
       href={href}
       title={title}
