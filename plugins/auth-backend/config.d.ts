@@ -113,6 +113,11 @@ export interface Config {
        * @default '1 year'
        */
       maxRotationLifetime?: HumanDuration | string;
+      /**
+       * Maximum number of refresh tokens per user
+       * @default 20
+       */
+      maxTokensPerUser?: number;
     };
 
     /**

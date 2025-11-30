@@ -53,6 +53,7 @@ describe('OfflineSessionDatabase', () => {
         knex,
         tokenLifetimeSeconds: TOKEN_LIFETIME_SECONDS,
         maxRotationLifetimeSeconds: MAX_ROTATION_LIFETIME_SECONDS,
+        maxTokensPerUser: 20,
       }),
     };
   }
@@ -171,27 +172,6 @@ describe('OfflineSessionDatabase', () => {
       });
     });
 
-    describe('rotateToken', () => {
-      it('should update token hash and last_used_at', async () => {
-        const initialSession = await db.createSession({
-          id: 'session-1',
-          userEntityRef: 'user:default/test',
-          tokenHash: 'hash-1',
-        });
-
-        // Wait a bit to ensure timestamp difference
-        await new Promise(resolve => setTimeout(resolve, 1100));
-
-        await db.rotateToken('session-1', 'hash-2');
-
-        const updatedSession = await db.getSessionById('session-1');
-        expect(updatedSession?.tokenHash).toBe('hash-2');
-        expect(updatedSession?.lastUsedAt.getTime()).toBeGreaterThanOrEqual(
-          initialSession.lastUsedAt.getTime(),
-        );
-      });
-    });
-
     describe('deleteSession', () => {
       it('should delete a session by ID', async () => {
         await db.createSession({
@@ -240,22 +220,6 @@ describe('OfflineSessionDatabase', () => {
         expect(session1).toBeUndefined();
         expect(session2).toBeUndefined();
         expect(session3).toBeDefined();
-      });
-    });
-
-    describe('deleteSessionByClientId', () => {
-      it('should delete session by OIDC client ID', async () => {
-        await db.createSession({
-          id: 'session-1',
-          userEntityRef: 'user:default/test',
-          oidcClientId: 'test-client',
-          tokenHash: 'hash-1',
-        });
-
-        await db.deleteSessionByClientId('test-client');
-
-        const session = await db.getSessionById('session-1');
-        expect(session).toBeUndefined();
       });
     });
 

@@ -104,10 +104,11 @@ export class OfflineAccessService {
     try {
       sessionId = getRefreshTokenId(refreshToken);
     } catch (error) {
+      this.#logger.debug('Failed to extract refresh token ID', error);
       throw new AuthenticationError('Invalid refresh token format');
     }
 
-    // Fetch session from database
+    // Get current token hash for verification
     const session = await this.#offlineSessionDb.getSessionById(sessionId);
     if (!session) {
       throw new AuthenticationError('Invalid refresh token');
@@ -125,21 +126,31 @@ export class OfflineAccessService {
       throw new AuthenticationError('Invalid refresh token');
     }
 
+    // Generate new refresh token with same session ID
+    const { token: newRefreshToken, hash: newHash } =
+      generateRefreshToken(sessionId);
+
+    // Atomically get and rotate token to prevent race conditions
+    // This ensures only one refresh request can succeed with the same token
+    const rotatedSession = await this.#offlineSessionDb.getAndRotateToken(
+      sessionId,
+      session.tokenHash,
+      newHash,
+    );
+
+    if (!rotatedSession) {
+      // Token was already rotated or expired, reject the request
+      throw new AuthenticationError('Invalid refresh token');
+    }
+
     // Issue new access token
     // Note: Ownership references (ent) will be computed by the token issuer
     // or should be provided through the catalog resolution mechanism
     const { token: accessToken } = await tokenIssuer.issueToken({
       claims: {
-        sub: session.userEntityRef,
+        sub: rotatedSession.userEntityRef,
       },
     });
-
-    // Generate new refresh token with same session ID
-    const { token: newRefreshToken, hash: newHash } =
-      generateRefreshToken(sessionId);
-
-    // Update database with new token hash
-    await this.#offlineSessionDb.rotateToken(sessionId, newHash);
 
     this.#logger.debug(
       `Refreshed access token for user ${session.userEntityRef} with session ${sessionId}`,
