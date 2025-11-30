@@ -27,6 +27,7 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { offlineAccessServiceRef } from './OfflineAccessService';
+import { readDcrTokenExpiration } from './readTokenExpiration';
 
 export class OidcService {
   private readonly auth: AuthService;
@@ -460,10 +461,12 @@ export class OidcService {
         tokenIssuer: this.tokenIssuer,
       });
 
+    const expiresIn = readDcrTokenExpiration(this.config);
+
     return {
       accessToken,
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresIn,
       refreshToken,
     };
   }

@@ -116,7 +116,8 @@ export class OfflineSessionDatabase {
       const userSessions = await trx<DbOfflineSessionRow>(TABLE_NAME)
         .where('user_entity_ref', userEntityRef)
         .select('id', 'last_used_at')
-        .orderBy('last_used_at', 'asc');
+        .orderBy('last_used_at', 'asc')
+        .orderBy('id', 'asc');
 
       const tokensToDelete = userSessions.length - (this.#maxTokensPerUser - 1);
 

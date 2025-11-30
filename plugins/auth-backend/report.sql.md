@@ -43,6 +43,7 @@
 
 - `offline_sessions_created_idx` (`created_at`)
 - `offline_sessions_last_used_idx` (`last_used_at`)
+- `offline_sessions_oidc_client_idx` (`oidc_client_id`)
 - `offline_sessions_pkey` (`id`) unique primary
 - `offline_sessions_user_idx` (`user_entity_ref`)
 

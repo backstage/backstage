@@ -57,6 +57,7 @@ export async function logout(argv: string[]) {
             token: refreshToken,
             token_type_hint: 'refresh_token',
           },
+          signal: AbortSignal.timeout(30_000),
         });
       } catch {
         // ignore errors per RFC 7009

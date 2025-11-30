@@ -73,6 +73,7 @@ describe('OidcService', () => {
       knex,
       tokenLifetimeSeconds: 30 * 24 * 60 * 60, // 30 days
       maxRotationLifetimeSeconds: 365 * 24 * 60 * 60, // 1 year
+      maxTokensPerUser: 20,
     });
 
     const offlineAccess = OfflineAccessService.create({
@@ -876,6 +877,7 @@ describe('OidcService', () => {
           code,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
+          expiresIn: 3600,
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
@@ -911,6 +913,7 @@ describe('OidcService', () => {
           code,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
+          expiresIn: 3600,
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
@@ -949,6 +952,7 @@ describe('OidcService', () => {
           code,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
+          expiresIn: 3600,
         });
 
         // Wait a moment to ensure we're not hitting timing issues with second-precision timestamps
@@ -1003,6 +1007,7 @@ describe('OidcService', () => {
           code,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
+          expiresIn: 3600,
         });
 
         // Get session ID from token and mark as expired by updating created_at

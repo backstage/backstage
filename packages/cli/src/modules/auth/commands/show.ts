@@ -42,6 +42,7 @@ export async function show(argv: string[]) {
     `${authBase}/v1/userinfo`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
+      signal: AbortSignal.timeout(30_000),
     },
   );
 
