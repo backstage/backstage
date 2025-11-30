@@ -22,6 +22,7 @@ import type {
   TextWeights,
 } from '../../types';
 import type { LinkProps as AriaLinkProps } from 'react-aria-components';
+import type { ReactNode } from 'react';
 
 /** @public */
 export interface LinkProps extends AriaLinkProps {
@@ -32,4 +33,10 @@ export interface LinkProps extends AriaLinkProps {
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
+
+  // This is used to set the title attribute on the link
+  title?: string;
+
+  // This is used to set the children of the link
+  children?: ReactNode;
 }
