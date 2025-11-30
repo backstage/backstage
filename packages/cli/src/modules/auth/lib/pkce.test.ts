@@ -19,57 +19,44 @@ import { generateVerifier, challengeFromVerifier } from './pkce';
 
 describe('pkce', () => {
   describe('generateVerifier', () => {
-    it('should generate a verifier of default length', () => {
-      const verifier = generateVerifier();
+    it('should generate verifiers with proper encoding and length', () => {
+      // Test default length
+      const defaultVerifier = generateVerifier();
+      expect(defaultVerifier).toBeDefined();
+      expect(typeof defaultVerifier).toBe('string');
+      expect(defaultVerifier.length).toBeGreaterThan(0);
 
-      expect(verifier).toBeDefined();
-      expect(typeof verifier).toBe('string');
-      expect(verifier.length).toBeGreaterThan(0);
-    });
-
-    it('should generate different verifiers on each call', () => {
-      const verifier1 = generateVerifier();
-      const verifier2 = generateVerifier();
-
-      expect(verifier1).not.toBe(verifier2);
-    });
-
-    it('should generate base64url encoded string without padding', () => {
-      const verifier = generateVerifier();
-
-      // Base64url should not contain =, +, or /
-      expect(verifier).not.toContain('=');
-      expect(verifier).not.toContain('+');
-      expect(verifier).not.toContain('/');
-
-      // Should only contain base64url characters
-      expect(verifier).toMatch(/^[A-Za-z0-9_-]+$/);
-    });
-
-    it('should generate verifier with custom length', () => {
+      // Test custom lengths
       const shortVerifier = generateVerifier(32);
       const longVerifier = generateVerifier(96);
-
       expect(shortVerifier).toBeDefined();
       expect(longVerifier).toBeDefined();
       expect(shortVerifier.length).toBeGreaterThan(0);
       expect(longVerifier.length).toBeGreaterThan(shortVerifier.length);
+
+      // Test base64url encoding (no padding, proper characters)
+      const verifier = generateVerifier();
+      expect(verifier).not.toContain('=');
+      expect(verifier).not.toContain('+');
+      expect(verifier).not.toContain('/');
+      expect(verifier).toMatch(/^[A-Za-z0-9_-]+$/);
+
+      // Test uniqueness
+      const verifier1 = generateVerifier();
+      const verifier2 = generateVerifier();
+      expect(verifier1).not.toBe(verifier2);
     });
 
-    it('should enforce minimum length of 32 bytes', () => {
-      const verifier = generateVerifier(10); // Less than minimum
+    it('should enforce minimum and maximum length constraints', () => {
+      // Test minimum length enforcement
+      const minVerifier = generateVerifier(10); // Less than minimum
+      expect(minVerifier).toBeDefined();
+      expect(minVerifier.length).toBeGreaterThanOrEqual(43); // 32 bytes = 43 base64url chars
 
-      expect(verifier).toBeDefined();
-      // With 32 bytes minimum, base64url encoding should produce at least 43 chars
-      expect(verifier.length).toBeGreaterThanOrEqual(43);
-    });
-
-    it('should enforce maximum length of 96 bytes', () => {
-      const verifier = generateVerifier(200); // More than maximum
-
-      expect(verifier).toBeDefined();
-      // With 96 bytes maximum, base64url encoding should produce at most 128 chars
-      expect(verifier.length).toBeLessThanOrEqual(128);
+      // Test maximum length enforcement
+      const maxVerifier = generateVerifier(200); // More than maximum
+      expect(maxVerifier).toBeDefined();
+      expect(maxVerifier.length).toBeLessThanOrEqual(128); // 96 bytes = 128 base64url chars
     });
 
     it('should produce consistent results for same byte sequence', () => {
@@ -87,67 +74,44 @@ describe('pkce', () => {
   });
 
   describe('challengeFromVerifier', () => {
-    it('should generate a challenge from a verifier', () => {
+    it('should generate challenges with proper encoding and consistency', () => {
       const verifier = 'test-verifier-string';
       const challenge = challengeFromVerifier(verifier);
 
+      // Basic properties
       expect(challenge).toBeDefined();
       expect(typeof challenge).toBe('string');
-      expect(challenge.length).toBeGreaterThan(0);
-    });
+      expect(challenge.length).toBe(43); // SHA-256 = 32 bytes = 43 base64url chars
 
-    it('should generate consistent challenge for same verifier', () => {
-      const verifier = 'test-verifier-string';
-      const challenge1 = challengeFromVerifier(verifier);
-      const challenge2 = challengeFromVerifier(verifier);
-
-      expect(challenge1).toBe(challenge2);
-    });
-
-    it('should generate different challenges for different verifiers', () => {
-      const verifier1 = 'test-verifier-1';
-      const verifier2 = 'test-verifier-2';
-      const challenge1 = challengeFromVerifier(verifier1);
-      const challenge2 = challengeFromVerifier(verifier2);
-
-      expect(challenge1).not.toBe(challenge2);
-    });
-
-    it('should generate base64url encoded challenge without padding', () => {
-      const verifier = 'test-verifier-string';
-      const challenge = challengeFromVerifier(verifier);
-
-      // Base64url should not contain =, +, or /
+      // Base64url encoding (no padding, proper characters)
       expect(challenge).not.toContain('=');
       expect(challenge).not.toContain('+');
       expect(challenge).not.toContain('/');
-
-      // Should only contain base64url characters
       expect(challenge).toMatch(/^[A-Za-z0-9_-]+$/);
+
+      // Consistency for same verifier
+      const challenge1 = challengeFromVerifier(verifier);
+      const challenge2 = challengeFromVerifier(verifier);
+      expect(challenge1).toBe(challenge2);
+      expect(challenge1).toBe(challenge);
+
+      // Different challenges for different verifiers
+      const verifier2 = 'test-verifier-2';
+      const challenge3 = challengeFromVerifier(verifier2);
+      expect(challenge3).not.toBe(challenge);
     });
 
-    it('should generate SHA-256 hash of correct length', () => {
-      const verifier = 'test-verifier-string';
-      const challenge = challengeFromVerifier(verifier);
+    it('should handle edge cases for verifier length', () => {
+      // Empty verifier
+      const emptyChallenge = challengeFromVerifier('');
+      expect(emptyChallenge).toBeDefined();
+      expect(emptyChallenge.length).toBe(43);
 
-      // SHA-256 produces 32 bytes, which in base64url is 43 characters (without padding)
-      expect(challenge.length).toBe(43);
-    });
-
-    it('should handle empty verifier', () => {
-      const verifier = '';
-      const challenge = challengeFromVerifier(verifier);
-
-      expect(challenge).toBeDefined();
-      expect(challenge.length).toBe(43); // SHA-256 always produces 32 bytes
-    });
-
-    it('should handle very long verifier', () => {
-      const verifier = 'a'.repeat(1000);
-      const challenge = challengeFromVerifier(verifier);
-
-      expect(challenge).toBeDefined();
-      expect(challenge.length).toBe(43); // SHA-256 always produces 32 bytes
+      // Very long verifier
+      const longVerifier = 'a'.repeat(1000);
+      const longChallenge = challengeFromVerifier(longVerifier);
+      expect(longChallenge).toBeDefined();
+      expect(longChallenge.length).toBe(43); // SHA-256 always produces 32 bytes
     });
 
     it('should produce RFC 7636 compliant challenge', () => {
@@ -206,6 +170,7 @@ describe('pkce', () => {
       const challenge2 = challengeFromVerifier(verifier);
       const challenge3 = challengeFromVerifier(verifier);
 
+      // All challenges from same verifier should be identical
       expect(challenge1).toBe(challenge2);
       expect(challenge2).toBe(challenge3);
     });

@@ -32,39 +32,35 @@ describe('localServer', () => {
         state: 'test-state',
       });
 
-      // Make request to callback URL
-      const callbackUrl = `${url}?code=test-code&state=test-state`;
-      const response = await fetch(callbackUrl);
+      // Test with both code and state
+      const response1 = await fetch(`${url}?code=test-code&state=test-state`);
+      expect(response1.status).toBe(200);
+      expect(await response1.text()).toBe('You may now close this window.');
 
-      expect(response.status).toBe(200);
-      expect(await response.text()).toBe('You may now close this window.');
-
-      const result = await waitForCode();
-      expect(result).toEqual({
+      const result1 = await waitForCode();
+      expect(result1).toEqual({
         code: 'test-code',
         state: 'test-state',
       });
 
       await close();
-    });
 
-    it('should handle callback with only code parameter', async () => {
-      const { url, waitForCode, close } = await startCallbackServer({
-        state: 'test-state',
-      });
+      // Test with only code
+      const {
+        url: url2,
+        waitForCode: waitForCode2,
+        close: close2,
+      } = await startCallbackServer({ state: 'test-state' });
+      const response2 = await fetch(`${url2}?code=test-code`);
+      expect(response2.status).toBe(200);
 
-      const callbackUrl = `${url}?code=test-code`;
-      const response = await fetch(callbackUrl);
-
-      expect(response.status).toBe(200);
-
-      const result = await waitForCode();
-      expect(result).toEqual({
+      const result2 = await waitForCode2();
+      expect(result2).toEqual({
         code: 'test-code',
         state: undefined,
       });
 
-      await close();
+      await close2();
     });
 
     it('should return 400 for missing code parameter', async () => {
@@ -91,36 +87,28 @@ describe('localServer', () => {
       await close();
     });
 
-    it('should close server gracefully', async () => {
+    it('should handle multiple requests and close gracefully', async () => {
       const { url, close } = await startCallbackServer({ state: 'test-state' });
 
+      // Multiple requests before code
+      const response1 = await fetch(url.replace('/callback', '/other'));
+      expect(response1.status).toBe(404);
+
+      const response2 = await fetch(url);
+      expect(response2.status).toBe(400);
+
+      const response3 = await fetch(`${url}?code=test-code`);
+      expect(response3.status).toBe(200);
+
       // Verify server is running
-      const response1 = await fetch(`${url}?code=test`);
-      expect(response1.status).toBe(200);
+      const response4 = await fetch(`${url}?code=test`);
+      expect(response4.status).toBe(200);
 
       // Close server
       await close();
 
       // Verify server is closed
       await expect(fetch(url)).rejects.toThrow();
-    });
-
-    it('should handle multiple requests before code is received', async () => {
-      const { url, close } = await startCallbackServer({ state: 'test-state' });
-
-      // First request to non-callback path
-      const response1 = await fetch(url.replace('/callback', '/other'));
-      expect(response1.status).toBe(404);
-
-      // Second request to callback without code
-      const response2 = await fetch(url);
-      expect(response2.status).toBe(400);
-
-      // Third request with code should succeed
-      const response3 = await fetch(`${url}?code=test-code`);
-      expect(response3.status).toBe(200);
-
-      await close();
     });
 
     it('should bind to localhost address', async () => {
@@ -196,36 +184,42 @@ describe('localServer', () => {
       await close();
     });
 
-    it('should handle special characters in code parameter', async () => {
+    it('should handle special characters in code and state parameters', async () => {
       const { url, waitForCode, close } = await startCallbackServer({
         state: 'test-state',
       });
 
       const specialCode = 'test-code+with/special=chars';
-      const encodedCode = encodeURIComponent(specialCode);
-      const callbackUrl = `${url}?code=${encodedCode}`;
+      const specialState = 'test-state+with/special=chars';
+      const callbackUrl = `${url}?code=${encodeURIComponent(
+        specialCode,
+      )}&state=${encodeURIComponent(specialState)}`;
 
       await fetch(callbackUrl);
 
       const result = await waitForCode();
       expect(result.code).toBe(specialCode);
+      expect(result.state).toBe(specialState);
 
       await close();
     });
 
-    it('should handle special characters in state parameter', async () => {
+    it('should handle multiple concurrent requests', async () => {
       const { url, waitForCode, close } = await startCallbackServer({
         state: 'test-state',
       });
 
-      const specialState = 'test-state+with/special=chars';
-      const encodedState = encodeURIComponent(specialState);
-      const callbackUrl = `${url}?code=test-code&state=${encodedState}`;
+      const requests = [
+        fetch(`${url}?code=code1`),
+        fetch(`${url}?code=code2`),
+        fetch(`${url}?code=code3`),
+      ];
 
-      await fetch(callbackUrl);
+      const responses = await Promise.all(requests);
+      expect(responses.every(r => r.status === 200)).toBe(true);
 
       const result = await waitForCode();
-      expect(result.state).toBe(specialState);
+      expect(result.code).toBe('code1');
 
       await close();
     });

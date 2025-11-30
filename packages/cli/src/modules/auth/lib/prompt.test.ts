@@ -70,7 +70,8 @@ describe('prompt', () => {
       expect(mockInquirer.prompt).not.toHaveBeenCalled();
     });
 
-    it('should prompt for instance when no name is provided', async () => {
+    it('should prompt for instance and show selected instance with asterisk prefix', async () => {
+      // Test with production selected
       mockStorage.getAllInstances.mockResolvedValue({
         instances: mockInstances,
         selected: mockInstances[0],
@@ -102,12 +103,11 @@ describe('prompt', () => {
         },
       ]);
       expect(result).toEqual(mockInstances[1]);
-    });
 
-    it('should show selected instance with asterisk prefix', async () => {
+      // Test with staging selected
       mockStorage.getAllInstances.mockResolvedValue({
         instances: mockInstances,
-        selected: mockInstances[1], // staging is selected
+        selected: mockInstances[1],
       });
       mockInquirer.prompt.mockResolvedValue({ choice: 'staging' });
 
@@ -157,7 +157,8 @@ describe('prompt', () => {
       );
     });
 
-    it('should handle single instance', async () => {
+    it('should handle single instance and use selected instance as default', async () => {
+      // Test single instance
       const singleInstance = [mockInstances[0]];
       mockStorage.getAllInstances.mockResolvedValue({
         instances: singleInstance,
@@ -169,9 +170,8 @@ describe('prompt', () => {
 
       expect(result).toEqual(mockInstances[0]);
       expect(mockInquirer.prompt).toHaveBeenCalled();
-    });
 
-    it('should use default selection in prompt', async () => {
+      // Test default selection matches selected instance
       const selectedInstance = mockInstances[2];
       mockStorage.getAllInstances.mockResolvedValue({
         instances: mockInstances,

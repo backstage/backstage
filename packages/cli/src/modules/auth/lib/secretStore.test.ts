@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
+import path from 'path';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { getSecretStore } from './secretStore';
+import { getSecretStore, resetSecretStore } from './secretStore';
 
 const mockDir = createMockDirectory();
 
@@ -23,10 +25,12 @@ describe('secretStore', () => {
   beforeEach(() => {
     mockDir.clear();
     process.env.XDG_DATA_HOME = mockDir.resolve('data');
+    resetSecretStore();
   });
 
   afterEach(() => {
     delete process.env.XDG_DATA_HOME;
+    resetSecretStore();
   });
 
   describe('FileSecretStore', () => {
@@ -58,13 +62,48 @@ describe('secretStore', () => {
       expect(result).toBeUndefined();
     });
 
-    it('should create directory with proper structure', async () => {
+    it('should not throw when deleting non-existent secrets', async () => {
+      const store = await getSecretStore();
+
+      await expect(
+        store.delete('non-existent-service', 'non-existent-account'),
+      ).resolves.not.toThrow();
+    });
+
+    it('should create files with correct directory structure', async () => {
       const store = await getSecretStore();
       await store.set('test-service', 'test-account', 'test-secret');
 
-      // Verify the file exists in the correct location
-      const result = await store.get('test-service', 'test-account');
-      expect(result).toBe('test-secret');
+      const expectedDir = path.join(
+        mockDir.resolve('data'),
+        'backstage-cli',
+        'secrets',
+        encodeURIComponent('test-service'),
+      );
+      const expectedFile = path.join(
+        expectedDir,
+        `${encodeURIComponent('test-account')}.secret`,
+      );
+
+      expect(await fs.pathExists(expectedFile)).toBe(true);
+      expect(await fs.pathExists(expectedDir)).toBe(true);
+    });
+
+    it('should create files with correct permissions (0o600)', async () => {
+      const store = await getSecretStore();
+      await store.set('test-service', 'test-account', 'test-secret');
+
+      const expectedFile = path.join(
+        mockDir.resolve('data'),
+        'backstage-cli',
+        'secrets',
+        encodeURIComponent('test-service'),
+        `${encodeURIComponent('test-account')}.secret`,
+      );
+
+      const stats = await fs.stat(expectedFile);
+      const mode = stats.mode & 0o777;
+      expect(mode).toBe(0o600);
     });
 
     it('should encode service and account names in file path', async () => {
@@ -72,6 +111,23 @@ describe('secretStore', () => {
       await store.set('my-service/test', 'my-account@test', 'test-secret');
 
       const result = await store.get('my-service/test', 'my-account@test');
+      expect(result).toBe('test-secret');
+
+      const expectedFile = path.join(
+        mockDir.resolve('data'),
+        'backstage-cli',
+        'secrets',
+        encodeURIComponent('my-service/test'),
+        `${encodeURIComponent('my-account@test')}.secret`,
+      );
+      expect(await fs.pathExists(expectedFile)).toBe(true);
+    });
+
+    it('should handle unicode characters in service and account names', async () => {
+      const store = await getSecretStore();
+      await store.set('service-测试', 'account-🚀', 'test-secret');
+
+      const result = await store.get('service-测试', 'account-🚀');
       expect(result).toBe('test-secret');
     });
 
@@ -108,29 +164,42 @@ describe('secretStore', () => {
       expect(result).toBe('new-secret');
     });
 
-    it('should use correct directory structure', async () => {
+    it('should handle empty string secrets', async () => {
+      const store = await getSecretStore();
+      await store.set('test-service', 'test-account', '');
+
+      const result = await store.get('test-service', 'test-account');
+      expect(result).toBe('');
+    });
+
+    it('should handle very long secrets', async () => {
+      const store = await getSecretStore();
+      const longSecret = 'a'.repeat(10000);
+      await store.set('test-service', 'test-account', longSecret);
+
+      const result = await store.get('test-service', 'test-account');
+      expect(result).toBe(longSecret);
+    });
+
+    it('should use XDG_DATA_HOME when set', async () => {
+      const customDataHome = mockDir.resolve('custom-data');
+      process.env.XDG_DATA_HOME = customDataHome;
+      resetSecretStore();
+
       const store = await getSecretStore();
       await store.set('test-service', 'test-account', 'test-secret');
 
+      const expectedFile = path.join(
+        customDataHome,
+        'backstage-cli',
+        'secrets',
+        encodeURIComponent('test-service'),
+        `${encodeURIComponent('test-account')}.secret`,
+      );
+      expect(await fs.pathExists(expectedFile)).toBe(true);
+
       const result = await store.get('test-service', 'test-account');
       expect(result).toBe('test-secret');
-    });
-
-    it('should use platform-appropriate data directory', async () => {
-      const store = await getSecretStore();
-      await store.set('test-service', 'test-account', 'test-secret');
-
-      const result = await store.get('test-service', 'test-account');
-      expect(result).toBe('test-secret');
-    });
-  });
-
-  describe('KeytarSecretStore', () => {
-    it('should use keytar when available (conceptual test)', async () => {
-      // Note: Testing keytar integration directly is difficult due to module loading
-      // In practice, the code checks if keytar is available and uses it if so
-      // The FileSecretStore tests above verify the fallback behavior
-      expect(true).toBe(true);
     });
   });
 
@@ -141,19 +210,32 @@ describe('secretStore', () => {
 
       expect(store1).toBe(store2);
     });
+
+    it('should create new instance after reset', async () => {
+      const store1 = await getSecretStore();
+      resetSecretStore();
+      const store2 = await getSecretStore();
+
+      expect(store1).not.toBe(store2);
+    });
   });
 
   describe('fallback behavior', () => {
     it('should fall back to FileSecretStore when keytar is not available', async () => {
-      // The implementation already handles this case by catching errors
-      // when trying to load keytar and falling back to FileSecretStore
       const store = await getSecretStore();
       await store.set('test-service', 'test-account', 'test-secret');
 
-      // If keytar is not available (which is often the case in CI),
-      // it should fall back to file-based storage
       const result = await store.get('test-service', 'test-account');
       expect(result).toBe('test-secret');
+
+      const expectedFile = path.join(
+        mockDir.resolve('data'),
+        'backstage-cli',
+        'secrets',
+        encodeURIComponent('test-service'),
+        `${encodeURIComponent('test-account')}.secret`,
+      );
+      expect(await fs.pathExists(expectedFile)).toBe(true);
     });
   });
 });
