@@ -28,6 +28,46 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { offlineAccessServiceRef } from './OfflineAccessService';
 import { json } from 'express';
 import { readDcrTokenExpiration } from './readTokenExpiration';
+import { z } from 'zod';
+import { fromZodError } from 'zod-validation-error';
+
+const authorizeQuerySchema = z.object({
+  client_id: z.string().min(1),
+  redirect_uri: z.string().url(),
+  response_type: z.string().min(1),
+  scope: z.string().optional(),
+  state: z.string().optional(),
+  nonce: z.string().optional(),
+  code_challenge: z.string().optional(),
+  code_challenge_method: z.string().optional(),
+});
+
+const sessionIdParamSchema = z.object({
+  sessionId: z.string().min(1),
+});
+
+const tokenRequestBodySchema = z.object({
+  grant_type: z.string().min(1),
+  code: z.string().optional(),
+  redirect_uri: z.string().url().optional(),
+  code_verifier: z.string().optional(),
+  refresh_token: z.string().optional(),
+});
+
+const registerRequestBodySchema = z.object({
+  client_name: z.string().optional(),
+  redirect_uris: z.array(z.string().url()).min(1),
+  response_types: z.array(z.string()).optional(),
+  grant_types: z.array(z.string()).optional(),
+  scope: z.string().optional(),
+});
+
+const revokeRequestBodySchema = z.object({
+  token: z.string().min(1),
+  token_type_hint: z.string().optional(),
+  client_id: z.string().optional(),
+  client_secret: z.string().optional(),
+});
 
 export class OidcRouter {
   private readonly oidc: OidcService;
@@ -66,10 +106,7 @@ export class OidcRouter {
     offlineAccess?: typeof offlineAccessServiceRef.T;
   }) {
     return new OidcRouter(
-      OidcService.create({
-        ...options,
-        offlineAccess: options.offlineAccess,
-      }),
+      OidcService.create(options),
       options.logger,
       options.auth,
       options.appUrl,
@@ -132,7 +169,16 @@ export class OidcRouter {
       // Handles the initial authorization request from the client, validates parameters,
       // and redirects to the Authorization Session page for user approval
       router.get('/v1/authorize', async (req, res) => {
-        // todo(blam): maybe add zod types for validating input
+        const queryParseResult = authorizeQuerySchema.safeParse(req.query);
+        if (!queryParseResult.success) {
+          const errorMessage = fromZodError(queryParseResult.error).message;
+          this.logger.error(`Failed to authorize: ${errorMessage}`);
+          return res.status(400).json({
+            error: 'invalid_request',
+            error_description: errorMessage,
+          });
+        }
+
         const {
           client_id: clientId,
           redirect_uri: redirectUri,
@@ -142,27 +188,18 @@ export class OidcRouter {
           nonce,
           code_challenge: codeChallenge,
           code_challenge_method: codeChallengeMethod,
-        } = req.query;
-
-        if (!clientId || !redirectUri || !responseType) {
-          this.logger.error(`Failed to authorize: Missing required parameters`);
-          return res.status(400).json({
-            error: 'invalid_request',
-            error_description:
-              'Missing required parameters: client_id, redirect_uri, response_type',
-          });
-        }
+        } = queryParseResult.data;
 
         try {
           const result = await this.oidc.createAuthorizationSession({
-            clientId: clientId as string,
-            redirectUri: redirectUri as string,
-            responseType: responseType as string,
-            scope: scope as string | undefined,
-            state: state as string | undefined,
-            nonce: nonce as string | undefined,
-            codeChallenge: codeChallenge as string | undefined,
-            codeChallengeMethod: codeChallengeMethod as string | undefined,
+            clientId,
+            redirectUri,
+            responseType,
+            scope,
+            state,
+            nonce,
+            codeChallenge,
+            codeChallengeMethod,
           });
 
           // todo(blam): maybe this URL could be overridable by config if
@@ -185,10 +222,10 @@ export class OidcRouter {
             isError(error) ? error.message : 'Unknown error',
           );
           if (state) {
-            errorParams.append('state', state as string);
+            errorParams.append('state', state);
           }
 
-          const redirectUrl = new URL(redirectUri as string);
+          const redirectUrl = new URL(redirectUri);
           redirectUrl.search = errorParams.toString();
           return res.redirect(redirectUrl.toString());
         }
@@ -197,14 +234,16 @@ export class OidcRouter {
       // Authorization Session request details endpoint
       // Returns Authorization Session request details for the frontend
       router.get('/v1/sessions/:sessionId', async (req, res) => {
-        const { sessionId } = req.params;
-
-        if (!sessionId) {
+        const paramParseResult = sessionIdParamSchema.safeParse(req.params);
+        if (!paramParseResult.success) {
+          const errorMessage = fromZodError(paramParseResult.error).message;
           return res.status(400).json({
             error: 'invalid_request',
-            error_description: 'Missing Authorization Session ID',
+            error_description: errorMessage,
           });
         }
+
+        const { sessionId } = paramParseResult.data;
 
         try {
           const session = await this.oidc.getAuthorizationSession({
@@ -233,14 +272,16 @@ export class OidcRouter {
       // Authorization Session approval endpoint
       // Handles user approval of Authorization Session requests and generates authorization codes
       router.post('/v1/sessions/:sessionId/approve', async (req, res) => {
-        const { sessionId } = req.params;
-
-        if (!sessionId) {
+        const paramParseResult = sessionIdParamSchema.safeParse(req.params);
+        if (!paramParseResult.success) {
+          const errorMessage = fromZodError(paramParseResult.error).message;
           return res.status(400).json({
             error: 'invalid_request',
-            error_description: 'Missing authorization session ID',
+            error_description: errorMessage,
           });
         }
+
+        const { sessionId } = paramParseResult.data;
 
         try {
           const httpCredentials = await this.httpAuth.credentials(req);
@@ -278,14 +319,16 @@ export class OidcRouter {
       // Authorization Session rejection endpoint
       // Handles user rejection of Authorization Session requests and redirects with error
       router.post('/v1/sessions/:sessionId/reject', async (req, res) => {
-        const { sessionId } = req.params;
-
-        if (!sessionId) {
+        const paramParseResult = sessionIdParamSchema.safeParse(req.params);
+        if (!paramParseResult.success) {
+          const errorMessage = fromZodError(paramParseResult.error).message;
           return res.status(400).json({
             error: 'invalid_request',
-            error_description: 'Missing authorization session ID',
+            error_description: errorMessage,
           });
         }
+
+        const { sessionId } = paramParseResult.data;
 
         const httpCredentials = await this.httpAuth.credentials(req);
 
@@ -339,24 +382,23 @@ export class OidcRouter {
       // Exchanges authorization codes for access tokens and ID tokens
       // Also handles refresh token grant type
       router.post('/v1/token', async (req, res) => {
-        // todo(blam): maybe add zod types for validating input
+        const bodyParseResult = tokenRequestBodySchema.safeParse(req.body);
+        if (!bodyParseResult.success) {
+          const errorMessage = fromZodError(bodyParseResult.error).message;
+          this.logger.error(`Failed to process token request: ${errorMessage}`);
+          return res.status(400).json({
+            error: 'invalid_request',
+            error_description: errorMessage,
+          });
+        }
+
         const {
           grant_type: grantType,
           code,
           redirect_uri: redirectUri,
           code_verifier: codeVerifier,
           refresh_token: refreshToken,
-        } = req.body;
-
-        if (!grantType) {
-          this.logger.error(
-            `Failed to process token request: Missing grant_type`,
-          );
-          return res.status(400).json({
-            error: 'invalid_request',
-            error_description: 'Missing grant_type parameter',
-          });
-        }
+        } = bodyParseResult.data;
 
         const expiresIn = readDcrTokenExpiration(this.config);
 
@@ -460,33 +502,34 @@ export class OidcRouter {
       // https://openid.net/specs/openid-connect-registration-1_0.html#ClientRegistration
       // Allows clients to register themselves dynamically with the provider
       router.post('/v1/register', async (req, res) => {
-        // todo(blam): maybe add zod types for validating input
+        const bodyParseResult = registerRequestBodySchema.safeParse(req.body);
+        if (!bodyParseResult.success) {
+          const errorMessage = fromZodError(bodyParseResult.error).message;
+          this.logger.error(`Failed to register client: ${errorMessage}`);
+          return res.status(400).json({
+            error: 'invalid_request',
+            error_description: errorMessage,
+          });
+        }
+
         const {
           client_name: clientName,
           redirect_uris: redirectUris,
           response_types: responseTypes,
           grant_types: grantTypes,
           scope,
-        } = req.body;
-
-        if (!redirectUris?.length) {
-          res.status(400).json({
-            error: 'invalid_request',
-            error_description: 'redirect_uris is required',
-          });
-          return;
-        }
+        } = bodyParseResult.data;
 
         try {
           const client = await this.oidc.registerClient({
-            clientName,
+            clientName: clientName ?? 'Backstage CLI',
             redirectUris,
             responseTypes,
             grantTypes,
             scope,
           });
 
-          res.status(201).json({
+          return res.status(201).json({
             client_id: client.clientId,
             redirect_uris: client.redirectUris,
             client_secret: client.clientSecret,
@@ -495,7 +538,7 @@ export class OidcRouter {
           const description = isError(e) ? e.message : 'Unknown error';
           this.logger.error(`Failed to register client: ${description}`, e);
 
-          res.status(500).json({
+          return res.status(500).json({
             error: 'server_error',
             error_description: `Failed to register client: ${description}`,
           });
@@ -506,23 +549,26 @@ export class OidcRouter {
       // Allows clients to revoke refresh tokens
       router.post('/v1/revoke', async (req, res) => {
         try {
-          // Parse token from request body (application/x-www-form-urlencoded or JSON)
-          const { token, token_type_hint: tokenTypeHint } = (req.body ??
-            {}) as Record<string, unknown>;
-
-          if (!token || typeof token !== 'string') {
+          const bodyParseResult = revokeRequestBodySchema.safeParse(
+            req.body ?? {},
+          );
+          if (!bodyParseResult.success) {
+            const errorMessage = fromZodError(bodyParseResult.error).message;
             return res.status(400).json({
               error: 'invalid_request',
-              error_description: 'Missing token',
+              error_description: errorMessage,
             });
           }
 
+          const {
+            token,
+            token_type_hint: tokenTypeHint,
+            client_id: bodyClientId,
+            client_secret: bodyClientSecret,
+          } = bodyParseResult.data;
+
           // Only refresh_token revocation is supported currently
-          if (
-            tokenTypeHint &&
-            typeof tokenTypeHint === 'string' &&
-            tokenTypeHint !== 'refresh_token'
-          ) {
+          if (tokenTypeHint && tokenTypeHint !== 'refresh_token') {
             // Hint is optional; ignore unsupported hints per RFC 7009
           }
 
@@ -550,16 +596,9 @@ export class OidcRouter {
 
           // client_secret_post
           if (!clientId || !clientSecret) {
-            const { client_id, client_secret } = (req.body ?? {}) as Record<
-              string,
-              unknown
-            >;
-            if (
-              typeof client_id === 'string' &&
-              typeof client_secret === 'string'
-            ) {
-              clientId = client_id;
-              clientSecret = client_secret;
+            if (bodyClientId && bodyClientSecret) {
+              clientId = bodyClientId;
+              clientSecret = bodyClientSecret;
             }
           }
 

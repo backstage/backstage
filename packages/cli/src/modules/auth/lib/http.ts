@@ -25,23 +25,16 @@ type HttpInit = {
 };
 
 export async function httpJson<T>(url: string, init?: HttpInit): Promise<T> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30_000);
-  try {
-    const res = await fetch(url, {
-      ...init,
-      signal: controller.signal,
-      body: init?.body ? JSON.stringify(init.body) : undefined,
-      headers: {
-        ...init?.headers,
-        ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
-      },
-    });
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return (await res.json()) as T;
-  } finally {
-    clearTimeout(timeout);
+  const res = await fetch(url, {
+    ...init,
+    body: init?.body ? JSON.stringify(init.body) : undefined,
+    headers: {
+      ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
+      ...init?.headers,
+    },
+  });
+  if (!res.ok) {
+    throw await ResponseError.fromResponse(res);
   }
+  return (await res.json()) as T;
 }

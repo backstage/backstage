@@ -145,6 +145,7 @@ describe('auth', () => {
       expect(mockHttp.httpJson).toHaveBeenCalledWith(
         'http://localhost:7007/api/auth/v1/token',
         {
+          signal: expect.any(AbortSignal),
           method: 'POST',
           body: {
             grant_type: 'refresh_token',
@@ -309,7 +310,7 @@ describe('auth', () => {
       }
     });
 
-    it('should handle malformed token response with missing fields', async () => {
+    it('should validate token response and reject malformed responses', async () => {
       const now = Date.now();
       const instance = {
         name: 'test',
@@ -332,15 +333,54 @@ describe('auth', () => {
         },
       );
 
-      // Missing required fields - code will proceed but result will have undefined values
+      // Test missing access_token
       mockHttp.httpJson.mockResolvedValue({
         token_type: 'Bearer',
+        expires_in: 3600,
+        refresh_token: 'new-refresh-token',
       } as any);
 
-      const result = await refreshAccessToken('test');
-      // The function doesn't validate the response, so it will create instance with undefined values
-      expect(result.accessToken).toBeUndefined();
-      expect(result.accessTokenExpiresAt).toBeNaN();
+      await expect(refreshAccessToken('test')).rejects.toThrow(
+        'Invalid token response',
+      );
+      await expect(refreshAccessToken('test')).rejects.toThrow('access_token');
+
+      // Test missing expires_in
+      mockHttp.httpJson.mockResolvedValue({
+        access_token: 'new-access-token',
+        token_type: 'Bearer',
+        refresh_token: 'new-refresh-token',
+      } as any);
+
+      await expect(refreshAccessToken('test')).rejects.toThrow(
+        'Invalid token response',
+      );
+      await expect(refreshAccessToken('test')).rejects.toThrow('expires_in');
+
+      // Test missing refresh_token
+      mockHttp.httpJson.mockResolvedValue({
+        access_token: 'new-access-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      } as any);
+
+      await expect(refreshAccessToken('test')).rejects.toThrow(
+        'Invalid token response',
+      );
+      await expect(refreshAccessToken('test')).rejects.toThrow('refresh_token');
+
+      // Test invalid expires_in (non-positive)
+      mockHttp.httpJson.mockResolvedValue({
+        access_token: 'new-access-token',
+        token_type: 'Bearer',
+        expires_in: 0,
+        refresh_token: 'new-refresh-token',
+      } as any);
+
+      await expect(refreshAccessToken('test')).rejects.toThrow(
+        'Invalid token response',
+      );
+      await expect(refreshAccessToken('test')).rejects.toThrow('expires_in');
     });
   });
 });

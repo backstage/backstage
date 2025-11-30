@@ -235,6 +235,7 @@ async function registerClient(authBase: string, redirectUri: string) {
         grant_types: ['authorization_code'],
         scope: 'openid offline_access',
       },
+      signal: AbortSignal.timeout(30_000),
     },
   );
 }
@@ -307,6 +308,7 @@ async function exchangeAuthorizationCode(options: {
       redirect_uri: redirectUri,
       code_verifier: verifier,
     },
+    signal: AbortSignal.timeout(30_000),
   });
 }
 
@@ -347,13 +349,28 @@ function cryptoRandom(): string {
 
 // The react-dev-utils/openBrowser breaks the login URL by encoding the URL parameters again
 export function openInBrowser(url: string): void {
+  const handleError = (error: unknown) => {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    process.stderr.write(
+      `Warning: Failed to open browser automatically: ${message}\n`,
+    );
+    process.stderr.write(`Please open this URL manually: ${url}\n`);
+  };
+
   const spawnOpts = { detached: true, stdio: 'ignore' } as const;
-  if (process.platform === 'darwin') {
-    spawn('open', [url], spawnOpts).unref();
-  } else if (process.platform === 'win32') {
-    spawn('cmd', ['/c', 'start', '""', url], spawnOpts).unref();
-  } else {
-    // linux and others
-    spawn('xdg-open', [url], spawnOpts).unref();
+  let child;
+  try {
+    if (process.platform === 'darwin') {
+      child = spawn('open', [url], spawnOpts);
+    } else if (process.platform === 'win32') {
+      child = spawn('cmd', ['/c', 'start', '""', url], spawnOpts);
+    } else {
+      // linux and others
+      child = spawn('xdg-open', [url], spawnOpts);
+    }
+    child.unref();
+    child.on('error', handleError);
+  } catch (error) {
+    handleError(error);
   }
 }
