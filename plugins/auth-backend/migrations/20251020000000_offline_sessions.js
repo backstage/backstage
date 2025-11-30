@@ -64,6 +64,7 @@ exports.up = async function up(knex) {
       .inTable('oidc_clients')
       .onDelete('CASCADE');
     table.index('user_entity_ref', 'offline_sessions_user_idx');
+    table.index('oidc_client_id', 'offline_sessions_oidc_client_idx');
     table.index('created_at', 'offline_sessions_created_idx');
     table.index('last_used_at', 'offline_sessions_last_used_idx');
   });

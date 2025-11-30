@@ -23,7 +23,7 @@ import {
 describe('refreshToken', () => {
   describe('generateRefreshToken', () => {
     it('should generate a token with embedded ID', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { token, hash } = generateRefreshToken(sessionId);
 
       expect(token).toBeDefined();
@@ -37,7 +37,7 @@ describe('refreshToken', () => {
     });
 
     it('should generate unique tokens for the same ID', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const result1 = generateRefreshToken(sessionId);
       const result2 = generateRefreshToken(sessionId);
 
@@ -46,8 +46,8 @@ describe('refreshToken', () => {
     });
 
     it('should generate different hashes for different tokens', () => {
-      const sessionId1 = 'session-1';
-      const sessionId2 = 'session-2';
+      const sessionId1 = '123e4567-e89b-4d3a-a456-426614174000';
+      const sessionId2 = '223e4567-e89b-4d3a-a456-426614174001';
 
       const result1 = generateRefreshToken(sessionId1);
       const result2 = generateRefreshToken(sessionId2);
@@ -58,15 +58,15 @@ describe('refreshToken', () => {
 
   describe('getRefreshTokenId', () => {
     it('should extract the session ID from a valid token', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { token } = generateRefreshToken(sessionId);
 
       const extractedId = getRefreshTokenId(token);
       expect(extractedId).toBe(sessionId);
     });
 
-    it('should handle tokens with complex IDs', () => {
-      const sessionId = 'session-123-abc-xyz';
+    it('should handle tokens with any session ID format', () => {
+      const sessionId = 'any-session-id-format';
       const { token } = generateRefreshToken(sessionId);
 
       const extractedId = getRefreshTokenId(token);
@@ -88,7 +88,7 @@ describe('refreshToken', () => {
 
   describe('verifyRefreshToken', () => {
     it('should verify a valid token against its hash', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { token, hash } = generateRefreshToken(sessionId);
 
       const isValid = verifyRefreshToken(token, hash);
@@ -96,7 +96,7 @@ describe('refreshToken', () => {
     });
 
     it('should reject an invalid token', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { hash } = generateRefreshToken(sessionId);
       const { token: wrongToken } = generateRefreshToken(sessionId);
 
@@ -105,7 +105,7 @@ describe('refreshToken', () => {
     });
 
     it('should reject a modified token', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { token, hash } = generateRefreshToken(sessionId);
 
       // Modify the token slightly
@@ -116,7 +116,7 @@ describe('refreshToken', () => {
     });
 
     it('should reject with invalid hash format', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { token } = generateRefreshToken(sessionId);
 
       const isValid = verifyRefreshToken(token, 'invalid-hash');
@@ -124,7 +124,7 @@ describe('refreshToken', () => {
     });
 
     it('should reject with empty hash', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { token } = generateRefreshToken(sessionId);
 
       const isValid = verifyRefreshToken(token, '');
@@ -132,7 +132,7 @@ describe('refreshToken', () => {
     });
 
     it('should handle malformed hash gracefully', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { token } = generateRefreshToken(sessionId);
 
       expect(verifyRefreshToken(token, 'not.a.valid.hash')).toBe(false);
@@ -140,7 +140,7 @@ describe('refreshToken', () => {
     });
 
     it('should be timing-safe (multiple verifications should work)', () => {
-      const sessionId = 'test-session-id';
+      const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
       const { token, hash } = generateRefreshToken(sessionId);
 
       // Verify multiple times to ensure timing safety

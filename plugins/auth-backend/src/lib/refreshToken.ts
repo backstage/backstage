@@ -62,10 +62,15 @@ export function generateRefreshToken(id: string): {
  * @public
  */
 export function getRefreshTokenId(token: string): string {
-  const parts = token.split('.');
-  if (parts.length !== 2) {
+  if (!token || typeof token !== 'string') {
     throw new Error('Invalid refresh token format');
   }
+
+  const parts = token.split('.');
+  if (parts.length !== 2 || !parts[0] || !parts[1]) {
+    throw new Error('Invalid refresh token format');
+  }
+
   return parts[0];
 }
 
