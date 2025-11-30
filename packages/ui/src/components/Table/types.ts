@@ -21,7 +21,10 @@ import {
 import type { TextColors } from '../../types';
 
 /** @public */
-export interface CellProps extends ReactAriaCellProps {
+export interface CellProps extends ReactAriaCellProps {}
+
+/** @public */
+export interface CellTextProps extends ReactAriaCellProps {
   title: string;
   description?: string;
   color?: TextColors;
