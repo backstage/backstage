@@ -184,58 +184,51 @@ describe('auth', () => {
       );
     });
 
-    it('should throw error if client ID is missing', async () => {
+    it('should throw error if client ID or secret is missing', async () => {
       const now = Date.now();
-      const instance = {
-        name: 'test',
-        baseUrl: 'http://localhost:7007',
-        clientId: '',
-        issuedAt: now - 3600_000,
-        accessToken: 'old-token',
-        accessTokenExpiresAt: now - 60_000,
-      };
 
-      mockStorage.withMetadataLock.mockImplementation(
-        async (fn: () => Promise<any>) => fn(),
-      );
-      mockStorage.getInstanceByName.mockResolvedValue(instance);
-      mockSecretStoreInstance.get.mockImplementation(
-        async (_service: string, account: string) => {
-          if (account === 'refreshToken') return 'refresh-token';
-          return undefined;
+      const testCases = [
+        {
+          instance: {
+            name: 'test',
+            baseUrl: 'http://localhost:7007',
+            clientId: '',
+            issuedAt: now - 3600_000,
+            accessToken: 'old-token',
+            accessTokenExpiresAt: now - 60_000,
+          },
+          getMock: async (_service: string, account: string) => {
+            if (account === 'refreshToken') return 'refresh-token';
+            return undefined;
+          },
         },
-      );
-
-      await expect(refreshAccessToken('test')).rejects.toThrow(
-        'Missing stored credentials',
-      );
-    });
-
-    it('should throw error if client secret is missing', async () => {
-      const now = Date.now();
-      const instance = {
-        name: 'test',
-        baseUrl: 'http://localhost:7007',
-        clientId: 'test-client-id',
-        issuedAt: now - 3600_000,
-        accessToken: 'old-token',
-        accessTokenExpiresAt: now - 60_000,
-      };
-
-      mockStorage.withMetadataLock.mockImplementation(
-        async (fn: () => Promise<any>) => fn(),
-      );
-      mockStorage.getInstanceByName.mockResolvedValue(instance);
-      mockSecretStoreInstance.get.mockImplementation(
-        async (_service: string, account: string) => {
-          if (account === 'refreshToken') return 'refresh-token';
-          return undefined;
+        {
+          instance: {
+            name: 'test',
+            baseUrl: 'http://localhost:7007',
+            clientId: 'test-client-id',
+            issuedAt: now - 3600_000,
+            accessToken: 'old-token',
+            accessTokenExpiresAt: now - 60_000,
+          },
+          getMock: async (_service: string, account: string) => {
+            if (account === 'refreshToken') return 'refresh-token';
+            return undefined;
+          },
         },
-      );
+      ];
 
-      await expect(refreshAccessToken('test')).rejects.toThrow(
-        'Missing stored credentials',
-      );
+      for (const { instance, getMock } of testCases) {
+        mockStorage.withMetadataLock.mockImplementation(
+          async (fn: () => Promise<any>) => fn(),
+        );
+        mockStorage.getInstanceByName.mockResolvedValue(instance);
+        mockSecretStoreInstance.get.mockImplementation(getMock);
+
+        await expect(refreshAccessToken('test')).rejects.toThrow(
+          'Missing stored credentials',
+        );
+      }
     });
 
     it('should use metadata lock during refresh', async () => {
@@ -279,6 +272,75 @@ describe('auth', () => {
 
       expect(lockAcquired).toBe(true);
       expect(mockStorage.withMetadataLock).toHaveBeenCalled();
+    });
+
+    it('should handle HTTP and network errors during refresh', async () => {
+      const now = Date.now();
+      const instance = {
+        name: 'test',
+        baseUrl: 'http://localhost:7007',
+        clientId: 'test-client-id',
+        issuedAt: now - 3600_000,
+        accessToken: 'old-token',
+        accessTokenExpiresAt: now - 60_000,
+      };
+
+      const errorCases = [
+        new Error('Request failed with 401 Unauthorized'),
+        new Error('Network error'),
+      ];
+
+      for (const error of errorCases) {
+        mockStorage.withMetadataLock.mockImplementation(
+          async (fn: () => Promise<any>) => fn(),
+        );
+        mockStorage.getInstanceByName.mockResolvedValue(instance);
+        mockSecretStoreInstance.get.mockImplementation(
+          async (_service: string, account: string) => {
+            if (account === 'clientSecret') return 'test-secret';
+            if (account === 'refreshToken') return 'refresh-token';
+            return undefined;
+          },
+        );
+
+        mockHttp.httpJson.mockRejectedValue(error);
+
+        await expect(refreshAccessToken('test')).rejects.toThrow(error.message);
+      }
+    });
+
+    it('should handle malformed token response with missing fields', async () => {
+      const now = Date.now();
+      const instance = {
+        name: 'test',
+        baseUrl: 'http://localhost:7007',
+        clientId: 'test-client-id',
+        issuedAt: now - 3600_000,
+        accessToken: 'old-token',
+        accessTokenExpiresAt: now - 60_000,
+      };
+
+      mockStorage.withMetadataLock.mockImplementation(
+        async (fn: () => Promise<any>) => fn(),
+      );
+      mockStorage.getInstanceByName.mockResolvedValue(instance);
+      mockSecretStoreInstance.get.mockImplementation(
+        async (_service: string, account: string) => {
+          if (account === 'clientSecret') return 'test-secret';
+          if (account === 'refreshToken') return 'refresh-token';
+          return undefined;
+        },
+      );
+
+      // Missing required fields - code will proceed but result will have undefined values
+      mockHttp.httpJson.mockResolvedValue({
+        token_type: 'Bearer',
+      } as any);
+
+      const result = await refreshAccessToken('test');
+      // The function doesn't validate the response, so it will create instance with undefined values
+      expect(result.accessToken).toBeUndefined();
+      expect(result.accessTokenExpiresAt).toBeNaN();
     });
   });
 });

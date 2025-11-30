@@ -72,13 +72,14 @@ describe('http', () => {
       expect(result).toEqual({ success: true });
     });
 
-    it('should include custom headers in request', async () => {
+    it('should include and merge custom headers', async () => {
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue({ data: 'test' }),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
+      // Test custom headers without body
       await httpJson('https://example.com/api', {
         headers: {
           Authorization: 'Bearer token',
@@ -95,15 +96,8 @@ describe('http', () => {
           },
         }),
       );
-    });
 
-    it('should merge custom headers with content-type when body is present', async () => {
-      const mockResponse = {
-        ok: true,
-        json: jest.fn().mockResolvedValue({ success: true }),
-      };
-      mockFetch.mockResolvedValue(mockResponse as any);
-
+      // Test merging headers with content-type when body is present
       await httpJson('https://example.com/api', {
         method: 'POST',
         body: { data: 'test' },
@@ -123,19 +117,27 @@ describe('http', () => {
       );
     });
 
-    it('should throw ResponseError for non-ok response', async () => {
-      const mockResponse = {
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-        url: 'https://example.com/api',
-        text: jest.fn().mockResolvedValue('Not found'),
-      };
-      mockFetch.mockResolvedValue(mockResponse as any);
+    it('should throw ResponseError for non-ok responses', async () => {
+      const errorCases = [
+        { status: 404, statusText: 'Not Found' },
+        { status: 401, statusText: 'Unauthorized' },
+        { status: 500, statusText: 'Internal Server Error' },
+      ];
 
-      await expect(httpJson('https://example.com/api')).rejects.toThrow(
-        'Request failed with 404 Not Found',
-      );
+      for (const { status, statusText } of errorCases) {
+        const mockResponse = {
+          ok: false,
+          status,
+          statusText,
+          url: 'https://example.com/api',
+          text: jest.fn().mockResolvedValue('Error'),
+        };
+        mockFetch.mockResolvedValue(mockResponse as any);
+
+        await expect(httpJson('https://example.com/api')).rejects.toThrow(
+          `Request failed with ${status} ${statusText}`,
+        );
+      }
     });
 
     it('should abort request after 30 seconds timeout', async () => {
@@ -166,19 +168,6 @@ describe('http', () => {
 
       jest.useRealTimers();
     }, 10000);
-
-    it('should clear timeout after successful response', async () => {
-      const mockResponse = {
-        ok: true,
-        json: jest.fn().mockResolvedValue({ data: 'test' }),
-      };
-      mockFetch.mockResolvedValue(mockResponse as any);
-
-      await httpJson('https://example.com/api');
-
-      // Test passes if no timeout-related errors occur
-      expect(mockResponse.json).toHaveBeenCalled();
-    });
 
     it('should handle JSON parsing errors gracefully', async () => {
       const mockResponse = {
@@ -212,45 +201,23 @@ describe('http', () => {
       }
     });
 
-    it('should not include Content-Type header for GET requests without body', async () => {
-      const mockResponse = {
-        ok: true,
-        json: jest.fn().mockResolvedValue({ data: 'test' }),
-      };
-      mockFetch.mockResolvedValue(mockResponse as any);
+    it('should handle various response body types', async () => {
+      const testCases = [
+        { body: null, expected: null },
+        { body: [1, 2, 3], expected: [1, 2, 3] },
+        { body: { data: 'test' }, expected: { data: 'test' } },
+      ];
 
-      await httpJson('https://example.com/api', { method: 'GET' });
+      for (const { body, expected } of testCases) {
+        const mockResponse = {
+          ok: true,
+          json: jest.fn().mockResolvedValue(body),
+        };
+        mockFetch.mockResolvedValue(mockResponse as any);
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/api',
-        expect.objectContaining({
-          headers: {},
-        }),
-      );
-    });
-
-    it('should handle empty response body', async () => {
-      const mockResponse = {
-        ok: true,
-        json: jest.fn().mockResolvedValue(null),
-      };
-      mockFetch.mockResolvedValue(mockResponse as any);
-
-      const result = await httpJson('https://example.com/api');
-
-      expect(result).toBeNull();
-    });
-
-    it('should handle array response', async () => {
-      const mockResponse = {
-        ok: true,
-        json: jest.fn().mockResolvedValue([1, 2, 3]),
-      };
-      mockFetch.mockResolvedValue(mockResponse as any);
-
-      const result = await httpJson<number[]>('https://example.com/api');
-
-      expect(result).toEqual([1, 2, 3]);
+        const result = await httpJson('https://example.com/api');
+        expect(result).toEqual(expected);
+      }
     });
 
     it('should handle network errors', async () => {
@@ -262,37 +229,7 @@ describe('http', () => {
       );
     });
 
-    it('should handle 401 Unauthorized', async () => {
-      const mockResponse = {
-        ok: false,
-        status: 401,
-        statusText: 'Unauthorized',
-        url: 'https://example.com/api',
-        text: jest.fn().mockResolvedValue('Unauthorized'),
-      };
-      mockFetch.mockResolvedValue(mockResponse as any);
-
-      await expect(httpJson('https://example.com/api')).rejects.toThrow(
-        'Request failed with 401 Unauthorized',
-      );
-    });
-
-    it('should handle 500 Internal Server Error', async () => {
-      const mockResponse = {
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-        url: 'https://example.com/api',
-        text: jest.fn().mockResolvedValue('Server error'),
-      };
-      mockFetch.mockResolvedValue(mockResponse as any);
-
-      await expect(httpJson('https://example.com/api')).rejects.toThrow(
-        'Request failed with 500 Internal Server Error',
-      );
-    });
-
-    it('should pass custom abort signal if provided', async () => {
+    it('should use custom abort signal if provided', async () => {
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue({ data: 'test' }),
@@ -304,13 +241,32 @@ describe('http', () => {
         signal: customController.signal,
       });
 
-      // The custom signal should be passed through (though in implementation it might be overridden)
+      // The implementation creates its own signal for timeout, but should still accept custom signal
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/api',
         expect.objectContaining({
           signal: expect.any(AbortSignal),
         }),
       );
+    });
+
+    it('should handle malformed URLs gracefully', async () => {
+      const networkError = new TypeError('Failed to parse URL');
+      mockFetch.mockRejectedValue(networkError);
+
+      await expect(httpJson('not-a-valid-url')).rejects.toThrow();
+    });
+
+    it('should handle very large response bodies', async () => {
+      const largeData = { items: Array(10000).fill({ data: 'x'.repeat(100) }) };
+      const mockResponse = {
+        ok: true,
+        json: jest.fn().mockResolvedValue(largeData),
+      };
+      mockFetch.mockResolvedValue(mockResponse as any);
+
+      const result = await httpJson('https://example.com/api');
+      expect(result).toEqual(largeData);
     });
   });
 });

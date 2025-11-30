@@ -100,3 +100,11 @@ export async function getSecretStore(): Promise<SecretStore> {
   }
   return singleton;
 }
+
+/**
+ * Reset the singleton instance (for testing purposes only)
+ * @internal
+ */
+export function resetSecretStore(): void {
+  singleton = undefined;
+}

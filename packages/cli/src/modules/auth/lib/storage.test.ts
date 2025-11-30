@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
+import path from 'path';
 import { NotFoundError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import {
@@ -60,20 +62,16 @@ describe('storage', () => {
   });
 
   describe('getAllInstances', () => {
-    it('should return empty array if file does not exist', async () => {
-      const result = await getAllInstances();
+    it('should return empty array if file does not exist or is empty', async () => {
+      const result1 = await getAllInstances();
+      expect(result1).toEqual({ instances: [], selected: undefined });
 
-      expect(result).toEqual({ instances: [], selected: undefined });
-    });
-
-    it('should return empty array if file is empty', async () => {
       mockDir.setContent({
         'config/backstage-cli/instances.yaml': '',
       });
 
-      const result = await getAllInstances();
-
-      expect(result).toEqual({ instances: [], selected: undefined });
+      const result2 = await getAllInstances();
+      expect(result2).toEqual({ instances: [], selected: undefined });
     });
 
     it('should parse and return instances from YAML', async () => {
@@ -350,14 +348,6 @@ describe('storage', () => {
       expect(result).toBe('result');
     });
 
-    it('should create file if it does not exist', async () => {
-      const callback = jest.fn().mockResolvedValue('result');
-      await withMetadataLock(callback);
-
-      // File should have been created for locking
-      expect(callback).toHaveBeenCalled();
-    });
-
     it('should release lock even if callback throws', async () => {
       const error = new Error('Test error');
       const callback = jest.fn().mockRejectedValue(error);
@@ -372,28 +362,57 @@ describe('storage', () => {
 
   describe('file path resolution', () => {
     it('should use XDG_CONFIG_HOME when set', async () => {
-      process.env.XDG_CONFIG_HOME = mockDir.resolve('custom-config');
+      const customConfigHome = mockDir.resolve('custom-config');
+      process.env.XDG_CONFIG_HOME = customConfigHome;
 
       await upsertInstance(mockInstance1);
 
       const result = await getAllInstances();
       expect(result.instances).toHaveLength(1);
       expect(result.instances[0].name).toBe('production');
+
+      // Verify file was created in custom location
+      const expectedFile = path.join(
+        customConfigHome,
+        'backstage-cli',
+        'instances.yaml',
+      );
+      expect(await fs.pathExists(expectedFile)).toBe(true);
     });
 
-    it('should respect environment-based directory configuration', async () => {
-      // This test verifies that the storage respects XDG_CONFIG_HOME
-      // The mock directory is already set up via beforeEach
+    it('should create files with correct permissions (0o600)', async () => {
       await upsertInstance(mockInstance1);
-      await upsertInstance(mockInstance2);
 
-      const result = await getAllInstances();
-      expect(result.instances.length).toBeGreaterThanOrEqual(2);
+      const file = path.join(
+        mockDir.resolve('config'),
+        'backstage-cli',
+        'instances.yaml',
+      );
+      const stats = await fs.stat(file);
+      const mode = stats.mode & 0o777;
+      expect(mode).toBe(0o600);
+    });
 
-      const hasProduction = result.instances.some(i => i.name === 'production');
-      const hasStaging = result.instances.some(i => i.name === 'staging');
-      expect(hasProduction).toBe(true);
-      expect(hasStaging).toBe(true);
+    it('should handle invalid schema and missing fields gracefully', async () => {
+      mockDir.setContent({
+        'config/backstage-cli/instances.yaml': `instances:
+  - name: ""
+    baseUrl: not-a-url
+    clientId: ""
+`,
+      });
+
+      const result1 = await getAllInstances();
+      expect(result1.instances).toHaveLength(0);
+
+      mockDir.setContent({
+        'config/backstage-cli/instances.yaml': `instances:
+  - name: production
+`,
+      });
+
+      const result2 = await getAllInstances();
+      expect(result2.instances).toHaveLength(0);
     });
   });
 });
