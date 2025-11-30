@@ -16,8 +16,6 @@
 
 import chalk from 'chalk';
 import ora from 'ora';
-import { assertError } from '@backstage/errors';
-import { run } from '@backstage/cli-common';
 
 const TASK_NAME_MAX_LENGTH = 14;
 
@@ -59,27 +57,6 @@ export class Task {
     } catch (error) {
       spinner.fail();
       throw error;
-    }
-  }
-
-  static async forCommand(
-    command: string,
-    options?: { cwd?: string; optional?: boolean },
-  ) {
-    try {
-      await Task.forItem('executing', command, async () => {
-        const parts = command.trim().split(/\s+/);
-        await run(parts, { cwd: options?.cwd }).waitForExit();
-      });
-    } catch (error) {
-      assertError(error);
-      if (options?.optional) {
-        Task.error(`Warning: Failed to execute command ${chalk.cyan(command)}`);
-      } else {
-        throw new Error(
-          `Failed to execute command '${chalk.cyan(command)}', ${error}`,
-        );
-      }
     }
   }
 }
