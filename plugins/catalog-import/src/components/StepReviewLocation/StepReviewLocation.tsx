@@ -15,8 +15,8 @@
  */
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { Link } from '@backstage/core-components';
-import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { Link, useAppTitle } from '@backstage/core-components';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -44,10 +44,8 @@ export const StepReviewLocation = ({
 }: Props) => {
   const { t } = useTranslationRef(catalogImportTranslationRef);
   const catalogApi = useApi(catalogApiRef);
-  const configApi = useApi(configApiRef);
   const analytics = useAnalytics();
-
-  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const appTitle = useAppTitle();
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();

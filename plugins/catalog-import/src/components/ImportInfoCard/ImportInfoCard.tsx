@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InfoCard } from '@backstage/core-components';
+import { InfoCard, useAppTitle } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Chip from '@material-ui/core/Chip';
@@ -47,7 +47,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
 
   const { t } = useTranslationRef(catalogImportTranslationRef);
   const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const appTitle = useAppTitle();
   const catalogImportApi = useApi(catalogImportApiRef);
 
   const hasGithubIntegration = configApi.has('integrations.github');

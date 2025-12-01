@@ -22,14 +22,11 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { useState } from 'react';
 import { isError } from '@backstage/errors';
-import {
-  configApiRef,
-  PendingOAuthRequest,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import Box from '@material-ui/core/Box';
+import { useAppTitle } from '../../hooks';
 
 export type LoginRequestListItemClassKey = 'root';
 
@@ -55,7 +52,7 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   const classes = useItemStyles();
   const [error, setError] = useState<string>();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
-  const configApi = useApi(configApiRef);
+  const appTitle = useAppTitle();
 
   const handleContinue = async () => {
     setBusy(true);
@@ -72,7 +69,7 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   const message =
     request.provider.message ??
     t('oauthRequestDialog.message', {
-      appTitle: configApi.getString('app.title'),
+      appTitle,
       provider: request.provider.title,
     });
 

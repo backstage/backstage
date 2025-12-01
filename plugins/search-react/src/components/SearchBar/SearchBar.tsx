@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  AnalyticsContext,
-  configApiRef,
-  useApi,
-  useApp,
-} from '@backstage/core-plugin-api';
+import { AnalyticsContext, useApp } from '@backstage/core-plugin-api';
+import { useAppTitle } from '@backstage/core-components';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
@@ -80,10 +76,10 @@ export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
     ...rest
   } = props;
 
-  const configApi = useApi(configApiRef);
   const [value, setValue] = useState<string>('');
   const forwardedValueRef = useRef<string>('');
   const { t } = useTranslationRef(searchReactTranslationRef);
+  const appTitle = useAppTitle();
 
   useEffect(() => {
     setValue(prevValue => {
@@ -139,7 +135,7 @@ export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
   const inputPlaceholder =
     placeholder ??
     t('searchBar.placeholder', {
-      org: configApi.getOptionalString('app.title') || 'Backstage',
+      org: appTitle,
     });
   const SearchIcon = useApp().getSystemIcon('search') || DefaultSearchIcon;
 

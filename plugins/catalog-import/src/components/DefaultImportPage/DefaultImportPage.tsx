@@ -20,8 +20,8 @@ import {
   Header,
   Page,
   SupportButton,
+  useAppTitle,
 } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Grid from '@material-ui/core/Grid';
 import { useTheme } from '@material-ui/core/styles';
@@ -39,9 +39,8 @@ import { ImportStepper } from '../ImportStepper';
 export const DefaultImportPage = () => {
   const { t } = useTranslationRef(catalogImportTranslationRef);
   const theme = useTheme();
-  const configApi = useApi(configApiRef);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const appTitle = useAppTitle();
 
   const contentItems = [
     <Grid key={0} item xs={12} md={4} lg={6} xl={8}>

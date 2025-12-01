@@ -16,7 +16,6 @@
 
 import {
   BackstageIdentityResponse,
-  configApiRef,
   SignInPageProps,
   useAnalytics,
   useApi,
@@ -39,6 +38,7 @@ import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useSearchParams } from 'react-router-dom';
+import { useAppTitle } from '../../hooks';
 
 type CommonSignInPageProps = SignInPageProps & {
   /**
@@ -69,8 +69,8 @@ export const MultiSignInPage = ({
   titleComponent,
   align = 'left',
 }: MultiSignInPageProps) => {
-  const configApi = useApi(configApiRef);
   const classes = useStyles();
+  const appTitle = useAppTitle();
 
   const signInProviders = getSignInProviders(providers);
   const [loading, providerElements] = useSignInProviders(
@@ -84,7 +84,7 @@ export const MultiSignInPage = ({
 
   return (
     <Page themeId="home">
-      <Header title={configApi.getString('app.title')} />
+      <Header title={appTitle} />
       <Content>
         {(title || titleComponent) && (
           <ContentHeader
@@ -115,7 +115,7 @@ export const SingleSignInPage = ({
 }: SingleSignInPageProps) => {
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
-  const configApi = useApi(configApiRef);
+  const appTitle = useAppTitle();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
   const analytics = useAnalytics();
 
@@ -186,7 +186,7 @@ export const SingleSignInPage = ({
 
   return showLoginPage ? (
     <Page themeId="home">
-      <Header title={configApi.getString('app.title')} />
+      <Header title={appTitle} />
       <Content>
         <Grid
           container
