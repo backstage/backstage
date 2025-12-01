@@ -21,6 +21,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
     readonly 'table.pagination.previousTooltip': 'Previous Page';
+    readonly 'app.title': 'Backstage';
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
