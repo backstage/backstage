@@ -34,6 +34,7 @@ import {
   useTable,
   SearchField,
   Box,
+  CellText,
 } from '@backstage/ui';
 import {
   EntityRefLinkCell,
@@ -41,7 +42,6 @@ import {
   TagsCell,
   DescriptionCell,
 } from './cells';
-import { Cell as ReactAriaCell } from 'react-aria-components';
 import { TableColumn } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 
@@ -388,7 +388,7 @@ export function OffsetPaginatedCatalogTable(
                     }
                     // Fallback: render the content directly
                     return (
-                      <ReactAriaCell
+                      <Cell
                         id={cellId}
                         className="bui-TableCell"
                         hidden={column.hidden}
@@ -398,7 +398,7 @@ export function OffsetPaginatedCatalogTable(
                             {renderedContent}
                           </div>
                         </div>
-                      </ReactAriaCell>
+                      </Cell>
                     );
                   }
 
@@ -409,7 +409,7 @@ export function OffsetPaginatedCatalogTable(
                       : '';
 
                   return (
-                    <Cell
+                    <CellText
                       id={cellId}
                       title={cellTitle}
                       hidden={column.hidden}
