@@ -15,7 +15,7 @@
  */
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { Cell, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { CellText, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   entityRouteParams,
@@ -88,7 +88,7 @@ export function EntityRefLinkCell(props: EntityRefLinkCellProps) {
   }
 
   let cell = (
-    <Cell
+    <CellText
       id={id}
       title={displayTitle}
       leadingIcon={icon}

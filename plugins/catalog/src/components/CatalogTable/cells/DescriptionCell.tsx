@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Cell, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { CellText, Tooltip, TooltipTrigger } from '@backstage/ui';
 
 /**
  * Props for DescriptionCell
@@ -34,11 +34,11 @@ export function DescriptionCell(props: DescriptionCellProps) {
   const { id, hidden, text } = props;
 
   if (!text) {
-    return <Cell id={id} title="" hidden={hidden} />;
+    return <CellText id={id} title="" hidden={hidden} />;
   }
 
   const cell = (
-    <Cell
+    <CellText
       id={id}
       title={text}
       color="primary"

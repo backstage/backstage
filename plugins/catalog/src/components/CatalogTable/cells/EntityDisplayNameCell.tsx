@@ -15,7 +15,7 @@
  */
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { Cell, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { CellText, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { ReactNode } from 'react';
 
@@ -96,7 +96,7 @@ export function EntityDisplayNameCell(props: EntityDisplayNameCellProps) {
   const iconElement = Icon && !hideIcon ? <Icon fontSize="inherit" /> : null;
 
   let cell = (
-    <Cell
+    <CellText
       id={id}
       title={primaryTitle}
       leadingIcon={iconElement}

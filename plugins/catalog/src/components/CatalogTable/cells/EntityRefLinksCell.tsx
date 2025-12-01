@@ -20,14 +20,13 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Fragment } from 'react';
-import { Cell, Link, Flex } from '@backstage/ui';
+import { Cell, CellText, Link, Flex } from '@backstage/ui';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   entityRouteParams,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { useEntityDisplayNameContent } from './EntityDisplayNameCell';
-import { Cell as ReactAriaCell } from 'react-aria-components';
 
 /**
  * Props for EntityRefLinksCell
@@ -101,7 +100,7 @@ export function EntityRefLinksCell(props: EntityRefLinksCellProps) {
   const { id, hidden, entityRefs, defaultKind, hideIcons } = props;
 
   if (!entityRefs || entityRefs.length === 0) {
-    return <Cell id={id} title="" hidden={hidden} />;
+    return <CellText id={id} title="" hidden={hidden} />;
   }
 
   if (hidden) {
@@ -110,7 +109,7 @@ export function EntityRefLinksCell(props: EntityRefLinksCellProps) {
 
   // Render multiple links using Cell's internal structure
   return (
-    <ReactAriaCell id={id} className="bui-TableCell">
+    <Cell id={id} className="bui-TableCell">
       <div className="bui-TableCellContentWrapper">
         <div className="bui-TableCellContent">
           {entityRefs.map((entityRef, index) => (
@@ -128,6 +127,6 @@ export function EntityRefLinksCell(props: EntityRefLinksCellProps) {
           ))}
         </div>
       </div>
-    </ReactAriaCell>
+    </Cell>
   );
 }
