@@ -1,0 +1,131 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { Cell, CellText, TagGroup, Tag } from '@backstage/ui';
+import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
+import { TableColumn } from '@backstage/core-components';
+import { CatalogTableRow } from './types';
+import { extractValueByField } from './utils';
+
+/**
+ * Renders the appropriate cell component based on the column field
+ * @internal
+ */
+export function renderCell(
+  item: CatalogTableRow,
+  column: TableColumn<CatalogTableRow>,
+): JSX.Element {
+  const cellId = column.field || String(column.title);
+  const cellValue = column.field
+    ? extractValueByField(item, column.field)
+    : null;
+
+  // Determine cell component based on field
+
+  // Name column - EntityRefLink
+  if (column.field === 'resolved.entityRef') {
+    // The old column format uses filters.kind?.value as defaultKind (see defaultCatalogTableColumnsFunc.tsx)
+    // Since we can't access the filter context here, we use the entity's kind as defaultKind
+    // This ensures that if the entity kind matches the defaultKind, the kind prefix is omitted
+    // (e.g., "api:default/hello-world" with defaultKind="api" shows as "hello-world")
+    const defaultKind = item.entity.kind || 'Component';
+
+    // EntityRefLink uses EntityDisplayName internally, which handles:
+    // - metadata.title vs humanizeEntityRef logic via useEntityPresentation
+    // - Icon rendering
+    // - Tooltip with secondary title
+    // We just need to pass defaultKind to match the old column format behavior
+    return (
+      <Cell id={cellId} className="bui-TableCell" hidden={column.hidden}>
+        <EntityRefLink entityRef={item.entity} defaultKind={defaultKind} />
+      </Cell>
+    );
+  }
+
+  // System column - EntityRefLinks
+  if (column.field === 'resolved.partOfSystemRelationTitle') {
+    return (
+      <Cell id={cellId} className="bui-TableCell" hidden={column.hidden}>
+        <EntityRefLinks
+          entityRefs={item.resolved.partOfSystemRelations || []}
+          defaultKind="system"
+        />
+      </Cell>
+    );
+  }
+
+  // Owner column - EntityRefLinks
+  if (column.field === 'resolved.ownedByRelationsTitle') {
+    return (
+      <Cell id={cellId} className="bui-TableCell" hidden={column.hidden}>
+        <EntityRefLinks
+          entityRefs={item.resolved.ownedByRelations || []}
+          defaultKind="group"
+        />
+      </Cell>
+    );
+  }
+
+  // Tags column
+  if (column.field === 'entity.metadata.tags') {
+    return (
+      <Cell id={cellId} className="bui-TableCell" hidden={column.hidden}>
+        <TagGroup>
+          {item.entity.metadata.tags &&
+            item.entity.metadata.tags.length > 0 &&
+            item.entity.metadata.tags.map(tag => (
+              <Tag key={tag} size="small">
+                {tag}
+              </Tag>
+            ))}
+        </TagGroup>
+      </Cell>
+    );
+  }
+
+  // Description column
+  if (column.field === 'entity.metadata.description') {
+    return (
+      <CellText
+        id={cellId}
+        title={item.entity.metadata.description || ''}
+        hidden={column.hidden}
+      />
+    );
+  }
+
+  // Targets column - use DescriptionCell for comma-separated list
+  if (
+    column.field === 'entity.spec.targets' ||
+    column.field === 'entity.spec.target'
+  ) {
+    let targets: string[] = [];
+    if (item.entity?.spec?.targets && Array.isArray(item.entity.spec.targets)) {
+      targets = item.entity.spec.targets as string[];
+    } else if (item.entity?.spec?.target) {
+      targets = [item.entity.spec.target as string];
+    }
+    return (
+      <CellText id={cellId} title={targets.join(', ')} hidden={column.hidden} />
+    );
+  }
+
+  // Fallback: use simple string value for other columns
+  const cellTitle =
+    cellValue !== undefined && cellValue !== null ? String(cellValue) : '';
+
+  return <CellText id={cellId} title={cellTitle} hidden={column.hidden} />;
+}

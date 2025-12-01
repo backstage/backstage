@@ -23,7 +23,6 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
-  Table,
   TableColumn,
   TableProps,
   WarningPanel,
@@ -34,13 +33,10 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import Typography from '@material-ui/core/Typography';
 import { visuallyHidden } from '@mui/utils';
-import Edit from '@material-ui/icons/Edit';
-import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
@@ -49,6 +45,9 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
 import { FavoriteToggleIcon } from '@backstage/core-components';
+import { Text } from '@backstage/ui';
+import { RiEdit2Line, RiExternalLinkLine } from '@remixicon/react';
+import { CatalogTableBase } from './CatalogTableBase';
 
 /**
  * Props for {@link CatalogTable}.
@@ -115,6 +114,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
   );
   const { t } = useTranslationRef(catalogTranslationRef);
 
+  // Client-side pagination state - must be declared before any conditional returns
+  const pageSize = 20;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPageSize, setCurrentPageSize] = useState(pageSize);
+
   if (error) {
     return (
       <div>
@@ -136,8 +140,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography style={visuallyHidden}>{title}</Typography>
-            <OpenInNew fontSize="small" />
+            <Text style={visuallyHidden}>{title}</Text>
+            <RiExternalLinkLine fontSize="small" />
           </>
         ),
         tooltip: title,
@@ -155,8 +159,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography style={visuallyHidden}>{title}</Typography>
-            <Edit fontSize="small" />
+            <Text style={visuallyHidden}>{title}</Text>
+            <RiEdit2Line fontSize="small" />
           </>
         ),
         tooltip: title,
@@ -224,33 +228,36 @@ export const CatalogTable = (props: CatalogTableProps) => {
         emptyContent={emptyContent}
         isLoading={loading}
         title={title}
-        actions={actions}
         subtitle={subtitle}
-        options={options}
         data={entities.map(toEntityRow)}
       />
     );
   }
 
   const rows = entities.sort(refCompare).map(toEntityRow);
-  const pageSize = 20;
-  const showPagination = rows.length > pageSize;
 
   return (
-    <Table<CatalogTableRow>
-      isLoading={loading}
+    <CatalogTableBase
       columns={tableColumns}
-      options={{
-        paging: showPagination,
-        pageSize: pageSize,
-        pageSizeOptions: [20, 50, 100],
-        ...options,
-      }}
-      title={title}
       data={rows}
-      actions={actions}
+      title={title}
       subtitle={subtitle}
       emptyContent={emptyContent}
+      isLoading={loading}
+      pagination={{
+        mode: 'client',
+        pageSize: currentPageSize,
+        rowCount: rows.length,
+        offset: currentPage * currentPageSize,
+        onOffsetChange: (newOffset: number) => {
+          setCurrentPage(Math.floor(newOffset / currentPageSize));
+        },
+        onPageSizeChange: (newPageSize: number) => {
+          setCurrentPageSize(newPageSize);
+          setCurrentPage(0);
+        },
+      }}
+      showPagination={rows.length > pageSize}
     />
   );
 };
