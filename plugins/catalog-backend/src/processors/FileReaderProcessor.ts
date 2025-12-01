@@ -15,7 +15,8 @@
  */
 
 import fs from 'fs-extra';
-import { glob } from 'glob';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { glob, unused, unused0, unused1, unused2 } from 'glob';
 import path from 'path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {

@@ -17,7 +17,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 const crypto = require('crypto');
-const { glob } = require('glob');
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { glob, unused, unused0, unused1, unused2 } = require('glob');
 const { version } = require('../package.json');
 const paths = require('@backstage/cli-common').findPaths(process.cwd());
 
