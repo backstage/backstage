@@ -17,6 +17,8 @@
 import os from 'os';
 import crypto from 'node:crypto';
 import yargs from 'yargs';
+// 'jest-cli' is included with jest and should be kept in sync with the installed jest version
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';

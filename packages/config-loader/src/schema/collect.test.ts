@@ -15,14 +15,9 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { collectConfigSchemas } from './collect';
+import { collectConfigSchemas, internal } from './collect';
 import path from 'path';
-
-// cwd must be restored
-const origDir = process.cwd();
-afterAll(() => {
-  process.chdir(origDir);
-});
+import { execSync } from 'child_process';
 
 const mockSchema = {
   type: 'object',
@@ -36,6 +31,36 @@ const mockSchema = {
 
 describe('collectConfigSchemas', () => {
   const mockDir = createMockDirectory();
+
+  // Jest 30's module resolver doesn't find nested node_modules in mock directories.
+  // Use a child process for native Node.js resolution instead.
+  const originalResolvePackagePath = internal.resolvePackagePath;
+  beforeAll(() => {
+    internal.resolvePackagePath = (name, options) => {
+      const basePath = (options && options.paths?.[0]) ?? process.cwd();
+      const baseDir = basePath.endsWith('.json')
+        ? path.dirname(basePath)
+        : basePath;
+
+      try {
+        return execSync('node', {
+          input: `console.log(require.resolve(${JSON.stringify(
+            name,
+          )}, { paths: [${JSON.stringify(baseDir)}] }))`,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+        }).trim();
+      } catch {
+        const error = new Error(`Cannot find module '${name}'`);
+        (error as NodeJS.ErrnoException).code = 'MODULE_NOT_FOUND';
+        throw error;
+      }
+    };
+  });
+
+  afterAll(() => {
+    internal.resolvePackagePath = originalResolvePackagePath;
+  });
 
   afterEach(() => {
     mockDir.clear();

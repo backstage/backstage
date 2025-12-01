@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -312,10 +312,10 @@ describe('SearchResultGroup', () => {
 
     await userEvent.click(screen.getByText('owner'));
 
-    await userEvent.type(
-      screen.getByRole('textbox'),
-      '{backspace}{backspace}{backspace}{backspace}techdocs-core',
-    );
+    // Use fireEvent.blur for contentEditable elements since userEvent.type with
+    // backspace doesn't work properly in jsdom (jsdom limitation, not a bug)
+    const textbox = screen.getByRole('textbox');
+    fireEvent.blur(textbox, { target: { textContent: 'techdocs-core' } });
 
     await waitFor(() => {
       expect(screen.getByText('techdocs-core')).toBeInTheDocument();
